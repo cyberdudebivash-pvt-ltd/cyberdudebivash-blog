@@ -1,142 +1,16 @@
-# ═══════════════════════════════════════════════════════════════
-# CYBERDUDEBIVASH — SENTINEL APEX LIVE INTEL AUTO-PUBLISHER
-# ═══════════════════════════════════════════════════════════════
-# Runs every 30 minutes (24/7). Zero YAML syntax errors.
-# © 2025 CYBERDUDEBIVASH. All rights reserved.
-# ═══════════════════════════════════════════════════════════════
-
-name: "Sentinel APEX — Live Intel Auto-Publisher"
-
+# DEPRECATED: Replaced by sentinel-apex.yml (v3.0)
+# This workflow is disabled. All pipeline logic is now in sentinel-apex.yml.
+name: "[DEPRECATED] Live Intel — Use sentinel-apex.yml"
 on:
-  schedule:
-    - cron: "*/30 * * * *"
   workflow_dispatch:
     inputs:
-      force_fetch:
-        description: "Force fetch even if recently run"
+      note:
+        description: "This workflow is deprecated. Use sentinel-apex.yml instead."
         required: false
-        default: "false"
-        type: choice
-        options:
-          - "false"
-          - "true"
-      debug:
-        description: "Enable debug output"
-        required: false
-        default: "false"
-        type: choice
-        options:
-          - "false"
-          - "true"
-
+        default: "Use sentinel-apex.yml"
 jobs:
-  fetch-and-publish:
-    name: "Fetch Live Intel and Publish"
+  deprecated:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    concurrency:
-      group: sentinel-intel-publisher
-      cancel-in-progress: false
-
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: "Setup Node.js"
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: "Verify fetch-live-intel.js exists"
-        run: |
-          if [ ! -f "fetch-live-intel.js" ]; then
-            echo "ERROR: fetch-live-intel.js not found in repo root"
-            exit 1
-          fi
-          echo "OK: fetch-live-intel.js found ($(wc -c < fetch-live-intel.js) bytes)"
-
-      - name: "Ensure intel-state.json exists"
-        run: |
-          if [ ! -f "intel-state.json" ]; then
-            echo '{"published":[],"lastRun":null,"totalPublished":0}' > intel-state.json
-            echo "Created fresh intel-state.json"
-          else
-            echo "intel-state.json exists"
-          fi
-
-      - name: "Ensure posts directory exists"
-        run: |
-          mkdir -p posts
-          echo "posts/ ready ($(ls posts/*.html 2>/dev/null | wc -l) existing posts)"
-
-      - name: "Run Sentinel APEX Intel Fetcher"
-        id: run_fetcher
-        env:
-          FORCE_FETCH: ${{ github.event.inputs.force_fetch || 'false' }}
-          DEBUG: ${{ github.event.inputs.debug || 'false' }}
-        run: |
-          echo "Starting Sentinel APEX Intel Fetcher at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-          timeout 300 node fetch-live-intel.js
-          EXIT_CODE=$?
-          if [ $EXIT_CODE -eq 0 ]; then
-            echo "Fetcher completed successfully"
-          elif [ $EXIT_CODE -eq 124 ]; then
-            echo "Fetcher timed out after 5 minutes"
-            exit 1
-          else
-            echo "Fetcher exited with code $EXIT_CODE"
-            exit $EXIT_CODE
-          fi
-
-      - name: "Check for new content"
-        id: check_changes
-        run: |
-          CHANGED=$(git status --short | wc -l)
-          echo "changed_count=$CHANGED" >> $GITHUB_OUTPUT
-          if [ "$CHANGED" -gt "0" ]; then
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "$CHANGED files changed:"
-            git status --short
-          else
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "No new intel in this cycle"
-          fi
-
-      - name: "Commit and push new intel"
-        if: steps.check_changes.outputs.has_changes == 'true'
-        run: |
-          git config user.name "Sentinel APEX Bot"
-          git config user.email "sentinel@cyberdudebivash.com"
-          git add -A
-          NEW_POSTS=$(git diff --staged --name-only | grep "^posts/" | wc -l | tr -d ' ')
-          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
-          MSG="Sentinel APEX: +${NEW_POSTS} live intel report(s) [${TIMESTAMP}] [skip ci]"
-          git commit -m "$MSG"
-          echo "Committed: $MSG"
-          for i in 1 2 3; do
-            git push && echo "Push successful" && break
-            echo "Push attempt $i failed, retrying in 5s..."
-            sleep 5
-          done
-
-      - name: "No new intel this cycle"
-        if: steps.check_changes.outputs.has_changes == 'false'
-        run: |
-          echo "No new critical threats in this cycle. Next check in 30 minutes."
-
-      - name: "Run summary"
-        if: always()
-        run: |
-          echo "=== SENTINEL APEX RUN SUMMARY ==="
-          echo "Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-          echo "Repo: ${{ github.repository }}"
-          echo "Trigger: ${{ github.event_name }}"
-          if [ -f "intel-state.json" ]; then
-            TOTAL=$(node -e "try{var s=require('./intel-state.json');console.log(s.totalPublished||0)}catch(e){console.log(0)}")
-            echo "Total published all-time: $TOTAL"
-          fi
-          echo "================================="
+      - name: "Deprecated"
+        run: echo "This workflow is deprecated. Please use sentinel-apex.yml instead."

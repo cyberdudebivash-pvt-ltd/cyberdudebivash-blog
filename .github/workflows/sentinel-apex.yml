@@ -1,0 +1,198 @@
+# ═══════════════════════════════════════════════════════════════════════
+# CYBERDUDEBIVASH SENTINEL APEX — Global Intelligence Pipeline v3.0
+# Runs every 10 minutes, 24/7. All 12 sources. Full retry logic.
+# © 2026 CYBERDUDEBIVASH PRIVATE LIMITED
+# ═══════════════════════════════════════════════════════════════════════
+
+name: "⚡ SENTINEL APEX — Global Intel Pipeline v3.0"
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+    inputs:
+      force_reset_state:
+        description: "Reset intel-state.json (re-publish all)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      debug:
+        description: "Enable verbose debug output"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sentinel-apex-pipeline
+  cancel-in-progress: false
+
+jobs:
+  ingest-process-publish:
+    name: "Ingest → Process → Enrich → Publish"
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      # ── SETUP ────────────────────────────────────────────────────────
+      - name: "📥 Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "⚙️ Setup Node.js 20"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # ── PRE-FLIGHT CHECKS ────────────────────────────────────────────
+      - name: "🔍 Pre-flight: verify engine exists"
+        run: |
+          if [ ! -f "fetch-live-intel.js" ]; then
+            echo "❌ CRITICAL: fetch-live-intel.js missing from repo root!"
+            exit 1
+          fi
+          LINES=$(wc -l < fetch-live-intel.js)
+          echo "✅ fetch-live-intel.js: ${LINES} lines"
+          mkdir -p posts
+          echo "✅ posts/ directory ready ($(ls posts/*.html 2>/dev/null | wc -l) existing posts)"
+
+      - name: "🔄 Pre-flight: initialize intel-state.json"
+        run: |
+          if [ "${{ github.event.inputs.force_reset_state }}" = "true" ]; then
+            echo '{"published":[],"lastRun":null,"totalPublished":0,"version":"3.0"}' > intel-state.json
+            echo "⚠️ intel-state.json RESET by manual trigger"
+          elif [ ! -f "intel-state.json" ]; then
+            echo '{"published":[],"lastRun":null,"totalPublished":0,"version":"3.0"}' > intel-state.json
+            echo "✅ intel-state.json initialized fresh"
+          else
+            TOTAL=$(node -e "try{var s=require('./intel-state.json');console.log(s.totalPublished||0)}catch(e){console.log(0)}" 2>/dev/null || echo "0")
+            PUB=$(node -e "try{var s=require('./intel-state.json');console.log(s.published.length)}catch(e){console.log(0)}" 2>/dev/null || echo "0")
+            echo "✅ intel-state.json loaded: ${PUB} tracked IDs, ${TOTAL} total published"
+          fi
+
+      # ── INTEL PIPELINE ───────────────────────────────────────────────
+      - name: "🛰️ Run SENTINEL APEX — Ingest + Process + Publish"
+        id: run_pipeline
+        env:
+          NVD_API_KEY:  ${{ secrets.NVD_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEBUG:        ${{ github.event.inputs.debug || 'false' }}
+          NODE_ENV:     production
+        run: |
+          echo "═══════════════════════════════════════════════════════"
+          echo "CYBERDUDEBIVASH SENTINEL APEX v3.0 — $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "═══════════════════════════════════════════════════════"
+          
+          # Run with timeout — fail loudly on timeout
+          if ! timeout 360 node fetch-live-intel.js; then
+            EXIT=$?
+            if [ $EXIT -eq 124 ]; then
+              echo "❌ Pipeline TIMED OUT after 6 minutes"
+            else
+              echo "❌ Pipeline FAILED with exit code $EXIT"
+            fi
+            exit $EXIT
+          fi
+          echo "✅ Pipeline completed successfully"
+
+      # ── DETECT CHANGES ───────────────────────────────────────────────
+      - name: "🔎 Detect new intel files"
+        id: changes
+        run: |
+          CHANGED=$(git status --short | wc -l | tr -d ' ')
+          NEW_POSTS=$(git status --short | grep "^?" | grep "posts/" | wc -l | tr -d ' ')
+          MODIFIED=$(git diff --name-only | wc -l | tr -d ' ')
+
+          echo "changed_count=${CHANGED}"    >> $GITHUB_OUTPUT
+          echo "new_posts=${NEW_POSTS}"       >> $GITHUB_OUTPUT
+          echo "has_changes=$([ $CHANGED -gt 0 ] && echo true || echo false)" >> $GITHUB_OUTPUT
+          
+          if [ "$CHANGED" -gt 0 ]; then
+            echo "📊 Changes detected: ${CHANGED} files (${NEW_POSTS} new posts)"
+            git status --short | head -20
+          else
+            echo "ℹ️ No new intel in this cycle"
+          fi
+
+      # ── COMMIT & PUSH (with retry) ────────────────────────────────────
+      - name: "🚀 Commit and push new intel"
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name  "SENTINEL APEX Bot"
+          git config user.email "sentinel@cyberdudebivash.com"
+          git add -A
+
+          NEW_POSTS="${{ steps.changes.outputs.new_posts }}"
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+          TOTAL=$(node -e "try{var s=require('./intel-state.json');console.log(s.totalPublished||0)}catch(e){console.log(0)}" 2>/dev/null || echo "?")
+          
+          MSG="⚡ SENTINEL APEX: +${NEW_POSTS} intel report(s) [${TIMESTAMP}] [total: ${TOTAL}] [skip ci]"
+          git commit -m "$MSG"
+          echo "📝 Commit: $MSG"
+
+          # Push with retry (3 attempts, exponential backoff)
+          for ATTEMPT in 1 2 3; do
+            echo "Push attempt ${ATTEMPT}/3..."
+            if git push; then
+              echo "✅ Push successful on attempt ${ATTEMPT}"
+              break
+            fi
+            if [ $ATTEMPT -lt 3 ]; then
+              echo "⚠️ Push failed, pulling latest and retrying in $((ATTEMPT * 5))s..."
+              sleep $((ATTEMPT * 5))
+              git pull --rebase origin main || true
+            else
+              echo "❌ All push attempts failed"
+              exit 1
+            fi
+          done
+
+      # ── NO CHANGES ────────────────────────────────────────────────────
+      - name: "💤 No new intel this cycle"
+        if: steps.changes.outputs.has_changes == 'false'
+        run: |
+          echo "ℹ️ No new intel published this cycle."
+          echo "All current threat intel has already been processed."
+          echo "Next run in ~10 minutes."
+
+      # ── RUN SUMMARY ───────────────────────────────────────────────────
+      - name: "📊 Pipeline run summary"
+        if: always()
+        run: |
+          echo "════════════════════════════════════════════"
+          echo "   SENTINEL APEX RUN SUMMARY"
+          echo "════════════════════════════════════════════"
+          echo "  Time     : $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "  Repo     : ${{ github.repository }}"
+          echo "  Trigger  : ${{ github.event_name }}"
+          echo "  Run #    : ${{ github.run_number }}"
+          if [ -f "intel-state.json" ]; then
+            TOTAL=$(node -e "try{var s=require('./intel-state.json');console.log(s.totalPublished||0)}catch(e){console.log(0)}" 2>/dev/null || echo "?")
+            PUB=$(node -e "try{var s=require('./intel-state.json');console.log(s.published.length)}catch(e){console.log(0)}" 2>/dev/null || echo "?")
+            LAST=$(node -e "try{var s=require('./intel-state.json');console.log(s.lastRun||'never')}catch(e){console.log('error')}" 2>/dev/null || echo "?")
+            echo "  Total    : ${TOTAL} reports published"
+            echo "  Tracked  : ${PUB} unique IDs"
+            echo "  Last Run : ${LAST}"
+          fi
+          echo "  New Posts: ${{ steps.changes.outputs.new_posts || '0' }}"
+          echo "════════════════════════════════════════════"
+
+      # ── FAILURE ALERT ─────────────────────────────────────────────────
+      - name: "🚨 Pipeline failure alert"
+        if: failure()
+        run: |
+          echo "::error title=SENTINEL APEX PIPELINE FAILURE::The CYBERDUDEBIVASH SENTINEL APEX intelligence pipeline failed at $(date -u '+%Y-%m-%d %H:%M:%S UTC'). Check logs above for details. Run #${{ github.run_number }}."
+          echo ""
+          echo "FAILURE DIAGNOSTIC:"
+          echo "  - Check NVD API availability"
+          echo "  - Check CISA KEV availability"
+          echo "  - Check RSS feed availability"
+          echo "  - Verify fetch-live-intel.js syntax"
+          echo "  - Review full job logs above"
+          exit 0  # Don't fail the step itself, just log
