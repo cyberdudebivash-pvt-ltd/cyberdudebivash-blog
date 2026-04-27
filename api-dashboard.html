@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Dashboard — CYBERDUDEBIVASH SENTINEL APEX</title>
+<meta name="description" content="Manage your SENTINEL APEX API key, view usage stats, and upgrade your threat intelligence subscription.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:var(--apex-bg);color:var(--apex-text);min-height:100vh}
+nav{background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nlogo{font-size:17px;font-weight:900;color:var(--apex-cyan);text-decoration:none}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:#fff;background:var(--apex-surface)}.nlinks{display:flex;gap:4px}
+.ncta{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000!important;font-weight:700!important;border-radius:6px!important}
+.hero{background:linear-gradient(135deg,#07090f,#0d1117);border-bottom:1px solid var(--apex-border);padding:60px 24px 40px;text-align:center}
+.hero h1{font-size:clamp(24px,4vw,42px);font-weight:900;color:#fff;margin-bottom:12px}.hero h1 span{color:var(--apex-cyan)}
+.hero p{color:var(--apex-muted);font-size:16px;max-width:600px;margin:0 auto 32px}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--apex-border);background:var(--apex-surface);overflow-x:auto}
+.tab{padding:14px 24px;font-size:14px;font-weight:600;color:var(--apex-muted);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;white-space:nowrap}.tab:hover{color:var(--apex-text)}.tab.active{color:var(--apex-cyan);border-bottom-color:var(--apex-cyan)}
+.wrap{max-width:1100px;margin:0 auto;padding:40px 24px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:28px;margin-bottom:24px}
+.card-title{font-size:14px;font-weight:700;color:var(--apex-cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--apex-border)}
+.form-group{margin-bottom:18px}label{display:block;font-size:13px;font-weight:600;color:var(--apex-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+input,select{width:100%;padding:12px 16px;background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;color:var(--apex-text);font-size:14px;font-family:inherit;outline:none;transition:.2s}
+input:focus,select:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba(0,255,224,.1)}
+.btn{padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000}.btn-primary:hover{opacity:.9}
+.btn-secondary{background:transparent;border:2px solid var(--apex-cyan);color:var(--apex-cyan)}.btn-secondary:hover{background:rgba(0,255,224,.08)}
+.btn-danger{background:rgba(255,59,59,.15);border:1px solid rgba(255,59,59,.4);color:var(--apex-red)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.key-display{background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;padding:16px 20px;font-family:var(--mono);font-size:13px;color:var(--apex-cyan);word-break:break-all;position:relative;margin:12px 0}
+.copy-btn{position:absolute;top:10px;right:10px;padding:4px 12px;background:var(--apex-surface);border:1px solid var(--apex-border);border-radius:4px;color:var(--apex-muted);font-size:11px;font-weight:600;cursor:pointer;transition:.2s}.copy-btn:hover{color:var(--apex-text)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin:20px 0}
+.stat-box{background:#0a0e18;border:1px solid var(--apex-border);border-radius:10px;padding:20px;text-align:center}
+.stat-val{font-size:28px;font-weight:900;font-family:var(--mono);color:var(--apex-cyan)}.stat-val.red{color:var(--apex-red)}.stat-val.green{color:var(--apex-green)}.stat-val.orange{color:var(--apex-orange)}
+.stat-lbl{font-size:11px;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
+.usage-bar{height:6px;background:var(--apex-border);border-radius:3px;margin:12px 0;overflow:hidden}
+.usage-fill{height:100%;background:linear-gradient(90deg,var(--apex-cyan),#0099ff);border-radius:3px;transition:.5s}
+.usage-fill.warn{background:linear-gradient(90deg,var(--apex-orange),#ff6b00)}
+.usage-fill.danger{background:linear-gradient(90deg,var(--apex-red),#cc0000)}
+.tier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:20px}
+.tier-card{background:#0a0e18;border:1px solid var(--apex-border);border-radius:14px;padding:24px;position:relative}
+.tier-card.featured{border-color:var(--apex-cyan);box-shadow:0 0 24px rgba(0,255,224,.1)}
+.tier-card.featured::before{content:'MOST POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000;font-size:10px;font-weight:900;padding:3px 12px;border-radius:10px;letter-spacing:.1em}
+.tier-name{font-size:20px;font-weight:900;color:#fff;margin-bottom:4px}
+.tier-price{font-size:36px;font-weight:900;color:var(--apex-cyan);font-family:var(--mono)}.tier-price span{font-size:14px;color:var(--apex-muted);font-weight:400;font-family:inherit}
+.tier-features{list-style:none;margin:16px 0;padding:0}
+.tier-features li{padding:6px 0;font-size:14px;color:var(--apex-muted);border-bottom:1px solid var(--apex-border)}.tier-features li::before{content:'✓ ';color:var(--apex-green);font-weight:700}
+.tier-features li.locked{color:#374151}.tier-features li.locked::before{content:'🔒 ';color:#374151}
+.badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.06em}
+.bdg-free{background:#6b728022;color:#6b7280;border:1px solid #6b728033}
+.bdg-pro{background:#00ffe022;color:#00ffe0;border:1px solid #00ffe044}
+.bdg-ent{background:#a855f722;color:#a855f7;border:1px solid #a855f744}
+.code-block{background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;padding:16px 20px;font-family:var(--mono);font-size:12px;color:#a6e22e;overflow-x:auto;white-space:pre;margin:12px 0;position:relative}
+.endpoint{background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;padding:14px 18px;margin-bottom:10px}
+.ep-method{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;font-family:var(--mono);background:#00ffe022;color:#00ffe0;margin-right:8px}
+.ep-path{font-family:var(--mono);font-size:13px;color:#fff}
+.ep-desc{font-size:12px;color:var(--apex-muted);margin-top:4px}
+.ep-tier{display:inline-block;padding:2px 6px;border-radius:3px;font-size:10px;font-weight:700;margin-left:8px}
+.ep-free{background:#6b728011;color:#6b7280}.ep-pro{background:#00ffe011;color:#00ffe0}.ep-ent{background:#a855f711;color:#a855f7}
+.alert{padding:14px 18px;border-radius:8px;margin:16px 0;font-size:14px}
+.alert-success{background:#00ff8815;border:1px solid #00ff8840;color:#00ff88}
+.alert-error{background:#ff3b3b15;border:1px solid #ff3b3b40;color:#ff3b3b}
+.alert-info{background:#00ffe015;border:1px solid #00ffe040;color:#00ffe0}
+.alert-warn{background:#ff8c0015;border:1px solid #ff8c0040;color:#ff8c00}
+.hidden{display:none!important}
+.chart-bar{display:flex;align-items:flex-end;gap:4px;height:80px;margin:16px 0}
+.bar-col{flex:1;background:rgba(0,255,224,.15);border-radius:3px 3px 0 0;position:relative;cursor:default;transition:.2s}
+.bar-col:hover{background:rgba(0,255,224,.3)}
+.bar-col::after{content:attr(data-label);position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--apex-muted);white-space:nowrap}
+footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);padding:24px;text-align:center;font-size:13px;color:var(--apex-muted)}footer a{color:var(--apex-cyan);text-decoration:none}
+@media(max-width:600px){.hero{padding:40px 16px 24px}.wrap{padding:24px 16px}.nlinks a:not(.ncta){display:none}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nlogo">CYBERDUDE<span style="color:#fff">BIVASH</span> <span style="font-size:11px;color:var(--apex-muted);font-weight:400">SENTINEL APEX</span></a>
+  <div class="nlinks">
+    <a href="/">Blog</a>
+    <a href="/api.html">API Docs</a>
+    <a href="/pricing.html" class="ncta">⚡ Upgrade</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>⚡ <span>SENTINEL APEX</span> API Dashboard</h1>
+  <p>Manage your API key, monitor usage, and access global threat intelligence.</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('register')">🔑 Get API Key</div>
+  <div class="tab" onclick="switchTab('dashboard')">📊 My Dashboard</div>
+  <div class="tab" onclick="switchTab('docs')">📖 API Reference</div>
+  <div class="tab" onclick="switchTab('plans')">💎 Plans</div>
+</div>
+
+<!-- REGISTER PANEL -->
+<div id="panel-register" class="panel active wrap">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px" class="reg-grid">
+    <div>
+      <div class="card">
+        <div class="card-title">🔑 Generate Free API Key</div>
+        <div id="reg-alert" class="hidden"></div>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input id="reg-name" type="text" placeholder="Your name or organization">
+        </div>
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input id="reg-email" type="email" placeholder="you@organization.com">
+        </div>
+        <div class="form-group">
+          <label>Plan</label>
+          <select id="reg-plan">
+            <option value="free">Free — 100 req/day (start here)</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="registerKey()" id="reg-btn" style="width:100%">⚡ Generate My API Key</button>
+        <p style="font-size:12px;color:var(--apex-muted);margin-top:12px;text-align:center">By registering, you agree to our <a href="#" style="color:var(--apex-cyan)">Terms of Service</a>. No credit card required for Free tier.</p>
+      </div>
+
+      <div id="key-result" class="card hidden">
+        <div class="card-title" style="color:var(--apex-green)">✅ API Key Generated</div>
+        <div class="alert alert-warn" style="font-size:13px;margin-bottom:16px">⚠️ <strong>Store this key securely.</strong> It will not be shown again.</div>
+        <label style="font-size:12px;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px">Your API Key</label>
+        <div class="key-display" id="key-display">—<button class="copy-btn" onclick="copyKey()">Copy</button></div>
+        <div id="key-meta" style="font-size:13px;color:var(--apex-muted);margin-top:12px;line-height:1.8"></div>
+        <button class="btn btn-primary" onclick="loadDashboard()" style="margin-top:16px;width:100%">Go to My Dashboard →</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-title">⚡ Quick Start</div>
+        <p style="font-size:14px;color:var(--apex-muted);margin-bottom:16px">Use your API key in any HTTP client:</p>
+        <div class="code-block" id="quickstart-code">curl -H "Authorization: Bearer YOUR_API_KEY" \
+  https://blog.cyberdudebivash.in/api/v1/intel/live</div>
+        <p style="font-size:13px;color:var(--apex-muted);margin-top:16px;margin-bottom:8px">Or use X-API-Key header:</p>
+        <div class="code-block">curl -H "X-API-Key: YOUR_API_KEY" \
+  https://blog.cyberdudebivash.in/api/v1/intel/top-threats</div>
+        <p style="font-size:13px;color:var(--apex-muted);margin-top:16px">JavaScript example:</p>
+        <div class="code-block">const res = await fetch(
+  'https://blog.cyberdudebivash.in/api/v1/intel/live',
+  { headers: { 'X-API-Key': 'YOUR_KEY' } }
+);
+const data = await res.json();</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD PANEL -->
+<div id="panel-dashboard" class="panel wrap">
+  <div class="card">
+    <div class="card-title">🔑 Load My Dashboard</div>
+    <div style="display:flex;gap:12px;align-items:flex-end">
+      <div class="form-group" style="flex:1;margin:0">
+        <label>Enter your API Key</label>
+        <input id="dash-key" type="password" placeholder="sentinel_...">
+      </div>
+      <button class="btn btn-primary" onclick="loadDashboard()">Load Dashboard</button>
+    </div>
+    <p style="font-size:12px;color:var(--apex-muted);margin-top:8px">Your key is never stored in your browser — only used for this session.</p>
+  </div>
+
+  <div id="dash-content" class="hidden">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-val" id="d-tier">—</div><div class="stat-lbl">Plan Tier</div></div>
+      <div class="stat-box"><div class="stat-val" id="d-used">—</div><div class="stat-lbl">Used Today</div></div>
+      <div class="stat-box"><div class="stat-val green" id="d-remaining">—</div><div class="stat-lbl">Remaining</div></div>
+      <div class="stat-box"><div class="stat-val orange" id="d-limit">—</div><div class="stat-lbl">Daily Limit</div></div>
+      <div class="stat-box"><div class="stat-val" id="d-total">—</div><div class="stat-lbl">All-Time Requests</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Today's Usage</div>
+      <div class="usage-bar"><div class="usage-fill" id="d-bar" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--apex-muted)">
+        <span id="d-usage-label">0 / 0 requests</span>
+        <span id="d-reset-label">Resets at midnight UTC</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 7-Day Usage</div>
+      <div class="chart-bar" id="usage-chart"></div>
+      <div style="margin-top:24px"></div>
+    </div>
+    <div class="card" id="dash-upgrade-card" style="background:linear-gradient(135deg,#0a1428,#111827);border-color:rgba(0,255,224,.15)">
+      <div class="card-title" style="color:var(--apex-cyan)">🚀 Upgrade Your Plan</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="startCheckout('pro')">⚡ Upgrade to Pro — $49/mo</button>
+        <button class="btn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7" onclick="startCheckout('enterprise')">🏢 Enterprise — Custom</button>
+      </div>
+      <p style="font-size:13px;color:var(--apex-muted);margin-top:12px">Pro includes: 5,000 req/day · Full IOC access · MITRE mapping · Sigma/YARA rules · 7-day free trial</p>
+    </div>
+  </div>
+</div>
+
+<!-- DOCS PANEL -->
+<div id="panel-docs" class="panel wrap">
+  <div class="card">
+    <div class="card-title">🔐 Authentication</div>
+    <p style="font-size:14px;color:var(--apex-muted);margin-bottom:16px">All endpoints require an API key passed via one of these methods:</p>
+    <div class="code-block">Authorization: Bearer sentinel_your_key_here
+# OR
+X-API-Key: sentinel_your_key_here</div>
+    <p style="font-size:13px;color:var(--apex-muted);margin-top:12px">Rate limit info is returned in response headers: <code style="color:var(--apex-cyan)">X-RateLimit-Limit</code>, <code style="color:var(--apex-cyan)">X-RateLimit-Remaining</code>, <code style="color:var(--apex-cyan)">X-RateLimit-Tier</code></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📡 Endpoints</div>
+
+    <div class="endpoint">
+      <div><span class="ep-method">GET</span><span class="ep-path">/api/v1/intel/live</span><span class="ep-tier ep-free">FREE</span></div>
+      <div class="ep-desc">Live threat intelligence feed. Query: page, limit, severity, type, exploited, cisa_kev, min_cvss, vendor</div>
+    </div>
+    <div class="endpoint">
+      <div><span class="ep-method">GET</span><span class="ep-path">/api/v1/intel/top-threats</span><span class="ep-tier ep-free">FREE</span></div>
+      <div class="ep-desc">Highest-priority threats (score ≥ 65/100). Always the most critical active threats.</div>
+    </div>
+    <div class="endpoint">
+      <div><span class="ep-method">GET</span><span class="ep-path">/api/v1/intel/cve/{id}</span><span class="ep-tier ep-free">FREE</span></div>
+      <div class="ep-desc">Full CVE intelligence by ID. Example: /api/v1/intel/cve/CVE-2025-12345</div>
+    </div>
+    <div class="endpoint">
+      <div><span class="ep-method">GET</span><span class="ep-path">/api/v1/intel/iocs</span><span class="ep-tier ep-pro">PRO</span></div>
+      <div class="ep-desc">Enriched IOC feed with confidence scoring. Query: type, min_confidence, related_id. Enterprise: format=stix returns STIX 2.1 bundle.</div>
+    </div>
+    <div class="endpoint">
+      <div><span class="ep-method">GET</span><span class="ep-path">/api/v1/intel/ransomware</span><span class="ep-tier ep-free">FREE</span></div>
+      <div class="ep-desc">Ransomware-specific threat intelligence: active campaigns, actor TTPs, IOC feeds.</div>
+    </div>
+    <div class="endpoint">
+      <div><span class="ep-method">GET</span><span class="ep-path">/api/v1/intel/search</span><span class="ep-tier ep-free">FREE</span></div>
+      <div class="ep-desc">Full-text search. Query: q=&lt;search term&gt;. Free: 5 results max. Pro: 50. Enterprise: 200.</div>
+    </div>
+    <div class="endpoint">
+      <div><span class="ep-method">GET</span><span class="ep-path">/api/v1/auth/me</span><span class="ep-tier ep-free">FREE</span></div>
+      <div class="ep-desc">Your user profile, tier, and feature access information.</div>
+    </div>
+    <div class="endpoint">
+      <div><span class="ep-method">GET</span><span class="ep-path">/api/v1/keys/usage</span><span class="ep-tier ep-free">FREE</span></div>
+      <div class="ep-desc">Per-key usage analytics. Query: days=7 (default) — returns daily breakdown for last N days.</div>
+    </div>
+    <div class="endpoint">
+      <div><span class="ep-method">POST</span><span class="ep-path">/api/v1/auth/register</span><span class="ep-tier ep-free">FREE</span></div>
+      <div class="ep-desc">Register and get an API key. Body: {email, name, plan}. Returns api_key (shown only once).</div>
+    </div>
+    <div class="endpoint">
+      <div><span class="ep-method">POST</span><span class="ep-path">/api/v1/billing/subscribe</span><span class="ep-tier ep-pro">AUTH</span></div>
+      <div class="ep-desc">Create a Stripe checkout session. Body: {plan: "pro"|"enterprise"}. Returns checkout_url.</div>
+    </div>
+
+    <div style="margin-top:24px">
+      <div class="card-title">📋 Response Schema</div>
+      <div class="code-block">{
+  "success": true,
+  "meta": {
+    "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
+    "timestamp": "2026-04-27T12:00:00.000Z",
+    "endpoint": "/api/v1/intel/live",
+    "tier": "pro"
+  },
+  "items": [ ... ],
+  "pagination": { "page": 1, "limit": 25, "total": 87, "has_next": true },
+  "tier_info": { "tier": "pro", "ioc_access": true, "upgrade_url": null },
+  "_trust": {
+    "source_attribution": "cisa_kev, nvd",
+    "confidence_score": 0.98,
+    "correlation_count": 2,
+    "verified_at": "2026-04-27T12:00:00.000Z"
+  }
+}</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">❌ Error Codes</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <tr style="background:#0a0e18"><th style="padding:10px 14px;text-align:left;color:var(--apex-cyan);border:1px solid var(--apex-border)">Code</th><th style="padding:10px 14px;text-align:left;color:var(--apex-cyan);border:1px solid var(--apex-border)">HTTP</th><th style="padding:10px 14px;text-align:left;color:var(--apex-cyan);border:1px solid var(--apex-border)">Meaning</th></tr>
+      <tr><td style="padding:10px 14px;border:1px solid var(--apex-border);font-family:var(--mono);color:var(--apex-orange)">UNAUTHORIZED</td><td style="padding:10px 14px;border:1px solid var(--apex-border)">401</td><td style="padding:10px 14px;border:1px solid var(--apex-border);color:var(--apex-muted)">Missing or invalid API key</td></tr>
+      <tr><td style="padding:10px 14px;border:1px solid var(--apex-border);font-family:var(--mono);color:var(--apex-orange)">TIER_RESTRICTED</td><td style="padding:10px 14px;border:1px solid var(--apex-border)">403</td><td style="padding:10px 14px;border:1px solid var(--apex-border);color:var(--apex-muted)">Endpoint requires higher plan</td></tr>
+      <tr><td style="padding:10px 14px;border:1px solid var(--apex-border);font-family:var(--mono);color:var(--apex-orange)">RATE_LIMIT_EXCEEDED</td><td style="padding:10px 14px;border:1px solid var(--apex-border)">429</td><td style="padding:10px 14px;border:1px solid var(--apex-border);color:var(--apex-muted)">Daily quota exhausted — retry tomorrow or upgrade</td></tr>
+      <tr><td style="padding:10px 14px;border:1px solid var(--apex-border);font-family:var(--mono);color:var(--apex-orange)">CVE_NOT_FOUND</td><td style="padding:10px 14px;border:1px solid var(--apex-border)">404</td><td style="padding:10px 14px;border:1px solid var(--apex-border);color:var(--apex-muted)">CVE not in SENTINEL APEX database</td></tr>
+      <tr><td style="padding:10px 14px;border:1px solid var(--apex-border);font-family:var(--mono);color:var(--apex-orange)">SERVICE_UNAVAILABLE</td><td style="padding:10px 14px;border:1px solid var(--apex-border)">503</td><td style="padding:10px 14px;border:1px solid var(--apex-border);color:var(--apex-muted)">Backend temporarily unavailable — retry in 30s</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- PLANS PANEL -->
+<div id="panel-plans" class="panel wrap">
+  <div class="tier-grid">
+    <div class="tier-card">
+      <span class="badge bdg-free" style="margin-bottom:12px">FREE</span>
+      <div class="tier-name">Free Tier</div>
+      <div class="tier-price">$0<span>/month</span></div>
+      <ul class="tier-features">
+        <li>100 API requests/day</li>
+        <li>Live threat feed access</li>
+        <li>Top threats endpoint</li>
+        <li>CVE lookup (summary)</li>
+        <li>Basic search (5 results)</li>
+        <li class="locked">Full IOC dataset</li>
+        <li class="locked">Sigma/YARA detection rules</li>
+        <li class="locked">MITRE ATT&CK mapping</li>
+        <li class="locked">Attack chain analysis</li>
+        <li class="locked">Business impact data</li>
+      </ul>
+      <button class="btn btn-secondary" onclick="switchTab('register')" style="width:100%">Get Free Key →</button>
+    </div>
+    <div class="tier-card featured">
+      <span class="badge bdg-pro" style="margin-bottom:12px">PRO</span>
+      <div class="tier-name">SOC Pro</div>
+      <div class="tier-price">$49<span>/month</span></div>
+      <ul class="tier-features">
+        <li>5,000 API requests/day</li>
+        <li>Full IOC dataset (50/item)</li>
+        <li>Sigma & YARA rules included</li>
+        <li>Full MITRE ATT&CK mapping</li>
+        <li>Attack chain analysis</li>
+        <li>Business impact data</li>
+        <li>Full search (50 results)</li>
+        <li>7-day free trial</li>
+        <li>Priority email support</li>
+        <li class="locked">STIX 2.1 export</li>
+      </ul>
+      <button class="btn btn-primary" onclick="startCheckout('pro')" style="width:100%">⚡ Start 7-Day Trial →</button>
+    </div>
+    <div class="tier-card">
+      <span class="badge bdg-ent" style="margin-bottom:12px">ENTERPRISE</span>
+      <div class="tier-name">Enterprise</div>
+      <div class="tier-price" style="color:#a855f7">Custom</div>
+      <ul class="tier-features">
+        <li>Unlimited API requests</li>
+        <li>Full IOC export (200+/item)</li>
+        <li>STIX 2.1 bundle export</li>
+        <li>Real-time intel feed</li>
+        <li>Bulk data export</li>
+        <li>Custom advisory reports</li>
+        <li>White-label licensing</li>
+        <li>Dedicated analyst support</li>
+        <li>SLA guarantee</li>
+        <li>MSSP licensing available</li>
+      </ul>
+      <a href="mailto:bivash@cyberdudebivash.com?subject=Enterprise+API+Inquiry" class="btn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7;width:100%;text-decoration:none;text-align:center;justify-content:center">🏢 Contact for Pricing →</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>⚡ CYBERDUDEBIVASH SENTINEL APEX v4.0 · <a href="/api.html">API Docs</a> · <a href="/pricing.html">Pricing</a> · <a href="mailto:bivash@cyberdudebivash.com">Support</a> · <a href="/enterprise.html">Enterprise</a></p>
+</footer>
+
+<script>
+const API = 'https://blog.cyberdudebivash.in';
+let sessionKey = null;
+
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const ids = ['register','dashboard','docs','plans'];
+    t.classList.toggle('active', ids[i]===id);
+  });
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(id==='dashboard'&&sessionKey) loadDashboard();
+}
+
+async function registerKey() {
+  const email = document.getElementById('reg-email').value.trim();
+  const name  = document.getElementById('reg-name').value.trim();
+  const plan  = document.getElementById('reg-plan').value;
+  const alert = document.getElementById('reg-alert');
+  const btn   = document.getElementById('reg-btn');
+
+  if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+    showAlert(alert,'error','Please enter a valid email address.'); return;
+  }
+  btn.disabled=true; btn.textContent='Generating key...';
+  showAlert(alert,'info','Generating your API key...');
+
+  try {
+    const res = await fetch(`${API}/api/v1/auth/register`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email,name,plan})
+    });
+    const data = await res.json();
+
+    if(data.api_key){
+      sessionKey = data.api_key;
+      document.getElementById('key-display').childNodes[0].textContent = data.api_key;
+      document.getElementById('key-meta').innerHTML =
+        `<strong style="color:var(--apex-green)">User ID:</strong> ${data.user.user_id}<br>
+         <strong style="color:var(--apex-green)">Tier:</strong> ${data.user.tier.toUpperCase()}<br>
+         <strong style="color:var(--apex-green)">Limit:</strong> ${data.rate_limit.requests_per_day} requests/day<br>
+         <strong style="color:var(--apex-green)">Usage:</strong> <code style="color:var(--apex-cyan)">${data.usage.endpoint}</code>`;
+      document.getElementById('key-result').classList.remove('hidden');
+      showAlert(alert,'success','✅ API key generated! Store it securely.');
+      document.getElementById('quickstart-code').textContent =
+        `curl -H "Authorization: Bearer ${data.api_key}" \\\n  ${API}/api/v1/intel/live`;
+    } else if(data.error){
+      showAlert(alert,'error', data.error.message || 'Registration failed.');
+    }
+  } catch(e){ showAlert(alert,'error','Request failed — check your connection and retry.'); }
+  btn.disabled=false; btn.textContent='⚡ Generate My API Key';
+}
+
+async function loadDashboard() {
+  const input = document.getElementById('dash-key');
+  const key = sessionKey || (input&&input.value.trim());
+  if(!key||!key.startsWith('sentinel_')){
+    alert('Please enter a valid API key (starts with sentinel_)'); return;
+  }
+  sessionKey = key;
+
+  try {
+    const [meRes, usageRes] = await Promise.all([
+      fetch(`${API}/api/v1/auth/me`, {headers:{'X-API-Key':key}}),
+      fetch(`${API}/api/v1/keys/usage?days=7`, {headers:{'X-API-Key':key}})
+    ]);
+    const me = await meRes.json();
+    const usage = await usageRes.json();
+
+    if(!me.success){ alert(me.error?.message||'Invalid API key'); return; }
+
+    const u = me.user, use = me.usage;
+    document.getElementById('d-tier').textContent = u.tier.toUpperCase();
+    document.getElementById('d-tier').className = 'stat-val'+(u.tier==='enterprise'?' ':'') + (u.tier==='free'?' ':'');
+    document.getElementById('d-used').textContent = use.today;
+    document.getElementById('d-remaining').textContent = use.remaining;
+    document.getElementById('d-remaining').className = 'stat-val'+(use.percent_used>80?' orange':' green');
+    document.getElementById('d-limit').textContent = use.daily_limit;
+    document.getElementById('d-total').textContent = u.total_requests;
+    document.getElementById('d-usage-label').textContent = `${use.today} / ${use.daily_limit} requests today (${use.percent_used}%)`;
+    document.getElementById('d-reset-label').textContent = `Resets: ${new Date(use.reset_at).toUTCString()}`;
+
+    const bar = document.getElementById('d-bar');
+    bar.style.width = Math.min(100, use.percent_used) + '%';
+    bar.className = 'usage-fill'+(use.percent_used>90?' danger':use.percent_used>70?' warn':'');
+
+    // 7-day chart
+    if(usage.success && usage.daily_breakdown){
+      const chart = document.getElementById('usage-chart');
+      chart.innerHTML='';
+      const days = usage.daily_breakdown;
+      const maxVal = Math.max(...days.map(d=>d.requests),1);
+      days.forEach(d=>{
+        const col = document.createElement('div');
+        col.className='bar-col';
+        col.style.height = Math.max(4,Math.round((d.requests/maxVal)*76))+'px';
+        col.setAttribute('data-label', d.date.slice(5));
+        col.title = `${d.date}: ${d.requests} requests`;
+        chart.appendChild(col);
+      });
+    }
+
+    if(u.tier!=='free') document.getElementById('dash-upgrade-card').style.display='none';
+    document.getElementById('dash-content').classList.remove('hidden');
+    if(input) input.value='';
+  } catch(e){ alert('Dashboard load failed: '+e.message); }
+}
+
+async function startCheckout(plan) {
+  if(!sessionKey){ switchTab('register'); return; }
+  try {
+    const res = await fetch(`${API}/api/v1/billing/subscribe`,{
+      method:'POST', headers:{'Content-Type':'application/json','X-API-Key':sessionKey},
+      body: JSON.stringify({plan})
+    });
+    const data = await res.json();
+    if(data.checkout_url) window.location.href = data.checkout_url;
+    else if(data.error)   alert(data.error.message);
+    else alert('Checkout unavailable — contact bivash@cyberdudebivash.com');
+  } catch(e){ alert('Checkout error: '+e.message); }
+}
+
+function copyKey() {
+  const key = document.getElementById('key-display').childNodes[0].textContent;
+  navigator.clipboard.writeText(key).then(()=>{
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent='Copied!'; btn.style.color='var(--apex-green)';
+    setTimeout(()=>{btn.textContent='Copy';btn.style.color='';},2000);
+  });
+}
+
+function showAlert(el, type, msg) {
+  el.className = 'alert alert-'+type;
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+// Check for Stripe redirect
+const params = new URLSearchParams(location.search);
+if(params.get('status')==='success') {
+  switchTab('dashboard');
+  setTimeout(()=>{ const a=document.createElement('div'); a.className='alert alert-success'; a.textContent='✅ Payment successful! Your account will be upgraded within 1 minute.'; document.getElementById('panel-dashboard').insertBefore(a,document.getElementById('panel-dashboard').firstChild); },200);
+}
+</script>
+</body>
+</html>

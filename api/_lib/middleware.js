@@ -1,0 +1,199 @@
+/**
+ * SENTINEL APEX — API Authentication + Rate Limiting Middleware
+ * Validates API keys, enforces tier rate limits, logs usage.
+ */
+'use strict';
+const crypto = require('crypto');
+const redis  = require('./redis');
+
+const RATE_LIMITS = {
+  free:       100,
+  pro:        5000,
+  enterprise: 999999,
+};
+
+const TIERS = ['free', 'pro', 'enterprise'];
+
+function today() {
+  return new Date().toISOString().slice(0, 10).replace(/-/g, '');
+}
+
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Authorization, X-API-Key, Content-Type',
+    'Access-Control-Max-Age': '86400',
+  };
+}
+
+function respond(res, status, body, extra = {}) {
+  const headers = { 'Content-Type': 'application/json', ...corsHeaders(), ...extra };
+  Object.entries(headers).forEach(([k, v]) => res.setHeader(k, v));
+  res.status(status).json(body);
+}
+
+function apiError(res, status, code, message, extra = {}) {
+  respond(res, status, {
+    error: { code, message },
+    meta:  { platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', timestamp: new Date().toISOString() },
+  }, extra);
+}
+
+// Hash API key (SHA-256) for secure storage
+function hashKey(key) {
+  return crypto.createHash('sha256').update(key).digest('hex');
+}
+
+// Generate a new API key
+function generateApiKey() {
+  const raw = crypto.randomBytes(32).toString('hex');
+  return `sentinel_${raw}`;
+}
+
+// Parse API key from request
+function extractApiKey(req) {
+  // Header: Authorization: Bearer sentinel_xxx  OR  X-API-Key: sentinel_xxx
+  const auth = req.headers['authorization'] || '';
+  if (auth.startsWith('Bearer ')) return auth.slice(7).trim();
+  const xkey = req.headers['x-api-key'] || '';
+  if (xkey) return xkey.trim();
+  // Query param fallback (not recommended but supported)
+  return req.query?.api_key || null;
+}
+
+// Core auth + rate limit middleware
+async function authenticate(req, res) {
+  // CORS preflight
+  if (req.method === 'OPTIONS') {
+    respond(res, 204, {});
+    return null;
+  }
+
+  const rawKey = extractApiKey(req);
+  if (!rawKey || !rawKey.startsWith('sentinel_')) {
+    apiError(res, 401, 'UNAUTHORIZED', 'API key required. Pass via Authorization: Bearer <key> or X-API-Key header. Get yours at https://blog.cyberdudebivash.in/api-dashboard.html');
+    return null;
+  }
+
+  const hash = hashKey(rawKey);
+  const userKey = `user:key:${hash}`;
+
+  let userData;
+  try {
+    const raw = await redis.hgetall(userKey);
+    if (!raw || !Array.isArray(raw) || raw.length === 0) {
+      apiError(res, 401, 'INVALID_KEY', 'API key not found or revoked. Visit https://blog.cyberdudebivash.in/api-dashboard.html to manage your keys.');
+      return null;
+    }
+    // Upstash HGETALL returns flat array [field, value, field, value...]
+    userData = {};
+    for (let i = 0; i < raw.length; i += 2) userData[raw[i]] = raw[i + 1];
+  } catch (e) {
+    // Redis unavailable — allow in dev mode only
+    if (process.env.NODE_ENV === 'development') {
+      return { tier: 'pro', userId: 'dev', email: 'dev@local', keyHash: hash };
+    }
+    apiError(res, 503, 'SERVICE_UNAVAILABLE', 'Auth service temporarily unavailable. Retry in 30s.');
+    return null;
+  }
+
+  const tier  = userData.tier || 'free';
+  const limit = RATE_LIMITS[tier] || RATE_LIMITS.free;
+  const rateKey = `ratelimit:${hash}:${today()}`;
+
+  let used;
+  try {
+    used = await redis.incr(rateKey);
+    if (used === 1) await redis.expire(rateKey, 86400); // expire at end of day
+
+    if (used > limit) {
+      apiError(res, 429, 'RATE_LIMIT_EXCEEDED',
+        `Rate limit reached: ${limit} requests/day for ${tier} tier. Upgrade at https://blog.cyberdudebivash.in/pricing.html`,
+        {
+          'X-RateLimit-Limit': String(limit),
+          'X-RateLimit-Remaining': '0',
+          'X-RateLimit-Reset': String(Math.ceil(Date.now() / 86400000) * 86400),
+          'Retry-After': String(86400 - (Math.floor(Date.now() / 1000) % 86400)),
+        }
+      );
+      return null;
+    }
+
+    // Log usage async (don't await — non-blocking)
+    logUsage(hash, req, tier).catch(() => {});
+
+    // Update total request count
+    redis.hincrby(userKey, 'totalRequests', 1).catch(() => {});
+    redis.hset(userKey, 'lastSeen', new Date().toISOString()).catch(() => {});
+
+  } catch (e) {
+    // Rate limit service down — fail open for enterprise, fail closed for free
+    if (tier === 'enterprise') {
+      // continue
+    } else {
+      apiError(res, 503, 'SERVICE_UNAVAILABLE', 'Rate limit service temporarily unavailable.');
+      return null;
+    }
+  }
+
+  // Set rate limit response headers
+  res.setHeader('X-RateLimit-Limit', String(limit));
+  res.setHeader('X-RateLimit-Remaining', String(Math.max(0, limit - (used || 0))));
+  res.setHeader('X-RateLimit-Tier', tier);
+  res.setHeader('X-Powered-By', 'CYBERDUDEBIVASH SENTINEL APEX v4.0');
+
+  return {
+    tier,
+    userId: userData.userId || hash,
+    email:  userData.email || '',
+    keyHash: hash,
+    requestsUsed: used || 0,
+    requestsLimit: limit,
+  };
+}
+
+// Async usage logger — logs to Redis sorted set for analytics
+async function logUsage(keyHash, req, tier) {
+  const endpoint = req.url?.split('?')[0] || '/unknown';
+  const logKey = `usage:log:${today()}`;
+  const entry  = JSON.stringify({
+    k: keyHash.slice(0, 8),
+    e: endpoint,
+    t: tier,
+    ts: Date.now(),
+    m: req.method,
+  });
+  await redis.zadd(logKey, Date.now(), entry);
+  // Track top endpoints
+  await redis.hincrby(`analytics:endpoints:${today()}`, endpoint, 1);
+  // Track per-key daily usage in hash
+  await redis.hincrby(`analytics:keys:${today()}`, keyHash.slice(0, 16), 1);
+}
+
+// Standard success response wrapper
+function successResponse(res, data, meta = {}) {
+  respond(res, 200, {
+    success: true,
+    meta: {
+      platform:   'CYBERDUDEBIVASH SENTINEL APEX v4.0',
+      timestamp:  new Date().toISOString(),
+      contact:    'bivash@cyberdudebivash.com',
+      docs:       'https://blog.cyberdudebivash.in/api.html',
+      ...meta,
+    },
+    ...data,
+  });
+}
+
+module.exports = {
+  authenticate,
+  respond,
+  apiError,
+  successResponse,
+  corsHeaders,
+  generateApiKey,
+  hashKey,
+  RATE_LIMITS,
+  TIERS,
+};

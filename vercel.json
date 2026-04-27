@@ -1,6 +1,26 @@
 {
   "version": 2,
+  "functions": {
+    "api/v1/billing/webhook.js": {
+      "memory": 128,
+      "maxDuration": 10
+    },
+    "api/v1/**/*.js": {
+      "memory": 256,
+      "maxDuration": 15
+    }
+  },
   "headers": [
+    {
+      "source": "/api/v1/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin",  "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Authorization, X-API-Key, Content-Type, stripe-signature" },
+        { "key": "X-Content-Type-Options",       "value": "nosniff" },
+        { "key": "X-Powered-By",                 "value": "CYBERDUDEBIVASH SENTINEL APEX v4.0" }
+      ]
+    },
     {
       "source": "/api/(.*).json",
       "headers": [
@@ -139,6 +159,10 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/api/v1/intel/cve/:id",
+      "destination": "/api/v1/intel/cve/[id]"
+    },
     {
       "source": "/feed",
       "destination": "/rss.xml"
