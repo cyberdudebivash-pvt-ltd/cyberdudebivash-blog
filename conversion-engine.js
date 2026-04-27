@@ -849,11 +849,11 @@
       '#cx4-overlay .co-dismiss{display:block;text-align:center;font-size:.7rem;color:#334155;margin-top:.5rem;cursor:pointer}' +
       '#cx4-overlay .co-dismiss:hover{color:#64748b}' +
       '#cx4-return-banner{' +
-        'position:fixed;top:56px;left:0;right:0;z-index:9994;' +
+        'position:fixed;bottom:0;left:0;right:0;z-index:9994;' +
         'background:linear-gradient(90deg,rgba(255,215,0,.1),rgba(0,255,224,.07));' +
-        'border-bottom:1px solid rgba(255,215,0,.2);padding:.55rem 1.5rem;' +
+        'border-top:1px solid rgba(255,215,0,.2);padding:.55rem 1.5rem;' +
         'display:flex;align-items:center;justify-content:center;gap:1.25rem;flex-wrap:wrap;' +
-        'transform:translateY(-100%);transition:transform .4s;' +
+        'transform:translateY(100%);transition:transform .4s;' +
         'font-family:"Segoe UI",system-ui,sans-serif;' +
       '}' +
       '#cx4-return-banner.show{transform:translateY(0)}' +

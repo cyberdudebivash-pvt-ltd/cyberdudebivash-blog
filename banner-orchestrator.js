@@ -26,15 +26,15 @@
   var BO_CFG = {
     HEADER_SEL: 'header, .site-header',
     // Top-anchored banners — only ONE should be visible at a time
-    TOP_BANNERS: ['apex-sticky', 'cx4-return-banner', 'aim-medium-card'],
+    TOP_BANNERS: ['aim-medium-card'],
     // Bottom-anchored — can coexist with a top banner
-    BOTTOM_BANNERS: ['apex-bottom-bar', 'aim-high-intent-strip'],
+    BOTTOM_BANNERS: ['apex-bottom-bar', 'aim-high-intent-strip', 'cx4-return-banner', 'aim-upgrade-strip'],
     // Corners — always ok
     CORNER: ['aim-bundle-prompt', 'apex-toast'],
     // Never suppress these
     EXEMPT: ['cx4-exit-overlay', 'apex-exit-overlay', 'cx4-scroll-bar'],
     // Priority order for top banners (index 0 = highest priority)
-    PRIORITY: ['apex-sticky', 'aim-medium-card', 'cx4-return-banner'],
+    PRIORITY: ['aim-medium-card'],
     SWEEP_INTERVALS: [200, 500, 1000, 2000, 3500, 6000]
   };
 

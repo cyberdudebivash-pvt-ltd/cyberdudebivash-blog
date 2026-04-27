@@ -664,7 +664,7 @@
       if (document.getElementById('aim-toast-container')) return;
       injectStyle('aim-toast-css', `
         #aim-toast-container {
-          position: fixed; bottom: 20px; left: 20px; z-index: 10002;
+          position: fixed; bottom: 20px; right: 20px; z-index: 10002;
           display: flex; flex-direction: column; gap: .5rem;
           pointer-events: none;
         }
@@ -927,7 +927,7 @@
       const { final, discount, code } = DYNPRICE.compute(49);
       const strip = document.createElement('div');
       strip.id = 'aim-upgrade-strip';
-      strip.style.cssText = `position:fixed;top:64px;left:0;right:0;z-index:9997;background:linear-gradient(90deg,rgba(0,255,224,.1),rgba(0,100,200,.08));border-bottom:1px solid rgba(0,255,224,.2);padding:.55rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;font-family:'Segoe UI',system-ui,sans-serif;transform:translateY(-100%);transition:transform .35s ease;`;
+      strip.style.cssText = `position:fixed;bottom:0;left:0;right:0;z-index:9997;background:linear-gradient(90deg,rgba(0,255,224,.1),rgba(0,100,200,.08));border-top:1px solid rgba(0,255,224,.2);padding:.55rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;font-family:'Segoe UI',system-ui,sans-serif;transform:translateY(100%);transition:transform .35s ease;`;
       strip.innerHTML = `
         <span style="font-size:.8rem;color:#e2e8f0;font-weight:500">
           👋 You've visited <strong style="color:${CFG.CYAN}">${p.rawVisits} times</strong> — upgrade to SOC Pro and stop missing critical intel.

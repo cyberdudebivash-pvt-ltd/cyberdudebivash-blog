@@ -1303,23 +1303,86 @@
   .intel-hub-bar { z-index: 190 !important; top: 64px !important; }
 }
 
-/* ── NOTIFICATION Z-INDEX FIX — desktop only ─────────────── */
-@media (min-width: 768px) {
-  #cx-scroll-bar    { z-index: 30000 !important; }
-  #aim-toast-container { z-index: 20000 !important; bottom: 24px !important; left: 24px !important; }
-  #cx-smart-overlay { z-index: 19000 !important; }
-  #cx-return-banner { top: 130px !important; z-index: 18000 !important; }
+/* ══════════════════════════════════════════════════════════
+   NOTIFICATION ZONE — ALL NOTIFICATIONS ANCHORED TO BOTTOM
+   Never appear in header/hero viewport. Zero visibility loss.
+   ══════════════════════════════════════════════════════════ */
+
+/* Return-visitor promo banner → bottom strip */
+#cx4-return-banner,
+#cx-return-banner {
+  position: fixed !important;
+  top: auto !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9800 !important;
+  transform: translateY(100%) !important;
+  border-top: 1px solid rgba(255,215,0,0.25) !important;
+  border-bottom: none !important;
 }
+#cx4-return-banner.show,
+#cx-return-banner.show {
+  transform: translateY(0) !important;
+}
+
+/* Upgrade nudge strip → bottom (above social proof toasts) */
+#aim-upgrade-strip,
+#apex-sticky {
+  position: fixed !important;
+  top: auto !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9700 !important;
+  border-top: 1px solid rgba(0,255,224,0.2) !important;
+  border-bottom: none !important;
+}
+
+/* Social proof toasts → bottom-RIGHT corner (away from bundle prompt) */
+#aim-toast-container {
+  position: fixed !important;
+  top: auto !important;
+  bottom: 90px !important;
+  left: auto !important;
+  right: 20px !important;
+  z-index: 9600 !important;
+  max-width: 320px !important;
+}
+
+/* Bundle prompt → bottom-LEFT corner */
+#aim-bundle-prompt {
+  bottom: 90px !important;
+  left: 20px !important;
+  top: auto !important;
+}
+
+/* High-intent bottom strip stays at bottom:0 */
+#aim-high-intent-strip {
+  bottom: 0 !important;
+  top: auto !important;
+  z-index: 9500 !important;
+}
+
+/* HARD BLOCK: nothing notification-like at top of viewport */
+#cx-scroll-bar    { z-index: 30000 !important; }
+#cx-smart-overlay { z-index: 19000 !important; }
+
+/* When return banner is open, nudge toast container up */
+body:has(#cx4-return-banner.show) #aim-toast-container { bottom: 130px !important; }
+body:has(#aim-upgrade-strip:not([style*="translateY(100%)"])) #aim-toast-container { bottom: 130px !important; }
 
 /* ── TOAST VISIBILITY ──────────────────────────────────── */
 .aim-toast { border: 1px solid rgba(0,255,224,0.4) !important; box-shadow: 0 8px 32px rgba(0,0,0,.8), 0 0 20px rgba(0,255,224,0.1) !important; }
 .aim-toast .at-action { color: #f1f5f9 !important; font-size: 13px !important; font-weight: 800 !important; }
 .aim-toast .at-who   { color: #94a3b8 !important; font-size: 12px !important; }
 
-/* ── RETURN BANNER TEXT — desktop only ────────────────── */
+/* ── RETURN BANNER TEXT ────────────────────────────────── */
 @media (min-width: 768px) {
-  #cx-return-banner span   { color: #f1f5f9 !important; font-size: 14px !important; }
-  #cx-return-banner strong { color: #ffd700 !important; font-size: 15px !important; font-weight: 900 !important; }
+  #cx-return-banner span,
+  #cx4-return-banner .rb-text { color: #f1f5f9 !important; font-size: 14px !important; }
+  #cx-return-banner strong,
+  #cx4-return-banner .rb-text strong { color: #ffd700 !important; font-size: 15px !important; font-weight: 900 !important; }
 }
 
 /* ── FORM FIELDS ───────────────────────────────────────── */
