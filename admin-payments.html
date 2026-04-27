@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SENTINEL APEX — Admin Payment Review</title>
+<meta name="robots" content="noindex,nofollow"/>
+<style>
+  :root {
+    --apex-cyan:  #00ffe0;
+    --apex-blue:  #00b4d8;
+    --apex-red:   #ff4d6d;
+    --apex-green: #00ff88;
+    --apex-gold:  #ffd700;
+    --apex-purple:#c084fc;
+    --bg:         #0d1117;
+    --bg2:        #161b22;
+    --bg3:        #1c2333;
+    --border:     rgba(0,255,224,.12);
+    --text:       #e6edf3;
+    --text2:      #8b949e;
+    --font:       'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  /* ── Login Gate ──────────────────────────────────────────── */
+  #login-gate {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; background: var(--bg);
+  }
+  .login-box {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 420px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.6);
+  }
+  .login-logo { font-size: 1.1rem; font-weight: 800; color: var(--apex-cyan); letter-spacing: .08em; margin-bottom: .5rem; }
+  .login-sub  { font-size: .8rem; color: var(--text2); margin-bottom: 2rem; }
+  .login-box label  { display: block; font-size: .78rem; color: var(--text2); margin-bottom: .4rem; letter-spacing: .06em; }
+  .login-box input  {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: .75rem 1rem; border-radius: 8px; font-family: var(--font);
+    font-size: .9rem; outline: none; margin-bottom: 1.25rem;
+  }
+  .login-box input:focus { border-color: var(--apex-cyan); }
+  .btn-login {
+    width: 100%; background: linear-gradient(135deg, var(--apex-cyan), var(--apex-blue));
+    color: #0d1117; border: none; border-radius: 8px; padding: .85rem;
+    font-weight: 800; font-size: .95rem; cursor: pointer; letter-spacing: .04em;
+    transition: opacity .2s;
+  }
+  .btn-login:hover { opacity: .88; }
+  #login-error { color: var(--apex-red); font-size: .82rem; margin-top: .75rem; min-height: 1.2rem; }
+
+  /* ── App Shell ───────────────────────────────────────────── */
+  #app { display: none; min-height: 100vh; }
+  header {
+    background: rgba(13,17,23,.97); border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .hdr-brand { font-weight: 800; font-size: 1rem; color: var(--apex-cyan); letter-spacing: .08em; }
+  .hdr-badge { font-size: .7rem; color: var(--apex-red); background: rgba(255,77,109,.1); border: 1px solid rgba(255,77,109,.3); border-radius: 4px; padding: .2rem .5rem; letter-spacing: .08em; }
+  .hdr-actions { display: flex; gap: 1rem; align-items: center; }
+  .hdr-email  { font-size: .78rem; color: var(--text2); }
+  .btn-logout { font-size: .75rem; color: var(--apex-red); background: none; border: 1px solid rgba(255,77,109,.3); border-radius: 6px; padding: .35rem .75rem; cursor: pointer; }
+  .btn-logout:hover { background: rgba(255,77,109,.08); }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* ── Stat Cards ──────────────────────────────────────────── */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; }
+  .stat-label { font-size: .72rem; color: var(--text2); letter-spacing: .08em; text-transform: uppercase; margin-bottom: .4rem; }
+  .stat-value { font-size: 2rem; font-weight: 800; color: var(--text); }
+  .stat-value.cyan   { color: var(--apex-cyan); }
+  .stat-value.green  { color: var(--apex-green); }
+  .stat-value.red    { color: var(--apex-red); }
+  .stat-value.gold   { color: var(--apex-gold); }
+
+  /* ── Section Header ──────────────────────────────────────── */
+  .section-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem; flex-wrap: wrap; gap: .75rem;
+  }
+  .section-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+  .filter-row { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .btn-filter {
+    font-size: .75rem; padding: .35rem .85rem; border-radius: 20px; cursor: pointer;
+    border: 1px solid var(--border); background: transparent; color: var(--text2);
+    transition: all .2s;
+  }
+  .btn-filter.active, .btn-filter:hover { border-color: var(--apex-cyan); color: var(--apex-cyan); background: rgba(0,255,224,.06); }
+  .btn-refresh {
+    font-size: .75rem; padding: .35rem .85rem; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--border); background: transparent; color: var(--text2);
+    transition: all .2s;
+  }
+  .btn-refresh:hover { border-color: var(--apex-cyan); color: var(--apex-cyan); }
+
+  /* ── Table ───────────────────────────────────────────────── */
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+  thead th {
+    background: var(--bg3); padding: .85rem 1rem; text-align: left;
+    font-size: .7rem; color: var(--text2); letter-spacing: .07em; text-transform: uppercase;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,.04); transition: background .15s; }
+  tbody tr:hover { background: rgba(0,255,224,.025); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td { padding: .9rem 1rem; vertical-align: middle; }
+  .td-email    { font-weight: 600; color: var(--text); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .td-txn      { font-family: monospace; font-size: .78rem; color: var(--apex-cyan); }
+  .td-plan     { font-size: .78rem; }
+  .td-amount   { font-weight: 700; color: var(--apex-gold); }
+  .td-method   { font-size: .72rem; color: var(--text2); }
+  .td-time     { font-size: .72rem; color: var(--text2); white-space: nowrap; }
+
+  /* ── Status Badge ────────────────────────────────────────── */
+  .badge {
+    display: inline-block; font-size: .65rem; font-weight: 700;
+    padding: .2rem .55rem; border-radius: 20px; letter-spacing: .06em; text-transform: uppercase;
+  }
+  .badge-pending  { background: rgba(255,215,0,.1);  color: var(--apex-gold);  border: 1px solid rgba(255,215,0,.25); }
+  .badge-approved { background: rgba(0,255,136,.1);  color: var(--apex-green); border: 1px solid rgba(0,255,136,.25); }
+  .badge-rejected { background: rgba(255,77,109,.1); color: var(--apex-red);   border: 1px solid rgba(255,77,109,.25); }
+  .badge-pro        { background: rgba(0,180,216,.1);  color: var(--apex-blue);  border: 1px solid rgba(0,180,216,.25); }
+  .badge-enterprise { background: rgba(192,132,252,.1);color: var(--apex-purple);border: 1px solid rgba(192,132,252,.25); }
+
+  /* ── Action Buttons ──────────────────────────────────────── */
+  .action-cell { display: flex; gap: .5rem; }
+  .btn-approve {
+    font-size: .73rem; padding: .35rem .75rem; border-radius: 6px; cursor: pointer;
+    background: rgba(0,255,136,.1); color: var(--apex-green);
+    border: 1px solid rgba(0,255,136,.3); transition: all .2s; white-space: nowrap;
+  }
+  .btn-approve:hover { background: rgba(0,255,136,.2); }
+  .btn-approve:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-reject {
+    font-size: .73rem; padding: .35rem .75rem; border-radius: 6px; cursor: pointer;
+    background: rgba(255,77,109,.08); color: var(--apex-red);
+    border: 1px solid rgba(255,77,109,.3); transition: all .2s; white-space: nowrap;
+  }
+  .btn-reject:hover { background: rgba(255,77,109,.18); }
+  .btn-reject:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* ── Empty / Loading / Error ─────────────────────────────── */
+  .table-msg { padding: 3rem; text-align: center; color: var(--text2); font-size: .88rem; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--apex-cyan); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Toast ───────────────────────────────────────────────── */
+  #toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column-reverse; gap: 10px; z-index: 9999; }
+  .toast {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+    padding: .85rem 1.25rem; font-size: .83rem; max-width: 360px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.5); animation: slideIn .3s ease;
+    display: flex; align-items: center; gap: .75rem;
+  }
+  .toast.success { border-color: rgba(0,255,136,.4); color: var(--apex-green); }
+  .toast.error   { border-color: rgba(255,77,109,.4); color: var(--apex-red); }
+  .toast.info    { border-color: rgba(0,255,224,.3); color: var(--apex-cyan); }
+  @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+
+  /* ── Reject Modal ────────────────────────────────────────── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 500; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; width: 100%; max-width: 440px; }
+  .modal-title { font-weight: 700; margin-bottom: 1rem; color: var(--apex-red); }
+  .modal-meta  { font-size: .8rem; color: var(--text2); margin-bottom: 1rem; }
+  .modal-box textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    border-radius: 8px; padding: .75rem; font-family: var(--font); font-size: .85rem;
+    resize: vertical; min-height: 80px; outline: none; margin-bottom: 1rem;
+  }
+  .modal-box textarea:focus { border-color: var(--apex-red); }
+  .modal-actions { display: flex; gap: .75rem; justify-content: flex-end; }
+  .btn-cancel { font-size: .82rem; padding: .5rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: none; color: var(--text2); cursor: pointer; }
+  .btn-cancel:hover { border-color: var(--text2); }
+  .btn-confirm-reject { font-size: .82rem; padding: .5rem 1.25rem; border-radius: 8px; background: var(--apex-red); color: #fff; border: none; font-weight: 700; cursor: pointer; }
+  .btn-confirm-reject:hover { opacity: .88; }
+
+  /* ── Audit Log ───────────────────────────────────────────── */
+  .audit-section { margin-top: 2.5rem; }
+  .audit-entry {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+    padding: .75rem 1rem; margin-bottom: .5rem; font-size: .78rem;
+    display: grid; grid-template-columns: 160px 1fr; gap: .5rem 1rem; align-items: start;
+  }
+  .audit-ts     { color: var(--text2); font-family: monospace; white-space: nowrap; }
+  .audit-action { font-weight: 700; }
+  .audit-action.approved { color: var(--apex-green); }
+  .audit-action.rejected { color: var(--apex-red); }
+  .audit-action.submitted{ color: var(--apex-gold); }
+  .audit-action.other    { color: var(--apex-cyan); }
+  .audit-detail { color: var(--text2); grid-column: 2; font-size: .74rem; word-break: break-all; }
+
+  /* ── Responsive ──────────────────────────────────────────── */
+  @media (max-width: 700px) {
+    header { padding: .75rem 1rem; }
+    main   { padding: 1rem; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .hdr-email { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Login Gate ─────────────────────────────────────────────── -->
+<div id="login-gate">
+  <div class="login-box">
+    <div class="login-logo">⬡ SENTINEL APEX</div>
+    <div class="login-sub">Admin Payment Review Dashboard · Restricted Access</div>
+    <label>ADMIN SECRET KEY</label>
+    <input type="password" id="admin-key-input" placeholder="Enter ADMIN_SECRET_KEY…" autocomplete="off"/>
+    <button class="btn-login" onclick="doLogin()">Authenticate →</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- ── App ────────────────────────────────────────────────────── -->
+<div id="app">
+  <header>
+    <div class="hdr-brand">⬡ SENTINEL APEX <span style="color:var(--text2);font-weight:400;font-size:.8rem">/ Admin Payments</span></div>
+    <div class="hdr-actions">
+      <span class="hdr-email" id="hdr-domain">blog.cyberdudebivash.in</span>
+      <span class="hdr-badge">ADMIN</span>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Stats Row -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card"><div class="stat-label">Pending Review</div><div class="stat-value gold" id="stat-pending">—</div></div>
+      <div class="stat-card"><div class="stat-label">Approved</div><div class="stat-value green" id="stat-approved">—</div></div>
+      <div class="stat-card"><div class="stat-label">Rejected</div><div class="stat-value red" id="stat-rejected">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total Revenue (Est.)</div><div class="stat-value cyan" id="stat-revenue">—</div></div>
+    </div>
+
+    <!-- Submissions Table -->
+    <div class="section-hdr">
+      <span class="section-title">Payment Submissions</span>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;">
+        <div class="filter-row">
+          <button class="btn-filter active" onclick="setFilter('pending_review', this)">Pending</button>
+          <button class="btn-filter" onclick="setFilter('approved', this)">Approved</button>
+          <button class="btn-filter" onclick="setFilter('rejected', this)">Rejected</button>
+          <button class="btn-filter" onclick="setFilter('all', this)">All</button>
+        </div>
+        <button class="btn-refresh" onclick="loadSubmissions()">⟳ Refresh</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Transaction ID (UTR)</th>
+            <th>Plan</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Submitted</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="submissions-body">
+          <tr><td colspan="8" class="table-msg"><span class="spinner"></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Audit Log -->
+    <div class="audit-section">
+      <div class="section-hdr">
+        <span class="section-title">Audit Log <span style="color:var(--text2);font-weight:400;font-size:.8rem">(last 50 events)</span></span>
+        <button class="btn-refresh" onclick="loadAuditLog()">⟳ Refresh</button>
+      </div>
+      <div id="audit-log-container">
+        <div class="table-msg" style="text-align:left;padding:1rem 0;color:var(--text2);">Loading audit log…</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="reject-modal">
+  <div class="modal-box">
+    <div class="modal-title">✕ Reject Payment</div>
+    <div class="modal-meta" id="reject-meta">Transaction: —</div>
+    <label style="font-size:.78rem;color:var(--text2);display:block;margin-bottom:.4rem;">REJECTION REASON (required)</label>
+    <textarea id="reject-reason" placeholder="e.g. UTR not found in bank records, amount mismatch, duplicate submission…"></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeRejectModal()">Cancel</button>
+      <button class="btn-confirm-reject" onclick="confirmReject()">Confirm Reject</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script>
+'use strict';
+
+const API_BASE = '/api/v1';
+let ADMIN_KEY  = '';
+let currentFilter = 'pending_review';
+let pendingRejectTxn = '';
+
+/* ── Auth ──────────────────────────────────────────────────── */
+function doLogin() {
+  const key = document.getElementById('admin-key-input').value.trim();
+  if (!key) { showLoginError('Admin key is required.'); return; }
+  ADMIN_KEY = key;
+  sessionStorage.setItem('_sap_ak', key);
+  document.getElementById('login-gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadAll();
+}
+
+function doLogout() {
+  ADMIN_KEY = '';
+  sessionStorage.removeItem('_sap_ak');
+  location.reload();
+}
+
+function showLoginError(msg) {
+  document.getElementById('login-error').textContent = msg;
+}
+
+document.getElementById('admin-key-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// Restore session
+(function () {
+  const stored = sessionStorage.getItem('_sap_ak');
+  if (stored) {
+    ADMIN_KEY = stored;
+    document.getElementById('login-gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadAll();
+  }
+})();
+
+/* ── Fetch Helpers ─────────────────────────────────────────── */
+async function adminFetch(path, opts = {}) {
+  const r = await fetch(API_BASE + path, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Key': ADMIN_KEY, ...opts.headers },
+  });
+  if (r.status === 401) {
+    toast('Admin key rejected. Please re-authenticate.', 'error');
+    doLogout();
+    throw new Error('Unauthorized');
+  }
+  return r.json();
+}
+
+/* ── Load All ─────────────────────────────────────────────── */
+function loadAll() {
+  loadStats();
+  loadSubmissions();
+  loadAuditLog();
+}
+
+/* ── Stats ─────────────────────────────────────────────────── */
+async function loadStats() {
+  try {
+    const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
+      adminFetch('/admin/payments/pending?status=pending_review&limit=200'),
+      adminFetch('/admin/payments/pending?status=approved&limit=200'),
+      adminFetch('/admin/payments/pending?status=rejected&limit=200'),
+    ]);
+    const pendingTotal  = pendingRes.total  || 0;
+    const approvedTotal = approvedRes.total || 0;
+    const rejectedTotal = rejectedRes.total || 0;
+
+    document.getElementById('stat-pending').textContent  = pendingTotal;
+    document.getElementById('stat-approved').textContent = approvedTotal;
+    document.getElementById('stat-rejected').textContent = rejectedTotal;
+
+    // Estimate revenue from approved submissions
+    let rev = 0;
+    (approvedRes.submissions || []).forEach(s => { rev += (s.amount || 0); });
+    document.getElementById('stat-revenue').textContent = '₹' + rev.toLocaleString('en-IN');
+  } catch (_) {}
+}
+
+/* ── Submissions ───────────────────────────────────────────── */
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadSubmissions();
+}
+
+async function loadSubmissions() {
+  const tbody = document.getElementById('submissions-body');
+  tbody.innerHTML = '<tr><td colspan="8" class="table-msg"><span class="spinner"></span></td></tr>';
+  try {
+    const data = await adminFetch(`/admin/payments/pending?status=${currentFilter}&limit=100`);
+    if (!data.submissions || data.submissions.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" class="table-msg">No submissions found for filter: <strong>${currentFilter}</strong></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = data.submissions.map(s => renderRow(s)).join('');
+  } catch (e) {
+    if (e.message !== 'Unauthorized') {
+      tbody.innerHTML = `<tr><td colspan="8" class="table-msg" style="color:var(--apex-red)">Failed to load: ${e.message}</td></tr>`;
+    }
+  }
+}
+
+function renderRow(s) {
+  const isPending = s.status === 'pending_review';
+  const statusBadge = {
+    pending_review: '<span class="badge badge-pending">Pending</span>',
+    approved:       '<span class="badge badge-approved">Approved</span>',
+    rejected:       '<span class="badge badge-rejected">Rejected</span>',
+  }[s.status] || `<span class="badge">${s.status}</span>`;
+
+  const planBadge = s.plan_type === 'enterprise'
+    ? '<span class="badge badge-enterprise">Enterprise</span>'
+    : '<span class="badge badge-pro">Pro</span>';
+
+  const txnShort = (s.transaction_id || '').slice(0, 20) + (s.transaction_id?.length > 20 ? '…' : '');
+  const submittedFmt = s.submitted_at ? new Date(s.submitted_at).toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'}) : '—';
+
+  const actions = isPending
+    ? `<div class="action-cell">
+        <button class="btn-approve" onclick="approvePayment('${escHtml(s.transaction_id)}')">✓ Approve</button>
+        <button class="btn-reject"  onclick="openRejectModal('${escHtml(s.transaction_id)}', '${escHtml(s.email)}')">✕ Reject</button>
+      </div>`
+    : `<span style="font-size:.72rem;color:var(--text2)">${s.reviewed_at ? new Date(s.reviewed_at).toLocaleDateString('en-IN') : '—'}</span>`;
+
+  return `<tr>
+    <td class="td-email" title="${escHtml(s.email)}">${escHtml(s.email)}</td>
+    <td class="td-txn" title="${escHtml(s.transaction_id)}">${escHtml(txnShort)}</td>
+    <td class="td-plan">${planBadge}</td>
+    <td class="td-amount">₹${(s.amount||0).toLocaleString('en-IN')}</td>
+    <td class="td-method">${escHtml(s.payment_method || '—')}</td>
+    <td>${statusBadge}</td>
+    <td class="td-time">${submittedFmt}</td>
+    <td>${actions}</td>
+  </tr>`;
+}
+
+/* ── Approve ───────────────────────────────────────────────── */
+async function approvePayment(txnId) {
+  if (!confirm(`Approve payment ${txnId}?\n\nThis will immediately upgrade the user's API tier. This action cannot be undone.`)) return;
+
+  const btns = document.querySelectorAll(`button[onclick="approvePayment('${CSS.escape(txnId)}')"]`);
+  btns.forEach(b => { b.disabled = true; b.textContent = '…'; });
+
+  try {
+    const data = await adminFetch('/admin/payments/approve', {
+      method: 'POST',
+      body:   JSON.stringify({ transaction_id: txnId }),
+    });
+    if (data.success) {
+      toast(`✓ Approved! ${data.approval?.email} upgraded to ${data.approval?.new_tier?.toUpperCase()}`, 'success');
+      loadAll();
+    } else {
+      toast(`Approval failed: ${data.error?.message || 'Unknown error'}`, 'error');
+      btns.forEach(b => { b.disabled = false; b.textContent = '✓ Approve'; });
+    }
+  } catch (e) {
+    if (e.message !== 'Unauthorized') toast(`Error: ${e.message}`, 'error');
+    btns.forEach(b => { b.disabled = false; b.textContent = '✓ Approve'; });
+  }
+}
+
+/* ── Reject Modal ──────────────────────────────────────────── */
+function openRejectModal(txnId, email) {
+  pendingRejectTxn = txnId;
+  document.getElementById('reject-meta').textContent = `Transaction: ${txnId}  ·  ${email}`;
+  document.getElementById('reject-reason').value = '';
+  document.getElementById('reject-modal').classList.add('open');
+}
+function closeRejectModal() {
+  document.getElementById('reject-modal').classList.remove('open');
+  pendingRejectTxn = '';
+}
+
+async function confirmReject() {
+  const reason = document.getElementById('reject-reason').value.trim();
+  if (!reason || reason.length < 5) { toast('Rejection reason is required (min 5 chars)', 'error'); return; }
+
+  try {
+    const data = await adminFetch('/admin/payments/reject', {
+      method: 'POST',
+      body:   JSON.stringify({ transaction_id: pendingRejectTxn, reason }),
+    });
+    if (data.success) {
+      toast(`✕ Rejected: ${pendingRejectTxn}`, 'info');
+      closeRejectModal();
+      loadAll();
+    } else {
+      toast(`Rejection failed: ${data.error?.message}`, 'error');
+    }
+  } catch (e) {
+    if (e.message !== 'Unauthorized') toast(`Error: ${e.message}`, 'error');
+  }
+}
+
+document.getElementById('reject-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('reject-modal')) closeRejectModal();
+});
+
+/* ── Audit Log ──────────────────────────────────────────────── */
+async function loadAuditLog() {
+  const container = document.getElementById('audit-log-container');
+  container.innerHTML = '<div class="table-msg" style="text-align:left;padding:.5rem 0;color:var(--text2);">Loading…</div>';
+  try {
+    const data = await adminFetch('/admin/payments/audit?limit=50');
+    if (!data.entries || data.entries.length === 0) {
+      container.innerHTML = '<div style="color:var(--text2);font-size:.82rem;padding:.5rem 0;">No audit entries yet.</div>';
+      return;
+    }
+    container.innerHTML = data.entries.map(e => {
+      const actionClass = {
+        PAYMENT_APPROVED: 'approved',
+        PAYMENT_REJECTED: 'rejected',
+        PAYMENT_SUBMITTED: 'submitted',
+        TIER_UPGRADED: 'approved',
+      }[e.action] || 'other';
+
+      const ts = e.ts ? new Date(e.ts).toLocaleString('en-IN',{dateStyle:'short',timeStyle:'medium'}) : '—';
+      const detail = Object.entries(e)
+        .filter(([k]) => !['action','ts'].includes(k))
+        .map(([k,v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`)
+        .join('  ·  ');
+
+      return `<div class="audit-entry">
+        <span class="audit-ts">${ts}</span>
+        <span class="audit-action ${actionClass}">${e.action || '—'}</span>
+        <span class="audit-detail">${escHtml(detail)}</span>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    if (e.message !== 'Unauthorized') {
+      container.innerHTML = `<div style="color:var(--apex-red);font-size:.82rem;">Failed to load audit log: ${e.message}</div>`;
+    }
+  }
+}
+
+/* ── Toast ──────────────────────────────────────────────────── */
+function toast(msg, type = 'info') {
+  const tc  = document.getElementById('toast-container');
+  const el  = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  tc.appendChild(el);
+  setTimeout(() => el.remove(), 5000);
+}
+
+/* ── Utils ──────────────────────────────────────────────────── */
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

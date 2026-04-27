@@ -1,0 +1,261 @@
+/**
+ * SENTINEL APEX — Manual Payment System Utilities
+ * Shared helpers for intent/submission/admin endpoints.
+ * Phase 1–12 of the CYBERDUDEBIVASH Manual Payment System.
+ */
+'use strict';
+const crypto = require('crypto');
+const redis  = require('./redis');
+
+/* ─── PLAN CATALOGUE ─────────────────────────────────────────── */
+const PLANS = {
+  pro: {
+    tier:        'pro',
+    label:       'SOC Pro',
+    amount:      1499,
+    currency:    'INR',
+    period:      'month',
+    rateLimit:   5000,
+    description: 'Pro tier — 5,000 API calls/day, IOC access, detection rules, full intel reports',
+    upiNote:     'Transfer ₹1,499 to the UPI ID below. Include your intent ID in remarks.',
+  },
+  enterprise: {
+    tier:        'enterprise',
+    label:       'Enterprise',
+    amount:      4999,
+    currency:    'INR',
+    period:      'month',
+    rateLimit:   999999,
+    description: 'Enterprise tier — Unlimited API calls, STIX export, bulk data, priority support',
+    upiNote:     'Transfer ₹4,999 to the UPI ID below. Include your intent ID in remarks.',
+  },
+};
+
+/* ─── PAYMENT INSTRUCTIONS ───────────────────────────────────── */
+const PAYMENT_INSTRUCTIONS = {
+  upi: {
+    method:  'UPI',
+    upi_id:  process.env.UPI_ID   || 'cyberdudebivash@upi',
+    name:    process.env.UPI_NAME  || 'CYBERDUDEBIVASH SENTINEL',
+    note:    'Include your Intent ID as payment remarks for faster verification.',
+  },
+  bank: {
+    method:       'Bank Transfer (NEFT/IMPS)',
+    account_name: process.env.BANK_NAME    || 'CYBERDUDEBIVASH TECHNOLOGIES',
+    account_no:   process.env.BANK_ACCOUNT || 'XXXXXXXXXXXX',
+    ifsc:         process.env.BANK_IFSC    || 'XXXXXXXXXX',
+    bank:         process.env.BANK_LABEL   || 'Contact support for bank details',
+    note:         'Use your Intent ID as transfer narration/remarks.',
+  },
+};
+
+/* ─── SECURITY CONSTANTS ─────────────────────────────────────── */
+const MAX_IP_SUBMISSIONS_PER_DAY = 3;
+const MIN_UTR_LENGTH              = 12;
+const MAX_UTR_LENGTH              = 64;
+const INTENT_TTL_SECONDS          = 86400;   // 24 hours
+const AUDIT_LOG_MAX_ENTRIES       = 10000;
+
+/* ─── HELPERS ────────────────────────────────────────────────── */
+
+/** Generate a UUID v4 intent ID */
+function generateIntentId() {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const bytes = crypto.randomBytes(16);
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = bytes.toString('hex');
+  return [hex.slice(0,8), hex.slice(8,12), hex.slice(12,16), hex.slice(16,20), hex.slice(20)].join('-');
+}
+
+/** Sanitize a string — strip HTML, control chars, trim, truncate */
+function sanitize(input, maxLen = 255) {
+  if (input === null || input === undefined) return '';
+  return String(input)
+    .replace(/<[^>]*>/g, '')          // strip HTML tags
+    .replace(/[<>"'`]/g, '')          // strip dangerous chars
+    .replace(/[\x00-\x1f\x7f]/g, '') // strip control chars
+    .trim()
+    .slice(0, maxLen);
+}
+
+/** Validate email format */
+function validateEmail(email) {
+  return typeof email === 'string' && /^[^@\s]{1,64}@[^@\s]{1,253}\.[^@\s]{2,}$/.test(email);
+}
+
+/** Normalize email to lowercase */
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+/** Safe email → Redis key segment */
+function emailKey(email) {
+  return email.replace(/[^a-z0-9_.-]/g, '_');
+}
+
+/** Extract real client IP from request */
+function getIp(req) {
+  return (
+    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
+    req.socket?.remoteAddress ||
+    '0.0.0.0'
+  );
+}
+
+/** YYYYMMDD string for Redis daily keys */
+function today() {
+  return new Date().toISOString().slice(0, 10).replace(/-/g, '');
+}
+
+/** ISO timestamp */
+function now() {
+  return new Date().toISOString();
+}
+
+/** Verify admin key from request headers */
+function isAdminAuthorized(req) {
+  const adminKey = process.env.ADMIN_SECRET_KEY;
+  if (!adminKey) return false; // admin key not configured → deny all
+  const provided = req.headers['x-admin-key'] || req.headers['authorization']?.replace('Bearer ', '') || '';
+  return crypto.timingSafeEqual(
+    Buffer.from(adminKey.padEnd(64).slice(0, 64)),
+    Buffer.from(provided.padEnd(64).slice(0, 64))
+  ) && provided === adminKey;
+}
+
+/* ─── HGETALL → object ───────────────────────────────────────── */
+function parseHash(raw) {
+  if (!raw || !Array.isArray(raw) || raw.length === 0) return null;
+  const obj = {};
+  for (let i = 0; i < raw.length; i += 2) obj[raw[i]] = raw[i + 1];
+  return obj;
+}
+
+/* ─── RATE LIMIT CHECK ───────────────────────────────────────── */
+async function checkIpRateLimit(ip) {
+  const key   = `payment:ip_rate:${ip}:${today()}`;
+  const count = await redis.incr(key);
+  if (count === 1) await redis.expire(key, 86400);
+  return { allowed: count <= MAX_IP_SUBMISSIONS_PER_DAY, count, max: MAX_IP_SUBMISSIONS_PER_DAY };
+}
+
+/* ─── AUDIT LOGGER ───────────────────────────────────────────── */
+async function auditLog(action, data = {}) {
+  try {
+    const entry = JSON.stringify({
+      action,
+      ts: now(),
+      ...data,
+    });
+    await redis.zadd('audit:payment:log', Date.now(), entry);
+    // Trim to cap log size
+    await redis.pipeline([
+      ['ZREMRANGEBYRANK', 'audit:payment:log', '0', String(-(AUDIT_LOG_MAX_ENTRIES + 1))],
+    ]).catch(() => {});
+  } catch (_) {
+    // audit log failure must never break main flow
+  }
+}
+
+/* ─── USER TIER UPGRADE ─────────────────────────────────────── */
+async function upgradeUserTier(email, newTier, meta = {}) {
+  const safeEmail = emailKey(email);
+  const ek        = `user:email:${safeEmail}`;
+
+  const userId = await redis.get(ek);
+  if (!userId) {
+    // User not yet registered — store pending tier for when they register
+    await redis.set(`user:pending:tier:${safeEmail}`, JSON.stringify({
+      tier:        newTier,
+      activatedAt: now(),
+      ...meta,
+    }));
+    await redis.expire(`user:pending:tier:${safeEmail}`, 90 * 86400); // 90 day window
+    return { upgraded: false, pending: true, reason: 'USER_NOT_REGISTERED' };
+  }
+
+  const hash = await redis.get(`user:id:${userId}`);
+  if (!hash) return { upgraded: false, pending: false, reason: 'KEY_HASH_NOT_FOUND' };
+
+  await redis.hmset(`user:key:${hash}`, {
+    tier:              newTier,
+    upgradedAt:        now(),
+    upgradedVia:       'manual_payment',
+    subscriptionId:    meta.transactionId || '',
+    paymentWarning:    '',
+    ...( meta.expiresAt ? { tierExpiresAt: meta.expiresAt } : {} ),
+  });
+
+  // Also refresh the pending key so register.js can skip it
+  await redis.del(`user:pending:tier:${safeEmail}`).catch(() => {});
+
+  await auditLog('TIER_UPGRADED', { email, newTier, ...meta });
+  return { upgraded: true, pending: false };
+}
+
+/* ─── CORS HEADERS ───────────────────────────────────────────── */
+function cors(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Key, Authorization');
+  res.setHeader('X-Powered-By', 'CYBERDUDEBIVASH SENTINEL APEX v4.0');
+}
+
+/* ─── STANDARD RESPONSE ─────────────────────────────────────── */
+function ok(res, data, status = 200) {
+  res.status(status).json({
+    success: true,
+    meta: { platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', timestamp: now() },
+    ...data,
+  });
+}
+
+function fail(res, status, code, message, extra = {}) {
+  res.status(status).json({
+    success: false,
+    error:   { code, message },
+    meta:    { platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', timestamp: now() },
+    ...extra,
+  });
+}
+
+/* ─── PARSE BODY ─────────────────────────────────────────────── */
+async function parseBody(req) {
+  if (typeof req.body === 'object' && req.body !== null) return req.body;
+  if (typeof req.body === 'string') {
+    try { return JSON.parse(req.body); } catch (_) { return {}; }
+  }
+  // Stream body (rare on Vercel but handle it)
+  return new Promise((resolve) => {
+    let data = '';
+    req.on('data', chunk => { data += chunk; });
+    req.on('end', () => { try { resolve(JSON.parse(data)); } catch (_) { resolve({}); } });
+    req.on('error', () => resolve({}));
+  });
+}
+
+module.exports = {
+  PLANS,
+  PAYMENT_INSTRUCTIONS,
+  MIN_UTR_LENGTH,
+  MAX_UTR_LENGTH,
+  generateIntentId,
+  sanitize,
+  validateEmail,
+  normalizeEmail,
+  emailKey,
+  getIp,
+  today,
+  now,
+  isAdminAuthorized,
+  parseHash,
+  checkIpRateLimit,
+  auditLog,
+  upgradeUserTier,
+  cors,
+  ok,
+  fail,
+  parseBody,
+};

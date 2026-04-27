@@ -63,15 +63,34 @@ module.exports = async (req, res) => {
 
     // Store user record in Redis
     const now = new Date().toISOString();
+
+    // Check for pre-approved tier (user paid before registering)
+    const safeEmail      = email.replace(/[^a-z0-9_.-]/g, '_');
+    let   activeTier     = 'free';
+    let   tierActivatedBy = null;
+    try {
+      const pendingTierRaw = await redis.get(`user:pending:tier:${safeEmail}`);
+      if (pendingTierRaw) {
+        const pendingTier = JSON.parse(pendingTierRaw);
+        if (pendingTier && pendingTier.tier && ['pro','enterprise'].includes(pendingTier.tier)) {
+          activeTier    = pendingTier.tier;
+          tierActivatedBy = pendingTier.transactionId || 'manual_payment';
+          // Consume the pending tier key so it can't be reused
+          await redis.del(`user:pending:tier:${safeEmail}`).catch(() => {});
+        }
+      }
+    } catch (_) { /* pending tier check is best-effort */ }
+
     await redis.hmset(`user:key:${hash}`, {
       userId,
       email,
       name,
-      tier:           'free',
+      tier:           activeTier,
       createdAt:      now,
       lastSeen:       now,
       totalRequests:  '0',
       keyHash:        hash.slice(0, 16),
+      ...(tierActivatedBy ? { upgradedAt: now, upgradedVia: 'manual_payment', subscriptionId: tierActivatedBy } : {}),
     });
 
     // Email → userId mapping (for lookup)
@@ -84,17 +103,22 @@ module.exports = async (req, res) => {
     await redis.incr('analytics:registrations:total').catch(() => {});
     await redis.incr(`analytics:registrations:${now.slice(0,10)}`).catch(() => {});
 
+    const RATE_MAP = { free: 100, pro: 5000, enterprise: 999999 };
+
     respond(res, 201, {
       success: true,
-      message: 'API key generated successfully. Store this key securely — it will not be shown again.',
+      message: activeTier !== 'free'
+        ? `API key generated. Your pre-approved ${activeTier.toUpperCase()} tier has been activated automatically.`
+        : 'API key generated successfully. Store this key securely — it will not be shown again.',
       user: {
         user_id:    userId,
         email,
-        tier:       'free',
+        tier:       activeTier,
         created_at: now,
+        ...(tierActivatedBy ? { tier_activated_by: 'manual_payment' } : {}),
       },
       api_key:       apiKey,
-      rate_limit:    { requests_per_day: 100, tier: 'free' },
+      rate_limit:    { requests_per_day: RATE_MAP[activeTier] || 100, tier: activeTier },
       usage:         { endpoint: 'Authorization: Bearer ' + apiKey },
       upgrade_url:   'https://blog.cyberdudebivash.in/pricing.html',
       dashboard_url: 'https://blog.cyberdudebivash.in/api-dashboard.html',

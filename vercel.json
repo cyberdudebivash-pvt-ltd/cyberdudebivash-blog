@@ -5,6 +5,22 @@
       "memory": 128,
       "maxDuration": 10
     },
+    "api/v1/billing/create-intent.js": {
+      "memory": 128,
+      "maxDuration": 10
+    },
+    "api/v1/billing/submit-payment.js": {
+      "memory": 128,
+      "maxDuration": 10
+    },
+    "api/v1/billing/payment-status.js": {
+      "memory": 128,
+      "maxDuration": 10
+    },
+    "api/v1/admin/payments/*.js": {
+      "memory": 256,
+      "maxDuration": 20
+    },
     "api/v1/**/*.js": {
       "memory": 256,
       "maxDuration": 15
@@ -159,22 +175,17 @@
     }
   ],
   "rewrites": [
-    {
-      "source": "/api/v1/intel/cve/:id",
-      "destination": "/api/v1/intel/cve/[id]"
-    },
-    {
-      "source": "/feed",
-      "destination": "/rss.xml"
-    },
-    {
-      "source": "/feed.xml",
-      "destination": "/rss.xml"
-    },
-    {
-      "source": "/atom.xml",
-      "destination": "/rss.xml"
-    }
+    { "source": "/api/v1/intel/cve/:id",           "destination": "/api/v1/intel/cve/[id]" },
+    { "source": "/api/v1/billing/create-intent",   "destination": "/api/v1/billing/create-intent" },
+    { "source": "/api/v1/billing/submit-payment",  "destination": "/api/v1/billing/submit-payment" },
+    { "source": "/api/v1/billing/payment-status",  "destination": "/api/v1/billing/payment-status" },
+    { "source": "/api/v1/admin/payments/pending",  "destination": "/api/v1/admin/payments/pending" },
+    { "source": "/api/v1/admin/payments/approve",  "destination": "/api/v1/admin/payments/approve" },
+    { "source": "/api/v1/admin/payments/reject",   "destination": "/api/v1/admin/payments/reject" },
+    { "source": "/api/v1/admin/payments/audit",    "destination": "/api/v1/admin/payments/audit" },
+    { "source": "/feed",     "destination": "/rss.xml" },
+    { "source": "/feed.xml", "destination": "/rss.xml" },
+    { "source": "/atom.xml", "destination": "/rss.xml" }
   ],
   "redirects": [
     {
