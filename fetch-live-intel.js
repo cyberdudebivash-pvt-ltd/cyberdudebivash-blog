@@ -1161,6 +1161,8 @@ function writeLiveIntel(allItems, state) {
       dueDate: item.dueDate||null, refs: (item.refs||[]).slice(0,2),
       priority: item.priority||0, threatLevel: item.threatLevel||'HIGH',
       sourceCount: item.sourceCount||1, iocCount: (item.iocs||[]).length,
+      slug: item.slug || slugify(item.id.startsWith('CVE')?`${item.id}-${item.vendor||''}-${item.product||''}`:item.title.slice(0,60)),
+      link: item.slug ? `${CFG.baseUrl}/posts/${item.slug}.html` : null,
     }));
     fs.writeFileSync(CFG.liveJsonPath, JSON.stringify({
       generatedAt: new Date().toISOString(), totalPublished: state.totalPublished||0,

@@ -57,7 +57,7 @@
   }
 
   function slugify(s) {
-    return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    return String(s||'').toLowerCase().replace(/[^a-z0-9\s-]/g,' ').replace(/\s+/g,'-').replace(/-{2,}/g,'-').replace(/^-|-$/g,'').slice(0,90);
   }
 
   function getCache() {
@@ -228,8 +228,9 @@
     var sev    = sevColor(item.score);
     var vendor = (item.vendors&&item.vendors[0])||item.product||'Unknown';
     var desc   = (item.desc||'').slice(0,175) + ((item.desc||'').length>175?'…':'');
-    var slug   = slugify((item.id||'')+(vendor?'-'+vendor:''));
-    var href   = '/posts/'+slug+'.html';
+    var product= item.product||(item.desc&&'')||'';
+    var slug   = slugify((item.id||'')+(vendor?'-'+vendor:'')+(product&&product!==vendor?'-'+product:''));
+    var href   = item.link || '/posts/'+slug+'.html';
 
     var badges = '';
     if (item.exploited) badges += '<span class="lfw-b lfw-b-exploit">⚡ ACTIVELY EXPLOITED</span>';

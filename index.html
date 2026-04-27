@@ -151,100 +151,275 @@
     .ticker-item .dot-purple { color: var(--apex-purple); margin-right: 6px; }
     .ticker-label { color: #ff4d6d; font-weight: 900; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* HEADER — scroll-shrink */
+    /* ══════════════════════════════════════════════
+       HEADER v4.0 — GOD LEVEL
+       ══════════════════════════════════════════════ */
     header {
-      background: var(--apex-surface);
-      border-bottom: 1px solid var(--apex-border);
+      background: rgba(13,17,23,0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0,255,224,0.1);
       position: sticky;
       top: 0;
       z-index: 10000;
-      transition: padding .25s ease, box-shadow .25s ease;
+      transition: all .3s ease;
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,224,0.4), rgba(0,180,216,0.4), transparent);
     }
     header.hdr-compact {
-      padding-top: 0;
-      padding-bottom: 0;
-      box-shadow: 0 2px 20px rgba(0,0,0,.5);
+      box-shadow: 0 4px 30px rgba(0,0,0,.7);
     }
     header.hdr-compact .header-inner { padding: 8px 40px; }
     header.hdr-compact .logo-badge   { display: none; }
     header.hdr-compact .logo         { font-size: 17px !important; }
     header.hdr-compact nav a          { font-size: 12px !important; }
-    /* Brand logo circle in header */
     .hdr-logo-img {
-      width: 38px; height: 38px;
+      width: 36px; height: 36px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid var(--apex-cyan);
-      box-shadow: 0 0 10px rgba(0,255,224,.25);
+      border: 1.5px solid rgba(0,255,224,0.5);
+      box-shadow: 0 0 12px rgba(0,255,224,.2), 0 0 24px rgba(0,255,224,.08);
       flex-shrink: 0;
-      transition: width .25s, height .25s;
+      transition: all .3s;
     }
-    header.hdr-compact .hdr-logo-img { width: 30px; height: 30px; }
+    .hdr-logo-img:hover { box-shadow: 0 0 20px rgba(0,255,224,.5); transform: scale(1.05); }
+    header.hdr-compact .hdr-logo-img { width: 28px; height: 28px; }
     .header-inner {
-      max-width: 1200px;
+      max-width: 1300px;
       margin: 0 auto;
-      padding: 16px 40px;
+      padding: 12px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
       gap: 12px;
     }
-    .logo-wrap { display: flex; align-items: center; gap: 14px; }
+    .logo-wrap { display: flex; align-items: center; gap: 12px; text-decoration: none; }
     .logo-badge {
-      background: var(--apex-cyan);
-      color: #000;
-      font-size: 10px;
+      background: linear-gradient(135deg, rgba(0,255,224,0.15), rgba(0,180,216,0.15));
+      border: 1px solid rgba(0,255,224,0.35);
+      color: var(--apex-cyan);
+      font-size: 9px;
       font-weight: 900;
       padding: 3px 8px;
       border-radius: 4px;
-      letter-spacing: 2px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
+      white-space: nowrap;
     }
     .logo {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 900;
-      color: var(--apex-cyan);
+      color: #fff;
       letter-spacing: 2px;
       text-decoration: none;
       text-transform: uppercase;
+      background: linear-gradient(135deg, #fff 40%, var(--apex-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
-    .logo span { color: #fff; }
-    nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+    .logo span { color: var(--apex-cyan); -webkit-text-fill-color: var(--apex-cyan); }
+    /* ── Desktop Nav ── */
+    nav { display: flex; align-items: center; gap: 2px; }
     nav a {
-      color: var(--apex-muted);
+      color: #8892a4;
       text-decoration: none;
-      font-size: 13px;
-      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 11px;
       border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      transition: all .2s;
+      white-space: nowrap;
+      position: relative;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 2px;
+      background: var(--apex-cyan);
+      border-radius: 2px;
+      transition: width .2s;
+    }
+    nav a:hover { color: var(--apex-cyan); background: rgba(0,255,224,0.06); }
+    nav a:hover::after { width: 60%; }
+    nav a.nav-active { color: var(--apex-cyan); }
+    nav a.nav-active::after { width: 60%; }
+    .nav-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.08); margin: 0 4px; }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--apex-cyan), #00b4d8) !important;
+      color: #000 !important;
+      font-weight: 800 !important;
+      padding: 8px 16px !important;
+      border-radius: 7px !important;
+      box-shadow: 0 0 16px rgba(0,255,224,0.25);
+      transition: all .2s !important;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { opacity: 1 !important; transform: translateY(-1px); box-shadow: 0 4px 24px rgba(0,255,224,0.4) !important; background: linear-gradient(135deg, #00ffe0, #00c8ff) !important; }
+    /* ── Hamburger ── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(0,255,224,0.2);
+      background: rgba(0,255,224,0.04);
+      transition: all .2s;
+      z-index: 20001;
+      position: relative;
+    }
+    .nav-hamburger:hover { background: rgba(0,255,224,0.1); border-color: rgba(0,255,224,0.4); }
+    .nav-hamburger span {
+      display: block; width: 22px; height: 2px;
+      background: var(--apex-cyan);
+      border-radius: 2px;
+      transition: all .3s cubic-bezier(.4,0,.2,1);
+      transform-origin: center;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    /* ── Mobile Drawer ── */
+    .mobile-nav-drawer {
+      display: none;
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: min(320px, 88vw);
+      background: rgba(7,9,15,0.97);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid rgba(0,255,224,0.15);
+      z-index: 20000;
+      padding: 80px 24px 40px;
+      flex-direction: column;
+      gap: 6px;
+      transform: translateX(100%);
+      transition: transform .35s cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+    }
+    .mobile-nav-drawer.open { transform: translateX(0); }
+    .mobile-nav-drawer a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 13px 16px;
+      border-radius: 8px;
+      border: 1px solid transparent;
       text-transform: uppercase;
       letter-spacing: 1px;
       transition: all .2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    nav a:hover { color: var(--apex-cyan); background: #001a1a; }
-    .nav-cta {
-      background: var(--apex-cyan) !important;
+    .mobile-nav-drawer a:hover { color: var(--apex-cyan); background: rgba(0,255,224,0.06); border-color: rgba(0,255,224,0.15); }
+    .mobile-nav-drawer a.nav-cta-mobile {
+      background: linear-gradient(135deg, var(--apex-cyan), #00b4d8);
       color: #000 !important;
-      font-weight: 700 !important;
+      font-weight: 900;
+      border: none;
+      margin-top: 12px;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0,255,224,0.3);
     }
-    .nav-cta:hover { opacity: 0.85; background: var(--apex-cyan) !important; }
+    .mobile-nav-drawer a.nav-cta-mobile:hover { opacity: 0.9; }
+    .mobile-nav-sep { height: 1px; background: rgba(255,255,255,0.06); margin: 8px 0; }
+    .mobile-nav-header {
+      position: absolute;
+      top: 20px; left: 24px; right: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .mobile-nav-logo { font-size: 14px; font-weight: 900; color: var(--apex-cyan); letter-spacing: 2px; }
+    .mobile-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 19999;
+      opacity: 0;
+      transition: opacity .35s;
+    }
+    .mobile-overlay.open { opacity: 1; }
 
-    /* HERO */
+    /* ══════════════════════════════════════════════
+       HERO v4.0 — GOD LEVEL
+       ══════════════════════════════════════════════ */
     .hero {
-      background: linear-gradient(135deg, #050010 0%, #000d1a 40%, #050010 100%);
-      border-bottom: 1px solid var(--apex-border);
-      padding: 70px 40px;
+      background: #050a0f;
+      border-bottom: 1px solid rgba(0,255,224,0.1);
+      padding: 80px 40px 60px;
       text-align: center;
       position: relative;
       overflow: hidden;
     }
+    /* Animated mesh grid */
     .hero::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse at 50% 50%, rgba(0,255,224,0.04) 0%, transparent 70%);
+      background-image:
+        linear-gradient(rgba(0,255,224,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,224,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridShift 20s linear infinite;
       pointer-events: none;
     }
+    @keyframes gridShift {
+      0%   { background-position: 0 0; }
+      100% { background-position: 60px 60px; }
+    }
+    /* Radial glow */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,255,224,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 20% 100%, rgba(0,180,216,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 100%, rgba(168,85,247,0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    /* Orbital ring */
+    .hero-orbital {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px; height: 700px;
+      border: 1px solid rgba(0,255,224,0.04);
+      border-radius: 50%;
+      animation: spin 40s linear infinite;
+      pointer-events: none;
+    }
+    .hero-orbital::before {
+      content: '';
+      position: absolute;
+      top: -3px; left: 50%;
+      width: 6px; height: 6px;
+      background: var(--apex-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--apex-cyan), 0 0 24px rgba(0,255,224,.4);
+    }
+    .hero-orbital-2 {
+      width: 500px; height: 500px;
+      animation: spin 25s linear infinite reverse;
+      border-color: rgba(0,180,216,0.05);
+    }
+    .hero-orbital-2::before {
+      background: #00b4d8;
+      box-shadow: 0 0 10px #00b4d8;
+      top: auto; bottom: -3px; left: 30%;
+    }
+    @keyframes spin { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+    .hero-content { position: relative; z-index: 2; }
     .hero-terminal {
       font-family: 'Courier New', monospace;
       font-size: 13px;
@@ -318,34 +493,55 @@
       max-width: 700px;
       margin: 0 auto 36px;
     }
-    .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px; }
     .btn-primary {
-      background: var(--apex-cyan);
+      background: linear-gradient(135deg, #00ffe0, #00b4d8);
       color: #000;
-      font-weight: 800;
-      font-size: 14px;
-      padding: 14px 28px;
+      font-weight: 900;
+      font-size: 15px;
+      padding: 15px 32px;
       border-radius: 8px;
       text-decoration: none;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: opacity .2s;
+      letter-spacing: 0.5px;
+      transition: all .2s;
+      box-shadow: 0 4px 24px rgba(0,255,224,0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
-    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 36px rgba(0,255,224,0.4); opacity: 0.95; }
     .btn-secondary {
-      background: transparent;
+      background: rgba(0,255,224,0.06);
       color: var(--apex-cyan);
       font-weight: 700;
-      font-size: 14px;
-      padding: 14px 28px;
+      font-size: 15px;
+      padding: 15px 32px;
       border-radius: 8px;
       text-decoration: none;
-      border: 1px solid var(--apex-cyan);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: background .2s;
+      border: 1px solid rgba(0,255,224,0.35);
+      letter-spacing: 0.5px;
+      transition: all .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
-    .btn-secondary:hover { background: #001a1a; }
+    .btn-secondary:hover { background: rgba(0,255,224,0.12); border-color: var(--apex-cyan); transform: translateY(-2px); }
+    .btn-api {
+      background: rgba(168,85,247,0.1);
+      color: #c084fc;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 15px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid rgba(168,85,247,0.3);
+      letter-spacing: 0.5px;
+      transition: all .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-api:hover { background: rgba(168,85,247,0.18); border-color: #c084fc; transform: translateY(-2px); }
     .hero-live-stats {
       display: flex;
       gap: 24px;
@@ -603,15 +799,53 @@
       grid-template-columns: 1fr 340px;
       gap: 40px;
     }
+    /* ══════════════════════════════════════════════
+       RESPONSIVE — TABLET (960px)
+       ══════════════════════════════════════════════ */
     @media (max-width: 960px) {
-      .main { grid-template-columns: 1fr; padding: 30px 20px 60px; }
-      .header-inner { padding: 16px 20px; }
-      .hero { padding: 50px 20px; }
+      .main { grid-template-columns: 1fr; padding: 24px 16px 60px; }
+      .header-inner { padding: 10px 20px; }
+      .hero { padding: 60px 20px 48px; }
       .stats-bar { padding: 14px 20px; }
       .newsletter-bar { padding: 14px 20px; }
       .nl-input { width: 100%; }
-      .featured-intel-section { padding: 24px 20px 0; }
+      .featured-intel-section { padding: 20px 16px 0; }
       .intel-hub-bar { top: 0; }
+      /* Hide desktop nav, show hamburger */
+      nav { display: none; }
+      .nav-hamburger { display: flex; }
+      .mobile-nav-drawer { display: flex; }
+      .mobile-overlay { display: block; }
+    }
+    /* ══════════════════════════════════════════════
+       RESPONSIVE — MOBILE (600px)
+       ══════════════════════════════════════════════ */
+    @media (max-width: 600px) {
+      .hero { padding: 48px 16px 40px; }
+      .hero::before { background-size: 40px 40px; }
+      .hero-orbital, .hero-orbital-2 { display: none; }
+      .hero h1 { font-size: clamp(26px, 8vw, 40px) !important; line-height: 1.2; }
+      .hero-desc { font-size: 15px !important; }
+      .hero-actions { flex-direction: column; align-items: center; gap: 10px; }
+      .hero-actions a { width: 100%; max-width: 340px; justify-content: center; }
+      .hero-trust-strip { font-size: 12px; gap: 8px 12px; }
+      .hero-trust-sep { display: none; }
+      .logo-badge { display: none; }
+      .logo { font-size: 16px !important; }
+      #apex-daily-digest { padding: 14px 16px; }
+      .digest-row { flex-wrap: wrap; gap: 6px; }
+      .hero-live-stats { font-size: 12px; gap: 12px; }
+      .stats-inner { gap: 20px; }
+      .stat-num { font-size: 18px; }
+      .hero-label { font-size: 10px; padding: 6px 14px; }
+    }
+    /* ══════════════════════════════════════════════
+       RESPONSIVE — SMALL MOBILE (400px)
+       ══════════════════════════════════════════════ */
+    @media (max-width: 400px) {
+      .header-inner { padding: 8px 14px; }
+      .hero { padding: 40px 14px 36px; }
+      .hdr-logo-img { width: 28px; height: 28px; }
     }
 
     /* SECTION LABEL */
@@ -1177,25 +1411,52 @@ input:focus, textarea:focus {
 </div>
 
 <!-- HEADER -->
+<!-- Mobile overlay backdrop -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileNav()"></div>
+
+<!-- Mobile slide-in drawer -->
+<nav class="mobile-nav-drawer" id="mobileNavDrawer" role="navigation" aria-label="Mobile navigation">
+  <div class="mobile-nav-header">
+    <span class="mobile-nav-logo">CYBERDUDE<span style="color:#fff">BIVASH</span></span>
+    <button onclick="closeMobileNav()" style="background:rgba(0,255,224,0.08);border:1px solid rgba(0,255,224,0.2);color:var(--apex-cyan);width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;">✕</button>
+  </div>
+  <a href="#reports">📋 Reports</a>
+  <a href="intelligence.html">🛡️ Intelligence Hub</a>
+  <a href="https://intel.cyberdudebivash.com" target="_blank">🌐 Intel Platform</a>
+  <a href="https://cyberdudebivash.in" target="_blank">🤖 AI Hub</a>
+  <a href="/products.html">📦 Products</a>
+  <a href="/pricing.html">💰 Pricing</a>
+  <a href="/api.html">🔌 API Docs</a>
+  <a href="https://tools.cyberdudebivash.com" target="_blank">🔧 Tools</a>
+  <div class="mobile-nav-sep"></div>
+  <a href="/api-dashboard.html" class="nav-cta-mobile">⚡ Get API Key — Free</a>
+  <a href="mailto:bivash@cyberdudebivash.com" style="font-size:13px;color:#4b5563;justify-content:center;padding:8px">✉️ bivash@cyberdudebivash.com</a>
+</nav>
+
 <header id="main-header">
   <div class="header-inner">
-    <div class="logo-wrap">
+    <a href="/" class="logo-wrap" style="text-decoration:none">
       <img src="/brand-logo.svg" alt="CyberDudeBivash" class="hdr-logo-img" onerror="this.style.display='none'">
-      <div class="logo-badge">CYBERDUDEBIVASH SENTINEL APEX</div>
-      <a href="/" class="logo">CYBERDUDE<span>BIVASH</span></a>
-    </div>
-    <nav>
+      <div class="logo-badge">SENTINEL APEX v4.0</div>
+      <span class="logo">CYBERDUDE<span>BIVASH</span></span>
+    </a>
+    <nav role="navigation" aria-label="Main navigation">
       <a href="#reports">Reports</a>
-      <a href="intelligence.html">Intelligence Hub</a>
-      <a href="https://intel.cyberdudebivash.com">Intel Platform</a>
-      <a href="https://cyberdudebivash.in">AI Hub</a>
-      <a href="https://cyberdudebivash.com">Home</a>
+      <a href="intelligence.html">Intel Hub</a>
+      <a href="https://intel.cyberdudebivash.com" target="_blank">Platform</a>
+      <a href="https://cyberdudebivash.in" target="_blank">AI Hub</a>
+      <div class="nav-sep"></div>
       <a href="/products.html">Products</a>
-    <a href="/pricing.html">Pricing</a>
-      <a href="https://tools.cyberdudebivash.com">Tools</a>
-      <a href="mailto:bivash@cyberdudebivash.com" class="nav-cta">Enterprise Access</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/api.html">API</a>
+      <div class="nav-sep"></div>
+      <a href="/api-dashboard.html" class="nav-cta">⚡ Get API Key</a>
     </nav>
-</div>
+    <!-- Hamburger (mobile only) -->
+    <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </header>
 <div class="section-nav-bar-outer">
   <div class="section-nav-bar" style="max-width:1400px;margin:0 auto;padding:7px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
@@ -1249,12 +1510,17 @@ input:focus, textarea:focus {
 </div>
 <!-- HERO -->
 <div class="hero">
+  <!-- Decorative orbital rings -->
+  <div class="hero-orbital"></div>
+  <div class="hero-orbital hero-orbital-2"></div>
+
+  <div class="hero-content">
   <div class="hero-terminal">
     <span class="hero-terminal-text" id="heroTerminal"></span><span class="cursor">&#9608;</span>
   </div>
   <div class="hero-label" id="hero-label-bar">
     <span class="hero-label-dot"></span>
-    <span class="hero-label-static">⚡ SENTINEL APEX v12</span>
+    <span class="hero-label-static">⚡ SENTINEL APEX v4.0</span>
     <span class="hero-label-sep">—</span>
     <div class="hero-label-rotate" id="hero-label-rotate">
       <span class="active">AI-Powered Threat Intelligence Platform</span>
@@ -1263,7 +1529,7 @@ input:focus, textarea:focus {
       <span>Nation-State APT Tracking in Real Time</span>
       <span>SOC-Ready Sigma &amp; YARA Rules Included</span>
       <span>Ransomware Group Activity — Live Updates</span>
-      <span>CVE Breakdowns Written for Security Teams</span>
+      <span>Enterprise API — Free Tier Available Now</span>
     </div>
   </div>
   <h1>
@@ -1275,25 +1541,33 @@ input:focus, textarea:focus {
     CYBERDUDEBIVASH SENTINEL APEX monitors <span id="kevCount" style="color:var(--apex-cyan);font-weight:800">1,200+</span>
     CISA KEV entries and global threat feeds 24/7 &mdash; delivering zero-day analysis, CVE breakdowns,
     ransomware tracking, and AI security research that SOC teams can act on immediately.
-    <strong style="color:var(--apex-green)">11 intelligence reports published — 5 new this week.</strong>
   </p>
-  <!-- PHASE 1: SINGLE INTENT CTA — dynamically updated by ux-controller.js -->
+  <!-- HERO CTAs — tri-button layout -->
   <div class="hero-actions">
-    <a href="/leads.html" id="hero-primary-cta" class="btn-primary hero-intent-cta" data-intent-low-href="/leads.html" data-intent-med-href="/products.html" data-intent-high-href="/pricing.html">
-      <span id="hero-cta-text">&#128233; Get Free Threat Alerts</span>
+    <a href="/api-dashboard.html" class="btn-primary">
+      <span>🔑</span> Get Free API Key
+    </a>
+    <a href="#reports" class="btn-secondary">
+      <span>📋</span> View Intel Reports
+    </a>
+    <a href="/pricing.html" class="btn-api">
+      <span>⚡</span> SOC Pro — $49/mo
     </a>
   </div>
-  <!-- SOCIAL PROOF + URGENCY STRIP -->
+  <!-- SOCIAL PROOF STRIP -->
   <div class="hero-trust-strip">
     <span class="hero-trust-item">
-      <span class="hero-trust-icon">&#128100;</span> Trusted by <strong>4,800+</strong> security professionals
+      <span class="hero-trust-dot blink" style="background:var(--apex-green)"></span>
+      <span style="color:#6b7280">Live</span> &nbsp;Updated every <strong>10 min</strong>
     </span>
     <span class="hero-trust-sep">&#9679;</span>
     <span class="hero-trust-item">
-      <span class="hero-trust-dot blink"></span> Updated every <strong>10 minutes</strong>
+      &#128100; <strong>4,800+</strong> security professionals
     </span>
     <span class="hero-trust-sep">&#9679;</span>
-    <span class="hero-trust-item">&#127481;&#127713; Used by SOC teams globally</span>
+    <span class="hero-trust-item">&#127481;&#127713; SOC teams globally</span>
+    <span class="hero-trust-sep">&#9679;</span>
+    <span class="hero-trust-item">&#128272; Free API — No credit card</span>
   </div>
   <!-- Live threat counters -->
     <!-- TODAY'S CRITICAL THREAT DIGEST — CYBERDUDEBIVASH SENTINEL APEX v12 -->
@@ -1335,9 +1609,10 @@ input:focus, textarea:focus {
     </div>
     <div class="hls-item">
       <span class="hls-dot blink" style="background:#00ff88"></span>
-      CYBERDUDEBIVASH SENTINEL APEX monitoring active
+      SENTINEL APEX monitoring active
     </div>
   </div>
+  </div><!-- /hero-content -->
 </div>
 
 <!-- LIVE STATS -->
@@ -2654,6 +2929,53 @@ if (digestDateEl) {
     weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
   });
 }
+
+// =============================================
+// 5. MOBILE NAV — hamburger + drawer + overlay
+// =============================================
+function toggleMobileNav() {
+  var drawer  = document.getElementById('mobileNavDrawer');
+  var overlay = document.getElementById('mobileOverlay');
+  var btn     = document.getElementById('navHamburger');
+  if (!drawer) return;
+  var isOpen = drawer.classList.contains('open');
+  if (isOpen) {
+    closeMobileNav();
+  } else {
+    drawer.classList.add('open');
+    overlay.classList.add('open');
+    btn.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeMobileNav() {
+  var drawer  = document.getElementById('mobileNavDrawer');
+  var overlay = document.getElementById('mobileOverlay');
+  var btn     = document.getElementById('navHamburger');
+  if (!drawer) return;
+  drawer.classList.remove('open');
+  overlay.classList.remove('open');
+  if (btn) { btn.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+  document.body.style.overflow = '';
+}
+// Close drawer on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeMobileNav();
+});
+// Mark active nav link
+(function() {
+  var links = document.querySelectorAll('nav a, .mobile-nav-drawer a');
+  var path  = window.location.pathname;
+  links.forEach(function(a) {
+    try {
+      var href = new URL(a.href).pathname;
+      if (href === path || (path === '/' && href === '/')) {
+        a.classList.add('nav-active');
+      }
+    } catch(e) {}
+  });
+})();
 </script>
 
 <script src="/security-engine.js" defer></script>
