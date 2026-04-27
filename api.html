@@ -172,12 +172,12 @@
 
 <!-- HERO -->
 <div class="api-hero">
-  <div class="api-hero-tag">⚡ CYBERDUDEBIVASH SENTINEL APEX API v2.0 — Now Live</div>
+  <div class="api-hero-tag">⚡ CYBERDUDEBIVASH SENTINEL APEX API v4.0 — Now Live</div>
   <h1>The <span>Threat Intelligence API</span> built for SOC teams</h1>
-  <p>Real-time CVE data, IOC feeds, malware hashes, ransomware tracking, and AI-powered risk scoring. Integrate in minutes. Trusted by security teams worldwide.</p>
+  <p>Real-time CVE data, IOC feeds, malware hashes, ransomware tracking, and AI-powered risk scoring. Integrate in minutes. Free tier, no credit card required.</p>
   <div class="api-hero-btns">
-    <a href="https://intel.cyberdudebivash.com/api/preview/" target="_blank" class="btn-primary">Try Free API Now →</a>
-    <a href="mailto:bivash@cyberdudebivash.com?subject=API%20Access%20Request" class="btn-outline">Enterprise Access</a>
+    <a href="/api-dashboard.html" class="btn-primary">Get Free API Key →</a>
+    <a href="mailto:bivash@cyberdudebivash.com?subject=Enterprise%20API%20Inquiry" class="btn-outline">Enterprise Access</a>
   </div>
 </div>
 
@@ -198,32 +198,41 @@
   <!-- ENDPOINTS -->
   <div style="margin-bottom:12px;">
     <div class="section-title">API Endpoints</div>
-    <div class="section-sub">Production-ready endpoints for every use case. Base URL: <code style="background:rgba(0,255,224,0.08);padding:2px 8px;border-radius:3px;font-size:13px;color:var(--apex-cyan);">https://intel.cyberdudebivash.com/api/</code></div>
+    <div class="section-sub">Live production endpoints. Base URL: <code style="background:rgba(0,255,224,0.08);padding:2px 8px;border-radius:3px;font-size:13px;color:var(--apex-cyan);">https://blog.cyberdudebivash.in/api/v1/</code> &mdash; Auth: <code style="background:rgba(0,255,224,0.08);padding:2px 8px;border-radius:3px;font-size:13px;color:var(--apex-cyan);">Authorization: Bearer &lt;key&gt;</code></div>
   </div>
 
   <div class="endpoints-grid">
     <div class="endpoint-card featured">
       <div class="ep-method">GET</div>
-      <div class="ep-path">/api/intel/cve/latest</div>
-      <div class="ep-desc">Latest CVEs with CVSS scores, severity ratings, affected products, CISA KEV status, and exploitability metadata.</div>
+      <div class="ep-path">/api/v1/intel/live</div>
+      <div class="ep-desc">Live threat intelligence feed — latest CVEs, CISA KEV entries, and active exploitation signals. Sorted by composite priority score (0–100). Updated every 10 minutes.</div>
       <div class="ep-tags">
-        <span class="ep-tag">CVSS Score</span><span class="ep-tag">KEV Status</span><span class="ep-tag">NVD Data</span>
+        <span class="ep-tag">CVEs</span><span class="ep-tag">KEV</span><span class="ep-tag">Priority Score</span>
         <span class="ep-tier free">✓ Free Tier</span>
       </div>
     </div>
     <div class="endpoint-card featured">
       <div class="ep-method">GET</div>
-      <div class="ep-path">/api/intel/cve/{CVE-ID}</div>
-      <div class="ep-desc">Deep dive on a specific CVE: full description, CVSS vector, patch status, PoC availability, active exploitation indicators.</div>
+      <div class="ep-path">/api/v1/intel/cve/{CVE-ID}</div>
+      <div class="ep-desc">Full detail on a specific CVE: CVSS v3 vector, CISA KEV status, exploitation evidence, IOCs, affected products, attack chain, and business impact analysis.</div>
       <div class="ep-tags">
-        <span class="ep-tag">Full Analysis</span><span class="ep-tag">PoC Status</span>
+        <span class="ep-tag">Full Analysis</span><span class="ep-tag">Attack Chain</span>
         <span class="ep-tier free">✓ Free Tier</span>
       </div>
     </div>
     <div class="endpoint-card">
       <div class="ep-method">GET</div>
-      <div class="ep-path">/api/intel/ioc/feed</div>
-      <div class="ep-desc">Full IOC feed: malicious IPs, domains, file hashes (MD5/SHA256), URLs, email headers, and registry keys. Updated hourly.</div>
+      <div class="ep-path">/api/v1/intel/top-threats</div>
+      <div class="ep-desc">Top 20 highest-priority threats right now — CRITICAL and HIGH severity items only. Includes priority score, threat level, and escalation reasoning.</div>
+      <div class="ep-tags">
+        <span class="ep-tag">CRITICAL</span><span class="ep-tag">HIGH</span><span class="ep-tag">Top 20</span>
+        <span class="ep-tier free">✓ Free Tier</span>
+      </div>
+    </div>
+    <div class="endpoint-card">
+      <div class="ep-method">GET</div>
+      <div class="ep-path">/api/v1/intel/iocs</div>
+      <div class="ep-desc">Structured IOC feed: malicious IPs, domains, URLs, file hashes (MD5/SHA256/SHA1). Extracted and correlated from 12 authoritative sources. Enterprise: STIX 2.1 export.</div>
       <div class="ep-tags">
         <span class="ep-tag">IPs</span><span class="ep-tag">Domains</span><span class="ep-tag">Hashes</span>
         <span class="ep-tier pro">⚡ Pro+</span>
@@ -231,55 +240,46 @@
     </div>
     <div class="endpoint-card">
       <div class="ep-method">GET</div>
-      <div class="ep-path">/api/intel/ransomware/tracker</div>
-      <div class="ep-desc">Live ransomware group tracker: active campaigns, victim counts, TTPs, ransom demands, and negotiation intelligence.</div>
+      <div class="ep-path">/api/v1/intel/ransomware</div>
+      <div class="ep-desc">Active ransomware campaign tracking: group names, victim sectors, TTPs, IOCs linked to active operators. Sourced from CISA alerts and threat intelligence feeds.</div>
       <div class="ep-tags">
-        <span class="ep-tag">Groups</span><span class="ep-tag">Victims</span><span class="ep-tag">TTPs</span>
+        <span class="ep-tag">Groups</span><span class="ep-tag">TTPs</span><span class="ep-tag">IOCs</span>
         <span class="ep-tier pro">⚡ Pro+</span>
       </div>
     </div>
     <div class="endpoint-card">
       <div class="ep-method">GET</div>
-      <div class="ep-path">/api/intel/apt/campaigns</div>
-      <div class="ep-desc">Nation-state APT campaign intelligence: Volt Typhoon, APT28/29, Lazarus Group. Current targets, TTPs, indicators.</div>
+      <div class="ep-path">/api/v1/intel/search</div>
+      <div class="ep-desc">Full-text search across all threat intelligence: query by CVE ID, vendor, product name, threat actor, malware family, or keyword. Supports <code>?q=</code>, <code>type=</code>, <code>tier=</code> filters.</div>
       <div class="ep-tags">
-        <span class="ep-tag">APT Groups</span><span class="ep-tag">Campaigns</span>
-        <span class="ep-tier pro">⚡ Pro+</span>
-      </div>
-    </div>
-    <div class="endpoint-card">
-      <div class="ep-method">POST</div>
-      <div class="ep-path">/api/intel/risk/score</div>
-      <div class="ep-desc">AI-powered risk scoring: submit an IP, domain, or file hash for real-time threat score (0-100) with classification reasoning.</div>
-      <div class="ep-tags">
-        <span class="ep-tag">AI Scoring</span><span class="ep-tag">0-100 Score</span>
-        <span class="ep-tier pro">⚡ Pro+</span>
+        <span class="ep-tag">Full-text</span><span class="ep-tag">Filtered</span>
+        <span class="ep-tier free">✓ Free Tier</span>
       </div>
     </div>
     <div class="endpoint-card">
       <div class="ep-method">GET</div>
-      <div class="ep-path">/api/intel/yara/rules</div>
-      <div class="ep-desc">Downloadable YARA rule bundles for latest malware families. Tagged by threat actor, malware family, and confidence level.</div>
+      <div class="ep-path">/api/v1/auth/me</div>
+      <div class="ep-desc">Authenticated user profile: tier, usage stats, daily limit, remaining requests, and tier feature comparison. Resets daily at UTC midnight.</div>
       <div class="ep-tags">
-        <span class="ep-tag">YARA</span><span class="ep-tag">Malware Families</span>
-        <span class="ep-tier ent">🔐 Enterprise</span>
+        <span class="ep-tag">Profile</span><span class="ep-tag">Rate Limits</span>
+        <span class="ep-tier free">✓ Free Tier</span>
       </div>
     </div>
     <div class="endpoint-card">
       <div class="ep-method">GET</div>
-      <div class="ep-path">/api/intel/siem/queries</div>
-      <div class="ep-desc">Pre-built detection queries for Splunk SPL, Microsoft Sentinel KQL, Elastic EQL, and QRadar AQL. Ready to deploy.</div>
+      <div class="ep-path">/api/v1/keys/usage</div>
+      <div class="ep-desc">30-day usage analytics per API key: daily breakdown, average requests, peak day, monthly projection, and upgrade recommendation if approaching limit.</div>
       <div class="ep-tags">
-        <span class="ep-tag">Splunk</span><span class="ep-tag">Sentinel</span><span class="ep-tag">Elastic</span>
-        <span class="ep-tier ent">🔐 Enterprise</span>
+        <span class="ep-tag">Analytics</span><span class="ep-tag">30-day</span>
+        <span class="ep-tier free">✓ Free Tier</span>
       </div>
     </div>
     <div class="endpoint-card">
-      <div class="ep-method">POST</div>
-      <div class="ep-path">/api/intel/webhook/alerts</div>
-      <div class="ep-desc">Push-based real-time alerts to your webhook URL for new KEV additions, CVSS 9+ CVEs, and active exploitation signals.</div>
+      <div class="ep-method get" style="background:rgba(167,139,250,0.15);color:#a78bfa;border-color:rgba(167,139,250,0.3);">STIX</div>
+      <div class="ep-path">/api/v1/intel/iocs?format=stix</div>
+      <div class="ep-desc">Full IOC export as STIX 2.1 bundle with indicator objects and MITRE ATT&amp;CK pattern syntax. Ready for TAXII ingest, OpenCTI, or MISP.</div>
       <div class="ep-tags">
-        <span class="ep-tag">Webhooks</span><span class="ep-tag">Real-time</span>
+        <span class="ep-tag">STIX 2.1</span><span class="ep-tag">TAXII</span><span class="ep-tag">MISP</span>
         <span class="ep-tier ent">🔐 Enterprise</span>
       </div>
     </div>
@@ -296,40 +296,37 @@
         <div class="code-tab">cURL</div>
         <div class="code-tab">JavaScript</div>
       </div>
-      <span style="margin-left:auto;font-size:11px;color:var(--apex-muted);">GET /api/intel/cve/latest?limit=5&min_cvss=9.0</span>
+      <span style="margin-left:auto;font-size:11px;color:var(--apex-muted);">GET /api/v1/intel/live?limit=5&tier=CRITICAL</span>
     </div>
     <div class="code-demo-body">
-<pre><span class="c-comment"># CYBERDUDEBIVASH SENTINEL APEX API — Python Example</span>
-<span class="c-comment"># pip install requests</span>
+<pre><span class="c-comment"># CYBERDUDEBIVASH SENTINEL APEX API v4.0 — Python Example</span>
+<span class="c-comment"># No extra dependencies — uses stdlib urllib</span>
 
-<span class="c-kw">import</span> requests
+<span class="c-kw">import</span> urllib.request, json
 
-API_KEY = <span class="c-str">"sa_YOUR_API_KEY_HERE"</span>
-BASE_URL = <span class="c-str">"https://intel.cyberdudebivash.com/api/intel"</span>
+API_KEY = <span class="c-str">"sentinel_YOUR_KEY_HERE"</span>  <span class="c-comment"># Get free key at /api-dashboard.html</span>
+BASE_URL = <span class="c-str">"https://blog.cyberdudebivash.in/api/v1"</span>
 
-<span class="c-comment"># Fetch latest critical CVEs (CVSS >= 9.0)</span>
-<span class="c-func">response</span> = requests.<span class="c-func">get</span>(
-    <span class="c-str">f"{BASE_URL}/cve/latest"</span>,
-    headers={<span class="c-str">"X-API-Key"</span>: API_KEY},
-    params={<span class="c-str">"limit"</span>: <span class="c-num">5</span>, <span class="c-str">"min_cvss"</span>: <span class="c-num">9.0</span>, <span class="c-str">"kev_only"</span>: <span class="c-str">"true"</span>}
+<span class="c-comment"># Fetch live threat feed — top 5 CRITICAL items</span>
+req = urllib.request.<span class="c-func">Request</span>(
+    <span class="c-str">f"{BASE_URL}/intel/live?limit=5&threat_level=CRITICAL"</span>,
+    headers={<span class="c-str">"Authorization"</span>: <span class="c-str">f"Bearer {API_KEY}"</span>}
 )
+<span class="c-kw">with</span> urllib.request.<span class="c-func">urlopen</span>(req) <span class="c-kw">as</span> r:
+    data = json.<span class="c-func">load</span>(r)
 
-data = response.<span class="c-func">json</span>()
-
-<span class="c-kw">for</span> cve <span class="c-kw">in</span> data[<span class="c-str">"vulnerabilities"</span>]:
-    <span class="c-func">print</span>(<span class="c-str">f"[{cve['severity']}] {cve['id']} — CVSS {cve['cvss_score']}"</span>)
-    <span class="c-func">print</span>(<span class="c-str">f"  {cve['description'][:80]}..."</span>)
-    <span class="c-func">print</span>(<span class="c-str">f"  KEV: {cve['cisa_kev']} | Exploited: {cve['actively_exploited']}"</span>)
+<span class="c-kw">for</span> item <span class="c-kw">in</span> data[<span class="c-str">"data"</span>][<span class="c-str">"items"</span>]:
+    <span class="c-func">print</span>(<span class="c-str">f"[{item['threat_level']}] {item['id']} — Score {item['priority_score']}"</span>)
+    <span class="c-func">print</span>(<span class="c-str">f"  {item['title']}"</span>)
+    <span class="c-func">print</span>(<span class="c-str">f"  KEV: {item.get('cisa_kev',False)} | IOCs: {len(item.get('iocs',[]))}"</span>)
     <span class="c-func">print</span>()
 
 <span class="c-comment"># OUTPUT:</span>
-<span class="c-comment"># [CRITICAL] CVE-2026-28401 — CVSS 10.0</span>
-<span class="c-comment">#   Ivanti Connect Secure pre-auth RCE via SAML signature bypass...</span>
-<span class="c-comment">#   KEV: True | Exploited: True</span>
+<span class="c-comment"># [CRITICAL] CVE-2026-1234 — Score 97</span>
+<span class="c-comment">#   Ivanti Connect Secure Pre-Auth RCE via SAML Bypass</span>
+<span class="c-comment">#   KEV: True | IOCs: 12</span>
 <span class="c-comment">#</span>
-<span class="c-comment"># [CRITICAL] CVE-2026-35616 — CVSS 9.8</span>
-<span class="c-comment">#   Fortinet FortiClient EMS pre-auth RCE via heap overflow...</span>
-<span class="c-comment">#   KEV: True | Exploited: True</span></pre>
+<span class="c-comment"># Register at: https://blog.cyberdudebivash.in/api-dashboard.html</span></pre>
     </div>
   </div>
 
@@ -359,7 +356,7 @@ data = response.<span class="c-func">json</span>()
         <li class="locked">Ransomware tracker (Pro)</li>
         <li class="locked">YARA rules (Enterprise)</li>
       </ul>
-      <a href="https://intel.cyberdudebivash.com/api/preview/" target="_blank" class="plan-cta outline">Get Free API Key →</a>
+      <a href="/api-dashboard.html" class="plan-cta outline">Get Free API Key →</a>
     </div>
 
     <!-- Pro -->
@@ -370,9 +367,9 @@ data = response.<span class="c-func">json</span>()
       <div class="plan-price-period">/ month — or $470/yr (save 20%)</div>
       <p class="plan-desc">For SOC analysts, threat hunters, and security teams who need real-time intelligence.</p>
       <div class="plan-limits">
-        <div class="plan-limit-row"><span>Daily Requests</span><span class="plan-limit-val">10,000 / day</span></div>
+        <div class="plan-limit-row"><span>Daily Requests</span><span class="plan-limit-val">5,000 / day</span></div>
         <div class="plan-limit-row"><span>Rate Limit</span><span class="plan-limit-val">100 req/min</span></div>
-        <div class="plan-limit-row"><span>Data Freshness</span><span class="plan-limit-val">Real-time</span></div>
+        <div class="plan-limit-row"><span>Data Freshness</span><span class="plan-limit-val">Real-time (10 min)</span></div>
       </div>
       <ul class="plan-features">
         <li>Everything in Free</li>
@@ -385,7 +382,7 @@ data = response.<span class="c-func">json</span>()
         <li class="locked">YARA rules API (Enterprise)</li>
         <li class="locked">SIEM query bundles (Enterprise)</li>
       </ul>
-      <a href="mailto:bivash@cyberdudebivash.com?subject=SOC%20Pro%20API%20Access" class="plan-cta cyan">Get SOC Pro API →</a>
+      <a href="/api-dashboard.html#plans" class="plan-cta cyan">Start 7-Day Free Trial →</a>
     </div>
 
     <!-- Enterprise -->
@@ -457,8 +454,8 @@ data = response.<span class="c-func">json</span>()
     <h2 style="font-size:26px;font-weight:900;color:#fff;margin-bottom:12px;">Start integrating threat intelligence today</h2>
     <p style="color:var(--apex-muted);font-size:15px;max-width:500px;margin:0 auto 24px;">Free tier requires no credit card. SOC Pro includes full API access + blog subscriptions. Enterprise gets dedicated support.</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <a href="https://intel.cyberdudebivash.com/api/preview/" target="_blank" class="btn-primary">Try Free API →</a>
-      <a href="mailto:bivash@cyberdudebivash.com?subject=API%20Access%20Request" class="btn-outline">Get Pro Access →</a>
+      <a href="/api-dashboard.html" class="btn-primary">Get Your Free API Key →</a>
+      <a href="/api-dashboard.html#plans" class="btn-outline">Upgrade to Pro →</a>
     </div>
     <p style="font-size:12px;color:var(--apex-muted);margin-top:16px;">Questions? Email <a href="mailto:bivash@cyberdudebivash.com" style="color:var(--apex-cyan);">bivash@cyberdudebivash.com</a> or DM <a href="https://x.com/cdbsentinelapex" target="_blank" style="color:var(--apex-cyan);">@cdbsentinelapex</a></p>
   </div>
