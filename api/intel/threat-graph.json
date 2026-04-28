@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-28T15:37:39.266Z",
+  "generated": "2026-04-28T17:14:38.407Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 114,
+    "total_nodes": 123,
     "actors": 8,
     "cves": 37,
-    "campaigns": 31,
+    "campaigns": 35,
     "malware": 0,
     "iocs": 6,
-    "edges": 78
+    "edges": 85
   },
   "nodes": {
     "actor:lockbit": {
@@ -483,7 +483,13 @@
       "id": "actor:shinyhunters",
       "type": "ThreatActor",
       "name": "ShinyHunters",
-      "connections": [],
+      "connections": [
+        {
+          "target": "SECURITYWEEK-83e15f470988da23",
+          "relationship": "exploits",
+          "confidence": 0.85
+        }
+      ],
       "attributes": {
         "aliases": [
           "Shiny Hunters",
@@ -2560,6 +2566,188 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "CISA-e03681b031b511fa": {
+      "id": "CISA-e03681b031b511fa",
+      "type": "Intel",
+      "name": "NSA GRASSMARLIN",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "HIGH",
+        "priority_score": 77,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "CISA US-CERT",
+        "product": "Multiple Products",
+        "published": "2026-04-28",
+        "type": "ADVISORY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.cve.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "CISA-9be2e84936113a7f": {
+      "id": "CISA-9be2e84936113a7f",
+      "type": "Intel",
+      "name": "Intrado 911 Emergency Gateway (EGW)",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "HIGH",
+        "priority_score": 71,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "CISA US-CERT",
+        "product": "Multiple Products",
+        "published": "2026-04-23",
+        "type": "ADVISORY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.cve.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "CISA-48be90832034f9ae": {
+      "id": "CISA-48be90832034f9ae",
+      "type": "Intel",
+      "name": "SpiceJet Online Booking System",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "HIGH",
+        "priority_score": 71,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "CISA US-CERT",
+        "product": "Multiple Products",
+        "published": "2026-04-23",
+        "type": "ADVISORY"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-83e15f470988da23": {
+      "id": "SECURITYWEEK-83e15f470988da23",
+      "type": "Intel",
+      "name": "Vimeo Confirms User and Customer Data Breach",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-04-28",
+        "type": "DATA_BREACH"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-0550681df7e10295": {
+      "id": "BLEEPINGCOMPUTER-0550681df7e10295",
+      "type": "Intel",
+      "name": "US reportedly charges Scattered Spider hacker arrested in Finland",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-04-28",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-259675dd": {
+      "id": "campaign:cluster-259675dd",
+      "type": "Campaign",
+      "name": "CISA Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-04-28",
+        "last_seen": "2026-04-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-6807 | 7 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CISA-e03681b031b511fa",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-cfde6401": {
+      "id": "campaign:cluster-cfde6401",
+      "type": "Campaign",
+      "name": "CISA Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-04-23",
+        "last_seen": "2026-04-23",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-6074 | 7 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CISA-9be2e84936113a7f",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-279bf7ac": {
+      "id": "campaign:cluster-279bf7ac",
+      "type": "Campaign",
+      "name": "CISA Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-04-23",
+        "last_seen": "2026-04-23",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 2 related CVEs: CVE-2026-6375, CVE-2026-6376 | 8 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CISA-48be90832034f9ae",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-7e649c6d": {
+      "id": "campaign:cluster-7e649c6d",
+      "type": "Campaign",
+      "name": "SimpleHelp Privilege Escalation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-04-24",
+        "last_seen": "2026-04-24",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 4 related CVEs: CVE-2024-7399, CVE-2024-57726, CVE-2024-57728, CVE-2025-29635 | 5 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CISA-4357d42794d86a92",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -3298,6 +3486,69 @@
       "id": "campaign:cve-2026-25874→includes→CVE-2026-25874",
       "source": "campaign:cve-2026-25874",
       "target": "CVE-2026-25874",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "CISA-e03681b031b511fa→linked_to→ioc:domain:www.cve.org",
+      "source": "CISA-e03681b031b511fa",
+      "target": "ioc:domain:www.cve.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "CISA-9be2e84936113a7f→linked_to→ioc:domain:www.cve.org",
+      "source": "CISA-9be2e84936113a7f",
+      "target": "ioc:domain:www.cve.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→SECURITYWEEK-83e15f470988da23",
+      "source": "actor:shinyhunters",
+      "target": "SECURITYWEEK-83e15f470988da23",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-259675dd→includes→CISA-e03681b031b511fa",
+      "source": "campaign:cluster-259675dd",
+      "target": "CISA-e03681b031b511fa",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-cfde6401→includes→CISA-9be2e84936113a7f",
+      "source": "campaign:cluster-cfde6401",
+      "target": "CISA-9be2e84936113a7f",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-279bf7ac→includes→CISA-48be90832034f9ae",
+      "source": "campaign:cluster-279bf7ac",
+      "target": "CISA-48be90832034f9ae",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-7e649c6d→includes→CISA-4357d42794d86a92",
+      "source": "campaign:cluster-7e649c6d",
+      "target": "CISA-4357d42794d86a92",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-04-28",
