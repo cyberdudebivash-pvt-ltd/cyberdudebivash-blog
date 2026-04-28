@@ -36,24 +36,31 @@ const CFG = {
   liveJsonPath:       path.join(__dirname, 'live-intel.json'),
   sitemapPath:        path.join(__dirname, 'sitemap.xml'),
   apiDir:             path.join(__dirname, 'api', 'intel'),
-  nvdLookbackHours:   168,
-  kevLookbackDays:    14,
-  maxNewPostsPerRun:  10,
+  // Phase 1 Fix: tighter lookback windows — sourceFetchState tracks real last-seen per source
+  nvdLookbackHours:   72,      // fallback when no prior source state (3 days)
+  kevLookbackDays:    7,       // fallback when no prior source state
+  maxNewPostsPerRun:  12,
   minCVSS:            7.0,
   minPriorityScore:   40,
   requestTimeoutMs:   25000,
-  maxRssItems:        8,
+  maxRssItems:        12,      // more items per RSS source
+  // Phase 3 Fix: dedup TTL — published items older than N days are NOT considered duplicates
+  dedupTtlDays:       30,
+  // Phase 5 Fix: rolling window sizes
+  liveRollingWindow:  100,     // live-intel.json max items
+  apiLiveWindow:      75,      // api/intel/live.json max items
   nvdApiKey:          process.env.NVD_API_KEY  || '',
   githubToken:        process.env.GITHUB_TOKEN || '',
   nvdApi:             'https://services.nvd.nist.gov/rest/json/cves/2.0',
   cisaKevUrl:         'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json',
   cisaAlertsRss:      'https://www.cisa.gov/cybersecurity-advisories/all.xml',
-  ghAdvisoryUrl:      'https://api.github.com/advisories?type=reviewed&severity=high&per_page=20',
+  ghAdvisoryUrl:      'https://api.github.com/advisories?type=reviewed&severity=high&per_page=30',
   bleepingRss:        'https://www.bleepingcomputer.com/feed/',
   thnRss:             'https://feeds.feedburner.com/TheHackersNews',
   krebsRss:           'https://krebsonsecurity.com/feed/',
   secweekRss:         'https://www.securityweek.com/feed/',
   sansRss:            'https://isc.sans.edu/rssfeed_full.xml',
+  darkReadingRss:     'https://www.darkreading.com/rss.xml',
   urlhausApi:         'https://urlhaus-api.abuse.ch/v1/payloads/recent/',
   threatfoxApi:       'https://threatfox-api.abuse.ch/api/v1/',
   msrcApi:            'https://api.msrc.microsoft.com/cvrf/v2.0/Updates',
@@ -200,30 +207,55 @@ function loadState() {
       const s = JSON.parse(fs.readFileSync(CFG.statePath, 'utf8'));
       if (!Array.isArray(s.published)) s.published = [];
       if (!s.correlations) s.correlations = {};
+      if (!s.sourceFetchState) s.sourceFetchState = {};
       return s;
     }
   } catch(e) { warn('State corrupt — starting fresh.'); }
-  return { published: [], lastRun: null, totalPublished: 0, correlations: {}, version: '4.0' };
+  return { published: [], lastRun: null, totalPublished: 0, correlations: {}, sourceFetchState: {}, version: '4.0' };
 }
 function saveState(state) {
   state.lastRun = new Date().toISOString();
   state.version = '4.0';
+  // Trim published list — remove entries older than 60 days first, then hard cap at 2000
+  const ttlMs = (CFG.dedupTtlDays || 30) * 86400000 * 2; // 60-day hard purge
+  const now = Date.now();
+  state.published = state.published.filter(p => (now - new Date(p.date || 0).getTime()) < ttlMs);
   if (state.published.length > 2000) state.published = state.published.slice(0, 1500);
   fs.writeFileSync(CFG.statePath, JSON.stringify(state, null, 2), 'utf8');
 }
-function isPublished(state, id) { return state.published.some(p => p.id === id); }
+// Returns last fetch timestamp for a named source (epoch ms), or null if never fetched
+function getSourceLastFetch(state, source) {
+  return state.sourceFetchState?.[source]?.lastFetch || null;
+}
+// Records successful fetch timestamp for a named source
+function setSourceLastFetch(state, source, tsMs) {
+  if (!state.sourceFetchState) state.sourceFetchState = {};
+  state.sourceFetchState[source] = { lastFetch: tsMs || Date.now(), updatedAt: new Date().toISOString() };
+}
+// isPublished respects dedupTtlDays — items published > TTL days ago are NOT duplicates
+function isPublished(state, id) {
+  const ttlMs = (CFG.dedupTtlDays || 30) * 86400000;
+  const now   = Date.now();
+  return state.published.some(p => {
+    if (p.id !== id) return false;
+    const age = now - new Date(p.date || 0).getTime();
+    return age < ttlMs; // within TTL window → is a duplicate
+  });
+}
 function markPublished(state, item) {
   state.published.unshift({ id: item.id, slug: item.slug, date: isoNow(), title: item.title });
   state.totalPublished = (state.totalPublished || 0) + 1;
 }
 
 // ── SOURCE 1: NVD CVE API v2.0 ─────────────────────────────────────────
-async function fetchNVD() {
-  const end = new Date(), start = new Date(Date.now() - CFG.nvdLookbackHours * 3600000);
-  const fmt = d => d.toISOString().slice(0,23);
+async function fetchNVD(state) {
+  const end   = new Date();
+  const lastFetch = getSourceLastFetch(state, 'nvd');
+  const start = lastFetch ? new Date(lastFetch) : new Date(Date.now() - CFG.nvdLookbackHours * 3600000);
+  const fmt   = d => d.toISOString().slice(0,23);
   const apiUrl     = `${CFG.nvdApi}?pubStartDate=${encodeURIComponent(fmt(start))}&pubEndDate=${encodeURIComponent(fmt(end))}&cvssV3SeverityExact=CRITICAL&resultsPerPage=20&noRejected`;
   const apiUrlHigh = `${CFG.nvdApi}?lastModStartDate=${encodeURIComponent(fmt(start))}&lastModEndDate=${encodeURIComponent(fmt(end))}&cvssV3SeverityExact=CRITICAL&resultsPerPage=15&noRejected`;
-  log('NVD: fetching CRITICAL CVEs...');
+  log(`NVD: fetching CRITICAL CVEs since ${start.toISOString()}...`);
   try {
     await sleep(600);
     let raw;
@@ -247,17 +279,19 @@ async function fetchNVD() {
         desc, cvss, vector, cweId, refs, pubDate, vendor, product, exploited:false, cisaKev:false, ransomware:false,
         iocs, sourceCount:1, daysOld: Math.floor((Date.now()-new Date(pubDate).getTime())/86400000) };
     }).filter(i => i.cvss >= CFG.minCVSS);
-    log(`NVD: ${items.length} items.`); return items;
+    setSourceLastFetch(state, 'nvd', Date.now());
+    log(`NVD: ${items.length} items (since ${start.toISOString().slice(0,10)}).`); return items;
   } catch(e) { warn(`NVD failed: ${e.message}`); return []; }
 }
 
 // ── SOURCE 2: CISA KEV ─────────────────────────────────────────────────
-async function fetchCISAKev() {
-  log('CISA KEV: fetching...');
+async function fetchCISAKev(state) {
+  const lastFetch = getSourceLastFetch(state, 'cisa_kev');
+  const cutoff    = lastFetch ? new Date(lastFetch) : new Date(Date.now() - CFG.kevLookbackDays * 86400000);
+  log(`CISA KEV: fetching (since ${cutoff.toISOString().slice(0,10)})...`);
   try {
     const raw = await fetchWithRetry(CFG.cisaKevUrl);
     const data = JSON.parse(raw);
-    const cutoff = new Date(Date.now() - CFG.kevLookbackDays * 86400000);
     const items = (data.vulnerabilities||[]).filter(v => new Date(v.dateAdded) >= cutoff).map(v => {
       const iocs = extractIOCs(v.shortDescription||'', []);
       return { source:'cisa_kev', type:'CVE_REPORT', id:v.cveID,
@@ -269,39 +303,50 @@ async function fetchCISAKev() {
         reqAction:v.requiredAction, iocs, sourceCount:1,
         daysOld: Math.floor((Date.now()-new Date(v.dateAdded).getTime())/86400000) };
     });
+    setSourceLastFetch(state, 'cisa_kev', Date.now());
     log(`CISA KEV: ${items.length} items.`); return items;
   } catch(e) { warn(`CISA KEV failed: ${e.message}`); return []; }
 }
 
 // ── SOURCE 3: CISA Alerts RSS ──────────────────────────────────────────
-async function fetchCISAAlerts() {
-  log('CISA Alerts RSS: fetching...');
+async function fetchCISAAlerts(state) {
+  const lastFetch  = getSourceLastFetch(state, 'cisa_alerts');
+  const afterDate  = lastFetch ? new Date(lastFetch) : new Date(Date.now() - CFG.kevLookbackDays * 86400000);
+  log(`CISA Alerts RSS: fetching (since ${afterDate.toISOString().slice(0,10)})...`);
   try {
     const raw = await fetchWithRetry(CFG.cisaAlertsRss);
-    const items = parseRSS(raw).slice(0, CFG.maxRssItems).map(item => {
-      const text = (item.title||'')+' '+(item.desc||'');
-      const iocs = extractIOCs(text, []);
-      return { source:'cisa_alerts', type:'ADVISORY', id:'CISA-'+md5(item.link),
-        title:item.title, desc:(item.desc||'').slice(0,600), cvss:8.5, refs:[item.link],
-        pubDate:item.pubDate?new Date(item.pubDate).toISOString().slice(0,10):isoNow(),
-        vendor:'CISA US-CERT', product:'Multiple Products',
-        exploited:/exploit|active/i.test(text), cisaKev:false,
-        ransomware:/ransomware/i.test(text),
-        cves:extractCVEs(text), link:item.link, iocs, sourceCount:1,
-        daysOld: item.pubDate ? Math.floor((Date.now()-new Date(item.pubDate).getTime())/86400000) : 0 };
-    });
-    log(`CISA Alerts: ${items.length} items.`); return items;
+    const parsed = parseRSS(raw);
+    const items = parsed
+      .filter(item => {
+        if (!item.pubDate) return true; // include if no date
+        try { return new Date(item.pubDate) >= afterDate; } catch(_) { return true; }
+      })
+      .slice(0, CFG.maxRssItems).map(item => {
+        const text = (item.title||'')+' '+(item.desc||'');
+        const iocs = extractIOCs(text, []);
+        return { source:'cisa_alerts', type:'ADVISORY', id:'CISA-'+md5(item.link),
+          title:item.title, desc:(item.desc||'').slice(0,600), cvss:8.5, refs:[item.link],
+          pubDate:item.pubDate?new Date(item.pubDate).toISOString().slice(0,10):isoNow(),
+          vendor:'CISA US-CERT', product:'Multiple Products',
+          exploited:/exploit|active/i.test(text), cisaKev:false,
+          ransomware:/ransomware/i.test(text),
+          cves:extractCVEs(text), link:item.link, iocs, sourceCount:1,
+          daysOld: item.pubDate ? Math.floor((Date.now()-new Date(item.pubDate).getTime())/86400000) : 0 };
+      });
+    setSourceLastFetch(state, 'cisa_alerts', Date.now());
+    log(`CISA Alerts: ${items.length} items (filtered from ${parsed.length}).`); return items;
   } catch(e) { warn(`CISA Alerts failed: ${e.message}`); return []; }
 }
 
 // ── SOURCE 4: GitHub Security Advisories ──────────────────────────────
-async function fetchGitHubAdvisories() {
-  log('GitHub Advisories: fetching...');
+async function fetchGitHubAdvisories(state) {
+  const lastFetch = getSourceLastFetch(state, 'github_advisories');
+  const cutoff    = lastFetch ? new Date(lastFetch) : new Date(Date.now() - 7*86400000);
+  log(`GitHub Advisories: fetching (since ${cutoff.toISOString().slice(0,10)})...`);
   try {
     await sleep(500);
     const raw = await fetchWithRetry(CFG.ghAdvisoryUrl);
     const data = JSON.parse(raw);
-    const cutoff = new Date(Date.now() - 7*86400000);
     const items = (Array.isArray(data)?data:[]).filter(a => new Date(a.published_at||a.updated_at) >= cutoff).slice(0,10).map(a => {
       const cvss = a.cvss?.score||(a.severity==='critical'?9.0:7.5);
       const cves = (a.cve_id?[a.cve_id]:[]).concat((a.identifiers||[]).filter(i=>i.type==='CVE').map(i=>i.value));
@@ -318,6 +363,7 @@ async function fetchGitHubAdvisories() {
         exploited:false, cisaKev:false, ransomware:false, cves, iocs, sourceCount:1,
         daysOld: Math.floor((Date.now()-new Date(a.published_at||isoNow()).getTime())/86400000) };
     });
+    setSourceLastFetch(state, 'github_advisories', Date.now());
     log(`GitHub Advisories: ${items.length} items.`); return items;
   } catch(e) { warn(`GitHub Advisories failed: ${e.message}`); return []; }
 }
@@ -357,12 +403,20 @@ function rssToIntel(item, source) {
 }
 
 // ── SOURCES 5-9: RSS FEEDS ─────────────────────────────────────────────
-async function fetchRSS(urlStr, source, maxItems) {
-  log(`${source}: fetching RSS...`);
+async function fetchRSS(urlStr, source, maxItems, state) {
+  const lastFetch = state ? getSourceLastFetch(state, source) : null;
+  const afterDate = lastFetch ? new Date(lastFetch) : new Date(Date.now() - CFG.kevLookbackDays * 86400000);
+  log(`${source}: fetching RSS (since ${afterDate.toISOString().slice(0,10)})...`);
   try {
     const raw = await fetchWithRetry(urlStr);
-    const items = parseRSS(raw).slice(0, maxItems||CFG.maxRssItems).map(item => rssToIntel(item, source));
-    log(`${source}: ${items.length} items.`); return items;
+    const parsed = parseRSS(raw);
+    const filtered = parsed.filter(item => {
+      if (!item.pubDate) return true;
+      try { return new Date(item.pubDate) >= afterDate; } catch(_) { return true; }
+    });
+    const items = filtered.slice(0, maxItems||CFG.maxRssItems).map(item => rssToIntel(item, source));
+    if (state) setSourceLastFetch(state, source, Date.now());
+    log(`${source}: ${items.length} items (filtered from ${parsed.length}).`); return items;
   } catch(e) { warn(`${source} failed: ${e.message}`); return []; }
 }
 
@@ -382,9 +436,10 @@ async function fetchURLhaus() {
       const hash = u.md5_hash||u.sha256_hash;
       if (hash) families[tag].hashes.push({ type: u.sha256_hash?'sha256':'md5', value:hash, confidence_score:0.92, first_seen:isoNow(), source_count:1 });
     });
+    const dailyDate = new Date().toISOString().slice(0,10); // YYYY-MM-DD — daily-fresh ID
     const items = Object.entries(families).filter(([k])=>k!=='unknown_malware').slice(0,3).map(([tag,info]) => ({
       source:'urlhaus', type:'MALWARE_REPORT',
-      id:'URLHAUS-'+md5(tag+(info.date||'')),
+      id:'URLHAUS-'+md5(tag+dailyDate),
       title:`Abuse.ch Malware Alert: ${tag} — ${info.count} Payloads Tracked (URLhaus)`,
       desc:`URLhaus tracking ${info.count} active payloads for ${tag} malware family. Fresh IOCs confirmed. Deploy to SIEM/firewall immediately.`,
       cvss:7.5, refs:['https://urlhaus.abuse.ch/'],
@@ -416,9 +471,10 @@ async function fetchThreatFox() {
       if (!families[fam]) families[fam] = { iocs:[], firstSeen:ioc.first_seen };
       families[fam].iocs.push({ type:ioc.ioc_type, value:ioc.ioc, confidence_score:0.90, first_seen:isoNow(), source_count:1 });
     });
+    const dailyDate = new Date().toISOString().slice(0,10); // YYYY-MM-DD — daily-fresh ID
     const items = Object.entries(families).slice(0,3).map(([family,info]) => ({
       source:'threatfox', type:'MALWARE_REPORT',
-      id:'THREATFOX-'+md5(family+(info.firstSeen||'')),
+      id:'THREATFOX-'+md5(family+dailyDate),
       title:`ThreatFox IOC Alert: ${family} — Fresh Indicators Published`,
       desc:`Abuse.ch ThreatFox published ${info.iocs.length} fresh IOCs for ${family}. Active threat infrastructure. Deploy to SIEM/firewall/EDR immediately.`,
       cvss:7.8, refs:['https://threatfox.abuse.ch/'],
@@ -1059,13 +1115,16 @@ function writeAPIFiles(allItems, state) {
     const now = new Date().toISOString();
     const apiMeta = { generated: now, version: '4.0', platform: 'CYBERDUDEBIVASH SENTINEL APEX', contact: 'bivash@cyberdudebivash.com', docs: `${CFG.baseUrl}/api.html` };
 
-    // /api/intel/live.json — top 50 items, full structured data
-    const livePayload = {
-      ...apiMeta,
-      endpoint: '/api/intel/live.json',
-      description: 'Live threat intelligence feed — top 50 priority items',
-      total_published: state.totalPublished || 0,
-      items: allItems.slice(0,50).map(item => ({
+    // /api/intel/live.json — rolling 75-item window, full structured data
+    let existingApiItems = [];
+    const apiLivePath = path.join(CFG.apiDir, 'live.json');
+    if (fs.existsSync(apiLivePath)) {
+      try {
+        const exData = JSON.parse(fs.readFileSync(apiLivePath, 'utf8'));
+        existingApiItems = Array.isArray(exData.items) ? exData.items : [];
+      } catch(_) {}
+    }
+    const newApiItems = allItems.map(item => ({
         id: item.id,
         title: (item.title||'').slice(0,120),
         description: (item.desc||'').slice(0,300),
@@ -1086,17 +1145,35 @@ function writeAPIFiles(allItems, state) {
         ioc_count: (item.iocs||[]).length,
         report_url: item.slug ? `${CFG.baseUrl}/posts/${item.slug}.html` : null,
         refs: (item.refs||[]).slice(0,3),
-      })),
+        _addedAt: new Date().toISOString(),
+    }));
+    // Rolling merge: new overrides existing by id, sort DESC by priority_score→published, trim to apiLiveWindow
+    const mergedApi = [...newApiItems];
+    const newApiIds = new Set(newApiItems.map(i => i.id));
+    existingApiItems.forEach(e => { if (!newApiIds.has(e.id)) mergedApi.push(e); });
+    mergedApi.sort((a,b) => {
+      const ps = (b.priority_score||0) - (a.priority_score||0);
+      if (ps !== 0) return ps;
+      return new Date(b.published||0) - new Date(a.published||0);
+    });
+    const rolledApiItems = mergedApi.slice(0, CFG.apiLiveWindow || 75);
+    const livePayload = {
+      ...apiMeta,
+      endpoint: '/api/intel/live.json',
+      description: `Live threat intelligence feed — rolling ${CFG.apiLiveWindow||75} priority items`,
+      total_published: state.totalPublished || 0,
+      items: rolledApiItems,
     };
     fs.writeFileSync(path.join(CFG.apiDir, 'live.json'), JSON.stringify(livePayload, null, 2), 'utf8');
+    log(`api/intel/live.json: ${rolledApiItems.length} items (${newApiItems.length} new + ${existingApiItems.length} existing → rolled to ${CFG.apiLiveWindow||75}).`);
 
-    // /api/intel/top-threats.json — top 10 CRITICAL/HIGH
-    const topThreats = allItems.filter(i=>(i.priority||0)>=65).slice(0,10);
+    // /api/intel/top-threats.json — top 10 CRITICAL/HIGH from rolled set
+    const topThreats = rolledApiItems.filter(i=>(i.priority_score||0)>=65).slice(0,10);
     fs.writeFileSync(path.join(CFG.apiDir, 'top-threats.json'), JSON.stringify({
       ...apiMeta, endpoint: '/api/intel/top-threats.json',
       description: 'Top 10 highest-priority threats (score ≥ 65)',
       count: topThreats.length,
-      items: topThreats.map(i=>({ id:i.id, title:(i.title||'').slice(0,100), priority_score:i.priority||0, threat_level:i.threatLevel||'HIGH', cvss:i.cvss||0, exploited:!!i.exploited, cisa_kev:!!i.cisaKev, ransomware:!!i.ransomware, vendor:i.vendor||'', product:i.product||'', report_url: i.slug?`${CFG.baseUrl}/posts/${i.slug}.html`:null })),
+      items: topThreats.map(i=>({ id:i.id, title:(i.title||'').slice(0,100), priority_score:i.priority_score||i.priority||0, threat_level:i.threat_level||i.threatLevel||'HIGH', cvss:i.cvss||0, exploited:!!i.exploited, cisa_kev:!!i.cisa_kev||!!i.cisaKev, ransomware:!!i.ransomware, vendor:i.vendor||'', product:i.product||'', report_url: i.report_url||null })),
     }, null, 2), 'utf8');
 
     // /api/intel/iocs.json — all enriched IOCs
@@ -1156,7 +1233,15 @@ function writeAPIFiles(allItems, state) {
 // ── LIVE-INTEL.JSON (widget feed) ─────────────────────────────────────
 function writeLiveIntel(allItems, state) {
   try {
-    const liveItems = allItems.slice(0,25).map(item => ({
+    // Load existing items for rolling merge
+    let existingItems = [];
+    if (fs.existsSync(CFG.liveJsonPath)) {
+      try {
+        const ex = JSON.parse(fs.readFileSync(CFG.liveJsonPath, 'utf8'));
+        existingItems = Array.isArray(ex.items) ? ex.items : [];
+      } catch(_) {}
+    }
+    const newItems = allItems.map(item => ({
       id: item.id, title: (item.title||'').slice(0,120), desc: (item.desc||'').slice(0,200),
       cvss: item.cvss||0, type: item.type||'INTEL', source: item.source||'',
       pubDate: item.pubDate||isoNow(), exploited: !!item.exploited, cisaKev: !!item.cisaKev,
@@ -1166,20 +1251,31 @@ function writeLiveIntel(allItems, state) {
       sourceCount: item.sourceCount||1, iocCount: (item.iocs||[]).length,
       slug: item.slug || slugify(item.id.startsWith('CVE')?`${item.id}-${item.vendor||''}-${item.product||''}`:item.title.slice(0,60)),
       link: item.slug ? `${CFG.baseUrl}/posts/${item.slug}.html` : null,
+      _addedAt: new Date().toISOString(),
     }));
+    // Merge: new items override existing by id, then sort DESC by priority→pubDate, trim to window
+    const merged = [...newItems];
+    const newIds = new Set(newItems.map(i => i.id));
+    existingItems.forEach(e => { if (!newIds.has(e.id)) merged.push(e); });
+    merged.sort((a,b) => {
+      const ps = (b.priority||0) - (a.priority||0);
+      if (ps !== 0) return ps;
+      return new Date(b.pubDate||0) - new Date(a.pubDate||0);
+    });
+    const liveItems = merged.slice(0, CFG.liveRollingWindow || 100);
     fs.writeFileSync(CFG.liveJsonPath, JSON.stringify({
       generatedAt: new Date().toISOString(), totalPublished: state.totalPublished||0,
       source: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', platform: 'blog.cyberdudebivash.in',
       stats: {
-        critical: liveItems.filter(i=>i.threatLevel==='CRITICAL').length,
-        high:     liveItems.filter(i=>i.threatLevel==='HIGH').length,
-        cisaKev:  liveItems.filter(i=>i.cisaKev).length,
-        exploited:liveItems.filter(i=>i.exploited).length,
+        critical:  liveItems.filter(i=>i.threatLevel==='CRITICAL').length,
+        high:      liveItems.filter(i=>i.threatLevel==='HIGH').length,
+        cisaKev:   liveItems.filter(i=>i.cisaKev).length,
+        exploited: liveItems.filter(i=>i.exploited).length,
         ransomware:liveItems.filter(i=>i.ransomware).length,
       },
       items: liveItems,
     }, null, 2), 'utf8');
-    log(`live-intel.json updated: ${liveItems.length} items.`);
+    log(`live-intel.json: ${liveItems.length} items (${newItems.length} new + ${existingItems.length} existing → rolled to ${CFG.liveRollingWindow||100}).`);
   } catch(e) { warn(`live-intel.json failed: ${e.message}`); }
 }
 
@@ -1227,8 +1323,8 @@ async function main() {
   const T0 = Date.now();
   log('═'.repeat(65));
   log('CYBERDUDEBIVASH SENTINEL APEX v4.0 — Global Intelligence Engine');
-  log('9-Phase Production Pipeline: IOC Enrichment + Correlation +');
-  log('Priority Scoring + Signal Filtering + API Platform + Reports');
+  log('10-Phase Real-Time Pipeline: Live Ingestion + Stateful Dedup +');
+  log('Correlation + Scoring + Enrichment + Rolling Storage + Reports');
   log(`Run started: ${new Date().toISOString()}`);
   log('═'.repeat(65));
 
@@ -1236,35 +1332,54 @@ async function main() {
   if (!fs.existsSync(CFG.postsDir)) fs.mkdirSync(CFG.postsDir, { recursive: true });
 
   const state = loadState();
-  log(`State: ${state.published.length} items published. Total: ${state.totalPublished}`);
+  log(`State: ${state.published.length} items in dedup window (TTL=${CFG.dedupTtlDays}d). Total published: ${state.totalPublished}`);
+  const sourceFetchLog = {}; // per-source debug stats: {fetched, new}
 
-  // ── PHASE 2/3 INPUT: INGEST ALL 12 SOURCES IN PARALLEL ───────────────
-  log('\n── PHASE 1: MULTI-SOURCE INGESTION ────────────────────────────');
+  // ── PHASE 1: INGEST ALL 13 SOURCES IN PARALLEL (pass state for lastFetch) ──
+  log('\n── PHASE 1: MULTI-SOURCE INGESTION (STATEFUL LAST-SEEN) ────────');
   const [
     nvdItems, kevItems, cisaAlerts, ghAdvisories,
     bleepItems, thnItems, krebsItems, secweekItems, sansItems,
-    urlhausItems, threatfoxItems, msrcItems
+    urlhausItems, threatfoxItems, msrcItems, darkReadingItems
   ] = await Promise.all([
-    fetchNVD().catch(e => { warn(`NVD fatal: ${e.message}`); return []; }),
-    fetchCISAKev().catch(e => { warn(`KEV fatal: ${e.message}`); return []; }),
-    fetchCISAAlerts().catch(e => { warn(`CISA alerts fatal: ${e.message}`); return []; }),
-    fetchGitHubAdvisories().catch(e => { warn(`GH advisories fatal: ${e.message}`); return []; }),
-    fetchRSS(CFG.bleepingRss, 'bleepingcomputer', CFG.maxRssItems).catch(() => []),
-    fetchRSS(CFG.thnRss, 'thehackernews', CFG.maxRssItems).catch(() => []),
-    fetchRSS(CFG.krebsRss, 'krebsonsecurity', 4).catch(() => []),
-    fetchRSS(CFG.secweekRss, 'securityweek', CFG.maxRssItems).catch(() => []),
-    fetchRSS(CFG.sansRss, 'sans_isc', 4).catch(() => []),
+    fetchNVD(state).catch(e => { warn(`NVD fatal: ${e.message}`); return []; }),
+    fetchCISAKev(state).catch(e => { warn(`KEV fatal: ${e.message}`); return []; }),
+    fetchCISAAlerts(state).catch(e => { warn(`CISA alerts fatal: ${e.message}`); return []; }),
+    fetchGitHubAdvisories(state).catch(e => { warn(`GH advisories fatal: ${e.message}`); return []; }),
+    fetchRSS(CFG.bleepingRss, 'bleepingcomputer', CFG.maxRssItems, state).catch(() => []),
+    fetchRSS(CFG.thnRss, 'thehackernews', CFG.maxRssItems, state).catch(() => []),
+    fetchRSS(CFG.krebsRss, 'krebsonsecurity', 4, state).catch(() => []),
+    fetchRSS(CFG.secweekRss, 'securityweek', CFG.maxRssItems, state).catch(() => []),
+    fetchRSS(CFG.sansRss, 'sans_isc', 4, state).catch(() => []),
     fetchURLhaus().catch(() => []),
     fetchThreatFox().catch(() => []),
     fetchMSRC().catch(() => []),
+    fetchRSS(CFG.darkReadingRss, 'darkreading', CFG.maxRssItems, state).catch(() => []),
   ]);
 
-  const allBatches = [nvdItems,kevItems,cisaAlerts,ghAdvisories,bleepItems,thnItems,krebsItems,secweekItems,sansItems,urlhausItems,threatfoxItems,msrcItems];
+  // Per-source fetch logging
+  const sourceBatches = [
+    ['nvd',nvdItems],['cisa_kev',kevItems],['cisa_alerts',cisaAlerts],
+    ['github_advisories',ghAdvisories],['bleepingcomputer',bleepItems],
+    ['thehackernews',thnItems],['krebsonsecurity',krebsItems],
+    ['securityweek',secweekItems],['sans_isc',sansItems],
+    ['urlhaus',urlhausItems],['threatfox',threatfoxItems],
+    ['msrc',msrcItems],['darkreading',darkReadingItems],
+  ];
+  sourceBatches.forEach(([src, items]) => {
+    sourceFetchLog[src] = { fetched: items.length, new: 0 };
+  });
+
+  const allBatches = sourceBatches.map(([,items]) => items);
   const activeSources = allBatches.filter(a=>a.length>0).length;
-  log(`\nSources returning data: ${activeSources}/12`);
+  log(`\nSources returning data: ${activeSources}/13`);
+  sourceBatches.forEach(([src, items]) => {
+    if (items.length > 0) log(`  ✓ ${src}: ${items.length} items fetched`);
+    else log(`  ✗ ${src}: 0 items (offline or no new data)`);
+  });
   if (activeSources === 0) { err('All sources failed — aborting pipeline.'); process.exit(1); }
 
-  // ── PHASE 2: CORRELATION ENGINE ───────────────────────────────────────
+  // ── PHASE 2: CORRELATION ENGINE ──────────────────────────────────────
   log('\n── PHASE 2: CORRELATION ENGINE ─────────────────────────────────');
   const correlatedItems = correlateAndMerge(allBatches);
   log(`Correlated items: ${correlatedItems.length} (unique IDs, cross-source merged)`);
@@ -1297,25 +1412,50 @@ async function main() {
     warn('Continuing with unenriched items — graph/campaigns not updated this cycle');
   }
 
+  // ── PHASE 5: DEBUG STATS + FRESHNESS VALIDATION ───────────────────────
+  const totalFetched  = Object.values(sourceFetchLog).reduce((s,v) => s + v.fetched, 0);
+  const newAfterDedup = enrichedItems.filter(item => item.id && !isPublished(state, item.id)).length;
+  const dupSkipped    = correlatedItems.length - newAfterDedup;
+
+  log('\n── PHASE 5: PIPELINE DEBUG STATS ───────────────────────────────');
+  log(`  total_fetched       : ${totalFetched}`);
+  log(`  after_correlation   : ${correlatedItems.length}`);
+  log(`  after_noise_filter  : ${filteredItems.length}`);
+  log(`  new_after_dedup     : ${newAfterDedup}`);
+  log(`  duplicates_skipped  : ${dupSkipped} (within ${CFG.dedupTtlDays}d TTL window)`);
+  log(`  final_enriched      : ${enrichedItems.length}`);
+
+  // Freshness validation — warn if no item has pubDate within last 24h
+  const yesterday = new Date(Date.now() - 86400000);
+  const freshItems = enrichedItems.filter(item => {
+    try { return new Date(item.pubDate || 0) >= yesterday; } catch(_) { return false; }
+  });
+  if (freshItems.length === 0) {
+    log('⚠️  NO NEW INTEL DETECTED THIS CYCLE — all items older than 24h');
+    log('    Check source availability and lastFetch state.');
+  } else {
+    log(`  fresh_items_24h     : ${freshItems.length} (pubDate >= ${yesterday.toISOString().slice(0,10)})`);
+  }
+
   // ── WRITE LIVE FEEDS (always, even if no new posts) ────────────────────
   writeLiveIntel(enrichedItems, state);
 
-  // ── PHASE 5: API PLATFORM ─────────────────────────────────────────────
-  log('\n── PHASE 5: ENTERPRISE API PLATFORM ───────────────────────────');
+  // ── PHASE 6: API PLATFORM ─────────────────────────────────────────────
+  log('\n── PHASE 6: ENTERPRISE API PLATFORM ───────────────────────────');
   writeAPIFiles(enrichedItems, state);
 
-  // ── PHASE 6+7: REPORT GENERATION ──────────────────────────────────────
+  // ── PHASE 7+8: REPORT GENERATION ──────────────────────────────────────
   const newItems = enrichedItems.filter(item => item.id && !isPublished(state, item.id));
   log(`\nNew (unpublished) items: ${newItems.length}`);
 
   if (newItems.length === 0) {
-    log('No new intel this cycle. All items already published.');
+    log('No new intel this cycle. All items already published or within dedup TTL.');
     saveState(state);
     validateAndReport(enrichedItems, [], state, T0);
     return;
   }
 
-  log('\n── PHASE 6+7: GENERATING ADVANCED REPORTS ──────────────────────');
+  log('\n── PHASE 7+8: GENERATING ADVANCED REPORTS ──────────────────────');
   const toPublish = newItems.slice(0, CFG.maxNewPostsPerRun);
   const generatedCards = [], rssItems = [], newSlugs = [];
 
@@ -1347,8 +1487,8 @@ async function main() {
     } catch(e) { err(`Failed to generate: ${item.id} — ${e.message}`); }
   }
 
-  // ── PHASE 8: PLATFORM FILE UPDATES ────────────────────────────────────
-  log('\n── PHASE 8: PLATFORM SYNC ──────────────────────────────────────');
+  // ── PHASE 9: PLATFORM FILE UPDATES ────────────────────────────────────
+  log('\n── PHASE 9: PLATFORM SYNC ──────────────────────────────────────');
   if (generatedCards.length > 0) {
     updateIndexHTML(generatedCards);
     updateRSS(rssItems);
@@ -1359,7 +1499,7 @@ async function main() {
 
   saveState(state);
 
-  // ── PHASE 9: VALIDATION ────────────────────────────────────────────────
+  // ── PHASE 10: VALIDATION ───────────────────────────────────────────────
   validateAndReport(enrichedItems, generatedCards, state, T0);
 }
 
