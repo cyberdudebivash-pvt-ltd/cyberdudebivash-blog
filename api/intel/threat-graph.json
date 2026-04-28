@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-28T18:52:43.992Z",
+  "generated": "2026-04-28T20:09:16.889Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 127,
+    "total_nodes": 130,
     "actors": 8,
-    "cves": 38,
-    "campaigns": 37,
+    "cves": 39,
+    "campaigns": 38,
     "malware": 0,
-    "iocs": 6,
-    "edges": 88
+    "iocs": 7,
+    "edges": 90
   },
   "nodes": {
     "actor:lockbit": {
@@ -1438,7 +1438,7 @@
       "attributes": {
         "cvss": 9.5,
         "threat_level": "CRITICAL",
-        "priority_score": 91,
+        "priority_score": 96,
         "exploited": true,
         "cisa_kev": true,
         "ransomware": false,
@@ -2830,6 +2830,61 @@
           "confidence": 1
         }
       ]
+    },
+    "CVE-2026-3854": {
+      "id": "CVE-2026-3854",
+      "type": "CVE",
+      "name": "Researchers Discover Critical GitHub CVE-2026-3854 RCE Flaw Exploitable via Single Git Push",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 66,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-04-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:github.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:github.com": {
+      "id": "ioc:domain:github.com",
+      "type": "IOC",
+      "name": "github.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-04-28"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-3854": {
+      "id": "campaign:cve-2026-3854",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-04-28",
+        "last_seen": "2026-04-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-3854 | 1 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-3854",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -3658,6 +3713,24 @@
       "id": "campaign:cluster-ed20d118→includes→CISA-a8b7c1d19b1e64ab",
       "source": "campaign:cluster-ed20d118",
       "target": "CISA-a8b7c1d19b1e64ab",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-3854→linked_to→ioc:domain:github.com",
+      "source": "CVE-2026-3854",
+      "target": "ioc:domain:github.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-3854→includes→CVE-2026-3854",
+      "source": "campaign:cve-2026-3854",
+      "target": "CVE-2026-3854",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-04-28",
