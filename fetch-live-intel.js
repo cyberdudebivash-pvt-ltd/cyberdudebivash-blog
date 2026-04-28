@@ -17,6 +17,9 @@ const crypto = require('crypto');
 // Intelligence Enrichment Pipeline
 const { runEnrichmentPipeline } = require('./api/_lib/enrichment-pipeline');
 
+// Signal-to-Noise Engine (S2N)
+const { runS2N, formatForFeed, finalThreatLevel } = require('./api/_lib/s2n-engine');
+
 const CFG = {
   // ── Core paths ─────────────────────────────────────────────────────
   baseUrl:            'https://blog.cyberdudebivash.in',
@@ -1336,90 +1339,95 @@ function updateSitemap(slugs) {
   } catch(e) { warn(`Sitemap update failed: ${e.message}`); }
 }
 
-// ── PHASE 5: ENTERPRISE API PLATFORM (static JSON endpoints) ──────────
+// ── PHASE 5: ENTERPRISE API PLATFORM (S2N-powered static JSON endpoints) ──
 function writeAPIFiles(allItems, state) {
   try {
     // Ensure API directories exist
     const apiCveDir = path.join(CFG.apiDir, 'cve');
     [CFG.apiDir, apiCveDir].forEach(d => { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); });
 
-    const now = new Date().toISOString();
-    const apiMeta = { generated: now, version: '4.0', platform: 'CYBERDUDEBIVASH SENTINEL APEX', contact: 'bivash@cyberdudebivash.com', docs: `${CFG.baseUrl}/api.html` };
+    const now     = new Date().toISOString();
+    const apiMeta = {
+      generated: now, version: '5.1', engine: 'SENTINEL APEX S2N v1.0',
+      platform: 'CYBERDUDEBIVASH SENTINEL APEX', contact: 'bivash@cyberdudebivash.com',
+      docs: `${CFG.baseUrl}/api.html`,
+    };
 
-    // /api/intel/live.json — rolling 75-item window, full structured data
-    let existingApiItems = [];
+    // ── Load existing live.json for S2N window (semantic dedup) ─────────
+    let windowItems = [];
     const apiLivePath = path.join(CFG.apiDir, 'live.json');
     if (fs.existsSync(apiLivePath)) {
       try {
         const exData = JSON.parse(fs.readFileSync(apiLivePath, 'utf8'));
-        existingApiItems = Array.isArray(exData.items) ? exData.items : [];
+        windowItems = Array.isArray(exData.items) ? exData.items : [];
       } catch(_) {}
     }
-    const newApiItems = allItems.map(item => ({
-        id: item.id,
-        title: (item.title||'').slice(0,120),
-        description: (item.desc||'').slice(0,300),
-        cvss: item.cvss||0,
-        priority_score: item.priority||0,
-        threat_level: item.threatLevel||'HIGH',
-        type: item.type||'INTEL',
-        source: item.source||'',
-        sources_confirmed: item.sourceCount||1,
-        published: item.pubDate||isoNow(),
-        exploited: !!item.exploited,
-        cisa_kev: !!item.cisaKev,
-        ransomware: !!item.ransomware,
-        vendor: item.vendor||'',
-        product: item.product||'',
-        due_date: item.dueDate||null,
-        cves: item.cves||[],
-        ioc_count: (item.iocs||[]).length,
-        report_url: item.slug ? `${CFG.baseUrl}/posts/${item.slug}.html` : null,
-        refs: (item.refs||[]).slice(0,3),
-        _addedAt: new Date().toISOString(),
-    }));
-    // Rolling merge: new overrides existing by id, sort DESC by priority_score→published, trim to apiLiveWindow
-    const mergedApi = [...newApiItems];
-    const newApiIds = new Set(newApiItems.map(i => i.id));
-    existingApiItems.forEach(e => { if (!newApiIds.has(e.id)) mergedApi.push(e); });
-    mergedApi.sort((a,b) => {
-      const ps = (b.priority_score||0) - (a.priority_score||0);
-      if (ps !== 0) return ps;
-      return new Date(b.published||0) - new Date(a.published||0);
-    });
-    const rolledApiItems = mergedApi.slice(0, CFG.apiLiveWindow || 75);
-    const livePayload = {
-      ...apiMeta,
-      endpoint: '/api/intel/live.json',
-      description: `Live threat intelligence feed — rolling ${CFG.apiLiveWindow||75} priority items`,
-      total_published: state.totalPublished || 0,
-      items: rolledApiItems,
-    };
-    fs.writeFileSync(path.join(CFG.apiDir, 'live.json'), JSON.stringify(livePayload, null, 2), 'utf8');
-    log(`api/intel/live.json: ${rolledApiItems.length} items (${newApiItems.length} new + ${existingApiItems.length} existing → rolled to ${CFG.apiLiveWindow||75}).`);
 
-    // /api/intel/top-threats.json — top 10 CRITICAL/HIGH from rolled set
-    const topThreats = rolledApiItems.filter(i=>(i.priority_score||0)>=65).slice(0,10);
+    // ── Run S2N Engine ──────────────────────────────────────────────────
+    log('── S2N ENGINE ─────────────────────────────────────────────────────');
+    const s2nResult = runS2N(allItems, windowItems);
+    const { live: liveItems, topThreats: topItems, raw: rawItems } = formatForFeed(s2nResult);
+
+    log(`  S2N stats: input=${s2nResult.stats.input_items} candidates=${s2nResult.stats.candidates} passed=${s2nResult.stats.passed} suppressed=${s2nResult.stats.suppressed} merges=${s2nResult.stats.semantic_merges} elapsed=${s2nResult.stats.elapsed_ms}ms`);
+    log(`  avg_qs=${s2nResult.stats.avg_qs} avg_ps=${s2nResult.stats.avg_final_ps} tier4_kept=${s2nResult.stats.tier4_kept}`);
+
+    // ── /api/intel/live.json — top 50 S2N-passed items ─────────────────
+    // Rolling merge with existing (new overrides by id, trim to apiLiveWindow)
+    const mergedLive = [...liveItems];
+    const newLiveIds = new Set(liveItems.map(i => i.id));
+    windowItems.forEach(e => { if (!newLiveIds.has(e.id)) mergedLive.push(e); });
+    mergedLive.sort((a,b) => {
+      const ps = (b.final_ps||b.priority_score||0) - (a.final_ps||a.priority_score||0);
+      if (ps !== 0) return ps;
+      return new Date(b.first_seen||b.published||0) - new Date(a.first_seen||a.published||0);
+    });
+    const rolledLiveItems = mergedLive.slice(0, CFG.apiLiveWindow || 100);
+    fs.writeFileSync(apiLivePath, JSON.stringify({
+      ...apiMeta, endpoint: '/api/intel/live.json',
+      description: `S2N live threat intelligence feed — top ${CFG.apiLiveWindow||100} items by final_ps`,
+      total_published: state.totalPublished || 0,
+      s2n_stats: { passed: s2nResult.stats.passed, suppressed: s2nResult.stats.suppressed, avg_qs: s2nResult.stats.avg_qs },
+      items: rolledLiveItems,
+    }, null, 2), 'utf8');
+    log(`api/intel/live.json: ${rolledLiveItems.length} items (S2N passed=${s2nResult.stats.passed}).`);
+
+    // ── /api/intel/top-threats.json — final_ps≥70 AND quality_score≥0.60 ──
     fs.writeFileSync(path.join(CFG.apiDir, 'top-threats.json'), JSON.stringify({
       ...apiMeta, endpoint: '/api/intel/top-threats.json',
-      description: 'Top 10 highest-priority threats (score ≥ 65)',
-      count: topThreats.length,
-      items: topThreats.map(i=>({ id:i.id, title:(i.title||'').slice(0,100), priority_score:i.priority_score||i.priority||0, threat_level:i.threat_level||i.threatLevel||'HIGH', cvss:i.cvss||0, exploited:!!i.exploited, cisa_kev:!!i.cisa_kev||!!i.cisaKev, ransomware:!!i.ransomware, vendor:i.vendor||'', product:i.product||'', report_url: i.report_url||null })),
+      description: 'S2N top threats: final_ps ≥ 70 AND quality_score ≥ 0.60',
+      count: topItems.length,
+      items: topItems,
     }, null, 2), 'utf8');
+    log(`api/intel/top-threats.json: ${topItems.length} items.`);
 
-    // /api/intel/iocs.json — all enriched IOCs
+    // ── /api/intel/raw.json — unfiltered (paid tier, includes suppressed) ─
+    const rawDir = path.join(CFG.apiDir);
+    fs.writeFileSync(path.join(rawDir, 'raw.json'), JSON.stringify({
+      ...apiMeta, endpoint: '/api/intel/raw.json',
+      description: 'Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.',
+      note: 'Access requires Enterprise API key. Includes suppression_reason and full IOC data.',
+      count: rawItems.length,
+      items: rawItems,
+    }, null, 2), 'utf8');
+    log(`api/intel/raw.json: ${rawItems.length} items (incl. ${s2nResult.stats.suppressed} suppressed).`);
+
+    // ── /api/intel/iocs.json — all enriched IOCs ────────────────────────
     const allIOCs = [];
-    allItems.slice(0,30).forEach(item => {
+    s2nResult.passed.slice(0, 40).forEach(item => {
       (item.iocs||[]).forEach(ioc => {
-        if (ioc && ioc.value) allIOCs.push({ ...ioc, related_id: item.id, related_type: item.type, threat_level: item.threatLevel||'HIGH', priority_score: item.priority||0 });
+        if (ioc && ioc.value) allIOCs.push({
+          ...ioc, related_id: item.id, related_type: item.type,
+          threat_level: finalThreatLevel(item.final_ps||0),
+          priority_score: item.final_ps||0,
+          quality_score: item.quality_score||0,
+        });
       });
     });
-    // Deduplicate IOCs
     const iocMap = new Map();
     allIOCs.forEach(ioc => {
       const k = `${ioc.type}:${ioc.value}`;
       if (!iocMap.has(k)) iocMap.set(k, { ...ioc, source_count: 1 });
-      else { const ex = iocMap.get(k); ex.source_count++; ex.confidence_score = Math.min(0.99, ex.confidence_score + 0.05); }
+      else { const ex = iocMap.get(k); ex.source_count++; ex.confidence_score = Math.min(0.99, (ex.confidence_score||0.5) + 0.05); }
     });
     fs.writeFileSync(path.join(CFG.apiDir, 'iocs.json'), JSON.stringify({
       ...apiMeta, endpoint: '/api/intel/iocs.json',
@@ -1429,36 +1437,49 @@ function writeAPIFiles(allItems, state) {
       items: Array.from(iocMap.values()).sort((a,b)=>(b.confidence_score||0)-(a.confidence_score||0)).slice(0,200),
     }, null, 2), 'utf8');
 
-    // /api/intel/ransomware.json — ransomware-specific intel
-    const ransomItems = allItems.filter(i => i.ransomware || i.type==='RANSOMWARE');
+    // ── /api/intel/ransomware.json — ransomware-specific ────────────────
+    const ransomItems = s2nResult.passed.filter(i => i.ransomware || i.type==='RANSOMWARE');
     fs.writeFileSync(path.join(CFG.apiDir, 'ransomware.json'), JSON.stringify({
       ...apiMeta, endpoint: '/api/intel/ransomware.json',
-      description: 'Ransomware-specific threat intelligence',
+      description: 'Ransomware-specific threat intelligence (S2N-filtered)',
       count: ransomItems.length,
-      items: ransomItems.slice(0,20).map(i=>({ id:i.id, title:(i.title||'').slice(0,100), priority_score:i.priority||0, threat_level:i.threatLevel||'HIGH', cvss:i.cvss||0, cisa_kev:!!i.cisaKev, vendor:i.vendor||'', product:i.product||'', ioc_count:(i.iocs||[]).length, report_url: i.slug?`${CFG.baseUrl}/posts/${i.slug}.html`:null })),
+      items: ransomItems.slice(0,20).map(i=>({
+        id:i.id, title:(i.title||'').slice(0,100),
+        final_ps: i.final_ps||0, quality_score: i.quality_score||0,
+        threat_level: finalThreatLevel(i.final_ps||0), cvss:i.cvss||0,
+        cisa_kev:!!i.cisa_kev, vendor:i.vendor||'', product:i.product||'',
+        ioc_count:i.ioc_count||(i.iocs||[]).length, report_url:i.report_url||null,
+      })),
     }, null, 2), 'utf8');
 
-    // /api/intel/cve/{id}.json — individual CVE files
+    // ── /api/intel/cve/{id}.json — per-CVE detail files ─────────────────
     let cveFileCount = 0;
-    allItems.filter(i => i.id && i.id.startsWith('CVE') && (i.priority||0)>=50).slice(0,20).forEach(item => {
-      const cveFile = path.join(apiCveDir, `${item.id}.json`);
-      fs.writeFileSync(cveFile, JSON.stringify({
-        ...apiMeta, endpoint: `/api/intel/cve/${item.id}.json`,
-        id: item.id, title: item.title, description: item.desc, cvss: item.cvss||0,
-        priority_score: item.priority||0, threat_level: item.threatLevel||'HIGH',
-        type: item.type, sources: item._sources||[item.source], sources_confirmed: item.sourceCount||1,
-        published: item.pubDate, exploited: !!item.exploited, cisa_kev: !!item.cisaKev,
-        ransomware: !!item.ransomware, vendor: item.vendor, product: item.product,
-        due_date: item.dueDate||null, required_action: item.reqAction||null,
-        cves: item.cves||[], refs: item.refs||[], iocs: item.iocs||[],
-        mitre: item._mitre || null,
-        report_url: item.slug ? `${CFG.baseUrl}/posts/${item.slug}.html` : null,
-      }, null, 2), 'utf8');
-      cveFileCount++;
-    });
+    s2nResult.passed
+      .filter(i => i.id && i.id.startsWith('CVE') && (i.final_ps||0)>=50)
+      .slice(0, 20)
+      .forEach(item => {
+        const orig = allItems.find(o => o.id === item.id) || item;
+        const cveFile = path.join(apiCveDir, `${item.id}.json`);
+        fs.writeFileSync(cveFile, JSON.stringify({
+          ...apiMeta, endpoint: `/api/intel/cve/${item.id}.json`,
+          id: item.id, title: item.title, description: item.description||orig.desc,
+          cvss: item.cvss||0, final_ps: item.final_ps||0, quality_score: item.quality_score||0,
+          threat_level: finalThreatLevel(item.final_ps||0),
+          type: orig.type, sources: item.merged_sources||[item.source],
+          sources_confirmed: item.sources_confirmed||1,
+          first_seen: item.first_seen, last_seen: item.last_seen,
+          exploited: !!item.exploited, cisa_kev: !!item.cisa_kev,
+          ransomware: !!item.ransomware, vendor: item.vendor, product: item.product,
+          due_date: item.due_date||null, required_action: orig.reqAction||null,
+          cves: item.cves||[], refs: item.refs||[], iocs: orig.iocs||[],
+          mitre: orig._mitre || null, explanation: item.explanation||null,
+          report_url: orig.slug ? `${CFG.baseUrl}/posts/${orig.slug}.html` : null,
+        }, null, 2), 'utf8');
+        cveFileCount++;
+      });
 
-    log(`API files written: live.json, top-threats.json, iocs.json (${iocMap.size} IOCs), ransomware.json (${ransomItems.length}), ${cveFileCount} CVE files.`);
-  } catch(e) { warn(`API generation failed: ${e.message}`); }
+    log(`API files written: live.json (${rolledLiveItems.length}), top-threats.json (${topItems.length}), raw.json (${rawItems.length}), iocs.json (${iocMap.size} IOCs), ransomware.json (${ransomItems.length}), ${cveFileCount} CVE files.`);
+  } catch(e) { warn(`API generation failed: ${e.message}\n${e.stack||''}`); }
 }
 
 // ── LIVE-INTEL.JSON (widget feed) ─────────────────────────────────────
@@ -1708,12 +1729,12 @@ async function main() {
       log(`  fresh_items_24h: ${freshItems.length}`);
     }
 
-    // ── PHASE 6: FINAL STREAM WRITE (full enriched corpus) ────────────
-    log('\n── PHASE 6: STREAMING — Final enriched write ───────────────────');
+    // ── PHASE 6: FINAL STREAM WRITE — S2N-powered ─────────────────────
+    log('\n── PHASE 6: STREAMING — S2N + Final enriched write ─────────────');
     writeLiveIntel(enrichedItems, state);
-    writeAPIFiles(enrichedItems, state);
+    writeAPIFiles(enrichedItems, state);  // <-- runs S2N engine internally
 
-    // ── REPORT GENERATION ─────────────────────────────────────────────
+    // ── REPORT GENERATION — use S2N-passed items for scoring ──────────
     const newItems   = enrichedItems.filter(item=>item.id&&!isPublished(state,item.id));
     log(`\nNew (unpublished) items: ${newItems.length}`);
 
