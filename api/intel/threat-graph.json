@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-28T17:14:38.407Z",
+  "generated": "2026-04-28T18:52:43.992Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 123,
+    "total_nodes": 127,
     "actors": 8,
-    "cves": 37,
-    "campaigns": 35,
+    "cves": 38,
+    "campaigns": 37,
     "malware": 0,
     "iocs": 6,
-    "edges": 85
+    "edges": 88
   },
   "nodes": {
     "actor:lockbit": {
@@ -1434,16 +1434,16 @@
     "CVE-2026-32202": {
       "id": "CVE-2026-32202",
       "type": "CVE",
-      "name": "Microsoft Confirms Active Exploitation of Windows Shell CVE-2026-32202",
+      "name": "CVE-2026-32202: Microsoft Windows Protection Mechanism Failure Vulnerability — CISA KEV Active Exploitation",
       "attributes": {
-        "cvss": 8,
-        "threat_level": "HIGH",
-        "priority_score": 65,
+        "cvss": 9.5,
+        "threat_level": "CRITICAL",
+        "priority_score": 91,
         "exploited": true,
-        "cisa_kev": false,
+        "cisa_kev": true,
         "ransomware": false,
-        "vendor": "The Hacker News",
-        "product": "Threat Intelligence",
+        "vendor": "Microsoft",
+        "product": "Windows",
         "published": "2026-04-28",
         "type": "CVE_REPORT"
       },
@@ -2422,12 +2422,12 @@
       "type": "Campaign",
       "name": "Microsoft Ecosystem Targeting Campaign",
       "attributes": {
-        "severity": "HIGH",
+        "severity": "CRITICAL",
         "item_count": 1,
         "first_seen": "2026-04-28",
         "last_seen": "2026-04-28",
         "confidence": 0.9,
-        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-32202 | 1 item(s) confirmed exploited in the wild"
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-32202 | 1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
       },
       "connections": [
         {
@@ -2744,6 +2744,88 @@
       "connections": [
         {
           "target": "CISA-4357d42794d86a92",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "CVE-2024-1708": {
+      "id": "CVE-2024-1708",
+      "type": "CVE",
+      "name": "CVE-2024-1708: ConnectWise ScreenConnect Path Traversal Vulnerability — CISA KEV Active Exploitation",
+      "attributes": {
+        "cvss": 9.5,
+        "threat_level": "CRITICAL",
+        "priority_score": 96,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "ConnectWise",
+        "product": "ScreenConnect",
+        "published": "2026-04-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CISA-a8b7c1d19b1e64ab": {
+      "id": "CISA-a8b7c1d19b1e64ab",
+      "type": "Intel",
+      "name": "CISA Adds Two Known Exploited Vulnerabilities to Catalog",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "HIGH",
+        "priority_score": 70,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "CISA US-CERT",
+        "product": "Multiple Products",
+        "published": "2026-04-28",
+        "type": "ADVISORY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.cve.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cve-2024-1708": {
+      "id": "campaign:cve-2024-1708",
+      "type": "Campaign",
+      "name": "ConnectWise ScreenConnect Exploitation Campaign",
+      "attributes": {
+        "severity": "CRITICAL",
+        "item_count": 1,
+        "first_seen": "2026-04-28",
+        "last_seen": "2026-04-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2024-1708 | 1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      },
+      "connections": [
+        {
+          "target": "CVE-2024-1708",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-ed20d118": {
+      "id": "campaign:cluster-ed20d118",
+      "type": "Campaign",
+      "name": "CISA Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-04-28",
+        "last_seen": "2026-04-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 2 related CVEs: CVE-2024-1708, CVE-2026-32202 | 3 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CISA-a8b7c1d19b1e64ab",
           "relationship": "includes",
           "confidence": 1
         }
@@ -3549,6 +3631,33 @@
       "id": "campaign:cluster-7e649c6d→includes→CISA-4357d42794d86a92",
       "source": "campaign:cluster-7e649c6d",
       "target": "CISA-4357d42794d86a92",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "CISA-a8b7c1d19b1e64ab→linked_to→ioc:domain:www.cve.org",
+      "source": "CISA-a8b7c1d19b1e64ab",
+      "target": "ioc:domain:www.cve.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2024-1708→includes→CVE-2024-1708",
+      "source": "campaign:cve-2024-1708",
+      "target": "CVE-2024-1708",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-ed20d118→includes→CISA-a8b7c1d19b1e64ab",
+      "source": "campaign:cluster-ed20d118",
+      "target": "CISA-a8b7c1d19b1e64ab",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-04-28",
