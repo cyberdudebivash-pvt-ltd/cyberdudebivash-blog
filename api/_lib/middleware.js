@@ -1,10 +1,12 @@
 /**
  * SENTINEL APEX — API Authentication + Rate Limiting Middleware
  * Validates API keys, enforces tier rate limits, logs usage.
+ * Phase 1, 4, 8, 11 hardening applied.
  */
 'use strict';
 const crypto = require('crypto');
 const redis  = require('./redis');
+const sec    = require('./security');
 
 const RATE_LIMITS = {
   free:       100,
@@ -20,16 +22,18 @@ function today() {
 
 function corsHeaders() {
   return {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin':  '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Authorization, X-API-Key, Content-Type',
-    'Access-Control-Max-Age': '86400',
+    'Access-Control-Allow-Headers': 'Authorization, X-API-Key, Content-Type, X-Admin-Key',
+    'Access-Control-Max-Age':       '86400',
   };
 }
 
 function respond(res, status, body, extra = {}) {
-  const headers = { 'Content-Type': 'application/json', ...corsHeaders(), ...extra };
-  Object.entries(headers).forEach(([k, v]) => res.setHeader(k, v));
+  // Always apply full security headers
+  sec.applySecurityHeaders(res);
+  res.setHeader('Content-Type', 'application/json');
+  Object.entries(extra).forEach(([k, v]) => res.setHeader(k, v));
   res.status(status).json(body);
 }
 
@@ -94,6 +98,7 @@ async function authenticate(req, res) {
     if (process.env.NODE_ENV === 'development') {
       return { tier: 'pro', userId: 'dev', email: 'dev@local', keyHash: hash };
     }
+    // Safe error — never expose Redis internals
     apiError(res, 503, 'SERVICE_UNAVAILABLE', 'Auth service temporarily unavailable. Retry in 30s.');
     return null;
   }
@@ -196,4 +201,9 @@ module.exports = {
   hashKey,
   RATE_LIMITS,
   TIERS,
+  // Re-export security helpers so routers only need one import
+  guardRequest:        sec.guardRequest,
+  globalIpRateLimit:   sec.globalIpRateLimit,
+  applySecurityHeaders:sec.applySecurityHeaders,
+  safeError:           sec.safeError,
 };

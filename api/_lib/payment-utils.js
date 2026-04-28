@@ -51,9 +51,10 @@ const PAYMENT_INSTRUCTIONS = {
 
 /* ─── SECURITY CONSTANTS ─────────────────────────────────────── */
 const MAX_IP_SUBMISSIONS_PER_DAY = 3;
-const MIN_UTR_LENGTH              = 12;
-const MAX_UTR_LENGTH              = 64;
+const MIN_UTR_LENGTH              = 8;       // Minimum for short bank refs
+const MAX_UTR_LENGTH              = 64;      // Maximum to prevent padding attacks
 const INTENT_TTL_SECONDS          = 86400;   // 24 hours
+const SUBMISSION_TTL_SECONDS      = 7776000; // 90 days — fraud guard + retention
 const AUDIT_LOG_MAX_ENTRIES       = 10000;
 
 /* ─── HELPERS ────────────────────────────────────────────────── */
@@ -114,15 +115,25 @@ function now() {
   return new Date().toISOString();
 }
 
-/** Verify admin key from request headers */
+/** Verify admin key from request headers.
+ *  Only accepts x-admin-key header (NOT Authorization) to prevent header confusion.
+ *  Uses timing-safe comparison at fixed width to prevent length-based timing attacks.
+ */
 function isAdminAuthorized(req) {
   const adminKey = process.env.ADMIN_SECRET_KEY;
-  if (!adminKey) return false; // admin key not configured → deny all
-  const provided = req.headers['x-admin-key'] || req.headers['authorization']?.replace('Bearer ', '') || '';
-  return crypto.timingSafeEqual(
-    Buffer.from(adminKey.padEnd(64).slice(0, 64)),
-    Buffer.from(provided.padEnd(64).slice(0, 64))
-  ) && provided === adminKey;
+  if (!adminKey || adminKey.length < 16) return false; // must be configured + meaningful length
+  // Only accept X-Admin-Key — never Authorization (prevents header injection)
+  const provided = String(req.headers['x-admin-key'] || '');
+  if (!provided || provided.length === 0) return false;
+  const WIDTH = 128;
+  const expected = adminKey.padEnd(WIDTH).slice(0, WIDTH);
+  const actual   = provided.padEnd(WIDTH).slice(0, WIDTH);
+  try {
+    return crypto.timingSafeEqual(Buffer.from(expected, 'utf8'), Buffer.from(actual, 'utf8'))
+      && provided === adminKey; // exact match also checked (prevents padding bypass)
+  } catch (_) {
+    return false;
+  }
 }
 
 /* ─── HGETALL → object ───────────────────────────────────────── */
@@ -241,6 +252,8 @@ module.exports = {
   PAYMENT_INSTRUCTIONS,
   MIN_UTR_LENGTH,
   MAX_UTR_LENGTH,
+  INTENT_TTL_SECONDS,
+  SUBMISSION_TTL_SECONDS,
   generateIntentId,
   sanitize,
   validateEmail,

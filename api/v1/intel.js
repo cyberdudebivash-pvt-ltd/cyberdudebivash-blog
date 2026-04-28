@@ -18,16 +18,19 @@
 const crypto = require('crypto');
 const { authenticate, successResponse, apiError, corsHeaders } = require('../_lib/middleware');
 const { getIntel, getCVEDetail, searchIntel, getPlatformStats } = require('../_lib/intel');
-
-/* ─── CORS pre-flight helper ─────────────────────────────────── */
-function setCors(res) {
-  Object.entries(corsHeaders()).forEach(([k, v]) => res.setHeader(k, v));
-}
+const sec = require('../_lib/security');
 
 /* ─── Main Router ────────────────────────────────────────────── */
 module.exports = async (req, res) => {
-  setCors(res);
-  if (req.method === 'OPTIONS') return res.status(204).end();
+  /* Phase 1: global guard — security headers + method check + size limit */
+  const ok_guard = await sec.guardRequest(req, res, {
+    allowedMethods: ['GET', 'POST', 'OPTIONS'],
+    maxBodyBytes:   10240,
+  });
+  if (!ok_guard) return;
+
+  /* Phase 4: global IP rate limit (10 req/min) */
+  if (!(await sec.globalIpRateLimit(req, res))) return;
 
   const action = String(req.query.action || '').toLowerCase().trim();
 
@@ -211,7 +214,7 @@ module.exports = async (req, res) => {
     }
   } catch (e) {
     return apiError(res, 500, 'INTERNAL_ERROR',
-      `Intel router error: ${e.message}`);
+      sec.safeError(e, 'Intel service temporarily unavailable. Please retry.'));
   }
 };
 

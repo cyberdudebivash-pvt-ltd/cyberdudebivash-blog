@@ -315,8 +315,8 @@ let pendingRejectTxn = '';
 function doLogin() {
   const key = document.getElementById('admin-key-input').value.trim();
   if (!key) { showLoginError('Admin key is required.'); return; }
+  // Key stored in-memory only — never persisted to sessionStorage/localStorage
   ADMIN_KEY = key;
-  sessionStorage.setItem('_sap_ak', key);
   document.getElementById('login-gate').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   loadAll();
@@ -324,7 +324,6 @@ function doLogin() {
 
 function doLogout() {
   ADMIN_KEY = '';
-  sessionStorage.removeItem('_sap_ak');
   location.reload();
 }
 
@@ -333,17 +332,6 @@ function showLoginError(msg) {
 }
 
 document.getElementById('admin-key-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-// Restore session
-(function () {
-  const stored = sessionStorage.getItem('_sap_ak');
-  if (stored) {
-    ADMIN_KEY = stored;
-    document.getElementById('login-gate').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    loadAll();
-  }
-})();
 
 /* ── Fetch Helpers ─────────────────────────────────────────── */
 async function adminFetch(path, opts = {}) {
@@ -409,7 +397,7 @@ async function loadSubmissions() {
     tbody.innerHTML = data.submissions.map(s => renderRow(s)).join('');
   } catch (e) {
     if (e.message !== 'Unauthorized') {
-      tbody.innerHTML = `<tr><td colspan="8" class="table-msg" style="color:var(--apex-red)">Failed to load: ${e.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="table-msg" style="color:var(--apex-red)">Failed to load submissions. Please retry.</td></tr>`;
     }
   }
 }
@@ -468,7 +456,7 @@ async function approvePayment(txnId) {
       btns.forEach(b => { b.disabled = false; b.textContent = '✓ Approve'; });
     }
   } catch (e) {
-    if (e.message !== 'Unauthorized') toast(`Error: ${e.message}`, 'error');
+    if (e.message !== 'Unauthorized') toast('Approval request failed. Please retry.', 'error');
     btns.forEach(b => { b.disabled = false; b.textContent = '✓ Approve'; });
   }
 }
@@ -502,7 +490,7 @@ async function confirmReject() {
       toast(`Rejection failed: ${data.error?.message}`, 'error');
     }
   } catch (e) {
-    if (e.message !== 'Unauthorized') toast(`Error: ${e.message}`, 'error');
+    if (e.message !== 'Unauthorized') toast('Rejection request failed. Please retry.', 'error');
   }
 }
 
@@ -542,7 +530,7 @@ async function loadAuditLog() {
     }).join('');
   } catch (e) {
     if (e.message !== 'Unauthorized') {
-      container.innerHTML = `<div style="color:var(--apex-red);font-size:.82rem;">Failed to load audit log: ${e.message}</div>`;
+      container.innerHTML = `<div style="color:var(--apex-red);font-size:.82rem;">Failed to load audit log. Please retry.</div>`;
     }
   }
 }

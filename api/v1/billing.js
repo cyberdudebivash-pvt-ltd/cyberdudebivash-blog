@@ -21,31 +21,38 @@ const {
 const {
   PLANS, PAYMENT_INSTRUCTIONS,
   MIN_UTR_LENGTH, MAX_UTR_LENGTH,
+  INTENT_TTL_SECONDS, SUBMISSION_TTL_SECONDS,
   generateIntentId, sanitize, validateEmail, normalizeEmail, emailKey,
-  getIp, now, checkIpRateLimit, parseHash,
-  cors, ok, fail, parseBody, auditLog,
+  now, parseHash, ok, fail, parseBody, auditLog,
 } = require('../_lib/payment-utils');
+const sec = require('../_lib/security');
 
-/* ─── CORS helper ─────────────────────────────────────────────── */
-function setCors(res) {
-  Object.entries(corsHeaders()).forEach(([k, v]) => res.setHeader(k, v));
-}
+/* ─── Allowed payment methods ─────────────────────────────────── */
+const VALID_PAYMENT_METHODS = new Set(['UPI', 'BANK', 'NEFT', 'IMPS', 'RTGS', 'PHONEPE', 'GPAY', 'PAYTM', 'OTHER']);
 
-/* ─── Max intents per IP per day ──────────────────────────────── */
-const MAX_INTENTS_PER_IP_PER_DAY = 5;
-const VALID_PAYMENT_METHODS      = ['UPI', 'BANK', 'NEFT', 'IMPS', 'RTGS', 'PHONEPE', 'GPAY', 'PAYTM', 'OTHER'];
+/* ─── Allowed fields per action (whitelist) ───────────────────── */
+const FIELDS = {
+  'create-intent':  ['email', 'plan_type'],
+  'submit-payment': ['email', 'intent_id', 'utr_number', 'transaction_id', 'payment_method'],
+};
 
 /* ─── Main Router ─────────────────────────────────────────────── */
 module.exports = async (req, res) => {
-  setCors(res);
-  if (req.method === 'OPTIONS') return res.status(204).end();
+  /* Phase 1: global guard — sets security headers, checks method/size */
+  const ok_guard = await sec.guardRequest(req, res, {
+    allowedMethods: ['GET', 'POST', 'OPTIONS'],
+    maxBodyBytes:   10240,
+  });
+  if (!ok_guard) return;
+
+  /* Phase 4: global IP rate limit */
+  if (!(await sec.globalIpRateLimit(req, res))) return;
 
   const action = String(req.query.action || '').toLowerCase().trim();
 
   if (!action) {
     return fail(res, 400, 'MISSING_ACTION',
-      'action parameter required. Valid: create-intent, submit-payment, status, subscribe. ' +
-      'Example: POST /api/v1/billing?action=create-intent');
+      'action parameter required. Valid: create-intent, submit-payment, status, subscribe.');
   }
 
   /* ─── Route Dispatcher ───────────────────────────────────────── */
@@ -68,30 +75,26 @@ module.exports = async (req, res) => {
 async function handleCreateIntent(req, res) {
   if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
 
-  const ip   = getIp(req);
+  const ip   = sec.getIp(req);
   const body = await parseBody(req);
+
+  /* Phase 2: field whitelist — reject unexpected fields */
+  const whitelistErr = sec.assertFieldWhitelist(body, FIELDS['create-intent']);
+  if (whitelistErr) return fail(res, 400, 'INVALID_FIELDS', whitelistErr);
 
   const email    = normalizeEmail(body.email);
   const planType = sanitize(String(body.plan_type || '').toLowerCase(), 20);
 
-  /* ── Validate ─────────────────────────────────────────────── */
-  if (!validateEmail(email)) {
+  /* Phase 2: strict input validation */
+  if (!sec.validateEmail(email)) {
     return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
   }
-  if (!PLANS[planType]) {
+  if (!sec.validatePlan(planType)) {
     return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "pro" or "enterprise"');
   }
 
-  /* ── IP rate limit ────────────────────────────────────────── */
-  try {
-    const rk = `payment:intent_rate:${ip}:${new Date().toISOString().slice(0,10).replace(/-/g,'')}`;
-    const cnt = await redis.incr(rk);
-    if (cnt === 1) await redis.expire(rk, 86400);
-    if (cnt > MAX_INTENTS_PER_IP_PER_DAY) {
-      return fail(res, 429, 'TOO_MANY_INTENTS',
-        `Maximum ${MAX_INTENTS_PER_IP_PER_DAY} payment intents per IP per day.`);
-    }
-  } catch (_) { /* allow if Redis down */ }
+  /* Phase 4: intent creation IP rate limit (5/day/IP) */
+  if (!(await sec.intentIpRateLimit(req, res))) return;
 
   /* ── Deduplicate: return existing pending intent ──────────── */
   try {
@@ -162,7 +165,7 @@ async function handleCreateIntent(req, res) {
     }, 201);
 
   } catch (e) {
-    return fail(res, 500, 'INTENT_CREATE_FAILED', `Failed to create intent: ${e.message}`);
+    return fail(res, 500, 'INTENT_CREATE_FAILED', sec.safeError(e, 'Failed to create payment intent. Please retry.'));
   }
 }
 
@@ -174,114 +177,137 @@ async function handleCreateIntent(req, res) {
 async function handleSubmitPayment(req, res) {
   if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
 
-  const ip   = getIp(req);
-  const ua   = sanitize(req.headers['user-agent'] || 'unknown', 300);
+  const ip   = sec.getIp(req);
+  const ua   = sanitize(req.headers['user-agent'] || 'unknown', 200);
   const body = await parseBody(req);
 
+  /* Phase 2: field whitelist */
+  const whitelistErr = sec.assertFieldWhitelist(body, FIELDS['submit-payment']);
+  if (whitelistErr) return fail(res, 400, 'INVALID_FIELDS', whitelistErr);
+
   const email         = normalizeEmail(body.email);
-  const intentId      = sanitize(String(body.intent_id      || ''), 40);
-  const rawTxn        = sanitize(String(body.transaction_id || ''), MAX_UTR_LENGTH);
+  const intentId      = sanitize(String(body.intent_id || body.transaction_id?.match?.(/^[0-9a-f-]{36}$/) ? '' : ''), 40);
+  const rawUTR        = sec.normalizeUTR(String(body.utr_number || body.transaction_id || ''));
   const paymentMethod = sanitize(String(body.payment_method || 'UPI').toUpperCase(), 20);
+  const intentIdRaw   = sanitize(String(body.intent_id || ''), 40);
 
-  /* ── Input Validation ─────────────────────────────────────── */
-  if (!validateEmail(email)) return fail(res, 400, 'INVALID_EMAIL', 'Valid email required.');
-  if (!intentId || intentId.length < 32) {
-    return fail(res, 400, 'INVALID_INTENT_ID', 'intent_id is required (UUID from action=create-intent)');
+  /* Phase 2: strict validation */
+  if (!sec.validateEmail(email)) {
+    return fail(res, 400, 'INVALID_EMAIL', 'Valid email address required.');
   }
-  if (!rawTxn || rawTxn.length < MIN_UTR_LENGTH) {
-    return fail(res, 400, 'INVALID_TRANSACTION_ID',
-      `transaction_id must be ≥${MIN_UTR_LENGTH} characters. UTR numbers are typically 12–22 digits.`);
+  if (!sec.validateUUID(intentIdRaw)) {
+    return fail(res, 400, 'INVALID_INTENT_ID',
+      'intent_id must be a valid UUID v4 (from action=create-intent).');
   }
-  if (rawTxn.length > MAX_UTR_LENGTH) {
-    return fail(res, 400, 'INVALID_TRANSACTION_ID', `transaction_id max ${MAX_UTR_LENGTH} characters.`);
+  if (!sec.validateUTR(rawUTR)) {
+    return fail(res, 400, 'INVALID_UTR',
+      `UTR must be 8–64 alphanumeric characters only. Example: 427110170556`);
   }
-  if (!/^[A-Za-z0-9_\-]+$/.test(rawTxn)) {
-    return fail(res, 400, 'INVALID_TRANSACTION_FORMAT',
-      'transaction_id must be alphanumeric (letters, numbers, hyphens, underscores only).');
-  }
-  if (!VALID_PAYMENT_METHODS.includes(paymentMethod)) {
+  if (!VALID_PAYMENT_METHODS.has(paymentMethod)) {
     return fail(res, 400, 'INVALID_PAYMENT_METHOD',
-      `payment_method must be one of: ${VALID_PAYMENT_METHODS.join(', ')}`);
+      `payment_method must be one of: ${[...VALID_PAYMENT_METHODS].join(', ')}`);
   }
 
-  /* ── IP Rate Limit ────────────────────────────────────────── */
-  try {
-    const rateResult = await checkIpRateLimit(ip);
-    if (!rateResult.allowed) {
-      await auditLog('RATE_LIMIT_HIT', { ip, email, count: rateResult.count });
-      return fail(res, 429, 'SUBMISSION_RATE_LIMIT',
-        `Max ${rateResult.max} payment submissions per IP per day.`);
-    }
-  } catch (_) { /* allow */ }
+  const txnNorm = rawUTR; // already uppercased + sanitized by normalizeUTR
 
-  /* ── Duplicate UTR Guard ──────────────────────────────────── */
-  const txnNorm = rawTxn.toUpperCase();
-  const dupKey  = `payment:txn:seen:${txnNorm}`;
+  /* Phase 4: IP submission rate limit (3/day/IP) */
+  if (!(await sec.submissionIpRateLimit(req, res))) {
+    await auditLog('RATE_LIMIT_HIT', { ip, email, endpoint: 'submit-payment' });
+    return;
+  }
+
+  /* ── Phase 5+6: Duplicate UTR Guard (90-day atomic block) ────── */
+  const dupKey = `payment:txn:seen:${txnNorm}`;
   try {
     const dup = await redis.exists(dupKey);
     if (dup && parseInt(dup, 10) > 0) {
       await auditLog('DUPLICATE_TXN', { ip, email, transactionId: txnNorm });
       return fail(res, 409, 'DUPLICATE_TRANSACTION',
-        'This transaction ID has already been submitted. Each UTR can only be submitted once.');
+        'This transaction reference has already been submitted. Each UTR can only be used once.');
     }
-  } catch (_) { /* allow */ }
+  } catch (_) { /* allow if Redis down — approve step also deduplicates */ }
 
-  /* ── Validate Intent ──────────────────────────────────────── */
+  /* ── Phase 5: Validate Intent ─────────────────────────────────── */
   let intent;
   try {
-    intent = parseHash(await redis.hgetall(`payment:intent:${intentId}`));
+    intent = parseHash(await redis.hgetall(`payment:intent:${intentIdRaw}`));
     if (!intent) {
-      await auditLog('INVALID_INTENT', { ip, email, intentId, note: 'not found or expired' });
+      await auditLog('INVALID_INTENT', { ip, email, intentId: intentIdRaw, note: 'not found or expired' });
       return fail(res, 404, 'INTENT_NOT_FOUND',
-        'Payment intent not found or expired (24h TTL). Create new via action=create-intent');
+        'Payment intent not found or expired (24h TTL). Please create a new one.');
     }
   } catch (e) {
-    return fail(res, 503, 'SERVICE_UNAVAILABLE', 'Verification service unavailable. Retry in 30s.');
+    return fail(res, 503, 'SERVICE_UNAVAILABLE', 'Verification service temporarily unavailable. Retry in 30s.');
   }
 
+  /* Phase 5: email must exactly match intent */
   if (intent.email !== email) {
-    await auditLog('EMAIL_MISMATCH', { ip, intentId, submittedEmail: email, intentEmail: intent.email });
-    return fail(res, 403, 'EMAIL_MISMATCH', 'Email does not match the one used to create this intent.');
+    await auditLog('EMAIL_MISMATCH', { ip, intentId: intentIdRaw, submittedEmail: email, intentEmail: intent.email });
+    return fail(res, 403, 'EMAIL_MISMATCH',
+      'Email does not match the intent. Use the same email from payment intent creation.');
   }
-  if (['submitted', 'completed'].includes(intent.status)) {
-    return fail(res, 409, 'ALREADY_SUBMITTED',
-      `Payment for this intent already submitted (status: ${intent.status}).`);
+
+  /* Phase 5: intent must be unconsumed */
+  if (intent.status === 'submitted' || intent.status === 'completed') {
+    return fail(res, 409, 'INTENT_ALREADY_USED',
+      `This payment intent has already been submitted (status: ${intent.status}). Each intent is single-use.`);
   }
   if (intent.status === 'rejected') {
-    return fail(res, 409, 'INTENT_REJECTED', 'This intent was rejected. Create a new one via action=create-intent');
+    return fail(res, 409, 'INTENT_REJECTED',
+      'This intent was rejected. Please create a new payment intent.');
+  }
+  if (intent.status !== 'pending_payment') {
+    return fail(res, 409, 'INVALID_INTENT_STATUS',
+      `Intent cannot be used in status "${intent.status}".`);
   }
 
-  /* ── Store Submission ─────────────────────────────────────── */
+  /* ── Phase 6: Store Submission with mandatory TTL ─────────────── */
   const submittedAt = now();
   try {
     await redis.hmset(`payment:submission:${txnNorm}`, {
-      intentId, email, transactionId: txnNorm, paymentMethod,
-      planType: intent.planType, amount: intent.amount, currency: intent.currency,
-      status: 'pending_review', submittedAt, ip, userAgent: ua,
-      reviewedAt: '', reviewedBy: '', rejectionNote: '',
+      intentId:      intentIdRaw,
+      email,
+      transactionId: txnNorm,
+      paymentMethod,
+      planType:      intent.planType,
+      amount:        intent.amount,
+      currency:      intent.currency,
+      status:        'pending_review',
+      submittedAt,
+      ip,
+      userAgent:     ua,
+      reviewedAt:    '',
+      reviewedBy:    '',
+      rejectionNote: '',
     });
+
+    /* MANDATORY: every Redis write gets a TTL */
+    await redis.expire(`payment:submission:${txnNorm}`, SUBMISSION_TTL_SECONDS); // 90 days
     await redis.zadd('payment:pending', Date.now(), txnNorm);
-    await redis.set(dupKey, '1');
-    await redis.expire(dupKey, 90 * 86400);
-    await redis.hset(`payment:intent:${intentId}`, 'status', 'submitted');
+    await redis.setex(dupKey, SUBMISSION_TTL_SECONDS, '1');            // atomic set+TTL
+    await redis.hset(`payment:intent:${intentIdRaw}`, 'status', 'submitted');  // consume intent
 
     await auditLog('PAYMENT_SUBMITTED', {
-      email, intentId, transactionId: txnNorm, paymentMethod,
+      email, intentId: intentIdRaw, transactionId: txnNorm, paymentMethod,
       planType: intent.planType, amount: intent.amount, ip,
     });
 
     return ok(res, {
-      message: 'Payment submitted successfully. Your transaction is under review.',
+      message: 'Payment submitted for review. Verification within 2–6 business hours.',
       submission: {
-        transaction_id: txnNorm, intent_id: intentId, email,
-        plan_type: intent.planType, amount: parseInt(intent.amount, 10),
-        currency: intent.currency, payment_method: paymentMethod,
-        status: 'pending_review', submitted_at: submittedAt,
+        transaction_id: txnNorm,
+        intent_id:      intentIdRaw,
+        email,
+        plan_type:      intent.planType,
+        amount:         parseInt(intent.amount, 10),
+        currency:       intent.currency,
+        payment_method: paymentMethod,
+        status:         'pending_review',
+        submitted_at:   submittedAt,
       },
       next_steps: [
-        'Our team will verify your payment within 2–6 hours (business hours).',
-        'Once approved, your API tier will be upgraded automatically.',
-        `Check status: GET /api/v1/billing?action=status&transaction_id=${txnNorm}&email=${email}`,
+        'Your API tier upgrades automatically once payment is verified.',
+        `Poll status: GET /api/v1/billing?action=status&transaction_id=${txnNorm}&email=${encodeURIComponent(email)}`,
       ],
       support: 'bivash@cyberdudebivash.com',
     });
@@ -289,7 +315,7 @@ async function handleSubmitPayment(req, res) {
   } catch (e) {
     try { await redis.del(`payment:submission:${txnNorm}`); } catch (_) {}
     try { await redis.del(dupKey); } catch (_) {}
-    return fail(res, 500, 'SUBMISSION_FAILED', `Submission failed: ${e.message}. Retry or contact support.`);
+    return fail(res, 500, 'SUBMISSION_FAILED', sec.safeError(e, 'Submission failed. Please retry or contact support.'));
   }
 }
 
@@ -300,13 +326,14 @@ async function handleSubmitPayment(req, res) {
 async function handlePaymentStatus(req, res) {
   if (req.method !== 'GET') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'GET required');
 
-  const txnRaw = sanitize(String(req.query.transaction_id || ''), 64).toUpperCase();
+  const txnRaw = sec.normalizeUTR(String(req.query.transaction_id || ''));
   const email  = normalizeEmail(req.query.email || '');
 
-  if (!txnRaw || txnRaw.length < 6) {
-    return fail(res, 400, 'INVALID_TRANSACTION_ID', 'transaction_id query parameter required.');
+  if (!sec.validateUTR(txnRaw)) {
+    return fail(res, 400, 'INVALID_TRANSACTION_ID',
+      'transaction_id must be a valid alphanumeric UTR (8–64 characters).');
   }
-  if (!validateEmail(email)) {
+  if (!sec.validateEmail(email)) {
     return fail(res, 400, 'INVALID_EMAIL', 'email query parameter required.');
   }
 
@@ -342,7 +369,7 @@ async function handlePaymentStatus(req, res) {
     });
 
   } catch (e) {
-    return fail(res, 500, 'STATUS_CHECK_FAILED', `Status check failed: ${e.message}`);
+    return fail(res, 500, 'STATUS_CHECK_FAILED', sec.safeError(e, 'Status check unavailable. Please retry.'));
   }
 }
 
@@ -391,6 +418,6 @@ async function handleSubscribe(req, res) {
     });
 
   } catch (e) {
-    return fail(res, 500, 'CHECKOUT_FAILED', `Checkout session failed: ${e.message}`);
+    return fail(res, 500, 'CHECKOUT_FAILED', sec.safeError(e, 'Checkout unavailable. Use manual payment or contact support.'));
   }
 }

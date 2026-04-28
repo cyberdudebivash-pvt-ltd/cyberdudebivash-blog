@@ -18,44 +18,42 @@ const {
   PLANS,
   isAdminAuthorized, parseHash,
   sanitize, normalizeEmail, emailKey,
-  now, getIp,
+  now,
   upgradeUserTier,
-  cors, ok, fail, parseBody, auditLog,
-  corsHeaders,
+  ok, fail, parseBody, auditLog,
 } = require('../_lib/payment-utils');
-const { corsHeaders: mwCorsHeaders } = require('../_lib/middleware');
-
-/* ─── CORS helper ─────────────────────────────────────────────── */
-function setCors(res) {
-  // Use middleware corsHeaders for consistency
-  const hdrs = typeof mwCorsHeaders === 'function' ? mwCorsHeaders() : {};
-  Object.entries({ ...hdrs, 'X-Powered-By': 'CYBERDUDEBIVASH SENTINEL APEX v4.0' })
-    .forEach(([k, v]) => res.setHeader(k, v));
-}
+const sec = require('../_lib/security');
 
 /* ─── Main Router ─────────────────────────────────────────────── */
 module.exports = async (req, res) => {
-  setCors(res);
-  if (req.method === 'OPTIONS') return res.status(204).end();
+  /* Phase 1: global guard — security headers, method check, size limit */
+  const ok_guard = await sec.guardRequest(req, res, {
+    allowedMethods: ['GET', 'POST', 'OPTIONS'],
+    maxBodyBytes:   10240,
+  });
+  if (!ok_guard) return;
+
+  /* Phase 4: admin-specific IP rate limit (50 req/min) */
+  if (!(await sec.adminIpRateLimit(req, res))) return;
 
   const action = String(req.query.action || '').toLowerCase().trim();
+  const ip     = sec.getIp(req);
 
   if (!action) {
     return fail(res, 400, 'MISSING_ACTION',
-      'action required. Valid: pending, approve, reject, audit. ' +
-      'All routes require X-Admin-Key header.');
+      'action required. Valid: pending, approve, reject, audit. All routes require X-Admin-Key header.');
   }
 
-  /* ── Admin Auth Gate (applied to ALL actions) ───────────────── */
-  if (!isAdminAuthorized(req)) {
+  /* Phase 3: Admin auth gate — timing-safe, X-Admin-Key only */
+  if (!sec.verifyAdminKey(req)) {
     await auditLog('ADMIN_AUTH_FAIL', {
-      ip:       getIp(req),
+      ip,
       action,
       endpoint: 'admin-router',
-      ua:       req.headers['user-agent'] || '',
+      ua:       sanitize(req.headers['user-agent'] || '', 200),
     });
     return fail(res, 401, 'UNAUTHORIZED',
-      'Valid X-Admin-Key header required. Set ADMIN_SECRET_KEY in Vercel environment variables.');
+      'Valid X-Admin-Key header required.');
   }
 
   /* ─── Route Dispatcher ───────────────────────────────────────── */
@@ -155,7 +153,7 @@ async function handlePending(req, res) {
     });
 
   } catch (e) {
-    return fail(res, 500, 'FETCH_FAILED', `Failed to fetch submissions: ${e.message}`);
+    return fail(res, 500, 'FETCH_FAILED', sec.safeError(e, 'Failed to fetch submissions. Please retry.'));
   }
 }
 
@@ -183,7 +181,7 @@ async function handleApprove(req, res) {
       return fail(res, 404, 'SUBMISSION_NOT_FOUND', `No submission found for "${txnRaw}".`);
     }
   } catch (e) {
-    return fail(res, 503, 'SERVICE_UNAVAILABLE', `Redis error: ${e.message}`);
+    return fail(res, 503, 'SERVICE_UNAVAILABLE', sec.safeError(e, 'Storage unavailable. Please retry.'));
   }
 
   /* ── State guard ──────────────────────────────────────────── */
@@ -205,7 +203,7 @@ async function handleApprove(req, res) {
   const newTier    = plan.tier;
   const email      = submission.email;
   const approvedAt = now();
-  const adminIp    = getIp(req);
+  const adminIp    = sec.getIp(req);
 
   /* ── Upgrade user tier in Redis ───────────────────────────── */
   let upgradeResult;
@@ -218,7 +216,7 @@ async function handleApprove(req, res) {
     });
   } catch (e) {
     return fail(res, 500, 'UPGRADE_FAILED',
-      `Tier upgrade failed: ${e.message}. Submission NOT marked approved — safe to retry.`);
+      sec.safeError(e, 'Tier upgrade failed. Submission NOT marked approved — safe to retry.'));
   }
 
   /* ── Update submission + sorted sets ─────────────────────── */
@@ -239,7 +237,7 @@ async function handleApprove(req, res) {
     await redis.incr('analytics:payments:approved:total').catch(() => {});
   } catch (e) {
     await auditLog('APPROVAL_STATUS_UPDATE_FAILED', {
-      transactionId: txnRaw, email, error: e.message,
+      transactionId: txnRaw, email, error: sec.safeError(e, 'Status update failed'),
       note: 'CRITICAL: Tier upgraded but status update partial. Verify manually.',
     });
     // Tier was upgraded — still return success
@@ -297,7 +295,7 @@ async function handleReject(req, res) {
       return fail(res, 404, 'SUBMISSION_NOT_FOUND', `No submission found for "${txnRaw}".`);
     }
   } catch (e) {
-    return fail(res, 503, 'SERVICE_UNAVAILABLE', `Redis error: ${e.message}`);
+    return fail(res, 503, 'SERVICE_UNAVAILABLE', sec.safeError(e, 'Storage unavailable. Please retry.'));
   }
 
   if (submission.status === 'approved') {
@@ -310,7 +308,7 @@ async function handleReject(req, res) {
   }
 
   const rejectedAt = now();
-  const adminIp    = getIp(req);
+  const adminIp    = sec.getIp(req);
 
   try {
     await redis.hmset(`payment:submission:${txnRaw}`, {
@@ -347,7 +345,7 @@ async function handleReject(req, res) {
     });
 
   } catch (e) {
-    return fail(res, 500, 'REJECTION_FAILED', `Failed to record rejection: ${e.message}`);
+    return fail(res, 500, 'REJECTION_FAILED', sec.safeError(e, 'Failed to record rejection. Please retry.'));
   }
 }
 
@@ -391,6 +389,6 @@ async function handleAudit(req, res) {
     });
 
   } catch (e) {
-    return fail(res, 500, 'AUDIT_FETCH_FAILED', `Failed to fetch audit log: ${e.message}`);
+    return fail(res, 500, 'AUDIT_FETCH_FAILED', sec.safeError(e, 'Failed to fetch audit log. Please retry.'));
   }
 }

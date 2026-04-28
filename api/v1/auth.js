@@ -18,12 +18,12 @@ const {
   authenticate, respond, apiError, successResponse, corsHeaders,
   generateApiKey, hashKey, RATE_LIMITS,
 } = require('../_lib/middleware');
+const sec = require('../_lib/security');
+
+/* ─── Allowed fields for register (Phase 2 whitelist) ─────────── */
+const REGISTER_FIELDS = ['email', 'name', 'plan'];
 
 /* ─── Helpers ─────────────────────────────────────────────────── */
-function setCors(res) {
-  Object.entries(corsHeaders()).forEach(([k, v]) => res.setHeader(k, v));
-}
-
 function today() { return new Date().toISOString().slice(0,10).replace(/-/g,''); }
 
 function daysAgo(n) {
@@ -34,24 +34,28 @@ function daysAgo(n) {
 
 /* ─── Main Router ─────────────────────────────────────────────── */
 module.exports = async (req, res) => {
-  setCors(res);
-  if (req.method === 'OPTIONS') return res.status(204).end();
+  /* Phase 1: global guard */
+  const ok_guard = await sec.guardRequest(req, res, {
+    allowedMethods: ['GET', 'POST', 'OPTIONS'],
+    maxBodyBytes:   10240,
+  });
+  if (!ok_guard) return;
+
+  /* Phase 4: global IP rate limit */
+  if (!(await sec.globalIpRateLimit(req, res))) return;
 
   const action = String(req.query.action || '').toLowerCase().trim();
 
   if (!action) {
     return apiError(res, 400, 'MISSING_ACTION',
-      'action parameter required. Valid: register, me, usage. ' +
-      'Example: POST /api/v1/auth?action=register');
+      'action parameter required. Valid: register, me, usage.');
   }
 
   /* ─── Route Dispatcher ──────────────────────────────────────── */
   switch (action) {
-
     case 'register': return handleRegister(req, res);
     case 'me':       return handleMe(req, res);
     case 'usage':    return handleUsage(req, res);
-
     default:
       return apiError(res, 400, 'INVALID_ACTION',
         `Unknown action: "${action}". Valid: register, me, usage`);
@@ -68,7 +72,7 @@ async function handleRegister(req, res) {
     return apiError(res, 405, 'METHOD_NOT_ALLOWED', 'POST required for action=register');
   }
 
-  /* ── Parse Body ─────────────────────────────────────────── */
+  /* ── Parse + validate body ──────────────────────────────── */
   let body = {};
   try {
     if (typeof req.body === 'object' && req.body !== null) body = req.body;
@@ -77,13 +81,16 @@ async function handleRegister(req, res) {
     return apiError(res, 400, 'INVALID_BODY', 'Request body must be valid JSON: { email, name?, plan? }');
   }
 
-  const email = String(body.email || '').trim().toLowerCase();
-  const plan  = String(body.plan  || 'free').trim().toLowerCase();
-  const name  = String(body.name  || '').trim().slice(0, 100)
-    .replace(/<[^>]*>/g, '').replace(/[<>"'`]/g, ''); // sanitize
+  /* Phase 2: field whitelist */
+  const wErr = sec.assertFieldWhitelist(body, REGISTER_FIELDS);
+  if (wErr) return apiError(res, 400, 'INVALID_FIELDS', wErr);
 
-  /* ── Validate ───────────────────────────────────────────── */
-  if (!email || !/^[^@\s]{1,64}@[^@\s]{1,253}\.[^@\s]{2,}$/.test(email)) {
+  const email = sec.sanitize(String(body.email || ''), 320).trim().toLowerCase();
+  const plan  = sec.sanitize(String(body.plan  || 'free'), 20).trim().toLowerCase();
+  const name  = sec.sanitize(String(body.name  || ''), 100);
+
+  /* Phase 2: strict email validation */
+  if (!sec.validateEmail(email)) {
     return apiError(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
   }
   if (!['free', 'pro', 'enterprise'].includes(plan)) {
@@ -179,7 +186,7 @@ async function handleRegister(req, res) {
 
   } catch (e) {
     return apiError(res, 500, 'REGISTRATION_FAILED',
-      `Registration failed: ${e.message}. Please retry or contact bivash@cyberdudebivash.com`);
+      sec.safeError(e, 'Registration failed. Please retry or contact bivash@cyberdudebivash.com'));
   }
 }
 
@@ -234,7 +241,7 @@ async function handleMe(req, res) {
     });
 
   } catch (e) {
-    return apiError(res, 500, 'PROFILE_ERROR', e.message);
+    return apiError(res, 500, 'PROFILE_ERROR', sec.safeError(e, 'Profile unavailable. Please retry.'));
   }
 }
 
@@ -290,6 +297,6 @@ async function handleUsage(req, res) {
     });
 
   } catch (e) {
-    return apiError(res, 500, 'USAGE_ERROR', e.message);
+    return apiError(res, 500, 'USAGE_ERROR', sec.safeError(e, 'Usage data unavailable. Please retry.'));
   }
 }
