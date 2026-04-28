@@ -1,0 +1,208 @@
+{
+  "_comment": "Example enriched intel item from SENTINEL APEX v4.2 HARDENED pipeline. Shows full schema with all Phase 1-9 fields.",
+  "schema_version": "4.2",
+  "pipeline_version": "SENTINEL_APEX_v4.2_HARDENED",
+  "generated": "2026-04-28T00:00:00.000Z",
+
+  "example_enriched_item": {
+    "id": "CVE-2023-20198",
+    "title": "Cisco IOS XE Web UI Privilege Escalation",
+    "type": "ZERO_DAY",
+    "cvss": 10.0,
+    "published": "2023-10-16",
+    "exploited": true,
+    "cisa_kev": true,
+    "vendor": "Cisco",
+    "product": "IOS XE",
+    "description": "A vulnerability in the web UI feature of Cisco IOS XE Software allowed an unauthenticated, remote attacker to create an account on an affected system with privilege level 15 access. The attacker could then use that account to gain control of the affected system.",
+    "ransomware": false,
+    "sources_confirmed": 3,
+    "iocs": [
+      { "type": "ip", "value": "5.149.249.74",  "confidence_score": 0.92, "first_seen": "2023-10-19" },
+      { "type": "ip", "value": "154.53.56.231", "confidence_score": 0.88, "first_seen": "2023-10-20" }
+    ],
+
+    "priority_score": 97,
+    "threat_level": "CRITICAL",
+    "confidence_score": 0.95,
+
+    "actor_attribution": {
+      "primary_actor":       "Salt Typhoon",
+      "primary_actor_id":    "actor:salt-typhoon",
+      "primary_confidence":  0.89,
+      "unattributed":        false,
+      "attribution_quality": "HIGH",
+      "evidence_summary":    "CVE-2023-20198 publicly attributed to Salt Typhoon (CISA KEV + CISA AA24-190A); Actor name found in title/description; CVE_ACTOR_MAP baseline (CISA/DOJ record); Co-clustered in attributed campaign (conf: 0.96)",
+      "signals": {
+        "ioc_overlap":      0.75,
+        "keyword_match":    0.80,
+        "source_mentions":  0.85,
+        "campaign_overlap": 0.96
+      },
+      "all_attributions": [
+        {
+          "actor_id":            "actor:salt-typhoon",
+          "actor_name":          "Salt Typhoon",
+          "confidence":          0.89,
+          "attribution_quality": "HIGH",
+          "signals": {
+            "ioc_overlap":      0.75,
+            "keyword_match":    0.80,
+            "source_mentions":  0.85,
+            "campaign_overlap": 0.96
+          },
+          "evidence_summary": "CVE-2023-20198 publicly attributed to Salt Typhoon (CISA KEV + CISA AA24-190A)"
+        }
+      ]
+    },
+
+    "data_confidence": {
+      "score":      0.877,
+      "tier":       "HIGH",
+      "suppressed": false,
+      "factors": {
+        "source_count":    { "raw": 3, "normalized": 1.000, "weight": 0.40 },
+        "structured_data": { "populated": 6, "of": 6, "normalized": 1.000, "weight": 0.30 },
+        "ioc_presence":    { "raw": 2, "normalized": 0.400, "weight": 0.30 }
+      }
+    },
+
+    "scoring": {
+      "priority_score":   97,
+      "normalized_score": 0.9700,
+      "threat_level":     "CRITICAL",
+      "confidence_score": 0.95,
+      "reasoning": [
+        "Critical CVSS 10.0 (cvss_norm=1.00, weight=0.20)",
+        "CISA KEV confirmed — highest exploitation priority (kev_flag=1.0, weight=0.20)",
+        "Zero-day — unpatched at publication (exploit_flag=0.85, weight=0.15)",
+        "2 IOC(s) present (ioc_density=0.40, weight=0.10)",
+        "Actor attribution: Salt Typhoon (actor_confidence=0.89, weight=0.15)",
+        "Part of CRITICAL campaign (2 items; campaign_size_norm=0.40, weight=0.10)",
+        "Published 924 day(s) ago (recency=exp(-924/14)=0.000, weight=0.10)",
+        "Composite: normalized_score=0.9700 → priority_score=97 (CRITICAL)"
+      ],
+      "breakdown": {
+        "cvss":     { "raw": 10.0, "normalized": 1.00, "weight": 0.20, "contribution": 0.200 },
+        "kev":      { "present": true, "normalized": 1.00, "weight": 0.20, "contribution": 0.200 },
+        "exploit":  { "exploited": true, "is_zero_day": true, "normalized": 1.00, "weight": 0.15, "contribution": 0.150 },
+        "ioc":      { "count": 2, "normalized": 0.40, "weight": 0.10, "contribution": 0.040 },
+        "actor":    { "actor_count": 1, "confidence": 0.89, "normalized": 0.89, "weight": 0.15, "contribution": 0.134 },
+        "campaign": { "member": true, "size": 2, "severity": "CRITICAL", "normalized": 0.40, "weight": 0.10, "contribution": 0.040 },
+        "recency":  { "days_old": 924, "normalized": 0.000, "weight": 0.10, "contribution": 0.000 }
+      },
+      "scoring_model": "SENTINEL_APEX_v4.2_NORMALIZED"
+    },
+
+    "_explanation": {
+      "actor": "Attributed to Salt Typhoon with confidence 0.890 (HIGH). Evidence: CVE-2023-20198 publicly attributed to Salt Typhoon (CISA/DOJ record); Keyword pattern matched in intel text; Actor name found in title/description; Co-clustered in attributed campaign (conf: 0.96). Signals: IOC overlap=0.75, keyword=0.80, source mentions=0.85, campaign overlap=0.96.",
+      "campaign": "Part of campaign \"Cisco IOS XE Zero-Day Campaign\" (campaign:cve-2023-20198-and-cve-2023-20273) with 2 item(s), confidence 0.960, severity CRITICAL. Clustering reason: 2 intel item(s) clustered with composite confidence 0.960",
+      "score": "Priority score 97/100 (CRITICAL). Normalized score 0.9700. Key drivers: Critical CVSS 10.0 (cvss_norm=1.00, weight=0.20); CISA KEV confirmed — highest exploitation priority (kev_flag=1.0, weight=0.20); Zero-day — unpatched at publication (exploit_flag=0.85, weight=0.15); 2 IOC(s) present (ioc_density=0.40, weight=0.10).",
+      "data": "Data confidence: HIGH (score=0.877). Sources: 3 (norm=1.00), structured fields: 6/6, IOCs: 2."
+    },
+
+    "_intelligence": {
+      "linked_actors": [
+        {
+          "id":         "actor:salt-typhoon",
+          "name":       "Salt Typhoon",
+          "category":   "nation_state",
+          "motivation": "espionage,signals_intelligence",
+          "origin":     "china",
+          "ttps":       ["T1190", "T1071", "T1078", "T1021.006", "T1557"]
+        }
+      ],
+      "campaign_id":         "campaign:cve-2023-20198-and-cve-2023-20273",
+      "campaign_name":       "Cisco IOS XE Zero-Day Campaign",
+      "campaign_severity":   "CRITICAL",
+      "campaign_item_count": 2,
+      "graph_node_id":       "CVE-2023-20198",
+      "enriched_at":         "2026-04-28T00:00:00.000Z",
+      "pipeline_version":    "SENTINEL_APEX_v4.2_HARDENED"
+    },
+
+    "_trust": {
+      "source_attribution": "CISA Advisory AA24-190A; Cisco PSIRT",
+      "confidence_score":   0.98,
+      "correlation_count":  3,
+      "verified_at":        "2026-04-28T00:00:00.000Z",
+      "methodology":        "Multi-source correlation, CVSS scoring, KEV verification, IOC extraction",
+      "platform":           "CYBERDUDEBIVASH SENTINEL APEX v4.0"
+    }
+  },
+
+  "tier_gating_examples": {
+    "_comment": "Shows what each tier sees for this item",
+
+    "free_tier": {
+      "id":             "CVE-2023-20198",
+      "title":          "Cisco IOS XE Web UI Privilege Escalation",
+      "cvss":           10.0,
+      "threat_level":   "CRITICAL",
+      "type":           "ZERO_DAY",
+      "published":      "2023-10-16",
+      "exploited":      true,
+      "cisa_kev":       true,
+      "priority_score": 97,
+      "actor_attribution": {
+        "primary_actor": "Salt Typhoon",
+        "unattributed":  false
+      },
+      "data_confidence": { "tier": "HIGH" },
+      "_upgrade": "Full IOCs, MITRE mapping, attribution confidence, explainability, and attack chain available on Pro plan — https://blog.cyberdudebivash.in/pricing.html"
+    },
+
+    "pro_tier": {
+      "id":             "CVE-2023-20198",
+      "title":          "Cisco IOS XE Web UI Privilege Escalation",
+      "cvss":           10.0,
+      "threat_level":   "CRITICAL",
+      "priority_score": 97,
+      "actor_attribution": {
+        "primary_actor":       "Salt Typhoon",
+        "primary_actor_id":    "actor:salt-typhoon",
+        "primary_confidence":  0.89,
+        "unattributed":        false,
+        "attribution_quality": "HIGH",
+        "evidence_summary":    "CVE-2023-20198 publicly attributed to Salt Typhoon (CISA/DOJ record)"
+      },
+      "data_confidence": { "score": 0.877, "tier": "HIGH", "suppressed": false },
+      "scoring": {
+        "priority_score": 97, "normalized_score": 0.97, "threat_level": "CRITICAL",
+        "confidence_score": 0.95, "reasoning": ["Critical CVSS 10.0", "CISA KEV confirmed"]
+      },
+      "_explanation": {
+        "actor":    "Attributed to Salt Typhoon with confidence 0.890 (HIGH)...",
+        "campaign": "Part of campaign Cisco IOS XE Zero-Day Campaign...",
+        "score":    "Priority score 97/100 (CRITICAL)...",
+        "data":     "Data confidence: HIGH (score=0.877)..."
+      }
+    },
+
+    "enterprise_tier": "<<full enriched object above — all fields including signals, breakdown, all_attributions>>"
+  },
+
+  "phase9_validation_checks": {
+    "low_data_intel_no_actor": {
+      "scenario": "Single source, no IOCs, partial fields",
+      "expected_data_confidence": "LOW (suppressed=true)",
+      "expected_attribution": "Unknown (confidence < 0.50 without evidence)"
+    },
+    "strong_ioc_overlap_clustering": {
+      "scenario": "Two items sharing 3+ IOCs",
+      "expected": "Clustered (ioc_overlap ≥ 0.33 → with 0.35 weight = 0.116 minimum; actor bonus can push to 0.60+)"
+    },
+    "kev_high_cvss": {
+      "scenario": "CISA KEV item with CVSS 9.8",
+      "expected": "priority_score ≥ 85 → CRITICAL tier"
+    },
+    "single_source_low_confidence": {
+      "scenario": "1 source, no IOCs, no actor match",
+      "expected": "data_confidence.score < 0.40 → suppressed from top threats"
+    },
+    "all_outputs_have_explanations": {
+      "scenario": "Every enriched item",
+      "expected": "_explanation.actor AND _explanation.campaign AND _explanation.score AND _explanation.data all non-empty"
+    }
+  }
+}

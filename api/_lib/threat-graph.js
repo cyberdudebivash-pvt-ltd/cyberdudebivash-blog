@@ -1,6 +1,10 @@
 /**
- * SENTINEL APEX — Threat Actor Graph Engine v1.0
+ * SENTINEL APEX — Threat Actor Graph Engine v2.0
  * Phase 1: Relationship graph across CVE → Actor → Campaign → IOC entities.
+ * Phase 1 Hardening: 4-factor confidence attribution scoring.
+ *   confidence = (ioc_overlap*0.4) + (keyword_match*0.2)
+ *              + (source_mentions*0.2) + (campaign_overlap*0.2)
+ *   Threshold: 0.50 — below this, actor = "Unknown"
  *
  * Node types:   ThreatActor | CVE | Campaign | Malware | IOC
  * Relationships: exploits | executes | uses | targets | linked_to |
@@ -15,10 +19,21 @@
 const fs   = require('fs');
 const path = require('path');
 
-const GRAPH_PATH = path.resolve(__dirname, '../../api/intel/threat-graph.json');
+const GRAPH_PATH      = path.resolve(__dirname, '../../api/intel/threat-graph.json');
 const GRAPH_CACHE_TTL = 120000; // 2 min in-process cache
-let _graphCache = null;
+let _graphCache     = null;
 let _graphCacheTime = 0;
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════════════════════════════════════ */
+/**
+ * Clamp any numeric value to [0.0, 1.0].
+ * Treats null / undefined / NaN as 0.
+ */
+function boundConfidence(v) {
+  return Math.min(1.0, Math.max(0.0, v || 0));
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
    THREAT ACTOR KNOWLEDGE BASE
@@ -178,6 +193,206 @@ const KEYWORD_ACTOR_MAP = [
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════
+   PHASE 1 HARDENING: 4-FACTOR CONFIDENCE ATTRIBUTION
+   confidence = (ioc_overlap*0.4) + (keyword_match*0.2)
+              + (source_mentions*0.2) + (campaign_overlap*0.2)
+   Threshold < 0.50 → primary_actor = "Unknown"
+═══════════════════════════════════════════════════════════════════════ */
+
+/**
+ * Compute actor attribution for a single intel item using 4-signal model.
+ *
+ * @param {Object} item      - Enriched intel item (must have .id, .title, .desc/.description)
+ * @param {Object} graph     - Threat graph (nodes, edges)
+ * @param {Array}  campaigns - Campaign objects (from campaign-engine, optional)
+ * @returns {Object} attribution result with all_attributions array
+ */
+function computeActorAttribution(item, graph, campaigns) {
+  const itemId  = String(item.id || '');
+  const text    = `${item.title || ''} ${item.desc || item.description || ''}`.toLowerCase();
+  campaigns     = campaigns || [];
+
+  // Gather candidate actors from CVE_ACTOR_MAP + KEYWORD_ACTOR_MAP
+  const candidates = new Map(); // actorId → evidence accumulator
+
+  // ── Seed candidates ───────────────────────────────────────────────────
+  // From CVE_ACTOR_MAP (CISA / DOJ verifiable)
+  const cveActors = CVE_ACTOR_MAP[itemId] || [];
+  for (const actorId of cveActors) {
+    if (!candidates.has(actorId)) candidates.set(actorId, { cveMatch: true, keywordFired: false, mentionCount: 0, campaignOverlap: 0 });
+    else candidates.get(actorId).cveMatch = true;
+  }
+
+  // From keyword patterns
+  for (const { patterns, actors } of KEYWORD_ACTOR_MAP) {
+    if (patterns.some(p => p.test(text))) {
+      for (const actorId of actors) {
+        if (!candidates.has(actorId)) candidates.set(actorId, { cveMatch: false, keywordFired: false, mentionCount: 0, campaignOverlap: 0 });
+        candidates.get(actorId).keywordFired = true;
+      }
+    }
+  }
+
+  // From graph edges (pre-existing 'exploits' edges touching this item)
+  const graphEdges = (graph.edges || []).filter(e => e.target === itemId && e.relationship === 'exploits');
+  for (const edge of graphEdges) {
+    const actorId = edge.source;
+    if (!candidates.has(actorId)) candidates.set(actorId, { cveMatch: false, keywordFired: false, mentionCount: 0, campaignOverlap: 0 });
+  }
+
+  // If no candidates at all, return "Unknown" quickly
+  if (candidates.size === 0) {
+    return _buildUnknownAttribution(itemId, 'No matching actors found in CVE map, keyword map, or graph edges');
+  }
+
+  // ── Compute each signal per actor ─────────────────────────────────────
+  const allAttribResults = [];
+
+  for (const [actorId, ev] of candidates.entries()) {
+    const actor = THREAT_ACTOR_DB[actorId] || (graph.nodes || {})[actorId];
+    if (!actor) continue;
+
+    const actorName    = actor.name || actor.attributes?.name || actorId;
+    const actorAliases = (actor.attributes?.aliases || []).map(a => a.toLowerCase());
+
+    // ── Signal 1: ioc_overlap (weight 0.40) ──────────────────────────
+    // CVE_ACTOR_MAP match = 0.75 baseline (CISA/DOJ implies infrastructure overlap)
+    // Actual IOC graph overlap (shared IOC nodes via edges) adds up to 1.0
+    let iocOverlap = 0;
+    if (ev.cveMatch) {
+      iocOverlap = 0.75; // verifiable public attribution implies shared infrastructure
+    }
+    // Count IOC nodes shared between actor and item in the graph
+    const actorIocEdges = (graph.edges || []).filter(e => e.source === actorId && e.relationship === 'linked_to');
+    const itemIocEdges  = (graph.edges || []).filter(e => e.source === itemId  && e.relationship === 'linked_to');
+    const actorIocSet   = new Set(actorIocEdges.map(e => e.target));
+    const sharedIocs    = itemIocEdges.filter(e => actorIocSet.has(e.target)).length;
+    if (sharedIocs > 0) {
+      iocOverlap = Math.max(iocOverlap, Math.min(1.0, sharedIocs / 3));
+    }
+    iocOverlap = boundConfidence(iocOverlap);
+
+    // ── Signal 2: keyword_match (weight 0.20) ─────────────────────────
+    // Keyword pattern fired in title/description → 0.8
+    // CVE_ACTOR_MAP match also guarantees keyword is relevant → floor 0.55
+    let keywordMatch = 0;
+    if (ev.keywordFired) keywordMatch = 0.8;
+    if (ev.cveMatch)     keywordMatch = Math.max(keywordMatch, 0.55);
+    keywordMatch = boundConfidence(keywordMatch);
+
+    // ── Signal 3: source_mentions (weight 0.20) ───────────────────────
+    // Actor name or alias appears in intel text → 0.5 per hit, capped at 1.0
+    // CVE_ACTOR_MAP match → baseline 0.80 (public attribution = credible source mention)
+    let mentionScore = 0;
+    if (ev.cveMatch) mentionScore = Math.max(mentionScore, 0.80);
+
+    const nameHit = text.includes(actorName.toLowerCase());
+    if (nameHit) mentionScore = Math.max(mentionScore, 0.5);
+
+    for (const alias of actorAliases) {
+      if (alias.length >= 4 && text.includes(alias)) {
+        mentionScore = Math.min(1.0, mentionScore + 0.2);
+      }
+    }
+    mentionScore = boundConfidence(mentionScore);
+
+    // ── Signal 4: campaign_overlap (weight 0.20) ──────────────────────
+    // Item is co-clustered in a campaign attributed to this actor
+    let campaignOverlap = 0;
+    for (const campaign of campaigns) {
+      const campActors = (campaign.threat_actors || []).map(a => typeof a === 'string' ? a : a.id);
+      if (!campActors.includes(actorId)) continue;
+      const campItems = campaign.related_intel_ids || (campaign.related_intel || []).map(r => r.id);
+      if (campItems.includes(itemId)) {
+        // Overlap weight proportional to campaign confidence
+        const campConf = boundConfidence(campaign.confidence || 0.7);
+        campaignOverlap = Math.max(campaignOverlap, campConf);
+      }
+    }
+    campaignOverlap = boundConfidence(campaignOverlap);
+
+    // ── Composite confidence ──────────────────────────────────────────
+    const rawConfidence = (iocOverlap  * 0.40)
+                        + (keywordMatch * 0.20)
+                        + (mentionScore * 0.20)
+                        + (campaignOverlap * 0.20);
+
+    const confidence = boundConfidence(rawConfidence);
+
+    // ── Attribution quality label ─────────────────────────────────────
+    let attributionQuality;
+    if (confidence >= 0.85)      attributionQuality = 'HIGH';
+    else if (confidence >= 0.65) attributionQuality = 'MEDIUM';
+    else if (confidence >= 0.50) attributionQuality = 'LOW';
+    else                         attributionQuality = 'INSUFFICIENT';
+
+    // ── Evidence summary ─────────────────────────────────────────────
+    const evidenceParts = [];
+    if (ev.cveMatch)         evidenceParts.push(`CVE ${itemId} publicly attributed to ${actorName} (CISA/DOJ record)`);
+    if (ev.keywordFired)     evidenceParts.push(`Keyword pattern matched in intel text`);
+    if (nameHit)             evidenceParts.push(`Actor name found in title/description`);
+    if (sharedIocs > 0)      evidenceParts.push(`${sharedIocs} shared IOC(s) in graph`);
+    if (campaignOverlap > 0) evidenceParts.push(`Co-clustered in attributed campaign (conf: ${campaignOverlap.toFixed(2)})`);
+
+    allAttribResults.push({
+      actor_id:            actorId,
+      actor_name:          actorName,
+      confidence:          confidence,
+      attribution_quality: attributionQuality,
+      signals: {
+        ioc_overlap:      iocOverlap,
+        keyword_match:    keywordMatch,
+        source_mentions:  mentionScore,
+        campaign_overlap: campaignOverlap,
+      },
+      evidence_summary: evidenceParts.length > 0
+        ? evidenceParts.join('; ')
+        : 'Insufficient evidence — below attribution threshold',
+    });
+  }
+
+  // Sort by confidence descending
+  allAttribResults.sort((a, b) => b.confidence - a.confidence);
+
+  // Primary actor = highest confidence IF it meets threshold
+  const primary = allAttribResults[0];
+  if (!primary || primary.confidence < 0.50) {
+    return _buildUnknownAttribution(
+      itemId,
+      primary
+        ? `Best candidate ${primary.actor_name} scored ${primary.confidence.toFixed(3)} — below 0.50 threshold`
+        : 'No candidates met attribution threshold',
+      allAttribResults
+    );
+  }
+
+  return {
+    primary_actor:       primary.actor_name,
+    primary_actor_id:    primary.actor_id,
+    primary_confidence:  primary.confidence,
+    unattributed:        false,
+    attribution_quality: primary.attribution_quality,
+    evidence_summary:    primary.evidence_summary,
+    signals:             primary.signals,
+    all_attributions:    allAttribResults,
+  };
+}
+
+/** Build a standardized "Unknown" attribution result */
+function _buildUnknownAttribution(itemId, reason, candidates) {
+  return {
+    primary_actor:       'Unknown',
+    primary_actor_id:    null,
+    primary_confidence:  0,
+    unattributed:        true,
+    attribution_quality: 'NONE',
+    evidence_summary:    reason || 'No evidence meets attribution threshold',
+    signals: { ioc_overlap: 0, keyword_match: 0, source_mentions: 0, campaign_overlap: 0 },
+    all_attributions:    candidates || [],
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
    GRAPH STORAGE
 ═══════════════════════════════════════════════════════════════════════ */
 function getDefaultGraph() {
@@ -245,7 +460,6 @@ function addNode(graph, node) {
   if (!graph.nodes[nid]) {
     graph.nodes[nid] = { ...node, id: nid, connections: [] };
   } else {
-    // Merge — preserve existing connections
     const existing = graph.nodes[nid];
     graph.nodes[nid] = {
       ...existing,
@@ -268,15 +482,14 @@ function addEdge(graph, source, target, relationship, confidence = 0.8, meta = {
     source,
     target,
     relationship,
-    confidence,
+    confidence: boundConfidence(confidence),
     first_seen: meta.first_seen || new Date().toISOString().slice(0, 10),
     sources: meta.sources || [],
   });
 
-  // Update adjacency list on source node
   if (graph.nodes[source]) {
     if (!graph.nodes[source].connections) graph.nodes[source].connections = [];
-    graph.nodes[source].connections.push({ target, relationship, confidence });
+    graph.nodes[source].connections.push({ target, relationship, confidence: boundConfidence(confidence) });
   }
 }
 
@@ -339,7 +552,6 @@ function buildGraphFromIntel(intelItems) {
       name: actor.name,
       attributes: actor.attributes,
     });
-    // Pre-wire known CVE edges with high confidence
     for (const cveId of (actor.attributes.known_cves || [])) {
       addEdge(graph, id, cveId, 'exploits', 0.92, { sources: (actor.attributes.refs || []).slice(0, 1) });
     }
@@ -384,7 +596,7 @@ function buildGraphFromIntel(intelItems) {
 
     // Add IOC nodes (top 5 per item, avoid graph bloat)
     for (const ioc of (item.iocs || []).slice(0, 5)) {
-      if (!ioc || !ioc.value || ioc.type === 'url') continue; // skip noisy URLs
+      if (!ioc || !ioc.value || ioc.type === 'url') continue;
       const iocId = `ioc:${ioc.type}:${String(ioc.value).replace(/[^a-zA-Z0-9._\-:]/g, '_').slice(0, 50)}`;
       addNode(graph, {
         id: iocId, type: 'IOC', name: ioc.value,
@@ -398,22 +610,21 @@ function buildGraphFromIntel(intelItems) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   TIER-BASED GRAPH FILTER — prevents free-tier users from seeing all data
+   TIER-BASED GRAPH FILTER
 ═══════════════════════════════════════════════════════════════════════ */
 function getGraphForTier(graph, tier) {
   const allNodes = Object.values(graph.nodes || {});
   const limit    = tier === 'enterprise' ? 999 : tier === 'pro' ? 300 : 60;
 
-  // Free: only actors + critical CVEs, no IOC nodes
   const filtered = tier === 'free'
     ? allNodes.filter(n => n.type === 'ThreatActor' ||
         (n.type === 'CVE' && (n.attributes?.priority_score || 0) >= 70) ||
         n.type === 'Campaign')
     : allNodes;
 
-  const topNodes  = filtered.slice(0, limit);
-  const nodeIds   = new Set(topNodes.map(n => n.id));
-  const topEdges  = (graph.edges || []).filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
+  const topNodes = filtered.slice(0, limit);
+  const nodeIds  = new Set(topNodes.map(n => n.id));
+  const topEdges = (graph.edges || []).filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
 
   return {
     nodes:     topNodes,
@@ -428,6 +639,8 @@ module.exports = {
   THREAT_ACTOR_DB,
   CVE_ACTOR_MAP,
   KEYWORD_ACTOR_MAP,
+  boundConfidence,
+  computeActorAttribution,
   loadGraph,
   saveGraph,
   getDefaultGraph,

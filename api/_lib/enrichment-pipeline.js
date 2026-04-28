@@ -1,156 +1,164 @@
 /**
- * SENTINEL APEX — Intelligence Enrichment Pipeline v1.0
- * Phase 4: For each intel item:
- *   1. Extract entities (CVEs, actors, vendor/product)
- *   2. Link item to threat actor graph
- *   3. Assign campaign via clustering engine
- *   4. Compute enhanced AI threat score
- *   5. Return enriched object
+ * SENTINEL APEX — Intelligence Enrichment Pipeline v2.0
+ * Phase 6 Hardening: 8-step two-pass pipeline with explainability engine.
  *
- * Called from fetch-live-intel.js after correlation + merge.
- * Writes updated threat-graph.json + campaigns.json to disk.
+ * PIPELINE ORDER:
+ *   1. validateAndExtract(items)         → filter bad items, extract entities
+ *   2. computeDataConfidence per item    → LOW/MEDIUM/HIGH data quality tier
+ *   3. buildGraphFromIntel               → threat graph with nodes + edges
+ *   4. Pass 1: computeActorAttribution   → without campaign context
+ *   5. buildCampaigns (actor-aware)      → clustering uses Pass 1 attributions
+ *   6. linkActorsToCampaigns             → campaign nodes wired into graph
+ *   7. Pass 2: computeActorAttribution   → with campaign context (final)
+ *   8. computeNormalizedScore per item   → with final actor + campaign context
+ *   9. generateExplanation per item      → human-readable _explanation block
+ *  10. Assemble enriched objects
+ *
+ * QUALITY RULES (Phase 8):
+ *   - No attribution without evidence (confidence < 0.50 → "Unknown")
+ *   - No weak clusters (cluster_score < 0.60)
+ *   - No inflated scores (all features normalized 0–1)
+ *   - All outputs explainable (every item has _explanation block)
+ *   - All confidence values strictly bounded [0, 1]
+ *
+ * API TIER GATING (Phase 7):
+ *   FREE:       actor name + data_confidence.tier only
+ *   PRO:        full explanation + confidence, actor_attribution without signal_detail
+ *   ENTERPRISE: raw signals + scoring.breakdown + all_attributions
  *
  * © 2026 CYBERDUDEBIVASH PRIVATE LIMITED
  */
 'use strict';
 
 const {
-  buildGraphFromIntel, saveGraph, addNode, addEdge,
-  getActorsForItem, getTopActors, KEYWORD_ACTOR_MAP, CVE_ACTOR_MAP,
+  buildGraphFromIntel,
+  saveGraph,
+  addNode,
+  addEdge,
+  getActorsForItem,
+  getTopActors,
+  KEYWORD_ACTOR_MAP,
+  CVE_ACTOR_MAP,
+  computeActorAttribution,
+  boundConfidence,
 } = require('./threat-graph');
 
 const {
-  buildCampaigns, saveCampaigns,
+  buildCampaigns,
+  linkActorsToCampaigns: linkActorsToCampaignsEngine,
+  saveCampaigns,
 } = require('./campaign-engine');
 
-const { computeEnhancedScore } = require('./threat-scorer');
+const {
+  computeDataConfidence,
+  computeNormalizedScore,
+} = require('./threat-scorer');
 
-/* ─── Actor name extraction from free text ───────────────────────────── */
-const ACTOR_TEXT_MAP = {
-  'LockBit':         'actor:lockbit',
-  'Cl0p':            'actor:cl0p',
-  'Clop':            'actor:cl0p',
-  'TA505':           'actor:cl0p',
-  'APT41':           'actor:apt41',
-  'Winnti':          'actor:apt41',
-  'Double Dragon':   'actor:apt41',
-  'Volt Typhoon':    'actor:volt-typhoon',
-  'Salt Typhoon':    'actor:salt-typhoon',
-  'GhostEmperor':    'actor:salt-typhoon',
-  'PhantomCore':     'actor:phantomcore',
-  'ShinyHunters':    'actor:shinyhunters',
-  'Shiny Hunters':   'actor:shinyhunters',
-};
+/* ═══════════════════════════════════════════════════════════════════════
+   STEP 1: VALIDATE + EXTRACT
+═══════════════════════════════════════════════════════════════════════ */
+function validateAndExtract(items) {
+  const validItems   = [];
+  const skippedItems = [];
 
-function extractEntities(item) {
-  const text = `${item.title || ''} ${item.desc || item.description || ''}`;
+  for (const item of (items || [])) {
+    const id = String(item.id || '');
 
-  // CVE references
-  const cveRefs = [...new Set(
-    (text.match(/CVE-\d{4}-\d{4,7}/gi) || []).map(c => c.toUpperCase())
-  )];
-
-  // Actor mentions via static name table
-  const actorMentions = [];
-  for (const [name, actorId] of Object.entries(ACTOR_TEXT_MAP)) {
-    if (new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(text)) {
-      if (!actorMentions.includes(actorId)) actorMentions.push(actorId);
+    // Must have an ID
+    if (!id || id.length < 2) {
+      skippedItems.push({ item, reason: 'Missing or invalid id' });
+      continue;
     }
-  }
 
-  // Actor matches via keyword patterns
-  for (const { patterns, actors } of KEYWORD_ACTOR_MAP) {
-    if (patterns.some(p => p.test(text))) {
-      actors.forEach(a => { if (!actorMentions.includes(a)) actorMentions.push(a); });
+    // Must have a title
+    if (!item.title || String(item.title).length < 3) {
+      skippedItems.push({ item, reason: 'Missing or too-short title' });
+      continue;
     }
+
+    // Enrich with normalized fields for downstream use
+    const normalized = {
+      ...item,
+      id,
+      title:     String(item.title || ''),
+      desc:      String(item.desc || item.description || item.summary || ''),
+      cvss:      parseFloat(item.cvss || item.cvssScore || 0) || 0,
+      exploited: !!(item.exploited),
+      cisa_kev:  !!(item.cisaKev || item.cisa_kev),
+      ransomware: !!(item.ransomware || item.type === 'RANSOMWARE'),
+      iocs:       Array.isArray(item.iocs) ? item.iocs : [],
+    };
+
+    validItems.push(normalized);
   }
 
-  // CVE→actor map
-  const itemId = String(item.id || '');
-  if (CVE_ACTOR_MAP[itemId]) {
-    CVE_ACTOR_MAP[itemId].forEach(a => {
-      if (!actorMentions.includes(a)) actorMentions.push(a);
-    });
-  }
-
-  // Vendor + product as entity refs
-  const vendors = [item.vendor, item.product]
-    .filter(v => v && v !== 'Unknown Vendor' && v !== 'Unknown Product' && v.length > 2);
-
-  return { cveRefs, actorMentions, vendors };
+  return { validItems, skippedItems };
 }
 
-/* ─── Enrich a single item given pre-built graph + campaign list ─────── */
-function enrichItem(item, graph, campaigns) {
-  const entities = extractEntities(item);
+/* ═══════════════════════════════════════════════════════════════════════
+   STEP 9: EXPLANATION GENERATOR
+   Every output includes _explanation: { actor, campaign, score, data }
+═══════════════════════════════════════════════════════════════════════ */
+function generateExplanation(item, attribution, campaign, scoring, dataConf) {
+  // ── Actor explanation ────────────────────────────────────────────────
+  let actorExplanation;
+  if (attribution.unattributed) {
+    actorExplanation = `No actor attribution: ${attribution.evidence_summary}. ` +
+      `Best candidate scored ${
+        attribution.all_attributions.length > 0
+          ? attribution.all_attributions[0].confidence.toFixed(3)
+          : '0.000'
+      } — below 0.50 threshold.`;
+  } else {
+    actorExplanation = `Attributed to ${attribution.primary_actor} with confidence ` +
+      `${attribution.primary_confidence.toFixed(3)} (${attribution.attribution_quality}). ` +
+      `Evidence: ${attribution.evidence_summary}. ` +
+      `Signals: IOC overlap=${attribution.signals.ioc_overlap.toFixed(2)}, ` +
+      `keyword=${attribution.signals.keyword_match.toFixed(2)}, ` +
+      `source mentions=${attribution.signals.source_mentions.toFixed(2)}, ` +
+      `campaign overlap=${attribution.signals.campaign_overlap.toFixed(2)}.`;
+  }
 
-  // Actors from graph edges (already wired by buildGraphFromIntel)
-  const graphActors    = getActorsForItem(graph, String(item.id || ''));
-  const allActorIds    = [...new Set([...entities.actorMentions, ...graphActors.map(a => a.id)])];
+  // ── Campaign explanation ─────────────────────────────────────────────
+  let campaignExplanation;
+  if (!campaign) {
+    campaignExplanation = `Not assigned to any campaign. Item similarity score against all clusters ` +
+      `fell below the 0.60 threshold (weighted model: ioc_overlap*0.35 + cve_match*0.25 + ` +
+      `time_proximity*0.20 + text_similarity*0.20).`;
+  } else {
+    const topReason = (campaign.reasoning || [])[0] || 'Clustered by weighted similarity';
+    campaignExplanation = `Part of campaign "${campaign.name}" (${campaign.campaign_id}) ` +
+      `with ${campaign.item_count} item(s), confidence ${campaign.confidence.toFixed(3)}, ` +
+      `severity ${campaign.severity}. ` +
+      `Clustering reason: ${topReason}`;
+  }
 
-  // Find associated campaign
-  const campaign = (campaigns || []).find(c => c.related_intel_ids?.includes(String(item.id || '')));
+  // ── Score explanation ────────────────────────────────────────────────
+  const topReasons = (scoring.reasoning || []).slice(0, 4);
+  const scoreExplanation = `Priority score ${scoring.priority_score}/100 (${scoring.threat_level}). ` +
+    `Normalized score ${scoring.normalized_score.toFixed(4)}. ` +
+    `Key drivers: ${topReasons.join('; ')}.`;
 
-  // Graph context for scorer
-  const graphContext = {
-    actorCount:       allActorIds.length,
-    inCampaign:       !!campaign,
-    campaignSize:     campaign?.item_count || 0,
-    campaignSeverity: campaign?.severity || null,
-  };
-
-  // Enhanced scoring
-  const scoring = computeEnhancedScore(item, graphContext);
+  // ── Data confidence explanation ──────────────────────────────────────
+  const dataExplanation = `Data confidence: ${dataConf.tier} (score=${dataConf.score.toFixed(3)}). ` +
+    `Sources: ${dataConf.factors.source_count.raw} (norm=${dataConf.factors.source_count.normalized.toFixed(2)}), ` +
+    `structured fields: ${dataConf.factors.structured_data.populated}/${dataConf.factors.structured_data.of}, ` +
+    `IOCs: ${dataConf.factors.ioc_presence.raw}. ` +
+    (dataConf.suppressed ? 'WARNING: Low data confidence — suppressed from top threats.' : '');
 
   return {
-    ...item,
-    // Overwrite scores with enhanced values
-    priority_score:   scoring.priority_score,
-    threat_level:     scoring.threat_level,
-    confidence_score: scoring.confidence_score,
-    score_breakdown:  scoring.score_breakdown,
-    scoring_model:    scoring.scoring_model,
-
-    // Intelligence enrichment block
-    _intelligence: {
-      entities,
-      linked_actors: allActorIds.map(actorId => {
-        const node = graph.nodes[actorId];
-        return node ? {
-          id:         actorId,
-          name:       node.name,
-          category:   node.attributes?.category,
-          motivation: node.attributes?.motivation,
-          origin:     node.attributes?.origin,
-          ttps:       (node.attributes?.ttps || []).slice(0, 5),
-        } : null;
-      }).filter(Boolean),
-      campaign_id:         campaign?.campaign_id     || null,
-      campaign_name:       campaign?.name            || null,
-      campaign_severity:   campaign?.severity        || null,
-      campaign_item_count: campaign?.item_count      || 0,
-      graph_node_id:       String(item.id || ''),
-      enriched_at:         new Date().toISOString(),
-    },
+    actor:    actorExplanation,
+    campaign: campaignExplanation,
+    score:    scoreExplanation,
+    data:     dataExplanation,
   };
 }
 
-/* ─── Link threat actors to campaigns via graph ─────────────────────── */
-function linkActorsToCampaigns(graph, campaigns) {
+/* ═══════════════════════════════════════════════════════════════════════
+   LINK ACTORS TO CAMPAIGNS (graph-level wiring)
+═══════════════════════════════════════════════════════════════════════ */
+function linkActorsToCampaignsGraph(graph, campaigns) {
   for (const campaign of campaigns) {
-    const actorIds = new Set();
-
-    for (const intelId of (campaign.related_intel_ids || [])) {
-      getActorsForItem(graph, intelId).forEach(a => actorIds.add(a.id));
-    }
-
-    campaign.threat_actors = [...actorIds].map(id => {
-      const node = graph.nodes[id];
-      return node ? { id, name: node.name, category: node.attributes?.category } : null;
-    }).filter(Boolean);
-
-    campaign.threat_actor = campaign.threat_actors[0]?.name || null;
-
     // Add campaign node to graph
     addNode(graph, {
       id:   campaign.campaign_id,
@@ -162,71 +170,366 @@ function linkActorsToCampaigns(graph, campaigns) {
         first_seen: campaign.first_seen,
         last_seen:  campaign.last_seen,
         confidence: campaign.confidence,
+        reasoning:  (campaign.reasoning || []).slice(0, 3).join(' | '),
       },
     });
+
+    // Collect actor IDs for this campaign
+    const actorIds = new Set();
+    for (const actor of (campaign.threat_actors || [])) {
+      if (actor && actor.id) actorIds.add(actor.id);
+    }
+    // Also check graph edges for items in campaign
+    for (const intelId of (campaign.related_intel_ids || [])) {
+      getActorsForItem(graph, intelId).forEach(a => actorIds.add(a.id));
+    }
+
+    // Update campaign.threat_actors if empty
+    if (campaign.threat_actors.length === 0 && actorIds.size > 0) {
+      campaign.threat_actors = [...actorIds].map(id => {
+        const node = graph.nodes[id];
+        return node ? { id, name: node.name, confidence: 0.75, category: node.attributes?.category } : null;
+      }).filter(Boolean);
+      if (campaign.threat_actors.length > 0) {
+        campaign.threat_actor = campaign.threat_actors[0].name;
+      }
+    }
 
     // Actor → executes → Campaign edges
     for (const actorId of actorIds) {
       addEdge(graph, actorId, campaign.campaign_id, 'executes', 0.85);
     }
 
-    // Campaign → includes → CVE edges
+    // Campaign → includes → CVE/Intel edges
     for (const intelId of (campaign.related_intel_ids || [])) {
       addEdge(graph, campaign.campaign_id, intelId, 'includes', 1.0);
     }
   }
+
+  return campaigns;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   MAIN PIPELINE ENTRY POINT
-   Called from fetch-live-intel.js after correlateAndMerge()
+   MAIN PIPELINE — runEnrichmentPipeline(intelItems)
 ═══════════════════════════════════════════════════════════════════════ */
 function runEnrichmentPipeline(intelItems) {
   const startTime = Date.now();
-  console.log(`[ENRICH] Starting enrichment pipeline for ${intelItems.length} items...`);
+  const log = (msg) => console.log(`[ENRICH] ${msg}`);
 
-  // Phase 1: Build / update threat graph from raw items
-  const graph = buildGraphFromIntel(intelItems);
-  console.log(`[ENRICH] Graph built: ${Object.keys(graph.nodes).length} nodes, ${graph.edges.length} edges`);
+  log(`Starting 8-step hardened enrichment pipeline for ${(intelItems || []).length} items...`);
 
-  // Phase 2: Build campaign clusters
-  const campaigns = buildCampaigns(intelItems);
-  console.log(`[ENRICH] Campaigns clustered: ${campaigns.length} campaigns`);
+  // ── STEP 1: Validate + extract ───────────────────────────────────────
+  const { validItems, skippedItems } = validateAndExtract(intelItems);
+  log(`Step 1 — Validated: ${validItems.length} valid, ${skippedItems.length} skipped`);
 
-  // Phase 3: Link actors to campaigns and extend graph
-  linkActorsToCampaigns(graph, campaigns);
+  if (validItems.length === 0) {
+    log('No valid items to process — pipeline aborted');
+    return {
+      enrichedItems: [],
+      graph:         { nodes: {}, edges: [] },
+      campaigns:     [],
+      stats:         { items_processed: 0, skipped: skippedItems.length, elapsed_ms: 0 },
+    };
+  }
 
-  // Phase 4: Enrich every item with graph context, campaign, and enhanced score
-  const enrichedItems = intelItems.map(item => enrichItem(item, graph, campaigns));
-  console.log(`[ENRICH] Items enriched: ${enrichedItems.length}`);
+  // ── STEP 2: Data confidence per item ────────────────────────────────
+  const dataConfMap = new Map();
+  let suppressedCount = 0;
+  for (const item of validItems) {
+    const dc = computeDataConfidence(item);
+    dataConfMap.set(item.id, dc);
+    if (dc.suppressed) suppressedCount++;
+  }
+  log(`Step 2 — Data confidence: ${validItems.length - suppressedCount} HIGH/MEDIUM, ${suppressedCount} LOW (suppressed from top threats)`);
 
-  // Phase 5: Persist graph + campaigns to disk
+  // ── STEP 3: Build threat graph ───────────────────────────────────────
+  const graph = buildGraphFromIntel(validItems);
+  log(`Step 3 — Graph built: ${Object.keys(graph.nodes).length} nodes, ${graph.edges.length} edges`);
+
+  // ── STEP 4: Pass 1 actor attribution (no campaign context yet) ───────
+  const pass1Attribution = new Map();
+  for (const item of validItems) {
+    const attr = computeActorAttribution(item, graph, []);
+    pass1Attribution.set(item.id, attr);
+    // Attach to item for campaign clustering signal
+    item.actor_attribution = attr;
+  }
+  const pass1Attributed = validItems.filter(i => !pass1Attribution.get(i.id).unattributed).length;
+  log(`Step 4 — Pass 1 attribution: ${pass1Attributed}/${validItems.length} attributed (≥0.50 confidence)`);
+
+  // ── STEP 5: Build campaigns (uses Pass 1 attributions as signal) ─────
+  const campaigns = buildCampaigns(validItems);
+  log(`Step 5 — Campaigns clustered: ${campaigns.length} campaign(s) (threshold=0.60)`);
+
+  // ── STEP 6: Link actors to campaigns + wire graph ────────────────────
+  linkActorsToCampaignsGraph(graph, campaigns);
+  log(`Step 6 — Campaign nodes wired into graph`);
+
+  // ── STEP 7: Pass 2 actor attribution (with campaign context) ─────────
+  const pass2Attribution = new Map();
+  for (const item of validItems) {
+    const attr = computeActorAttribution(item, graph, campaigns);
+    pass2Attribution.set(item.id, attr);
+    // Update item with final attribution
+    item.actor_attribution = attr;
+  }
+  const pass2Attributed = validItems.filter(i => !pass2Attribution.get(i.id).unattributed).length;
+  log(`Step 7 — Pass 2 attribution: ${pass2Attributed}/${validItems.length} attributed (final)`);
+
+  // ── STEPS 8–10: Score + explain + assemble ────────────────────────────
+  const enrichedItems = validItems.map(item => {
+    const attribution = pass2Attribution.get(item.id);
+    const dataConf    = dataConfMap.get(item.id);
+
+    // Find associated campaign
+    const campaign = campaigns.find(c => c.related_intel_ids?.includes(item.id)) || null;
+
+    // Graph context for normalized scoring
+    const graphContext = {
+      actorCount:       attribution.unattributed ? 0 : 1,
+      actorConfidence:  attribution.primary_confidence || 0,
+      inCampaign:       !!campaign,
+      campaignSize:     campaign?.item_count || 0,
+      campaignSeverity: campaign?.severity   || null,
+    };
+
+    // Step 8: Normalized score
+    const scoring = computeNormalizedScore(item, graphContext);
+
+    // Step 9: Generate explanation
+    const explanation = generateExplanation(item, attribution, campaign, scoring, dataConf);
+
+    // Step 10: Assemble enriched object
+    const graphActors = getActorsForItem(graph, item.id);
+
+    return {
+      ...item,
+      // Updated scores from normalized model
+      priority_score:   scoring.priority_score,
+      threat_level:     scoring.threat_level,
+      confidence_score: scoring.confidence_score,
+
+      // Phase 1: Actor attribution
+      actor_attribution: {
+        primary_actor:       attribution.primary_actor,
+        primary_actor_id:    attribution.primary_actor_id,
+        primary_confidence:  attribution.primary_confidence,
+        unattributed:        attribution.unattributed,
+        attribution_quality: attribution.attribution_quality,
+        evidence_summary:    attribution.evidence_summary,
+        signals:             attribution.signals,
+        all_attributions:    attribution.all_attributions,
+      },
+
+      // Phase 4: Data confidence
+      data_confidence: dataConf,
+
+      // Phase 3: Normalized scoring
+      scoring: {
+        priority_score:   scoring.priority_score,
+        normalized_score: scoring.normalized_score,
+        threat_level:     scoring.threat_level,
+        confidence_score: scoring.confidence_score,
+        reasoning:        scoring.reasoning,
+        breakdown:        scoring.breakdown,
+        scoring_model:    scoring.scoring_model,
+      },
+
+      // Phase 5: Explainability
+      _explanation: explanation,
+
+      // Intelligence context
+      _intelligence: {
+        linked_actors: graphActors.map(a => ({
+          id:         a.id,
+          name:       a.name,
+          category:   a.attributes?.category,
+          motivation: a.attributes?.motivation,
+          origin:     a.attributes?.origin,
+          ttps:       (a.attributes?.ttps || []).slice(0, 5),
+        })),
+        campaign_id:         campaign?.campaign_id     || null,
+        campaign_name:       campaign?.name            || null,
+        campaign_severity:   campaign?.severity        || null,
+        campaign_item_count: campaign?.item_count      || 0,
+        graph_node_id:       item.id,
+        enriched_at:         new Date().toISOString(),
+        pipeline_version:    'SENTINEL_APEX_v4.2_HARDENED',
+      },
+    };
+  });
+
+  // ── Persist to disk ────────────────────────────────────────────────
   saveGraph(graph);
   saveCampaigns({ campaigns });
 
   const elapsed = Date.now() - startTime;
-  console.log(`[ENRICH] Pipeline complete in ${elapsed}ms`);
+  const topThreatCount = enrichedItems.filter(i => !i.data_confidence.suppressed).length;
+
+  log(`Pipeline complete in ${elapsed}ms`);
+  log(`  Items enriched:     ${enrichedItems.length}`);
+  log(`  Attributed:         ${pass2Attributed}/${validItems.length}`);
+  log(`  Campaigns:          ${campaigns.length}`);
+  log(`  High/Med conf data: ${topThreatCount} (${suppressedCount} suppressed)`);
 
   return {
     enrichedItems,
     graph,
     campaigns,
     stats: {
-      items_processed: intelItems.length,
-      graph_nodes:     Object.keys(graph.nodes).length,
-      graph_edges:     graph.edges.length,
-      campaigns:       campaigns.length,
-      elapsed_ms:      elapsed,
+      items_processed:     validItems.length,
+      skipped:             skippedItems.length,
+      attributed:          pass2Attributed,
+      unattributed:        validItems.length - pass2Attributed,
+      campaigns:           campaigns.length,
+      suppressed_low_data: suppressedCount,
+      top_threat_items:    topThreatCount,
+      graph_nodes:         Object.keys(graph.nodes).length,
+      graph_edges:         graph.edges.length,
+      elapsed_ms:          elapsed,
     },
   };
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   API TIER GATING (Phase 7)
+   Strips fields based on subscriber tier.
+═══════════════════════════════════════════════════════════════════════ */
+
 /**
- * Lightweight enrichment for API-time use (no disk writes).
- * Used by the intel API router to add intelligence context to live queries.
+ * FREE tier: actor name + data_confidence.tier only.
+ * No explanations, no signals, no breakdown.
  */
-function enrichItemForAPI(item, graph, campaigns) {
-  return enrichItem(item, graph, campaigns);
+function filterForFree(item) {
+  return {
+    ...item,
+    actor_attribution: {
+      primary_actor: item.actor_attribution?.primary_actor || 'Unknown',
+      unattributed:  item.actor_attribution?.unattributed ?? true,
+    },
+    data_confidence: {
+      tier: item.data_confidence?.tier || 'UNKNOWN',
+    },
+    // Strip enriched fields
+    scoring:          undefined,
+    _explanation:     undefined,
+    _intelligence:    undefined,
+  };
 }
 
-module.exports = { runEnrichmentPipeline, enrichItem, enrichItemForAPI, extractEntities };
+/**
+ * PRO tier: full explanation + confidence, actor attribution without raw signals.
+ * No breakdown, no all_attributions signal detail.
+ */
+function filterForPro(item) {
+  const attr = item.actor_attribution || {};
+  return {
+    ...item,
+    actor_attribution: {
+      primary_actor:       attr.primary_actor,
+      primary_actor_id:    attr.primary_actor_id,
+      primary_confidence:  attr.primary_confidence,
+      unattributed:        attr.unattributed,
+      attribution_quality: attr.attribution_quality,
+      evidence_summary:    attr.evidence_summary,
+      // signals and all_attributions detail stripped for PRO
+    },
+    data_confidence: {
+      score:      item.data_confidence?.score,
+      tier:       item.data_confidence?.tier,
+      suppressed: item.data_confidence?.suppressed,
+    },
+    scoring: item.scoring ? {
+      priority_score:   item.scoring.priority_score,
+      normalized_score: item.scoring.normalized_score,
+      threat_level:     item.scoring.threat_level,
+      confidence_score: item.scoring.confidence_score,
+      reasoning:        item.scoring.reasoning,
+      // breakdown stripped for PRO
+    } : undefined,
+    _explanation: item._explanation,
+    _intelligence: item._intelligence ? {
+      linked_actors:       item._intelligence.linked_actors,
+      campaign_id:         item._intelligence.campaign_id,
+      campaign_name:       item._intelligence.campaign_name,
+      campaign_severity:   item._intelligence.campaign_severity,
+      campaign_item_count: item._intelligence.campaign_item_count,
+      enriched_at:         item._intelligence.enriched_at,
+    } : undefined,
+  };
+}
+
+/**
+ * ENTERPRISE tier: everything — raw signals + scoring.breakdown + all_attributions.
+ */
+function filterForEnterprise(item) {
+  return item; // Full enriched object, nothing stripped
+}
+
+/**
+ * Apply tier gating to an array of enriched items.
+ */
+function applyTierGating(items, tier) {
+  if (!items) return [];
+  const filter = tier === 'enterprise' ? filterForEnterprise
+               : tier === 'pro'        ? filterForPro
+               :                        filterForFree;
+  return items.map(filter);
+}
+
+/**
+ * Lightweight enrichment for API-time single-item use (no disk writes).
+ */
+function enrichItemForAPI(item, graph, campaigns) {
+  const { validItems } = validateAndExtract([item]);
+  if (!validItems.length) return item;
+
+  const normalizedItem   = validItems[0];
+  const dataConf         = computeDataConfidence(normalizedItem);
+  const attribution      = computeActorAttribution(normalizedItem, graph, campaigns || []);
+  const campaign         = (campaigns || []).find(c => c.related_intel_ids?.includes(normalizedItem.id)) || null;
+
+  const graphContext = {
+    actorCount:       attribution.unattributed ? 0 : 1,
+    actorConfidence:  attribution.primary_confidence || 0,
+    inCampaign:       !!campaign,
+    campaignSize:     campaign?.item_count || 0,
+    campaignSeverity: campaign?.severity   || null,
+  };
+
+  const scoring     = computeNormalizedScore(normalizedItem, graphContext);
+  const explanation = generateExplanation(normalizedItem, attribution, campaign, scoring, dataConf);
+  const graphActors = getActorsForItem(graph, normalizedItem.id);
+
+  return {
+    ...normalizedItem,
+    priority_score:    scoring.priority_score,
+    threat_level:      scoring.threat_level,
+    confidence_score:  scoring.confidence_score,
+    actor_attribution: { ...attribution },
+    data_confidence:   dataConf,
+    scoring,
+    _explanation:      explanation,
+    _intelligence: {
+      linked_actors:       graphActors.map(a => ({ id: a.id, name: a.name, category: a.attributes?.category })),
+      campaign_id:         campaign?.campaign_id   || null,
+      campaign_name:       campaign?.name          || null,
+      campaign_severity:   campaign?.severity      || null,
+      campaign_item_count: campaign?.item_count    || 0,
+      graph_node_id:       normalizedItem.id,
+      enriched_at:         new Date().toISOString(),
+      pipeline_version:    'SENTINEL_APEX_v4.2_HARDENED',
+    },
+  };
+}
+
+module.exports = {
+  runEnrichmentPipeline,
+  enrichItemForAPI,
+  validateAndExtract,
+  generateExplanation,
+  applyTierGating,
+  filterForFree,
+  filterForPro,
+  filterForEnterprise,
+};

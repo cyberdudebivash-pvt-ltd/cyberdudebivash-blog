@@ -57,41 +57,81 @@ function attestItem(item) {
   };
 }
 
-// FREE tier: remove sensitive fields, limit depth
+// FREE tier: actor name + data_confidence.tier only. No explanations, no signals.
 function filterFree(item) {
-  const { iocs, ioc_count, refs, cves, ...safe } = item;
   return {
-    id:             safe.id,
-    title:          safe.title,
-    description:    safe.description ? safe.description.slice(0, 150) + '…  [Upgrade to Pro for full details]' : '',
-    cvss:           safe.cvss,
-    threat_level:   safe.threat_level,
-    type:           safe.type,
-    published:      safe.published,
-    exploited:      safe.exploited,
-    cisa_kev:       safe.cisa_kev,
-    vendor:         safe.vendor,
-    product:        safe.product,
-    priority_score: safe.priority_score,
-    sources_confirmed: safe.sources_confirmed,
-    _upgrade:       'Full IOCs, MITRE mapping, Sigma/YARA rules, and attack chain available on Pro plan — https://blog.cyberdudebivash.in/pricing.html',
-    _trust:         (safe._trust || attestItem(safe)._trust),
+    id:             item.id,
+    title:          item.title,
+    description:    (item.description || item.desc || '').slice(0, 150) + (item.description && item.description.length > 150 ? '…  [Upgrade to Pro for full details]' : ''),
+    cvss:           item.cvss,
+    threat_level:   item.threat_level,
+    type:           item.type,
+    published:      item.published || item.pubDate,
+    exploited:      item.exploited,
+    cisa_kev:       item.cisa_kev || item.cisaKev,
+    vendor:         item.vendor,
+    product:        item.product,
+    priority_score: item.priority_score,
+    sources_confirmed: item.sources_confirmed,
+    // Phase 7: Free tier gets actor name + data tier only — no signals, no breakdown
+    actor_attribution: {
+      primary_actor: item.actor_attribution?.primary_actor || 'Unknown',
+      unattributed:  item.actor_attribution?.unattributed ?? true,
+    },
+    data_confidence: {
+      tier: item.data_confidence?.tier || item._trust ? 'MEDIUM' : 'UNKNOWN',
+    },
+    _upgrade: 'Full IOCs, MITRE mapping, attribution confidence, explainability, and attack chain available on Pro plan — https://blog.cyberdudebivash.in/pricing.html',
+    _trust:   (item._trust || attestItem(item)._trust),
   };
 }
 
-// PRO tier: full data except raw file access
+// PRO tier: full explanation + confidence, actor without raw signals, scoring without breakdown
 function filterPro(item) {
+  const attr = item.actor_attribution || {};
   return attestItem({
     ...item,
-    description: item.description,
+    description: item.description || item.desc,
     iocs:        (item.iocs || []).slice(0, 50),
     refs:        (item.refs || []).slice(0, 10),
     cves:        item.cves || [],
     report_url:  item.report_url || null,
+    // Phase 7: Pro gets full explanation + confidence — no raw signals or all_attributions
+    actor_attribution: {
+      primary_actor:       attr.primary_actor,
+      primary_actor_id:    attr.primary_actor_id,
+      primary_confidence:  attr.primary_confidence,
+      unattributed:        attr.unattributed,
+      attribution_quality: attr.attribution_quality,
+      evidence_summary:    attr.evidence_summary,
+      // signals and all_attributions are Enterprise-only
+    },
+    data_confidence: item.data_confidence ? {
+      score:      item.data_confidence.score,
+      tier:       item.data_confidence.tier,
+      suppressed: item.data_confidence.suppressed,
+    } : undefined,
+    scoring: item.scoring ? {
+      priority_score:   item.scoring.priority_score,
+      normalized_score: item.scoring.normalized_score,
+      threat_level:     item.scoring.threat_level,
+      confidence_score: item.scoring.confidence_score,
+      reasoning:        item.scoring.reasoning,
+      // breakdown is Enterprise-only
+    } : undefined,
+    _explanation: item._explanation, // Full explanation block for Pro
+    _intelligence: item._intelligence ? {
+      linked_actors:       item._intelligence.linked_actors,
+      campaign_id:         item._intelligence.campaign_id,
+      campaign_name:       item._intelligence.campaign_name,
+      campaign_severity:   item._intelligence.campaign_severity,
+      campaign_item_count: item._intelligence.campaign_item_count,
+      enriched_at:         item._intelligence.enriched_at,
+    } : undefined,
   });
 }
 
-// ENTERPRISE tier: everything
+// ENTERPRISE tier: everything — raw signals + scoring.breakdown + all_attributions
 function filterEnterprise(item) {
   return attestItem(item);
 }
@@ -297,21 +337,21 @@ function getCampaigns(tier, query = {}) {
   const { page, limit, offset } = parsePagination(query);
   const paged  = campaigns.slice(offset, offset + limit);
 
-  // Tier gating on shared_iocs and related_intel depth
+  // Tier gating on shared_iocs, related_intel depth, and reasoning (Phase 7)
   const tierPaged = paged.map(campaign => {
     if (tier === 'free') {
-      const { shared_iocs, related_intel, ...safe } = campaign;
+      const { shared_iocs, related_intel, reasoning, clustering_model, ...safe } = campaign;
       return {
         ...safe,
         related_intel: (related_intel || []).slice(0, 3),
         shared_iocs:   [],
-        _upgrade: 'Full IOC list and campaign details available on Pro plan',
+        _upgrade: 'Full IOC list, clustering reasoning, and campaign details available on Pro plan',
       };
     }
     if (tier === 'pro') {
       return { ...campaign, shared_iocs: (campaign.shared_iocs || []).slice(0, 20) };
     }
-    return campaign; // enterprise: everything
+    return campaign; // enterprise: everything including reasoning[] and clustering_model
   });
 
   return {

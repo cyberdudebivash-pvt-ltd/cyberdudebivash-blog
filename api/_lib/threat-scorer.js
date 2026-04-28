@@ -1,213 +1,303 @@
 /**
- * SENTINEL APEX — AI Threat Scoring Engine v1.0
- * Phase 3: Deterministic weighted scoring model.
+ * SENTINEL APEX — AI Threat Scoring Engine v2.0
+ * Phase 3 Hardening: Normalized scoring + data confidence layer.
  *
- * INPUT FEATURES (11 dimensions):
- *   CVSS score · KEV presence · Exploitation status · Ransomware flag
- *   IOC richness · Source count · Threat actor linkage · Campaign membership
- *   Campaign size · Recency · Critical infrastructure flag
+ * NORMALIZED SCORING FORMULA:
+ *   score = (cvss_norm*0.20) + (kev_flag*0.20) + (exploit_flag*0.15)
+ *         + (ioc_density*0.10) + (actor_confidence*0.15)
+ *         + (campaign_size_norm*0.10) + (recency*0.10)
  *
- * OUTPUT:
- *   { priority_score: 0–100, threat_level: CRITICAL/HIGH/MEDIUM/LOW,
- *     confidence_score: 0–1, score_breakdown: {...}, scoring_model: string }
+ *   All features normalized to [0, 1] before weighting.
+ *   Final priority_score = normalized_score × 100.
+ *   Every output includes reasoning[] explaining each component.
+ *
+ * DATA CONFIDENCE LAYER:
+ *   data_confidence = (source_count*0.40) + (structured_data*0.30) + (ioc_presence*0.30)
+ *   < 0.40 → LOW (suppress from top threats)
+ *   0.40–0.69 → MEDIUM
+ *   ≥ 0.70 → HIGH
  *
  * All weights are explicit and auditable. No black-box scoring.
  *
  * © 2026 CYBERDUDEBIVASH PRIVATE LIMITED
  */
 'use strict';
+const { boundConfidence } = require('./threat-graph');
 
 /* ═══════════════════════════════════════════════════════════════════════
-   WEIGHT CONFIGURATION
-   Total maximum raw score ≈ 115 (capped at 100).
-   Over-capacity allows differentiation at the top end.
-═══════════════════════════════════════════════════════════════════════ */
-const WEIGHTS = {
-  CVSS_MAX:             25,  // CVSS 10.0 → 25 pts (linear: cvss * 2.5)
-  KEV_BONUS:            20,  // CISA KEV confirmed
-  EXPLOITATION_BONUS:   15,  // Active exploitation in wild
-  RANSOMWARE_BONUS:     10,  // Ransomware campaign association
-  IOC_MAX:               8,  // IOC count ≥ 6 → full 8 pts
-  SOURCE_MAX:            7,  // 4+ corroborating sources → full 7 pts
-  ACTOR_KNOWN:           8,  // Known threat actor(s) linked (2+ actors → max)
-  CAMPAIGN_MEMBER:       5,  // Part of active campaign
-  RECENCY_MAX:           7,  // Published today → 7 pts, fades over 14 days
-  ZERO_DAY_BONUS:        5,  // Type === 'ZERO_DAY'
-  CRITICAL_INFRA_BONUS:  5,  // SCADA/ICS/federal/nuclear context
-};
-
-/* ═══════════════════════════════════════════════════════════════════════
-   SCORING ENGINE
+   DATA CONFIDENCE LAYER
+   data_confidence = (source_count*0.40) + (structured_data*0.30) + (ioc_presence*0.30)
 ═══════════════════════════════════════════════════════════════════════ */
 
 /**
- * Compute enhanced threat score for a single intel item.
+ * Compute data confidence score for a single intel item.
+ * Items below 0.40 are flagged for suppression from top threats.
  *
- * @param {Object} item         — Intel item (from live.json schema)
- * @param {Object} graphContext — Optional context from the graph + clustering layer
- *   @param {number} graphContext.actorCount    — # of linked threat actors
- *   @param {boolean} graphContext.inCampaign   — is this item part of a campaign?
- *   @param {number} graphContext.campaignSize  — # of items in associated campaign
- *   @param {string} graphContext.campaignSeverity — CRITICAL/HIGH/MEDIUM/LOW
- * @returns {Object} Scoring result with full breakdown
+ * @param {Object} item - Intel item
+ * @returns {{ score, tier, suppressed, factors }}
  */
-function computeEnhancedScore(item, graphContext = {}) {
+function computeDataConfidence(item) {
+  // ── Factor 1: source_count (weight 0.40) ──────────────────────────
+  // Normalized: min(1.0, sourceCount / 3)
+  // 1 source → 0.33, 2 sources → 0.67, 3+ sources → 1.0
+  const sourceCount = Math.max(1,
+    parseInt(item.sourceCount || item.sources_confirmed || 1, 10)
+  );
+  const sourceNorm  = Math.min(1.0, sourceCount / 3);
+
+  // ── Factor 2: structured_data_presence (weight 0.30) ──────────────
+  // Check 6 expected structured fields: cvss, pubDate/published, title, type, vendor, exploited
+  const structuredFields = [
+    !!parseFloat(item.cvss || item.cvssScore || 0),
+    !!(item.pubDate || item.published),
+    !!(item.title && item.title.length > 5),
+    !!(item.type),
+    !!(item.vendor || item.product),
+    (item.exploited !== undefined && item.exploited !== null),
+  ];
+  const populatedCount   = structuredFields.filter(Boolean).length;
+  const structuredNorm   = populatedCount / 6;
+
+  // ── Factor 3: ioc_presence (weight 0.30) ──────────────────────────
+  // Normalized: min(1.0, iocCount / 5)
+  // 0 IOCs → 0, 1 → 0.2, 3 → 0.6, 5+ → 1.0
+  const iocCount   = Math.max(
+    (item.iocs || []).length,
+    parseInt(item.ioc_count || 0, 10)
+  );
+  const iocNorm    = Math.min(1.0, iocCount / 5);
+
+  // ── Composite ────────────────────────────────────────────────────
+  const rawScore   = (sourceNorm * 0.40) + (structuredNorm * 0.30) + (iocNorm * 0.30);
+  const score      = Math.round(rawScore * 1000) / 1000;
+
+  // ── Tier assignment ──────────────────────────────────────────────
+  let tier;
+  if (score >= 0.70)      tier = 'HIGH';
+  else if (score >= 0.40) tier = 'MEDIUM';
+  else                    tier = 'LOW';
+
+  const suppressed = score < 0.40;
+
+  return {
+    score,
+    tier,
+    suppressed,
+    factors: {
+      source_count:           { raw: sourceCount, normalized: Math.round(sourceNorm * 1000) / 1000, weight: 0.40 },
+      structured_data:        { populated: populatedCount, of: 6, normalized: Math.round(structuredNorm * 1000) / 1000, weight: 0.30 },
+      ioc_presence:           { raw: iocCount, normalized: Math.round(iocNorm * 1000) / 1000, weight: 0.30 },
+    },
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PHASE 3 HARDENING: NORMALIZED SCORING ENGINE
+   score = (cvss_norm*0.20) + (kev_flag*0.20) + (exploit_flag*0.15)
+         + (ioc_density*0.10) + (actor_confidence*0.15)
+         + (campaign_size_norm*0.10) + (recency*0.10)
+═══════════════════════════════════════════════════════════════════════ */
+
+/**
+ * Compute normalized threat score for a single intel item.
+ * Replaces computeEnhancedScore with fully normalized [0,1] features.
+ *
+ * @param {Object} item         - Intel item (from live.json schema)
+ * @param {Object} graphContext - Optional context from graph + clustering layer
+ *   @param {number}  graphContext.actorCount       - # of linked threat actors
+ *   @param {number}  graphContext.actorConfidence  - primary actor confidence (0–1)
+ *   @param {boolean} graphContext.inCampaign       - part of a campaign?
+ *   @param {number}  graphContext.campaignSize     - items in associated campaign
+ *   @param {string}  graphContext.campaignSeverity - CRITICAL/HIGH/MEDIUM/LOW
+ * @returns {Object} Normalized scoring result with reasoning[]
+ */
+function computeNormalizedScore(item, graphContext) {
+  graphContext = graphContext || {};
   const {
-    actorCount      = 0,
-    inCampaign      = false,
-    campaignSize    = 0,
+    actorCount       = 0,
+    actorConfidence  = 0,
+    inCampaign       = false,
+    campaignSize     = 0,
     campaignSeverity = null,
   } = graphContext;
 
-  const breakdown = {};
+  const reasoning  = [];
+  const breakdown  = {};
 
-  /* ── 1. CVSS Base Score (0–25 pts) ─────────────────────────────── */
-  const cvss = Math.min(10, Math.max(0, parseFloat(item.cvss || item.cvssScore || 0)));
-  const cvssScore = Math.min(WEIGHTS.CVSS_MAX, Math.round(cvss * (WEIGHTS.CVSS_MAX / 10)));
-  breakdown.cvss = { raw: cvss, max: WEIGHTS.CVSS_MAX, contribution: cvssScore };
+  // ── Feature 1: cvss_norm (weight 0.20) ──────────────────────────────
+  // CVSS 0–10 → normalized 0–1
+  const cvss     = Math.min(10, Math.max(0, parseFloat(item.cvss || item.cvssScore || 0)));
+  const cvssNorm = cvss / 10;
+  breakdown.cvss = { raw: cvss, normalized: cvssNorm, weight: 0.20, contribution: cvssNorm * 0.20 };
+  if (cvss >= 9.0)      reasoning.push(`Critical CVSS ${cvss} (cvss_norm=${cvssNorm.toFixed(2)}, weight=0.20)`);
+  else if (cvss >= 7.0) reasoning.push(`High CVSS ${cvss} (cvss_norm=${cvssNorm.toFixed(2)}, weight=0.20)`);
+  else if (cvss > 0)    reasoning.push(`CVSS ${cvss} (cvss_norm=${cvssNorm.toFixed(2)}, weight=0.20)`);
+  else                  reasoning.push(`No CVSS data (cvss_norm=0.00, weight=0.20)`);
 
-  /* ── 2. CISA KEV Confirmation (0 or 20 pts) ─────────────────────── */
-  const hasKev     = !!(item.cisaKev || item.cisa_kev);
-  const kevScore   = hasKev ? WEIGHTS.KEV_BONUS : 0;
-  breakdown.kev    = { present: hasKev, max: WEIGHTS.KEV_BONUS, contribution: kevScore };
+  // ── Feature 2: kev_flag (weight 0.20) ───────────────────────────────
+  // Binary: on CISA KEV → 1.0
+  const hasKev  = !!(item.cisaKev || item.cisa_kev);
+  const kevNorm = hasKev ? 1.0 : 0.0;
+  breakdown.kev = { present: hasKev, normalized: kevNorm, weight: 0.20, contribution: kevNorm * 0.20 };
+  reasoning.push(hasKev
+    ? `CISA KEV confirmed — highest exploitation priority (kev_flag=1.0, weight=0.20)`
+    : `Not on CISA KEV list (kev_flag=0.0, weight=0.20)`
+  );
 
-  /* ── 3. Active Exploitation (0 or 15 pts) ───────────────────────── */
-  const exploited      = !!(item.exploited);
-  const exploitScore   = exploited ? WEIGHTS.EXPLOITATION_BONUS : 0;
-  breakdown.exploitation = {
-    status: exploited ? 'confirmed_in_wild' : 'not_confirmed',
-    max: WEIGHTS.EXPLOITATION_BONUS,
-    contribution: exploitScore,
-  };
+  // ── Feature 3: exploit_flag (weight 0.15) ────────────────────────────
+  // exploited = 1.0; zero_day (not yet patched) = 0.85; neither = 0
+  const exploited    = !!(item.exploited);
+  const isZeroDay    = item.type === 'ZERO_DAY';
+  const exploitNorm  = exploited ? 1.0 : isZeroDay ? 0.85 : 0.0;
+  breakdown.exploit  = { exploited, is_zero_day: isZeroDay, normalized: exploitNorm, weight: 0.15, contribution: exploitNorm * 0.15 };
+  if (exploited)      reasoning.push(`Exploited in the wild (exploit_flag=1.0, weight=0.15)`);
+  else if (isZeroDay) reasoning.push(`Zero-day — unpatched at publication (exploit_flag=0.85, weight=0.15)`);
+  else                reasoning.push(`No confirmed exploitation (exploit_flag=0.0, weight=0.15)`);
 
-  /* ── 4. Ransomware Association (0 or 10 pts) ────────────────────── */
-  const hasRansomware    = !!(item.ransomware || item.type === 'RANSOMWARE');
-  const ransomwareScore  = hasRansomware ? WEIGHTS.RANSOMWARE_BONUS : 0;
-  breakdown.ransomware   = { present: hasRansomware, max: WEIGHTS.RANSOMWARE_BONUS, contribution: ransomwareScore };
-
-  /* ── 5. IOC Richness (0–8 pts) ──────────────────────────────────── */
+  // ── Feature 4: ioc_density (weight 0.10) ────────────────────────────
+  // IOC count normalized: min(1.0, iocCount / 5)
   const iocCount    = Math.max(
     (item.iocs || []).length,
     parseInt(item.ioc_count || 0, 10)
   );
-  // 1 IOC = 1pt, 2 = 3pt, 4 = 6pt, 6+ = 8pt
-  const iocScore    = iocCount >= 6 ? 8 : iocCount >= 4 ? 6 : iocCount >= 2 ? 3 : iocCount >= 1 ? 1 : 0;
-  breakdown.ioc_richness = { count: iocCount, max: WEIGHTS.IOC_MAX, contribution: iocScore };
+  const iocNorm     = Math.min(1.0, iocCount / 5);
+  breakdown.ioc     = { count: iocCount, normalized: iocNorm, weight: 0.10, contribution: iocNorm * 0.10 };
+  if (iocCount > 0) reasoning.push(`${iocCount} IOC(s) present (ioc_density=${iocNorm.toFixed(2)}, weight=0.10)`);
+  else              reasoning.push(`No IOCs (ioc_density=0.0, weight=0.10)`);
 
-  /* ── 6. Multi-Source Corroboration (0–7 pts) ────────────────────── */
-  const sourceCount = Math.max(1,
-    parseInt(item.sourceCount || item.sources_confirmed || 1, 10)
-  );
-  // 1 source = 0pt, 2 = 3pt, 3 = 5pt, 4+ = 7pt
-  const sourceScore = sourceCount >= 4 ? 7 : sourceCount >= 3 ? 5 : sourceCount >= 2 ? 3 : 0;
-  breakdown.sources = { count: sourceCount, max: WEIGHTS.SOURCE_MAX, contribution: sourceScore };
+  // ── Feature 5: actor_confidence (weight 0.15) ───────────────────────
+  // From actor attribution. 0 actors = 0.0; actor_confidence from attribution.
+  // If actorCount ≥ 1 but no confidence passed, use 0.5 as default.
+  let actorConf = 0.0;
+  if (item.actor_attribution && !item.actor_attribution.unattributed) {
+    actorConf = boundConfidence(item.actor_attribution.primary_confidence || actorConfidence);
+  } else if (actorCount > 0) {
+    actorConf = boundConfidence(actorConfidence || 0.5);
+  }
+  const actorNorm = actorConf;
+  breakdown.actor = { actor_count: actorCount, confidence: actorConf, normalized: actorNorm, weight: 0.15, contribution: actorNorm * 0.15 };
+  if (actorNorm > 0) {
+    const actorName = item.actor_attribution?.primary_actor || `${actorCount} actor(s)`;
+    reasoning.push(`Actor attribution: ${actorName} (actor_confidence=${actorNorm.toFixed(2)}, weight=0.15)`);
+  } else {
+    reasoning.push(`No actor attribution (actor_confidence=0.0, weight=0.15)`);
+  }
 
-  /* ── 7. Known Threat Actor Linkage (0–8 pts) ────────────────────── */
-  // 0 actors = 0pt, 1 actor = 5pt, 2+ actors = 8pt
-  const actorScore  = actorCount >= 2 ? WEIGHTS.ACTOR_KNOWN
-                    : actorCount === 1 ? 5 : 0;
-  breakdown.threat_actor = {
-    count: actorCount,
-    max: WEIGHTS.ACTOR_KNOWN,
-    contribution: actorScore,
-    note: actorCount > 0 ? `${actorCount} known actor(s) linked via SENTINEL APEX graph` : 'No known actor attribution',
-  };
-
-  /* ── 8. Campaign Membership (0–5 pts) ───────────────────────────── */
-  // Not in campaign = 0pt, in campaign (small) = 3pt, large campaign = 5pt
-  const campaignScore = inCampaign
-    ? (campaignSize >= 5 ? WEIGHTS.CAMPAIGN_MEMBER : campaignSize >= 3 ? 4 : 3)
-    : 0;
+  // ── Feature 6: campaign_size_norm (weight 0.10) ─────────────────────
+  // campaignSize normalized: min(1.0, campaignSize / 5)
+  // Not in campaign = 0; campaign with 5+ items = 1.0
+  const campNorm  = inCampaign ? Math.min(1.0, (campaignSize || 1) / 5) : 0.0;
   breakdown.campaign = {
-    member:   inCampaign,
-    size:     campaignSize,
-    severity: campaignSeverity,
-    max:      WEIGHTS.CAMPAIGN_MEMBER,
-    contribution: campaignScore,
+    member: inCampaign, size: campaignSize, severity: campaignSeverity,
+    normalized: campNorm, weight: 0.10, contribution: campNorm * 0.10,
   };
+  if (inCampaign) reasoning.push(`Part of ${campaignSeverity || 'active'} campaign (${campaignSize} items; campaign_size_norm=${campNorm.toFixed(2)}, weight=0.10)`);
+  else            reasoning.push(`Not associated with a campaign (campaign_size_norm=0.0, weight=0.10)`);
 
-  /* ── 9. Recency (0–7 pts) ───────────────────────────────────────── */
+  // ── Feature 7: recency (weight 0.10) ────────────────────────────────
+  // recency = exp(-daysOld / 14)
+  // Same-day → 1.0; 14 days → ~0.37; 28 days → ~0.14
   const pubDate  = item.pubDate || item.published || null;
-  const daysOld  = item.daysOld != null ? item.daysOld
-                  : pubDate ? Math.floor((Date.now() - new Date(pubDate).getTime()) / 86400000)
-                  : 7; // default to 7 days if unknown
-  const safeAge  = Math.max(0, daysOld);
-  const recencyScore = safeAge <= 0  ? 7
-                     : safeAge <= 1  ? 6
-                     : safeAge <= 3  ? 4
-                     : safeAge <= 7  ? 2
-                     : safeAge <= 14 ? 1 : 0;
-  breakdown.recency = { days_old: safeAge, max: WEIGHTS.RECENCY_MAX, contribution: recencyScore };
+  const daysOld  = item.daysOld != null
+    ? Math.max(0, item.daysOld)
+    : pubDate
+      ? Math.max(0, Math.floor((Date.now() - new Date(pubDate).getTime()) / 86400000))
+      : 7; // default unknown = 7 days
+  const recencyNorm = Math.exp(-daysOld / 14);
+  breakdown.recency = { days_old: daysOld, normalized: Math.round(recencyNorm * 1000) / 1000, weight: 0.10, contribution: recencyNorm * 0.10 };
+  reasoning.push(`Published ${daysOld} day(s) ago (recency=exp(-${daysOld}/14)=${recencyNorm.toFixed(3)}, weight=0.10)`);
 
-  /* ── 10. Zero-Day Bonus (0 or 5 pts) ───────────────────────────── */
-  const isZeroDay   = item.type === 'ZERO_DAY';
-  const zeroDayScore = isZeroDay ? WEIGHTS.ZERO_DAY_BONUS : 0;
-  breakdown.zero_day = { present: isZeroDay, max: WEIGHTS.ZERO_DAY_BONUS, contribution: zeroDayScore };
+  // ── Composite normalized score ────────────────────────────────────────
+  const normalizedScore = boundConfidence(
+    (cvssNorm    * 0.20) +
+    (kevNorm     * 0.20) +
+    (exploitNorm * 0.15) +
+    (iocNorm     * 0.10) +
+    (actorNorm   * 0.15) +
+    (campNorm    * 0.10) +
+    (recencyNorm * 0.10)
+  );
 
-  /* ── 11. Critical Infrastructure Context (0 or 5 pts) ──────────── */
-  const critText        = `${item.title || ''} ${item.desc || item.description || ''}`;
-  const isCritInfra     = /federal|critical\s+infra|scada|ics|ot\s+|nuclear|power\s+grid|water\s+treatment|pipeline|election/i.test(critText);
-  const critInfraScore  = isCritInfra ? WEIGHTS.CRITICAL_INFRA_BONUS : 0;
-  breakdown.critical_infra = { present: isCritInfra, max: WEIGHTS.CRITICAL_INFRA_BONUS, contribution: critInfraScore };
+  const priorityScore = Math.min(100, Math.max(0, Math.round(normalizedScore * 100)));
 
-  /* ── COMPOSITE SCORE ─────────────────────────────────────────────── */
-  const rawScore  = cvssScore + kevScore + exploitScore + ransomwareScore +
-                    iocScore + sourceScore + actorScore + campaignScore +
-                    recencyScore + zeroDayScore + critInfraScore;
-  const finalScore = Math.min(100, Math.max(0, Math.round(rawScore)));
+  // ── Threat level ────────────────────────────────────────────────────
+  const threatLevel = priorityScore >= 85 ? 'CRITICAL'
+                    : priorityScore >= 65 ? 'HIGH'
+                    : priorityScore >= 45 ? 'MEDIUM' : 'LOW';
 
-  /* ── CONFIDENCE SCORE (0–1) ──────────────────────────────────────── */
-  // Based on: how many features have data, source count, and KEV presence
-  const featuresWithData = Object.values(breakdown).filter(v => v.contribution > 0).length;
-  const baseConfidence   = 0.40 + (featuresWithData / 11) * 0.40;
-  const sourceBonus      = sourceCount >= 3 ? 0.12 : sourceCount >= 2 ? 0.06 : 0;
-  const kevBonus         = hasKev ? 0.08 : 0;
-  const confidence       = Math.min(0.99, baseConfidence + sourceBonus + kevBonus);
+  // ── Confidence score (data quality × scoring richness) ──────────────
+  // Confidence in the score itself: based on features with real data
+  const featuresWithData    = [cvss > 0, hasKev, exploited || isZeroDay, iocCount > 0, actorNorm > 0, inCampaign].filter(Boolean).length;
+  const scoringConfidence   = boundConfidence(0.40 + (featuresWithData / 6) * 0.55 + (hasKev ? 0.05 : 0));
 
-  /* ── THREAT LEVEL ────────────────────────────────────────────────── */
-  const threatLevel = finalScore >= 85 ? 'CRITICAL'
-                    : finalScore >= 65 ? 'HIGH'
-                    : finalScore >= 45 ? 'MEDIUM' : 'LOW';
+  reasoning.push(`Composite: normalized_score=${normalizedScore.toFixed(4)} → priority_score=${priorityScore} (${threatLevel})`);
 
   return {
-    priority_score:   finalScore,
+    priority_score:   priorityScore,
+    normalized_score: Math.round(normalizedScore * 10000) / 10000,
     threat_level:     threatLevel,
-    confidence_score: Math.round(confidence * 100) / 100,
-    score_breakdown:  breakdown,
-    raw_score:        rawScore,
-    scoring_model:    'SENTINEL_APEX_v4.1_ENHANCED_DETERMINISTIC',
+    confidence_score: Math.round(scoringConfidence * 100) / 100,
+    reasoning,
+    breakdown,
+    scoring_model:    'SENTINEL_APEX_v4.2_NORMALIZED',
   };
 }
 
 /**
- * Recompute score for items that already have graph/campaign context embedded.
- * Convenience wrapper for batch re-scoring after enrichment.
+ * Legacy alias — backward compatibility for any callers using computeEnhancedScore.
+ * Maps old graphContext shape to new one.
+ */
+function computeEnhancedScore(item, graphContext) {
+  graphContext = graphContext || {};
+  // Old signature had actorCount; new has actorConfidence too
+  return computeNormalizedScore(item, {
+    actorCount:       graphContext.actorCount      || 0,
+    actorConfidence:  graphContext.actorConfidence || 0,
+    inCampaign:       graphContext.inCampaign      || false,
+    campaignSize:     graphContext.campaignSize    || 0,
+    campaignSeverity: graphContext.campaignSeverity || null,
+  });
+}
+
+/**
+ * Recompute score for items that already have actor_attribution + campaign embedded.
  */
 function rescoreEnrichedItem(item) {
+  const attr = item.actor_attribution || {};
   const graphContext = {
-    actorCount:       (item._intelligence?.linked_actors || []).length,
+    actorCount:       attr.unattributed ? 0 : 1,
+    actorConfidence:  attr.primary_confidence || 0,
     inCampaign:       !!(item._intelligence?.campaign_id),
     campaignSize:     item._intelligence?.campaign_item_count || 0,
-    campaignSeverity: item._intelligence?.campaign_severity || null,
+    campaignSeverity: item._intelligence?.campaign_severity   || null,
   };
-  return computeEnhancedScore(item, graphContext);
+  return computeNormalizedScore(item, graphContext);
 }
 
 /**
- * Batch score: returns only the delta fields needed to update stored items.
+ * Batch score: returns delta fields to update stored items.
  */
-function batchScore(items, graphContext = {}) {
+function batchScore(items, graphContextMap) {
+  graphContextMap = graphContextMap || {};
   return items.map(item => {
-    const ctx = graphContext[item.id] || {};
-    const scoring = computeEnhancedScore(item, ctx);
+    const ctx     = graphContextMap[item.id] || {};
+    const scoring = computeNormalizedScore(item, ctx);
     return {
       id:               item.id,
       priority_score:   scoring.priority_score,
+      normalized_score: scoring.normalized_score,
       threat_level:     scoring.threat_level,
       confidence_score: scoring.confidence_score,
-      score_breakdown:  scoring.score_breakdown,
+      breakdown:        scoring.breakdown,
+      reasoning:        scoring.reasoning,
     };
   });
 }
 
-module.exports = { computeEnhancedScore, rescoreEnrichedItem, batchScore, WEIGHTS };
+module.exports = {
+  computeDataConfidence,
+  computeNormalizedScore,
+  computeEnhancedScore,  // legacy alias
+  rescoreEnrichedItem,
+  batchScore,
+};
