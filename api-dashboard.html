@@ -71,6 +71,7 @@ input:focus,select:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba
 footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);padding:24px;text-align:center;font-size:13px;color:var(--apex-muted)}footer a{color:var(--apex-cyan);text-decoration:none}
 @media(max-width:600px){.hero{padding:40px 16px 24px}.wrap{padding:24px 16px}.nlinks a:not(.ncta){display:none}}
 </style>
+<script src="/payment-flow.js"></script>
 </head>
 <body>
 <nav>
@@ -187,10 +188,10 @@ const data = await res.json();</div>
     <div class="card" id="dash-upgrade-card" style="background:linear-gradient(135deg,#0a1428,#111827);border-color:rgba(0,255,224,.15)">
       <div class="card-title" style="color:var(--apex-cyan)">🚀 Upgrade Your Plan</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
-        <button class="btn btn-primary" onclick="startCheckout('pro')">⚡ Upgrade to Pro — $49/mo</button>
-        <button class="btn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7" onclick="startCheckout('enterprise')">🏢 Enterprise — Custom</button>
+        <button class="btn btn-primary" onclick="ApexPaymentFlow.startUpgrade('pro')">⚡ Upgrade to Pro — ₹1,499/mo</button>
+        <button class="btn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7" onclick="ApexPaymentFlow.startUpgrade('enterprise')">🏢 Enterprise — ₹4,999/mo</button>
       </div>
-      <p style="font-size:13px;color:var(--apex-muted);margin-top:12px">Pro includes: 5,000 req/day · Full IOC access · MITRE mapping · Sigma/YARA rules · 7-day free trial</p>
+      <p style="font-size:13px;color:var(--apex-muted);margin-top:12px">Pro includes: 5,000 req/day · Full IOC access · MITRE mapping · Sigma/YARA rules · Pay via UPI or bank transfer</p>
     </div>
   </div>
 </div>
@@ -310,7 +311,7 @@ X-API-Key: sentinel_your_key_here</div>
     <div class="tier-card featured">
       <span class="badge bdg-pro" style="margin-bottom:12px">PRO</span>
       <div class="tier-name">SOC Pro</div>
-      <div class="tier-price">$49<span>/month</span></div>
+      <div class="tier-price">₹1,499<span>/month</span></div>
       <ul class="tier-features">
         <li>5,000 API requests/day</li>
         <li>Full IOC dataset (50/item)</li>
@@ -319,16 +320,16 @@ X-API-Key: sentinel_your_key_here</div>
         <li>Attack chain analysis</li>
         <li>Business impact data</li>
         <li>Full search (50 results)</li>
-        <li>7-day free trial</li>
         <li>Priority email support</li>
+        <li>Pay via UPI or bank transfer</li>
         <li class="locked">STIX 2.1 export</li>
       </ul>
-      <button class="btn btn-primary" onclick="startCheckout('pro')" style="width:100%">⚡ Start 7-Day Trial →</button>
+      <button class="btn btn-primary" onclick="ApexPaymentFlow.startUpgrade('pro')" style="width:100%">⚡ Upgrade to Pro →</button>
     </div>
     <div class="tier-card">
       <span class="badge bdg-ent" style="margin-bottom:12px">ENTERPRISE</span>
       <div class="tier-name">Enterprise</div>
-      <div class="tier-price" style="color:#a855f7">Custom</div>
+      <div class="tier-price" style="color:#a855f7">₹4,999<span>/month</span></div>
       <ul class="tier-features">
         <li>Unlimited API requests</li>
         <li>Full IOC export (200+/item)</li>
@@ -341,7 +342,7 @@ X-API-Key: sentinel_your_key_here</div>
         <li>SLA guarantee</li>
         <li>MSSP licensing available</li>
       </ul>
-      <a href="mailto:bivash@cyberdudebivash.com?subject=Enterprise+API+Inquiry" class="btn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7;width:100%;text-decoration:none;text-align:center;justify-content:center">🏢 Contact for Pricing →</a>
+      <button class="btn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7;width:100%" onclick="ApexPaymentFlow.startUpgrade('enterprise')">🏢 Upgrade to Enterprise →</button>
     </div>
   </div>
 </div>
@@ -458,18 +459,10 @@ async function loadDashboard() {
   } catch(e){ alert('Dashboard load failed: '+e.message); }
 }
 
-async function startCheckout(plan) {
-  if(!sessionKey){ switchTab('register'); return; }
-  try {
-    const res = await fetch(`${API}/api/v1/billing/subscribe`,{
-      method:'POST', headers:{'Content-Type':'application/json','X-API-Key':sessionKey},
-      body: JSON.stringify({plan})
-    });
-    const data = await res.json();
-    if(data.checkout_url) window.location.href = data.checkout_url;
-    else if(data.error)   alert(data.error.message);
-    else alert('Checkout unavailable — contact bivash@cyberdudebivash.com');
-  } catch(e){ alert('Checkout error: '+e.message); }
+function startCheckout(plan) {
+  // Redirects to the manual payment flow via ApexPaymentFlow module
+  if (typeof ApexPaymentFlow !== 'undefined') ApexPaymentFlow.startUpgrade(plan);
+  else window.location.href = '/pricing.html';
 }
 
 function copyKey() {

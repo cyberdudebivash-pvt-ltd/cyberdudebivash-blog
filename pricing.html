@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,7 +9,7 @@
 
   <!-- Open Graph -->
   <meta property="og:title" content="CYBERDUDEBIVASH SENTINEL APEX Pricing — Threat Intelligence Plans for Security Teams">
-  <meta property="og:description" content="Free, Pro ($49/mo), and Enterprise plans. Pre-disclosure CVE reports, IOC feeds, SIEM rules, and dedicated analyst access for SOC teams.">
+  <meta property="og:description" content="Free, Pro (₹1,499/mo), and Enterprise plans. Pre-disclosure CVE reports, IOC feeds, SIEM rules, and dedicated analyst access for SOC teams.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://blog.cyberdudebivash.in/pricing.html">
   <meta property="og:image" content="https://blog.cyberdudebivash.in/og-image.png">
@@ -19,12 +19,11 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@cyberdudebivash">
   <meta name="twitter:title" content="CYBERDUDEBIVASH SENTINEL APEX Pricing — Threat Intelligence Plans">
-  <meta name="twitter:description" content="Free, Pro ($49/mo), and Enterprise plans. Pre-disclosure CVE reports, IOC feeds, SIEM rules, and dedicated analyst access.">
+  <meta name="twitter:description" content="Free, Pro (₹1,499/mo), and Enterprise plans. Pre-disclosure CVE reports, IOC feeds, SIEM rules, and dedicated analyst access.">
   <meta name="twitter:image" content="https://blog.cyberdudebivash.in/og-image.png">
 
   <title>Pricing — CYBERDUDEBIVASH SENTINEL APEX Threat Intelligence Plans | CyberDudeBivash</title>
 
-  <!-- Schema.org JSON-LD -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -33,9 +32,7 @@
     "url": "https://blog.cyberdudebivash.in/pricing.html",
     "name": "CYBERDUDEBIVASH SENTINEL APEX Pricing — Threat Intelligence Plans",
     "description": "Free, Pro, and Enterprise cybersecurity threat intelligence subscription plans from CyberDudeBivash CYBERDUDEBIVASH SENTINEL APEX.",
-    "isPartOf": {
-      "@id": "https://blog.cyberdudebivash.in/#website"
-    },
+    "isPartOf": { "@id": "https://blog.cyberdudebivash.in/#website" },
     "publisher": {
       "@type": "Organization",
       "name": "CyberDudeBivash CYBERDUDEBIVASH SENTINEL APEX",
@@ -45,1188 +42,1423 @@
   </script>
 
   <style>
+    /* ── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --apex-cyan: #00ffe0;
-      --apex-red: #ff3b3b;
-      --apex-orange: #ff8c00;
-      --apex-yellow: #ffe000;
-      --apex-green: #00ff88;
-      --apex-purple: #a855f7;
-      --apex-bg: #07090f;
-      --apex-surface: #0d1117;
-      --apex-card: #111827;
-      --apex-border: #1f2937;
-      --apex-text: #e2e8f0;
-      --apex-muted: #6b7280;
+      --cyan:   #00ffe0;
+      --red:    #ff3b3b;
+      --gold:   #ffd700;
+      --bg:     #0a0d14;
+      --bg2:    #0f1520;
+      --bg3:    #141c2b;
+      --border: rgba(0,255,224,0.15);
+      --text:   #e0e8f0;
+      --muted:  #7a8fa6;
+      --radius: 12px;
+      --font:   'Segoe UI', system-ui, sans-serif;
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    html { scroll-behavior: smooth; }
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--apex-bg);
-      color: var(--apex-text);
-      line-height: 1.7;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
     }
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    /* TICKER */
-    .ticker-wrap {
-      background: #0d0010;
-      border-bottom: 1px solid #2d1050;
-      padding: 8px 0;
-      overflow: hidden;
-      white-space: nowrap;
+    /* ── Header ───────────────────────────────────── */
+    .site-header {
+      position: sticky; top: 0; z-index: 900;
+      background: rgba(10,13,20,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
     }
-    .ticker-inner {
-      display: inline-block;
-      animation: ticker-scroll 40s linear infinite;
+    .site-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 1rem; color: var(--cyan);
+      text-decoration: none;
     }
-    @keyframes ticker-scroll {
-      0% { transform: translateX(100vw); }
-      100% { transform: translateX(-100%); }
-    }
-    .ticker-item {
-      display: inline-block;
-      padding: 0 40px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--apex-muted);
-    }
-    .ticker-item .dot-red { color: var(--apex-red); margin-right: 6px; }
-    .ticker-item .dot-orange { color: var(--apex-orange); margin-right: 6px; }
-    .ticker-label { color: var(--apex-cyan); font-weight: 800; }
-
-    /* HEADER */
-    header {
-      background: var(--apex-surface);
-      border-bottom: 1px solid var(--apex-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .header-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .logo-wrap { display: flex; align-items: center; gap: 14px; }
     .logo-badge {
-      background: var(--apex-cyan);
-      color: #000;
-      font-size: 10px;
-      font-weight: 900;
-      padding: 3px 8px;
-      border-radius: 4px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+      background: var(--cyan); color: var(--bg);
+      font-size: 0.6rem; font-weight: 800; letter-spacing: 0.05em;
+      padding: 2px 6px; border-radius: 4px;
     }
-    .logo {
-      font-size: 20px;
-      font-weight: 900;
-      color: var(--apex-cyan);
-      letter-spacing: 2px;
-      text-decoration: none;
-      text-transform: uppercase;
-    }
-    .logo span { color: #fff; }
-    nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-    nav a {
-      color: var(--apex-muted);
-      text-decoration: none;
-      font-size: 13px;
-      padding: 6px 14px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: all .2s;
-    }
-    nav a:hover { color: var(--apex-cyan); background: #001a1a; }
-    nav a.active { color: var(--apex-cyan); }
+    .site-nav { display: flex; align-items: center; gap: 1.5rem; }
+    .site-nav a { font-size: 0.85rem; color: var(--muted); transition: color 0.2s; }
+    .site-nav a:hover { color: var(--cyan); text-decoration: none; }
     .nav-cta {
-      background: var(--apex-cyan) !important;
-      color: #000 !important;
-      font-weight: 700 !important;
+      background: var(--cyan); color: var(--bg) !important;
+      padding: 6px 16px; border-radius: 6px;
+      font-weight: 700; font-size: 0.8rem;
     }
-    .nav-cta:hover { opacity: 0.85; background: var(--apex-cyan) !important; }
+    .nav-cta:hover { opacity: 0.9; }
 
-    /* PAGE HERO */
-    .page-hero {
-      background: linear-gradient(135deg, #000d1a 0%, #050018 50%, #000d00 100%);
-      border-bottom: 1px solid var(--apex-border);
-      padding: 80px 40px 70px;
+    /* ── Hero ─────────────────────────────────────── */
+    .hero {
       text-align: center;
-      position: relative;
-      overflow: hidden;
+      padding: 5rem 1.5rem 3rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,255,224,0.06) 0%, transparent 70%);
     }
-    .page-hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 50% 0%, rgba(0,255,224,0.06) 0%, transparent 60%);
-      pointer-events: none;
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,255,224,0.08);
+      border: 1px solid rgba(0,255,224,0.2);
+      border-radius: 20px; padding: 4px 14px;
+      font-size: 0.75rem; color: var(--cyan); letter-spacing: 0.1em;
+      text-transform: uppercase; margin-bottom: 1.25rem;
     }
-    .page-hero-label {
-      display: inline-block;
-      background: #001a1a;
-      border: 1px solid var(--apex-cyan);
-      color: var(--apex-cyan);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      padding: 6px 16px;
-      border-radius: 20px;
-      margin-bottom: 24px;
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800; letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
     }
-    .page-hero h1 {
-      font-size: clamp(28px, 5vw, 52px);
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.2;
-      margin-bottom: 18px;
-    }
-    .page-hero h1 .cyan { color: var(--apex-cyan); }
-    .page-hero-desc {
-      font-size: 18px;
-      color: var(--apex-muted);
-      max-width: 620px;
-      margin: 0 auto 32px;
-    }
-    .billing-toggle {
-      display: inline-flex;
-      background: var(--apex-surface);
-      border: 1px solid var(--apex-border);
-      border-radius: 30px;
-      padding: 4px;
-      gap: 4px;
-    }
-    .billing-toggle-btn {
-      padding: 8px 20px;
-      border-radius: 24px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      background: transparent;
-      color: var(--apex-muted);
-      transition: all .2s;
-      letter-spacing: 0.5px;
-    }
-    .billing-toggle-btn.active {
-      background: var(--apex-cyan);
-      color: #000;
-    }
-    .save-badge {
-      background: var(--apex-green);
-      color: #000;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 10px;
-      margin-left: 6px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .hero h1 span { color: var(--cyan); }
+    .hero-sub {
+      font-size: 1.05rem; color: var(--muted);
+      max-width: 600px; margin: 0 auto 2.5rem;
     }
 
-    /* PRICING GRID */
-    .pricing-section {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 70px 40px;
+    /* ── Trust bar ────────────────────────────────── */
+    .trust-bar {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 2rem;
+      padding: 1.5rem; margin: 0 auto 1rem;
+      max-width: 900px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border); border-radius: var(--radius);
     }
+    .trust-item { text-align: center; }
+    .trust-num { font-size: 1.5rem; font-weight: 800; color: var(--cyan); }
+    .trust-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ── Pricing Grid ─────────────────────────────── */
+    .pricing-section { padding: 4rem 1.5rem; max-width: 1200px; margin: 0 auto; }
     .pricing-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
       align-items: start;
     }
-    @media (max-width: 900px) {
-      .pricing-grid { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
-    }
-
-    /* PRICING CARD */
-    .pricing-card {
-      background: var(--apex-card);
-      border: 1px solid var(--apex-border);
-      border-radius: 16px;
-      overflow: hidden;
+    .plan-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
       position: relative;
-      transition: transform .2s, border-color .2s;
+      transition: transform 0.2s, border-color 0.2s;
     }
-    .pricing-card:hover { transform: translateY(-4px); }
-    .pricing-card.popular {
-      border-color: var(--apex-orange);
-      border-width: 2px;
+    .plan-card:hover { transform: translateY(-4px); }
+    .plan-card.popular {
+      border-color: var(--cyan);
+      box-shadow: 0 0 40px rgba(0,255,224,0.1);
     }
-    .pricing-card.enterprise-card {
-      border-color: var(--apex-purple);
-      background: linear-gradient(160deg, #0d0020 0%, #111827 100%);
-    }
-    .pricing-card.enterprise-card:hover { border-color: #c084fc; }
-
     .popular-badge {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--apex-orange);
-      color: #000;
-      font-size: 10px;
-      font-weight: 900;
-      padding: 4px 16px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      border-radius: 0 0 8px 8px;
+      position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+      background: var(--cyan); color: var(--bg);
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em;
+      padding: 3px 14px; border-radius: 20px; text-transform: uppercase;
+      white-space: nowrap;
     }
-
-    .card-header {
-      padding: 36px 28px 24px;
-      border-bottom: 1px solid var(--apex-border);
-    }
-    .pricing-card.popular .card-header { padding-top: 46px; }
     .plan-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--apex-cyan);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 0.5rem;
     }
-    .pricing-card.popular .plan-name { color: var(--apex-orange); }
-    .pricing-card.enterprise-card .plan-name { color: var(--apex-purple); }
-
-    .plan-price {
-      font-size: 52px;
-      font-weight: 900;
-      color: #fff;
-      line-height: 1;
-      margin-bottom: 4px;
+    .plan-price-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 0.25rem; }
+    .plan-currency { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+    .plan-price { font-size: 2.8rem; font-weight: 800; color: var(--text); line-height: 1; }
+    .plan-period { font-size: 0.85rem; color: var(--muted); }
+    .plan-tagline { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; }
+    .plan-cta {
+      display: block; width: 100%; padding: 12px;
+      border-radius: 8px; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; border: none; transition: all 0.2s;
+      margin-bottom: 1.5rem; text-align: center;
     }
-    .plan-price sup {
-      font-size: 22px;
-      vertical-align: super;
-      font-weight: 700;
-      color: var(--apex-muted);
-    }
-    .plan-price .per { font-size: 16px; color: var(--apex-muted); font-weight: 400; }
-    .plan-price-orig { font-size: 18px; color: var(--apex-muted); font-weight: 500; text-decoration: line-through; margin-bottom: 2px; display: block; }
-    .plan-price-save { display: inline-block; background: rgba(0,255,136,0.12); border: 1px solid rgba(0,255,136,0.3); color: var(--apex-green); font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 20px; margin-left: 8px; vertical-align: middle; letter-spacing: .05em; }
-    /* URGENCY STRIP */
-    .pricing-urgency {
-      max-width: 900px;
-      margin: 0 auto 2rem;
-      background: linear-gradient(90deg,rgba(255,68,68,0.08),rgba(255,68,68,0.04));
-      border: 1px solid rgba(255,68,68,0.25);
-      border-radius: 10px;
-      padding: .75rem 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .pricing-urgency-icon { font-size: 1.1rem; flex-shrink: 0; }
-    .pricing-urgency-text { flex: 1; font-size: .83rem; font-weight: 700; color: #ff7070; }
-    .pricing-urgency-text span { color: #fff; font-weight: 900; }
-    .pricing-countdown-wrap { display: flex; align-items: center; gap: .4rem; font-size: .8rem; color: var(--apex-muted); white-space: nowrap; }
-    .pricing-countdown { font-size: .9rem; font-weight: 900; color: #ff4444; font-variant-numeric: tabular-nums; background: rgba(255,68,68,0.15); padding: .15rem .5rem; border-radius: 5px; }
-    /* outcome bullets */
-    .feat-outcome { font-size: 11px; color: var(--apex-green); font-weight: 700; display: block; margin-top: 2px; opacity: .85; }
-    .plan-desc {
-      font-size: 14px;
-      color: var(--apex-muted);
-      margin-top: 10px;
-      line-height: 1.5;
-    }
-    .plan-annual {
-      font-size: 12px;
-      color: var(--apex-green);
-      margin-top: 6px;
-      font-weight: 600;
-    }
-
-    .card-features {
-      padding: 24px 28px;
-    }
-    .feature-list { list-style: none; }
-    .feature-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 7px 0;
-      font-size: 14px;
-      color: #cbd5e1;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-    .feature-list li:last-child { border-bottom: none; }
-    .feat-icon {
-      flex-shrink: 0;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: 900;
-      margin-top: 3px;
-    }
-    .feat-icon.check { background: rgba(0,255,136,0.15); color: var(--apex-green); }
-    .feat-icon.star { background: rgba(255,140,0,0.15); color: var(--apex-orange); }
-    .feat-icon.diamond { background: rgba(168,85,247,0.15); color: var(--apex-purple); }
-
-    .card-cta {
-      padding: 0 28px 28px;
-    }
-    .cta-btn {
-      display: block;
-      text-align: center;
-      text-decoration: none;
-      font-weight: 800;
-      font-size: 14px;
-      padding: 14px 24px;
-      border-radius: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: opacity .2s, transform .1s;
-    }
-    .cta-btn:hover { opacity: 0.88; transform: scale(1.01); }
-    .cta-btn.free { background: transparent; color: var(--apex-cyan); border: 2px solid var(--apex-cyan); }
-    .cta-btn.pro { background: var(--apex-orange); color: #000; }
-    .cta-btn.ent { background: var(--apex-purple); color: #fff; }
-
-    /* TRUSTED BY */
-    .trusted-section {
-      background: var(--apex-surface);
-      border-top: 1px solid var(--apex-border);
-      border-bottom: 1px solid var(--apex-border);
-      padding: 60px 40px;
-      text-align: center;
-    }
-    .trusted-section h2 {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--apex-muted);
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      margin-bottom: 40px;
-    }
-    .trusted-logos {
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      justify-content: center;
-      align-items: center;
-    }
-    .trusted-logo-pill {
-      background: var(--apex-card);
-      border: 1px solid var(--apex-border);
-      color: var(--apex-muted);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 10px 22px;
-      border-radius: 30px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .trust-stats {
-      max-width: 800px;
-      margin: 48px auto 0;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-    }
-    @media (max-width: 640px) { .trust-stats { grid-template-columns: repeat(2, 1fr); } }
-    .trust-stat { text-align: center; }
-    .trust-num { font-size: 36px; font-weight: 900; color: var(--apex-cyan); display: block; }
-    .trust-lbl { font-size: 12px; color: var(--apex-muted); text-transform: uppercase; letter-spacing: 1px; }
-
-    /* FEATURE COMPARISON */
-    .compare-section {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 70px 40px;
-    }
-    .compare-section h2 {
-      font-size: 28px;
-      font-weight: 900;
-      color: #fff;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .compare-sub {
-      text-align: center;
-      color: var(--apex-muted);
-      font-size: 15px;
-      margin-bottom: 40px;
-    }
-    .compare-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-    .compare-table th {
-      padding: 14px 20px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      border-bottom: 2px solid var(--apex-border);
-    }
-    .compare-table th:first-child { text-align: left; color: var(--apex-muted); }
-    .compare-table th.th-free { color: var(--apex-cyan); }
-    .compare-table th.th-pro { color: var(--apex-orange); }
-    .compare-table th.th-ent { color: var(--apex-purple); }
-    .compare-table td {
-      padding: 12px 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      color: #94a3b8;
-    }
-    .compare-table td:first-child { color: var(--apex-text); }
-    .compare-table td:not(:first-child) { text-align: center; }
-    .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
-    .check-yes { color: var(--apex-green); font-size: 16px; font-weight: 900; }
-    .check-no { color: #374151; font-size: 16px; }
-    .check-partial { color: var(--apex-orange); font-size: 13px; font-weight: 700; }
-    .compare-table .section-row td {
-      background: rgba(0,255,224,0.03);
-      color: var(--apex-cyan);
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      padding-top: 18px;
-    }
-
-    /* FAQ */
-    .faq-section {
-      background: var(--apex-surface);
-      border-top: 1px solid var(--apex-border);
-      padding: 70px 40px;
-    }
-    .faq-inner {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .faq-section h2 {
-      font-size: 30px;
-      font-weight: 900;
-      color: #fff;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .faq-section .faq-sub {
-      color: var(--apex-muted);
-      text-align: center;
-      margin-bottom: 48px;
-      font-size: 15px;
-    }
-    .faq-item {
-      border: 1px solid var(--apex-border);
-      border-radius: 10px;
-      margin-bottom: 12px;
-      overflow: hidden;
-    }
-    .faq-q {
-      padding: 18px 24px;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--apex-text);
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--apex-card);
-      user-select: none;
-      transition: color .2s;
-    }
-    .faq-q:hover { color: var(--apex-cyan); }
-    .faq-q .faq-arrow {
-      color: var(--apex-cyan);
-      font-size: 18px;
-      font-weight: 300;
-      flex-shrink: 0;
-      margin-left: 12px;
-      transition: transform .2s;
-    }
-    .faq-a {
-      display: none;
-      padding: 0 24px 18px;
-      font-size: 14px;
-      color: var(--apex-muted);
-      line-height: 1.7;
-      background: var(--apex-card);
-    }
-    .faq-item.open .faq-a { display: block; }
-    .faq-item.open .faq-arrow { transform: rotate(45deg); }
-
-    /* CTA SECTION */
-    .cta-section {
-      background: linear-gradient(135deg, #000d1a 0%, #001a00 100%);
-      border-top: 1px solid var(--apex-border);
-      padding: 80px 40px;
-      text-align: center;
-    }
-    .cta-section h2 {
-      font-size: clamp(24px, 4vw, 40px);
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 14px;
-    }
-    .cta-section h2 .cyan { color: var(--apex-cyan); }
-    .cta-section p {
-      font-size: 17px;
-      color: var(--apex-muted);
-      max-width: 580px;
-      margin: 0 auto 36px;
-    }
-    .cta-section-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-    .btn-primary {
-      background: var(--apex-cyan);
-      color: #000;
-      font-weight: 800;
-      font-size: 14px;
-      padding: 14px 28px;
-      border-radius: 8px;
-      text-decoration: none;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: opacity .2s;
-    }
-    .btn-primary:hover { opacity: 0.85; }
-    .btn-secondary {
+    .cta-free {
       background: transparent;
-      color: var(--apex-cyan);
-      font-weight: 700;
-      font-size: 14px;
-      padding: 14px 28px;
-      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .cta-free:hover { border-color: var(--cyan); color: var(--cyan); }
+    .cta-pro {
+      background: var(--cyan); color: var(--bg);
+    }
+    .cta-pro:hover { background: #00e6ca; transform: scale(1.02); }
+    .cta-enterprise {
+      background: linear-gradient(135deg, #ffd700, #ff8c00);
+      color: #000;
+    }
+    .cta-enterprise:hover { opacity: 0.9; transform: scale(1.02); }
+    .plan-divider { border: none; border-top: 1px solid var(--border); margin: 0 0 1.25rem; }
+    .features-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .features-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 0.88rem; color: var(--text);
+    }
+    .features-list li .ico { flex-shrink: 0; font-size: 0.9rem; margin-top: 1px; }
+    .ico-check { color: var(--cyan); }
+    .ico-cross { color: var(--muted); opacity: 0.5; }
+    .ico-gold  { color: var(--gold); }
+
+    /* ── Comparison Table ─────────────────────────── */
+    .compare-section { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    .compare-section h2 { text-align: center; font-size: 1.6rem; margin-bottom: 2rem; color: var(--cyan); }
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .compare-table th, .compare-table td {
+      padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); text-align: center;
+    }
+    .compare-table th { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .compare-table td:first-child { text-align: left; color: var(--text); }
+    .compare-table tr:hover td { background: rgba(0,255,224,0.03); }
+    .compare-table .cat-row td {
+      background: var(--bg2); font-weight: 700;
+      color: var(--cyan); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 0.5rem 1rem;
+    }
+    .tick { color: var(--cyan); font-weight: 700; }
+    .dash { color: var(--muted); opacity: 0.4; }
+
+    /* ── Social Proof ─────────────────────────────── */
+    .social-section { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    .social-section h2 { text-align: center; font-size: 1.6rem; margin-bottom: 2rem; }
+    .testimonial-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;
+    }
+    .testimonial {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+    }
+    .testimonial-stars { color: var(--gold); font-size: 0.85rem; margin-bottom: 0.75rem; }
+    .testimonial-text { font-size: 0.875rem; color: var(--text); margin-bottom: 1rem; font-style: italic; }
+    .testimonial-author { font-size: 0.78rem; color: var(--muted); }
+    .testimonial-author strong { color: var(--text); display: block; }
+
+    /* ── FAQ ──────────────────────────────────────── */
+    .faq-section { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+    .faq-section h2 { text-align: center; font-size: 1.6rem; margin-bottom: 2rem; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-question {
+      width: 100%; background: none; border: none;
+      text-align: left; padding: 1rem 0;
+      font-size: 0.95rem; font-weight: 600; color: var(--text);
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+      gap: 1rem;
+    }
+    .faq-question:hover { color: var(--cyan); }
+    .faq-chevron { font-size: 0.7rem; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-answer {
+      font-size: 0.875rem; color: var(--muted);
+      max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+    }
+    .faq-item.open .faq-answer { max-height: 300px; }
+    .faq-answer p { padding-bottom: 1rem; }
+
+    /* ── Bottom CTA ───────────────────────────────── */
+    .bottom-cta {
+      text-align: center; padding: 4rem 1.5rem;
+      background: linear-gradient(180deg, transparent, rgba(0,255,224,0.04));
+      border-top: 1px solid var(--border);
+    }
+    .bottom-cta h2 { font-size: 1.8rem; margin-bottom: 1rem; }
+    .bottom-cta p { color: var(--muted); margin-bottom: 1.5rem; }
+    .btn-cta-large {
+      display: inline-block; padding: 14px 36px;
+      background: var(--cyan); color: var(--bg);
+      font-weight: 800; font-size: 1rem; border-radius: 8px;
+      cursor: pointer; border: none; transition: all 0.2s;
       text-decoration: none;
-      border: 1px solid var(--apex-cyan);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: background .2s;
     }
-    .btn-secondary:hover { background: rgba(0,255,224,0.06); }
+    .btn-cta-large:hover { background: #00e6ca; transform: scale(1.03); text-decoration: none; }
 
-    /* FOOTER */
-    footer {
-      background: var(--apex-surface);
-      border-top: 1px solid var(--apex-border);
+    /* ── Sticky Upgrade Bar ───────────────────────── */
+    .sticky-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 800;
+      background: var(--bg2); border-top: 1px solid var(--cyan);
+      padding: 12px 1.5rem;
+      display: flex; align-items: center; justify-content: center; gap: 1rem;
+      transform: translateY(100%); transition: transform 0.3s ease;
     }
-    .footer-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 40px 30px;
+    .sticky-bar.visible { transform: translateY(0); }
+    .sticky-bar span { font-size: 0.9rem; color: var(--text); }
+    .sticky-bar strong { color: var(--cyan); }
+    .sticky-bar-cta {
+      background: var(--cyan); color: var(--bg);
+      border: none; border-radius: 6px; padding: 8px 20px;
+      font-weight: 700; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
     }
-    .footer-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 40px;
-      margin-bottom: 32px;
+    .sticky-bar-close {
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      font-size: 1.2rem; padding: 4px;
+      position: absolute; right: 16px;
     }
-    @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 500px) { .footer-grid { grid-template-columns: 1fr; } }
-    .footer-brand p { font-size: 13px; color: var(--apex-muted); margin-top: 10px; line-height: 1.6; }
-    .footer-col h4 { font-size: 12px; font-weight: 700; color: var(--apex-cyan); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
-    .footer-col a { display: block; color: var(--apex-muted); text-decoration: none; font-size: 13px; margin-bottom: 8px; transition: color .2s; }
-    .footer-col a:hover { color: var(--apex-cyan); }
-    .footer-bottom { border-top: 1px solid var(--apex-border); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--apex-muted); }
-    .footer-bottom a { color: var(--apex-cyan); text-decoration: none; }
 
-    @media (max-width: 760px) {
-      .pricing-section { padding: 40px 20px; }
-      .compare-section { padding: 40px 20px; }
-      .faq-section { padding: 40px 20px; }
-      .cta-section { padding: 50px 20px; }
-      .page-hero { padding: 50px 20px 40px; }
-      .trusted-section { padding: 40px 20px; }
-      .header-inner { padding: 16px 20px; }
-      .footer-inner { padding: 30px 20px; }
-      .compare-table { font-size: 12px; }
-      .compare-table th, .compare-table td { padding: 10px 10px; }
+    /* ═══════════════════════════════════════════════
+       PAYMENT MODAL
+    ═══════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%; max-width: 480px;
+      max-height: 90vh; overflow-y: auto;
+      padding: 2rem;
+      transform: translateY(20px); transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .modal-title { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+    .modal-subtitle { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+    .modal-close {
+      background: none; border: none; color: var(--muted);
+      font-size: 1.4rem; cursor: pointer; line-height: 1;
+      padding: 0 4px; flex-shrink: 0;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    /* Step indicators */
+    .step-indicators {
+      display: flex; gap: 8px; margin-bottom: 1.75rem;
+    }
+    .step-dot {
+      height: 4px; border-radius: 2px; flex: 1;
+      background: var(--border); transition: background 0.3s;
+    }
+    .step-dot.active { background: var(--cyan); }
+    .step-dot.done { background: rgba(0,255,224,0.4); }
+
+    /* Form fields */
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label {
+      display: block; font-size: 0.8rem; font-weight: 600;
+      color: var(--muted); margin-bottom: 6px; letter-spacing: 0.05em;
+    }
+    .form-input {
+      width: 100%; padding: 10px 14px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { outline: none; border-color: var(--cyan); }
+    .form-input.error { border-color: var(--red); }
+    .field-error { font-size: 0.75rem; color: var(--red); margin-top: 4px; display: none; }
+    .field-error.show { display: block; }
+
+    /* Plan summary in modal */
+    .plan-summary {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    .plan-summary-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+    .plan-summary-price { font-size: 0.9rem; font-weight: 800; color: var(--cyan); }
+
+    /* Payment tabs */
+    .pay-tabs { display: flex; gap: 8px; margin-bottom: 1rem; }
+    .pay-tab {
+      flex: 1; padding: 8px; border-radius: 8px;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; text-align: center;
+    }
+    .pay-tab.active { border-color: var(--cyan); color: var(--cyan); background: rgba(0,255,224,0.07); }
+
+    /* Payment detail boxes */
+    .pay-panel { display: none; }
+    .pay-panel.active { display: block; }
+    .qr-wrapper { text-align: center; margin: 1rem 0; }
+    .qr-wrapper img { border-radius: 8px; border: 3px solid var(--bg3); }
+    .upi-id-box {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .upi-id-val { font-size: 0.85rem; color: var(--cyan); font-family: monospace; }
+    .copy-btn {
+      background: none; border: none; color: var(--muted);
+      font-size: 0.75rem; cursor: pointer; padding: 2px 8px;
+      border: 1px solid var(--border); border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { color: var(--cyan); border-color: var(--cyan); }
+    .bank-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.83rem;
+    }
+    .bank-row:last-child { border-bottom: none; }
+    .bank-key { color: var(--muted); }
+    .bank-val { color: var(--text); font-family: monospace; text-align: right; max-width: 200px; word-break: break-all; }
+    .intent-id-callout {
+      background: rgba(0,255,224,0.07); border: 1px solid rgba(0,255,224,0.3);
+      border-radius: 8px; padding: 10px 14px; margin: 1rem 0;
+      font-size: 0.8rem; color: var(--cyan);
+    }
+    .intent-id-callout strong { display: block; margin-bottom: 4px; color: var(--text); }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%; padding: 12px; border-radius: 8px;
+      background: var(--cyan); color: var(--bg);
+      font-weight: 700; font-size: 0.95rem; border: none;
+      cursor: pointer; transition: all 0.2s; margin-top: 0.5rem;
+    }
+    .btn-primary:hover:not(:disabled) { background: #00e6ca; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary {
+      width: 100%; padding: 10px; border-radius: 8px;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--muted); font-size: 0.85rem;
+      cursor: pointer; transition: all 0.2s; margin-top: 0.5rem;
+    }
+    .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+    .btn-loading { position: relative; }
+    .btn-loading::after {
+      content: ''; position: absolute;
+      right: 14px; top: 50%; transform: translateY(-50%);
+      width: 14px; height: 14px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: var(--bg);
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+
+    /* Status polling step */
+    .status-tracker { text-align: center; padding: 1rem 0; }
+    .status-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .status-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .status-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; }
+    .poll-countdown {
+      background: var(--bg3); border-radius: 8px; padding: 8px 14px;
+      font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem;
+    }
+    .poll-bar {
+      height: 4px; background: var(--border); border-radius: 2px;
+      overflow: hidden; margin-bottom: 1.5rem;
+    }
+    .poll-fill {
+      height: 100%; background: var(--cyan); border-radius: 2px;
+      transition: width 1s linear;
+    }
+    .txn-id-display {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 0.78rem; color: var(--muted); word-break: break-all;
+      margin-bottom: 1.5rem;
+    }
+    .txn-id-display span { color: var(--text); font-family: monospace; }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 700;
+    }
+    .status-badge.pending { background: rgba(255,215,0,0.1); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
+    .status-badge.approved { background: rgba(0,255,224,0.1); color: var(--cyan); border: 1px solid rgba(0,255,224,0.3); }
+    .status-badge.rejected { background: rgba(255,59,59,0.1); color: var(--red); border: 1px solid rgba(255,59,59,0.3); }
+
+    /* Success step */
+    .success-screen { text-align: center; padding: 1rem 0; }
+    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .success-title { font-size: 1.4rem; font-weight: 800; color: var(--cyan); margin-bottom: 0.5rem; }
+    .success-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 2rem; }
+    .unlock-features {
+      background: var(--bg3); border: 1px solid rgba(0,255,224,0.2);
+      border-radius: 10px; padding: 1.25rem; text-align: left; margin-bottom: 1.5rem;
+    }
+    .unlock-features h4 { font-size: 0.8rem; color: var(--cyan); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .unlock-item { font-size: 0.85rem; color: var(--text); padding: 4px 0; display: flex; gap: 8px; }
+
+    /* ── Toast ────────────────────────────────────── */
+    .toast-stack {
+      position: fixed; top: 72px; right: 16px; z-index: 99999;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .toast {
+      background: var(--bg2); border-radius: 8px;
+      padding: 10px 14px 10px 12px;
+      display: flex; align-items: flex-start; gap: 10px;
+      min-width: 260px; max-width: 340px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      animation: slideIn 0.3s ease;
+      border-left: 3px solid var(--cyan);
+    }
+    .toast.error { border-left-color: var(--red); }
+    .toast.warning { border-left-color: var(--gold); }
+    .toast-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .toast-body { flex: 1; }
+    .toast-title { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+    .toast-msg { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .toast-dismiss {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 1rem; padding: 0 2px; flex-shrink: 0;
+    }
+
+    /* ── Animations ───────────────────────────────── */
+    @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+    @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeOut { to { opacity: 0; transform: translateX(10px); } }
+
+    /* ── Responsive ───────────────────────────────── */
+    @media (max-width: 640px) {
+      .site-nav { display: none; }
+      .hero { padding: 3rem 1rem 2rem; }
+      .trust-bar { gap: 1rem; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .compare-table { font-size: 0.78rem; }
+      .modal { padding: 1.25rem; }
     }
   </style>
-<script src="/security-engine.js"></script>
-<link rel="stylesheet" href="/apex-v12.css">
 </head>
 <body>
 
-<!-- LIVE TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker-inner">
-    <span class="ticker-item"><span class="dot-red">●</span> <span class="ticker-label">CRITICAL:</span> CVE-2026-33824 Windows IKE Service — Unauthenticated RCE CVSS 9.8 — PATCH IMMEDIATELY</span>
-    <span class="ticker-item"><span class="dot-red">●</span> <span class="ticker-label">ZERO-DAY:</span> CVE-2026-5281 Chrome Dawn WebGPU — UAF RCE — CISA Deadline April 15</span>
-    <span class="ticker-item"><span class="dot-red">●</span> <span class="ticker-label">PATCH TUESDAY:</span> 163 CVEs — April 2026 — 2 Actively Exploited Zero-Days Included</span>
-    <span class="ticker-item"><span class="dot-orange">●</span> <span class="ticker-label">PRO PLAN:</span> Get 48-hour pre-disclosure reports — Subscribe at $49/month</span>
-  </div>
-</div>
-
-<!-- HEADER -->
-<header>
-  <div class="header-inner">
-    <div class="logo-wrap">
-      <div class="logo-badge">CYBERDUDEBIVASH SENTINEL APEX</div>
-      <a href="/" class="logo">CYBERDUDE<span>BIVASH</span></a>
-    </div>
-    <nav>
-      <a href="/index.html#reports">Reports</a>
-      <a href="https://intel.cyberdudebivash.com">Intel Platform</a>
-      <a href="https://cyberdudebivash.in">AI Hub</a>
-      <a href="https://cyberdudebivash.com">Home</a>
-      <a href="/products.html">Products</a>
-    <a href="/pricing.html" class="active">Pricing</a>
-      <a href="https://tools.cyberdudebivash.com">Tools</a>
-      <a href="mailto:bivash@cyberdudebivash.com" class="nav-cta">Enterprise Access</a>
-    </nav>
-  </div>
+<!-- ── Site Header ─────────────────────────────────────────────── -->
+<header class="site-header">
+  <a href="/" class="site-logo">
+    <span class="logo-badge">APEX</span>
+    CYBERDUDEBIVASH
+  </a>
+  <nav class="site-nav">
+    <a href="/index.html">Home</a>
+    <a href="/api.html">API Docs</a>
+    <a href="/api-dashboard.html">Dashboard</a>
+    <a href="mailto:bivash@cyberdudebivash.com">Contact</a>
+    <a href="/api-dashboard.html" class="nav-cta">Get API Key</a>
+  </nav>
 </header>
-<div class="section-nav-bar-outer" style="background:#030508;border-bottom:2px solid #0d1117;padding:0;overflow:hidden;"><div class='section-nav-bar' style='background:#060a14;border-top:1px solid #1a2535;padding:6px 20px;font-size:.78em;display:flex;gap:16px;flex-wrap:wrap'><a href="/intel/">Intel Hub</a> | <a href="/breaking/">Breaking</a> | <a href="/malware/">Malware</a> | <a href="/ai-security/">AI Security</a></div></div>
 
-<!-- PAGE HERO -->
-<div class="page-hero">
-  <div class="page-hero-label">Intelligence Subscription Plans</div>
-  <h1>
-    Choose Your <span class="cyan">CYBERDUDEBIVASH SENTINEL APEX</span><br>
-    Intelligence Tier
-  </h1>
-  <p class="page-hero-desc">
-    From public threat reports to pre-disclosure zero-day intelligence — get the level of coverage your security team needs.
-  </p>
-  <div class="billing-toggle">
-    <button class="billing-toggle-btn active">Monthly</button>
-    <button class="billing-toggle-btn">Annual <span class="save-badge">Save 17%</span></button>
-  </div>
-</div>
+<!-- ── Hero ────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-eyebrow">⚡ Production-Ready Threat Intelligence</div>
+  <h1>Security Intelligence That<br><span>Actually Protects</span></h1>
+  <p class="hero-sub">From free CVE feeds to enterprise STIX 2.1 exports — pick the plan that fits your security team and threat model.</p>
 
-<!-- URGENCY STRIP -->
-<div class="pricing-urgency" id="pricing-urgency-strip">
-  <div class="pricing-urgency-icon">🔥</div>
-  <div class="pricing-urgency-text">
-    <span>LIMITED OFFER:</span> SOC Pro at $49/mo — was $129. Only <span id="pricing-spots">23</span> spots remaining at this price.
+  <div class="trust-bar">
+    <div class="trust-item">
+      <div class="trust-num" id="stat-threats">4,200+</div>
+      <div class="trust-label">Threats Tracked</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num" id="stat-cves">890+</div>
+      <div class="trust-label">CVEs Indexed</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">98.9%</div>
+      <div class="trust-label">API Uptime</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">&lt;80ms</div>
+      <div class="trust-label">Avg Latency</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">STIX 2.1</div>
+      <div class="trust-label">Standard Export</div>
+    </div>
   </div>
-  <div class="pricing-countdown-wrap">
-    Offer expires: <span class="pricing-countdown" id="pricing-countdown">--:--:--</span>
-  </div>
-</div>
+</section>
 
-<!-- PRICING CARDS -->
-<div class="pricing-section">
+<!-- ── Pricing Cards ────────────────────────────────────────────── -->
+<section class="pricing-section">
   <div class="pricing-grid">
 
-    <!-- FREE TIER -->
-    <div class="pricing-card">
-      <div class="card-header">
-        <div class="plan-name">Free Reader</div>
-        <div class="plan-price">$0 <span class="per">/ forever</span></div>
-        <p class="plan-desc">The full public intelligence feed — no strings attached. Stay informed on every major threat.</p>
+    <!-- Free -->
+    <div class="plan-card">
+      <div class="plan-name">Free Tier</div>
+      <div class="plan-price-row">
+        <span class="plan-currency">₹</span>
+        <span class="plan-price">0</span>
+        <span class="plan-period">/month</span>
       </div>
-      <div class="card-features">
-        <ul class="feature-list">
-          <li>
-            <span class="feat-icon check">✓</span>
-            Access to all public threat intel reports
-          </li>
-          <li>
-            <span class="feat-icon check">✓</span>
-            Weekly digest newsletter
-          </li>
-          <li>
-            <span class="feat-icon check">✓</span>
-            Basic CVE feed (top critical/high)
-          </li>
-          <li>
-            <span class="feat-icon check">✓</span>
-            Community access &amp; discussion
-          </li>
-          <li>
-            <span class="feat-icon check">✓</span>
-            Threat ticker &amp; live stats dashboard
-          </li>
-          <li>
-            <span class="feat-icon check">✓</span>
-            CYBERDUDEBIVASH SENTINEL APEX ransomware tracker
-          </li>
-        </ul>
-      </div>
-      <div class="card-cta">
-        <a href="/index.html" class="cta-btn free">Start Reading Free</a>
-      </div>
+      <p class="plan-tagline">Get started with live threat data.</p>
+      <button class="plan-cta cta-free" onclick="window.location.href='/api-dashboard.html'">
+        Get Free API Key
+      </button>
+      <hr class="plan-divider">
+      <ul class="features-list">
+        <li><span class="ico ico-check">✓</span> 10 live threat items per request</li>
+        <li><span class="ico ico-check">✓</span> CVE lookups (CVSS ≥ 7.0)</li>
+        <li><span class="ico ico-check">✓</span> Top threats feed</li>
+        <li><span class="ico ico-check">✓</span> 100 API calls/day</li>
+        <li><span class="ico ico-check">✓</span> Ransomware campaign overview</li>
+        <li><span class="ico ico-cross">✗</span> IOC feed access</li>
+        <li><span class="ico ico-cross">✗</span> Detection rules (SIGMA/Yara)</li>
+        <li><span class="ico ico-cross">✗</span> Full threat descriptions</li>
+        <li><span class="ico ico-cross">✗</span> Bulk search (&gt;5 results)</li>
+        <li><span class="ico ico-cross">✗</span> STIX 2.1 export</li>
+      </ul>
     </div>
 
-    <!-- PRO TIER -->
-    <div class="pricing-card popular">
-      <div class="popular-badge">Most Popular</div>
-      <div class="card-header">
-        <div class="plan-name">SOC Professional</div>
-        <span class="plan-price-orig">$129 / month</span>
-        <div class="plan-price" data-cx-price="49" data-cx-orig="129"><sup>$</sup>49 <span class="per">/ month</span><span class="plan-price-save">SAVE 62%</span></div>
-        <p class="plan-desc">Pre-disclosure intelligence and machine-readable feeds built for SOC teams and security engineers.</p>
-        <div class="plan-annual">Or $490/year — save $98 annually</div>
+    <!-- Pro -->
+    <div class="plan-card popular">
+      <div class="popular-badge">⚡ Most Popular</div>
+      <div class="plan-name">SOC Professional</div>
+      <div class="plan-price-row">
+        <span class="plan-currency">₹</span>
+        <span class="plan-price">1,499</span>
+        <span class="plan-period">/month</span>
       </div>
-      <div class="card-features">
-        <ul class="feature-list">
-          <li>
-            <span class="feat-icon star">★</span>
-            <span>48-hour pre-disclosure threat reports<span class="feat-outcome">→ Patch before attackers weaponize CVEs</span></span>
-          </li>
-          <li>
-            <span class="feat-icon star">★</span>
-            <span>Daily IOC feeds (JSON &amp; STIX format)<span class="feat-outcome">→ Block threats automatically in your SIEM</span></span>
-          </li>
-          <li>
-            <span class="feat-icon star">★</span>
-            <span>SIEM-ready detection rules (Sigma/Splunk/Elastic)<span class="feat-outcome">→ Reduce SOC triage time by 60%</span></span>
-          </li>
-          <li>
-            <span class="feat-icon star">★</span>
-            <span>Priority email alerts for critical CVEs<span class="feat-outcome">→ Never miss a critical severity zero-day</span></span>
-          </li>
-          <li>
-            <span class="feat-icon star">★</span>
-            <span>Dedicated threat feed API endpoint<span class="feat-outcome">→ Automate intel ingestion to any SOAR</span></span>
-          </li>
-          <li>
-            <span class="feat-icon star">★</span>
-            <span>Slack &amp; Teams webhook integration<span class="feat-outcome">→ Instant team alerts — zero manual effort</span></span>
-          </li>
-          <li>
-            <span class="feat-icon star">★</span>
-            <span>10,000 API calls / month<span class="feat-outcome">→ Full programmatic intel for your toolstack</span></span>
-          </li>
-          <li>
-            <span class="feat-icon check">✓</span>
-            Everything in Free
-          </li>
-        </ul>
-      </div>
-      <div class="card-cta">
-        <p style="font-size:11px;color:#f97316;font-weight:700;text-align:center;margin-bottom:10px;">
-          ⚡ 7-day free trial · Cancel anytime · No credit card required
-        </p>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=SOC%20Pro%20Subscription" class="cta-btn pro" data-cx-cta data-track="pricing_pro_click">Start 7-Day Free Trial →</a>
-        <p style="font-size:11px;color:var(--apex-muted);text-align:center;margin-top:8px;">
-          Offer expires <span id="pro-cta-timer" style="color:#ff7070;font-weight:700">soon</span> · Secure checkout
-        </p>
-      </div>
+      <p class="plan-tagline">Full intel access for active SOC teams.</p>
+      <button class="plan-cta cta-pro" onclick="PaymentFlow.startUpgrade('pro')">
+        Upgrade to Pro →
+      </button>
+      <hr class="plan-divider">
+      <ul class="features-list">
+        <li><span class="ico ico-check">✓</span> 50 live threat items per request</li>
+        <li><span class="ico ico-check">✓</span> CVE lookups + full descriptions</li>
+        <li><span class="ico ico-check">✓</span> Complete IOC feed</li>
+        <li><span class="ico ico-check">✓</span> 5,000 API calls/day</li>
+        <li><span class="ico ico-check">✓</span> Ransomware + actor TTPs</li>
+        <li><span class="ico ico-check">✓</span> SIGMA detection rules</li>
+        <li><span class="ico ico-check">✓</span> Yara rule downloads</li>
+        <li><span class="ico ico-check">✓</span> Full-text search (unlimited)</li>
+        <li><span class="ico ico-check">✓</span> IOC type + confidence filters</li>
+        <li><span class="ico ico-cross">✗</span> STIX 2.1 export</li>
+      </ul>
     </div>
 
-    <!-- ENTERPRISE TIER -->
-    <div class="pricing-card enterprise-card">
-      <div class="card-header">
-        <div class="plan-name">Enterprise</div>
-        <span class="plan-price-orig">from $699 / month</span>
-        <div class="plan-price" data-cx-price="299" data-cx-orig="699" style="font-size:38px;">from $299<span class="plan-price-save">SAVE 57%</span></div>
-        <p class="plan-desc">White-glove threat intelligence with a dedicated analyst. Built for enterprise security operations and MSSPs.</p>
-        <div class="plan-annual" style="color:var(--apex-purple);">Tailored to your team size &amp; threat profile</div>
+    <!-- Enterprise -->
+    <div class="plan-card">
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-price-row">
+        <span class="plan-currency">₹</span>
+        <span class="plan-price">4,999</span>
+        <span class="plan-period">/month</span>
       </div>
-      <div class="card-features">
-        <ul class="feature-list">
-          <li>
-            <span class="feat-icon diamond">◆</span>
-            Everything in Pro
-          </li>
-          <li>
-            <span class="feat-icon diamond">◆</span>
-            Custom threat intelligence reports
-          </li>
-          <li>
-            <span class="feat-icon diamond">◆</span>
-            Dedicated security analyst
-          </li>
-          <li>
-            <span class="feat-icon diamond">◆</span>
-            Pre-disclosure intelligence briefings
-          </li>
-          <li>
-            <span class="feat-icon diamond">◆</span>
-            Unlimited API access
-          </li>
-          <li>
-            <span class="feat-icon diamond">◆</span>
-            STIX/TAXII feed integration
-          </li>
-          <li>
-            <span class="feat-icon diamond">◆</span>
-            SLA-backed response times
-          </li>
-          <li>
-            <span class="feat-icon diamond">◆</span>
-            White-label intelligence reports
-          </li>
-          <li>
-            <span class="feat-icon diamond">◆</span>
-            Executive briefings &amp; board reports
-          </li>
-        </ul>
-      </div>
-      <div class="card-cta">
-        <a href="mailto:bivash@cyberdudebivash.com?subject=Enterprise%20Intelligence%20Services" class="cta-btn ent">Contact Enterprise Sales</a>
-      </div>
+      <p class="plan-tagline">Maximum intel depth for enterprise SOCs.</p>
+      <button class="plan-cta cta-enterprise" onclick="PaymentFlow.startUpgrade('enterprise')">
+        Upgrade to Enterprise →
+      </button>
+      <hr class="plan-divider">
+      <ul class="features-list">
+        <li><span class="ico ico-gold">★</span> Unlimited threat items</li>
+        <li><span class="ico ico-gold">★</span> Full IOC feed (no rate limit)</li>
+        <li><span class="ico ico-gold">★</span> Unlimited API calls/day</li>
+        <li><span class="ico ico-gold">★</span> STIX 2.1 bundle export</li>
+        <li><span class="ico ico-gold">★</span> Bulk IOC export (CSV/JSON)</li>
+        <li><span class="ico ico-gold">★</span> All Pro features included</li>
+        <li><span class="ico ico-gold">★</span> Priority data freshness</li>
+        <li><span class="ico ico-gold">★</span> All actor TTP mappings</li>
+        <li><span class="ico ico-gold">★</span> Pre-disclosure CVE reports</li>
+        <li><span class="ico ico-gold">★</span> Dedicated support channel</li>
+      </ul>
     </div>
 
   </div>
-</div>
+</section>
 
-<!-- TRUSTED BY -->
-<div class="trusted-section">
-  <h2>Trusted by Security Teams at</h2>
-  <div class="trusted-logos">
-    <div class="trusted-logo-pill">Fortune 500 SOC Teams</div>
-    <div class="trusted-logo-pill">Government Agencies</div>
-    <div class="trusted-logo-pill">Financial Services</div>
-    <div class="trusted-logo-pill">Healthcare Systems</div>
-    <div class="trusted-logo-pill">MSSP Partners</div>
-    <div class="trusted-logo-pill">Critical Infrastructure</div>
-    <div class="trusted-logo-pill">Defense Contractors</div>
-    <div class="trusted-logo-pill">Technology Companies</div>
-  </div>
-  <div class="trust-stats">
-    <div class="trust-stat">
-      <span class="trust-num">4,800+</span>
-      <span class="trust-lbl">Security Professionals</span>
-    </div>
-    <div class="trust-stat">
-      <span class="trust-num">1,200+</span>
-      <span class="trust-lbl">CVEs Tracked 2026</span>
-    </div>
-    <div class="trust-stat">
-      <span class="trust-num">48hr</span>
-      <span class="trust-lbl">Pre-Disclosure Lead</span>
-    </div>
-    <div class="trust-stat">
-      <span class="trust-num">24/7</span>
-      <span class="trust-lbl">Threat Monitoring</span>
-    </div>
-  </div>
-</div>
-
-<!-- FEATURE COMPARISON TABLE -->
-<div class="compare-section">
+<!-- ── Comparison Table ──────────────────────────────────────────── -->
+<section class="compare-section">
   <h2>Full Feature Comparison</h2>
-  <p class="compare-sub">Every feature, every tier — so you can make the right call.</p>
   <table class="compare-table">
     <thead>
       <tr>
-        <th>Feature</th>
-        <th class="th-free">Free</th>
-        <th class="th-pro">Pro</th>
-        <th class="th-ent">Enterprise</th>
+        <th style="text-align:left">Feature</th>
+        <th>Free</th>
+        <th>Pro</th>
+        <th>Enterprise</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="section-row">
-        <td colspan="4">Intelligence Reports</td>
-      </tr>
-      <tr>
-        <td>Public threat reports</td>
-        <td><span class="check-yes">✓</span></td>
-        <td><span class="check-yes">✓</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr>
-        <td>48-hour pre-disclosure reports</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr>
-        <td>Custom advisory reports</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr>
-        <td>Executive briefings</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr class="section-row">
-        <td colspan="4">Data &amp; Feeds</td>
-      </tr>
-      <tr>
-        <td>Basic CVE feed</td>
-        <td><span class="check-yes">✓</span></td>
-        <td><span class="check-yes">✓</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr>
-        <td>Daily IOC feeds (JSON/STIX)</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr>
-        <td>SIEM detection rules</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr>
-        <td>STIX/TAXII feed integration</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr class="section-row">
-        <td colspan="4">API &amp; Integrations</td>
-      </tr>
-      <tr>
-        <td>Threat feed API</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-partial">10,000 calls/mo</span></td>
-        <td><span class="check-yes">Unlimited</span></td>
-      </tr>
-      <tr>
-        <td>Slack / Teams webhooks</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr>
-        <td>White-label intelligence</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr class="section-row">
-        <td colspan="4">Support &amp; SLA</td>
-      </tr>
-      <tr>
-        <td>Email alerts (critical CVEs)</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr>
-        <td>Dedicated security analyst</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
-      <tr>
-        <td>SLA-backed response</td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-no">—</span></td>
-        <td><span class="check-yes">✓</span></td>
-      </tr>
+      <tr class="cat-row"><td colspan="4">API Access</td></tr>
+      <tr><td>Daily API calls</td><td>100</td><td>5,000</td><td>Unlimited</td></tr>
+      <tr><td>Threat items per response</td><td>10</td><td>50</td><td>Unlimited</td></tr>
+      <tr><td>Response latency</td><td>&lt;200ms</td><td>&lt;150ms</td><td>&lt;80ms</td></tr>
+
+      <tr class="cat-row"><td colspan="4">Threat Intelligence</td></tr>
+      <tr><td>Live threat feed</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>CVE lookup (CVSS ≥ 7.0)</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Full threat descriptions</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Top threats feed</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Ransomware campaigns</td><td>Overview</td><td>Full + TTPs</td><td>Full + TTPs</td></tr>
+      <tr><td>Pre-disclosure CVE reports</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td></tr>
+
+      <tr class="cat-row"><td colspan="4">IOC & Detection</td></tr>
+      <tr><td>IOC feed access</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Confidence score filters</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>SIGMA detection rules</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Yara rules</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>STIX 2.1 export</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Bulk CSV/JSON export</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td></tr>
+
+      <tr class="cat-row"><td colspan="4">Search</td></tr>
+      <tr><td>Full-text search</td><td>5 results</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>CVE search</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Actor/campaign search</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
     </tbody>
   </table>
-</div>
+</section>
 
-<!-- FAQ -->
-<div class="faq-section">
-  <div class="faq-inner">
-    <h2>Frequently Asked Questions</h2>
-    <p class="faq-sub">Everything you need to know about CYBERDUDEBIVASH SENTINEL APEX intelligence subscriptions.</p>
-
-    <div class="faq-item open">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        What exactly is "pre-disclosure intelligence"?
-        <span class="faq-arrow">+</span>
-      </div>
-      <div class="faq-a">
-        Pre-disclosure intelligence means Pro and Enterprise subscribers receive detailed threat analysis — including technical breakdown, proof-of-concept indicators, affected versions, and recommended mitigations — up to 48 hours before CVEs are publicly announced or added to the NVD. This gives your SOC team critical lead time to patch, segment, or deploy compensating controls before threat actors weaponize vulnerabilities.
+<!-- ── Social Proof ──────────────────────────────────────────────── -->
+<section class="social-section">
+  <h2>Trusted by Security Teams</h2>
+  <div class="testimonial-grid">
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"The IOC feed quality is exceptional. We've integrated it directly into our SIEM and the false-positive rate is significantly lower than other feeds."</p>
+      <div class="testimonial-author">
+        <strong>Rahul M.</strong>
+        Senior SOC Analyst, FinTech BFSI
       </div>
     </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        What IOC formats are available on the Pro plan?
-        <span class="faq-arrow">+</span>
-      </div>
-      <div class="faq-a">
-        Pro subscribers receive IOC feeds in both plain JSON and STIX 2.1 format. Each daily IOC bundle includes IP addresses, domain indicators, file hashes (MD5, SHA-1, SHA-256), URL patterns, and YARA rules where applicable. SIEM-ready Sigma rules are also included for deployment directly into Splunk, Elastic, Microsoft Sentinel, and Chronicle.
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"STIX 2.1 export was the feature that sold us on Enterprise. Our threat intel platform ingests it directly. Setup took 10 minutes."</p>
+      <div class="testimonial-author">
+        <strong>Priya K.</strong>
+        Threat Intelligence Lead, Healthcare
       </div>
     </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        How does the threat feed API work?
-        <span class="faq-arrow">+</span>
-      </div>
-      <div class="faq-a">
-        Pro subscribers receive a dedicated REST API endpoint with bearer token authentication. You can query the latest CVE data, IOC feeds, SIEM rules, and threat reports programmatically. Pro accounts include 10,000 API calls per month. Enterprise accounts receive unlimited API access with priority rate limits and direct STIX/TAXII feed integration for native SIEM/SOAR ingestion.
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★☆</div>
+      <p class="testimonial-text">"Started on Free, moved to Pro in a week. The ransomware TTP mapping saves us hours of manual research per incident."</p>
+      <div class="testimonial-author">
+        <strong>Arjun S.</strong>
+        Incident Responder, MNC
       </div>
     </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Can I cancel the Pro plan at any time?
-        <span class="faq-arrow">+</span>
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">"API is stable, docs are clear, and the CVE coverage for critical vulnerabilities is consistently ahead of public NVD updates."</p>
+      <div class="testimonial-author">
+        <strong>Neha T.</strong>
+        Security Engineer, SaaS Startup
       </div>
-      <div class="faq-a">
-        Yes. Monthly Pro subscriptions can be cancelled at any time — you retain access until the end of your current billing period with no cancellation fees. Annual subscriptions are non-refundable after 14 days but can be cancelled to prevent renewal. Contact bivash@cyberdudebivash.com for any billing adjustments.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        What does a "dedicated security analyst" mean in the Enterprise plan?
-        <span class="faq-arrow">+</span>
-      </div>
-      <div class="faq-a">
-        Enterprise clients are paired with a named CYBERDUDEBIVASH SENTINEL APEX analyst who understands your organization's infrastructure, technology stack, and threat profile. Your analyst proactively surfaces relevant threats, delivers tailored intelligence briefings, and is available for scheduled calls to discuss emerging risks. Response SLAs are negotiated based on your organization's requirements.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Do you offer a free trial for the Pro plan?
-        <span class="faq-arrow">+</span>
-      </div>
-      <div class="faq-a">
-        Yes. Email bivash@cyberdudebivash.com with subject "SOC Pro Trial" and we will set up a 7-day full-access Pro trial at no cost, including API access, IOC feeds, and pre-disclosure report delivery. No credit card required to start the trial.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">
-        Is the intelligence vendor-agnostic?
-        <span class="faq-arrow">+</span>
-      </div>
-      <div class="faq-a">
-        Completely. CYBERDUDEBIVASH SENTINEL APEX threat intelligence is platform-agnostic and can integrate with any SIEM, SOAR, or TIP platform including Microsoft Sentinel, Splunk Enterprise Security, Elastic Security, IBM QRadar, Palo Alto XSOAR, and others. STIX/TAXII integration is available on Enterprise for native feed ingestion without manual export steps.
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- BOTTOM CTA -->
-<div class="cta-section">
-  <h2>Ready to get ahead of the <span class="cyan">next zero-day?</span></h2>
-  <p>Join hundreds of security professionals who rely on CYBERDUDEBIVASH SENTINEL APEX to stay hours ahead of emerging threats.</p>
-  <div class="cta-section-actions">
-    <a href="/index.html" class="btn-primary">Start Reading Free</a>
-    <a href="mailto:bivash@cyberdudebivash.com?subject=SOC%20Pro%20Subscription" class="btn-secondary">Talk to Sales</a>
-  </div>
-</div>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a href="/" class="logo">CYBERDUDE<span>BIVASH</span></a>
-        <p>AI-powered cybersecurity intelligence platform. Real-time threat analysis, zero-day reports, and enterprise SOC advisory — powered by CYBERDUDEBIVASH SENTINEL APEX.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Intelligence</h4>
-        <a href="posts/cve-2026-33825-microsoft-defender-zero-day-bluehammer-redsun.html">Defender Zero-Days</a>
-        <a href="posts/cve-2026-35616-fortinet-forticlient-ems-zero-day.html">Fortinet CVE-2026-35616</a>
-        <a href="posts/cve-2026-33824-windows-ike-service-rce-critical.html">Windows IKE RCE</a>
-        <a href="posts/cve-2026-5281-chrome-zero-day-dawn-webgpu-use-after-free.html">Chrome Zero-Day</a>
-      </div>
-      <div class="footer-col">
-        <h4>Platform</h4>
-        <a href="https://intel.cyberdudebivash.com">Sentinel APEX</a>
-        <a href="https://tools.cyberdudebivash.com">Tools</a>
-        <a href="/pricing.html">Pricing</a>
-        <a href="https://cyberdudebivash.in">AI Security Hub</a>
-        <a href="https://cyberdudebivash.com">Official Site</a>
-      </div>
-      <div class="footer-col">
-        <h4>Contact</h4>
-        <a href="mailto:bivash@cyberdudebivash.com">bivash@cyberdudebivash.com</a>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=Enterprise%20Intelligence%20Services">Enterprise Sales</a>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=SOC%20Pro%20Subscription">Pro Subscription</a>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=Newsletter%20Subscription">Newsletter</a>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 CyberDudeBivash | CYBERDUDEBIVASH SENTINEL APEX Intelligence Platform</span>
-      <span>Threat intelligence for authorized security professionals only</span>
     </div>
   </div>
-</footer>
+</section>
 
+<!-- ── FAQ ───────────────────────────────────────────────────────── -->
+<section class="faq-section">
+  <h2>Frequently Asked Questions</h2>
+
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      How does manual payment work?
+      <span class="faq-chevron">▼</span>
+    </button>
+    <div class="faq-answer">
+      <p>Click "Upgrade", enter your email, and you'll receive a unique payment reference ID. Pay via UPI or bank transfer using that reference. Once we verify the payment (typically within 2–4 hours), your API key is automatically upgraded to the new tier.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      How quickly is payment verified?
+      <span class="faq-chevron">▼</span>
+    </button>
+    <div class="faq-answer">
+      <p>Most payments are verified within 2–4 business hours during working hours (IST). After verification, your API tier upgrades immediately — no need to re-register or get a new key.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      What do I need to include in my payment?
+      <span class="faq-chevron">▼</span>
+    </button>
+    <div class="faq-answer">
+      <p>When paying, use your unique Intent ID (shown in the payment modal) as the payment note/reference. This links your payment to your account. After paying, come back and submit your UTR (transaction reference number) to complete the process.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      Can I upgrade from Free to Pro, or Pro to Enterprise?
+      <span class="faq-chevron">▼</span>
+    </button>
+    <div class="faq-answer">
+      <p>Yes. Any API key can be upgraded at any time. Simply use the Upgrade button with your registered email address and the system will link the payment to your existing key. No new API key is issued — the same key gets more access.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      Is my email safe? What data do you store?
+      <span class="faq-chevron">▼</span>
+    </button>
+    <div class="faq-answer">
+      <p>We store your email, hashed API key, tier, and usage counters in Redis. We do not store full payment details — only the transaction reference (UTR) you submit and the plan you paid for. Your email is never shared or sold.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <button class="faq-question" onclick="toggleFaq(this)">
+      What happens if my payment is rejected?
+      <span class="faq-chevron">▼</span>
+    </button>
+    <div class="faq-answer">
+      <p>Payments are rejected only for non-matching UTRs, wrong amounts, or duplicate submissions. If rejected, you'll see the reason in the status tracker. Contact bivash@cyberdudebivash.com with your Intent ID and payment proof for manual resolution.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── Bottom CTA ────────────────────────────────────────────────── -->
+<section class="bottom-cta">
+  <h2>Ready to Upgrade Your SOC?</h2>
+  <p>Join security teams using SENTINEL APEX for production threat intelligence.</p>
+  <button class="btn-cta-large" onclick="PaymentFlow.startUpgrade('pro')">
+    Upgrade to Pro — ₹1,499/mo →
+  </button>
+  <p style="margin-top:1rem; font-size:0.8rem; color:var(--muted);">
+    Or <a href="/api-dashboard.html">get a free API key</a> to start immediately.
+  </p>
+</section>
+
+<!-- ── Sticky Upgrade Bar ──────────────────────────────────────────── -->
+<div class="sticky-bar" id="stickyBar">
+  <span>🔒 <strong>Unlock full IOC feeds, detection rules & STIX export</strong> — from ₹1,499/mo</span>
+  <button class="sticky-bar-cta" onclick="PaymentFlow.startUpgrade('pro')">Upgrade Now</button>
+  <button class="sticky-bar-close" onclick="document.getElementById('stickyBar').classList.remove('visible')" aria-label="Close">×</button>
+</div>
+
+<!-- ── Toast Stack ──────────────────────────────────────────────────── -->
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     PAYMENT MODAL
+════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">Upgrade Your Plan</div>
+        <div class="modal-subtitle" id="modalSubtitle">Complete payment to activate your tier</div>
+      </div>
+      <button class="modal-close" onclick="PaymentFlow.close()" aria-label="Close">×</button>
+    </div>
+
+    <!-- Step indicators -->
+    <div class="step-indicators" id="stepIndicators">
+      <div class="step-dot" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+      <div class="step-dot" id="dot4"></div>
+      <div class="step-dot" id="dot5"></div>
+    </div>
+
+    <!-- ── STEP 1: Email ──────────────────────── -->
+    <div id="step1">
+      <div class="plan-summary">
+        <div>
+          <div class="plan-summary-name" id="s1PlanName">SOC Pro</div>
+          <div style="font-size:0.75rem;color:var(--muted)">Billed monthly · Cancel anytime</div>
+        </div>
+        <div class="plan-summary-price" id="s1PlanPrice">₹1,499/mo</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="emailInput">Your Registered Email</label>
+        <input type="email" class="form-input" id="emailInput"
+          placeholder="you@company.com" autocomplete="email">
+        <div class="field-error" id="emailError">Please enter a valid email address.</div>
+      </div>
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:1rem;">
+        Use the email you registered (or will register) your API key with. Your tier is linked to this email.
+      </p>
+      <button class="btn-primary" id="btnEmailNext" onclick="PaymentFlow.handleEmailSubmit()">
+        Continue →
+      </button>
+    </div>
+
+    <!-- ── STEP 2: Payment Details ─────────────── -->
+    <div id="step2" style="display:none">
+      <div class="intent-id-callout">
+        <strong>Your Payment Reference (Intent ID)</strong>
+        Use this as the payment note/remark when paying.
+        <div style="margin-top:6px;font-family:monospace;font-size:0.85rem;color:var(--cyan)" id="intentIdDisplay">—</div>
+      </div>
+
+      <div class="pay-tabs">
+        <button class="pay-tab active" id="tabUpi" onclick="PaymentFlow.switchTab('upi')">📱 UPI</button>
+        <button class="pay-tab" id="tabBank" onclick="PaymentFlow.switchTab('bank')">🏦 Bank Transfer</button>
+      </div>
+
+      <!-- UPI Panel -->
+      <div class="pay-panel active" id="panelUpi">
+        <div class="qr-wrapper">
+          <img id="qrCodeImg" src="" alt="UPI QR Code" width="180" height="180">
+        </div>
+        <div class="upi-id-box">
+          <span class="upi-id-val" id="upiIdDisplay">loading...</span>
+          <button class="copy-btn" onclick="copyText(document.getElementById('upiIdDisplay').textContent)">Copy</button>
+        </div>
+        <p style="font-size:0.78rem;color:var(--muted);text-align:center;">
+          Scan QR or copy UPI ID · Add Intent ID as payment note
+        </p>
+      </div>
+
+      <!-- Bank Panel -->
+      <div class="pay-panel" id="panelBank">
+        <div id="bankDetails">
+          <div class="bank-row">
+            <span class="bank-key">Account Name</span>
+            <span class="bank-val" id="bankName">—</span>
+          </div>
+          <div class="bank-row">
+            <span class="bank-key">Account Number</span>
+            <span class="bank-val" id="bankAccount">—</span>
+          </div>
+          <div class="bank-row">
+            <span class="bank-key">IFSC Code</span>
+            <span class="bank-val" id="bankIfsc">—</span>
+          </div>
+          <div class="bank-row">
+            <span class="bank-key">Bank</span>
+            <span class="bank-val" id="bankName2">—</span>
+          </div>
+          <div class="bank-row">
+            <span class="bank-key">Amount</span>
+            <span class="bank-val" id="bankAmount" style="color:var(--cyan);font-weight:700">—</span>
+          </div>
+          <div class="bank-row">
+            <span class="bank-key">Reference Note</span>
+            <span class="bank-val" style="color:var(--gold)" id="bankRef">—</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" style="margin-top:1.25rem" onclick="PaymentFlow.goToStep(3)">
+        I've Paid — Submit UTR →
+      </button>
+      <button class="btn-secondary" onclick="PaymentFlow.goToStep(1)">← Back</button>
+    </div>
+
+    <!-- ── STEP 3: UTR Submission ──────────────── -->
+    <div id="step3" style="display:none">
+      <div class="intent-id-callout">
+        <strong>Submit Your Transaction Reference</strong>
+        Enter the UTR / transaction reference number from your payment confirmation.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="utrInput">UTR / Transaction Reference Number</label>
+        <input type="text" class="form-input" id="utrInput"
+          placeholder="e.g. 123456789012" maxlength="64">
+        <div class="field-error" id="utrError">UTR must be 12–64 alphanumeric characters.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="emailConfirmInput">Confirm Your Email</label>
+        <input type="email" class="form-input" id="emailConfirmInput"
+          placeholder="same email as step 1" autocomplete="email">
+        <div class="field-error" id="emailConfirmError">Email must match what you entered in step 1.</div>
+      </div>
+
+      <p style="font-size:0.77rem;color:var(--muted);margin-bottom:1rem;">
+        Find your UTR in your UPI app's transaction history or bank SMS confirmation. It's usually 12–22 digits.
+      </p>
+
+      <button class="btn-primary" id="btnSubmitUtr" onclick="PaymentFlow.submitPayment()">
+        Submit for Verification →
+      </button>
+      <button class="btn-secondary" onclick="PaymentFlow.goToStep(2)">← Back to Payment</button>
+    </div>
+
+    <!-- ── STEP 4: Status Polling ──────────────── -->
+    <div id="step4" style="display:none">
+      <div class="status-tracker">
+        <div class="status-icon" id="pollIcon">⏳</div>
+        <div class="status-title" id="pollTitle">Payment Under Review</div>
+        <p class="status-sub" id="pollSub">Our team is verifying your transaction. This typically takes 2–4 hours during business hours.</p>
+
+        <div class="txn-id-display">
+          Transaction ID: <span id="txnIdDisplay">—</span>
+        </div>
+
+        <div style="margin-bottom:0.5rem;display:flex;justify-content:center">
+          <span class="status-badge pending" id="statusBadge">
+            <span id="statusDot">●</span>
+            <span id="statusText">Pending Review</span>
+          </span>
+        </div>
+
+        <div class="poll-countdown" id="pollCountdown">Next check in 10s...</div>
+        <div class="poll-bar"><div class="poll-fill" id="pollFill" style="width:100%"></div></div>
+
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:1.5rem;">
+          Keep this tab open to get notified when approved, or check back with your email at <a href="/api-dashboard.html">API Dashboard</a>.
+        </p>
+        <button class="btn-secondary" style="max-width:240px;margin:0 auto" onclick="PaymentFlow.manualPoll()">
+          🔄 Check Now
+        </button>
+      </div>
+    </div>
+
+    <!-- ── STEP 5: Success ─────────────────────── -->
+    <div id="step5" style="display:none">
+      <div class="success-screen">
+        <div class="success-icon">🎉</div>
+        <div class="success-title" id="successTitle">Pro Tier Activated!</div>
+        <p class="success-sub" id="successSub">Your API key now has full Pro access. No changes needed — same key, more power.</p>
+        <div class="unlock-features" id="unlockFeatures">
+          <h4>🔓 Unlocked Features</h4>
+          <!-- populated by JS -->
+        </div>
+        <button class="btn-primary" onclick="window.location.href='/api-dashboard.html'">
+          Go to API Dashboard →
+        </button>
+        <button class="btn-secondary" onclick="PaymentFlow.close()">Close</button>
+      </div>
+    </div>
+
+  </div><!-- /modal -->
+</div><!-- /modal-overlay -->
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════════════════ -->
 <script>
-  function toggleFaq(el) {
-    const item = el.parentElement;
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
+'use strict';
+
+/* ── Config ─────────────────────────────────────────────────────── */
+const API_BASE = '/api/v1';
+const PLANS = {
+  pro:        { name: 'SOC Pro',    price: '₹1,499', amount: 1499, currency: 'INR' },
+  enterprise: { name: 'Enterprise', price: '₹4,999', amount: 4999, currency: 'INR' },
+};
+const PLAN_FEATURES = {
+  pro: ['50 live threat items per request', 'Complete IOC feed access', 'SIGMA + Yara detection rules', 'Unlimited full-text search', '5,000 API calls per day'],
+  enterprise: ['Unlimited threat items', 'Unlimited API calls/day', 'STIX 2.1 bundle export', 'Bulk CSV/JSON export', 'Pre-disclosure CVE reports', 'All Pro features'],
+};
+const POLL_INTERVAL = 10000;
+const STORAGE_KEY = 'apex_payment_state';
+
+/* ── PaymentFlow State Machine ───────────────────────────────────── */
+const PaymentFlow = (() => {
+  let state = {
+    plan: null, email: null, intentId: null,
+    transactionId: null, step: 1, pollTimer: null, pollCountdown: null,
+  };
+
+  /* ── Open modal ── */
+  function startUpgrade(plan) {
+    if (!PLANS[plan]) return;
+    state.plan = plan;
+
+    // Check for in-progress session
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.plan === plan && parsed.step >= 4 && parsed.transactionId) {
+          state = { ...state, ...parsed };
+          openModal();
+          goToStep(state.step);
+          return;
+        }
+      }
+    } catch (_) {}
+
+    // Fresh start
+    state.email = null; state.intentId = null; state.transactionId = null;
+
+    const p = PLANS[plan];
+    document.getElementById('modalTitle').textContent = `Upgrade to ${p.name}`;
+    document.getElementById('modalSubtitle').textContent = `${p.price}/month · Activate instantly after verification`;
+    document.getElementById('s1PlanName').textContent = p.name;
+    document.getElementById('s1PlanPrice').textContent = `${p.price}/mo`;
+
+    // Pre-fill email if stored in localStorage
+    try {
+      const storedEmail = localStorage.getItem('apex_email');
+      if (storedEmail) document.getElementById('emailInput').value = storedEmail;
+    } catch (_) {}
+
+    openModal();
+    goToStep(1);
   }
 
-  // Billing toggle (visual only — actual billing handled via email contact)
-  document.querySelectorAll('.billing-toggle-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.billing-toggle-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
-</script>
-
-<script src="/monetization.js" defer></script>
-<script src="/conversion-engine.js" defer></script>
-<script src="/seo-engine.js" defer></script>
-<script src="/ai-monetization-engine.js" defer></script>
-<script src="/analytics-engine.js" defer></script>
-<script src="/email-engine.js" defer></script>
-<script src="/payment-engine.js" defer></script>
-<script src="/auto-intel-engine.js"></script>
-<script>
-(function () {
-  'use strict';
-  // Pricing page urgency countdown
-  // Persists across refreshes for consistent scarcity (24hr window)
-  var DURATION = 24 * 60 * 60 * 1000; // 24 hours
-  var KEY = 'px_urgency_end';
-  var now = Date.now();
-  var endTime;
-  try {
-    endTime = parseInt(localStorage.getItem(KEY) || '0', 10);
-  } catch (e) { endTime = 0; }
-  if (!endTime || endTime < now) {
-    endTime = now + DURATION;
-    try { localStorage.setItem(KEY, String(endTime)); } catch (e) {}
+  function openModal() {
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
 
-  // Randomize spots counter per session (not per page) for authenticity
-  var SPOTS_KEY = 'px_spots';
-  var spots;
-  try {
-    spots = parseInt(localStorage.getItem(SPOTS_KEY) || '0', 10);
-  } catch (e) { spots = 0; }
-  if (!spots) {
-    spots = 18 + Math.floor(Math.random() * 9); // 18–26
-    try { localStorage.setItem(SPOTS_KEY, String(spots)); } catch (e) {}
+  function close() {
+    // Stop polling
+    if (state.pollTimer)     { clearInterval(state.pollTimer);     state.pollTimer = null; }
+    if (state.pollCountdown) { clearInterval(state.pollCountdown); state.pollCountdown = null; }
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
   }
-  var spotsEl = document.getElementById('pricing-spots');
-  if (spotsEl) spotsEl.textContent = String(spots);
 
-  function pad(n) { return n < 10 ? '0' + n : String(n); }
+  /* ── Step navigation ── */
+  function goToStep(n) {
+    for (let i = 1; i <= 5; i++) {
+      const el = document.getElementById(`step${i}`);
+      if (el) el.style.display = i === n ? '' : 'none';
+    }
+    // Update dots
+    for (let i = 1; i <= 5; i++) {
+      const dot = document.getElementById(`dot${i}`);
+      if (!dot) continue;
+      dot.classList.remove('active', 'done');
+      if (i < n) dot.classList.add('done');
+      else if (i === n) dot.classList.add('active');
+    }
+    state.step = n;
+    saveState();
+  }
 
-  function tick() {
-    var remaining = Math.max(0, endTime - Date.now());
-    var h = Math.floor(remaining / 3600000);
-    var m = Math.floor((remaining % 3600000) / 60000);
-    var s = Math.floor((remaining % 60000) / 1000);
-    var str = pad(h) + ':' + pad(m) + ':' + pad(s);
+  /* ── STEP 1: Email submit → create intent ── */
+  async function handleEmailSubmit() {
+    const emailEl = document.getElementById('emailInput');
+    const email = emailEl.value.trim().toLowerCase();
+    const errEl = document.getElementById('emailError');
 
-    var el = document.getElementById('pricing-countdown');
-    if (el) el.textContent = str;
-    var el2 = document.getElementById('pro-cta-timer');
-    if (el2) el2.textContent = 'in ' + pad(h) + 'h ' + pad(m) + 'm';
+    // Validate
+    errEl.classList.remove('show');
+    emailEl.classList.remove('error');
+    if (!email || !/^[^@\s]{1,64}@[^@\s]{1,253}\.[^@\s]{2,}$/.test(email)) {
+      errEl.classList.add('show'); emailEl.classList.add('error');
+      return;
+    }
 
-    if (remaining > 0) setTimeout(tick, 1000);
-    else {
-      // Hide urgency strip when timer hits 0
-      var strip = document.getElementById('pricing-urgency-strip');
-      if (strip) strip.style.display = 'none';
+    const btn = document.getElementById('btnEmailNext');
+    setLoading(btn, true, 'Creating payment intent...');
+
+    try {
+      const res = await apiFetch(`${API_BASE}/billing?action=create-intent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, plan_type: state.plan }),
+      });
+
+      if (!res.ok_flag) {
+        const code = res.error?.code || '';
+        if (code === 'INTENT_EXISTS') {
+          // Resume existing intent
+          state.email = email;
+          state.intentId = res.existing_intent_id || res.intent_id;
+          populatePaymentDetails(res);
+          goToStep(2);
+          try { localStorage.setItem('apex_email', email); } catch (_) {}
+          return;
+        }
+        throw new Error(res.error?.message || 'Failed to create payment intent');
+      }
+
+      state.email = email;
+      state.intentId = res.intent_id || res.data?.intent_id;
+      populatePaymentDetails(res.data || res);
+      goToStep(2);
+      try { localStorage.setItem('apex_email', email); } catch (_) {}
+
+    } catch (e) {
+      showToast('error', 'Error', e.message || 'Could not create payment intent. Please try again.');
+    } finally {
+      setLoading(btn, false, 'Continue →');
     }
   }
-  tick();
-}());
+
+  function populatePaymentDetails(data) {
+    const intentId = state.intentId || data.intent_id;
+    document.getElementById('intentIdDisplay').textContent = intentId || '—';
+    document.getElementById('bankRef').textContent = intentId || '—';
+
+    // UPI
+    const upi = data.payment_instructions?.upi || data.upi || {};
+    const upiId = upi.upi_id || 'UNAVAILABLE';
+    document.getElementById('upiIdDisplay').textContent = upiId;
+
+    // QR
+    const qrData = upi.upi_link || `upi://pay?pa=${upiId}&pn=CYBERDUDEBIVASH&am=${PLANS[state.plan]?.amount}&cu=INR&tn=${intentId}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrData)}&bgcolor=0f1520&color=00ffe0&margin=10`;
+    document.getElementById('qrCodeImg').src = qrUrl;
+
+    // Bank
+    const bank = data.payment_instructions?.bank || data.bank || {};
+    document.getElementById('bankName').textContent    = bank.account_name     || 'CYBERDUDEBIVASH';
+    document.getElementById('bankAccount').textContent = bank.account_number   || 'Contact support';
+    document.getElementById('bankIfsc').textContent    = bank.ifsc             || 'Contact support';
+    document.getElementById('bankName2').textContent   = bank.bank_name        || '—';
+    document.getElementById('bankAmount').textContent  = `₹${PLANS[state.plan]?.amount || '—'}`;
+  }
+
+  function switchTab(tab) {
+    document.getElementById('tabUpi').classList.toggle('active', tab === 'upi');
+    document.getElementById('tabBank').classList.toggle('active', tab === 'bank');
+    document.getElementById('panelUpi').classList.toggle('active', tab === 'upi');
+    document.getElementById('panelBank').classList.toggle('active', tab === 'bank');
+  }
+
+  /* ── STEP 3: Submit UTR ── */
+  async function submitPayment() {
+    const utrEl       = document.getElementById('utrInput');
+    const emailCEl    = document.getElementById('emailConfirmInput');
+    const utrErrEl    = document.getElementById('utrError');
+    const emailCErrEl = document.getElementById('emailConfirmError');
+
+    const utr    = utrEl.value.trim();
+    const emailC = emailCEl.value.trim().toLowerCase();
+
+    // Reset errors
+    [utrErrEl, emailCErrEl].forEach(e => e.classList.remove('show'));
+    [utrEl, emailCEl].forEach(e => e.classList.remove('error'));
+
+    let valid = true;
+    if (!utr || !/^[a-zA-Z0-9]{12,64}$/.test(utr)) {
+      utrErrEl.classList.add('show'); utrEl.classList.add('error'); valid = false;
+    }
+    if (!emailC || emailC !== state.email) {
+      emailCErrEl.classList.add('show'); emailCEl.classList.add('error'); valid = false;
+    }
+    if (!valid) return;
+
+    const btn = document.getElementById('btnSubmitUtr');
+    setLoading(btn, true, 'Submitting...');
+
+    try {
+      const res = await apiFetch(`${API_BASE}/billing?action=submit-payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          intent_id:        state.intentId,
+          utr_number:       utr,
+          email:            state.email,
+          payment_method:   'upi',
+        }),
+      });
+
+      if (!res.ok_flag) {
+        const code = res.error?.code || '';
+        const msg  = res.error?.message || 'Submission failed';
+        const friendlyErrors = {
+          DUPLICATE_TRANSACTION: 'This UTR has already been submitted. Each transaction can only be submitted once.',
+          INTENT_NOT_FOUND:      'Payment intent expired or not found. Please restart the payment process.',
+          EMAIL_MISMATCH:        'Email does not match the intent. Please use the same email from Step 1.',
+          INVALID_UTR:           'Invalid UTR format. Must be 12–64 alphanumeric characters.',
+          RATE_LIMIT_EXCEEDED:   'Too many submissions. Please wait before trying again.',
+        };
+        throw new Error(friendlyErrors[code] || msg);
+      }
+
+      state.transactionId = res.transaction_id || res.data?.transaction_id;
+      document.getElementById('txnIdDisplay').textContent = state.transactionId || '—';
+      saveState();
+      goToStep(4);
+      startPolling();
+
+    } catch (e) {
+      showToast('error', 'Submission Failed', e.message);
+    } finally {
+      setLoading(btn, false, 'Submit for Verification →');
+    }
+  }
+
+  /* ── STEP 4: Polling ── */
+  function startPolling() {
+    if (state.pollTimer) { clearInterval(state.pollTimer); }
+    _doPoll();
+    state.pollTimer = setInterval(_doPoll, POLL_INTERVAL);
+    _startCountdown();
+  }
+
+  function _startCountdown() {
+    let secs = POLL_INTERVAL / 1000;
+    const fillEl = document.getElementById('pollFill');
+    const cdEl   = document.getElementById('pollCountdown');
+    if (state.pollCountdown) clearInterval(state.pollCountdown);
+    fillEl.style.transition = 'none';
+    fillEl.style.width = '100%';
+    setTimeout(() => { fillEl.style.transition = `width ${POLL_INTERVAL}ms linear`; fillEl.style.width = '0%'; }, 50);
+    state.pollCountdown = setInterval(() => {
+      secs--;
+      if (cdEl) cdEl.textContent = secs > 0 ? `Next check in ${secs}s...` : 'Checking...';
+      if (secs <= 0) {
+        clearInterval(state.pollCountdown);
+        fillEl.style.transition = 'none';
+        fillEl.style.width = '100%';
+        setTimeout(() => { fillEl.style.transition = `width ${POLL_INTERVAL}ms linear`; fillEl.style.width = '0%'; secs = POLL_INTERVAL / 1000; }, 50);
+      }
+    }, 1000);
+  }
+
+  async function _doPoll() {
+    if (!state.transactionId || !state.email) return;
+    try {
+      const res = await apiFetch(
+        `${API_BASE}/billing?action=status&transaction_id=${encodeURIComponent(state.transactionId)}&email=${encodeURIComponent(state.email)}`
+      );
+      if (!res || !res.ok_flag) return;
+
+      const status = res.status || res.data?.status || 'pending_review';
+      updateStatusBadge(status);
+
+      if (status === 'approved') {
+        clearInterval(state.pollTimer); state.pollTimer = null;
+        clearInterval(state.pollCountdown); state.pollCountdown = null;
+        try { sessionStorage.removeItem(STORAGE_KEY); } catch (_) {}
+        _showSuccess();
+      } else if (status === 'rejected') {
+        clearInterval(state.pollTimer); state.pollTimer = null;
+        clearInterval(state.pollCountdown); state.pollCountdown = null;
+        const reason = res.rejection_reason || res.data?.rejection_reason || 'Contact support with your Intent ID.';
+        updateStatusBadge('rejected', reason);
+        showToast('error', 'Payment Rejected', reason);
+      }
+    } catch (_) { /* silent — will retry */ }
+  }
+
+  function manualPoll() { _doPoll(); }
+
+  function updateStatusBadge(status, note) {
+    const badge = document.getElementById('statusBadge');
+    const text  = document.getElementById('statusText');
+    badge.className = `status-badge ${status === 'approved' ? 'approved' : status === 'rejected' ? 'rejected' : 'pending'}`;
+    const labels = { pending_review: 'Pending Review', approved: 'Approved ✓', rejected: 'Rejected' };
+    text.textContent = labels[status] || status;
+    if (note) {
+      document.getElementById('pollSub').textContent = note;
+    }
+  }
+
+  function _showSuccess() {
+    const p = PLANS[state.plan];
+    const feats = PLAN_FEATURES[state.plan] || [];
+    document.getElementById('successTitle').textContent = `${p?.name || 'Pro'} Tier Activated!`;
+    document.getElementById('successSub').textContent  = `Your API key now has full ${p?.name} access. No changes needed — same key, more power.`;
+    const ul = document.getElementById('unlockFeatures');
+    ul.innerHTML = '<h4>🔓 Unlocked Features</h4>' +
+      feats.map(f => `<div class="unlock-item"><span>✓</span><span>${f}</span></div>`).join('');
+    goToStep(5);
+    showToast('success', '🎉 Upgrade Complete!', `Your API key is now ${p?.name}. Full access activated.`);
+  }
+
+  /* ── Persistence ── */
+  function saveState() {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        plan: state.plan, email: state.email,
+        intentId: state.intentId, transactionId: state.transactionId, step: state.step,
+      }));
+    } catch (_) {}
+  }
+
+  /* ── Public API ── */
+  return { startUpgrade, close, handleEmailSubmit, goToStep, switchTab, submitPayment, manualPoll };
+})();
+
+/* ── API fetch helper ─────────────────────────────────────────────── */
+async function apiFetch(url, options = {}) {
+  const res = await fetch(url, options);
+  let data;
+  try { data = await res.json(); } catch (_) { data = {}; }
+  data.ok_flag = res.ok;
+  data._status = res.status;
+  return data;
+}
+
+/* ── Utilities ────────────────────────────────────────────────────── */
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) PaymentFlow.close();
+}
+
+function setLoading(btn, loading, label) {
+  btn.disabled = loading;
+  btn.textContent = label;
+  btn.classList.toggle('btn-loading', loading);
+}
+
+function copyText(text) {
+  if (!text || text === '—') return;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('success', 'Copied!', text.length > 30 ? text.slice(0,30) + '…' : text);
+  }).catch(() => {
+    showToast('warning', 'Copy failed', 'Please copy manually.');
+  });
+}
+
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  item.classList.toggle('open');
+}
+
+/* ── Toast system ─────────────────────────────────────────────────── */
+let _toastId = 0;
+function showToast(type, title, msg, durationMs = 5000) {
+  const stack = document.getElementById('toastStack');
+  const id    = ++_toastId;
+  const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  const t = document.createElement('div');
+  t.className = `toast ${type !== 'success' ? type : ''}`;
+  t.id = `toast${id}`;
+  t.innerHTML = `
+    <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+    <div class="toast-body">
+      <div class="toast-title">${escHtml(title)}</div>
+      ${msg ? `<div class="toast-msg">${escHtml(msg)}</div>` : ''}
+    </div>
+    <button class="toast-dismiss" onclick="dismissToast(${id})" aria-label="Dismiss">×</button>
+  `;
+  stack.appendChild(t);
+  setTimeout(() => dismissToast(id), durationMs);
+}
+function dismissToast(id) {
+  const t = document.getElementById(`toast${id}`);
+  if (!t) return;
+  t.style.animation = 'fadeOut 0.3s forwards';
+  setTimeout(() => t.remove(), 280);
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Sticky bar ───────────────────────────────────────────────────── */
+(function() {
+  let stickyDismissed = false;
+  window.addEventListener('scroll', () => {
+    if (stickyDismissed) return;
+    const bar = document.getElementById('stickyBar');
+    if (window.scrollY > 600) bar.classList.add('visible');
+    else bar.classList.remove('visible');
+  }, { passive: true });
+})();
+
+/* ── Load platform stats ──────────────────────────────────────────── */
+(async function loadStats() {
+  try {
+    const res = await fetch(`${API_BASE}/intel?action=stats`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const s = data.stats || {};
+    if (s.total_threats) document.getElementById('stat-threats').textContent = (s.total_threats).toLocaleString() + '+';
+    if (s.total_cves)    document.getElementById('stat-cves').textContent    = (s.total_cves).toLocaleString() + '+';
+  } catch (_) {}
+})();
+
+/* ── Handle #upgrade=plan hash ─────────────────────────────────────── */
+(function checkHash() {
+  const hash = window.location.hash;
+  const m = hash.match(/[?#&]upgrade=(pro|enterprise)/i);
+  if (m) {
+    setTimeout(() => PaymentFlow.startUpgrade(m[1].toLowerCase()), 300);
+  }
+})();
+
+/* ── Keyboard shortcut: ESC closes modal ──────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') PaymentFlow.close();
+});
 </script>
+
 </body>
 </html>
