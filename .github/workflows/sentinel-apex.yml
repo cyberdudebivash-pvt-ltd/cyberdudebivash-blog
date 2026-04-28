@@ -1,7 +1,7 @@
-name: "⚡ SENTINEL APEX — Global Intel Pipeline v4.0"
+name: "⚡ SENTINEL APEX v5.0 — High-Frequency Global Intel Pipeline"
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
     inputs:
       force_reset_state:
@@ -26,9 +26,9 @@ concurrency:
 
 jobs:
   ingest-process-publish:
-    name: "Ingest → Correlate → Score → Filter → Publish"
+    name: "27 Sources → Tiered Parallel → Stream → Publish"
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 7
 
     steps:
       - name: "Checkout repository"
@@ -44,58 +44,88 @@ jobs:
 
       - name: "Pre-flight: verify engine"
         run: |
-          echo "⚡ SENTINEL APEX v4.0 — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-          echo "9 Phases: IOC Enrichment + Correlation + Priority Scoring + Signal Filtering + API Platform + Paid Tiers + Advanced Reports + Performance + Validation"
+          echo "⚡ SENTINEL APEX v5.0 — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          echo "27 Sources | Tiered Parallel | Stream-Like | Lock Mechanism | Health Mon."
           node --version
           test -f fetch-live-intel.js || (echo "❌ fetch-live-intel.js missing" && exit 1)
+          # Remove stale lock if older than 8 minutes
+          if [ -f pipeline.lock ]; then
+            LOCK_AGE=$(( $(date +%s) - $(stat -c %Y pipeline.lock 2>/dev/null || echo 0) ))
+            if [ "$LOCK_AGE" -gt 480 ]; then
+              echo "⚠️ Removing stale lock (age: ${LOCK_AGE}s)"
+              rm -f pipeline.lock
+            else
+              echo "ℹ️ Lock file present (age: ${LOCK_AGE}s) — pipeline self-manages"
+            fi
+          fi
           echo "✅ Engine verified"
 
       - name: "Initialize intel-state.json"
         run: |
           if [ "${{ github.event.inputs.force_reset_state }}" = "true" ]; then
-            echo '{"published":[],"lastRun":null,"totalPublished":0,"correlations":{},"version":"4.0","platform":"CYBERDUDEBIVASH SENTINEL APEX v4.0","note":"Manual reset via workflow_dispatch."}' > intel-state.json
+            echo '{"published":[],"lastRun":null,"totalPublished":0,"correlations":{},"sourceFetchState":{},"sourceHealth":{},"version":"5.0","platform":"CYBERDUDEBIVASH SENTINEL APEX v5.0","note":"Manual reset via workflow_dispatch."}' > intel-state.json
             echo "⚠️ State RESET by operator"
           elif [ ! -f intel-state.json ]; then
-            echo '{"published":[],"lastRun":null,"totalPublished":0,"correlations":{},"version":"4.0","platform":"CYBERDUDEBIVASH SENTINEL APEX v4.0"}' > intel-state.json
+            echo '{"published":[],"lastRun":null,"totalPublished":0,"correlations":{},"sourceFetchState":{},"sourceHealth":{},"version":"5.0","platform":"CYBERDUDEBIVASH SENTINEL APEX v5.0"}' > intel-state.json
             echo "✅ State initialized fresh"
           else
-            echo "✅ State loaded ($(node -e "const s=require('./intel-state.json');console.log(s.published.length+' published, total='+s.totalPublished)"  2>/dev/null || echo 'existing'))"
+            echo "✅ State loaded: $(node -e "
+              const s=require('./intel-state.json');
+              const h=s.sourceHealth||{};
+              const deg=Object.values(h).filter(x=>x.status==='degraded').map(x=>x.name);
+              console.log(s.published.length+' in dedup, total='+s.totalPublished+(deg.length?' | DEGRADED: '+deg.join(','):''));
+            " 2>/dev/null || echo 'existing')"
           fi
 
-      - name: "Run SENTINEL APEX v4.0 Pipeline"
-        timeout-minutes: 6
+      - name: "Run SENTINEL APEX v5.0 Pipeline"
+        timeout-minutes: 5
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OTX_API_KEY: ${{ secrets.OTX_API_KEY }}
           DEBUG: ${{ github.event.inputs.debug }}
         run: |
-          timeout 360 node fetch-live-intel.js
-          echo "✅ Pipeline completed successfully"
+          timeout 290 node fetch-live-intel.js
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "✅ Pipeline completed successfully"
+          elif [ $EXIT_CODE -eq 143 ] || [ $EXIT_CODE -eq 124 ]; then
+            echo "⚠️ Pipeline timed out — partial results may have been written"
+            rm -f pipeline.lock
+          else
+            echo "❌ Pipeline exited with code $EXIT_CODE"
+            rm -f pipeline.lock
+            exit $EXIT_CODE
+          fi
 
       - name: "Detect changes"
         id: changes
         run: |
           git config user.name  "SENTINEL-APEX[bot]"
           git config user.email "sentinel-apex@cyberdudebivash.com"
-          CHANGED=$(git status --short | wc -l | tr -d ' ')
+          # Remove lock file from git tracking (should never be committed)
+          rm -f pipeline.lock
+          CHANGED=$(git status --short | grep -v "pipeline.lock" | wc -l | tr -d ' ')
           echo "changed=$CHANGED" >> $GITHUB_OUTPUT
           echo "📊 Changed files: $CHANGED"
-          git status --short | head -20
+          git status --short | grep -v "pipeline.lock" | head -20
 
       - name: "Commit and push intel"
         if: steps.changes.outputs.changed != '0'
         run: |
           git add -A
+          git reset HEAD pipeline.lock 2>/dev/null || true
           NEW_POSTS=$(git status --cached --short | grep "^A.*posts/" | wc -l | tr -d ' ')
           API_FILES=$(git status --cached --short | grep "^A.*api/" | wc -l | tr -d ' ')
           TOTAL_PUB=$(node -e "try{const s=require('./intel-state.json');console.log(s.totalPublished||0)}catch(e){console.log(0)}" 2>/dev/null || echo 0)
-          COMMIT_MSG="SENTINEL APEX v4.0: +${NEW_POSTS} reports, +${API_FILES} API files, total=${TOTAL_PUB} [$(date -u '+%Y-%m-%dT%H:%M:%SZ')] [skip ci]"
+          SOURCES=$(node -e "try{const d=require('./live-intel.json');const u=[...new Set(d.items.map(i=>i.source))];console.log(u.length+'srcs')}catch(e){console.log('?srcs')}" 2>/dev/null || echo '?srcs')
+          COMMIT_MSG="SENTINEL APEX v5.0: +${NEW_POSTS} reports, +${API_FILES} API files, total=${TOTAL_PUB}, ${SOURCES} [$(date -u '+%Y-%m-%dT%H:%M:%SZ')] [skip ci]"
           git commit -m "$COMMIT_MSG"
           # Push with retry + rebase
           for i in 1 2 3; do
-            git push origin main && echo "✅ Push succeeded" && break
+            git push origin main && echo "✅ Push succeeded (attempt $i)" && break
             if [ $i -lt 3 ]; then
-              echo "⚠️ Push attempt $i failed — retrying with rebase..."
+              echo "⚠️ Push attempt $i failed — rebasing..."
               git pull --rebase origin main
               sleep $((i * 3))
             else
@@ -106,9 +136,9 @@ jobs:
       - name: "Run summary"
         if: always()
         run: |
-          echo "══════════════════════════════════════════════"
-          echo "⚡ SENTINEL APEX v4.0 — RUN SUMMARY"
-          echo "══════════════════════════════════════════════"
+          echo "══════════════════════════════════════════════════════"
+          echo "⚡ SENTINEL APEX v5.0 — RUN SUMMARY"
+          echo "══════════════════════════════════════════════════════"
           echo "Timestamp  : $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           echo "Trigger    : ${{ github.event_name }}"
           echo "Runner     : ${{ runner.os }}"
@@ -117,22 +147,30 @@ jobs:
               const s=require('./intel-state.json');
               console.log('Published  : '+s.totalPublished);
               console.log('Last run   : '+s.lastRun);
-              console.log('Version    : '+(s.version||'4.0'));
+              console.log('Version    : '+(s.version||'5.0'));
+              const h=s.sourceHealth||{};
+              const ok=Object.values(h).filter(x=>x.status==='ok').length;
+              const deg=Object.values(h).filter(x=>x.status==='degraded').length;
+              const warn=Object.values(h).filter(x=>x.status==='warning').length;
+              console.log('Src Health : '+ok+' ok, '+warn+' warn, '+deg+' degraded');
             " 2>/dev/null || true
           fi
           if [ -f live-intel.json ]; then
             node -e "
               const d=require('./live-intel.json');
               const st=d.stats||{};
+              const srcs=[...new Set(d.items.map(i=>i.source))];
               console.log('Live items : '+d.items.length);
               console.log('CRITICAL   : '+(st.critical||0));
               console.log('CISA KEV   : '+(st.cisaKev||0));
               console.log('Exploited  : '+(st.exploited||0));
+              console.log('Sources    : '+srcs.length+' ('+srcs.slice(0,8).join(', ')+(srcs.length>8?'...':'')+')');
             " 2>/dev/null || true
           fi
-          echo "══════════════════════════════════════════════"
+          echo "══════════════════════════════════════════════════════"
 
       - name: "Alert on failure"
         if: failure()
         run: |
-          echo "::error title=SENTINEL APEX v4.0 Pipeline Failed::Pipeline run failed at $(date -u). Check logs above for root cause. Sources may be rate-limiting or offline."
+          echo "::error title=SENTINEL APEX v5.0 Pipeline Failed::Pipeline failed at $(date -u). Check logs. Sources may be rate-limiting or offline. Lock file cleaned automatically."
+          rm -f pipeline.lock

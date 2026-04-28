@@ -1,16 +1,9 @@
 #!/usr/bin/env node
 /**
- * CYBERDUDEBIVASH SENTINEL APEX — Global Intelligence Engine v4.0
- * Production-grade. Zero external dependencies. 12 live sources.
- * Phase 1: Advanced IOC Enrichment
- * Phase 2: Deduplication & Correlation Engine
- * Phase 3: Priority Scoring Engine (0-100 composite)
- * Phase 4: Signal vs Noise Filtering
- * Phase 5: Enterprise API Platform (static JSON endpoints)
- * Phase 6: Paid Intel Segmentation (Free/Pro/Enterprise tiers)
- * Phase 7: Advanced Report Engine (Executive Summary + Business Impact + Attack Chain)
- * Phase 8: Performance & Reliability
- * Phase 9: Validation & Success Criteria
+ * CYBERDUDEBIVASH SENTINEL APEX — Global Intelligence Engine v5.0
+ * HIGH-FREQUENCY MULTI-SOURCE NEAR REAL-TIME INTELLIGENCE ENGINE
+ * 27 live sources | Tiered parallel ingestion | Stream-like writes
+ * Source health monitoring | Lock mechanism | 5-min cadence
  * © 2026 CYBERDUDEBIVASH PRIVATE LIMITED
  */
 'use strict';
@@ -21,10 +14,11 @@ const path   = require('path');
 const url    = require('url');
 const crypto = require('crypto');
 
-// Phase 4: Intelligence Enrichment Pipeline
+// Intelligence Enrichment Pipeline
 const { runEnrichmentPipeline } = require('./api/_lib/enrichment-pipeline');
 
 const CFG = {
+  // ── Core paths ─────────────────────────────────────────────────────
   baseUrl:            'https://blog.cyberdudebivash.in',
   brand:              'CYBERDUDEBIVASH',
   author:             'CYBERDUDEBIVASH SENTINEL APEX',
@@ -32,38 +26,65 @@ const CFG = {
   postsDir:           path.join(__dirname, 'posts'),
   indexPath:          path.join(__dirname, 'index.html'),
   statePath:          path.join(__dirname, 'intel-state.json'),
+  lockPath:           path.join(__dirname, 'pipeline.lock'),
   rssPath:            path.join(__dirname, 'rss.xml'),
   liveJsonPath:       path.join(__dirname, 'live-intel.json'),
   sitemapPath:        path.join(__dirname, 'sitemap.xml'),
   apiDir:             path.join(__dirname, 'api', 'intel'),
-  // Phase 1 Fix: tighter lookback windows — sourceFetchState tracks real last-seen per source
-  nvdLookbackHours:   72,      // fallback when no prior source state (3 days)
-  kevLookbackDays:    7,       // fallback when no prior source state
-  maxNewPostsPerRun:  12,
+
+  // ── Timing & limits ────────────────────────────────────────────────
+  nvdLookbackHours:   72,      // fallback when no prior source state
+  kevLookbackDays:    7,
+  maxNewPostsPerRun:  15,      // v5: increased
   minCVSS:            7.0,
-  minPriorityScore:   40,
-  requestTimeoutMs:   25000,
-  maxRssItems:        12,      // more items per RSS source
-  // Phase 3 Fix: dedup TTL — published items older than N days are NOT considered duplicates
+  minPriorityScore:   35,      // v5: lower bar = more signal captured
+  sourceTimeoutMs:    8000,    // per-source hard timeout (Phase 2)
+  requestTimeoutMs:   12000,
+  maxRssItems:        12,
   dedupTtlDays:       30,
-  // Phase 5 Fix: rolling window sizes
-  liveRollingWindow:  100,     // live-intel.json max items
-  apiLiveWindow:      75,      // api/intel/live.json max items
+  liveRollingWindow:  150,     // v5: increased window
+  apiLiveWindow:      100,
+  healthFailThreshold: 3,      // Phase 7: mark degraded after N consecutive failures
+  freshnessAlertMins:  30,     // Phase 8: alert if no new intel in 30 min
+
+  // ── API keys ────────────────────────────────────────────────────────
   nvdApiKey:          process.env.NVD_API_KEY  || '',
   githubToken:        process.env.GITHUB_TOKEN || '',
+  otxApiKey:          process.env.OTX_API_KEY  || '',
+
+  // ── TIER 1: Critical CVE / exploit sources ──────────────────────────
   nvdApi:             'https://services.nvd.nist.gov/rest/json/cves/2.0',
   cisaKevUrl:         'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json',
   cisaAlertsRss:      'https://www.cisa.gov/cybersecurity-advisories/all.xml',
   ghAdvisoryUrl:      'https://api.github.com/advisories?type=reviewed&severity=high&per_page=30',
+  msrcApi:            'https://api.msrc.microsoft.com/cvrf/v2.0/Updates',
+  exploitDbRss:       'https://www.exploit-db.com/rss.xml',
+  packetstormRss:     'https://rss.packetstormsecurity.com/files/advisories/',
+  fullDisclosureRss:  'https://seclists.org/rss/fulldisclosure.rss',
+
+  // ── TIER 2: Threat intel blogs + malware feeds ─────────────────────
   bleepingRss:        'https://www.bleepingcomputer.com/feed/',
   thnRss:             'https://feeds.feedburner.com/TheHackersNews',
   krebsRss:           'https://krebsonsecurity.com/feed/',
   secweekRss:         'https://www.securityweek.com/feed/',
   sansRss:            'https://isc.sans.edu/rssfeed_full.xml',
   darkReadingRss:     'https://www.darkreading.com/rss.xml',
+  talosBlogRss:       'https://blog.talosintelligence.com/feeds/posts/default',
+  unit42Rss:          'https://unit42.paloaltonetworks.com/feed/',
+  crowdstrikeBlogRss: 'https://www.crowdstrike.com/blog/feed/',
+  sentineloneBlogRss: 'https://www.sentinelone.com/blog/feed/',
+  googleProjZeroRss:  'https://googleprojectzero.blogspot.com/feeds/posts/default',
+  rapid7BlogRss:      'https://www.rapid7.com/blog/feed/',
   urlhausApi:         'https://urlhaus-api.abuse.ch/v1/payloads/recent/',
   threatfoxApi:       'https://threatfox-api.abuse.ch/api/v1/',
-  msrcApi:            'https://api.msrc.microsoft.com/cvrf/v2.0/Updates',
+
+  // ── TIER 3: Community + signals ─────────────────────────────────────
+  redditNetsecRss:    'https://www.reddit.com/r/netsec/.rss?limit=25',
+  redditCyberRss:     'https://www.reddit.com/r/cybersecurity/.rss?limit=15',
+  certEuRss:          'https://www.cert.europa.eu/publications/threat-intelligence/rss',
+  microsoftSecBlogRss:'https://www.microsoft.com/en-us/security/blog/feed/',
+  wiredSecRss:        'https://www.wired.com/feed/category/security/latest/rss',
+  recordedFutureRss:  'https://www.recordedfuture.com/feed/',
 };
 
 const log  = m => console.log(`[APEX] ${m}`);
@@ -71,7 +92,68 @@ const warn = m => console.warn(`[WARN] ${m}`);
 const err  = m => console.error(`[ERR]  ${m}`);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const isoNow = () => new Date().toISOString().slice(0, 10);
+const isoNowFull = () => new Date().toISOString();
 const md5 = s => crypto.createHash('md5').update(String(s)).digest('hex').slice(0, 16);
+
+// ── PHASE 3: LOCK MECHANISM — prevents overlapping runs ─────────────────
+function acquireLock() {
+  try {
+    if (fs.existsSync(CFG.lockPath)) {
+      const lockData = JSON.parse(fs.readFileSync(CFG.lockPath, 'utf8'));
+      const ageMs = Date.now() - (lockData.acquired || 0);
+      if (ageMs < 10 * 60000) { // 10 min max lock age
+        warn(`Pipeline already running (lock age ${Math.round(ageMs/1000)}s). Aborting.`);
+        return false;
+      }
+      warn(`Stale lock found (${Math.round(ageMs/60000)} min old). Overriding.`);
+    }
+    fs.writeFileSync(CFG.lockPath, JSON.stringify({ acquired: Date.now(), pid: process.pid }), 'utf8');
+    return true;
+  } catch(e) { warn(`Lock acquire failed: ${e.message}`); return true; } // fail-open
+}
+function releaseLock() {
+  try { if (fs.existsSync(CFG.lockPath)) fs.unlinkSync(CFG.lockPath); } catch(_) {}
+}
+
+// ── PHASE 2: PER-SOURCE TIMEOUT WRAPPER ────────────────────────────────
+async function fetchWithTimeout(fetchFn, sourceKey, timeoutMs) {
+  const timeout = timeoutMs || CFG.sourceTimeoutMs;
+  return Promise.race([
+    fetchFn(),
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`Source timeout ${timeout}ms: ${sourceKey}`)), timeout)),
+  ]);
+}
+
+// ── PHASE 7: SOURCE HEALTH MONITORING ──────────────────────────────────
+function initSourceHealth(name) {
+  return { name, lastSuccess: null, lastError: null, consecutiveFails: 0, totalFails: 0, totalSuccesses: 0, successRate: 1.0, status: 'ok' };
+}
+function recordSourceSuccess(state, source) {
+  if (!state.sourceHealth) state.sourceHealth = {};
+  const h = state.sourceHealth[source] || initSourceHealth(source);
+  h.lastSuccess       = isoNowFull();
+  h.consecutiveFails  = 0;
+  h.totalSuccesses    = (h.totalSuccesses || 0) + 1;
+  h.successRate       = h.totalSuccesses / Math.max(1, h.totalSuccesses + h.totalFails);
+  h.status            = 'ok';
+  state.sourceHealth[source] = h;
+}
+function recordSourceFailure(state, source, errorMsg) {
+  if (!state.sourceHealth) state.sourceHealth = {};
+  const h = state.sourceHealth[source] || initSourceHealth(source);
+  h.lastError         = `${isoNowFull()}: ${String(errorMsg).slice(0,100)}`;
+  h.consecutiveFails  = (h.consecutiveFails || 0) + 1;
+  h.totalFails        = (h.totalFails || 0) + 1;
+  h.successRate       = h.totalSuccesses / Math.max(1, h.totalSuccesses + h.totalFails);
+  h.status            = h.consecutiveFails >= CFG.healthFailThreshold ? 'degraded' : 'warning';
+  state.sourceHealth[source] = h;
+}
+function getSourceHealthReport(state) {
+  const health = state.sourceHealth || {};
+  const degraded = Object.values(health).filter(h => h.status === 'degraded');
+  const warning  = Object.values(health).filter(h => h.status === 'warning');
+  return { degraded: degraded.map(h=>h.name), warning: warning.map(h=>h.name), total: Object.keys(health).length };
+}
 
 // ── UTILITIES ──────────────────────────────────────────────────────────
 function fmtDate(d) {
@@ -208,19 +290,19 @@ function loadState() {
       if (!Array.isArray(s.published)) s.published = [];
       if (!s.correlations) s.correlations = {};
       if (!s.sourceFetchState) s.sourceFetchState = {};
+      if (!s.sourceHealth) s.sourceHealth = {};
       return s;
     }
   } catch(e) { warn('State corrupt — starting fresh.'); }
-  return { published: [], lastRun: null, totalPublished: 0, correlations: {}, sourceFetchState: {}, version: '4.0' };
+  return { published: [], lastRun: null, totalPublished: 0, correlations: {}, sourceFetchState: {}, sourceHealth: {}, version: '5.0' };
 }
 function saveState(state) {
-  state.lastRun = new Date().toISOString();
-  state.version = '4.0';
-  // Trim published list — remove entries older than 60 days first, then hard cap at 2000
-  const ttlMs = (CFG.dedupTtlDays || 30) * 86400000 * 2; // 60-day hard purge
-  const now = Date.now();
+  state.lastRun  = isoNowFull();
+  state.version  = '5.0';
+  const ttlMs    = (CFG.dedupTtlDays || 30) * 86400000 * 2; // 60-day hard purge
+  const now      = Date.now();
   state.published = state.published.filter(p => (now - new Date(p.date || 0).getTime()) < ttlMs);
-  if (state.published.length > 2000) state.published = state.published.slice(0, 1500);
+  if (state.published.length > 3000) state.published = state.published.slice(0, 2000);
   fs.writeFileSync(CFG.statePath, JSON.stringify(state, null, 2), 'utf8');
 }
 // Returns last fetch timestamp for a named source (epoch ms), or null if never fetched
@@ -509,20 +591,170 @@ async function fetchMSRC() {
   } catch(e) { warn(`MSRC failed: ${e.message}`); return []; }
 }
 
-// ── PHASE 3: PRIORITY SCORING ENGINE (0–100 composite) ────────────────
+// ── TIER 1 SOURCES 13-15: EXPLOIT/VULN DISCLOSURE ────────────────────
+
+async function fetchExploitDB(state) {
+  const lastFetch = getSourceLastFetch(state, 'exploitdb');
+  const afterDate = lastFetch ? new Date(lastFetch) : new Date(Date.now() - 2*86400000);
+  log(`ExploitDB: fetching (since ${afterDate.toISOString().slice(0,10)})...`);
+  try {
+    const raw = await fetchWithRetry(CFG.exploitDbRss, {}, 2);
+    const parsed = parseRSS(raw);
+    const items = parsed
+      .filter(item => { try { return !item.pubDate || new Date(item.pubDate) >= afterDate; } catch(_){return true;} })
+      .slice(0, CFG.maxRssItems)
+      .map(item => {
+        const text = (item.title||'') + ' ' + (item.desc||'');
+        const cves  = extractCVEs(text);
+        const id    = cves[0] || ('EXPLOITDB-' + md5(item.link || item.title));
+        return {
+          source:'exploitdb', type: cves.length ? 'CVE_REPORT' : 'ZERO_DAY',
+          id, title: item.title || 'ExploitDB Public Exploit', desc: (item.desc||'').slice(0,600),
+          cvss: cves.length ? 8.5 : 7.5, refs: [item.link].filter(Boolean),
+          pubDate: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : isoNow(),
+          vendor: 'ExploitDB', product: 'Multiple Targets',
+          exploited: true, cisaKev: false, ransomware: false,
+          cves, iocs: extractIOCs(text, []), sourceCount: 1,
+          daysOld: item.pubDate ? Math.floor((Date.now()-new Date(item.pubDate).getTime())/86400000) : 0,
+        };
+      });
+    setSourceLastFetch(state, 'exploitdb', Date.now());
+    log(`ExploitDB: ${items.length} items.`); return items;
+  } catch(e) { warn(`ExploitDB failed: ${e.message}`); return []; }
+}
+
+async function fetchPacketStorm(state) {
+  const lastFetch = getSourceLastFetch(state, 'packetstorm');
+  const afterDate = lastFetch ? new Date(lastFetch) : new Date(Date.now() - 2*86400000);
+  log(`PacketStorm: fetching...`);
+  try {
+    const raw = await fetchWithRetry(CFG.packetstormRss, {}, 2);
+    const parsed = parseRSS(raw);
+    const items = parsed
+      .filter(item => { try { return !item.pubDate || new Date(item.pubDate) >= afterDate; } catch(_){return true;} })
+      .slice(0, CFG.maxRssItems)
+      .map(item => {
+        const text = (item.title||'') + ' ' + (item.desc||'');
+        const cves  = extractCVEs(text);
+        const id    = cves[0] || ('PKTSTORM-' + md5(item.link || item.title));
+        return {
+          source:'packetstorm', type: /exploit|poc|proof.of.concept/i.test(text) ? 'ZERO_DAY' : 'CVE_REPORT',
+          id, title: item.title || 'PacketStorm Security Advisory', desc: (item.desc||'').slice(0,600),
+          cvss: 8.0, refs: [item.link].filter(Boolean),
+          pubDate: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : isoNow(),
+          vendor: 'PacketStorm', product: 'Multiple Targets',
+          exploited: /exploit|poc/i.test(text), cisaKev: false, ransomware: false,
+          cves, iocs: extractIOCs(text, []), sourceCount: 1,
+          daysOld: item.pubDate ? Math.floor((Date.now()-new Date(item.pubDate).getTime())/86400000) : 0,
+        };
+      });
+    setSourceLastFetch(state, 'packetstorm', Date.now());
+    log(`PacketStorm: ${items.length} items.`); return items;
+  } catch(e) { warn(`PacketStorm failed: ${e.message}`); return []; }
+}
+
+async function fetchFullDisclosure(state) {
+  const lastFetch = getSourceLastFetch(state, 'fulldisclosure');
+  const afterDate = lastFetch ? new Date(lastFetch) : new Date(Date.now() - 2*86400000);
+  log(`Full Disclosure: fetching...`);
+  try {
+    const raw = await fetchWithRetry(CFG.fullDisclosureRss, {}, 2);
+    const parsed = parseRSS(raw);
+    const items = parsed
+      .filter(item => { try { return !item.pubDate || new Date(item.pubDate) >= afterDate; } catch(_){return true;} })
+      .slice(0, 8)
+      .map(item => {
+        const text = (item.title||'') + ' ' + (item.desc||'');
+        const cves  = extractCVEs(text);
+        const id    = cves[0] || ('FULLDIS-' + md5(item.link || item.title));
+        return {
+          source:'fulldisclosure', type: 'ZERO_DAY',
+          id, title: item.title || 'Full Disclosure Vulnerability Report', desc: (item.desc||'').slice(0,600),
+          cvss: cves.length ? 8.0 : 6.5, refs: [item.link].filter(Boolean),
+          pubDate: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : isoNow(),
+          vendor: 'SecLists', product: 'Multiple Targets',
+          exploited: /exploit|poc|0day/i.test(text), cisaKev: false, ransomware: false,
+          cves, iocs: extractIOCs(text, []), sourceCount: 1,
+          daysOld: item.pubDate ? Math.floor((Date.now()-new Date(item.pubDate).getTime())/86400000) : 0,
+        };
+      });
+    setSourceLastFetch(state, 'fulldisclosure', Date.now());
+    log(`Full Disclosure: ${items.length} items.`); return items;
+  } catch(e) { warn(`Full Disclosure failed: ${e.message}`); return []; }
+}
+
+// ── TIER 2 SOURCES 16-21: THREAT INTEL BLOGS ─────────────────────────
+
+async function fetchTalos(state) {
+  return fetchRSS(CFG.talosBlogRss, 'talos', CFG.maxRssItems, state);
+}
+async function fetchUnit42(state) {
+  return fetchRSS(CFG.unit42Rss, 'unit42', CFG.maxRssItems, state);
+}
+async function fetchCrowdStrike(state) {
+  return fetchRSS(CFG.crowdstrikeBlogRss, 'crowdstrike', CFG.maxRssItems, state);
+}
+async function fetchSentinelOne(state) {
+  return fetchRSS(CFG.sentineloneBlogRss, 'sentinelone', CFG.maxRssItems, state);
+}
+async function fetchGoogleProjectZero(state) {
+  return fetchRSS(CFG.googleProjZeroRss, 'googleprojectzero', 6, state);
+}
+async function fetchRapid7(state) {
+  return fetchRSS(CFG.rapid7BlogRss, 'rapid7', CFG.maxRssItems, state);
+}
+
+// ── TIER 3 SOURCES 22-27: COMMUNITY + SIGNALS ────────────────────────
+
+async function fetchRedditNetsec(state) {
+  return fetchRSS(CFG.redditNetsecRss, 'reddit_netsec', 10, state);
+}
+async function fetchRedditCyber(state) {
+  return fetchRSS(CFG.redditCyberRss, 'reddit_cyber', 8, state);
+}
+async function fetchCertEU(state) {
+  return fetchRSS(CFG.certEuRss, 'cert_eu', 6, state);
+}
+async function fetchMicrosoftSecBlog(state) {
+  return fetchRSS(CFG.microsoftSecBlogRss, 'microsoft_security', CFG.maxRssItems, state);
+}
+async function fetchWiredSecurity(state) {
+  return fetchRSS(CFG.wiredSecRss, 'wired_security', 8, state);
+}
+async function fetchRecordedFuture(state) {
+  return fetchRSS(CFG.recordedFutureRss, 'recorded_future', 8, state);
+}
+
+// ── PHASE 3+5: PRIORITY SCORING ENGINE WITH SIGNAL BOOSTING ───────────
 function computePriorityScore(item) {
   let score = 0;
+  const text = (item.title||'') + ' ' + (item.desc||'');
+
   // CVSS base (0-40 pts)
   const cvss = item.cvss || 0;
   score += Math.min(40, Math.round(cvss * 4.2));
+
+  // ── PHASE 5: SIGNAL BOOSTING ─────────────────────────────────────
   // CISA KEV confirmation (25 pts) — highest single signal
   if (item.cisaKev)    score += 25;
   // Active exploitation confirmed (20 pts)
   if (item.exploited)  score += 20;
   // Ransomware campaign use (15 pts)
   if (item.ransomware) score += 15;
-  // Multi-source corroboration (up to 10 pts)
-  score += Math.min(10, (item.sourceCount||1) * 3);
+  // Zero-day keyword boost (10 pts)
+  if (item.type === 'ZERO_DAY' || /zero.?day|0.?day|unpatched|no patch/i.test(text)) score += 10;
+  // Nation-state / APT boost (8 pts)
+  if (/nation.state|apt\d|lazarus|volt typhoon|sandworm|cozy bear|fancy bear|salt typhoon|state.sponsored/i.test(text)) score += 8;
+  // Critical infra boost (7 pts)
+  if (/federal|critical infrastructure|scada|ics|election|nuclear|power grid|hospital|utility/i.test(text)) score += 7;
+  // Supply chain boost (6 pts)
+  if (/supply chain|open.?source|npm|pypi|dependency/i.test(text)) score += 6;
+  // AI/ML attack surface boost (4 pts — emerging threat)
+  if (/ai security|llm|prompt injection|deepfake|gpt.*hack/i.test(text)) score += 4;
+  // ── END SIGNAL BOOSTING ───────────────────────────────────────────
+
+  // Multi-source corroboration (up to 12 pts)
+  score += Math.min(12, (item.sourceCount||1) * 3);
   // Recency bonus — fresher = better (up to 8 pts)
   const days = item.daysOld || 0;
   if (days === 0)      score += 8;
@@ -531,12 +763,11 @@ function computePriorityScore(item) {
   else if (days <= 7)  score += 2;
   // IOC richness bonus (up to 5 pts)
   score += Math.min(5, (item.iocs||[]).length);
-  // Threat actor / nation-state (5 pts)
-  if (item.type === 'THREAT_ACTOR') score += 5;
-  // Zero-day (8 pts)
-  if (item.type === 'ZERO_DAY')     score += 8;
-  // Critical infrastructure / federal (5 pts)
-  if (/federal|critical infrastructure|scada|ics|election|nuclear|power grid/i.test((item.title||'')+(item.desc||''))) score += 5;
+  // Threat actor type (4 pts)
+  if (item.type === 'THREAT_ACTOR') score += 4;
+  // Exploit code available (5 pts — from ExploitDB / PacketStorm)
+  if (item.source === 'exploitdb' || item.source === 'packetstorm' || item.source === 'fulldisclosure') score += 5;
+
   return Math.min(100, Math.round(score));
 }
 
@@ -1261,249 +1492,294 @@ function writeLiveIntel(allItems, state) {
       const ps = (b.priority||0) - (a.priority||0);
       if (ps !== 0) return ps;
       return new Date(b.pubDate||0) - new Date(a.pubDate||0);
-    });
-    const liveItems = merged.slice(0, CFG.liveRollingWindow || 100);
+    });    const liveItems = merged.slice(0, CFG.liveRollingWindow || 150);
     fs.writeFileSync(CFG.liveJsonPath, JSON.stringify({
       generatedAt: new Date().toISOString(), totalPublished: state.totalPublished||0,
-      source: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', platform: 'blog.cyberdudebivash.in',
+      source: 'CYBERDUDEBIVASH SENTINEL APEX v5.0', platform: 'blog.cyberdudebivash.in',
+      version: '5.0',
       stats: {
-        critical:  liveItems.filter(i=>i.threatLevel==='CRITICAL').length,
-        high:      liveItems.filter(i=>i.threatLevel==='HIGH').length,
-        cisaKev:   liveItems.filter(i=>i.cisaKev).length,
-        exploited: liveItems.filter(i=>i.exploited).length,
-        ransomware:liveItems.filter(i=>i.ransomware).length,
+        critical:   liveItems.filter(i=>i.threatLevel==='CRITICAL').length,
+        high:       liveItems.filter(i=>i.threatLevel==='HIGH').length,
+        cisaKev:    liveItems.filter(i=>i.cisaKev).length,
+        exploited:  liveItems.filter(i=>i.exploited).length,
+        ransomware: liveItems.filter(i=>i.ransomware).length,
+        sources:    [...new Set(liveItems.map(i=>i.source))].length,
       },
       items: liveItems,
     }, null, 2), 'utf8');
-    log(`live-intel.json: ${liveItems.length} items (${newItems.length} new + ${existingItems.length} existing → rolled to ${CFG.liveRollingWindow||100}).`);
+    log(`live-intel.json: ${liveItems.length} items (${newItems.length} new merged → rolled to ${CFG.liveRollingWindow||150}).`);
   } catch(e) { warn(`live-intel.json failed: ${e.message}`); }
 }
 
-// ── PHASE 9: VALIDATION ────────────────────────────────────────────────
-function validateAndReport(allItems, generatedCards, state, T0) {
-  const sourceCount = allItems.reduce((acc,i) => { (i._sources||[i.source]).forEach(s => acc.add(s)); return acc; }, new Set()).size;
-  const critCount  = allItems.filter(i=>i.threatLevel==='CRITICAL').length;
-  const highCount  = allItems.filter(i=>i.threatLevel==='HIGH').length;
-  const kevCount   = allItems.filter(i=>i.cisaKev).length;
+// ── VALIDATION REPORT ─────────────────────────────────────────────────
+function validateAndReport(allItems, generatedCards, state, T0, sourceStats) {
+  const sourceCount  = allItems.reduce((acc,i) => { (i._sources||[i.source]).forEach(s=>acc.add(s)); return acc; }, new Set()).size;
+  const critCount    = allItems.filter(i=>i.threatLevel==='CRITICAL').length;
+  const highCount    = allItems.filter(i=>i.threatLevel==='HIGH').length;
+  const kevCount     = allItems.filter(i=>i.cisaKev).length;
   const exploitCount = allItems.filter(i=>i.exploited).length;
-  const multiSrc   = allItems.filter(i=>(i.sourceCount||1)>=2).length;
-  const iocTotal   = allItems.reduce((s,i) => s+(i.iocs||[]).length, 0);
-  const elapsed    = ((Date.now()-T0)/1000).toFixed(1);
+  const multiSrc     = allItems.filter(i=>(i.sourceCount||1)>=2).length;
+  const iocTotal     = allItems.reduce((s,i)=>s+(i.iocs||[]).length, 0);
+  const elapsed      = ((Date.now()-T0)/1000).toFixed(1);
+  const healthRpt    = getSourceHealthReport(state);
 
   log('\n' + '═'.repeat(65));
-  log('SENTINEL APEX v4.0 — PIPELINE COMPLETE');
+  log('SENTINEL APEX v5.0 — PIPELINE COMPLETE');
   log('═'.repeat(65));
-  log(`⏱  Runtime          : ${elapsed}s`);
-  log(`📡 Active sources   : ${sourceCount}/12`);
-  log(`📊 Total items      : ${allItems.length} (after correlation + filtering)`);
-  log(`🔴 CRITICAL threats : ${critCount}`);
-  log(`🟠 HIGH threats     : ${highCount}`);
-  log(`⚠️  CISA KEV         : ${kevCount}`);
-  log(`⚡ Exploited ITW    : ${exploitCount}`);
-  log(`✓  Multi-source     : ${multiSrc} corroborated`);
-  log(`🏷️  IOCs extracted   : ${iocTotal}`);
-  log(`✅ Reports generated: ${generatedCards.length}`);
-  log(`📚 Total published  : ${state.totalPublished}`);
+  log(`⏱  Runtime           : ${elapsed}s`);
+  log(`📡 Sources active     : ${sourceCount}/27`);
+  log(`📊 Total items        : ${allItems.length}`);
+  log(`🔴 CRITICAL           : ${critCount}`);
+  log(`🟠 HIGH               : ${highCount}`);
+  log(`⚠️  CISA KEV           : ${kevCount}`);
+  log(`⚡ Exploited ITW      : ${exploitCount}`);
+  log(`✓  Multi-source       : ${multiSrc}`);
+  log(`🏷️  IOCs extracted     : ${iocTotal}`);
+  log(`✅ Reports generated  : ${generatedCards.length}`);
+  log(`📚 Total published    : ${state.totalPublished}`);
+  if (healthRpt.degraded.length > 0) log(`🔥 DEGRADED sources   : ${healthRpt.degraded.join(', ')}`);
+  if (healthRpt.warning.length  > 0) log(`⚠️  WARNING sources    : ${healthRpt.warning.join(', ')}`);
+  if (sourceStats) {
+    log('\n── Per-Source Stats ────────────────────────────────────────────');
+    Object.entries(sourceStats).forEach(([src, st]) => {
+      if (st.fetched > 0) log(`  ${src}: fetched=${st.fetched}, new=${st.new||0}`);
+    });
+  }
   log('═'.repeat(65));
 
-  // Phase 9 success criteria validation
+  // Phase 9 validation criteria
   const criteria = [
-    { check: sourceCount >= 3,         label: 'Minimum 3 sources active' },
+    { check: sourceCount >= 5,         label: 'Minimum 5 sources active' },
     { check: allItems.length >= 5,     label: 'Minimum 5 intel items' },
     { check: kevCount >= 0,            label: 'CISA KEV feed active' },
     { check: iocTotal >= 0,            label: 'IOC extraction running' },
     { check: state.totalPublished > 0, label: 'At least 1 report published' },
+    { check: healthRpt.degraded.length < 10, label: 'Less than 10 degraded sources' },
   ];
   criteria.forEach(c => log(`${c.check ? '✅' : '❌'} ${c.label}`));
   log('═'.repeat(65));
 }
 
-// ── PHASE 8: MAIN PIPELINE (Performance & Reliability) ────────────────
+// ── TIERED PARALLEL INGESTION HELPER ─────────────────────────────────
+async function runTier(label, tasks, state) {
+  log(`\n── ${label} ──────────────────────────────────────────────────`);
+  const results = await Promise.allSettled(tasks.map(([fn, key]) =>
+    fetchWithTimeout(() => fn(state), key, CFG.sourceTimeoutMs)
+      .then(items => { recordSourceSuccess(state, key); return items || []; })
+      .catch(e   => { recordSourceFailure(state, key, e.message); warn(`${key} failed: ${e.message}`); return []; })
+  ));
+  const batches = results.map(r => r.status === 'fulfilled' ? r.value : []);
+  const active  = batches.filter(b=>b.length>0).length;
+  log(`${label}: ${active}/${tasks.length} sources returned data (${batches.reduce((s,b)=>s+b.length,0)} total items)`);
+  return batches;
+}
+
+// ── MAIN PIPELINE v5.0 — TIERED, PARALLEL, STREAM-LIKE ───────────────
 async function main() {
   const T0 = Date.now();
   log('═'.repeat(65));
-  log('CYBERDUDEBIVASH SENTINEL APEX v4.0 — Global Intelligence Engine');
-  log('10-Phase Real-Time Pipeline: Live Ingestion + Stateful Dedup +');
-  log('Correlation + Scoring + Enrichment + Rolling Storage + Reports');
+  log('CYBERDUDEBIVASH SENTINEL APEX v5.0 — HIGH-FREQUENCY INTEL ENGINE');
+  log('27 Sources | Tiered Parallel | Stream-Like Writes | Health Mon.');
   log(`Run started: ${new Date().toISOString()}`);
   log('═'.repeat(65));
 
-  // Ensure required directories exist
-  if (!fs.existsSync(CFG.postsDir)) fs.mkdirSync(CFG.postsDir, { recursive: true });
+  // ── PHASE 3: LOCK — no overlapping runs ───────────────────────────
+  if (!acquireLock()) { process.exit(0); }
+  let lockReleased = false;
+  const safeRelease = () => { if (!lockReleased) { lockReleased = true; releaseLock(); } };
+  process.on('exit', safeRelease);
+  process.on('SIGTERM', () => { safeRelease(); process.exit(0); });
 
-  const state = loadState();
-  log(`State: ${state.published.length} items in dedup window (TTL=${CFG.dedupTtlDays}d). Total published: ${state.totalPublished}`);
-  const sourceFetchLog = {}; // per-source debug stats: {fetched, new}
-
-  // ── PHASE 1: INGEST ALL 13 SOURCES IN PARALLEL (pass state for lastFetch) ──
-  log('\n── PHASE 1: MULTI-SOURCE INGESTION (STATEFUL LAST-SEEN) ────────');
-  const [
-    nvdItems, kevItems, cisaAlerts, ghAdvisories,
-    bleepItems, thnItems, krebsItems, secweekItems, sansItems,
-    urlhausItems, threatfoxItems, msrcItems, darkReadingItems
-  ] = await Promise.all([
-    fetchNVD(state).catch(e => { warn(`NVD fatal: ${e.message}`); return []; }),
-    fetchCISAKev(state).catch(e => { warn(`KEV fatal: ${e.message}`); return []; }),
-    fetchCISAAlerts(state).catch(e => { warn(`CISA alerts fatal: ${e.message}`); return []; }),
-    fetchGitHubAdvisories(state).catch(e => { warn(`GH advisories fatal: ${e.message}`); return []; }),
-    fetchRSS(CFG.bleepingRss, 'bleepingcomputer', CFG.maxRssItems, state).catch(() => []),
-    fetchRSS(CFG.thnRss, 'thehackernews', CFG.maxRssItems, state).catch(() => []),
-    fetchRSS(CFG.krebsRss, 'krebsonsecurity', 4, state).catch(() => []),
-    fetchRSS(CFG.secweekRss, 'securityweek', CFG.maxRssItems, state).catch(() => []),
-    fetchRSS(CFG.sansRss, 'sans_isc', 4, state).catch(() => []),
-    fetchURLhaus().catch(() => []),
-    fetchThreatFox().catch(() => []),
-    fetchMSRC().catch(() => []),
-    fetchRSS(CFG.darkReadingRss, 'darkreading', CFG.maxRssItems, state).catch(() => []),
-  ]);
-
-  // Per-source fetch logging
-  const sourceBatches = [
-    ['nvd',nvdItems],['cisa_kev',kevItems],['cisa_alerts',cisaAlerts],
-    ['github_advisories',ghAdvisories],['bleepingcomputer',bleepItems],
-    ['thehackernews',thnItems],['krebsonsecurity',krebsItems],
-    ['securityweek',secweekItems],['sans_isc',sansItems],
-    ['urlhaus',urlhausItems],['threatfox',threatfoxItems],
-    ['msrc',msrcItems],['darkreading',darkReadingItems],
-  ];
-  sourceBatches.forEach(([src, items]) => {
-    sourceFetchLog[src] = { fetched: items.length, new: 0 };
-  });
-
-  const allBatches = sourceBatches.map(([,items]) => items);
-  const activeSources = allBatches.filter(a=>a.length>0).length;
-  log(`\nSources returning data: ${activeSources}/13`);
-  sourceBatches.forEach(([src, items]) => {
-    if (items.length > 0) log(`  ✓ ${src}: ${items.length} items fetched`);
-    else log(`  ✗ ${src}: 0 items (offline or no new data)`);
-  });
-  if (activeSources === 0) { err('All sources failed — aborting pipeline.'); process.exit(1); }
-
-  // ── PHASE 2: CORRELATION ENGINE ──────────────────────────────────────
-  log('\n── PHASE 2: CORRELATION ENGINE ─────────────────────────────────');
-  const correlatedItems = correlateAndMerge(allBatches);
-  log(`Correlated items: ${correlatedItems.length} (unique IDs, cross-source merged)`);
-  const multiSrcCount = correlatedItems.filter(i=>(i.sourceCount||1)>=2).length;
-  if (multiSrcCount > 0) log(`Multi-source corroborated: ${multiSrcCount} items (elevated confidence)`);
-
-  // ── PHASE 3: PRIORITY SCORING ─────────────────────────────────────────
-  log('\n── PHASE 3: PRIORITY SCORING ENGINE ───────────────────────────');
-  const critCount = correlatedItems.filter(i=>i.threatLevel==='CRITICAL').length;
-  const highCount = correlatedItems.filter(i=>i.threatLevel==='HIGH').length;
-  log(`Scored: CRITICAL=${critCount}, HIGH=${highCount}, total=${correlatedItems.length}`);
-
-  // ── PHASE 4: SIGNAL vs NOISE FILTERING ────────────────────────────────
-  log('\n── PHASE 4: SIGNAL vs NOISE FILTERING ─────────────────────────');
-  const filteredItems = filterSignalFromNoise(correlatedItems);
-  log(`After filtering: ${filteredItems.length} signal items retained`);
-
-  // ── PHASE 4.5: INTELLIGENCE ENRICHMENT PIPELINE ───────────────────────
-  log('\n── PHASE 4.5: INTELLIGENCE ENRICHMENT PIPELINE ─────────────────');
-  let enrichedItems = filteredItems;
   try {
-    const enrichResult = runEnrichmentPipeline(filteredItems);
-    enrichedItems = enrichResult.enrichedItems;
-    log(`Enrichment complete: ${enrichResult.stats.items_processed} items processed`);
-    log(`  Graph: ${enrichResult.stats.graph_nodes} nodes, ${enrichResult.stats.graph_edges} edges`);
-    log(`  Campaigns: ${enrichResult.stats.campaigns} clusters built`);
-    log(`  Elapsed: ${enrichResult.stats.elapsed_ms}ms`);
-  } catch (enrichErr) {
-    warn(`Enrichment pipeline failed (non-fatal): ${enrichErr.message}`);
-    warn('Continuing with unenriched items — graph/campaigns not updated this cycle');
-  }
+    if (!fs.existsSync(CFG.postsDir)) fs.mkdirSync(CFG.postsDir, { recursive: true });
 
-  // ── PHASE 5: DEBUG STATS + FRESHNESS VALIDATION ───────────────────────
-  const totalFetched  = Object.values(sourceFetchLog).reduce((s,v) => s + v.fetched, 0);
-  const newAfterDedup = enrichedItems.filter(item => item.id && !isPublished(state, item.id)).length;
-  const dupSkipped    = correlatedItems.length - newAfterDedup;
+    const state      = loadState();
+    const sourceStats = {};
+    log(`State: ${state.published.length} in dedup window (TTL=${CFG.dedupTtlDays}d). Total published: ${state.totalPublished}`);
 
-  log('\n── PHASE 5: PIPELINE DEBUG STATS ───────────────────────────────');
-  log(`  total_fetched       : ${totalFetched}`);
-  log(`  after_correlation   : ${correlatedItems.length}`);
-  log(`  after_noise_filter  : ${filteredItems.length}`);
-  log(`  new_after_dedup     : ${newAfterDedup}`);
-  log(`  duplicates_skipped  : ${dupSkipped} (within ${CFG.dedupTtlDays}d TTL window)`);
-  log(`  final_enriched      : ${enrichedItems.length}`);
+    // ══════════════════════════════════════════════════════════════════
+    // TIER 1 — Critical CVE/Exploit sources (processed first, always)
+    // ══════════════════════════════════════════════════════════════════
+    const tier1Batches = await runTier('TIER 1: CRITICAL CVE + EXPLOIT SOURCES', [
+      [fetchNVD,            'nvd'],
+      [fetchCISAKev,        'cisa_kev'],
+      [fetchCISAAlerts,     'cisa_alerts'],
+      [fetchGitHubAdvisories,'github_advisories'],
+      [s => fetchMSRC(),    'msrc'],
+      [fetchExploitDB,      'exploitdb'],
+      [fetchPacketStorm,    'packetstorm'],
+      [fetchFullDisclosure, 'fulldisclosure'],
+    ], state);
 
-  // Freshness validation — warn if no item has pubDate within last 24h
-  const yesterday = new Date(Date.now() - 86400000);
-  const freshItems = enrichedItems.filter(item => {
-    try { return new Date(item.pubDate || 0) >= yesterday; } catch(_) { return false; }
-  });
-  if (freshItems.length === 0) {
-    log('⚠️  NO NEW INTEL DETECTED THIS CYCLE — all items older than 24h');
-    log('    Check source availability and lastFetch state.');
-  } else {
-    log(`  fresh_items_24h     : ${freshItems.length} (pubDate >= ${yesterday.toISOString().slice(0,10)})`);
-  }
+    // ── PHASE 6: STREAM — write partial results after Tier 1 ──────────
+    const tier1Items = correlateAndMerge(tier1Batches);
+    if (tier1Items.length > 0) {
+      log(`\n── PHASE 6: STREAMING — Writing Tier 1 partial results (${tier1Items.length} items)...`);
+      writeLiveIntel(tier1Items.map(i=>({...i,priority:computePriorityScore(i),threatLevel:threatLevel(computePriorityScore(i))})), state);
+      writeAPIFiles(tier1Items.map(i=>({...i,priority:computePriorityScore(i),threatLevel:threatLevel(computePriorityScore(i))})), state);
+    }
+    tier1Batches.forEach((b,idx) => { const k=['nvd','cisa_kev','cisa_alerts','github_advisories','msrc','exploitdb','packetstorm','fulldisclosure'][idx]; if(k) sourceStats[k]={fetched:b.length}; });
 
-  // ── WRITE LIVE FEEDS (always, even if no new posts) ────────────────────
-  writeLiveIntel(enrichedItems, state);
+    // ══════════════════════════════════════════════════════════════════
+    // TIER 2 — Threat intel blogs + malware (run while Tier 1 publishes)
+    // ══════════════════════════════════════════════════════════════════
+    const tier2Batches = await runTier('TIER 2: THREAT BLOGS + MALWARE FEEDS', [
+      [s=>fetchRSS(CFG.bleepingRss,'bleepingcomputer',CFG.maxRssItems,s), 'bleepingcomputer'],
+      [s=>fetchRSS(CFG.thnRss,'thehackernews',CFG.maxRssItems,s),         'thehackernews'],
+      [s=>fetchRSS(CFG.krebsRss,'krebsonsecurity',4,s),                   'krebsonsecurity'],
+      [s=>fetchRSS(CFG.secweekRss,'securityweek',CFG.maxRssItems,s),      'securityweek'],
+      [s=>fetchRSS(CFG.sansRss,'sans_isc',4,s),                           'sans_isc'],
+      [s=>fetchRSS(CFG.darkReadingRss,'darkreading',CFG.maxRssItems,s),   'darkreading'],
+      [fetchTalos,          'talos'],
+      [fetchUnit42,         'unit42'],
+      [fetchCrowdStrike,    'crowdstrike'],
+      [fetchSentinelOne,    'sentinelone'],
+      [fetchGoogleProjectZero,'googleprojectzero'],
+      [fetchRapid7,         'rapid7'],
+      [s=>fetchURLhaus(),   'urlhaus'],
+      [s=>fetchThreatFox(), 'threatfox'],
+    ], state);
 
-  // ── PHASE 6: API PLATFORM ─────────────────────────────────────────────
-  log('\n── PHASE 6: ENTERPRISE API PLATFORM ───────────────────────────');
-  writeAPIFiles(enrichedItems, state);
+    // ── PHASE 6: STREAM — write merged T1+T2 results ─────────────────
+    const allT1T2 = [...tier1Batches, ...tier2Batches];
+    const t1t2Items = correlateAndMerge(allT1T2);
+    if (t1t2Items.length > 0) {
+      log(`\n── PHASE 6: STREAMING — Writing T1+T2 merged results (${t1t2Items.length} items)...`);
+      writeLiveIntel(t1t2Items.map(i=>({...i,priority:computePriorityScore(i),threatLevel:threatLevel(computePriorityScore(i))})), state);
+    }
+    tier2Batches.forEach((b,idx) => { const k=['bleepingcomputer','thehackernews','krebsonsecurity','securityweek','sans_isc','darkreading','talos','unit42','crowdstrike','sentinelone','googleprojectzero','rapid7','urlhaus','threatfox'][idx]; if(k) sourceStats[k]={fetched:b.length}; });
 
-  // ── PHASE 7+8: REPORT GENERATION ──────────────────────────────────────
-  const newItems = enrichedItems.filter(item => item.id && !isPublished(state, item.id));
-  log(`\nNew (unpublished) items: ${newItems.length}`);
+    // ══════════════════════════════════════════════════════════════════
+    // TIER 3 — Community signals (lower priority, can be slower)
+    // ══════════════════════════════════════════════════════════════════
+    const tier3Batches = await runTier('TIER 3: COMMUNITY + SIGNAL SOURCES', [
+      [fetchRedditNetsec,   'reddit_netsec'],
+      [fetchRedditCyber,    'reddit_cyber'],
+      [fetchCertEU,         'cert_eu'],
+      [fetchMicrosoftSecBlog,'microsoft_security'],
+      [fetchWiredSecurity,  'wired_security'],
+      [fetchRecordedFuture, 'recorded_future'],
+    ], state);
+    tier3Batches.forEach((b,idx) => { const k=['reddit_netsec','reddit_cyber','cert_eu','microsoft_security','wired_security','recorded_future'][idx]; if(k) sourceStats[k]={fetched:b.length}; });
 
-  if (newItems.length === 0) {
-    log('No new intel this cycle. All items already published or within dedup TTL.');
-    saveState(state);
-    validateAndReport(enrichedItems, [], state, T0);
-    return;
-  }
+    // ── FULL CORRELATION ACROSS ALL 27 SOURCES ────────────────────────
+    log('\n── FULL CORRELATION ENGINE ─────────────────────────────────────');
+    const allBatches      = [...tier1Batches, ...tier2Batches, ...tier3Batches];
+    const correlatedItems = correlateAndMerge(allBatches);
+    const activeSources   = allBatches.filter(b=>b.length>0).length;
+    log(`Full corpus: ${correlatedItems.length} items from ${activeSources}/27 sources`);
+    const multiSrcCount   = correlatedItems.filter(i=>(i.sourceCount||1)>=2).length;
+    if (multiSrcCount > 0) log(`Multi-source corroborated: ${multiSrcCount} items`);
 
-  log('\n── PHASE 7+8: GENERATING ADVANCED REPORTS ──────────────────────');
-  const toPublish = newItems.slice(0, CFG.maxNewPostsPerRun);
-  const generatedCards = [], rssItems = [], newSlugs = [];
+    if (activeSources === 0) { err('ALL sources failed — aborting.'); safeRelease(); process.exit(1); }
 
-  for (const item of toPublish) {
+    // ── PHASE 4: SIGNAL vs NOISE FILTERING ───────────────────────────
+    log('\n── PHASE 4: SIGNAL vs NOISE FILTERING ─────────────────────────');
+    const filteredItems = filterSignalFromNoise(correlatedItems);
+    log(`After filtering: ${filteredItems.length} signal items retained`);
+
+    // ── INTELLIGENCE ENRICHMENT ───────────────────────────────────────
+    log('\n── INTELLIGENCE ENRICHMENT PIPELINE ───────────────────────────');
+    let enrichedItems = filteredItems;
     try {
-      const { slug, title, html } = generatePostHTML(item);
-      const filePath = path.join(CFG.postsDir, `${slug}.html`);
-      if (fs.existsSync(filePath)) {
-        log(`Skip (exists): ${slug}.html`);
+      const enrichResult = runEnrichmentPipeline(filteredItems);
+      enrichedItems      = enrichResult.enrichedItems;
+      log(`Enrichment: ${enrichResult.stats.items_processed} items, ${enrichResult.stats.campaigns} campaigns, ${enrichResult.stats.elapsed_ms}ms`);
+    } catch(enrichErr) {
+      warn(`Enrichment non-fatal: ${enrichErr.message}. Continuing unenriched.`);
+    }
+
+    // ── PHASE 9: PERFORMANCE — per-source new count ──────────────────
+    const totalFetched  = Object.values(sourceStats).reduce((s,v)=>s+v.fetched,0);
+    const newAfterDedup = enrichedItems.filter(i=>i.id&&!isPublished(state,i.id)).length;
+    log(`\n── DEBUG STATS ─────────────────────────────────────────────────`);
+    log(`  total_fetched: ${totalFetched} | new_after_dedup: ${newAfterDedup} | enriched: ${enrichedItems.length}`);
+    Object.entries(sourceStats).forEach(([src,st]) => { st.new = enrichedItems.filter(i=>i.source===src&&!isPublished(state,i.id)).length; });
+
+    // ── PHASE 8: FRESHNESS — alert if stale > 30 min ─────────────────
+    const freshnessMs  = CFG.freshnessAlertMins * 60000;
+    const lastRunMs    = state.lastRun ? Date.now()-new Date(state.lastRun).getTime() : 0;
+    const yesterday    = new Date(Date.now()-86400000);
+    const freshItems   = enrichedItems.filter(i=>{ try{return new Date(i.pubDate||0)>=yesterday;}catch(_){return false;} });
+    if (freshItems.length===0 && lastRunMs > freshnessMs) {
+      log(`⚠️  FRESHNESS ALERT: No intel with pubDate >= yesterday. Last run: ${Math.round(lastRunMs/60000)} min ago.`);
+      log('    Check source availability. Consider running workflow_dispatch to reset state.');
+    } else {
+      log(`  fresh_items_24h: ${freshItems.length}`);
+    }
+
+    // ── PHASE 6: FINAL STREAM WRITE (full enriched corpus) ────────────
+    log('\n── PHASE 6: STREAMING — Final enriched write ───────────────────');
+    writeLiveIntel(enrichedItems, state);
+    writeAPIFiles(enrichedItems, state);
+
+    // ── REPORT GENERATION ─────────────────────────────────────────────
+    const newItems   = enrichedItems.filter(item=>item.id&&!isPublished(state,item.id));
+    log(`\nNew (unpublished) items: ${newItems.length}`);
+
+    if (newItems.length === 0) {
+      log('No new intel this cycle — all within dedup TTL.');
+      const health = getSourceHealthReport(state);
+      if (health.degraded.length > 0) log(`⚠️  Degraded sources: ${health.degraded.join(', ')}`);
+      saveState(state);
+      validateAndReport(enrichedItems, [], state, T0, sourceStats);
+      safeRelease();
+      return;
+    }
+
+    log('\n── REPORT GENERATION ───────────────────────────────────────────');
+    const toPublish     = newItems.slice(0, CFG.maxNewPostsPerRun);
+    const generatedCards= [], rssItems = [], newSlugs = [];
+
+    for (const item of toPublish) {
+      try {
+        const { slug, title, html } = generatePostHTML(item);
+        const filePath = path.join(CFG.postsDir, `${slug}.html`);
+        if (fs.existsSync(filePath)) {
+          markPublished(state, { id:item.id, slug, title });
+          continue;
+        }
+        fs.writeFileSync(filePath, html, 'utf8');
+        log(`✅ [${item.threatLevel||'HIGH'}] [${item.type}] ${slug}.html (score=${item.priority||0}, srcs=${item.sourceCount||1})`);
         markPublished(state, { id:item.id, slug, title });
-        continue;
-      }
-      fs.writeFileSync(filePath, html, 'utf8');
-      log(`✅ [${item.threatLevel||'HIGH'}] [${item.type}] ${slug}.html (${(html.length/1024).toFixed(1)}KB, score=${item.priority||0}, sources=${item.sourceCount||1})`);
-      markPublished(state, { id:item.id, slug, title });
-      generatedCards.push({ card: generatePostCard(item, slug, title) });
-      rssItems.push({ ...item, slug, title });
-      newSlugs.push(slug);
-      // Write per-CVE API file with slug attached
-      if (item.id.startsWith('CVE') && (item.priority||0) >= 50) {
-        try {
-          const apiCveDir = path.join(CFG.apiDir, 'cve');
-          if (!fs.existsSync(apiCveDir)) fs.mkdirSync(apiCveDir, { recursive: true });
-          const existing = fs.existsSync(path.join(apiCveDir, `${item.id}.json`))
-            ? JSON.parse(fs.readFileSync(path.join(apiCveDir, `${item.id}.json`), 'utf8')) : {};
-          fs.writeFileSync(path.join(apiCveDir, `${item.id}.json`), JSON.stringify({ ...existing, report_url: `${CFG.baseUrl}/posts/${slug}.html`, slug }, null, 2), 'utf8');
-        } catch(_) {}
-      }
-    } catch(e) { err(`Failed to generate: ${item.id} — ${e.message}`); }
+        generatedCards.push({ card: generatePostCard(item, slug, title) });
+        rssItems.push({ ...item, slug, title });
+        newSlugs.push(slug);
+        // Per-CVE API file
+        if (item.id.startsWith('CVE') && (item.priority||0) >= 50) {
+          try {
+            const apiCveDir = path.join(CFG.apiDir, 'cve');
+            if (!fs.existsSync(apiCveDir)) fs.mkdirSync(apiCveDir, { recursive: true });
+            const cveFile   = path.join(apiCveDir, `${item.id}.json`);
+            const existing  = fs.existsSync(cveFile) ? JSON.parse(fs.readFileSync(cveFile,'utf8')) : {};
+            fs.writeFileSync(cveFile, JSON.stringify({ ...existing, report_url:`${CFG.baseUrl}/posts/${slug}.html`, slug }, null, 2), 'utf8');
+          } catch(_) {}
+        }
+      } catch(e) { err(`Failed to generate: ${item.id} — ${e.message}`); }
+    }
+
+    // ── PLATFORM SYNC ─────────────────────────────────────────────────
+    log('\n── PLATFORM SYNC ───────────────────────────────────────────────');
+    if (generatedCards.length > 0) {
+      updateIndexHTML(generatedCards);
+      updateRSS(rssItems);
+      updateSitemap(newSlugs);
+    }
+
+    saveState(state);
+    validateAndReport(enrichedItems, generatedCards, state, T0, sourceStats);
+
+  } catch(fatalErr) {
+    err(`FATAL: ${fatalErr.message}\n${fatalErr.stack||''}`);
+    safeRelease();
+    process.exit(1);
   }
 
-  // ── PHASE 9: PLATFORM FILE UPDATES ────────────────────────────────────
-  log('\n── PHASE 9: PLATFORM SYNC ──────────────────────────────────────');
-  if (generatedCards.length > 0) {
-    updateIndexHTML(generatedCards);
-    updateRSS(rssItems);
-    updateSitemap(newSlugs);
-  } else {
-    log('No new cards — skipping index/RSS/sitemap updates.');
-  }
-
-  saveState(state);
-
-  // ── PHASE 10: VALIDATION ───────────────────────────────────────────────
-  validateAndReport(enrichedItems, generatedCards, state, T0);
+  safeRelease();
 }
 
 main().catch(e => {
-  err(`FATAL PIPELINE ERROR: ${e.message}\n${e.stack||''}`);
+  err(`UNHANDLED: ${e.message}\n${e.stack||''}`);
+  releaseLock();
   process.exit(1);
 });

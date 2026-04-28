@@ -24,10 +24,10 @@
     CISA_PROXY1: 'https://corsproxy.io/?https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json',
     CISA_PROXY2: 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json'),
     CONTAINER_ID:'live-intel-feed',
-    CACHE_KEY:   'cbd_lfw_v4',
-    CACHE_TTL:   9 * 60 * 1000,   // 9 min
-    REFRESH_MS:  10 * 60 * 1000,  // 10 min
-    MAX_CARDS:   12,
+    CACHE_KEY:   'cbd_lfw_v5',
+    CACHE_TTL:   55 * 1000,        // 55s — just under refresh interval
+    REFRESH_MS:  60 * 1000,        // Phase 10: 60s auto-refresh (pipeline now every 5 min)
+    MAX_CARDS:   15,               // v5: show more cards
     LOOKBACK_DAYS: 30
   };
 
@@ -408,20 +408,39 @@
     container.parentNode.insertBefore(d, container);
   }
 
+  /* ── PHASE 10: LAST-UPDATED TICKER ──────────────────────── */
+  var _lastFetchAt = null;
+  function startFreshnessTicker() {
+    var el = document.getElementById('lfw-label-ts');
+    if (!el) return;
+    setInterval(function() {
+      if (!_lastFetchAt) return;
+      var secsAgo = Math.round((Date.now() - _lastFetchAt) / 1000);
+      var label;
+      if (secsAgo < 60)       label = 'Updated ' + secsAgo + 's ago';
+      else if (secsAgo < 3600) label = 'Updated ' + Math.round(secsAgo/60) + 'm ago';
+      else                     label = 'Updated ' + Math.round(secsAgo/3600) + 'h ago';
+      el.textContent = label;
+    }, 5000); // tick every 5s
+  }
+
   /* ── BOOT ────────────────────────────────────────────────── */
   function boot() {
     var container=document.getElementById(CFG.CONTAINER_ID);
-    if (!container) return;
-    injectCSS();
+    if (!container) return;    injectCSS();
     injectLabel(container);
     doFetch(container, false).then(function(){
+      _lastFetchAt = Date.now();
       var ts=document.getElementById('lfw-label-ts');
-      if(ts) ts.textContent='Updated: '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      if(ts) ts.textContent='Updated just now';
+      startFreshnessTicker();
     });
+    // Phase 10: 60s auto-refresh — pipeline publishes every 5 min
     setInterval(function(){
       doFetch(container,true).then(function(){
+        _lastFetchAt = Date.now();
         var ts=document.getElementById('lfw-label-ts');
-        if(ts) ts.textContent='Updated: '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        if(ts) ts.textContent='Updated just now';
       });
     }, CFG.REFRESH_MS);
   }
@@ -432,5 +451,5 @@
     setTimeout(boot, 800);
   }
 
-  window.LIVE_FEED_WIDGET = { refresh: function(){ var c=document.getElementById(CFG.CONTAINER_ID); if(c) doFetch(c,true); }, cfg: CFG };
+  window.LIVE_FEED_WIDGET = { refresh: function(){ var c=document.getElementById(CFG.CONTAINER_ID); if(c) doFetch(c,true).then(function(){_lastFetchAt=Date.now();}); }, cfg: CFG };
 })();
