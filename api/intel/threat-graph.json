@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-28T11:23:53.198Z",
+  "generated": "2026-04-28T13:07:57.464Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 110,
+    "total_nodes": 112,
     "actors": 8,
-    "cves": 36,
-    "campaigns": 30,
+    "cves": 37,
+    "campaigns": 31,
     "malware": 0,
     "iocs": 6,
-    "edges": 77
+    "edges": 78
   },
   "nodes": {
     "actor:lockbit": {
@@ -1379,7 +1379,7 @@
       "attributes": {
         "cvss": 8.5,
         "threat_level": "HIGH",
-        "priority_score": 68,
+        "priority_score": 66,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
@@ -2486,6 +2486,44 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-25874": {
+      "id": "CVE-2026-25874",
+      "type": "CVE",
+      "name": "Critical Unpatched Flaw Leaves Hugging Face LeRobot Open to Unauthenticated RCE",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 78,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-04-28",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-25874": {
+      "id": "campaign:cve-2026-25874",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-04-28",
+        "last_seen": "2026-04-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-25874 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-25874",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -3215,6 +3253,15 @@
       "id": "campaign:cluster-0dcfc74e→includes→SECURITYWEEK-972c4f2537577523",
       "source": "campaign:cluster-0dcfc74e",
       "target": "SECURITYWEEK-972c4f2537577523",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-25874→includes→CVE-2026-25874",
+      "source": "campaign:cve-2026-25874",
+      "target": "CVE-2026-25874",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-04-28",
