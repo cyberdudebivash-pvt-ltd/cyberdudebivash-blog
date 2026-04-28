@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-28T22:17:11.049Z",
+  "generated": "2026-04-28T23:11:22.112Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 185,
+    "total_nodes": 192,
     "actors": 8,
-    "cves": 40,
+    "cves": 45,
     "campaigns": 43,
     "malware": 0,
-    "iocs": 8,
-    "edges": 97
+    "iocs": 10,
+    "edges": 99
   },
   "nodes": {
     "actor:lockbit": {
@@ -3889,6 +3889,129 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-33489": {
+      "id": "CVE-2026-33489",
+      "type": "CVE",
+      "name": "CoreDNS' transfer stanza selection uses lexicographic compare (subzone ACL bypass)",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 52,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/coredns/coredns",
+        "published": "2026-04-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:example.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:a.example.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:example.org": {
+      "id": "ioc:domain:example.org",
+      "type": "IOC",
+      "name": "example.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-04-28"
+      },
+      "connections": []
+    },
+    "ioc:domain:a.example.org": {
+      "id": "ioc:domain:a.example.org",
+      "type": "IOC",
+      "name": "a.example.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-04-28"
+      },
+      "connections": []
+    },
+    "CVE-2026-35579": {
+      "id": "CVE-2026-35579",
+      "type": "CVE",
+      "name": "CoreDNS has TSIG authentication bypass on gRPC and QUIC transports",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/coredns/coredns",
+        "published": "2026-04-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-33190": {
+      "id": "CVE-2026-33190",
+      "type": "CVE",
+      "name": "CoreDNS has TSIG authentication bypass on DoT, DoH, DoH3, DoQ, and gRPC",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/coredns/coredns",
+        "published": "2026-04-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-32936": {
+      "id": "CVE-2026-32936",
+      "type": "CVE",
+      "name": "CoreDNS DoH GET oversized dns= query parameter causes pre-validation CPU and memory amplification",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/coredns/coredns",
+        "published": "2026-04-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-32934": {
+      "id": "CVE-2026-32934",
+      "type": "CVE",
+      "name": "CoreDNS' DoQ worker pool does not bound stream backlog",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/coredns/coredns",
+        "published": "2026-04-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -4800,6 +4923,24 @@
       "target": "CISA-0bdc8695f13f628d",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-33489→linked_to→ioc:domain:example.org",
+      "source": "CVE-2026-33489",
+      "target": "ioc:domain:example.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-04-28",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-33489→linked_to→ioc:domain:a.example.org",
+      "source": "CVE-2026-33489",
+      "target": "ioc:domain:a.example.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-04-28",
       "sources": []
     }
