@@ -21,6 +21,9 @@ const path   = require('path');
 const url    = require('url');
 const crypto = require('crypto');
 
+// Phase 4: Intelligence Enrichment Pipeline
+const { runEnrichmentPipeline } = require('./api/_lib/enrichment-pipeline');
+
 const CFG = {
   baseUrl:            'https://blog.cyberdudebivash.in',
   brand:              'CYBERDUDEBIVASH',
@@ -1279,21 +1282,36 @@ async function main() {
   const filteredItems = filterSignalFromNoise(correlatedItems);
   log(`After filtering: ${filteredItems.length} signal items retained`);
 
+  // ── PHASE 4.5: INTELLIGENCE ENRICHMENT PIPELINE ───────────────────────
+  log('\n── PHASE 4.5: INTELLIGENCE ENRICHMENT PIPELINE ─────────────────');
+  let enrichedItems = filteredItems;
+  try {
+    const enrichResult = runEnrichmentPipeline(filteredItems);
+    enrichedItems = enrichResult.enrichedItems;
+    log(`Enrichment complete: ${enrichResult.stats.items_processed} items processed`);
+    log(`  Graph: ${enrichResult.stats.graph_nodes} nodes, ${enrichResult.stats.graph_edges} edges`);
+    log(`  Campaigns: ${enrichResult.stats.campaigns} clusters built`);
+    log(`  Elapsed: ${enrichResult.stats.elapsed_ms}ms`);
+  } catch (enrichErr) {
+    warn(`Enrichment pipeline failed (non-fatal): ${enrichErr.message}`);
+    warn('Continuing with unenriched items — graph/campaigns not updated this cycle');
+  }
+
   // ── WRITE LIVE FEEDS (always, even if no new posts) ────────────────────
-  writeLiveIntel(filteredItems, state);
+  writeLiveIntel(enrichedItems, state);
 
   // ── PHASE 5: API PLATFORM ─────────────────────────────────────────────
   log('\n── PHASE 5: ENTERPRISE API PLATFORM ───────────────────────────');
-  writeAPIFiles(filteredItems, state);
+  writeAPIFiles(enrichedItems, state);
 
   // ── PHASE 6+7: REPORT GENERATION ──────────────────────────────────────
-  const newItems = filteredItems.filter(item => item.id && !isPublished(state, item.id));
+  const newItems = enrichedItems.filter(item => item.id && !isPublished(state, item.id));
   log(`\nNew (unpublished) items: ${newItems.length}`);
 
   if (newItems.length === 0) {
     log('No new intel this cycle. All items already published.');
     saveState(state);
-    validateAndReport(filteredItems, [], state, T0);
+    validateAndReport(enrichedItems, [], state, T0);
     return;
   }
 
@@ -1342,7 +1360,7 @@ async function main() {
   saveState(state);
 
   // ── PHASE 9: VALIDATION ────────────────────────────────────────────────
-  validateAndReport(filteredItems, generatedCards, state, T0);
+  validateAndReport(enrichedItems, generatedCards, state, T0);
 }
 
 main().catch(e => {

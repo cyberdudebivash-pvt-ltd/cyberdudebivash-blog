@@ -1,0 +1,666 @@
+{
+  "generated": "2026-04-28T00:00:00.000Z",
+  "version": "1.0",
+  "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
+  "stats": {
+    "total_nodes": 30,
+    "actors": 8,
+    "cves": 14,
+    "campaigns": 6,
+    "malware": 2,
+    "iocs": 0,
+    "edges": 34
+  },
+  "nodes": {
+    "actor:lockbit": {
+      "id": "actor:lockbit",
+      "type": "ThreatActor",
+      "name": "LockBit",
+      "connections": [
+        { "target": "CVE-2023-27351", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2021-22986", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2021-34527", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2023-0669", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "campaign:cve-2023-27351", "relationship": "executes", "confidence": 0.92 }
+      ],
+      "attributes": {
+        "aliases": ["LockBit 2.0", "LockBit 3.0", "LockBit Black", "ABCD Ransomware"],
+        "category": "ransomware_group",
+        "motivation": "financial",
+        "sophistication": "advanced",
+        "origin": "criminal",
+        "active": true,
+        "first_seen": "2019-09-01",
+        "last_seen": null,
+        "target_sectors": ["healthcare", "finance", "manufacturing", "education", "government"],
+        "target_regions": ["global"],
+        "ttps": ["T1190", "T1486", "T1490", "T1489", "T1566.001", "T1078", "T1003"],
+        "description": "Prolific RaaS operation responsible for the most ransomware attacks globally (2022–2024). LockBit 3.0 (Black) introduced bug bounty programs, Zcash payments, and anti-analysis techniques.",
+        "known_cves": ["CVE-2023-27351", "CVE-2021-22986", "CVE-2021-34527", "CVE-2023-0669"],
+        "refs": [
+          "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-165a",
+          "https://www.justice.gov/opa/pr/justice-department-disrupts-lockbit-ransomware-group"
+        ]
+      }
+    },
+    "actor:apt41": {
+      "id": "actor:apt41",
+      "type": "ThreatActor",
+      "name": "APT41",
+      "connections": [
+        { "target": "CVE-2024-27199", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2024-27198", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2019-3396", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2020-10189", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "campaign:cve-2024-27199-and-cve-2024-27198", "relationship": "executes", "confidence": 0.90 }
+      ],
+      "attributes": {
+        "aliases": ["Winnti", "Double Dragon", "BARIUM", "Wicked Panda", "Earth Baku"],
+        "category": "nation_state",
+        "motivation": "espionage,financial",
+        "sophistication": "advanced",
+        "origin": "china",
+        "active": true,
+        "first_seen": "2012-01-01",
+        "last_seen": null,
+        "target_sectors": ["technology", "healthcare", "telecommunications", "finance", "gaming"],
+        "target_regions": ["global"],
+        "ttps": ["T1195.002", "T1190", "T1078", "T1059.001", "T1071.001", "T1027"],
+        "description": "Chinese state-sponsored threat group conducting both espionage for the MSS and financially motivated cybercrime. Known for supply chain attacks, gaming industry IP theft, and rapid exploitation of public-facing application vulnerabilities.",
+        "known_cves": ["CVE-2024-27199", "CVE-2024-27198", "CVE-2019-3396", "CVE-2020-10189"],
+        "refs": [
+          "https://www.mandiant.com/resources/insights/apt41-dual-espionage-and-cyber-crime-operations",
+          "https://www.justice.gov/opa/pr/seven-international-cyber-defendants-including-apt41-associates-charged"
+        ]
+      }
+    },
+    "actor:cl0p": {
+      "id": "actor:cl0p",
+      "type": "ThreatActor",
+      "name": "Cl0p",
+      "connections": [
+        { "target": "CVE-2024-27199", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2023-34362", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2023-0669", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2021-27101", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2023-27351", "relationship": "exploits", "confidence": 0.85 },
+        { "target": "campaign:cve-2023-34362", "relationship": "executes", "confidence": 0.95 }
+      ],
+      "attributes": {
+        "aliases": ["TA505", "FIN11", "LACE TEMPEST", "Clop"],
+        "category": "ransomware_group",
+        "motivation": "financial",
+        "sophistication": "advanced",
+        "origin": "criminal",
+        "active": true,
+        "first_seen": "2019-02-01",
+        "last_seen": null,
+        "target_sectors": ["finance", "retail", "healthcare", "manufacturing", "legal"],
+        "target_regions": ["global"],
+        "ttps": ["T1190", "T1486", "T1041", "T1566.002", "T1048"],
+        "description": "Financially motivated threat actor pioneering mass exploitation of enterprise file-transfer tools (GoAnywhere, MOVEit, Accellion). Cl0p operations resulted in 100s of simultaneous victim organizations from single CVE exploitations.",
+        "known_cves": ["CVE-2024-27199", "CVE-2023-34362", "CVE-2023-0669", "CVE-2021-27101"],
+        "refs": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-158a"]
+      }
+    },
+    "actor:volt-typhoon": {
+      "id": "actor:volt-typhoon",
+      "type": "ThreatActor",
+      "name": "Volt Typhoon",
+      "connections": [
+        { "target": "CVE-2024-39717", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2021-40539", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2021-27860", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2022-42475", "relationship": "exploits", "confidence": 0.92 }
+      ],
+      "attributes": {
+        "aliases": ["VANGUARD PANDA", "Bronze Silhouette", "Dev-0391", "UNC3236"],
+        "category": "nation_state",
+        "motivation": "espionage,pre-positioning",
+        "sophistication": "advanced",
+        "origin": "china",
+        "active": true,
+        "first_seen": "2021-01-01",
+        "last_seen": null,
+        "target_sectors": ["critical_infrastructure", "communications", "energy", "transportation", "defense_industrial_base"],
+        "target_regions": ["usa", "guam", "pacific", "australia", "uk"],
+        "ttps": ["T1190", "T1078", "T1133", "T1036", "T1571", "T1021.002"],
+        "description": "Chinese state-sponsored actor pre-positioning within US critical infrastructure for potential disruption during geopolitical crises. Noted for LOTL techniques and use of compromised SOHO routers.",
+        "known_cves": ["CVE-2024-39717", "CVE-2021-40539", "CVE-2021-27860", "CVE-2022-42475"],
+        "refs": [
+          "https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-038a",
+          "https://www.microsoft.com/en-us/security/blog/2023/05/24/volt-typhoon-targets-us-critical-infrastructure"
+        ]
+      }
+    },
+    "actor:salt-typhoon": {
+      "id": "actor:salt-typhoon",
+      "type": "ThreatActor",
+      "name": "Salt Typhoon",
+      "connections": [
+        { "target": "CVE-2023-20198", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2023-20273", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "CVE-2018-0171", "relationship": "exploits", "confidence": 0.92 },
+        { "target": "campaign:cve-2023-20198-and-cve-2023-20273", "relationship": "executes", "confidence": 0.95 }
+      ],
+      "attributes": {
+        "aliases": ["GhostEmperor", "FamousSparrow", "Earth Estries", "UNC2286"],
+        "category": "nation_state",
+        "motivation": "espionage,signals_intelligence",
+        "sophistication": "advanced",
+        "origin": "china",
+        "active": true,
+        "first_seen": "2020-01-01",
+        "last_seen": null,
+        "target_sectors": ["telecommunications", "government", "internet_service_providers", "law_enforcement"],
+        "target_regions": ["usa", "europe", "southeast_asia"],
+        "ttps": ["T1190", "T1071", "T1078", "T1021.006", "T1557"],
+        "description": "Chinese state-sponsored actor responsible for the most significant telecom sector breach in US history. Compromised major US telecoms, intercepting communications of officials and intelligence targets.",
+        "known_cves": ["CVE-2023-20198", "CVE-2023-20273", "CVE-2018-0171"],
+        "refs": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-190a"]
+      }
+    },
+    "actor:phantomcore": {
+      "id": "actor:phantomcore",
+      "type": "ThreatActor",
+      "name": "PhantomCore",
+      "connections": [],
+      "attributes": {
+        "aliases": ["PhantomCore Group"],
+        "category": "targeted_attacker",
+        "motivation": "espionage",
+        "sophistication": "intermediate",
+        "origin": "unknown",
+        "active": true,
+        "first_seen": "2024-01-01",
+        "last_seen": null,
+        "target_sectors": ["technology", "communications", "government"],
+        "target_regions": ["russia", "eastern_europe", "cis"],
+        "ttps": ["T1190", "T1059", "T1566", "T1055"],
+        "description": "Threat actor exploiting TrueConf Server vulnerabilities to deploy a proprietary RAT backdoor targeting organizations in Russia and Eastern Europe.",
+        "known_cves": [],
+        "refs": ["https://blog.cyberdudebivash.in/posts/phantomcore-exploits-trueconf-vulnerabilities-to-breach-russ.html"]
+      }
+    },
+    "actor:shinyhunters": {
+      "id": "actor:shinyhunters",
+      "type": "ThreatActor",
+      "name": "ShinyHunters",
+      "connections": [],
+      "attributes": {
+        "aliases": ["Shiny Hunters", "ShinyCorp"],
+        "category": "cybercriminal",
+        "motivation": "financial",
+        "sophistication": "intermediate",
+        "origin": "criminal",
+        "active": true,
+        "first_seen": "2020-01-01",
+        "last_seen": null,
+        "target_sectors": ["technology", "retail", "healthcare", "financial_services", "security"],
+        "target_regions": ["global"],
+        "ttps": ["T1078", "T1190", "T1530", "T1619", "T1213"],
+        "description": "Prolific data theft group specializing in cloud-hosted database breaches and SaaS platform compromises. Confirmed involvement in breaches of ADT, AT&T, Ticketmaster, Santander, and 100+ organizations.",
+        "known_cves": [],
+        "refs": ["https://blog.cyberdudebivash.in/posts/adt-confirms-data-breach-after-shinyhunters-leak-threat.html"]
+      }
+    },
+    "actor:russia-nexus-ransomware": {
+      "id": "actor:russia-nexus-ransomware",
+      "type": "ThreatActor",
+      "name": "Russia-Nexus Ransomware Operators",
+      "connections": [],
+      "attributes": {
+        "aliases": ["UNKN", "Russian RaaS Ecosystem", "Black Basta", "Conti Successors"],
+        "category": "ransomware_group",
+        "motivation": "financial",
+        "sophistication": "advanced",
+        "origin": "russia",
+        "active": true,
+        "first_seen": "2020-01-01",
+        "last_seen": null,
+        "target_sectors": ["healthcare", "manufacturing", "finance", "government", "critical_infrastructure"],
+        "target_regions": ["western_europe", "usa", "global"],
+        "ttps": ["T1486", "T1190", "T1566", "T1078", "T1133", "T1003"],
+        "description": "Umbrella designation for Russia-based ransomware groups. Germany doxed 'UNKN' in 2026, believed to be the operator of a major Russian ransomware-as-a-service empire.",
+        "known_cves": [],
+        "refs": ["https://blog.cyberdudebivash.in/posts/germany-doxes-8220-unkn-8221-head-of-ru-ransomware-gang.html"]
+      }
+    },
+    "CVE-2023-27351": {
+      "id": "CVE-2023-27351",
+      "type": "CVE",
+      "name": "PaperCut NG/MF Unauthenticated RCE",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 95,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": true,
+        "vendor": "PaperCut Software",
+        "product": "PaperCut NG/MF",
+        "published": "2023-04-19",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2024-27199": {
+      "id": "CVE-2024-27199",
+      "type": "CVE",
+      "name": "JetBrains TeamCity Authentication Bypass",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 93,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "JetBrains",
+        "product": "TeamCity",
+        "published": "2024-03-04",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2024-27198": {
+      "id": "CVE-2024-27198",
+      "type": "CVE",
+      "name": "JetBrains TeamCity Authentication Bypass (Alt)",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 91,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "JetBrains",
+        "product": "TeamCity",
+        "published": "2024-03-04",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2023-34362": {
+      "id": "CVE-2023-34362",
+      "type": "CVE",
+      "name": "MOVEit Transfer SQL Injection RCE",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 96,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": true,
+        "vendor": "Progress Software",
+        "product": "MOVEit Transfer",
+        "published": "2023-06-01",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2023-0669": {
+      "id": "CVE-2023-0669",
+      "type": "CVE",
+      "name": "Fortra GoAnywhere MFT Pre-Auth RCE",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 94,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": true,
+        "vendor": "Fortra",
+        "product": "GoAnywhere MFT",
+        "published": "2023-01-18",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2023-20198": {
+      "id": "CVE-2023-20198",
+      "type": "CVE",
+      "name": "Cisco IOS XE Web UI Privilege Escalation",
+      "connections": [],
+      "attributes": {
+        "cvss": 10.0,
+        "threat_level": "CRITICAL",
+        "priority_score": 97,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "Cisco",
+        "product": "IOS XE",
+        "published": "2023-10-16",
+        "type": "ZERO_DAY"
+      }
+    },
+    "CVE-2023-20273": {
+      "id": "CVE-2023-20273",
+      "type": "CVE",
+      "name": "Cisco IOS XE Web UI Privilege Escalation (Chain)",
+      "connections": [],
+      "attributes": {
+        "cvss": 7.2,
+        "threat_level": "HIGH",
+        "priority_score": 85,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "Cisco",
+        "product": "IOS XE",
+        "published": "2023-10-22",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2024-39717": {
+      "id": "CVE-2024-39717",
+      "type": "CVE",
+      "name": "Versa Director Arbitrary File Upload",
+      "connections": [],
+      "attributes": {
+        "cvss": 7.2,
+        "threat_level": "HIGH",
+        "priority_score": 82,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "Versa Networks",
+        "product": "Versa Director",
+        "published": "2024-08-22",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2021-40539": {
+      "id": "CVE-2021-40539",
+      "type": "CVE",
+      "name": "Zoho ManageEngine ADSelfService Plus RCE",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 88,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "Zoho",
+        "product": "ManageEngine ADSelfService Plus",
+        "published": "2021-09-07",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2021-22986": {
+      "id": "CVE-2021-22986",
+      "type": "CVE",
+      "name": "F5 BIG-IP iControl REST Unauthenticated RCE",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 87,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "F5",
+        "product": "BIG-IP",
+        "published": "2021-03-10",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2021-34527": {
+      "id": "CVE-2021-34527",
+      "type": "CVE",
+      "name": "Windows Print Spooler RCE (PrintNightmare)",
+      "connections": [],
+      "attributes": {
+        "cvss": 8.8,
+        "threat_level": "HIGH",
+        "priority_score": 84,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": true,
+        "vendor": "Microsoft",
+        "product": "Windows",
+        "published": "2021-07-01",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2021-27101": {
+      "id": "CVE-2021-27101",
+      "type": "CVE",
+      "name": "Accellion FTA SQL Injection",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 89,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": true,
+        "vendor": "Accellion",
+        "product": "FTA",
+        "published": "2021-03-01",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2022-42475": {
+      "id": "CVE-2022-42475",
+      "type": "CVE",
+      "name": "Fortinet FortiOS SSL-VPN RCE",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.3,
+        "threat_level": "CRITICAL",
+        "priority_score": 90,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "Fortinet",
+        "product": "FortiOS",
+        "published": "2022-12-07",
+        "type": "ZERO_DAY"
+      }
+    },
+    "CVE-2018-0171": {
+      "id": "CVE-2018-0171",
+      "type": "CVE",
+      "name": "Cisco IOS Smart Install Remote Code Execution",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 83,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Cisco",
+        "product": "IOS",
+        "published": "2018-03-28",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2019-3396": {
+      "id": "CVE-2019-3396",
+      "type": "CVE",
+      "name": "Confluence Server SSTI RCE",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 85,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "Atlassian",
+        "product": "Confluence Server",
+        "published": "2019-03-25",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2020-10189": {
+      "id": "CVE-2020-10189",
+      "type": "CVE",
+      "name": "Zoho ManageEngine Desktop Central Deserialization RCE",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 86,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "Zoho",
+        "product": "ManageEngine Desktop Central",
+        "published": "2020-03-05",
+        "type": "CVE_REPORT"
+      }
+    },
+    "CVE-2021-27860": {
+      "id": "CVE-2021-27860",
+      "type": "CVE",
+      "name": "FatPipe WARP/MPVPN/IPVPN Config Upload RCE",
+      "connections": [],
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "CRITICAL",
+        "priority_score": 80,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "FatPipe Networks",
+        "product": "WARP/MPVPN",
+        "published": "2021-11-10",
+        "type": "CVE_REPORT"
+      }
+    },
+    "campaign:cve-2023-27351": {
+      "id": "campaign:cve-2023-27351",
+      "type": "Campaign",
+      "name": "PaperCut Exploitation Wave",
+      "connections": [
+        { "target": "CVE-2023-27351", "relationship": "includes", "confidence": 1.0 }
+      ],
+      "attributes": {
+        "severity": "CRITICAL",
+        "item_count": 3,
+        "first_seen": "2023-04-19",
+        "last_seen": "2023-06-30",
+        "confidence": 0.95
+      }
+    },
+    "campaign:cve-2023-34362": {
+      "id": "campaign:cve-2023-34362",
+      "type": "Campaign",
+      "name": "MOVEit File Transfer Exploitation",
+      "connections": [
+        { "target": "CVE-2023-34362", "relationship": "includes", "confidence": 1.0 }
+      ],
+      "attributes": {
+        "severity": "CRITICAL",
+        "item_count": 4,
+        "first_seen": "2023-06-01",
+        "last_seen": "2023-09-30",
+        "confidence": 0.97
+      }
+    },
+    "campaign:cve-2024-27199-and-cve-2024-27198": {
+      "id": "campaign:cve-2024-27199-and-cve-2024-27198",
+      "type": "Campaign",
+      "name": "JetBrains TeamCity Supply Chain Campaign",
+      "connections": [
+        { "target": "CVE-2024-27199", "relationship": "includes", "confidence": 1.0 },
+        { "target": "CVE-2024-27198", "relationship": "includes", "confidence": 1.0 }
+      ],
+      "attributes": {
+        "severity": "CRITICAL",
+        "item_count": 2,
+        "first_seen": "2024-03-04",
+        "last_seen": "2024-04-30",
+        "confidence": 0.92
+      }
+    },
+    "campaign:cve-2023-20198-and-cve-2023-20273": {
+      "id": "campaign:cve-2023-20198-and-cve-2023-20273",
+      "type": "Campaign",
+      "name": "Cisco IOS XE Zero-Day Campaign",
+      "connections": [
+        { "target": "CVE-2023-20198", "relationship": "includes", "confidence": 1.0 },
+        { "target": "CVE-2023-20273", "relationship": "includes", "confidence": 1.0 }
+      ],
+      "attributes": {
+        "severity": "CRITICAL",
+        "item_count": 2,
+        "first_seen": "2023-10-16",
+        "last_seen": "2023-11-30",
+        "confidence": 0.96
+      }
+    },
+    "campaign:cluster-a1b2c3d4": {
+      "id": "campaign:cluster-a1b2c3d4",
+      "type": "Campaign",
+      "name": "China-Nexus Covert Intrusion Campaign",
+      "connections": [
+        { "target": "CVE-2024-39717", "relationship": "includes", "confidence": 0.9 },
+        { "target": "CVE-2022-42475", "relationship": "includes", "confidence": 0.85 }
+      ],
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 3,
+        "first_seen": "2024-01-01",
+        "last_seen": "2024-12-31",
+        "confidence": 0.88
+      }
+    },
+    "campaign:cluster-ransomware-ecosystem": {
+      "id": "campaign:cluster-ransomware-ecosystem",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "connections": [
+        { "target": "CVE-2021-34527", "relationship": "includes", "confidence": 0.9 },
+        { "target": "CVE-2021-27101", "relationship": "includes", "confidence": 0.9 }
+      ],
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 4,
+        "first_seen": "2021-01-01",
+        "last_seen": "2023-12-31",
+        "confidence": 0.85
+      }
+    }
+  },
+  "edges": [
+    { "id": "actor:lockbit→exploits→CVE-2023-27351", "source": "actor:lockbit", "target": "CVE-2023-27351", "relationship": "exploits", "confidence": 0.92, "first_seen": "2023-04-19", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-165a"] },
+    { "id": "actor:lockbit→exploits→CVE-2021-22986", "source": "actor:lockbit", "target": "CVE-2021-22986", "relationship": "exploits", "confidence": 0.92, "first_seen": "2021-03-10", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-165a"] },
+    { "id": "actor:lockbit→exploits→CVE-2021-34527", "source": "actor:lockbit", "target": "CVE-2021-34527", "relationship": "exploits", "confidence": 0.92, "first_seen": "2021-07-01", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-165a"] },
+    { "id": "actor:lockbit→exploits→CVE-2023-0669", "source": "actor:lockbit", "target": "CVE-2023-0669", "relationship": "exploits", "confidence": 0.92, "first_seen": "2023-01-18", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-165a"] },
+    { "id": "actor:lockbit→executes→campaign:cve-2023-27351", "source": "actor:lockbit", "target": "campaign:cve-2023-27351", "relationship": "executes", "confidence": 0.92, "first_seen": "2023-04-19", "sources": [] },
+    { "id": "actor:apt41→exploits→CVE-2024-27199", "source": "actor:apt41", "target": "CVE-2024-27199", "relationship": "exploits", "confidence": 0.92, "first_seen": "2024-03-04", "sources": ["https://www.mandiant.com/resources/insights/apt41-dual-espionage-and-cyber-crime-operations"] },
+    { "id": "actor:apt41→exploits→CVE-2024-27198", "source": "actor:apt41", "target": "CVE-2024-27198", "relationship": "exploits", "confidence": 0.92, "first_seen": "2024-03-04", "sources": ["https://www.mandiant.com/resources/insights/apt41-dual-espionage-and-cyber-crime-operations"] },
+    { "id": "actor:apt41→exploits→CVE-2019-3396", "source": "actor:apt41", "target": "CVE-2019-3396", "relationship": "exploits", "confidence": 0.92, "first_seen": "2019-03-25", "sources": ["https://www.mandiant.com/resources/insights/apt41-dual-espionage-and-cyber-crime-operations"] },
+    { "id": "actor:apt41→exploits→CVE-2020-10189", "source": "actor:apt41", "target": "CVE-2020-10189", "relationship": "exploits", "confidence": 0.92, "first_seen": "2020-03-05", "sources": ["https://www.mandiant.com/resources/insights/apt41-dual-espionage-and-cyber-crime-operations"] },
+    { "id": "actor:apt41→executes→campaign:cve-2024-27199-and-cve-2024-27198", "source": "actor:apt41", "target": "campaign:cve-2024-27199-and-cve-2024-27198", "relationship": "executes", "confidence": 0.90, "first_seen": "2024-03-04", "sources": [] },
+    { "id": "actor:cl0p→exploits→CVE-2024-27199", "source": "actor:cl0p", "target": "CVE-2024-27199", "relationship": "exploits", "confidence": 0.92, "first_seen": "2024-03-04", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-158a"] },
+    { "id": "actor:cl0p→exploits→CVE-2023-34362", "source": "actor:cl0p", "target": "CVE-2023-34362", "relationship": "exploits", "confidence": 0.92, "first_seen": "2023-06-01", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-158a"] },
+    { "id": "actor:cl0p→exploits→CVE-2023-0669", "source": "actor:cl0p", "target": "CVE-2023-0669", "relationship": "exploits", "confidence": 0.92, "first_seen": "2023-01-18", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-158a"] },
+    { "id": "actor:cl0p→exploits→CVE-2021-27101", "source": "actor:cl0p", "target": "CVE-2021-27101", "relationship": "exploits", "confidence": 0.92, "first_seen": "2021-03-01", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-158a"] },
+    { "id": "actor:cl0p→exploits→CVE-2023-27351", "source": "actor:cl0p", "target": "CVE-2023-27351", "relationship": "exploits", "confidence": 0.85, "first_seen": "2023-04-19", "sources": [] },
+    { "id": "actor:cl0p→executes→campaign:cve-2023-34362", "source": "actor:cl0p", "target": "campaign:cve-2023-34362", "relationship": "executes", "confidence": 0.95, "first_seen": "2023-06-01", "sources": [] },
+    { "id": "actor:volt-typhoon→exploits→CVE-2024-39717", "source": "actor:volt-typhoon", "target": "CVE-2024-39717", "relationship": "exploits", "confidence": 0.92, "first_seen": "2024-08-22", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-038a"] },
+    { "id": "actor:volt-typhoon→exploits→CVE-2021-40539", "source": "actor:volt-typhoon", "target": "CVE-2021-40539", "relationship": "exploits", "confidence": 0.92, "first_seen": "2021-09-07", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-038a"] },
+    { "id": "actor:volt-typhoon→exploits→CVE-2021-27860", "source": "actor:volt-typhoon", "target": "CVE-2021-27860", "relationship": "exploits", "confidence": 0.92, "first_seen": "2021-11-10", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-038a"] },
+    { "id": "actor:volt-typhoon→exploits→CVE-2022-42475", "source": "actor:volt-typhoon", "target": "CVE-2022-42475", "relationship": "exploits", "confidence": 0.92, "first_seen": "2022-12-07", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-038a"] },
+    { "id": "actor:salt-typhoon→exploits→CVE-2023-20198", "source": "actor:salt-typhoon", "target": "CVE-2023-20198", "relationship": "exploits", "confidence": 0.92, "first_seen": "2023-10-16", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-190a"] },
+    { "id": "actor:salt-typhoon→exploits→CVE-2023-20273", "source": "actor:salt-typhoon", "target": "CVE-2023-20273", "relationship": "exploits", "confidence": 0.92, "first_seen": "2023-10-22", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-190a"] },
+    { "id": "actor:salt-typhoon→exploits→CVE-2018-0171", "source": "actor:salt-typhoon", "target": "CVE-2018-0171", "relationship": "exploits", "confidence": 0.92, "first_seen": "2023-10-01", "sources": ["https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-190a"] },
+    { "id": "actor:salt-typhoon→executes→campaign:cve-2023-20198-and-cve-2023-20273", "source": "actor:salt-typhoon", "target": "campaign:cve-2023-20198-and-cve-2023-20273", "relationship": "executes", "confidence": 0.95, "first_seen": "2023-10-16", "sources": [] },
+    { "id": "campaign:cve-2023-27351→includes→CVE-2023-27351", "source": "campaign:cve-2023-27351", "target": "CVE-2023-27351", "relationship": "includes", "confidence": 1.0, "first_seen": "2023-04-19", "sources": [] },
+    { "id": "campaign:cve-2023-34362→includes→CVE-2023-34362", "source": "campaign:cve-2023-34362", "target": "CVE-2023-34362", "relationship": "includes", "confidence": 1.0, "first_seen": "2023-06-01", "sources": [] },
+    { "id": "campaign:cve-2024-27199-and-cve-2024-27198→includes→CVE-2024-27199", "source": "campaign:cve-2024-27199-and-cve-2024-27198", "target": "CVE-2024-27199", "relationship": "includes", "confidence": 1.0, "first_seen": "2024-03-04", "sources": [] },
+    { "id": "campaign:cve-2024-27199-and-cve-2024-27198→includes→CVE-2024-27198", "source": "campaign:cve-2024-27199-and-cve-2024-27198", "target": "CVE-2024-27198", "relationship": "includes", "confidence": 1.0, "first_seen": "2024-03-04", "sources": [] },
+    { "id": "campaign:cve-2023-20198-and-cve-2023-20273→includes→CVE-2023-20198", "source": "campaign:cve-2023-20198-and-cve-2023-20273", "target": "CVE-2023-20198", "relationship": "includes", "confidence": 1.0, "first_seen": "2023-10-16", "sources": [] },
+    { "id": "campaign:cve-2023-20198-and-cve-2023-20273→includes→CVE-2023-20273", "source": "campaign:cve-2023-20198-and-cve-2023-20273", "target": "CVE-2023-20273", "relationship": "includes", "confidence": 1.0, "first_seen": "2023-10-22", "sources": [] },
+    { "id": "campaign:cluster-a1b2c3d4→includes→CVE-2024-39717", "source": "campaign:cluster-a1b2c3d4", "target": "CVE-2024-39717", "relationship": "includes", "confidence": 0.90, "first_seen": "2024-08-22", "sources": [] },
+    { "id": "campaign:cluster-a1b2c3d4→includes→CVE-2022-42475", "source": "campaign:cluster-a1b2c3d4", "target": "CVE-2022-42475", "relationship": "includes", "confidence": 0.85, "first_seen": "2022-12-07", "sources": [] },
+    { "id": "campaign:cluster-ransomware-ecosystem→includes→CVE-2021-34527", "source": "campaign:cluster-ransomware-ecosystem", "target": "CVE-2021-34527", "relationship": "includes", "confidence": 0.90, "first_seen": "2021-07-01", "sources": [] },
+    { "id": "campaign:cluster-ransomware-ecosystem→includes→CVE-2021-27101", "source": "campaign:cluster-ransomware-ecosystem", "target": "CVE-2021-27101", "relationship": "includes", "confidence": 0.90, "first_seen": "2021-03-01", "sources": [] }
+  ]
+}

@@ -17,6 +17,8 @@ const PATHS = {
   ransomware:  path.join(BASE, 'api', 'intel', 'ransomware.json'),
   liveWidget:  path.join(BASE, 'live-intel.json'),
   state:       path.join(BASE, 'intel-state.json'),
+  graph:       path.join(BASE, 'api', 'intel', 'threat-graph.json'),
+  campaigns:   path.join(BASE, 'api', 'intel', 'campaigns.json'),
 };
 
 let _cache = {};
@@ -246,4 +248,135 @@ function getPlatformStats() {
   };
 }
 
-module.exports = { getIntel, getCVEDetail, searchIntel, getPlatformStats, applyTierFilter };
+/* ═══════════════════════════════════════════════════════════════════════
+   THREAT GRAPH  — serves pre-built graph.json with tier filtering
+═══════════════════════════════════════════════════════════════════════ */
+const { getGraphForTier, getTopActors, loadGraph } = require('./threat-graph');
+
+function getGraph(tier) {
+  try {
+    const graph = loadGraph();
+    if (!graph || !graph.nodes) {
+      return { nodes: [], edges: [], stats: {}, error: 'Graph not yet built — run fetch-live-intel.js' };
+    }
+    const result = getGraphForTier(graph, tier);
+    if (tier === 'free') {
+      result._upgrade = 'Full graph (IOC nodes, malware nodes, all edges) available on Pro/Enterprise — https://blog.cyberdudebivash.in/pricing.html';
+    }
+    return result;
+  } catch (e) {
+    console.error(`[INTEL] Graph load error: ${e.message}`);
+    return { nodes: [], edges: [], stats: {}, error: 'Graph temporarily unavailable' };
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CAMPAIGNS  — serves pre-built campaigns.json with tier and pagination
+═══════════════════════════════════════════════════════════════════════ */
+function getCampaigns(tier, query = {}) {
+  const data = loadJSON(PATHS.campaigns);
+  if (!data || !data.campaigns) {
+    return { campaigns: [], total: 0, error: 'Campaigns not yet built' };
+  }
+
+  let campaigns = [...(data.campaigns || [])];
+
+  // Filter
+  if (query.severity) {
+    const sev = query.severity.toUpperCase();
+    campaigns = campaigns.filter(c => c.severity === sev);
+  }
+  if (query.has_kev === 'true') {
+    campaigns = campaigns.filter(c => c.has_kev);
+  }
+  if (query.has_ransomware === 'true') {
+    campaigns = campaigns.filter(c => c.has_ransomware);
+  }
+
+  const total  = campaigns.length;
+  const { page, limit, offset } = parsePagination(query);
+  const paged  = campaigns.slice(offset, offset + limit);
+
+  // Tier gating on shared_iocs and related_intel depth
+  const tierPaged = paged.map(campaign => {
+    if (tier === 'free') {
+      const { shared_iocs, related_intel, ...safe } = campaign;
+      return {
+        ...safe,
+        related_intel: (related_intel || []).slice(0, 3),
+        shared_iocs:   [],
+        _upgrade: 'Full IOC list and campaign details available on Pro plan',
+      };
+    }
+    if (tier === 'pro') {
+      return { ...campaign, shared_iocs: (campaign.shared_iocs || []).slice(0, 20) };
+    }
+    return campaign; // enterprise: everything
+  });
+
+  return {
+    campaigns: tierPaged,
+    total,
+    pagination: { page, limit, total, total_pages: Math.ceil(total / limit), has_next: offset + limit < total },
+    generated: data.generated,
+    tier_info: { tier, full_ioc_access: tier !== 'free' },
+  };
+}
+
+function getCampaignDetail(campaignId, tier) {
+  const data = loadJSON(PATHS.campaigns);
+  if (!data || !data.campaigns) return { found: false, campaign: null };
+
+  const normalizedId = String(campaignId || '').toLowerCase();
+  const campaign = data.campaigns.find(c =>
+    c.campaign_id === normalizedId ||
+    c.campaign_id === `campaign:${normalizedId}` ||
+    c.campaign_id.includes(normalizedId)
+  );
+
+  if (!campaign) return { found: false, campaign: null };
+
+  if (tier === 'free') {
+    const { shared_iocs, ...safe } = campaign;
+    return { found: true, campaign: { ...safe, shared_iocs: [], _upgrade: 'IOC list requires Pro plan' } };
+  }
+  return { found: true, campaign };
+}
+
+function getTopActorsAPI(tier, limit = 10) {
+  try {
+    const graph = loadGraph();
+    if (!graph || !graph.nodes) return { actors: [], error: 'Graph not yet built' };
+    const actors = getTopActors(graph, Math.min(20, parseInt(limit, 10)));
+
+    // Tier gating on actor detail
+    const tiered = actors.map(actor => {
+      if (tier === 'free') {
+        return {
+          id:               actor.id,
+          name:             actor.name,
+          category:         actor.attributes?.category,
+          motivation:       actor.attributes?.motivation,
+          activity_score:   actor.activity_score,
+          cve_count:        actor.cve_count,
+          active:           actor.attributes?.active,
+          _upgrade:         'Full TTP mapping, target sectors, and IOC relationships on Pro plan',
+        };
+      }
+      return actor; // pro + enterprise: full detail
+    });
+
+    return {
+      actors: tiered,
+      total:  actors.length,
+      generated: graph.generated,
+    };
+  } catch (e) {
+    return { actors: [], error: 'Actor data temporarily unavailable' };
+  }
+}
+
+module.exports = {
+  getIntel, getCVEDetail, searchIntel, getPlatformStats, applyTierFilter,
+  getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI,
+};

@@ -11,13 +11,18 @@
  *  action=ransomware   GET  Ransomware campaign feed
  *  action=search       GET  Full-text search across all intel (?q=query)
  *  action=stats        GET  Platform stats — no auth required
+ *  action=graph        GET  Threat actor relationship graph (tier-gated)
+ *  action=campaigns    GET  Campaign clusters (?severity=&has_kev=)
+ *  action=campaign     GET  Single campaign detail (?id=campaign:...)
+ *  action=top-actors   GET  Most active threat actors ranked by activity
  *
  * Backward-compat rewrites in vercel.json map old paths to ?action= params.
  */
 'use strict';
 const crypto = require('crypto');
 const { authenticate, successResponse, apiError, corsHeaders } = require('../_lib/middleware');
-const { getIntel, getCVEDetail, searchIntel, getPlatformStats } = require('../_lib/intel');
+const { getIntel, getCVEDetail, searchIntel, getPlatformStats,
+        getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI } = require('../_lib/intel');
 const sec = require('../_lib/security');
 
 /* ─── Main Router ────────────────────────────────────────────── */
@@ -207,10 +212,67 @@ module.exports = async (req, res) => {
         });
       }
 
+      /* ── GET ?action=graph ────────────────────────────────────── */
+      case 'graph': {
+        const result = getGraph(user.tier);
+        return successResponse(res, result, {
+          endpoint:       '/api/v1/intel?action=graph',
+          description:    'Threat actor relationship graph — nodes (CVE/Actor/Campaign/IOC) and edges',
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
+      /* ── GET ?action=campaigns ────────────────────────────────── */
+      case 'campaigns': {
+        const result = getCampaigns(user.tier, req.query);
+        return successResponse(res, result, {
+          endpoint:       '/api/v1/intel?action=campaigns',
+          description:    'Threat campaign clusters grouped by shared IOCs, CVEs, and actor TTPs',
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
+      /* ── GET ?action=campaign&id=campaign:... ─────────────────── */
+      case 'campaign': {
+        const campaignId = String(req.query.id || '').trim();
+        if (!campaignId || campaignId.length < 3) {
+          return apiError(res, 400, 'MISSING_CAMPAIGN_ID',
+            'Campaign ID required. Example: GET /api/v1/intel?action=campaign&id=campaign:cve-2024-27199');
+        }
+        const { found, campaign } = getCampaignDetail(campaignId, user.tier);
+        if (!found) {
+          return apiError(res, 404, 'CAMPAIGN_NOT_FOUND',
+            `Campaign "${campaignId}" not found. List all at GET /api/v1/intel?action=campaigns`);
+        }
+        return successResponse(res, { campaign }, {
+          endpoint:       `/api/v1/intel?action=campaign&id=${campaignId}`,
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
+      /* ── GET ?action=top-actors ───────────────────────────────── */
+      case 'top-actors': {
+        const actorLimit = Math.min(20, parseInt(req.query.limit || '10', 10));
+        const result     = getTopActorsAPI(user.tier, actorLimit);
+        return successResponse(res, result, {
+          endpoint:       '/api/v1/intel?action=top-actors',
+          description:    'Most active threat actors ranked by graph connectivity and CVE exploitation count',
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
       /* ── Unknown action ────────────────────────────────────── */
       default:
         return apiError(res, 400, 'INVALID_ACTION',
-          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats`);
+          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors`);
     }
   } catch (e) {
     return apiError(res, 500, 'INTERNAL_ERROR',

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threat Intelligence — CYBERDUDEBIVASH SENTINEL APEX</title>
+<meta name="description" content="Live threat actor graph, campaign clusters, and intelligence relationships powered by SENTINEL APEX.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+:root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-yellow:#fbbf24;--apex-blue:#0099ff;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--apex-bg);color:var(--apex-text);min-height:100vh}
+nav{background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nlogo{font-size:17px;font-weight:900;color:var(--apex-cyan);text-decoration:none}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:#fff;background:var(--apex-surface)}.nlinks{display:flex;gap:4px}
+.ncta{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000!important;font-weight:700!important;border-radius:6px!important}
+.hero{background:linear-gradient(135deg,#07090f,#0d1117);border-bottom:1px solid var(--apex-border);padding:48px 24px 32px;text-align:center}
+.hero h1{font-size:clamp(22px,3.5vw,38px);font-weight:900;color:#fff;margin-bottom:10px}.hero h1 span{color:var(--apex-cyan)}
+.hero p{color:var(--apex-muted);font-size:15px;max-width:600px;margin:0 auto 20px}
+.key-bar{display:flex;gap:10px;max-width:600px;margin:0 auto;flex-wrap:wrap}
+.key-bar input{flex:1;padding:11px 16px;background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;color:var(--apex-text);font-size:13px;font-family:var(--mono);outline:none;min-width:200px}
+.key-bar input:focus{border-color:var(--apex-cyan)}
+.btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:.2s;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000}.btn-primary:hover{opacity:.9}
+.btn-secondary{background:transparent;border:2px solid var(--apex-cyan);color:var(--apex-cyan)}.btn-secondary:hover{background:rgba(0,255,224,.08)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.badge-critical{background:rgba(255,59,59,.2);color:#ff3b3b;border:1px solid rgba(255,59,59,.4)}
+.badge-high{background:rgba(255,140,0,.2);color:#ff8c00;border:1px solid rgba(255,140,0,.4)}
+.badge-medium{background:rgba(251,191,36,.2);color:#fbbf24;border:1px solid rgba(251,191,36,.4)}
+.badge-low{background:rgba(107,114,128,.2);color:#9ca3af;border:1px solid rgba(107,114,128,.4)}
+.badge-nation{background:rgba(168,85,247,.2);color:#a855f7;border:1px solid rgba(168,85,247,.4)}
+.badge-ransomware{background:rgba(255,59,59,.2);color:#ff3b3b;border:1px solid rgba(255,59,59,.4)}
+.badge-criminal{background:rgba(255,140,0,.2);color:#ff8c00;border:1px solid rgba(255,140,0,.4)}
+.badge-attacker{background:rgba(0,153,255,.2);color:#0099ff;border:1px solid rgba(0,153,255,.4)}
+.tabs-wrap{background:var(--apex-surface);border-bottom:1px solid var(--apex-border)}
+.tabs{display:flex;max-width:1400px;margin:0 auto;overflow-x:auto}
+.tab{padding:14px 24px;font-size:13px;font-weight:600;color:var(--apex-muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.2s;text-decoration:none}
+.tab:hover{color:var(--apex-text)}.tab.active{color:var(--apex-cyan);border-bottom-color:var(--apex-cyan)}
+.main{max-width:1400px;margin:0 auto;padding:32px 24px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:24px;margin-bottom:24px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:gap}
+.card-title{font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+.section-title{font-size:20px;font-weight:800;color:#fff;margin-bottom:6px}
+.section-sub{font-size:13px;color:var(--apex-muted);margin-bottom:24px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:20px}
+.actor-card{background:#0a0e18;border:1px solid var(--apex-border);border-radius:12px;padding:20px;transition:.2s;cursor:pointer}
+.actor-card:hover{border-color:var(--apex-cyan);background:#0d1520}
+.actor-name{font-size:16px;font-weight:800;color:#fff;margin-bottom:6px}
+.actor-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.actor-origin{font-size:12px;color:var(--apex-muted);margin-bottom:10px}
+.actor-desc{font-size:12px;color:var(--apex-muted);line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.actor-stats{display:flex;gap:16px;margin-bottom:12px}
+.astat{text-align:center}
+.astat-val{font-size:20px;font-weight:900;font-family:var(--mono);color:var(--apex-cyan)}
+.astat-lbl{font-size:10px;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.05em}
+.ttp-list{display:flex;flex-wrap:wrap;gap:4px}
+.ttp-badge{padding:2px 6px;background:rgba(0,255,224,.08);border:1px solid rgba(0,255,224,.2);border-radius:3px;font-size:10px;font-family:var(--mono);color:var(--apex-cyan)}
+.sector-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.sector-badge{padding:2px 7px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);border-radius:10px;font-size:10px;color:#a855f7}
+.campaign-card{background:#0a0e18;border:1px solid var(--apex-border);border-radius:12px;padding:20px;transition:.2s}
+.campaign-card:hover{border-color:rgba(0,255,224,.3)}
+.campaign-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px}
+.campaign-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.campaign-desc{font-size:12px;color:var(--apex-muted);line-height:1.6;margin-bottom:12px}
+.campaign-actors{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.actor-chip{padding:3px 10px;background:rgba(0,255,224,.08);border:1px solid rgba(0,255,224,.2);border-radius:12px;font-size:11px;font-weight:600;color:var(--apex-cyan)}
+.cve-list{display:flex;flex-wrap:wrap;gap:4px}
+.cve-chip{padding:2px 8px;background:rgba(255,59,59,.08);border:1px solid rgba(255,59,59,.25);border-radius:4px;font-size:10px;font-family:var(--mono);color:#ff6b6b}
+.confidence-bar{height:4px;background:#1f2937;border-radius:2px;margin-top:8px;overflow:hidden}
+.confidence-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--apex-cyan),var(--apex-blue))}
+.graph-wrap{position:relative;background:#0a0e18;border:1px solid var(--apex-border);border-radius:12px;overflow:hidden}
+#threat-graph{width:100%;height:600px;cursor:grab}
+#threat-graph:active{cursor:grabbing}
+.graph-controls{position:absolute;top:16px;right:16px;display:flex;flex-direction:column;gap:6px}
+.graph-btn{width:36px;height:36px;background:var(--apex-card);border:1px solid var(--apex-border);border-radius:8px;color:var(--apex-text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.graph-btn:hover{background:var(--apex-surface);color:var(--apex-cyan)}
+.graph-legend{position:absolute;bottom:16px;left:16px;background:rgba(7,9,15,.9);border:1px solid var(--apex-border);border-radius:8px;padding:12px 16px;font-size:11px}
+.legend-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;color:var(--apex-muted)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.tooltip{position:fixed;background:rgba(7,9,15,.97);border:1px solid var(--apex-border);border-radius:10px;padding:12px 16px;font-size:12px;pointer-events:none;z-index:9999;max-width:280px;display:none;line-height:1.6}
+.tooltip-name{font-weight:700;color:#fff;margin-bottom:6px;font-size:13px}
+.tooltip-type{font-size:11px;margin-bottom:4px}
+.tooltip-detail{color:var(--apex-muted);font-size:11px}
+.filter-row{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.filter-select{padding:8px 12px;background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;color:var(--apex-text);font-size:13px;outline:none;cursor:pointer}
+.filter-select:focus{border-color:var(--apex-cyan)}
+.info-bar{background:rgba(0,255,224,.06);border:1px solid rgba(0,255,224,.15);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--apex-cyan);margin-bottom:20px}
+.alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px}
+.alert-error{background:#ff3b3b15;border:1px solid #ff3b3b40;color:#ff3b3b}
+.alert-info{background:#00ffe015;border:1px solid #00ffe040;color:#00ffe0}
+.alert-warn{background:#ff8c0015;border:1px solid #ff8c0040;color:#ff8c00}
+.loading{display:flex;align-items:center;gap:10px;color:var(--apex-muted);padding:40px;justify-content:center}
+.spinner{width:20px;height:20px;border:2px solid var(--apex-border);border-top-color:var(--apex-cyan);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px}
+.stat-box{background:#0a0e18;border:1px solid var(--apex-border);border-radius:10px;padding:16px;text-align:center}
+.stat-val{font-size:24px;font-weight:900;font-family:var(--mono);color:var(--apex-cyan)}
+.stat-lbl{font-size:11px;color:var(--apex-muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+.node-detail{background:var(--apex-card);border:1px solid var(--apex-border);border-radius:12px;padding:20px;margin-top:20px;display:none}
+.node-detail.visible{display:block}
+.detail-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.detail-id{font-family:var(--mono);font-size:13px;color:var(--apex-cyan)}
+.detail-name{font-size:18px;font-weight:800;color:#fff}
+.detail-section{margin-bottom:14px}
+.detail-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--apex-muted);margin-bottom:6px}
+.detail-value{font-size:13px;color:var(--apex-text);line-height:1.6}
+.ref-link{color:var(--apex-cyan);font-size:11px;display:block;margin-top:2px;text-decoration:none;word-break:break-all}
+.ref-link:hover{text-decoration:underline}
+footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);padding:24px;text-align:center;font-size:13px;color:var(--apex-muted)}
+footer a{color:var(--apex-cyan);text-decoration:none}
+@media(max-width:640px){.main{padding:20px 16px}.hero{padding:32px 16px 24px}.grid-3,.grid-2{grid-template-columns:1fr}.key-bar{flex-direction:column}.actor-stats{gap:12px}}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────────────────────── -->
+<nav>
+  <a href="/" class="nlogo">⚡ SENTINEL APEX</a>
+  <div class="nlinks">
+    <a href="/">Home</a>
+    <a href="/api-dashboard.html">API</a>
+    <a href="/threat-intelligence.html" style="color:#fff;background:rgba(0,255,224,.08)">Threat Intel</a>
+    <a href="/pricing.html" class="ncta">Upgrade</a>
+  </div>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────────────────────────── -->
+<div class="hero">
+  <h1>Live <span>Threat Intelligence</span> Platform</h1>
+  <p>Explore the threat actor relationship graph, campaign clusters, and live IOC intelligence powered by SENTINEL APEX.</p>
+  <div class="key-bar">
+    <input type="password" id="api-key-input" placeholder="Enter your SENTINEL APEX API key…" autocomplete="off">
+    <button class="btn btn-primary" onclick="loadIntelligence()">Load Intel</button>
+    <button class="btn btn-secondary" onclick="clearKey()">Clear</button>
+  </div>
+  <div id="hero-status" style="margin-top:12px;font-size:12px;color:var(--apex-muted)"></div>
+</div>
+
+<!-- ── TABS ────────────────────────────────────────────────────────────── -->
+<div class="tabs-wrap">
+  <div class="tabs">
+    <a class="tab active" onclick="switchTab('graph',this)" href="#">🕸 Threat Graph</a>
+    <a class="tab" onclick="switchTab('actors',this)" href="#">👤 Threat Actors</a>
+    <a class="tab" onclick="switchTab('campaigns',this)" href="#">🎯 Campaigns</a>
+    <a class="tab" onclick="switchTab('topactors',this)" href="#">🏆 Top Actors</a>
+  </div>
+</div>
+
+<!-- ── MAIN ────────────────────────────────────────────────────────────── -->
+<div class="main">
+
+  <!-- ── GRAPH PANEL ─────────────────────────────────────────────────── -->
+  <div class="panel active" id="panel-graph">
+    <div id="graph-loading" class="loading"><div class="spinner"></div>Enter your API key above to load the threat graph.</div>
+    <div id="graph-content" style="display:none">
+      <div class="stats-row" id="graph-stats-row"></div>
+      <div id="graph-info-bar" class="info-bar" style="display:none"></div>
+      <div class="graph-wrap">
+        <svg id="threat-graph"></svg>
+        <div class="graph-controls">
+          <button class="graph-btn" onclick="zoomIn()" title="Zoom In">＋</button>
+          <button class="graph-btn" onclick="zoomOut()" title="Zoom Out">－</button>
+          <button class="graph-btn" onclick="resetZoom()" title="Reset">⊙</button>
+          <button class="graph-btn" onclick="togglePhysics()" id="physics-btn" title="Toggle physics">⏸</button>
+        </div>
+        <div class="graph-legend">
+          <div class="legend-row"><div class="legend-dot" style="background:#a855f7"></div>Threat Actor</div>
+          <div class="legend-row"><div class="legend-dot" style="background:#ff3b3b"></div>CVE / Vuln</div>
+          <div class="legend-row"><div class="legend-dot" style="background:#00ffe0"></div>Campaign</div>
+          <div class="legend-row"><div class="legend-dot" style="background:#ff8c00"></div>Malware</div>
+          <div class="legend-row"><div class="legend-dot" style="background:#0099ff"></div>IOC</div>
+        </div>
+      </div>
+      <div class="node-detail" id="node-detail">
+        <div class="detail-header">
+          <div>
+            <div class="detail-id" id="detail-id"></div>
+            <div class="detail-name" id="detail-name"></div>
+          </div>
+          <button class="btn btn-secondary" onclick="closeDetail()" style="padding:6px 14px;font-size:12px">✕ Close</button>
+        </div>
+        <div id="detail-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACTORS PANEL ─────────────────────────────────────────────────── -->
+  <div class="panel" id="panel-actors">
+    <div id="actors-loading" class="loading"><div class="spinner"></div>Enter your API key above to load threat actors.</div>
+    <div id="actors-content" style="display:none">
+      <div style="margin-bottom:20px">
+        <div class="section-title">Threat Actor Intelligence</div>
+        <div class="section-sub">Known threat groups, their TTPs, target sectors, and linked CVEs.</div>
+      </div>
+      <div class="filter-row">
+        <select class="filter-select" id="actor-filter-category" onchange="filterActors()">
+          <option value="">All Categories</option>
+          <option value="nation_state">Nation State</option>
+          <option value="ransomware_group">Ransomware Group</option>
+          <option value="cybercriminal">Cybercriminal</option>
+          <option value="targeted_attacker">Targeted Attacker</option>
+        </select>
+        <select class="filter-select" id="actor-filter-origin" onchange="filterActors()">
+          <option value="">All Origins</option>
+          <option value="china">China</option>
+          <option value="russia">Russia</option>
+          <option value="criminal">Criminal (Unattributed)</option>
+          <option value="unknown">Unknown</option>
+        </select>
+        <span id="actors-count" style="color:var(--apex-muted);font-size:13px;margin-left:auto"></span>
+      </div>
+      <div class="grid-3" id="actors-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── CAMPAIGNS PANEL ──────────────────────────────────────────────── -->
+  <div class="panel" id="panel-campaigns">
+    <div id="campaigns-loading" class="loading"><div class="spinner"></div>Enter your API key above to load campaign data.</div>
+    <div id="campaigns-content" style="display:none">
+      <div style="margin-bottom:20px">
+        <div class="section-title">Threat Campaign Clusters</div>
+        <div class="section-sub">Active and historical campaigns grouped by shared IOCs, CVEs, and threat actor TTPs.</div>
+      </div>
+      <div class="filter-row">
+        <select class="filter-select" id="camp-filter-sev" onchange="filterCampaigns()">
+          <option value="">All Severities</option>
+          <option value="CRITICAL">CRITICAL</option>
+          <option value="HIGH">HIGH</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="LOW">LOW</option>
+        </select>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--apex-muted);cursor:pointer">
+          <input type="checkbox" id="camp-filter-kev" onchange="filterCampaigns()" style="width:auto;accent-color:var(--apex-cyan)"> CISA KEV Only
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--apex-muted);cursor:pointer">
+          <input type="checkbox" id="camp-filter-ransomware" onchange="filterCampaigns()" style="width:auto;accent-color:var(--apex-red)"> Ransomware Only
+        </label>
+        <span id="campaigns-count" style="color:var(--apex-muted);font-size:13px;margin-left:auto"></span>
+      </div>
+      <div class="grid-2" id="campaigns-grid"></div>
+    </div>
+  </div>
+
+  <!-- ── TOP ACTORS PANEL ─────────────────────────────────────────────── -->
+  <div class="panel" id="panel-topactors">
+    <div id="topactors-loading" class="loading"><div class="spinner"></div>Enter your API key above to load top actors.</div>
+    <div id="topactors-content" style="display:none">
+      <div style="margin-bottom:24px">
+        <div class="section-title">Top Threat Actors by Activity</div>
+        <div class="section-sub">Ranked by graph connectivity: CVE exploitation count, campaign memberships, and relationship edges.</div>
+      </div>
+      <div id="topactors-list"></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-name" id="tt-name"></div>
+  <div class="tooltip-type" id="tt-type"></div>
+  <div class="tooltip-detail" id="tt-detail"></div>
+</div>
+
+<footer>
+  <p>CYBERDUDEBIVASH SENTINEL APEX v4.0 — Threat Intelligence Platform &nbsp;|&nbsp;
+     <a href="https://blog.cyberdudebivash.in">Blog</a> &nbsp;·&nbsp;
+     <a href="/api-dashboard.html">API Dashboard</a> &nbsp;·&nbsp;
+     <a href="/pricing.html">Pricing</a>
+  </p>
+  <p style="margin-top:6px;font-size:11px">All threat actor attributions are backed by public CISA advisories, DOJ indictments, or vendor reports. No speculative attribution.</p>
+</footer>
+
+<script>
+'use strict';
+// ── STATE ──────────────────────────────────────────────────────────────────
+let API_KEY = '';
+let GRAPH_DATA = null;
+let ACTORS_DATA = [];
+let CAMPAIGNS_DATA = [];
+let TOP_ACTORS_DATA = [];
+let USER_TIER = 'free';
+let simulation = null;
+let physicsEnabled = true;
+let svg = null, zoom = null, gMain = null;
+const API_BASE = '/api/v1/intel';
+
+// ── UTILS ──────────────────────────────────────────────────────────────────
+function severityColor(sev) {
+  const m = {CRITICAL:'#ff3b3b',HIGH:'#ff8c00',MEDIUM:'#fbbf24',LOW:'#9ca3af'};
+  return m[(sev||'').toUpperCase()] || '#9ca3af';
+}
+function categoryBadge(cat) {
+  const m = {nation_state:'nation',ransomware_group:'ransomware',cybercriminal:'criminal',targeted_attacker:'attacker'};
+  return m[cat] || cat || 'unknown';
+}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── AUTH ────────────────────────────────────────────────────────────────────
+async function fetchIntel(action, params={}) {
+  const u = new URLSearchParams({action, ...params});
+  const r = await fetch(`${API_BASE}?${u}`, {
+    headers: { 'X-API-Key': API_KEY, 'Content-Type': 'application/json' }
+  });
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.error?.message || d.error || `HTTP ${r.status}`);
+  return d;
+}
+
+function setHeroStatus(msg, color='var(--apex-muted)') {
+  const el = document.getElementById('hero-status');
+  el.style.color = color;
+  el.textContent = msg;
+}
+
+function clearKey() {
+  API_KEY = '';
+  document.getElementById('api-key-input').value = '';
+  setHeroStatus('');
+}
+
+// ── MAIN LOADER ─────────────────────────────────────────────────────────────
+async function loadIntelligence() {
+  const k = document.getElementById('api-key-input').value.trim();
+  if (!k) { setHeroStatus('⚠ API key required.', 'var(--apex-orange)'); return; }
+  API_KEY = k;
+  setHeroStatus('⏳ Loading intelligence data…', 'var(--apex-muted)');
+
+  // Parallel load all panels
+  const [graphOk, actorsOk, campaignsOk, topOk] = await Promise.allSettled([
+    loadGraph(), loadActors(), loadCampaigns(), loadTopActors()
+  ]);
+
+  const errors = [graphOk, actorsOk, campaignsOk, topOk]
+    .filter(r => r.status === 'rejected').map(r => r.reason?.message || 'Unknown error');
+
+  if (errors.length === 4) {
+    setHeroStatus('✗ Failed to load. Check your API key.', 'var(--apex-red)');
+  } else if (errors.length > 0) {
+    setHeroStatus(`⚠ Partially loaded (${4-errors.length}/4 sources). Some data unavailable.`, 'var(--apex-orange)');
+  } else {
+    setHeroStatus(`✓ Intelligence loaded — Tier: ${USER_TIER.toUpperCase()}`, 'var(--apex-green)');
+  }
+}
+
+// ── GRAPH ───────────────────────────────────────────────────────────────────
+async function loadGraph() {
+  document.getElementById('graph-loading').innerHTML = '<div class="spinner"></div>Loading threat graph…';
+  try {
+    const d = await fetchIntel('graph');
+    GRAPH_DATA = d.data || d;
+    if (d.data?.tier_info) USER_TIER = d.data.tier_info.tier || USER_TIER;
+
+    document.getElementById('graph-loading').style.display = 'none';
+    document.getElementById('graph-content').style.display = 'block';
+    renderGraphStats(GRAPH_DATA);
+    renderD3Graph(GRAPH_DATA);
+
+    if (GRAPH_DATA.tier_info?.tier === 'free') {
+      const ib = document.getElementById('graph-info-bar');
+      ib.style.display = 'block';
+      ib.textContent = `Free tier: showing ${GRAPH_DATA.tier_info?.showing || 0} nodes. Upgrade to Pro/Enterprise for the full graph with IOC nodes and malware relationships.`;
+    }
+  } catch(e) {
+    document.getElementById('graph-loading').innerHTML = `<span style="color:var(--apex-red)">✗ Graph unavailable: ${escHtml(e.message)}</span>`;
+    throw e;
+  }
+}
+
+function renderGraphStats(g) {
+  const s = g.stats || {};
+  const row = document.getElementById('graph-stats-row');
+  const stats = [
+    {v: s.total_nodes || (g.nodes||[]).length, l:'Total Nodes'},
+    {v: s.actors || 0, l:'Threat Actors', c:'var(--apex-purple)'},
+    {v: s.cves || 0, l:'CVEs', c:'var(--apex-red)'},
+    {v: s.campaigns || 0, l:'Campaigns', c:'var(--apex-cyan)'},
+    {v: s.edges || (g.edges||[]).length, l:'Relationships'},
+  ];
+  row.innerHTML = stats.map(s => `
+    <div class="stat-box">
+      <div class="stat-val" style="${s.c?`color:${s.c}`:''}">${s.v}</div>
+      <div class="stat-lbl">${s.l}</div>
+    </div>`).join('');
+}
+
+function renderD3Graph(g) {
+  const nodes = g.nodes || [];
+  const edges = g.edges || [];
+  const container = document.getElementById('threat-graph');
+  const W = container.clientWidth || 900;
+  const H = 600;
+
+  if (svg) { d3.select('#threat-graph').selectAll('*').remove(); }
+
+  svg = d3.select('#threat-graph')
+    .attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('width', '100%')
+    .attr('height', H);
+
+  zoom = d3.zoom().scaleExtent([0.15, 4]).on('zoom', e => {
+    gMain.attr('transform', e.transform);
+  });
+  svg.call(zoom);
+
+  gMain = svg.append('g');
+
+  // Defs: arrow markers per relationship type
+  const defs = svg.append('defs');
+  ['exploits','executes','includes','linked_to','uses','associated_with'].forEach(rel => {
+    defs.append('marker')
+      .attr('id', `arrow-${rel}`)
+      .attr('viewBox', '0 -4 8 8')
+      .attr('refX', 18).attr('refY', 0)
+      .attr('markerWidth', 6).attr('markerHeight', 6)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M0,-4L8,0L0,4')
+      .attr('fill', relColor(rel)).attr('opacity', 0.6);
+  });
+
+  function relColor(rel) {
+    const m = {exploits:'#ff3b3b',executes:'#a855f7',includes:'#00ffe0',linked_to:'#0099ff',uses:'#ff8c00',associated_with:'#fbbf24'};
+    return m[rel] || '#4b5563';
+  }
+
+  function nodeColor(type) {
+    const m = {ThreatActor:'#a855f7',CVE:'#ff3b3b',Campaign:'#00ffe0',Malware:'#ff8c00',IOC:'#0099ff',Intel:'#fbbf24'};
+    return m[type] || '#6b7280';
+  }
+
+  function nodeRadius(n) {
+    if (n.type === 'ThreatActor') return 14;
+    if (n.type === 'Campaign') return 11;
+    if (n.type === 'CVE') return 9;
+    if (n.type === 'Malware') return 8;
+    return 6;
+  }
+
+  // Build id→index map for links
+  const idxMap = {};
+  nodes.forEach((n, i) => { idxMap[n.id] = i; });
+
+  const links = edges.map(e => ({
+    source: idxMap[e.source] ?? e.source,
+    target: idxMap[e.target] ?? e.target,
+    relationship: e.relationship,
+    confidence: e.confidence || 0.8,
+  })).filter(l => typeof l.source === 'number' && typeof l.target === 'number');
+
+  // Force simulation
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id((_, i) => i).distance(d => {
+      if (d.relationship === 'executes') return 120;
+      if (d.relationship === 'exploits') return 90;
+      return 100;
+    }).strength(0.5))
+    .force('charge', d3.forceManyBody().strength(-300))
+    .force('center', d3.forceCenter(W / 2, H / 2))
+    .force('collision', d3.forceCollide(d => nodeRadius(d) + 8));
+
+  // Draw edges
+  const link = gMain.append('g').attr('class', 'links')
+    .selectAll('line')
+    .data(links).join('line')
+    .attr('stroke', d => relColor(d.relationship))
+    .attr('stroke-opacity', d => 0.2 + d.confidence * 0.4)
+    .attr('stroke-width', 1.5)
+    .attr('marker-end', d => `url(#arrow-${d.relationship})`);
+
+  // Draw nodes
+  const node = gMain.append('g').attr('class', 'nodes')
+    .selectAll('g').data(nodes).join('g')
+    .attr('cursor', 'pointer')
+    .call(d3.drag()
+      .on('start', (event, d) => {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x; d.fy = d.y;
+      })
+      .on('drag', (event, d) => { d.fx = event.x; d.fy = event.y; })
+      .on('end', (event, d) => {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null; d.fy = null;
+      }))
+    .on('mousemove', showTooltip)
+    .on('mouseleave', hideTooltip)
+    .on('click', (event, d) => { event.stopPropagation(); showNodeDetail(d); });
+
+  node.append('circle')
+    .attr('r', nodeRadius)
+    .attr('fill', d => nodeColor(d.type))
+    .attr('fill-opacity', 0.85)
+    .attr('stroke', d => nodeColor(d.type))
+    .attr('stroke-width', 2)
+    .attr('stroke-opacity', 0.4);
+
+  // Glow for ThreatActor nodes
+  node.filter(d => d.type === 'ThreatActor').append('circle')
+    .attr('r', d => nodeRadius(d) + 6)
+    .attr('fill', 'none')
+    .attr('stroke', d => nodeColor(d.type))
+    .attr('stroke-width', 1)
+    .attr('stroke-opacity', 0.15);
+
+  node.append('text')
+    .attr('dy', d => nodeRadius(d) + 12)
+    .attr('text-anchor', 'middle')
+    .attr('font-size', d => d.type === 'ThreatActor' ? 10 : 9)
+    .attr('font-weight', d => d.type === 'ThreatActor' ? '700' : '400')
+    .attr('fill', d => d.type === 'ThreatActor' ? '#e2e8f0' : '#6b7280')
+    .attr('pointer-events', 'none')
+    .text(d => {
+      const n = d.name || d.id || '';
+      return n.length > 16 ? n.slice(0, 14) + '…' : n;
+    });
+
+  simulation.on('tick', () => {
+    link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    node.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+
+  svg.on('click', () => closeDetail());
+}
+
+function showTooltip(event, d) {
+  const t = document.getElementById('tooltip');
+  document.getElementById('tt-name').textContent = d.name || d.id || '';
+  const typeLabels = {ThreatActor:'⚠ Threat Actor',CVE:'🔴 CVE/Vulnerability',Campaign:'🎯 Campaign',Malware:'☠ Malware',IOC:'🔵 IOC'};
+  document.getElementById('tt-type').textContent = typeLabels[d.type] || d.type || '';
+  document.getElementById('tt-type').style.color = d.type === 'ThreatActor' ? '#a855f7' : d.type === 'CVE' ? '#ff3b3b' : d.type === 'Campaign' ? '#00ffe0' : '#0099ff';
+
+  let detail = '';
+  if (d.type === 'ThreatActor') {
+    const a = d.attributes || {};
+    detail = `Category: ${a.category||'?'} | Origin: ${a.origin||'?'}\nMotivation: ${a.motivation||'?'}`;
+  } else if (d.type === 'CVE') {
+    const a = d.attributes || {};
+    detail = `CVSS: ${a.cvss||'?'} | ${a.vendor||''} ${a.product||''}\nKEV: ${a.cisa_kev?'Yes':'No'} | Exploited: ${a.exploited?'Yes':'No'}`;
+  } else if (d.type === 'Campaign') {
+    const a = d.attributes || {};
+    detail = `Severity: ${a.severity||'?'} | Confidence: ${Math.round((a.confidence||0)*100)}%\nItems: ${a.item_count||'?'}`;
+  }
+  document.getElementById('tt-detail').textContent = detail;
+
+  t.style.display = 'block';
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const left = event.clientX + 12 + 280 > vw ? event.clientX - 292 : event.clientX + 12;
+  const top  = event.clientY + 12 + 120 > vh ? event.clientY - 130 : event.clientY + 12;
+  t.style.left = left + 'px';
+  t.style.top  = top  + 'px';
+}
+function hideTooltip() { document.getElementById('tooltip').style.display = 'none'; }
+
+function showNodeDetail(d) {
+  const panel = document.getElementById('node-detail');
+  document.getElementById('detail-id').textContent = d.id || '';
+  document.getElementById('detail-name').textContent = d.name || d.id || '';
+  panel.classList.add('visible');
+
+  const a = d.attributes || {};
+  let html = '';
+
+  if (d.type === 'ThreatActor') {
+    const aliases = (a.aliases || []).join(', ');
+    html += `
+      <div class="detail-section">
+        <div class="detail-label">Category / Origin / Motivation</div>
+        <div class="detail-value">${escHtml(a.category||'?')} &nbsp;·&nbsp; ${escHtml(a.origin||'?')} &nbsp;·&nbsp; ${escHtml(a.motivation||'?')}</div>
+      </div>
+      ${aliases?`<div class="detail-section"><div class="detail-label">Aliases</div><div class="detail-value">${escHtml(aliases)}</div></div>`:''}
+      <div class="detail-section">
+        <div class="detail-label">Description</div>
+        <div class="detail-value">${escHtml(a.description||'')}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Target Sectors</div>
+        <div class="sector-list">${(a.target_sectors||[]).map(s=>`<span class="sector-badge">${escHtml(s)}</span>`).join('')}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">MITRE ATT&CK TTPs</div>
+        <div class="ttp-list">${(a.ttps||[]).map(t=>`<span class="ttp-badge">${escHtml(t)}</span>`).join('')}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Known CVEs Exploited</div>
+        <div class="cve-list">${(a.known_cves||[]).map(c=>`<span class="cve-chip">${escHtml(c)}</span>`).join('')}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Attribution Sources</div>
+        ${(a.refs||[]).map(r=>`<a href="${escHtml(r)}" target="_blank" rel="noopener" class="ref-link">↗ ${escHtml(r)}</a>`).join('')}
+      </div>`;
+  } else if (d.type === 'CVE') {
+    html += `
+      <div class="detail-section">
+        <div class="detail-label">CVSS / Threat Level</div>
+        <div class="detail-value"><strong style="color:${severityColor(a.threat_level)}">${a.threat_level||'?'}</strong> &nbsp;—&nbsp; CVSS ${a.cvss||'?'}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Vendor / Product</div>
+        <div class="detail-value">${escHtml(a.vendor||'?')} / ${escHtml(a.product||'?')}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Status</div>
+        <div class="detail-value">
+          ${a.cisa_kev?'<span class="badge badge-critical">CISA KEV</span> ':''}
+          ${a.exploited?'<span class="badge badge-high">EXPLOITED</span> ':''}
+          ${a.ransomware?'<span class="badge badge-ransomware">RANSOMWARE</span>':''}
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Published</div>
+        <div class="detail-value">${escHtml(a.published||'?')}</div>
+      </div>`;
+  } else if (d.type === 'Campaign') {
+    html += `
+      <div class="detail-section">
+        <div class="detail-label">Severity / Confidence</div>
+        <div class="detail-value"><strong style="color:${severityColor(a.severity)}">${a.severity||'?'}</strong> &nbsp;—&nbsp; ${Math.round((a.confidence||0)*100)}% confidence</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Timeline</div>
+        <div class="detail-value">${escHtml(a.first_seen||'?')} → ${escHtml(a.last_seen||'present')}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Items in Campaign</div>
+        <div class="detail-value">${a.item_count||'?'} intelligence items</div>
+      </div>`;
+  }
+
+  document.getElementById('detail-body').innerHTML = html;
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function closeDetail() {
+  document.getElementById('node-detail').classList.remove('visible');
+}
+
+function zoomIn() { svg?.transition().call(zoom.scaleBy, 1.4); }
+function zoomOut() { svg?.transition().call(zoom.scaleBy, 0.7); }
+function resetZoom() { svg?.transition().call(zoom.transform, d3.zoomIdentity); }
+function togglePhysics() {
+  physicsEnabled = !physicsEnabled;
+  if (simulation) physicsEnabled ? simulation.alphaTarget(0.3).restart() : simulation.stop();
+  document.getElementById('physics-btn').textContent = physicsEnabled ? '⏸' : '▶';
+}
+
+// ── ACTORS ──────────────────────────────────────────────────────────────────
+async function loadActors() {
+  document.getElementById('actors-loading').innerHTML = '<div class="spinner"></div>Loading threat actors…';
+  try {
+    const d = await fetchIntel('graph');
+    const nodes = d.data?.nodes || d.nodes || [];
+    ACTORS_DATA = nodes.filter(n => n.type === 'ThreatActor');
+    renderActors(ACTORS_DATA);
+    document.getElementById('actors-loading').style.display = 'none';
+    document.getElementById('actors-content').style.display = 'block';
+  } catch(e) {
+    document.getElementById('actors-loading').innerHTML = `<span style="color:var(--apex-red)">✗ Actor data unavailable: ${escHtml(e.message)}</span>`;
+    throw e;
+  }
+}
+
+function renderActors(actors) {
+  const grid = document.getElementById('actors-grid');
+  document.getElementById('actors-count').textContent = `${actors.length} actors`;
+  if (!actors.length) { grid.innerHTML = '<div style="color:var(--apex-muted);grid-column:1/-1;text-align:center;padding:40px">No actors found with current filters.</div>'; return; }
+
+  grid.innerHTML = actors.map(a => {
+    const attr = a.attributes || {};
+    const cat = attr.category || '';
+    const catLabel = {nation_state:'Nation State',ransomware_group:'Ransomware',cybercriminal:'Cybercriminal',targeted_attacker:'Targeted Attacker'}[cat] || cat;
+    const origin = attr.origin || 'unknown';
+    const cveCount = (attr.known_cves || []).length;
+    const ttps = (attr.ttps || []).slice(0, 6);
+    const sectors = (attr.target_sectors || []).slice(0, 4);
+
+    return `<div class="actor-card" onclick="highlightActorInGraph('${escHtml(a.id)}')">
+      <div class="actor-name">${escHtml(a.name || a.id)}</div>
+      <div class="actor-meta">
+        <span class="badge badge-${categoryBadge(cat)}">${escHtml(catLabel)}</span>
+        ${attr.active ? '<span class="badge" style="background:rgba(0,255,136,.12);color:#00ff88;border-color:rgba(0,255,136,.3)">ACTIVE</span>' : ''}
+      </div>
+      <div class="actor-origin">Origin: <strong style="color:var(--apex-text)">${escHtml(origin)}</strong> &nbsp;·&nbsp; First seen: ${escHtml(attr.first_seen||'?')}</div>
+      <div class="actor-stats">
+        <div class="astat"><div class="astat-val">${cveCount}</div><div class="astat-lbl">CVEs</div></div>
+        <div class="astat"><div class="astat-val">${ttps.length}</div><div class="astat-lbl">TTPs</div></div>
+        <div class="astat"><div class="astat-val">${sectors.length}</div><div class="astat-lbl">Sectors</div></div>
+      </div>
+      <div class="actor-desc">${escHtml(attr.description||'No description available.')}</div>
+      <div class="detail-label" style="font-size:10px;margin-bottom:4px">TTPs</div>
+      <div class="ttp-list">${ttps.map(t=>`<span class="ttp-badge">${escHtml(t)}</span>`).join('')}${(attr.ttps||[]).length>6?`<span class="ttp-badge">+${(attr.ttps||[]).length-6}</span>`:''}</div>
+      <div class="sector-list">${sectors.map(s=>`<span class="sector-badge">${escHtml(s)}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterActors() {
+  const cat  = document.getElementById('actor-filter-category').value;
+  const orig = document.getElementById('actor-filter-origin').value;
+  let filtered = [...ACTORS_DATA];
+  if (cat)  filtered = filtered.filter(a => (a.attributes?.category||'') === cat);
+  if (orig) filtered = filtered.filter(a => (a.attributes?.origin||'').toLowerCase().includes(orig));
+  renderActors(filtered);
+}
+
+function highlightActorInGraph(actorId) {
+  switchTab('graph', document.querySelectorAll('.tab')[0]);
+  setTimeout(() => {
+    if (!GRAPH_DATA) return;
+    const n = (GRAPH_DATA.nodes || []).find(n => n.id === actorId);
+    if (n) showNodeDetail(n);
+  }, 200);
+}
+
+// ── CAMPAIGNS ────────────────────────────────────────────────────────────────
+async function loadCampaigns() {
+  document.getElementById('campaigns-loading').innerHTML = '<div class="spinner"></div>Loading campaigns…';
+  try {
+    const d = await fetchIntel('campaigns');
+    CAMPAIGNS_DATA = d.data?.campaigns || d.campaigns || [];
+    renderCampaigns(CAMPAIGNS_DATA);
+    document.getElementById('campaigns-loading').style.display = 'none';
+    document.getElementById('campaigns-content').style.display = 'block';
+  } catch(e) {
+    document.getElementById('campaigns-loading').innerHTML = `<span style="color:var(--apex-red)">✗ Campaign data unavailable: ${escHtml(e.message)}</span>`;
+    throw e;
+  }
+}
+
+function renderCampaigns(camps) {
+  const grid = document.getElementById('campaigns-grid');
+  document.getElementById('campaigns-count').textContent = `${camps.length} campaigns`;
+  if (!camps.length) { grid.innerHTML = '<div style="color:var(--apex-muted);grid-column:1/-1;text-align:center;padding:40px">No campaigns found.</div>'; return; }
+
+  grid.innerHTML = camps.map(c => {
+    const sev = (c.severity||'LOW');
+    const actors = c.threat_actors || [];
+    const cves = (c.shared_cves||[]).slice(0,6);
+    const conf = Math.round((c.confidence||0)*100);
+
+    return `<div class="campaign-card">
+      <div class="campaign-name">${escHtml(c.name||c.campaign_id)}</div>
+      <div class="campaign-meta">
+        <span class="badge badge-${sev.toLowerCase()}">${sev}</span>
+        ${c.has_kev ? '<span class="badge" style="background:rgba(255,59,59,.12);color:#ff3b3b;border-color:rgba(255,59,59,.3)">CISA KEV</span>' : ''}
+        ${c.has_ransomware ? '<span class="badge" style="background:rgba(255,140,0,.12);color:#ff8c00;border-color:rgba(255,140,0,.3)">RANSOMWARE</span>' : ''}
+        ${c.has_exploited ? '<span class="badge" style="background:rgba(251,191,36,.12);color:#fbbf24;border-color:rgba(251,191,36,.3)">EXPLOITED</span>' : ''}
+      </div>
+      ${c._description ? `<div class="campaign-desc">${escHtml(c._description)}</div>` : ''}
+      <div style="font-size:11px;color:var(--apex-muted);margin-bottom:8px">
+        📅 ${escHtml(c.first_seen||'?')} → ${escHtml(c.last_seen||'present')} &nbsp;·&nbsp; ${c.item_count||0} intel items
+      </div>
+      ${actors.length ? `
+        <div class="detail-label" style="font-size:10px;margin-bottom:4px">Threat Actors</div>
+        <div class="campaign-actors">${actors.map(a=>`<span class="actor-chip">${escHtml(a.name||a.id)}</span>`).join('')}</div>
+      ` : ''}
+      ${cves.length ? `
+        <div class="detail-label" style="font-size:10px;margin:8px 0 4px">CVEs</div>
+        <div class="cve-list">${cves.map(c=>`<span class="cve-chip">${escHtml(c)}</span>`).join('')}${(c.shared_cves||[]).length>6?`<span class="cve-chip">+${(c.shared_cves||[]).length-6}</span>`:''}</div>
+      ` : ''}
+      <div class="detail-label" style="font-size:10px;margin-top:10px;margin-bottom:2px">Confidence: ${conf}%</div>
+      <div class="confidence-bar"><div class="confidence-fill" style="width:${conf}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function filterCampaigns() {
+  const sev    = document.getElementById('camp-filter-sev').value;
+  const kev    = document.getElementById('camp-filter-kev').checked;
+  const ransom = document.getElementById('camp-filter-ransomware').checked;
+  let filtered = [...CAMPAIGNS_DATA];
+  if (sev)    filtered = filtered.filter(c => c.severity === sev);
+  if (kev)    filtered = filtered.filter(c => c.has_kev);
+  if (ransom) filtered = filtered.filter(c => c.has_ransomware);
+  renderCampaigns(filtered);
+}
+
+// ── TOP ACTORS ───────────────────────────────────────────────────────────────
+async function loadTopActors() {
+  document.getElementById('topactors-loading').innerHTML = '<div class="spinner"></div>Loading top actors…';
+  try {
+    const d = await fetchIntel('top-actors', { limit: 10 });
+    TOP_ACTORS_DATA = d.data?.actors || d.actors || [];
+    renderTopActors(TOP_ACTORS_DATA);
+    document.getElementById('topactors-loading').style.display = 'none';
+    document.getElementById('topactors-content').style.display = 'block';
+  } catch(e) {
+    document.getElementById('topactors-loading').innerHTML = `<span style="color:var(--apex-red)">✗ Top actors unavailable: ${escHtml(e.message)}</span>`;
+    throw e;
+  }
+}
+
+function renderTopActors(actors) {
+  if (!actors.length) {
+    document.getElementById('topactors-list').innerHTML = '<div style="color:var(--apex-muted);text-align:center;padding:40px">No actor data available.</div>';
+    return;
+  }
+
+  const maxScore = Math.max(...actors.map(a => a.activity_score || 0), 1);
+
+  document.getElementById('topactors-list').innerHTML = actors.map((a, i) => {
+    const attr = a.attributes || {};
+    const cat = attr.category || '';
+    const score = a.activity_score || 0;
+    const pct = Math.round((score / maxScore) * 100);
+
+    return `<div class="card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap">
+        <div style="font-size:36px;font-weight:900;font-family:var(--mono);color:${i<3?'var(--apex-cyan)':'var(--apex-muted)'};min-width:44px;text-align:center;line-height:1">#${i+1}</div>
+        <div style="flex:1;min-width:200px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+            <span style="font-size:18px;font-weight:800;color:#fff">${escHtml(a.name||a.id)}</span>
+            <span class="badge badge-${categoryBadge(cat)}">${escHtml({nation_state:'Nation State',ransomware_group:'Ransomware',cybercriminal:'Cybercriminal',targeted_attacker:'Targeted Attacker'}[cat]||cat)}</span>
+            ${attr.active?'<span class="badge" style="background:rgba(0,255,136,.12);color:#00ff88;border-color:rgba(0,255,136,.3)">ACTIVE</span>':''}
+          </div>
+          <div style="font-size:12px;color:var(--apex-muted);margin-bottom:10px">Origin: ${escHtml(attr.origin||'?')} · Motivation: ${escHtml(attr.motivation||'?')}</div>
+          <div style="display:flex;gap:24px;margin-bottom:12px;flex-wrap:wrap">
+            <div class="astat"><div class="astat-val" style="font-size:22px">${a.cve_count||0}</div><div class="astat-lbl">CVEs Exploited</div></div>
+            <div class="astat"><div class="astat-val" style="font-size:22px">${a.campaign_count||0}</div><div class="astat-lbl">Campaigns</div></div>
+            <div class="astat"><div class="astat-val" style="font-size:22px">${a.connection_count||0}</div><div class="astat-lbl">Graph Edges</div></div>
+            <div class="astat"><div class="astat-val" style="font-size:22px;color:${score>=70?'var(--apex-red)':score>=40?'var(--apex-orange)':'var(--apex-green)'}">${score}</div><div class="astat-lbl">Activity Score</div></div>
+          </div>
+          <div style="font-size:11px;color:var(--apex-muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-weight:700">Activity Score</div>
+          <div class="confidence-bar" style="height:6px">
+            <div class="confidence-fill" style="width:${pct}%;background:linear-gradient(90deg,${i<3?'#00ffe0':'#a855f7'},${i<3?'#0099ff':'#7c3aed'})"></div>
+          </div>
+          <div style="margin-top:8px">
+            <div class="ttp-list">${(attr.ttps||[]).slice(0,6).map(t=>`<span class="ttp-badge">${escHtml(t)}</span>`).join('')}</div>
+          </div>
+          ${a._upgrade ? `<div class="alert alert-info" style="margin-top:12px;padding:8px 12px;font-size:11px">🔒 ${escHtml(a._upgrade)}</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const panel = document.getElementById('panel-' + name);
+  if (panel) panel.classList.add('active');
+  return false;
+}
+
+// ── KEY PRESS ENTER ───────────────────────────────────────────────────────────
+document.getElementById('api-key-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadIntelligence();
+});
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+// Check for demo mode via URL param
+const urlParams = new URLSearchParams(window.location.search);
+const demoKey = urlParams.get('demo');
+if (demoKey) {
+  document.getElementById('api-key-input').value = demoKey;
+  loadIntelligence();
+}
+</script>
+</body>
+</html>
