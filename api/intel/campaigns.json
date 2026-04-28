@@ -1,254 +1,1087 @@
 {
-  "generated": "2026-04-28T00:00:00.000Z",
-  "version": "1.0",
-  "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "campaigns": [
-    {
-      "campaign_id": "campaign:cve-2023-20198-and-cve-2023-20273",
-      "name": "Cisco IOS XE Zero-Day Campaign",
-      "severity": "CRITICAL",
-      "confidence": 0.96,
-      "item_count": 2,
-      "ioc_count": 0,
-      "first_seen": "2023-10-16",
-      "last_seen": "2023-11-30",
-      "related_intel_ids": ["CVE-2023-20198", "CVE-2023-20273"],
-      "related_intel": [
-        {
-          "id": "CVE-2023-20198",
-          "title": "Cisco IOS XE Web UI Privilege Escalation",
-          "type": "ZERO_DAY",
-          "priority_score": 97,
-          "published": "2023-10-16",
-          "exploited": true,
-          "cisa_kev": true
-        },
-        {
-          "id": "CVE-2023-20273",
-          "title": "Cisco IOS XE Web UI Privilege Escalation (Chain)",
-          "type": "CVE_REPORT",
-          "priority_score": 85,
-          "published": "2023-10-22",
-          "exploited": true,
-          "cisa_kev": true
-        }
-      ],
-      "shared_iocs": [],
-      "shared_cves": ["CVE-2023-20198", "CVE-2023-20273"],
-      "threat_actor": "Salt Typhoon",
-      "threat_actors": [
-        { "id": "actor:salt-typhoon", "name": "Salt Typhoon", "category": "nation_state" }
-      ],
-      "max_priority_score": 97,
-      "has_kev": true,
-      "has_ransomware": false,
-      "has_exploited": true,
-      "_description": "Active exploitation of two chained Cisco IOS XE vulnerabilities (CVE-2023-20198 + CVE-2023-20273) attributed to Salt Typhoon (Chinese nation-state). Attackers created privileged local user accounts and installed persistent implants on affected routers. Over 10,000 devices compromised globally."
-    },
-    {
-      "campaign_id": "campaign:cve-2023-34362",
-      "name": "MOVEit File Transfer Exploitation",
-      "severity": "CRITICAL",
-      "confidence": 0.97,
-      "item_count": 2,
-      "ioc_count": 0,
-      "first_seen": "2023-06-01",
-      "last_seen": "2023-09-30",
-      "related_intel_ids": ["CVE-2023-34362", "CVE-2023-0669"],
-      "related_intel": [
-        {
-          "id": "CVE-2023-34362",
-          "title": "MOVEit Transfer SQL Injection RCE",
-          "type": "CVE_REPORT",
-          "priority_score": 96,
-          "published": "2023-06-01",
-          "exploited": true,
-          "cisa_kev": true
-        },
-        {
-          "id": "CVE-2023-0669",
-          "title": "Fortra GoAnywhere MFT Pre-Auth RCE",
-          "type": "CVE_REPORT",
-          "priority_score": 94,
-          "published": "2023-01-18",
-          "exploited": true,
-          "cisa_kev": true
-        }
-      ],
-      "shared_iocs": [],
-      "shared_cves": ["CVE-2023-34362", "CVE-2023-0669"],
-      "threat_actor": "Cl0p",
-      "threat_actors": [
-        { "id": "actor:cl0p", "name": "Cl0p", "category": "ransomware_group" }
-      ],
-      "max_priority_score": 96,
-      "has_kev": true,
-      "has_ransomware": true,
-      "has_exploited": true,
-      "_description": "Cl0p ransomware group executed mass exploitation of MOVEit Transfer (CVE-2023-34362) and GoAnywhere MFT (CVE-2023-0669), compromising 600+ organizations including the US Department of Energy, British Airways, BBC, and Shell. Data was exfiltrated and held for ransom with no encryption — pure extortion."
-    },
     {
       "campaign_id": "campaign:cve-2023-27351",
       "name": "PaperCut Exploitation Wave",
       "severity": "CRITICAL",
-      "confidence": 0.95,
+      "confidence": 0.9,
       "item_count": 1,
       "ioc_count": 0,
-      "first_seen": "2023-04-19",
-      "last_seen": "2023-06-30",
-      "related_intel_ids": ["CVE-2023-27351"],
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20",
+      "related_intel_ids": [
+        "CVE-2023-27351"
+      ],
       "related_intel": [
         {
           "id": "CVE-2023-27351",
-          "title": "PaperCut NG/MF Unauthenticated RCE",
+          "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
           "type": "CVE_REPORT",
-          "priority_score": 95,
-          "published": "2023-04-19",
+          "priority_score": 100,
+          "published": "2026-04-20",
           "exploited": true,
           "cisa_kev": true
         }
       ],
       "shared_iocs": [],
-      "shared_cves": ["CVE-2023-27351"],
+      "shared_cves": [
+        "CVE-2023-27351"
+      ],
       "threat_actor": "LockBit",
       "threat_actors": [
-        { "id": "actor:lockbit", "name": "LockBit", "category": "ransomware_group" },
-        { "id": "actor:cl0p", "name": "Cl0p", "category": "ransomware_group" }
+        {
+          "id": "actor:lockbit",
+          "name": "LockBit",
+          "confidence": 0.6200000000000001,
+          "category": "unknown"
+        }
       ],
-      "max_priority_score": 95,
+      "max_priority_score": 100,
       "has_kev": true,
       "has_ransomware": true,
       "has_exploited": true,
-      "_description": "Multiple ransomware groups (LockBit, Cl0p) exploited CVE-2023-27351 in PaperCut print management software to gain unauthenticated RCE on servers. Primarily targeted education and healthcare sectors. CISA issued emergency advisory AA23-131A."
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2023-27351",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
     },
     {
-      "campaign_id": "campaign:cve-2024-27199-and-cve-2024-27198",
+      "campaign_id": "campaign:cve-2024-27199",
       "name": "JetBrains TeamCity Supply Chain Campaign",
       "severity": "CRITICAL",
-      "confidence": 0.92,
-      "item_count": 2,
+      "confidence": 0.9,
+      "item_count": 1,
       "ioc_count": 0,
-      "first_seen": "2024-03-04",
-      "last_seen": "2024-04-30",
-      "related_intel_ids": ["CVE-2024-27199", "CVE-2024-27198"],
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20",
+      "related_intel_ids": [
+        "CVE-2024-27199"
+      ],
       "related_intel": [
         {
           "id": "CVE-2024-27199",
-          "title": "JetBrains TeamCity Authentication Bypass",
+          "title": "CVE-2024-27199: JetBrains TeamCity Relative Path Traversal Vulnerability — CISA KEV Active Exploitation",
           "type": "CVE_REPORT",
-          "priority_score": 93,
-          "published": "2024-03-04",
-          "exploited": true,
-          "cisa_kev": true
-        },
-        {
-          "id": "CVE-2024-27198",
-          "title": "JetBrains TeamCity Authentication Bypass (Alt)",
-          "type": "CVE_REPORT",
-          "priority_score": 91,
-          "published": "2024-03-04",
+          "priority_score": 100,
+          "published": "2026-04-20",
           "exploited": true,
           "cisa_kev": true
         }
       ],
       "shared_iocs": [],
-      "shared_cves": ["CVE-2024-27199", "CVE-2024-27198"],
+      "shared_cves": [
+        "CVE-2024-27199"
+      ],
       "threat_actor": "APT41",
       "threat_actors": [
-        { "id": "actor:apt41", "name": "APT41", "category": "nation_state" },
-        { "id": "actor:cl0p", "name": "Cl0p", "category": "ransomware_group" }
+        {
+          "id": "actor:apt41",
+          "name": "APT41",
+          "confidence": 0.6200000000000001,
+          "category": "unknown"
+        }
       ],
-      "max_priority_score": 93,
+      "max_priority_score": 100,
+      "has_kev": true,
+      "has_ransomware": true,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2024-27199",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2026-33634",
+      "name": "Cisco Infrastructure Attack Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-27",
+      "last_seen": "2026-04-27",
+      "related_intel_ids": [
+        "CVE-2026-33634"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-33634",
+          "title": "TeamPCP Supply Chain Campaign: Update 008 - 26-Day Pause Ends with Three Concurrent Compromises (Checkmarx KICS, Bitwarden CLI Cascade, xinference PyPI), CanisterSprawl npm Worm Identified, and Tier 1 Coverage Returns, (Mon, Apr 27th)",
+          "type": "MALWARE_REPORT",
+          "priority_score": 95,
+          "published": "2026-04-27",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2026-33634"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 95,
       "has_kev": true,
       "has_ransomware": false,
       "has_exploited": true,
-      "_description": "Critical authentication bypass duo in JetBrains TeamCity CI/CD servers targeted by APT41 and Cl0p for supply chain infiltration. Attackers create rogue admin accounts and execute code in CI/CD pipelines, enabling supply chain poisoning of downstream software builds."
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-33634",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
     },
     {
-      "campaign_id": "campaign:cluster-a1b2c3d4",
-      "name": "China-Nexus Covert Intrusion Campaign",
-      "severity": "HIGH",
-      "confidence": 0.88,
-      "item_count": 2,
+      "campaign_id": "campaign:cve-2025-29635",
+      "name": "D-Link DIR-823X Exploitation Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
       "ioc_count": 0,
-      "first_seen": "2024-01-01",
-      "last_seen": "2024-12-31",
-      "related_intel_ids": ["CVE-2024-39717", "CVE-2022-42475"],
+      "first_seen": "2026-04-24",
+      "last_seen": "2026-04-24",
+      "related_intel_ids": [
+        "CVE-2025-29635"
+      ],
       "related_intel": [
         {
-          "id": "CVE-2024-39717",
-          "title": "Versa Director Arbitrary File Upload",
+          "id": "CVE-2025-29635",
+          "title": "CVE-2025-29635: D-Link DIR-823X Command Injection Vulnerability — CISA KEV Active Exploitation",
           "type": "CVE_REPORT",
-          "priority_score": 82,
-          "published": "2024-08-22",
-          "exploited": true,
-          "cisa_kev": true
-        },
-        {
-          "id": "CVE-2022-42475",
-          "title": "Fortinet FortiOS SSL-VPN RCE",
-          "type": "ZERO_DAY",
           "priority_score": 90,
-          "published": "2022-12-07",
+          "published": "2026-04-24",
           "exploited": true,
           "cisa_kev": true
         }
       ],
       "shared_iocs": [],
-      "shared_cves": ["CVE-2024-39717", "CVE-2022-42475"],
-      "threat_actor": "Volt Typhoon",
-      "threat_actors": [
-        { "id": "actor:volt-typhoon", "name": "Volt Typhoon", "category": "nation_state" }
+      "shared_cves": [
+        "CVE-2025-29635"
       ],
+      "threat_actor": null,
+      "threat_actors": [],
       "max_priority_score": 90,
       "has_kev": true,
       "has_ransomware": false,
       "has_exploited": true,
-      "_description": "Long-running campaign by China-nexus Volt Typhoon targeting US critical infrastructure via network edge devices. Living-off-the-land techniques using compromised SOHO routers as proxies. Primary targets: energy, communications, transportation, and defense sectors."
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2025-29635",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
     },
     {
-      "campaign_id": "campaign:cluster-ransomware-ecosystem",
-      "name": "Multi-Vector Ransomware Campaign",
-      "severity": "HIGH",
-      "confidence": 0.85,
-      "item_count": 2,
+      "campaign_id": "campaign:cve-2024-7399",
+      "name": "Samsung MagicINFO Exploitation Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
       "ioc_count": 0,
-      "first_seen": "2021-01-01",
-      "last_seen": "2023-12-31",
-      "related_intel_ids": ["CVE-2021-34527", "CVE-2021-27101"],
+      "first_seen": "2026-04-24",
+      "last_seen": "2026-04-24",
+      "related_intel_ids": [
+        "CVE-2024-7399"
+      ],
       "related_intel": [
         {
-          "id": "CVE-2021-34527",
-          "title": "Windows Print Spooler RCE (PrintNightmare)",
+          "id": "CVE-2024-7399",
+          "title": "CVE-2024-7399: Samsung MagicINFO 9 Server Path Traversal Vulnerability — CISA KEV Active Exploitation",
           "type": "CVE_REPORT",
-          "priority_score": 84,
-          "published": "2021-07-01",
-          "exploited": true,
-          "cisa_kev": true
-        },
-        {
-          "id": "CVE-2021-27101",
-          "title": "Accellion FTA SQL Injection",
-          "type": "CVE_REPORT",
-          "priority_score": 89,
-          "published": "2021-03-01",
+          "priority_score": 90,
+          "published": "2026-04-24",
           "exploited": true,
           "cisa_kev": true
         }
       ],
       "shared_iocs": [],
-      "shared_cves": ["CVE-2021-34527", "CVE-2021-27101"],
-      "threat_actor": "LockBit",
-      "threat_actors": [
-        { "id": "actor:lockbit", "name": "LockBit", "category": "ransomware_group" },
-        { "id": "actor:cl0p", "name": "Cl0p", "category": "ransomware_group" },
-        { "id": "actor:russia-nexus-ransomware", "name": "Russia-Nexus Ransomware Operators", "category": "ransomware_group" }
+      "shared_cves": [
+        "CVE-2024-7399"
       ],
-      "max_priority_score": 89,
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 90,
       "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2024-7399",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2024-57728",
+      "name": "SimpleHelp Privilege Escalation Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-24",
+      "last_seen": "2026-04-24",
+      "related_intel_ids": [
+        "CVE-2024-57728"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2024-57728",
+          "title": "CVE-2024-57728: SimpleHelp Path Traversal Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 90,
+          "published": "2026-04-24",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2024-57728"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 90,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2024-57728",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2024-57726",
+      "name": "SimpleHelp Privilege Escalation Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-24",
+      "last_seen": "2026-04-24",
+      "related_intel_ids": [
+        "CVE-2024-57726"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2024-57726",
+          "title": "CVE-2024-57726: SimpleHelp Missing Authorization Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 90,
+          "published": "2026-04-24",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2024-57726"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 90,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2024-57726",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2026-39987",
+      "name": "Marimo Marimo Exploitation Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-23",
+      "last_seen": "2026-04-23",
+      "related_intel_ids": [
+        "CVE-2026-39987"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-39987",
+          "title": "CVE-2026-39987: Marimo Remote Code Execution Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 90,
+          "published": "2026-04-23",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2026-39987"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 90,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-39987",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2026-33825",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-22",
+      "last_seen": "2026-04-22",
+      "related_intel_ids": [
+        "CVE-2026-33825"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-33825",
+          "title": "CVE-2026-33825: Microsoft Defender Insufficient Granularity of Access Control Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 90,
+          "published": "2026-04-22",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2026-33825"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 90,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-33825",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2026-20122",
+      "name": "Cisco Infrastructure Attack Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20",
+      "related_intel_ids": [
+        "CVE-2026-20122"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-20122",
+          "title": "CVE-2026-20122: Cisco Catalyst SD-WAN Manager Incorrect Use of Privileged APIs Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 88,
+          "published": "2026-04-20",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2026-20122"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 88,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-20122",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2026-20133",
+      "name": "Cisco Infrastructure Attack Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20",
+      "related_intel_ids": [
+        "CVE-2026-20133"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-20133",
+          "title": "CVE-2026-20133: Cisco Catalyst SD-WAN Manager Exposure of Sensitive Information to an Unauthorized Actor Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 88,
+          "published": "2026-04-20",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2026-20133"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 88,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-20133",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2025-2749",
+      "name": "Kentico Kentico Exploitation Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20",
+      "related_intel_ids": [
+        "CVE-2025-2749"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2025-2749",
+          "title": "CVE-2025-2749: Kentico Xperience Path Traversal Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 88,
+          "published": "2026-04-20",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2025-2749"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 88,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2025-2749",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2025-48700",
+      "name": "Synacor Zimbra Exploitation Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20",
+      "related_intel_ids": [
+        "CVE-2025-48700"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2025-48700",
+          "title": "CVE-2025-48700: Synacor Zimbra Collaboration Suite (ZCS) Cross-site Scripting Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 88,
+          "published": "2026-04-20",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2025-48700"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 88,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2025-48700",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2026-20128",
+      "name": "Cisco Infrastructure Attack Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20",
+      "related_intel_ids": [
+        "CVE-2026-20128"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-20128",
+          "title": "CVE-2026-20128: Cisco Catalyst SD-WAN Manager Storing Passwords in a Recoverable Format Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 88,
+          "published": "2026-04-20",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2026-20128"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 88,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-20128",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2025-32975",
+      "name": "Quest KACE Exploitation Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-20",
+      "last_seen": "2026-04-20",
+      "related_intel_ids": [
+        "CVE-2025-32975"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2025-32975",
+          "title": "CVE-2025-32975: Quest KACE Systems Management Appliance (SMA) Improper Authentication Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 88,
+          "published": "2026-04-20",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2025-32975"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 88,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2025-32975",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2026-34197",
+      "name": "Apache Vulnerability Exploitation Campaign",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-16",
+      "last_seen": "2026-04-16",
+      "related_intel_ids": [
+        "CVE-2026-34197"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-34197",
+          "title": "CVE-2026-34197: Apache ActiveMQ Improper Input Validation Vulnerability — CISA KEV Active Exploitation",
+          "type": "CVE_REPORT",
+          "priority_score": 88,
+          "published": "2026-04-16",
+          "exploited": true,
+          "cisa_kev": true
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2026-34197"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 88,
+      "has_kev": true,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-34197",
+        "1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cluster-dae98007",
+      "name": "SimpleHelp Privilege Escalation Campaign",
+      "severity": "HIGH",
+      "confidence": 0.83,
+      "item_count": 2,
+      "ioc_count": 1,
+      "first_seen": "2026-04-23",
+      "last_seen": "2026-04-24",
+      "related_intel_ids": [
+        "CISA-4357d42794d86a92",
+        "CISA-0bdc8695f13f628d"
+      ],
+      "related_intel": [
+        {
+          "id": "CISA-4357d42794d86a92",
+          "title": "CISA Adds Four Known Exploited Vulnerabilities to Catalog",
+          "type": "ADVISORY",
+          "priority_score": 68,
+          "published": "2026-04-24",
+          "exploited": true,
+          "cisa_kev": false
+        },
+        {
+          "id": "CISA-0bdc8695f13f628d",
+          "title": "CISA Adds One Known Exploited Vulnerability to Catalog",
+          "type": "ADVISORY",
+          "priority_score": 63,
+          "published": "2026-04-23",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "domain:www.cve.org"
+      ],
+      "shared_cves": [
+        "CVE-2024-7399",
+        "CVE-2024-57726",
+        "CVE-2024-57728",
+        "CVE-2025-29635",
+        "CVE-2026-39987"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 68,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "2 intel item(s) clustered with composite confidence 0.830",
+        "5 related CVEs: CVE-2024-7399, CVE-2024-57726, CVE-2024-57728, CVE-2025-29635...",
+        "6 shared IOC(s) across items",
+        "2 item(s) confirmed exploited in the wild",
+        "Item CISA-0bdc8695f13f628d joined cluster (score: 0.614): 1 shared IOC(s) (Jaccard: 1.000)"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cluster-280042e9",
+      "name": "China-Nexus Covert Intrusion Campaign",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 2,
+      "first_seen": "2026-04-23",
+      "last_seen": "2026-04-23",
+      "related_intel_ids": [
+        "CISA-447ce5be1e8784bc"
+      ],
+      "related_intel": [
+        {
+          "id": "CISA-447ce5be1e8784bc",
+          "title": "Defending Against China-Nexus Covert Networks of Compromised Devices",
+          "type": "ADVISORY",
+          "priority_score": 81,
+          "published": "2026-04-23",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "domain:cloud.google.com",
+        "domain:attack.mitre.org"
+      ],
+      "shared_cves": [],
+      "threat_actor": "Volt Typhoon",
+      "threat_actors": [
+        {
+          "id": "actor:volt-typhoon",
+          "name": "Volt Typhoon",
+          "confidence": 0.75,
+          "category": "nation_state"
+        },
+        {
+          "id": "actor:salt-typhoon",
+          "name": "Salt Typhoon",
+          "confidence": 0.75,
+          "category": "nation_state"
+        },
+        {
+          "id": "actor:apt41",
+          "name": "APT41",
+          "confidence": 0.75,
+          "category": "nation_state"
+        }
+      ],
+      "max_priority_score": 81,
+      "has_kev": false,
       "has_ransomware": true,
       "has_exploited": true,
-      "_description": "Broad ransomware campaign exploiting multiple Windows and enterprise file-transfer vulnerabilities. PrintNightmare (CVE-2021-34527) provided lateral movement across Windows networks while Accellion FTA exploitation enabled data exfiltration from secure file-sharing platforms."
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "7 shared IOC(s) across items",
+        "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cluster-ce88ee2d",
+      "name": "CISA Multiple Exploitation Campaign",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 3,
+      "first_seen": "2026-04-23",
+      "last_seen": "2026-04-23",
+      "related_intel_ids": [
+        "CISA-ff95e4b72a690d9e"
+      ],
+      "related_intel": [
+        {
+          "id": "CISA-ff95e4b72a690d9e",
+          "title": "Carlson Software VASCO-B GNSS Receiver",
+          "type": "ADVISORY",
+          "priority_score": 71,
+          "published": "2026-04-23",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "domain:www.cve.org",
+        "domain:www.carlsonsw.com",
+        "domain:cwe.mitre.org"
+      ],
+      "shared_cves": [
+        "CVE-2026-3893"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 71,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-3893",
+        "8 shared IOC(s) across items",
+        "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cluster-ad030364",
+      "name": "CISA Multiple Exploitation Campaign",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 3,
+      "first_seen": "2026-04-23",
+      "last_seen": "2026-04-23",
+      "related_intel_ids": [
+        "CISA-1b7903ace5a7532d"
+      ],
+      "related_intel": [
+        {
+          "id": "CISA-1b7903ace5a7532d",
+          "title": "Hangzhou Xiongmai Technology Co., Ltd XM530 IP Camera",
+          "type": "ADVISORY",
+          "priority_score": 71,
+          "published": "2026-04-23",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "domain:www.cve.org",
+        "domain:www.xiongmaitech.com",
+        "domain:cwe.mitre.org"
+      ],
+      "shared_cves": [
+        "CVE-2025-65856"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 71,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2025-65856",
+        "8 shared IOC(s) across items",
+        "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cluster-72cfcc2f",
+      "name": "CISA Multiple Exploitation Campaign",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 3,
+      "first_seen": "2026-04-23",
+      "last_seen": "2026-04-23",
+      "related_intel_ids": [
+        "CISA-4bb15ab33ac8ebfa"
+      ],
+      "related_intel": [
+        {
+          "id": "CISA-4bb15ab33ac8ebfa",
+          "title": "Yadea T5 Electric Bicycle",
+          "type": "ADVISORY",
+          "priority_score": 71,
+          "published": "2026-04-23",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "domain:www.cve.org",
+        "domain:yadea.com",
+        "domain:cwe.mitre.org"
+      ],
+      "shared_cves": [
+        "CVE-2025-70994"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 71,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2025-70994",
+        "8 shared IOC(s) across items",
+        "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cluster-c965f628",
+      "name": "CISA Multiple Exploitation Campaign",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 4,
+      "first_seen": "2026-04-23",
+      "last_seen": "2026-04-23",
+      "related_intel_ids": [
+        "CISA-2aa03ee388e74a39"
+      ],
+      "related_intel": [
+        {
+          "id": "CISA-2aa03ee388e74a39",
+          "title": "Milesight Cameras",
+          "type": "ADVISORY",
+          "priority_score": 71,
+          "published": "2026-04-23",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "ipv4:51.7.0.77",
+        "domain:www.cve.org",
+        "domain:www.milesight.com",
+        "domain:milesight.com"
+      ],
+      "shared_cves": [
+        "CVE-2026-28747",
+        "CVE-2026-27785",
+        "CVE-2026-32644",
+        "CVE-2026-32649",
+        "CVE-2026-20766"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 71,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "5 related CVEs: CVE-2026-28747, CVE-2026-27785, CVE-2026-32644, CVE-2026-32649...",
+        "9 shared IOC(s) across items",
+        "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cluster-cb28fdbe",
+      "name": "CISA Multiple Exploitation Campaign",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 3,
+      "first_seen": "2026-04-23",
+      "last_seen": "2026-04-23",
+      "related_intel_ids": [
+        "CISA-6337d3c7f05b18e2"
+      ],
+      "related_intel": [
+        {
+          "id": "CISA-6337d3c7f05b18e2",
+          "title": "FIRESTARTER Backdoor",
+          "type": "ADVISORY",
+          "priority_score": 66,
+          "published": "2026-04-23",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "domain:www.cve.org",
+        "domain:cwe.mitre.org",
+        "domain:sec.cloudapps.cisco.com"
+      ],
+      "shared_cves": [
+        "CVE-2025-20333",
+        "CVE-2025-20362"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 66,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "2 related CVEs: CVE-2025-20333, CVE-2025-20362",
+        "8 shared IOC(s) across items",
+        "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2026-32202",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-28",
+      "last_seen": "2026-04-28",
+      "related_intel_ids": [
+        "CVE-2026-32202"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-32202",
+          "title": "Microsoft Confirms Active Exploitation of Windows Shell CVE-2026-32202",
+          "type": "CVE_REPORT",
+          "priority_score": 65,
+          "published": "2026-04-28",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2026-32202"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 65,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-32202",
+        "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cluster-0dcfc74e",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "severity": "MEDIUM",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-04-27",
+      "last_seen": "2026-04-27",
+      "related_intel_ids": [
+        "SECURITYWEEK-972c4f2537577523"
+      ],
+      "related_intel": [
+        {
+          "id": "SECURITYWEEK-972c4f2537577523",
+          "title": "Incomplete Windows Patch Opens Door to Zero-Click Attacks",
+          "type": "THREAT_ACTOR",
+          "priority_score": 63,
+          "published": "2026-04-27",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 63,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
     }
-  ]
+  ],
+  "generated": "2026-04-28T09:36:00.313Z",
+  "version": "1.0",
+  "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0"
 }
