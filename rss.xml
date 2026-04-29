@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Tue, 28 Apr 2026 23:11:22 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 28 Apr 2026 12:00:00 +0000</lastBuildDate>
     <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,91 +31,6 @@
       <height>144</height>
     </image>
 
-          <item>
-    <title><![CDATA[CoreDNS' transfer stanza selection uses lexicographic compare (subzone ACL bypass)]]></title>
-    <link>https://blog.cyberdudebivash.in/posts/cve-2026-33489-go-github-com-coredns-coredns.html</link>
-    <description><![CDATA[Score 52/100 MEDIUM — CVSS 7.5 — ### Summary
-CoreDNS' transfer plugin can select the wrong ACL stanza when both a parent zone and a more-specific subzone are configured. A permissive parent-zone transfer rule can override a restrictive subzone rule (name-dependent), allowing an unauthorized client to perform AXFR/IXFR for the subzo. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
-    <pubDate>Tue, 28 Apr 2026 23:11:22 GMT</pubDate>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-33489-go-github-com-coredns-coredns.html</guid>
-    <category>Threat Intelligence</category>
-    <category>CVE_REPORT</category>
-  </item>
-  <item>
-    <title><![CDATA[CoreDNS has TSIG authentication bypass on gRPC and QUIC transports]]></title>
-    <link>https://blog.cyberdudebivash.in/posts/cve-2026-35579-go-github-com-coredns-coredns.html</link>
-    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary The gRPC, QUIC, DoH, and DoH3 transports in CoreDNS incorrectly handle TSIG authentication. For gRPC and QUIC, CoreDNS checks whether the TSIG key name exists in the config, but does not actually verify the TSIG HMAC. If the key name matches, `tsigStatus` remains nil and the tsig plugin . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
-    <pubDate>Tue, 28 Apr 2026 23:11:22 GMT</pubDate>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-35579-go-github-com-coredns-coredns.html</guid>
-    <category>Threat Intelligence</category>
-    <category>CVE_REPORT</category>
-  </item>
-  <item>
-    <title><![CDATA[CoreDNS has TSIG authentication bypass on DoT, DoH, DoH3, DoQ, and gRPC]]></title>
-    <link>https://blog.cyberdudebivash.in/posts/cve-2026-33190-go-github-com-coredns-coredns.html</link>
-    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary
-CoreDNS' tsig plugin can be bypassed on non-plain-DNS transports because it trusts the transport writer's TsigStatus() instead of performing verification itself. In the attached PoC, plain DNS/TCP correctly rejects an invalid TSIG (NOTAUTH), while the same invalid-TSIG request is accepte. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
-    <pubDate>Tue, 28 Apr 2026 23:11:22 GMT</pubDate>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-33190-go-github-com-coredns-coredns.html</guid>
-    <category>Threat Intelligence</category>
-    <category>CVE_REPORT</category>
-  </item>
-  <item>
-    <title><![CDATA[CoreDNS DoH GET oversized dns= query parameter causes pre-validation CPU and memory amplification]]></title>
-    <link>https://blog.cyberdudebivash.in/posts/cve-2026-32936-go-github-com-coredns-coredns.html</link>
-    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary CoreDNS's DNS-over-HTTPS (DoH) GET path accepts oversized `dns=` query values and performs substantial request parsing, query unescaping, base64 decoding, and message unpacking work before returning `400 Bad Request`. A remote, unauthenticated attacker can repeatedly send oversized DoH G. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
-    <pubDate>Tue, 28 Apr 2026 23:11:22 GMT</pubDate>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-32936-go-github-com-coredns-coredns.html</guid>
-    <category>Threat Intelligence</category>
-    <category>CVE_REPORT</category>
-  </item>
-  <item>
-    <title><![CDATA[CoreDNS' DoQ worker pool does not bound stream backlog]]></title>
-    <link>https://blog.cyberdudebivash.in/posts/cve-2026-32934-go-github-com-coredns-coredns.html</link>
-    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary
-CoreDNS' DNS-over-QUIC (DoQ) server can be driven into large goroutine and memory growth by a remote client that opens many QUIC streams and stalls after sending only 1 byte. Even with a small configured quic { worker_pool_size ... }, CoreDNS still spawns a goroutine per accepted stream . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
-    <pubDate>Tue, 28 Apr 2026 23:11:22 GMT</pubDate>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-32934-go-github-com-coredns-coredns.html</guid>
-    <category>Threat Intelligence</category>
-    <category>CVE_REPORT</category>
-  </item>
-  <item>
-    <title><![CDATA[BlueNoroff Uses Fake Zoom Calls to Turn Victims Into Attack Lures]]></title>
-    <link>https://blog.cyberdudebivash.in/posts/bluenoroff-uses-fake-zoom-calls-to-turn-victims-into-attack.html</link>
-    <description><![CDATA[Score 38/100 LOW — CVSS 6.5 — The North Korean group is using stolen victim videos, AI-generated avatars, and fake Zoom calls to scale malware attacks against cryptocurrency executives.. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
-    <pubDate>Tue, 28 Apr 2026 22:09:47 GMT</pubDate>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/bluenoroff-uses-fake-zoom-calls-to-turn-victims-into-attack.html</guid>
-    <category>Threat Intelligence</category>
-    <category>MALWARE_REPORT</category>
-  </item>
-  <item>
-    <title><![CDATA[CVE-2026-32202: Microsoft Windows Protection Mechanism Failure Vulnerability — CISA KEV Active Exploitation]]></title>
-    <link>https://blog.cyberdudebivash.in/posts/cve-2026-32202-microsoft-windows.html</link>
-    <description><![CDATA[Score 91/100 CRITICAL — CVSS 9.5 — Microsoft Windows Shell contains a protection mechanism failure vulnerability that allows an unauthorized attacker to perform spoofing over a network.. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
-    <pubDate>Tue, 28 Apr 2026 21:26:37 GMT</pubDate>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-32202-microsoft-windows.html</guid>
-    <category>Threat Intelligence</category>
-    <category>CISA KEV</category>
-  </item>
-  <item>
-    <title><![CDATA[Hackers are exploiting a critical LiteLLM pre-auth SQLi flaw]]></title>
-    <link>https://blog.cyberdudebivash.in/posts/cve-2026-42208-bleepingcomputer-threat-intelligence.html</link>
-    <description><![CDATA[Score 75/100 HIGH — CVSS 8 — Hackers are targeting sensitive information stored in the LiteLLM open-source large-language model (LLM) gateway by exploiting a critical vulnerability tracked as CVE-2026-42208. [...]. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
-    <pubDate>Tue, 28 Apr 2026 21:26:37 GMT</pubDate>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-42208-bleepingcomputer-threat-intelligence.html</guid>
-    <category>Threat Intelligence</category>
-    <category>AI_SECURITY</category>
-  </item>
-  <item>
-    <title><![CDATA[Researchers Discover Critical GitHub CVE-2026-3854 RCE Flaw Exploitable via Single Git Push]]></title>
-    <link>https://blog.cyberdudebivash.in/posts/cve-2026-3854-the-hacker-news-threat-intelligence.html</link>
-    <description><![CDATA[Score 66/100 HIGH — CVSS 8 — Cybersecurity researchers have disclosed details of a critical security vulnerability impacting GitHub.com and GitHub Enterprise Server that could allow an authenticated user to obtain remote code execution with a single "git push" command.
-The flaw, tracked as CVE-2026-3854 (CVSS score: 8.7), is a . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
-    <pubDate>Tue, 28 Apr 2026 20:09:16 GMT</pubDate>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-3854-the-hacker-news-threat-intelligence.html</guid>
-    <category>Threat Intelligence</category>
-    <category>CVE_REPORT</category>
-  </item>
   <item>
     <title>After Mythos: New Playbooks For a Zero-Window Era</title>
     <link>https://blog.cyberdudebivash.in/posts/after-mythos-new-playbooks-for-a-zero-window-era.html</link>
@@ -125,6 +40,19 @@ The flaw, tracked as CVE-2026-3854 (CVSS score: 8.7), is a . Full analysis, Sigm
 If you’ve been tracking advancements in AI, you know the exploit. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
     <content:encoded><![CDATA[<p>THEHACKERNEWS-d76c7ae39f09ecae — MEDIUM Score 58/100. When patching isn’t fast enough, NDR helps contain the next era of threats.
 If you’ve been tracking advancements in AI, you know the exploit. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/after-mythos-new-playbooks-for-a-zero-window-era.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
+    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
+    <category>Cyber Threat Intelligence</category>
+    <category>Cybersecurity</category>
+    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
+  </item>
+
+  <item>
+    <title>BlueNoroff Uses Fake Zoom Calls to Turn Victims Into Attack Lures</title>
+    <link>https://blog.cyberdudebivash.in/posts/bluenoroff-uses-fake-zoom-calls-to-turn-victims-into-attack.html</link>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/bluenoroff-uses-fake-zoom-calls-to-turn-victims-into-attack.html</guid>
+    <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
+    <description><![CDATA[DARKREADING-ade47a38c5238cf7 — LOW Score 38/100. The North Korean group is using stolen victim videos, AI-generated avatars, and fake Zoom calls to scale malware attacks against cryptocurre. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
+    <content:encoded><![CDATA[<p>DARKREADING-ade47a38c5238cf7 — LOW Score 38/100. The North Korean group is using stolen victim videos, AI-generated avatars, and fake Zoom calls to scale malware attacks against cryptocurre. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/bluenoroff-uses-fake-zoom-calls-to-turn-victims-into-attack.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
     <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
     <category>Cyber Threat Intelligence</category>
     <category>Cybersecurity</category>
@@ -188,12 +116,130 @@ Xu Zewei, 3. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVA
   </item>
 
   <item>
+    <title>CVE-2026-32202: Microsoft Windows Protection Mechanism Failure Vulnerability — CISA KEV Active Exploitation</title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-32202-microsoft-windows.html</link>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-32202-microsoft-windows.html</guid>
+    <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
+    <description><![CDATA[CVE-2026-32202 — CRITICAL Score 91/100. Microsoft Windows Shell contains a protection mechanism failure vulnerability that allows an unauthorized attacker to perform spoofing over . Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
+    <content:encoded><![CDATA[<p>CVE-2026-32202 — CRITICAL Score 91/100. Microsoft Windows Shell contains a protection mechanism failure vulnerability that allows an unauthorized attacker to perform spoofing over . Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-32202-microsoft-windows.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
+    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
+    <category>CVE Analysis</category>
+    <category>Vulnerability Intelligence</category>
+    <category>Cybersecurity</category>
+    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
+  </item>
+
+  <item>
     <title>Microsoft Confirms Active Exploitation of Windows Shell CVE-2026-32202</title>
     <link>https://blog.cyberdudebivash.in/posts/cve-2026-32202-the-hacker-news-threat-intelligence.html</link>
     <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-32202-the-hacker-news-threat-intelligence.html</guid>
     <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
     <description><![CDATA[CVE-2026-32202 — HIGH Score 65/100. Microsoft on Monday revised its advisory for a now-patched, high-severity security flaw impacting Windows Shell to acknowledge that it has b. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
     <content:encoded><![CDATA[<p>CVE-2026-32202 — HIGH Score 65/100. Microsoft on Monday revised its advisory for a now-patched, high-severity security flaw impacting Windows Shell to acknowledge that it has b. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-32202-the-hacker-news-threat-intelligence.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
+    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
+    <category>CVE Analysis</category>
+    <category>Vulnerability Intelligence</category>
+    <category>Cybersecurity</category>
+    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
+  </item>
+
+  <item>
+    <title>CoreDNS&amp;#39; DoQ worker pool does not bound stream backlog</title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-32934-go-github-com-coredns-coredns.html</link>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-32934-go-github-com-coredns-coredns.html</guid>
+    <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
+    <description><![CDATA[CVE-2026-32934 — LOW Score 43/100. ### Summary
+CoreDNS&#39; DNS-over-QUIC (DoQ) server can be driven into large goroutine and memory growth by a remote client that opens many QUIC. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
+    <content:encoded><![CDATA[<p>CVE-2026-32934 — LOW Score 43/100. ### Summary
+CoreDNS&#39; DNS-over-QUIC (DoQ) server can be driven into large goroutine and memory growth by a remote client that opens many QUIC. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-32934-go-github-com-coredns-coredns.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
+    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
+    <category>CVE Analysis</category>
+    <category>Vulnerability Intelligence</category>
+    <category>Cybersecurity</category>
+    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
+  </item>
+
+  <item>
+    <title>CoreDNS DoH GET oversized dns= query parameter causes pre-validation CPU and memory amplification</title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-32936-go-github-com-coredns-coredns.html</link>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-32936-go-github-com-coredns-coredns.html</guid>
+    <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
+    <description><![CDATA[CVE-2026-32936 — LOW Score 43/100. ### Summary CoreDNS&#39;s DNS-over-HTTPS (DoH) GET path accepts oversized `dns=` query values and performs substantial request parsing, query un. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
+    <content:encoded><![CDATA[<p>CVE-2026-32936 — LOW Score 43/100. ### Summary CoreDNS&#39;s DNS-over-HTTPS (DoH) GET path accepts oversized `dns=` query values and performs substantial request parsing, query un. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-32936-go-github-com-coredns-coredns.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
+    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
+    <category>CVE Analysis</category>
+    <category>Vulnerability Intelligence</category>
+    <category>Cybersecurity</category>
+    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
+  </item>
+
+  <item>
+    <title>CoreDNS has TSIG authentication bypass on DoT, DoH, DoH3, DoQ, and gRPC</title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-33190-go-github-com-coredns-coredns.html</link>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-33190-go-github-com-coredns-coredns.html</guid>
+    <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
+    <description><![CDATA[CVE-2026-33190 — LOW Score 43/100. ### Summary
+CoreDNS&#39; tsig plugin can be bypassed on non-plain-DNS transports because it trusts the transport writer&#39;s TsigStatus() instead o. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
+    <content:encoded><![CDATA[<p>CVE-2026-33190 — LOW Score 43/100. ### Summary
+CoreDNS&#39; tsig plugin can be bypassed on non-plain-DNS transports because it trusts the transport writer&#39;s TsigStatus() instead o. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-33190-go-github-com-coredns-coredns.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
+    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
+    <category>CVE Analysis</category>
+    <category>Vulnerability Intelligence</category>
+    <category>Cybersecurity</category>
+    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
+  </item>
+
+  <item>
+    <title>CoreDNS&amp;#39; transfer stanza selection uses lexicographic compare (subzone ACL bypass)</title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-33489-go-github-com-coredns-coredns.html</link>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-33489-go-github-com-coredns-coredns.html</guid>
+    <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
+    <description><![CDATA[CVE-2026-33489 — MEDIUM Score 52/100. ### Summary
+CoreDNS&#39; transfer plugin can select the wrong ACL stanza when both a parent zone and a more-specific subzone are configured. A p. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
+    <content:encoded><![CDATA[<p>CVE-2026-33489 — MEDIUM Score 52/100. ### Summary
+CoreDNS&#39; transfer plugin can select the wrong ACL stanza when both a parent zone and a more-specific subzone are configured. A p. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-33489-go-github-com-coredns-coredns.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
+    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
+    <category>CVE Analysis</category>
+    <category>Vulnerability Intelligence</category>
+    <category>Cybersecurity</category>
+    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
+  </item>
+
+  <item>
+    <title>CoreDNS has TSIG authentication bypass on gRPC and QUIC transports</title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-35579-go-github-com-coredns-coredns.html</link>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-35579-go-github-com-coredns-coredns.html</guid>
+    <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
+    <description><![CDATA[CVE-2026-35579 — LOW Score 43/100. ### Summary The gRPC, QUIC, DoH, and DoH3 transports in CoreDNS incorrectly handle TSIG authentication. For gRPC and QUIC, CoreDNS checks wh. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
+    <content:encoded><![CDATA[<p>CVE-2026-35579 — LOW Score 43/100. ### Summary The gRPC, QUIC, DoH, and DoH3 transports in CoreDNS incorrectly handle TSIG authentication. For gRPC and QUIC, CoreDNS checks wh. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-35579-go-github-com-coredns-coredns.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
+    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
+    <category>CVE Analysis</category>
+    <category>Vulnerability Intelligence</category>
+    <category>Cybersecurity</category>
+    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
+  </item>
+
+  <item>
+    <title>Researchers Discover Critical GitHub CVE-2026-3854 RCE Flaw Exploitable via Single Git Push</title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-3854-the-hacker-news-threat-intelligence.html</link>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-3854-the-hacker-news-threat-intelligence.html</guid>
+    <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
+    <description><![CDATA[CVE-2026-3854 — HIGH Score 66/100. Cybersecurity researchers have disclosed details of a critical security vulnerability impacting GitHub.com and GitHub Enterprise Server that. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
+    <content:encoded><![CDATA[<p>CVE-2026-3854 — HIGH Score 66/100. Cybersecurity researchers have disclosed details of a critical security vulnerability impacting GitHub.com and GitHub Enterprise Server that. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-3854-the-hacker-news-threat-intelligence.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
+    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
+    <category>CVE Analysis</category>
+    <category>Vulnerability Intelligence</category>
+    <category>Cybersecurity</category>
+    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
+  </item>
+
+  <item>
+    <title>Hackers are exploiting a critical LiteLLM pre-auth SQLi flaw</title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-42208-bleepingcomputer-threat-intelligence.html</link>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-42208-bleepingcomputer-threat-intelligence.html</guid>
+    <pubDate>Tue, 28 Apr 2026 12:00:00 +0000</pubDate>
+    <description><![CDATA[CVE-2026-42208 — HIGH Score 75/100. Hackers are targeting sensitive information stored in the LiteLLM open-source large-language model (LLM) gateway by exploiting a critical vu. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
+    <content:encoded><![CDATA[<p>CVE-2026-42208 — HIGH Score 75/100. Hackers are targeting sensitive information stored in the LiteLLM open-source large-language model (LLM) gateway by exploiting a critical vu. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-42208-bleepingcomputer-threat-intelligence.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
     <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
     <category>CVE Analysis</category>
     <category>Vulnerability Intelligence</category>
@@ -675,142 +721,6 @@ Xu Zewei, 3. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVA
     <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
     <category>CVE Analysis</category>
     <category>Vulnerability Intelligence</category>
-    <category>Cybersecurity</category>
-    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
-  </item>
-
-  <item>
-    <title>Cillium exposes sensitive information included in the cilium-bugtool debug archive</title>
-    <link>https://blog.cyberdudebivash.in/posts/cve-2026-41520-go-github-com-cilium-cilium.html</link>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-41520-go-github-com-cilium-cilium.html</guid>
-    <pubDate>Mon, 27 Apr 2026 12:00:00 +0000</pubDate>
-    <description><![CDATA[CVE-2026-41520 — LOW Score 44/100. ### Impact
-The output of `cilium-bugtool` can contain sensitive data when the tool is run against Cilium deployments with WireGuard encrypti. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
-    <content:encoded><![CDATA[<p>CVE-2026-41520 — LOW Score 44/100. ### Impact
-The output of `cilium-bugtool` can contain sensitive data when the tool is run against Cilium deployments with WireGuard encrypti. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-41520-go-github-com-cilium-cilium.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
-    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
-    <category>CVE Analysis</category>
-    <category>Vulnerability Intelligence</category>
-    <category>Cybersecurity</category>
-    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
-  </item>
-
-  <item>
-    <title>Firefox Vulnerability Allows Tor User Fingerprinting</title>
-    <link>https://blog.cyberdudebivash.in/posts/cve-2026-6770-securityweek-threat-intelligence.html</link>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-6770-securityweek-threat-intelligence.html</guid>
-    <pubDate>Mon, 27 Apr 2026 12:00:00 +0000</pubDate>
-    <description><![CDATA[CVE-2026-6770 — MEDIUM Score 45/100. The vulnerability is tracked as CVE-2026-6770 and it has been patched with the release of Firefox 150 and Tor 15.0.10. The post Firefox Vuln. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
-    <content:encoded><![CDATA[<p>CVE-2026-6770 — MEDIUM Score 45/100. The vulnerability is tracked as CVE-2026-6770 and it has been patched with the release of Firefox 150 and Tor 15.0.10. The post Firefox Vuln. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/cve-2026-6770-securityweek-threat-intelligence.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
-    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
-    <category>CVE Analysis</category>
-    <category>Vulnerability Intelligence</category>
-    <category>Cybersecurity</category>
-    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
-  </item>
-
-  <item>
-    <title>Defending Against China-Nexus Covert Networks of Compromised Devices</title>
-    <link>https://blog.cyberdudebivash.in/posts/defending-against-china-nexus-covert-networks-of-compromised.html</link>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/defending-against-china-nexus-covert-networks-of-compromised.html</guid>
-    <pubDate>Mon, 27 Apr 2026 12:00:00 +0000</pubDate>
-    <description><![CDATA[CISA-447ce5be1e8784bc — HIGH CVSS 8.5. &amp;lt;div class=&quot;SCXW131754345 BCX8&quot;&amp;gt;
-&amp;lt;div class=&quot;OutlineElement Ltr SCXW131754345 BCX8&quot;&amp;gt;
-&amp;lt;h2&amp;gt;&amp;lt;a class=&quot;c-button c-button--on-dark&quot; hr. Full analysis, IOCs, detection rules by CYBERDUDEBIVASH SENTINEL APEX.]]></description>
-    <content:encoded><![CDATA[<p>CISA-447ce5be1e8784bc — HIGH CVSS 8.5. &amp;lt;div class=&quot;SCXW131754345 BCX8&quot;&amp;gt;
-&amp;lt;div class=&quot;OutlineElement Ltr SCXW131754345 BCX8&quot;&amp;gt;
-&amp;lt;h2&amp;gt;&amp;lt;a class=&quot;c-button c-button--on-dark&quot; hr. Full analysis, IOCs, detection rules by CYBERDUDEBIVASH SENTINEL APEX.</p><p><a href="https://blog.cyberdudebivash.in/posts/defending-against-china-nexus-covert-networks-of-compromised.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
-    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
-    <category>Cyber Threat Intelligence</category>
-    <category>Cybersecurity</category>
-    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
-  </item>
-
-  <item>
-    <title>Easily Exploitable &amp;amp;#8216;Pack2TheRoot&amp;amp;#8217; Linux Vulnerability Leads to Root Access</title>
-    <link>https://blog.cyberdudebivash.in/posts/easily-exploitable-8216-pack2theroot-8217-linux-vulnerab.html</link>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/easily-exploitable-8216-pack2theroot-8217-linux-vulnerab.html</guid>
-    <pubDate>Mon, 27 Apr 2026 12:00:00 +0000</pubDate>
-    <description><![CDATA[SECURITYWEEK-4bbe57de7f45283e — MEDIUM Score 58/100. A race condition in PackageKit allows unprivileged users to escalate privileges when installing packages. The post Easily Exploitable &amp;#8216. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
-    <content:encoded><![CDATA[<p>SECURITYWEEK-4bbe57de7f45283e — MEDIUM Score 58/100. A race condition in PackageKit allows unprivileged users to escalate privileges when installing packages. The post Easily Exploitable &amp;#8216. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/easily-exploitable-8216-pack2theroot-8217-linux-vulnerab.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
-    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
-    <category>Cyber Threat Intelligence</category>
-    <category>Cybersecurity</category>
-    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
-  </item>
-
-  <item>
-    <title>FIRESTARTER Backdoor</title>
-    <link>https://blog.cyberdudebivash.in/posts/firestarter-backdoor.html</link>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/firestarter-backdoor.html</guid>
-    <pubDate>Mon, 27 Apr 2026 12:00:00 +0000</pubDate>
-    <description><![CDATA[CISA-6337d3c7f05b18e2 — HIGH CVSS 8.5. &amp;lt;h2&amp;gt;&amp;lt;strong&amp;gt;Malware Analysis Report at a Glance&amp;lt;/strong&amp;gt;&amp;lt;/h2&amp;gt;
-&amp;lt;table&amp;gt;
-&amp;lt;tbody&amp;gt;
-&amp;lt;tr&amp;gt;
-&amp;lt;th&amp;gt;Malware Name&amp;lt. Full analysis, IOCs, detection rules by CYBERDUDEBIVASH SENTINEL APEX.]]></description>
-    <content:encoded><![CDATA[<p>CISA-6337d3c7f05b18e2 — HIGH CVSS 8.5. &amp;lt;h2&amp;gt;&amp;lt;strong&amp;gt;Malware Analysis Report at a Glance&amp;lt;/strong&amp;gt;&amp;lt;/h2&amp;gt;
-&amp;lt;table&amp;gt;
-&amp;lt;tbody&amp;gt;
-&amp;lt;tr&amp;gt;
-&amp;lt;th&amp;gt;Malware Name&amp;lt. Full analysis, IOCs, detection rules by CYBERDUDEBIVASH SENTINEL APEX.</p><p><a href="https://blog.cyberdudebivash.in/posts/firestarter-backdoor.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
-    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
-    <category>Cyber Threat Intelligence</category>
-    <category>Cybersecurity</category>
-    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
-  </item>
-
-  <item>
-    <title>FTC: Americans lost over $2.1 billion to social media scams in 2025</title>
-    <link>https://blog.cyberdudebivash.in/posts/ftc-americans-lost-over-2-1-billion-to-social-media-scams.html</link>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/ftc-americans-lost-over-2-1-billion-to-social-media-scams.html</guid>
-    <pubDate>Mon, 27 Apr 2026 12:00:00 +0000</pubDate>
-    <description><![CDATA[BLEEPINGCOMPUTER-4d188072c2dc93ec — LOW Score 43/100. The U.S. Federal Trade Commission (FTC) warned of a massive increase in losses from social media scams since 2020, exceeding $2.1 billion in. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
-    <content:encoded><![CDATA[<p>BLEEPINGCOMPUTER-4d188072c2dc93ec — LOW Score 43/100. The U.S. Federal Trade Commission (FTC) warned of a massive increase in losses from social media scams since 2020, exceeding $2.1 billion in. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/ftc-americans-lost-over-2-1-billion-to-social-media-scams.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
-    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
-    <category>Cyber Threat Intelligence</category>
-    <category>Cybersecurity</category>
-    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
-  </item>
-
-  <item>
-    <title>Germany Doxes &amp;amp;#8220;UNKN,&amp;amp;#8221; Head of RU Ransomware Gangs REvil, GandCrab</title>
-    <link>https://blog.cyberdudebivash.in/posts/germany-doxes-8220-unkn-8221-head-of-ru-ransomware-gang.html</link>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/germany-doxes-8220-unkn-8221-head-of-ru-ransomware-gang.html</guid>
-    <pubDate>Mon, 27 Apr 2026 12:00:00 +0000</pubDate>
-    <description><![CDATA[KREBSONSECURITY-dc201ebceab0e56e — MEDIUM Score 45/100. An elusive hacker who went by the handle &quot;UNKN&quot; and ran the early Russian ransomware groups GandCrab and REvil now has a name and a face. Au. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
-    <content:encoded><![CDATA[<p>KREBSONSECURITY-dc201ebceab0e56e — MEDIUM Score 45/100. An elusive hacker who went by the handle &quot;UNKN&quot; and ran the early Russian ransomware groups GandCrab and REvil now has a name and a face. Au. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/germany-doxes-8220-unkn-8221-head-of-ru-ransomware-gang.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
-    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
-    <category>Ransomware</category>
-    <category>Threat Intelligence</category>
-    <category>Cybersecurity</category>
-    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
-  </item>
-
-  <item>
-    <title>GitPython has Command Injection via Git options bypass</title>
-    <link>https://blog.cyberdudebivash.in/posts/gitpython-has-command-injection-via-git-options-bypass.html</link>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/gitpython-has-command-injection-via-git-options-bypass.html</guid>
-    <pubDate>Mon, 27 Apr 2026 12:00:00 +0000</pubDate>
-    <description><![CDATA[GHSA-f256e32481fd7804 — MEDIUM Score 46/100. ### Summary
-GitPython blocks dangerous Git options such as `--upload-pack` and `--receive-pack` by default, but the equivalent Python kwargs. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
-    <content:encoded><![CDATA[<p>GHSA-f256e32481fd7804 — MEDIUM Score 46/100. ### Summary
-GitPython blocks dangerous Git options such as `--upload-pack` and `--receive-pack` by default, but the equivalent Python kwargs. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/gitpython-has-command-injection-via-git-options-bypass.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
-    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
-    <category>Cyber Threat Intelligence</category>
-    <category>Cybersecurity</category>
-    <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
-  </item>
-
-  <item>
-    <title>GitPython: Unsafe option check validates multi_options before shlex.split transformation</title>
-    <link>https://blog.cyberdudebivash.in/posts/gitpython-unsafe-option-check-validates-multi-options-befor.html</link>
-    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/gitpython-unsafe-option-check-validates-multi-options-befor.html</guid>
-    <pubDate>Mon, 27 Apr 2026 12:00:00 +0000</pubDate>
-    <description><![CDATA[GHSA-b128f3d97394801a — MEDIUM Score 45/100. ### Summary `_clone()` validates `multi_options` as the original list, then executes `shlex.split(&quot; &quot;.join(multi_options))`. A string like `. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.]]></description>
-    <content:encoded><![CDATA[<p>GHSA-b128f3d97394801a — MEDIUM Score 45/100. ### Summary `_clone()` validates `multi_options` as the original list, then executes `shlex.split(&quot; &quot;.join(multi_options))`. A string like `. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.</p><p><a href="https://blog.cyberdudebivash.in/posts/gitpython-unsafe-option-check-validates-multi-options-befor.html" target="_blank" rel="noopener">🔗 Read Full Intel Report →</a></p><p><strong>🛡️ Get Premium Threat Intel:</strong> <a href="https://blog.cyberdudebivash.in/products.html">CyberDudeBivash Products</a></p>]]></content:encoded>
-    <author>bivash@cyberdudebivash.com (CyberDudeBivash)</author>
-    <category>Cyber Threat Intelligence</category>
     <category>Cybersecurity</category>
     <source url="https://blog.cyberdudebivash.in/rss.xml">CyberDudeBivash SENTINEL APEX — Cyber Threat Intelligence</source>
   </item>
