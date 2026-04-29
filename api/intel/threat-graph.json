@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-29T19:41:37.006Z",
+  "generated": "2026-04-29T20:44:56.227Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 234,
+    "total_nodes": 242,
     "actors": 8,
-    "cves": 46,
+    "cves": 52,
     "campaigns": 48,
     "malware": 0,
-    "iocs": 19,
-    "edges": 117
+    "iocs": 20,
+    "edges": 118
   },
   "nodes": {
     "actor:lockbit": {
@@ -4786,6 +4786,149 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-34084": {
+      "id": "CVE-2026-34084",
+      "type": "CVE",
+      "name": "PhpSpreadsheet has SSRF/RCE in IOFactory::load when $filename is user controlled",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "phpoffice/phpspreadsheet",
+        "published": "2026-04-29",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.php.net",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:www.php.net": {
+      "id": "ioc:domain:www.php.net",
+      "type": "IOC",
+      "name": "www.php.net",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-04-29"
+      },
+      "connections": []
+    },
+    "CVE-2026-41643": {
+      "id": "CVE-2026-41643",
+      "type": "CVE",
+      "name": "GoBGP has Remote Denial of Service (Panic) in UpdatePathAttrs4ByteAs via Malformed BGP UPDATE",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/osrg/gobgp/v4",
+        "published": "2026-04-29",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-41642": {
+      "id": "CVE-2026-41642",
+      "type": "CVE",
+      "name": "GoBGP has Remote Denial of Service (Panic) via Malformed Well-known Path Attribute",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/osrg/gobgp/v4",
+        "published": "2026-04-29",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-41587": {
+      "id": "CVE-2026-41587",
+      "type": "CVE",
+      "name": "CI4MS has Unrestricted PHP File Upload via Theme Installation that Leads to Authenticated Remote Code Execution",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "ci4-cms-erp/ci4ms",
+        "published": "2026-04-29",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-40902": {
+      "id": "CVE-2026-40902",
+      "type": "CVE",
+      "name": "PhpSpreadsheet has CPU Denial of Service via Unbounded Row Number in XLSX Row Dimensions",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "phpoffice/phpspreadsheet",
+        "published": "2026-04-29",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-40863": {
+      "id": "CVE-2026-40863",
+      "type": "CVE",
+      "name": "PhpSpreadsheet has CPU Denial of Service via Unbounded Row Index in SpreadsheetML XML Reader",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "phpoffice/phpspreadsheet",
+        "published": "2026-04-29",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "DARKREADING-8ef51850cdadcc55": {
+      "id": "DARKREADING-8ef51850cdadcc55",
+      "type": "Intel",
+      "name": "Reverse Engineering With AI Unearths High-Severity GitHub Bug",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-04-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -5877,6 +6020,15 @@
       "target": "FULLDIS-3bcecc429e427524",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-04-29",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-34084→linked_to→ioc:domain:www.php.net",
+      "source": "CVE-2026-34084",
+      "target": "ioc:domain:www.php.net",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-04-29",
       "sources": []
     }
