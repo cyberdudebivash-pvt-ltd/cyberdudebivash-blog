@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-29T22:42:02.733Z",
+  "generated": "2026-04-29T23:39:58.120Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 261,
+    "total_nodes": 264,
     "actors": 8,
-    "cves": 64,
+    "cves": 65,
     "campaigns": 49,
     "malware": 0,
-    "iocs": 22,
-    "edges": 121
+    "iocs": 23,
+    "edges": 122
   },
   "nodes": {
     "actor:lockbit": {
@@ -5271,6 +5271,59 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-42031": {
+      "id": "CVE-2026-42031",
+      "type": "CVE",
+      "name": "CKAN has Unauthenticated SQL Injection and Authorization Bypass in `datastore_search_sql`",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "ckan",
+        "published": "2026-04-29",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:docs.ckan.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:docs.ckan.org": {
+      "id": "ioc:domain:docs.ckan.org",
+      "type": "IOC",
+      "name": "docs.ckan.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-04-29"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-3c4eeead680be50f": {
+      "id": "BLEEPINGCOMPUTER-3c4eeead680be50f",
+      "type": "Intel",
+      "name": "Official SAP npm packages compromised to steal credentials",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-04-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -6398,6 +6451,15 @@
       "target": "ioc:sha1:bf25b8695edbdd5476eeffc102b633d1d3e45f52",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-04-29",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-42031→linked_to→ioc:domain:docs.ckan.org",
+      "source": "CVE-2026-42031",
+      "target": "ioc:domain:docs.ckan.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-04-29",
       "sources": []
     }
