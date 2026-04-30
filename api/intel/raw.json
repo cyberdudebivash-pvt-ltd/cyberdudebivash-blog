@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-30T16:54:35.575Z",
+  "generated": "2026-04-30T18:11:42.728Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,8 +8,54 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 102,
+  "count": 103,
   "items": [
+    {
+      "id": "GHSA-64a1cd57a592be3e",
+      "title": "Hickory DNS's Record Cache Accepts AUTHORITY-Section NS from Sibling Zone via Parent-Pool Zone-Context Elevation",
+      "description": "# Summary The Hickory DNS project's experimental `hickory-recursor` crate's record cache (`DnsLru`) stores records from DNS responses keyed by each record's own (name, type), not by the query that triggered the response. `cache_response()` in `crates/recursor/src/lib.rs` chains `ANSWER`, `AUTHORITY`",
+      "cvss": 7.5,
+      "final_ps": 60,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-04-30",
+      "last_seen": "2026-04-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "hickory-recursor",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-83hf-93m4-rgwq",
+        "https://github.com/hickory-dns/hickory-dns/security/advisories/GHSA-83hf-93m4-rgwq",
+        "https://github.com/advisories/GHSA-83hf-93m4-rgwq"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "+12 PoC_available"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -99,9 +145,9 @@
       "iocs": []
     },
     {
-      "id": "BLEEPINGCOMPUTER-70307b8647148122",
-      "title": "FBI links cybercriminals to sharp surge in cargo theft attacks",
-      "description": "The U.S. Federal Bureau of Investigation (FBI) warned the transportation and logistics industry of a sharp rise in cyber-enabled cargo theft, with estimated losses in the United States and Canada reaching nearly $725 million in 2025. [...]",
+      "id": "BLEEPINGCOMPUTER-1bc78fb7b1569c25",
+      "title": "Romanian leader of online swatting ring gets 4 years in prison",
+      "description": "A Romanian national who led an online swatting ring that targeted more than 75 public officials, multiple journalists, and four religious institutions was sentenced to 4 years in federal prison. [...]",
       "cvss": 6.5,
       "final_ps": 49,
       "quality_score": 0.45,
@@ -123,7 +169,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.bleepingcomputer.com/news/security/fbi-links-cybercriminals-to-sharp-surge-in-cargo-theft-attacks/"
+        "https://www.bleepingcomputer.com/news/security/romanian-leader-of-online-swatting-ring-gets-4-years-in-prison/"
       ],
       "explanation": {
         "quality": [
@@ -234,50 +280,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "BLEEPINGCOMPUTER-898fc975949d5cb8",
-      "title": "April KB5083769 Windows 11 update causes backup software failures",
-      "description": "The April 2026 KB5083769 security update breaks third-party backup applications from multiple vendors on systems running Windows 11 24H2 and 25H2. [...]",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.45,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "bleepingcomputer",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "bleepingcomputer"
-      ],
-      "first_seen": "2026-04-30",
-      "last_seen": "2026-04-30",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "BleepingComputer",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/microsoft/april-kb5083769-windows-11-update-causes-backup-software-failures/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -923,6 +925,50 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "WIRED_SECURITY-2cd64c37e0e022cd",
+      "title": "OpenAI Rolls Out ‘Advanced’ Security Mode for At-Risk Accounts",
+      "description": "OpenAI is rolling out Advanced Account Security for people concerned that their ChatGPT or Codex accounts could be potential targets of phishing attacks.",
+      "cvss": 6.5,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "wired_security",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "wired_security"
+      ],
+      "first_seen": "2026-04-30",
+      "last_seen": "2026-04-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "wired_security",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.wired.com/story/openai-chatgpt-codex-advanced-account-security/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.65 (wired_security)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -2632,6 +2678,106 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-39383",
+      "title": "Gotenberg Vulnerable to Unauthenticated SSRF via Unfiltered Webhook URL",
+      "description": "",
+      "cvss": 8.6,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-04-30",
+      "last_seen": "2026-04-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/gotenberg/gotenberg/v8",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-39383",
+        "CVE-2026-39383"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-5vh4-rgv7-p9g4",
+        "https://github.com/gotenberg/gotenberg/security/advisories/GHSA-5vh4-rgv7-p9g4",
+        "https://github.com/gotenberg/gotenberg/releases/tag/v8.31.0",
+        "https://github.com/advisories/GHSA-5vh4-rgv7-p9g4"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-40171",
+      "title": "Jupyter Notebook Vulnerable to Authentication Token Theft via CommandLinker XSS",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-04-30",
+      "last_seen": "2026-04-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@jupyter-notebook/help-extension",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-40171",
+        "CVE-2026-40171"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-rch3-82jr-f9w9",
+        "https://github.com/jupyter/notebook/security/advisories/GHSA-rch3-82jr-f9w9",
+        "https://jupyterlab.readthedocs.io/en/latest/user/commands.html#commands-in-markdown-output-and-files",
+        "https://github.com/advisories/GHSA-rch3-82jr-f9w9"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -4509,94 +4655,6 @@
         ],
         "priority": [
           "+4 critical_infra"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-31431",
-      "title": "New Linux 'Copy Fail' Vulnerability Enables Root Access on Major Distributions",
-      "description": "",
-      "cvss": 8,
-      "final_ps": 17,
-      "quality_score": 0.423,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "thehackernews",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "thehackernews"
-      ],
-      "first_seen": "2026-04-30",
-      "last_seen": "2026-04-30",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "The Hacker News",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-31431"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://thehackernews.com/2026/04/new-linux-copy-fail-vulnerability.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (thehackernews)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.423"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "THEHACKERNEWS-1eee17f2559f0d53",
-      "title": "Chinese Silk Typhoon Hacker Extradited to U.S. Over COVID Research Cyberattacks",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 17,
-      "quality_score": 0.433,
-      "threat_level": "LOW",
-      "type": "THREAT_ACTOR",
-      "source": "thehackernews",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "thehackernews"
-      ],
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "The Hacker News",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://thehackernews.com/2026/04/chinese-silk-typhoon-hacker-extradited.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (thehackernews)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.433"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
