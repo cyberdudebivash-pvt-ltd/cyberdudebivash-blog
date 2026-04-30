@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-30T07:33:14.807Z",
+  "generated": "2026-04-30T09:37:08.834Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 268,
+    "total_nodes": 271,
     "actors": 8,
-    "cves": 65,
+    "cves": 66,
     "campaigns": 49,
     "malware": 0,
-    "iocs": 23,
-    "edges": 122
+    "iocs": 24,
+    "edges": 123
   },
   "nodes": {
     "actor:lockbit": {
@@ -5396,6 +5396,59 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "SECURITYWEEK-146917fff19e66c0": {
+      "id": "SECURITYWEEK-146917fff19e66c0",
+      "type": "Intel",
+      "name": "Sandhills Medical Says Ransomware Breach Affects 170,000",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-04-30",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "CVE-2026-31431": {
+      "id": "CVE-2026-31431",
+      "type": "CVE",
+      "name": "New Linux 'Copy Fail' Vulnerability Enables Root Access on Major Distributions",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "MEDIUM",
+        "priority_score": 46,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-04-30",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:xint.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:xint.io": {
+      "id": "ioc:domain:xint.io",
+      "type": "IOC",
+      "name": "xint.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-04-30"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -6533,6 +6586,15 @@
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-04-29",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-31431→linked_to→ioc:domain:xint.io",
+      "source": "CVE-2026-31431",
+      "target": "ioc:domain:xint.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-04-30",
       "sources": []
     }
   ]

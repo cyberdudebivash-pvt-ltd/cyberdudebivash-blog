@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-30T07:33:14.813Z",
+  "generated": "2026-04-30T09:37:08.839Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,8 +8,52 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 101,
+  "count": 102,
   "items": [
+    {
+      "id": "SECURITYWEEK-146917fff19e66c0",
+      "title": "Sandhills Medical Says Ransomware Breach Affects 170,000",
+      "description": "It took the healthcare organization nearly one year to publicly disclose a data breach after it was targeted by Inc Ransom. The post Sandhills Medical Says Ransomware Breach Affects 170,000 appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 60,
+      "quality_score": 0.445,
+      "threat_level": "MEDIUM",
+      "type": "RANSOMWARE",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-04-30",
+      "last_seen": "2026-04-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/sandhills-medical-says-ransomware-breach-affects-170000/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -99,14 +143,14 @@
       "iocs": []
     },
     {
-      "id": "THEHACKERNEWS-fb05cfeec0688e74",
-      "title": "Google Fixes CVSS 10 Gemini CLI CI RCE and Cursor Flaws Enable Code Execution",
-      "description": "Google has addressed a maximum severity security flaw in Gemini CLI -- the \"@google/gemini-cli\" npm package and the \"google-github-actions/run-gemini-cli\" GitHub Actions workflow -- that could have allowed attackers to execute arbitrary commands on host systems.\n\"The vulnerability allowed an unprivi",
-      "cvss": 6.5,
-      "final_ps": 46,
-      "quality_score": 0.408,
+      "id": "CVE-2026-31431",
+      "title": "New Linux 'Copy Fail' Vulnerability Enables Root Access on Major Distributions",
+      "description": "Cybersecurity researchers have disclosed details of a Linux local privilege escalation (LPE) flaw that could allow an unprivileged local user to obtain root.\nThe high-severity vulnerability tracked as CVE-2026-31431 (CVSS score: 7.8) has been codenamed Copy Fail by Xint.io and Theori.\n\"An unprivileg",
+      "cvss": 8,
+      "final_ps": 48,
+      "quality_score": 0.508,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
+      "type": "CVE_REPORT",
       "source": "thehackernews",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -120,27 +164,38 @@
       "vendor": "The Hacker News",
       "product": "Threat Intelligence",
       "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
+      "cves": [
+        "CVE-2026-31431"
+      ],
+      "ioc_count": 1,
       "refs": [
-        "https://thehackernews.com/2026/04/google-fixes-cvss-10-gemini-cli-ci-rce.html"
+        "https://thehackernews.com/2026/04/new-linux-copy-fail-vulnerability.html"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.55 (thehackernews)",
-          "data_confidence=0.80",
+          "data_confidence=1.00",
+          "ioc_presence=1 IOCs",
           "recency=0d (score=1.00)",
-          "QS=0.408"
+          "QS=0.508"
         ],
         "priority": [
-          "+3 supply_chain"
+          "base_ps=48 (no boosts)"
         ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "suppression": null,
         "merge": null
       },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "domain",
+          "value": "xint.io",
+          "confidence_score": 0.75,
+          "first_seen": "2026-04-30",
+          "source_count": 1
+        }
+      ]
     },
     {
       "id": "CVE-2026-32202",
