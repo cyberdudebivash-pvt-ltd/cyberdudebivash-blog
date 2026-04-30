@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-30T09:37:08.834Z",
+  "generated": "2026-04-30T11:19:04.636Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 271,
+    "total_nodes": 275,
     "actors": 8,
     "cves": 66,
-    "campaigns": 49,
+    "campaigns": 50,
     "malware": 0,
     "iocs": 24,
-    "edges": 123
+    "edges": 124
   },
   "nodes": {
     "actor:lockbit": {
@@ -5449,6 +5449,80 @@
         "first_seen": "2026-04-30"
       },
       "connections": []
+    },
+    "SECURITYWEEK-347252b5017e7ff8": {
+      "id": "SECURITYWEEK-347252b5017e7ff8",
+      "type": "Intel",
+      "name": "Critical cPanel &#038; WHM Vulnerability Exploited as Zero-Day for Months",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-04-30",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-fc065e1e7eb1c117": {
+      "id": "SECURITYWEEK-fc065e1e7eb1c117",
+      "type": "Intel",
+      "name": "&#8216;Copy Fail&#8217; Logic Flaw in Linux Kernel Enables System Takeover",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-04-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "WIRED_SECURITY-3149f8285ddc96cf": {
+      "id": "WIRED_SECURITY-3149f8285ddc96cf",
+      "type": "Intel",
+      "name": "Exposed Data Illustrates the Nightmare Scenario for a Stalkerware Victim",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "wired_security",
+        "product": "Threat Intelligence",
+        "published": "2026-04-30",
+        "type": "DATA_BREACH"
+      },
+      "connections": []
+    },
+    "campaign:cluster-6e4e274d": {
+      "id": "campaign:cluster-6e4e274d",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-04-30",
+        "last_seen": "2026-04-30",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-347252b5017e7ff8",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -6594,6 +6668,15 @@
       "target": "ioc:domain:xint.io",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-04-30",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-6e4e274d→includes→SECURITYWEEK-347252b5017e7ff8",
+      "source": "campaign:cluster-6e4e274d",
+      "target": "SECURITYWEEK-347252b5017e7ff8",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-04-30",
       "sources": []
     }
