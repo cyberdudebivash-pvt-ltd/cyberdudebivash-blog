@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-30T18:11:42.722Z",
+  "generated": "2026-04-30T19:51:38.042Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 296,
+    "total_nodes": 302,
     "actors": 8,
-    "cves": 69,
+    "cves": 71,
     "campaigns": 51,
     "malware": 0,
-    "iocs": 24,
-    "edges": 125
+    "iocs": 25,
+    "edges": 126
   },
   "nodes": {
     "actor:lockbit": {
@@ -5903,6 +5903,113 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "SECURITYWEEK-2d3ae8c7a209b29f": {
+      "id": "SECURITYWEEK-2d3ae8c7a209b29f",
+      "type": "Intel",
+      "name": "Anthropic Unveils Claude Security to Counter AI-Powered Exploit Surge",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-04-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-713ae5a07894edc4": {
+      "id": "SECURITYWEEK-713ae5a07894edc4",
+      "type": "Intel",
+      "name": "AI Fuels ‘Industrial’ Cybercrime as Time-to-Exploit Shrinks to Hours",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-04-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-42449": {
+      "id": "CVE-2026-42449",
+      "type": "CVE",
+      "name": "n8n-mcp's IPv4-mapped IPv6 addresses bypass SSRF protection in validateUrlSync(), enabling full SSRF for SDK embedders",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "n8n-mcp",
+        "published": "2026-04-30",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:169.254.169.254",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        }
+      ]
+    },
+    "ioc:ipv4:169.254.169.254": {
+      "id": "ioc:ipv4:169.254.169.254",
+      "type": "IOC",
+      "name": "169.254.169.254",
+      "attributes": {
+        "ioc_type": "ipv4",
+        "confidence": 0.88,
+        "first_seen": "2026-04-30"
+      },
+      "connections": []
+    },
+    "CVE-2026-42349": {
+      "id": "CVE-2026-42349",
+      "type": "CVE",
+      "name": "Clerk has an authorization bypass when combining organization, billing, or reverification checks",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "@clerk/shared",
+        "published": "2026-04-30",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-4b1d96b3ede8b7ea": {
+      "id": "BLEEPINGCOMPUTER-4b1d96b3ede8b7ea",
+      "type": "Intel",
+      "name": "New Bluekit phishing service includes an AI assistant, 40 templates",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-04-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -7066,6 +7173,15 @@
       "target": "CVE-2026-41940",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-04-30",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-42449→linked_to→ioc:ipv4:169.254.169.254",
+      "source": "CVE-2026-42449",
+      "target": "ioc:ipv4:169.254.169.254",
+      "relationship": "linked_to",
+      "confidence": 0.88,
       "first_seen": "2026-04-30",
       "sources": []
     }
