@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-01T08:52:48.828Z",
+  "generated": "2026-05-01T10:21:46.589Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 345,
+    "total_nodes": 349,
     "actors": 8,
     "cves": 74,
-    "campaigns": 54,
+    "campaigns": 55,
     "malware": 0,
     "iocs": 40,
-    "edges": 153
+    "edges": 154
   },
   "nodes": {
     "actor:lockbit": {
@@ -6821,6 +6821,80 @@
           "confidence": 1
         }
       ]
+    },
+    "THEHACKERNEWS-2c0a1b2ea28c0bdc": {
+      "id": "THEHACKERNEWS-2c0a1b2ea28c0bdc",
+      "type": "Intel",
+      "name": "Poisoned Ruby Gems and Go Modules Exploit CI Pipelines for Credential Theft",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-05-01",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-7aa7dbf04f01d10c": {
+      "id": "SECURITYWEEK-7aa7dbf04f01d10c",
+      "type": "Intel",
+      "name": "Cisco Releases Open Source Tool for AI Model Provenance",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-05-01",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-cfedcd6943cd50ed": {
+      "id": "BLEEPINGCOMPUTER-cfedcd6943cd50ed",
+      "type": "Intel",
+      "name": "Windows 11 KB5083631 update released with 34 changes and fixes",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-01",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-a0fe02db": {
+      "id": "campaign:cluster-a0fe02db",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-05-01",
+        "last_seen": "2026-05-01",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "THEHACKERNEWS-2c0a1b2ea28c0bdc",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -8234,6 +8308,15 @@
       "id": "campaign:cluster-971eb01b→includes→REDDIT_CYBER-2c3fb537318f6c26",
       "source": "campaign:cluster-971eb01b",
       "target": "REDDIT_CYBER-2c3fb537318f6c26",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-01",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-a0fe02db→includes→THEHACKERNEWS-2c0a1b2ea28c0bdc",
+      "source": "campaign:cluster-a0fe02db",
+      "target": "THEHACKERNEWS-2c0a1b2ea28c0bdc",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-01",
