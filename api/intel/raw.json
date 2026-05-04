@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-04T21:36:18.863Z",
+  "generated": "2026-05-04T22:38:39.162Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,14 +8,60 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 100,
+  "count": 101,
   "items": [
     {
-      "id": "GHSA-d39f1862dd8ff2f9",
-      "title": "AzuraCast Vulnerable to Liquidsoap Code Injection via Incomplete cleanUpString-to-toRawString Migration in Remote Relay ",
-      "description": "## Summary The `cleanUpString()` method in `ConfigWriter.php` uses an ungreedy regex to strip Liquidsoap string interpolation patterns (`#{...}`) from user input. This regex can be bypassed via nested interpolation syntax (`#{#{EXPR}}`), allowing injection of arbitrary Liquidsoap code. Commit `ff49e",
-      "cvss": 8.8,
-      "final_ps": 51,
+      "id": "CVE-2026-22679",
+      "title": "Weaver E-cology critical bug exploited in attacks since March",
+      "description": "Hackers have been exploiting a critical vulnerability (CVE-2026-22679) in the Weaver E-cology office automation since mid-March to run discovery commands. [...]",
+      "cvss": 8,
+      "final_ps": 70,
+      "quality_score": 0.58,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-05-04",
+      "last_seen": "2026-05-04",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-22679"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/weaver-e-cology-critical-bug-exploited-in-attacks-since-march/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.580"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "GHSA-123dad83f13506f2",
+      "title": "webonyx/graphql-php has quadratic validation cost in OverlappingFieldsCanBeMerged via inline fragments",
+      "description": "## Summary `OverlappingFieldsCanBeMerged` validation rule has `O(n^2 x m^2)` worst case via flattened inline fragments. The CVE-2023-26144 named-fragment cache does not cover inline fragments. A 364 KB query (200 outer x 100 inner inline fragments) consumes 117 seconds of CPU per request, with no co",
+      "cvss": 7.5,
+      "final_ps": 56,
       "quality_score": 0.548,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
@@ -30,15 +76,15 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "composer",
-      "product": "azuracast/azuracast",
+      "product": "webonyx/graphql-php",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-q4ph-8x8g-95f8",
-        "https://github.com/AzuraCast/AzuraCast/security/advisories/GHSA-q4ph-8x8g-95f8",
-        "https://github.com/AzuraCast/AzuraCast/commit/d6b8422fc2c36269df9d1adec89dfbba58828915",
-        "https://github.com/advisories/GHSA-q4ph-8x8g-95f8"
+        "https://github.com/advisories/GHSA-fc86-6rv6-2jpm",
+        "https://github.com/webonyx/graphql-php/security/advisories/GHSA-fc86-6rv6-2jpm",
+        "https://github.com/graphql/graphql-js/issues/2185",
+        "https://github.com/sangria-graphql-org/sangria/pull/12"
       ],
       "explanation": {
         "quality": [
@@ -48,7 +94,7 @@
           "QS=0.547"
         ],
         "priority": [
-          "base_ps=51 (no boosts)"
+          "+4 critical_infra"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -270,6 +316,53 @@
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
           "QS=0.510"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-54fc9b3617108b15",
+      "title": "livewire-markdown-editor has arbitrary file upload that allows stored XSS via attachment handler",
+      "description": "### Impact\nAll versions of `mckenziearts/livewire-markdown-editor` prior to **v1.3** contain a critical arbitrary file upload vulnerability in the `MarkdownEditor::updatedAttachments()` Livewire handler. The handler calls `$file->store()` with no server-side validation of MIME type, extension, or fi",
+      "cvss": 7.1,
+      "final_ps": 47,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-04",
+      "last_seen": "2026-05-04",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "mckenziearts/livewire-markdown-editor",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-gxxh-8vcj-w2mh",
+        "https://github.com/mckenziearts/livewire-markdown-editor/security/advisories/GHSA-gxxh-8vcj-w2mh",
+        "https://github.com/mckenziearts/livewire-markdown-editor/commit/1e60eaa5781e89704e112425f832774be85cd71f",
+        "https://github.com/mckenziearts/livewire-markdown-editor/releases/tag/v1.3"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
         ],
         "priority": [
           "base_ps=47 (no boosts)"
@@ -970,50 +1063,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "DARKREADING-68954dd355214dbf",
-      "title": "RMM Tools Fuel Stealthy Phishing Campaign",
-      "description": "Attackers are abusing two remote monitoring and management (RMM) tools to evade detection in a campaign that has impacted over 80 organizations so far.",
-      "cvss": 6.5,
-      "final_ps": 39,
-      "quality_score": 0.408,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "darkreading",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "darkreading"
-      ],
-      "first_seen": "2026-05-04",
-      "last_seen": "2026-05-04",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "darkreading",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.darkreading.com/cyberattacks-data-breaches/rmm-tools-stealthy-phishing-campaign"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (darkreading)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.408"
-        ],
-        "priority": [
-          "base_ps=39 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -2953,6 +3002,106 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-42313",
+      "title": "pyload-ng: non-admin SETTINGS users can redirect all outbound traffic through an attacker-controlled proxy via unrestric",
+      "description": "",
+      "cvss": 8.3,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-04",
+      "last_seen": "2026-05-04",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "pyload-ng",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42313",
+        "CVE-2026-42313"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-pg67-9wjv-mr85",
+        "https://github.com/pyload/pyload/security/advisories/GHSA-pg67-9wjv-mr85",
+        "https://github.com/advisories/GHSA-4744-96p5-mp2j",
+        "https://github.com/advisories/GHSA-ppvx-rwh9-7rj7"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-42246",
+      "title": "net-imap vulnerable to STARTTLS stripping via invalid response timing",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-04",
+      "last_seen": "2026-05-04",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rubygems",
+      "product": "net-imap",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42246",
+        "CVE-2026-42246"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-vcgp-9326-pqcp",
+        "https://github.com/ruby/net-imap/security/advisories/GHSA-vcgp-9326-pqcp",
+        "https://github.com/ruby/net-imap/commit/0ede4c40b1523dfeaf95777b2678e54cc0fd9618",
+        "https://github.com/ruby/net-imap/commit/24a4e770b43230286a05aa2a9746cdbb3eb8485e"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-42575",
       "title": "apko doesn't verify downloaded apk packages against APKINDEX checksum (package substitution possible)",
       "description": "",
@@ -4489,100 +4638,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "GHSA-f4c7f9b16df4a155",
-      "title": "OpenClaw: OpenShell FS bridge writes stay pinned to the sandbox mount root",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.493,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-04",
-      "last_seen": "2026-05-04",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "openclaw",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wppj-c6mr-83jj",
-        "https://github.com/openclaw/openclaw/security/advisories/GHSA-wppj-c6mr-83jj",
-        "https://github.com/openclaw/openclaw/commit/7be82d4fd1193bcb7e44ee38838f00bf924ffa76",
-        "https://github.com/advisories/GHSA-wppj-c6mr-83jj"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-87cc460cbc5fc488",
-      "title": "OpenClaw: MCP loopback owner context is derived from server-issued bearer tokens",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.493,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-04",
-      "last_seen": "2026-05-04",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "openclaw",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-r6xh-pqhr-v4xh",
-        "https://github.com/openclaw/openclaw/security/advisories/GHSA-r6xh-pqhr-v4xh",
-        "https://github.com/openclaw/openclaw/commit/3cb1a56bfc9579a0f2336f9cfa12a8a744332a19",
-        "https://github.com/advisories/GHSA-r6xh-pqhr-v4xh"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     }
   ]

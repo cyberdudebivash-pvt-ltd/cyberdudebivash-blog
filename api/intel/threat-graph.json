@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-04T21:36:18.856Z",
+  "generated": "2026-05-04T22:38:39.155Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 472,
+    "total_nodes": 478,
     "actors": 8,
-    "cves": 93,
-    "campaigns": 62,
+    "cves": 96,
+    "campaigns": 63,
     "malware": 0,
     "iocs": 57,
-    "edges": 204
+    "edges": 205
   },
   "nodes": {
     "actor:lockbit": {
@@ -9253,6 +9253,116 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-22679": {
+      "id": "CVE-2026-22679",
+      "type": "CVE",
+      "name": "Weaver E-cology critical bug exploited in attacks since March",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-04",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-123dad83f13506f2": {
+      "id": "GHSA-123dad83f13506f2",
+      "type": "Intel",
+      "name": "webonyx/graphql-php has quadratic validation cost in OverlappingFieldsCanBeMerged via inline fragments",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "webonyx/graphql-php",
+        "published": "2026-05-04",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-42313": {
+      "id": "CVE-2026-42313",
+      "type": "CVE",
+      "name": "pyload-ng: non-admin SETTINGS users can redirect all outbound traffic through an attacker-controlled proxy via unrestricted `proxy.*` config (incomplete fix for CVE-2026-33509 / -35463 / -35464 / -35586)",
+      "attributes": {
+        "cvss": 8.3,
+        "threat_level": "MEDIUM",
+        "priority_score": 46,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "pyload-ng",
+        "published": "2026-05-04",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-42246": {
+      "id": "CVE-2026-42246",
+      "type": "CVE",
+      "name": "net-imap vulnerable to STARTTLS stripping via invalid response timing",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "rubygems",
+        "product": "net-imap",
+        "published": "2026-05-04",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-54fc9b3617108b15": {
+      "id": "GHSA-54fc9b3617108b15",
+      "type": "Intel",
+      "name": "livewire-markdown-editor has arbitrary file upload that allows stored XSS via attachment handler",
+      "attributes": {
+        "cvss": 7.1,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "mckenziearts/livewire-markdown-editor",
+        "published": "2026-05-04",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-22679": {
+      "id": "campaign:cve-2026-22679",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-04",
+        "last_seen": "2026-05-04",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-22679 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-22679",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -11127,6 +11237,15 @@
       "target": "ioc:domain:changedetection.io",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-05-04",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-22679→includes→CVE-2026-22679",
+      "source": "campaign:cve-2026-22679",
+      "target": "CVE-2026-22679",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-05-04",
       "sources": []
     }
