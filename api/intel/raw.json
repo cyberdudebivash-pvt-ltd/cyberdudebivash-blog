@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-05T20:18:17.312Z",
+  "generated": "2026-05-05T21:31:39.263Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,13 +8,106 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 101,
+  "count": 104,
   "items": [
     {
-      "id": "GHSA-1b650dc47a3cee7b",
-      "title": "gix-pack has multiple DoS vectors: unchecked indexing panics and uncapped OOM allocations from crafted pack data",
-      "description": "### Summary Multiple denial-of-service vectors in `gix-pack`: unchecked array indexing causes panics on crafted delta data, and uncapped attacker-controlled size headers enable OOM process kills. Both are triggered by malicious pack data received during clone/fetch. ### Details **Bug 1: Unchecked ar",
+      "id": "GHSA-2700361e2ed0517d",
+      "title": "Hysteria: A specially constructed quic package can crash the server OOM when the sniff is enabled",
+      "description": "### Summary A specially constructed quic package can crash the server OOM when the sniff is enabled. ### Details When the server has sniff enabled, a valid connection can request the server to forward UDP traffic and construct a huge crypto length. The server will allocate memory according to this l",
+      "cvss": 8.8,
+      "final_ps": 63,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-05",
+      "last_seen": "2026-05-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/apernet/hysteria/core/v2",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-9fw6-xgg2-mq9q",
+        "https://github.com/apernet/hysteria/security/advisories/GHSA-9fw6-xgg2-mq9q",
+        "https://github.com/advisories/GHSA-9fw6-xgg2-mq9q"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "+12 PoC_available"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-4f680c48847015a8",
+      "title": "Grav has Insecure Deserialization in File Cache",
+      "description": "# Insecure Deserialization in File Cache - **Severity:** High - **CWE:** CWE-502\n- **Location:** `system/src/Grav/Framework/Cache/Adapter/FileCache.php`\n- **Sink:** `unserialize($value, ['allowed_classes' => true])` ## Affected version(s) - **Affected:** `>= 1.7.44` and ` true` allows object instant",
       "cvss": 7.5,
+      "final_ps": 60,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-05",
+      "last_seen": "2026-05-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "getgrav/grav",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-gwfr-jfjf-92vv",
+        "https://github.com/getgrav/grav/security/advisories/GHSA-gwfr-jfjf-92vv",
+        "https://github.com/getgrav/grav/commit/5a12f9be8314682c8713e569e330f11805d0a663",
+        "https://github.com/advisories/GHSA-gwfr-jfjf-92vv"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "+12 PoC_available"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-7e7bbc35077edfca",
+      "title": "@evomap/evolver's validator sandbox allowlist permits `npm`/`npx`, yielding RCE from Hub-delivered validation tasks via ",
+      "description": "## Summary The validator-mode sandbox executor (`src/gep/validator/sandboxExecutor.js`) places `npm` and `npx` in its hard executable allowlist. Because `npm install ` and `npx -y -p ` execute arbitrary code by design (preinstall/install/postinstall lifecycle scripts and remote-package bin entries),",
+      "cvss": 8.1,
       "final_ps": 56,
       "quality_score": 0.548,
       "threat_level": "MEDIUM",
@@ -29,15 +122,15 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "rust",
-      "product": "gix-pack",
+      "vendor": "npm",
+      "product": "@evomap/evolver",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-x494-mj8g-cj27",
-        "https://github.com/GitoxideLabs/gitoxide/security/advisories/GHSA-x494-mj8g-cj27",
-        "https://github.com/advisories/GHSA-x494-mj8g-cj27"
+        "https://github.com/advisories/GHSA-jxh8-jh77-xh6g",
+        "https://github.com/EvoMap/evolver/security/advisories/GHSA-jxh8-jh77-xh6g",
+        "https://github.com/advisories/GHSA-jxh8-jh77-xh6g"
       ],
       "explanation": {
         "quality": [
@@ -47,7 +140,53 @@
           "QS=0.547"
         ],
         "priority": [
-          "+4 critical_infra"
+          "+3 supply_chain"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-0703330c8b239ed0",
+      "title": "@evomap/evolver: Path Traversal in `evolver fetch` default-branch `safeId` allows Hub-controlled overwrite of project fi",
+      "description": "## Summary The `evolver fetch` subcommand in `index.js` writes Hub-supplied `bundled_files[]` into a directory derived from a Hub-supplied `skill_id`. When `--out` is not used, the path-sanitizing regex permits `.` characters, allowing a `skill_id` of `..` to escape the `skills/` subdirectory and re",
+      "cvss": 8.8,
+      "final_ps": 51,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-05",
+      "last_seen": "2026-05-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@evomap/evolver",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-cfcj-hqpf-hccf",
+        "https://github.com/EvoMap/evolver/security/advisories/GHSA-cfcj-hqpf-hccf",
+        "https://github.com/advisories/GHSA-cfcj-hqpf-hccf"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=51 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -142,52 +281,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "GHSA-5383e5c74d01f342",
-      "title": "RustFS: ListServiceAccount authorizes against wrong admin action, enabling cross-user enumeration and root service accou",
-      "description": "## Summary `ListServiceAccount` (`GET /rustfs/admin/v3/list-service-accounts?user= `) authorizes cross-user requests against `UpdateServiceAccountAdminAction` instead of `ListServiceAccountsAdminAction` at `rustfs/src/admin/handlers/service_account.rs:936`. The handler accepts the **wrong** admin ac",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-05",
-      "last_seen": "2026-05-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "rustfs",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-mm2q-qcmx-gw4w",
-        "https://github.com/rustfs/rustfs/security/advisories/GHSA-mm2q-qcmx-gw4w",
-        "https://github.com/advisories/GHSA-mm2q-qcmx-gw4w"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -327,38 +420,38 @@
       "iocs": []
     },
     {
-      "id": "BLEEPINGCOMPUTER-f4e0f1ca1a764416",
-      "title": "DAEMON Tools trojanized in supply-chain attack to deploy backdoor",
-      "description": "Hackers trojanized installers for the DAEMON Tools software and since April 8, delivered a backdoor to thousands of systems that downloaded the product from the official website. [...]",
+      "id": "DARKREADING-b74eed864b86d724",
+      "title": "Trellix Source Code Breach Highlights Growing Supply Chain Threats",
+      "description": "Info is scant, but such breaches can reveal where a security product's controls are located and how detections are designed, giving attackers a leg up.",
       "cvss": 6.5,
-      "final_ps": 44,
-      "quality_score": 0.45,
-      "threat_level": "LOW",
-      "type": "MALWARE_REPORT",
-      "source": "bleepingcomputer",
+      "final_ps": 46,
+      "quality_score": 0.408,
+      "threat_level": "MEDIUM",
+      "type": "DATA_BREACH",
+      "source": "darkreading",
       "sources_confirmed": 1,
       "merged_sources": [
-        "bleepingcomputer"
+        "darkreading"
       ],
       "first_seen": "2026-05-05",
       "last_seen": "2026-05-05",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "BleepingComputer",
+      "vendor": "darkreading",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.bleepingcomputer.com/news/security/daemon-tools-trojanized-in-supply-chain-attack-to-deploy-backdoor/"
+        "https://www.darkreading.com/cyberattacks-data-breaches/trellix-source-code-breach-supply-chain-threats"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
+          "source_weight=0.55 (darkreading)",
           "data_confidence=0.80",
           "recency=0d (score=1.00)",
-          "QS=0.450"
+          "QS=0.408"
         ],
         "priority": [
           "+3 supply_chain"
@@ -414,6 +507,50 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "BLEEPINGCOMPUTER-1fba92e8c10c0923",
+      "title": "Instructure hacker claims data theft from 8,800 schools, universities",
+      "description": "The hacker behind a breach at education technology giant Instructure claims to have stolen 280 million data records for students and staff from 8,809 colleges, school districts, and online education platforms. [...]",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.45,
+      "threat_level": "LOW",
+      "type": "DATA_BREACH",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-05-05",
+      "last_seen": "2026-05-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/instructure-hacker-claims-data-theft-from-8-800-schools-universities/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.450"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -3090,6 +3227,304 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-42315",
+      "title": "PyLoad vulnerable to Path Traversal via Package Folder Name in set_package_data",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-05",
+      "last_seen": "2026-05-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "pyload-ng",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42315",
+        "CVE-2026-42315"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-838g-gr43-qqg9",
+        "https://github.com/pyload/pyload/security/advisories/GHSA-838g-gr43-qqg9",
+        "https://github.com/advisories/GHSA-838g-gr43-qqg9"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-44167",
+      "title": "phpseclib has a CVE-2024-27355 mitigation bypass — OID amplification DoS in ASN1::decodeOID()",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-05",
+      "last_seen": "2026-05-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "phpseclib/phpseclib",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44167",
+        "CVE-2026-44167"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-3qpq-r242-jqj7",
+        "https://github.com/phpseclib/phpseclib/security/advisories/GHSA-3qpq-r242-jqj7",
+        "https://github.com/phpseclib/phpseclib/commit/d53d2021bcb9f6a04d5d44ec99e6bbef219a71bc",
+        "https://github.com/advisories/GHSA-3qpq-r242-jqj7"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-43891",
+      "title": "changedetection.io has an Arbitrary Local File Read via a crafted backup restore",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-05",
+      "last_seen": "2026-05-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "changedetection.io",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-43891",
+        "CVE-2026-43891"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-8757-69j2-hx56",
+        "https://github.com/dgtlmoon/changedetection.io/security/advisories/GHSA-8757-69j2-hx56",
+        "https://github.com/advisories/GHSA-8757-69j2-hx56"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-42843",
+      "title": "Grav API Privilege Escalation to Super Admin",
+      "description": "",
+      "cvss": 8.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-05",
+      "last_seen": "2026-05-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "getgrav/grav-plugin-api",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42843",
+        "CVE-2026-42843"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-r945-h4vm-h736",
+        "https://github.com/getgrav/grav/security/advisories/GHSA-r945-h4vm-h736",
+        "https://github.com/getgrav/grav-plugin-api/commit/26f529c7d438c73343e82311fb095caeaf1a6116",
+        "https://github.com/advisories/GHSA-r945-h4vm-h736"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-42612",
+      "title": "Grav Vulnerable to Publisher-Level Stored XSS via Unquoted Event Attributes",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-05",
+      "last_seen": "2026-05-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "getgrav/grav",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42612",
+        "CVE-2026-42612"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-9695-8fr9-hw5q",
+        "https://github.com/getgrav/grav/security/advisories/GHSA-9695-8fr9-hw5q",
+        "https://github.com/getgrav/grav/commit/5a12f9be8314682c8713e569e330f11805d0a663",
+        "https://github.com/advisories/GHSA-9695-8fr9-hw5q"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-42609",
+      "title": "Grav Vulnerable to Administrative Account Disruption and Privilege De-escalation via User Overwrite Logic",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-05",
+      "last_seen": "2026-05-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "getgrav/grav",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42609",
+        "CVE-2026-42609"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-rr73-568v-28f8",
+        "https://github.com/getgrav/grav/security/advisories/GHSA-rr73-568v-28f8",
+        "https://github.com/getgrav/grav/commit/5a12f9be8314682c8713e569e330f11805d0a663",
+        "https://github.com/getgrav/grav/commit/c66dfeb5ff679a1667678c6335eb9ff3255dfc47"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-43897",
       "title": "link-preview-js vulnerable to IPv6 and internal loopback attacks",
       "description": "",
@@ -4329,293 +4764,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42295",
-      "title": "Argo vulnerable to exposure of artifact repository credentials",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-04",
-      "last_seen": "2026-05-04",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/argoproj/argo-workflows/v4",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42295",
-        "CVE-2026-42295"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7vf8-2cr6-54mf",
-        "https://github.com/argoproj/argo-workflows/security/advisories/GHSA-7vf8-2cr6-54mf",
-        "https://github.com/argoproj/argo-workflows/security/advisories/GHSA-c2hv-4pfj-mm2r",
-        "https://github.com/argoproj/argo-workflows/commit/bdd40908580f727c590c8743836e338b04fe4a87"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-40893",
-      "title": "Gotenberg has an ExifTool Dangerous Tag Blocklist Bypass via Group-Prefixed Tag Names that Allows Arbitrary File Rename ",
-      "description": "",
-      "cvss": 8.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-04",
-      "last_seen": "2026-05-04",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/gotenberg/gotenberg/v8",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-40893",
-        "CVE-2026-40893"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-62p3-hvxx-fxg4",
-        "https://github.com/gotenberg/gotenberg/security/advisories/GHSA-62p3-hvxx-fxg4",
-        "https://github.com/advisories/GHSA-62p3-hvxx-fxg4"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42311",
-      "title": "Pillow has an OOB Write with Invalid PSD Tile Extents (Integer Overflow)",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-04",
-      "last_seen": "2026-05-04",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "pillow",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42311",
-        "CVE-2026-42311"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-pwv6-vv43-88gr",
-        "https://github.com/python-pillow/Pillow/security/advisories/GHSA-cfh3-3jmp-rvhc",
-        "https://github.com/python-pillow/Pillow/security/advisories/GHSA-pwv6-vv43-88gr",
-        "https://github.com/python-pillow/Pillow/pull/9520"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "GHSA-f16bb274abdcaa77",
-      "title": "gix and gitoxide: unvalidated submodule name traverses out of .git/modules and redirects state() / open() to another rep",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.493,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-05",
-      "last_seen": "2026-05-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "gitoxide",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-fr8x-3vfx-f45h",
-        "https://github.com/GitoxideLabs/gitoxide/security/advisories/GHSA-fr8x-3vfx-f45h",
-        "https://github.com/advisories/GHSA-fr8x-3vfx-f45h"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-ddb6cb7dbbd8cbbd",
-      "title": "gix and gitoxide's symlinked .gitmodules are followed and parsed from outside of the repository",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.493,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-05",
-      "last_seen": "2026-05-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "gitoxide",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-pg4w-g64p-qwhj",
-        "https://github.com/GitoxideLabs/gitoxide/security/advisories/GHSA-pg4w-g64p-qwhj",
-        "https://github.com/advisories/GHSA-pg4w-g64p-qwhj"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-cdcfacd54784b9e4",
-      "title": "gitoxide: CommandForbiddenInModulesConfiguration Bypass in gix_submodule::File::update() Enables Arbitrary Command Execu",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.493,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-05",
-      "last_seen": "2026-05-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "gix",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-f26g-jm89-4g65",
-        "https://github.com/GitoxideLabs/gitoxide/security/advisories/GHSA-f26g-jm89-4g65",
-        "https://github.com/advisories/GHSA-f26g-jm89-4g65"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     }
   ]
