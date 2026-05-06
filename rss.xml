@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Wed, 06 May 2026 21:18:50 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 06 May 2026 22:12:18 GMT</lastBuildDate>
     <pubDate>Wed, 06 May 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,7 +31,128 @@
       <height>144</height>
     </image>
 
-      <item>
+        <item>
+    <title><![CDATA[rmcp Streamable HTTP server transport has a DNS rebinding vulnerability]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-42559-rust-rmcp.html</link>
+    <description><![CDATA[Score 50/100 MEDIUM — CVSS 8.8 — ## Summary Prior to version 1.4.0, the `rmcp` crate's Streamable HTTP server transport (`crates/rmcp/src/transport/streamable_http_server/`) did not validate the incoming `Host` header. This allowed a malicious public website, via a DNS rebinding attack, to send authenticated requests to an MCP serv. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-42559-rust-rmcp.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI has unauthenticated RCE via `tool_override.py` (CVE-2026-40287 patch bypass)]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44334-pip-praisonai.html</link>
+    <description><![CDATA[Score 46/100 MEDIUM — CVSS 8.4 — ## TL;DR CVE-2026-40287's fix gated `tools.py` auto-import behind `PRAISONAI_ALLOW_LOCAL_TOOLS=true` in **two** files (`tool_resolver.py`, `api/call.py`). A **third** import sink in `praisonai/templates/tool_override.py` was missed and remains unguarded. It is reached by the recipe runner on every r. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44334-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI has an SSRF bypass]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44335-pip-praisonaiagents.html</link>
+    <description><![CDATA[Score 45/100 MEDIUM — CVSS 7.5 — ### Summary
+The URL checking logic in PraisonAI has a logical flaw that could be bypassed by attackers, leading to SSRF attacks. ### Details
+The current PraisonAI project uses _validate_url to validate the input URL. The main logic is to perform security checks on the host portion of the URL extract. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44335-pip-praisonaiagents.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[GitPython: Newline injection in config_writer().set_value() enables RCE via core.hooksPath]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44244-pip-gitpython.html</link>
+    <description><![CDATA[Score 44/100 LOW — CVSS 7.8 — `GitConfigParser.set_value()` passes values to Python's `configparser` without validating for newlines. GitPython's own `_write()` converts embedded newlines into indented continuation lines (e.g. `\n` becomes `\n\t`), but Git still accepts an indented `[core]` stanza as a section header — so the in. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44244-pip-gitpython.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Daptin fuzzy search injects unvalidated column name into raw SQL]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44349-go-github-com-daptin-daptin.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ## Summary `processFuzzySearch` in `server/resource/resource_findallpaginated.go:1484` splits the user-supplied `column` parameter by comma and interpolates each segment directly into `goqu.L(fmt.Sprintf("LOWER(%s) LIKE ?", prefix+col))` raw SQL with no column whitelist check. The entry point is `GE. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44349-go-github-com-daptin-daptin.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[python-multipart has Denial of Service via unbounded multipart part headers]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-42561-pip-python-multipart.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary `python-multipart` has a denial of service vulnerability in multipart part header parsing. When parsing `multipart/form-data`, `MultipartParser` previously had no limit on the number of part headers or the size of an individual part header. An attacker could send a request with either ma. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-42561-pip-python-multipart.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Mako vulnerable to path traversal via backslash URI on Windows in TemplateLookup]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44307-pip-mako.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ## Summary On Windows, a URI using backslash traversal (e.g. `\..\..\ secret.txt`) bypasses the directory traversal check in `Template.__init__` and the `posixpath`-based normalization in `TemplateLookup.get_template()`, allowing reads of files outside the configured template directory. ## Details T. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44307-pip-mako.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[JupyterLab's command linker attributes in HTML enable one-click command execution from untrusted content]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-42557-pip-jupyterlab.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — JupyterLab's HTML sanitizer allowlists `data-commandlinker-command` and `data-commandlinker-args` on `button` elements, while `CommandLinker` listens for all click events on `document.body` and executes the named command without checking whether the element came from trusted JupyterLab UI. A noteboo. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-42557-pip-jupyterlab.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Flight vulnerable to sensitive information disclosure via default error handler]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-42552-composer-flightphp-core.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary
+The default error handler `Engine::_error()` writes the full exception message, exception code, and stack trace (including absolute filesystem paths) directly into the HTTP 500 response, with no debug gating. Production deployments leak internal paths, any secret interpolated into an exc. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-42552-composer-flightphp-core.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Flight: HTTP method override enabled by default, facilitating CSRF escalation and middleware bypass]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-42551-composer-flightphp-core.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary
+`Request::getMethod()` unconditionally honors the `X-HTTP-Method-Override` header and the `$_REQUEST['_method']` parameter on **any** HTTP verb (including safe verbs such as GET), with no opt-in and no whitelist of permitted target methods. A GET request can silently become a DELETE or P. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-42551-composer-flightphp-core.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Hackers abuse Google ads for GoDaddy ManageWP login phishing]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/hackers-abuse-google-ads-for-godaddy-managewp-login-phishing.html</link>
+    <description><![CDATA[Score 38/100 LOW — CVSS 6.5 — A phishing campaign delivered through Google sponsored search results is targeting credentials for ManageWP, GoDaddy's platform for managing fleets of WordPress websites. [...]. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/hackers-abuse-google-ads-for-godaddy-managewp-login-phishing.html</guid>
+    <category>Threat Intelligence</category>
+    <category>NEWS_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Yet Another Way to Bypass Google Chrome's Encryption Protection]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/yet-another-way-to-bypass-google-chrome-s-encryption-protect.html</link>
+    <description><![CDATA[Score 38/100 LOW — CVSS 6.5 — Authors of the VoidStealer Trojan uncovered a way to get around Google's App-Bound Encryption (ABE), opening the door to infostealers.. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/yet-another-way-to-bypass-google-chrome-s-encryption-protect.html</guid>
+    <category>Threat Intelligence</category>
+    <category>MALWARE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[A Kid With a Fake Mustache Tricked an Online Age-Verification Tool]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/a-kid-with-a-fake-mustache-tricked-an-online-age-verificatio.html</link>
+    <description><![CDATA[Score 38/100 LOW — CVSS 6.5 — To stop children from bypassing its age checks, Meta is revamping its age-verification tools with an AI system that analyzes images and videos for “visual cues,” such as height and bone structure.. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 06 May 2026 22:12:18 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/a-kid-with-a-fake-mustache-tricked-an-online-age-verificatio.html</guid>
+    <category>Threat Intelligence</category>
+    <category>NEWS_REPORT</category>
+  </item>
+  <item>
     <title><![CDATA[Palo Alto Firewall Zero-Day Under Active Exploitation]]></title>
     <link>https://blog.cyberdudebivash.in/posts/palo-alto-firewall-zero-day-under-active-exploitation.html</link>
     <description><![CDATA[Score 73/100 HIGH — CVSS 6.5 — &lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1t5cbhz/palo_alto_firewall_zeroday_under_active/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/n-Uho1d8-k57k42FE08b3xMW1D-eCOpdLcWuJbZisjo.jpeg?width=320&amp;amp;crop=smart&amp;amp;auto. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
