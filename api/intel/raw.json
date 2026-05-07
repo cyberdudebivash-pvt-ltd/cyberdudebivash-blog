@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-07T00:05:30.440Z",
+  "generated": "2026-05-07T04:02:37.479Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,8 +8,55 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 98,
+  "count": 101,
   "items": [
+    {
+      "id": "GHSA-27c9b58725ad8a89",
+      "title": "Diffusers: None.py has Trust Remote Code Bypass",
+      "description": "## Background This vulnerability is found in the `DiffusionPipeline.from_pretrained` flow, which is used to load a pipeline from the HuggingFace Hub. This function accepts an optional `custom_pipeline` keyword argument: the name of a Python file in the repo that contains a custom class inheriting fr",
+      "cvss": 8.8,
+      "final_ps": 51,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "diffusers",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-j7w6-vpvq-j3gm",
+        "https://github.com/huggingface/diffusers/security/advisories/GHSA-j7w6-vpvq-j3gm",
+        "https://github.com/huggingface/diffusers/pull/13448",
+        "https://github.com/huggingface/diffusers/commit/a37f6f8394ac2a7ee8360c3abea811efe54512b1"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=51 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -99,9 +146,53 @@
       "iocs": []
     },
     {
-      "id": "GHSA-cd008fc20f9f300d",
-      "title": "ldap3_proto has LDAP Filter stack exhaustion",
-      "description": "### Impact\nLDAP queries are not validated for depth, which can cause the parser (both PEG and ASN) to exhaust the stack. This *may* cause a denial of service in applications that process queries. ### Workarounds\nN/A ### Resources\nRelated to GHSA-r5fr-9gmv-jggh",
+      "id": "SANS_ISC-18faed0ce9e945df",
+      "title": "An Adaptive Cyber Analytics UI for Web Honeypot Logs &#x5b;Guest Diary&#x5d;, (Wed, May 6th)",
+      "description": "&#x5b;This is a Guest Diary by Eric Roldan, an ISC intern as part of the SANS.edu BACS program&#x5d; &#xd;",
+      "cvss": 6.5,
+      "final_ps": 49,
+      "quality_score": 0.445,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sans_isc",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sans_isc"
+      ],
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SANS ISC",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://isc.sans.edu/diary/rss/32962"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (sans_isc)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-dc519870d57cd6ab",
+      "title": "hickory-proto: NSEC3 closest-encloser proof validation enters unbounded loop on cross-zone responses",
+      "description": "The NSEC3 closest-encloser proof validation in `hickory-proto`'s (0.25.0-alpha.3 ... 0.25.2) and `hickory-net`'s (0.26.0-alpha.1 .. 0.26.0) `DnssecDnsHandle` walks from the QNAME up to the SOA owner name, building a list of candidate encloser names. The iterator used assumes the QNAME is a descendan",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -112,21 +203,21 @@
       "merged_sources": [
         "github_advisories"
       ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "rust",
-      "product": "ldap3_proto",
+      "product": "hickory-proto",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-qcxq-75wr-5cm8",
-        "https://github.com/kanidm/ldap3/security/advisories/GHSA-qcxq-75wr-5cm8",
-        "https://github.com/advisories/GHSA-r5fr-9gmv-jggh",
-        "https://github.com/advisories/GHSA-qcxq-75wr-5cm8"
+        "https://github.com/advisories/GHSA-3v94-mw7p-v465",
+        "https://github.com/hickory-dns/hickory-dns/security/advisories/GHSA-3v94-mw7p-v465",
+        "https://rustsec.org/advisories/RUSTSEC-2026-0118.html",
+        "https://rustsec.org/advisories/RUSTSEC-2026-0120.html"
       ],
       "explanation": {
         "quality": [
@@ -146,9 +237,9 @@
       "iocs": []
     },
     {
-      "id": "GHSA-5c678f57eb9548dd",
-      "title": "scim_proton and kanidm_proto have an authenticated process abort via SCIM filter stack exhaustion",
-      "description": "### Summary A single unauthenticated `GET` to any `/scim/v1/...` endpoint with a `?filter=` query string of a few thousand nested parentheses (≈ 4–12 KB) drives the recursive-descent PEG parser past the worker thread's stack guard page. Rust responds to stack overflow with `std::process::abort()` — ",
+      "id": "GHSA-3c9e45adf2a32f16",
+      "title": "Talos Linux has a local privilege escalation from untrusted workloads",
+      "description": "### Summary A vulnerability in the Linux kernel's algif_aead subsystem (CVE-2026-31431, \"copy.fail\") allows an unprivileged container workload to corrupt arbitrary file page-cache pages via the AF_ALG crypto interface and splice(). On Talos Linux, this vulnerability can be chained into a complete no",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -159,20 +250,21 @@
       "merged_sources": [
         "github_advisories"
       ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "rust",
-      "product": "scim_proto",
+      "vendor": "go",
+      "product": "github.com/siderolabs/talos",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-r5fr-9gmv-jggh",
-        "https://github.com/kanidm/kanidm/security/advisories/GHSA-r5fr-9gmv-jggh",
-        "https://github.com/advisories/GHSA-r5fr-9gmv-jggh"
+        "https://github.com/advisories/GHSA-m38g-vww2-mvgx",
+        "https://github.com/siderolabs/talos/security/advisories/GHSA-m38g-vww2-mvgx",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-31431",
+        "https://github.com/Percivalll/Copy-Fail-CVE-2026-31431-Kubernetes-PoC"
       ],
       "explanation": {
         "quality": [
@@ -326,6 +418,66 @@
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
+    },
+    {
+      "id": "SANS_ISC-44dd3187f974a0d7",
+      "title": "ISC Stormcast For Thursday, May 7th, 2026 https://isc.sans.edu/podcastdetail/9922, (Thu, May 7th)",
+      "description": "(c) SANS Internet Storm Center. https://isc.sans.edu Creative Commons Attribution-Noncommercial 3.0 United States License.",
+      "cvss": 6.5,
+      "final_ps": 44,
+      "quality_score": 0.505,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sans_isc",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sans_isc"
+      ],
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SANS ISC",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 2,
+      "refs": [
+        "https://isc.sans.edu/diary/rss/32964"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (sans_isc)",
+          "data_confidence=0.80",
+          "ioc_presence=2 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.505"
+        ],
+        "priority": [
+          "base_ps=44 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "url",
+          "value": "https://isc.sans.edu/podcastdetail/9922,",
+          "confidence_score": 0.82,
+          "first_seen": "2026-05-07",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://isc.sans.edu",
+          "confidence_score": 0.82,
+          "first_seen": "2026-05-07",
+          "source_count": 1
+        }
+      ]
     },
     {
       "id": "CVE-2026-32202",
@@ -3139,8 +3291,58 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-42577",
-      "title": "Netty epoll transport denial of service via RST on half-closed TCP connection",
+      "id": "CVE-2026-42083",
+      "title": "Free5GC PCF: Missing authentication middleware in Npcf_SMPolicyControl allows access to SM policy handlers and disclosur",
+      "description": "",
+      "cvss": 8.2,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/free5gc/pcf",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42083",
+        "CVE-2026-42083"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-6rgm-gr97-x3j5",
+        "https://github.com/free5gc/free5gc/security/advisories/GHSA-6rgm-gr97-x3j5",
+        "https://github.com/free5gc/free5gc/issues/844",
+        "https://github.com/free5gc/pcf/pull/63"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-42786",
+      "title": "Bandit Buffers Unbounded WebSocket Continuation Frames, Allowing Unauthenticated Memory Exhaustion",
       "description": "",
       "cvss": 7.5,
       "final_ps": 21,
@@ -3152,24 +3354,224 @@
       "merged_sources": [
         "github_advisories"
       ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "maven",
-      "product": "io.netty:netty-transport-native-epoll",
+      "vendor": "erlang",
+      "product": "bandit",
       "due_date": null,
       "cves": [
-        "CVE-2026-42577",
-        "CVE-2026-42577"
+        "CVE-2026-42786",
+        "CVE-2026-42786"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-rwm7-x88c-3g2p",
-        "https://github.com/netty/netty/security/advisories/GHSA-rwm7-x88c-3g2p",
-        "https://github.com/netty/netty/pull/16689",
-        "https://github.com/netty/netty/commit/0ec3d97fab376e243d328ac95fbd288ba0f6e22d"
+        "https://github.com/advisories/GHSA-pf94-94m9-536p",
+        "https://github.com/mtrudel/bandit/security/advisories/GHSA-pf94-94m9-536p",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-42786",
+        "https://github.com/mtrudel/bandit/commit/21612c7c7b1ce43eccd36d3af3a2299d23513667"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-39804",
+      "title": "Bandit's unbounded WebSocket inflate causes BEAM OOM with a single frame",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "erlang",
+      "product": "bandit",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-39804",
+        "CVE-2026-39804"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-frh3-6pv6-rc8j",
+        "https://github.com/mtrudel/bandit/security/advisories/GHSA-frh3-6pv6-rc8j",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-39804",
+        "https://github.com/mtrudel/bandit/commit/8156921a51e684a951221da7bc30a70a022f722e"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-42459",
+      "title": "Free5GC UDM has Improper Input Validation and Generation of Error Messages Containing Sensitive Information",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/free5gc/udm",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42459",
+        "CVE-2026-42459"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-585v-hcgf-jhfr",
+        "https://github.com/free5gc/free5gc/security/advisories/GHSA-585v-hcgf-jhfr",
+        "https://github.com/free5gc/free5gc/security/advisories/GHSA-h4wg-rp7m-8xx4",
+        "https://github.com/free5gc/udm/blob/v1.4.3/internal/sbi/api_subscriberdatamanagement.go"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-44504",
+      "title": "Aegra has cross-user run injection in /threads/{thread_id}/runs (IDOR)",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "aegra-api",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44504",
+        "CVE-2026-44504"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-m98r-6667-4wq7",
+        "https://github.com/aegra/aegra/security/advisories/GHSA-m98r-6667-4wq7",
+        "https://github.com/aegra/aegra/issues/336",
+        "https://github.com/aegra/aegra/pull/337"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-44511",
+      "title": "katalyst-koi: Session cookies can be replayed after user logout",
+      "description": "",
+      "cvss": 7.4,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rubygems",
+      "product": "katalyst-koi",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44511",
+        "CVE-2026-44511"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4cx3-3c38-j9vv",
+        "https://github.com/katalyst/koi/security/advisories/GHSA-4cx3-3c38-j9vv",
+        "https://guides.rubyonrails.org/v5.2.0/security.html#replay-attacks-for-cookiestore-sessions",
+        "https://github.com/advisories/GHSA-4cx3-3c38-j9vv"
       ],
       "explanation": {
         "quality": [
@@ -3219,6 +3621,56 @@
         "https://github.com/advisories/GHSA-f89h-2fjh-2r9q",
         "https://github.com/GitoxideLabs/gitoxide/security/advisories/GHSA-f89h-2fjh-2r9q",
         "https://github.com/advisories/GHSA-f89h-2fjh-2r9q"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-42577",
+      "title": "Netty epoll transport denial of service via RST on half-closed TCP connection",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-06",
+      "last_seen": "2026-05-06",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "io.netty:netty-transport-native-epoll",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42577",
+        "CVE-2026-42577"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-rwm7-x88c-3g2p",
+        "https://github.com/netty/netty/security/advisories/GHSA-rwm7-x88c-3g2p",
+        "https://github.com/netty/netty/pull/16689",
+        "https://github.com/netty/netty/commit/0ec3d97fab376e243d328ac95fbd288ba0f6e22d"
       ],
       "explanation": {
         "quality": [
@@ -4129,62 +4581,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-44304",
-      "title": "Lemur: LDAP Filter Injection enables post-authentication privilege escalation",
-      "description": "",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "lemur",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44304",
-        "CVE-2026-44304"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-3r34-vq8m-39gh",
-        "https://github.com/Netflix/lemur/security/advisories/GHSA-3r34-vq8m-39gh",
-        "https://github.com/Netflix/lemur/releases/tag/v1.9.0",
-        "https://github.com/advisories/GHSA-3r34-vq8m-39gh"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-44243",
-      "title": "GitPython reference APIs has a path traversal vulnerability that allows arbitrary file write and delete outside the repo",
+      "id": "GHSA-7deabfd517e1bda4",
+      "title": "rust-zserio has Unbounded Memory Allocation",
       "description": "",
       "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "final_ps": 20,
+      "quality_score": 0.493,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "github_advisories",
@@ -4192,286 +4594,37 @@
       "merged_sources": [
         "github_advisories"
       ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "pip",
-      "product": "GitPython",
+      "vendor": "rust",
+      "product": "rust-zserio",
       "due_date": null,
-      "cves": [
-        "CVE-2026-44243",
-        "CVE-2026-44243"
-      ],
+      "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-7545-fcxq-7j24",
-        "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-7545-fcxq-7j24",
-        "https://github.com/advisories/GHSA-7545-fcxq-7j24"
+        "https://github.com/advisories/GHSA-fpf5-4jw8-67x8",
+        "https://github.com/Danaozhong/rust-zserio/security/advisories/GHSA-fpf5-4jw8-67x8",
+        "https://github.com/ndsev/zserio/security/advisories/GHSA-cwq5-8pvq-j65j",
+        "https://github.com/Danaozhong/rust-zserio/commit/57f5fb4a2a8611d58dbcc1a9221349206dd99c3c"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.493"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=20 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-44240",
-      "title": "basic-ftp allows a malicious FTP server to cause client-side denial of service via unbounded multiline control response ",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "basic-ftp",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44240",
-        "CVE-2026-44240"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-rpmf-866q-6p89",
-        "https://github.com/patrickjuchli/basic-ftp/security/advisories/GHSA-rpmf-866q-6p89",
-        "https://github.com/advisories/GHSA-rpmf-866q-6p89"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-33441",
-      "title": "Mistune has a Denial-of-Service (DoS) vulnerability",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "mistune",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-33441",
-        "CVE-2026-33441"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-hjph-f4mc-wx4c",
-        "https://github.com/lepture/mistune/security/advisories/GHSA-hjph-f4mc-wx4c",
-        "https://github.com/advisories/GHSA-hjph-f4mc-wx4c"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-33079",
-      "title": "Mistune has a ReDoS in LINK_TITLE_RE that allows denial of service via crafted Markdown input",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "mistune",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-33079",
-        "CVE-2026-33079"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-8mp2-v27r-99xp",
-        "https://github.com/lepture/mistune/security/advisories/GHSA-8mp2-v27r-99xp",
-        "https://github.com/advisories/GHSA-8mp2-v27r-99xp"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-44011",
-      "title": "Craft CMS has Potential Authenticated Remote Code Execution via Malicious Attached Behavior",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "craftcms/cms",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44011",
-        "CVE-2026-44011"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-qrgm-p9w5-rrfw",
-        "https://github.com/craftcms/cms/security/advisories/GHSA-255j-qw47-wjh5",
-        "https://github.com/craftcms/cms/security/advisories/GHSA-qrgm-p9w5-rrfw",
-        "https://github.com/advisories/GHSA-qrgm-p9w5-rrfw"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42339",
-      "title": "QuantumNous/new-api has an SSRF Filter Bypass via 0.0.0.0",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/QuantumNous/new-api",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42339",
-        "CVE-2026-42339"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-v5c3-6wvc-pc2q",
-        "https://github.com/QuantumNous/new-api/security/advisories/GHSA-v5c3-6wvc-pc2q",
-        "https://github.com/advisories/GHSA-9f46-w24h-69w4",
-        "https://github.com/advisories/GHSA-v5c3-6wvc-pc2q"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     }
   ]
