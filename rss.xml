@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Thu, 07 May 2026 04:02:37 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 07 May 2026 06:49:36 GMT</lastBuildDate>
     <pubDate>Thu, 07 May 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,7 +31,56 @@
       <height>144</height>
     </image>
 
-    <item>
+      <item>
+    <title><![CDATA[vm2 Node.js Library Vulnerabilities Enable Sandbox Escape and Arbitrary Code Execution]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/vm2-node-js-library-vulnerabilities-enable-sandbox-escape-an.html</link>
+    <description><![CDATA[Score 64/100 MEDIUM — CVSS 6.5 — A dozen critical security vulnerabilities have been disclosed in the vm2 Node.js library that could be exploited by bad actors to break out of the sandbox and execute arbitrary code on susceptible systems.
+vm2 is an open-source library used to run untrusted JavaScript code inside a secure sandbox by. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Thu, 07 May 2026 06:49:36 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/vm2-node-js-library-vulnerabilities-enable-sandbox-escape-an.html</guid>
+    <category>Threat Intelligence</category>
+    <category>NEWS_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[vm2 has a NodeVM require.root bypass via symlink traversal that allows sandbox escape]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-43998-npm-vm2.html</link>
+    <description><![CDATA[Score 53/100 MEDIUM — CVSS 8.5 — ## Summary
+NodeVM's `require.root` path restriction can be bypassed using filesystem symlinks, allowing sandboxed code to load modules from outside the allowed root directory in host context. Because path validation uses `path.resolve()` (which does not dereference symlinks) but module loading uses . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Thu, 07 May 2026 06:49:36 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-43998-npm-vm2.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Diffusers has a `trust_remote_code` bypass via `custom_pipeline` and local custom components]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44513-pip-diffusers.html</link>
+    <description><![CDATA[Score 48/100 MEDIUM — CVSS 8.8 — ### Impact A `trust_remote_code` bypass in `DiffusionPipeline.from_pretrained` allows arbitrary remote code execution despite the user passing `trust_remote_code=False` (or omitting it, which is the default). The vulnerability has three variants, all sharing the same root cause — the `trust_remote_c. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Thu, 07 May 2026 06:49:36 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44513-pip-diffusers.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[vm2 has a Sandbox Escape via Promise Constructor Unhandled Rejection (Process Crash DoS)]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44001-npm-vm2.html</link>
+    <description><![CDATA[Score 47/100 MEDIUM — CVSS 8.6 — ### Summary
+A sandbox escape vulnerability in vm2 v3.10.5 allows any sandboxed code to crash the host Node.js process via a single Promise constructor that triggers an unhandled rejection propagating to the host. The fix for CVE-2026-22709 (v3.10.2) only sanitized the `onRejected` callback in `.then. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Thu, 07 May 2026 06:49:36 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44001-npm-vm2.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[vm2 Sandbox Access to Host Buffer.alloc Allows timeout Bypass Resulting in Memory Exhaustion]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44004-npm-vm2.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary
+Sandboxed code can call `Buffer.alloc()` with an arbitrary size to allocate memory directly on the host heap. Because `Buffer.alloc` is a synchronous C++ native call, vm2's `timeout` option cannot interrupt it. A single request can exhaust host memory and crash the process with a `FATAL . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Thu, 07 May 2026 06:49:36 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44004-npm-vm2.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
     <title><![CDATA[Diffusers: None.py has Trust Remote Code Bypass]]></title>
     <link>https://blog.cyberdudebivash.in/posts/diffusers-none-py-has-trust-remote-code-bypass.html</link>
     <description><![CDATA[Score 48/100 MEDIUM — CVSS 8.8 — ## Background This vulnerability is found in the `DiffusionPipeline.from_pretrained` flow, which is used to load a pipeline from the HuggingFace Hub. This function accepts an optional `custom_pipeline` keyword argument: the name of a Python file in the repo that contains a custom class inheriting fr. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>

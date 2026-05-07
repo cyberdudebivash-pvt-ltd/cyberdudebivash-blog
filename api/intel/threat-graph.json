@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-07T04:02:37.472Z",
+  "generated": "2026-05-07T06:49:35.949Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 693,
+    "total_nodes": 699,
     "actors": 8,
-    "cves": 169,
-    "campaigns": 70,
+    "cves": 173,
+    "campaigns": 71,
     "malware": 0,
     "iocs": 91,
-    "edges": 268
+    "edges": 269
   },
   "nodes": {
     "actor:lockbit": {
@@ -13328,6 +13328,116 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "THEHACKERNEWS-380054b122c7487b": {
+      "id": "THEHACKERNEWS-380054b122c7487b",
+      "type": "Intel",
+      "name": "vm2 Node.js Library Vulnerabilities Enable Sandbox Escape and Arbitrary Code Execution",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-05-07",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-43998": {
+      "id": "CVE-2026-43998",
+      "type": "CVE",
+      "name": "vm2 has a NodeVM require.root bypass via symlink traversal that allows sandbox escape",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "vm2",
+        "published": "2026-05-07",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-44513": {
+      "id": "CVE-2026-44513",
+      "type": "CVE",
+      "name": "Diffusers has a `trust_remote_code` bypass via `custom_pipeline` and local custom components",
+      "attributes": {
+        "cvss": 8.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "diffusers",
+        "published": "2026-05-07",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-44001": {
+      "id": "CVE-2026-44001",
+      "type": "CVE",
+      "name": "vm2 has a Sandbox Escape via Promise Constructor Unhandled Rejection (Process Crash DoS)",
+      "attributes": {
+        "cvss": 8.6,
+        "threat_level": "MEDIUM",
+        "priority_score": 47,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "vm2",
+        "published": "2026-05-07",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-44004": {
+      "id": "CVE-2026-44004",
+      "type": "CVE",
+      "name": "vm2 Sandbox Access to Host Buffer.alloc Allows timeout Bypass Resulting in Memory Exhaustion",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "vm2",
+        "published": "2026-05-07",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-ce853b00": {
+      "id": "campaign:cluster-ce853b00",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-05-07",
+        "last_seen": "2026-05-07",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "THEHACKERNEWS-380054b122c7487b",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -15778,6 +15888,15 @@
       "target": "ioc:sha1:57f5fb4a2a8611d58dbcc1a9221349206dd99c3c",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-05-07",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-ce853b00→includes→THEHACKERNEWS-380054b122c7487b",
+      "source": "campaign:cluster-ce853b00",
+      "target": "THEHACKERNEWS-380054b122c7487b",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-05-07",
       "sources": []
     }
