@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-06T23:09:02.943Z",
+  "generated": "2026-05-07T00:05:30.440Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 96,
+  "count": 98,
   "items": [
     {
       "id": "CVE-2023-27351",
@@ -96,6 +96,99 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "GHSA-cd008fc20f9f300d",
+      "title": "ldap3_proto has LDAP Filter stack exhaustion",
+      "description": "### Impact\nLDAP queries are not validated for depth, which can cause the parser (both PEG and ASN) to exhaust the stack. This *may* cause a denial of service in applications that process queries. ### Workarounds\nN/A ### Resources\nRelated to GHSA-r5fr-9gmv-jggh",
+      "cvss": 7.5,
+      "final_ps": 48,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-06",
+      "last_seen": "2026-05-06",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "ldap3_proto",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-qcxq-75wr-5cm8",
+        "https://github.com/kanidm/ldap3/security/advisories/GHSA-qcxq-75wr-5cm8",
+        "https://github.com/advisories/GHSA-r5fr-9gmv-jggh",
+        "https://github.com/advisories/GHSA-qcxq-75wr-5cm8"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-5c678f57eb9548dd",
+      "title": "scim_proton and kanidm_proto have an authenticated process abort via SCIM filter stack exhaustion",
+      "description": "### Summary A single unauthenticated `GET` to any `/scim/v1/...` endpoint with a `?filter=` query string of a few thousand nested parentheses (≈ 4–12 KB) drives the recursive-descent PEG parser past the worker thread's stack guard page. Rust responds to stack overflow with `std::process::abort()` — ",
+      "cvss": 7.5,
+      "final_ps": 48,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-06",
+      "last_seen": "2026-05-06",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "scim_proto",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-r5fr-9gmv-jggh",
+        "https://github.com/kanidm/kanidm/security/advisories/GHSA-r5fr-9gmv-jggh",
+        "https://github.com/advisories/GHSA-r5fr-9gmv-jggh"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -3046,6 +3139,155 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-42577",
+      "title": "Netty epoll transport denial of service via RST on half-closed TCP connection",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-06",
+      "last_seen": "2026-05-06",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "io.netty:netty-transport-native-epoll",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42577",
+        "CVE-2026-42577"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-rwm7-x88c-3g2p",
+        "https://github.com/netty/netty/security/advisories/GHSA-rwm7-x88c-3g2p",
+        "https://github.com/netty/netty/pull/16689",
+        "https://github.com/netty/netty/commit/0ec3d97fab376e243d328ac95fbd288ba0f6e22d"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-44471",
+      "title": "gix-fs: Symlink prefix-reuse allows worktree escape during checkout",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-07",
+      "last_seen": "2026-05-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "gix-fs",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44471",
+        "CVE-2026-44471"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-f89h-2fjh-2r9q",
+        "https://github.com/GitoxideLabs/gitoxide/security/advisories/GHSA-f89h-2fjh-2r9q",
+        "https://github.com/advisories/GHSA-f89h-2fjh-2r9q"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-0897",
+      "title": "Keras vulnerable to DoS via Malicious .keras Model (HDF5 Shape Bomb Causes Petabyte Allocation in KerasFileEditor)",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-06",
+      "last_seen": "2026-05-06",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "keras",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-0897",
+        "CVE-2026-0897"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-mgx6-5cf9-rr43",
+        "https://github.com/keras-team/keras/security/advisories/GHSA-mgx6-5cf9-rr43",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-0897",
+        "https://github.com/keras-team/keras/pull/21880"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-42602",
       "title": "opentelemetry-collector-contrib's azureauthextension Authenticate method does not validate bearer tokens, allowing auth ",
       "description": "",
@@ -4214,155 +4456,6 @@
         "https://github.com/QuantumNous/new-api/security/advisories/GHSA-v5c3-6wvc-pc2q",
         "https://github.com/advisories/GHSA-9f46-w24h-69w4",
         "https://github.com/advisories/GHSA-v5c3-6wvc-pc2q"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42283",
-      "title": "DevSpace UI Server WebSocket CheckOrigin does not validate source",
-      "description": "",
-      "cvss": 7.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/loft-sh/devspace",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42283",
-        "CVE-2026-42283"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-hqwm-7x7x-8379",
-        "https://github.com/devspace-sh/devspace/security/advisories/GHSA-hqwm-7x7x-8379",
-        "https://github.com/advisories/GHSA-hqwm-7x7x-8379"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42222",
-      "title": "Nginx-UI: Unauthenticated first-boot instance claim via POST /api/install allows remote bootstrap takeover",
-      "description": "",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/0xJacky/nginx-ui",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42222",
-        "CVE-2026-42222"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-mxqh-q9h6-v8pq",
-        "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-mxqh-q9h6-v8pq",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-42222",
-        "https://github.com/advisories/GHSA-mxqh-q9h6-v8pq"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42221",
-      "title": "Nginx-UI: Unauthenticated First-Run Installer Allows Remote Initial Admin Claim",
-      "description": "",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/0xJacky/Nginx-UI",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42221",
-        "CVE-2026-42221"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-h27v-ph7w-m9fp",
-        "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-h27v-ph7w-m9fp",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-42221",
-        "https://github.com/0xJacky/nginx-ui/releases/tag/v2.3.8"
       ],
       "explanation": {
         "quality": [
