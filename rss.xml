@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Thu, 07 May 2026 20:45:49 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 07 May 2026 21:42:09 GMT</lastBuildDate>
     <pubDate>Thu, 07 May 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,7 +31,54 @@
       <height>144</height>
     </image>
 
-    <item>
+      <item>
+    <title><![CDATA[Ech0's OAuth redirect URI validation ignores path component, enables exchange-code theft]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/ech0-s-oauth-redirect-uri-validation-ignores-path-component.html</link>
+    <description><![CDATA[Score 52/100 MEDIUM — CVSS 8 — ## Summary `parseAndValidateClientRedirect` at `internal/service/auth/auth.go:448` validates OAuth client-redirect URIs by comparing only scheme and host against the admin-configured allowlist. Path, query, and fragment are ignored. The initiator at `/oauth/:provider/login` embeds the caller-supplie. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Thu, 07 May 2026 21:42:09 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/ech0-s-oauth-redirect-uri-validation-ignores-path-component.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[ech0's acess tokens with expiry=never cannot be revoked: logout panics, delete does not blacklist JTI]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/ech0-s-acess-tokens-with-expiry-never-cannot-be-revoked-log.html</link>
+    <description><![CDATA[Score 49/100 MEDIUM — CVSS 7.4 — ## Summary Access tokens created with the "never expire" option have no `exp` JWT claim. Three independent revocation mechanisms fail for this token type. Logout at `internal/handler/auth/auth.go:154` and `:163` dereferences `claims.ExpiresAt.Time`, panicking on the nil field so the token never hits. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Thu, 07 May 2026 21:42:09 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/ech0-s-acess-tokens-with-expiry-never-cannot-be-revoked-log.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Ech0 has Server-Side Request Forgery (SSRF) via Connect Handler fetchPeerConnectInfo]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/ech0-has-server-side-request-forgery-ssrf-via-connect-hand.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.7 — ## Summary
+The `fetchPeerConnectInfo` function in `internal/service/connect/connect.go:214-239` uses `httpUtil.SendRequest` (no SSRF protection) instead of `SendSafeRequest` (which has `ValidatePublicHTTPURL` with private IP blocking). This allows authenticated users to make the server request arbit. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Thu, 07 May 2026 21:42:09 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/ech0-has-server-side-request-forgery-ssrf-via-connect-hand.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Note Mark: Arbitrary File Write via Path Traversal in Asset Names Leads to Remote Code Execution]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44522-go-github-com-enchant97-note-mark-backend.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Description The Note Mark application allows authenticated users to upload assets to notes via `POST /api/notes/{noteID}/assets`, where the asset filename is provided through the `X-Name` HTTP request header. This value is stored directly in the database without any sanitization or validation - . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Thu, 07 May 2026 21:42:09 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44522-go-github-com-enchant97-note-mark-backend.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Microsoft APM CLI's plugin.json component paths escape plugin root and copy arbitrary host files during install]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44641-pip-apm-cli.html</link>
+    <description><![CDATA[Score 41/100 LOW — CVSS 7.1 — ### Summary
+Microsoft APM normalizes marketplace plugins by copying plugin components referenced in `plugin.json` into `.apm/`. The manifest fields `agents`, `skills`, `commands`, and `hooks` are attacker-controlled, but the implementation does not enforce that those paths remain inside the plugin d. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Thu, 07 May 2026 21:42:09 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44641-pip-apm-cli.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
     <title><![CDATA[Ivanti EPMM CVE-2026-6973 RCE Under Active Exploitation Grants Admin-Level Access]]></title>
     <link>https://blog.cyberdudebivash.in/posts/cve-2026-6973-the-hacker-news-threat-intelligence.html</link>
     <description><![CDATA[Score 68/100 HIGH — CVSS 8 — Ivanti is warning that a new security flaw impacting Endpoint Manager Mobile (EPMM) has been explored in limited attacks in the wild.
