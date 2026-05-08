@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-08T11:18:15.801Z",
+  "generated": "2026-05-08T12:50:28.948Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 795,
+    "total_nodes": 798,
     "actors": 8,
     "cves": 181,
-    "campaigns": 81,
+    "campaigns": 82,
     "malware": 0,
     "iocs": 102,
-    "edges": 306
+    "edges": 307
   },
   "nodes": {
     "actor:lockbit": {
@@ -15263,6 +15263,62 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-71d27177a05d8820": {
+      "id": "BLEEPINGCOMPUTER-71d27177a05d8820",
+      "type": "Intel",
+      "name": "CISA gives feds four days to patch Ivanti flaw exploited as zero-day",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 75,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-08",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-df52bbbb76d4aa3e": {
+      "id": "SECURITYWEEK-df52bbbb76d4aa3e",
+      "type": "Intel",
+      "name": "Polish Security Agency Reports ICS Breaches at Five Water Treatment Plants",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-05-08",
+        "type": "DATA_BREACH"
+      },
+      "connections": []
+    },
+    "campaign:cluster-95310936": {
+      "id": "campaign:cluster-95310936",
+      "type": "Campaign",
+      "name": "Ivanti Gateway Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-08",
+        "last_seen": "2026-05-08",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-71d27177a05d8820",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -18053,6 +18109,15 @@
       "id": "campaign:cluster-8a7e2349→includes→BLEEPINGCOMPUTER-99fd63caf972aae2",
       "source": "campaign:cluster-8a7e2349",
       "target": "BLEEPINGCOMPUTER-99fd63caf972aae2",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-08",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-95310936→includes→BLEEPINGCOMPUTER-71d27177a05d8820",
+      "source": "campaign:cluster-95310936",
+      "target": "BLEEPINGCOMPUTER-71d27177a05d8820",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-08",
