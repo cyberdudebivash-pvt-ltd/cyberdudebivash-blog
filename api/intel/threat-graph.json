@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-08T06:23:37.705Z",
+  "generated": "2026-05-08T08:09:02.482Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 784,
+    "total_nodes": 788,
     "actors": 8,
     "cves": 181,
-    "campaigns": 80,
+    "campaigns": 81,
     "malware": 0,
     "iocs": 102,
-    "edges": 305
+    "edges": 306
   },
   "nodes": {
     "actor:lockbit": {
@@ -5458,7 +5458,7 @@
     "CVE-2026-31431": {
       "id": "CVE-2026-31431",
       "type": "CVE",
-      "name": "Copy Fail: What You Need to Know About the Most Severe Linux Threat in Years",
+      "name": "Another Universal Linux Local Privilege Escalation (LPE) Vulnerability: Dirty Frag, (Fri, May 8th)",
       "attributes": {
         "cvss": 8,
         "threat_level": "MEDIUM",
@@ -5466,9 +5466,9 @@
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "unit42",
+        "vendor": "SANS ISC",
         "product": "Threat Intelligence",
-        "published": "2026-05-05",
+        "published": "2026-05-08",
         "type": "CVE_REPORT"
       },
       "connections": [
@@ -15063,6 +15063,80 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-99fd63caf972aae2": {
+      "id": "BLEEPINGCOMPUTER-99fd63caf972aae2",
+      "type": "Intel",
+      "name": "New Linux 'Dirty Frag' zero-day gives root on all major distros",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-08",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-22839fe6c1e3750f": {
+      "id": "SECURITYWEEK-22839fe6c1e3750f",
+      "type": "Intel",
+      "name": "Ransomware Group Takes Credit for Trellix Hack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-05-08",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-92f4018e87c566a0": {
+      "id": "SECURITYWEEK-92f4018e87c566a0",
+      "type": "Intel",
+      "name": "Vulnerability in Claude Extension for Chrome Exposes AI Agent to Takeover",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-05-08",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-8a7e2349": {
+      "id": "campaign:cluster-8a7e2349",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-08",
+        "last_seen": "2026-05-08",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-99fd63caf972aae2",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -17846,6 +17920,15 @@
       "target": "WIRED_SECURITY-8f8ea4ff8fef2129",
       "relationship": "exploits",
       "confidence": 0.85,
+      "first_seen": "2026-05-08",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-8a7e2349→includes→BLEEPINGCOMPUTER-99fd63caf972aae2",
+      "source": "campaign:cluster-8a7e2349",
+      "target": "BLEEPINGCOMPUTER-99fd63caf972aae2",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-05-08",
       "sources": []
     }
