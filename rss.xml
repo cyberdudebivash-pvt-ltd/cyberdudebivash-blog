@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Fri, 08 May 2026 22:33:16 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 08 May 2026 23:34:08 GMT</lastBuildDate>
     <pubDate>Fri, 08 May 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,7 +31,108 @@
       <height>144</height>
     </image>
 
-        <item>
+          <item>
+    <title><![CDATA[free5GC's SMF UPI DELETE /upi/v1/upNodesLinks/{ref} panics on AN-node deletion via nil UPF dereference; unauthenticated, state-mutating]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44328-go-github-com-free5gc-smf.html</link>
+    <description><![CDATA[Score 52/100 MEDIUM — CVSS 8.2 — ### Summary
+free5GC's SMF mounts the `UPI` management route group without inbound OAuth2 middleware (same root cause as the broader UPI auth gap reported in free5gc/free5gc#887). On top of that, the `DELETE /upi/v1/upNodesLinks/{upNodeRef}` handler unconditionally dereferences `upNode.UPF` after the. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 08 May 2026 23:34:08 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44328-go-github-com-free5gc-smf.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[free5GC NRF: type-confusion panic in POST /oauth2/token structured-form parser via Reflect.Set on incompatible types]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44325-go-github-com-free5gc-nrf.html</link>
+    <description><![CDATA[Score 50/100 MEDIUM — CVSS 7.5 — ### Summary
+free5GC's NRF root SBI endpoint `POST /oauth2/token` contains a parser-level type-confusion bug family. The handler in `NFs/nrf/internal/sbi/api_accesstoken.go` reflects over `models.NrfAccessTokenAccessTokenReq`, special-cases only plain `string` and `NrfNfManagementNfType` fields, and . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 08 May 2026 23:34:08 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44325-go-github-com-free5gc-nrf.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[free5GC's NEF 3gpp-pfd-management PATCH applications/{appId} panics on UDR access failure due to nil ProblemDetails dereference]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44322-go-github-com-free5gc-nef.html</link>
+    <description><![CDATA[Score 50/100 MEDIUM — CVSS 7.5 — ### Summary
+free5GC's NEF `PATCH /3gpp-pfd-management/v1/{afId}/transactions/{transId}/applications/{appId}` handler panics with a nil-pointer dereference when the upstream UDR call fails AND the consumer wrapper returns `err != nil` together with a nil `*ProblemDetails`. The handler's `errPfdData !. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 08 May 2026 23:34:08 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44322-go-github-com-free5gc-nef.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[free5GC's SMF UPI POST /upi/v1/upNodesLinks exits the SMF process on overlapping UE pools (unauthenticated, reachable Fatalf)]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44321-go-github-com-free5gc-smf.html</link>
+    <description><![CDATA[Score 50/100 MEDIUM — CVSS 7.5 — ### Summary
+free5GC's SMF mounts the `UPI` management route group without inbound OAuth2 middleware (same root cause as free5gc/free5gc#887). The `POST /upi/v1/upNodesLinks` create-or-update handler accepts attacker-controlled JSON and passes it directly into `UpNodesFromConfiguration()`, which call. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 08 May 2026 23:34:08 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44321-go-github-com-free5gc-smf.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[free5GC's PCF npcf-smpolicycontrol POST /sm-policies panics on downstream UDR/OpenAPI 404 via nil pointer dereference]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44316-go-github-com-free5gc-pcf.html</link>
+    <description><![CDATA[Score 50/100 MEDIUM — CVSS 7.5 — ### Summary
+free5GC's PCF `POST /npcf-smpolicycontrol/v1/sm-policies` handler (`HandleCreateSmPolicyRequest`) panics with a nil-pointer dereference when a downstream OpenAPI consumer call (UDR lookup) returns `404 Not Found` and the consumer wrapper returns `err != nil` together with a nil response . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 08 May 2026 23:34:08 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44316-go-github-com-free5gc-pcf.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Phpseclib needs guardrails on large binaryfield integers]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2023-49316-composer-phpseclib-phpseclib.html</link>
+    <description><![CDATA[Score 47/100 MEDIUM — CVSS 7.5 — ### Impact
+Anyone loading untrusted ASN1 files (eg. X509 certificates, RSA PKCS8 private or public keys, etc) ### Patches
+https://github.com/phpseclib/phpseclib/commit/964d78101a70305df33f442f5490f0adb3b7e77f ### Workarounds
+No. ### References
+https://github.com/phpseclib/phpseclib/commit/964d78101a. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 08 May 2026 23:34:08 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2023-49316-composer-phpseclib-phpseclib.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[LangChain vulnerable to unsafe deserialization of attacker-controlled objects through overly broad `load()` allowlists]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44843-pip-langchain-core.html</link>
+    <description><![CDATA[Score 45/100 MEDIUM — CVSS 8.2 — LangChain contains older runtime code paths that deserialize run inputs, run outputs, or other application-controlled payloads using overly broad object allowlists. These paths may call `load()` with `allowed_objects="all"`. This does not enable arbitrary Python object deserialization, but it does a. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 08 May 2026 23:34:08 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44843-pip-langchain-core.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[free5GC's NEF crashes via logger.Fatal on PFD notification delivery failure (attacker-controlled notifyUri)]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44319-go-github-com-free5gc-nef.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary
+free5GC's NEF terminates the entire process when a stored PFD-subscription `notifyUri` cannot be reached. In `PfdChangeNotifier.FlushNotifications()`, the notifier calls `NnefPFDmanagementNotify(...)` and on any delivery error invokes `logger.PFDManageLog.Fatal(err)`, which is `os.Exit(1. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 08 May 2026 23:34:08 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44319-go-github-com-free5gc-nef.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[free5GC's NEF nnef-callback route group is unauthenticated; forged callback requests are accepted into the processing path]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44320-go-github-com-free5gc-nef.html</link>
+    <description><![CDATA[Score 42/100 LOW — CVSS 7.3 — ### Summary
+free5GC's NEF mounts the `nnef-callback` route group without inbound OAuth2/bearer-token authorization. A forged or arbitrary bearer token (e.g. `Authorization: Bearer not-a-real-token`) is enough to reach the SMF-callback handler -- the callback body is parsed and dispatched into NEF bu. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 08 May 2026 23:34:08 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44320-go-github-com-free5gc-nef.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[GitPython: Newline injection in config_writer() section parameter bypasses CVE-2026-42215 patch, enabling RCE via core.hooksPath]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/gitpython-newline-injection-in-config-writer-section-para.html</link>
+    <description><![CDATA[Score 40/100 LOW — CVSS 7 — Summary The patch for CVE-2026-42215 (GitPython 3.1.49) validates newlines only in the value parameter of set_value(). The section and option parameters are passed to configparser without any newline validation. An attacker who controls the section argument can inject \n to write arbitrary section h. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 08 May 2026 23:34:08 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/gitpython-newline-injection-in-config-writer-section-para.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
     <title><![CDATA[Open WebUI has stored XSS in Excel file preview]]></title>
     <link>https://blog.cyberdudebivash.in/posts/cve-2026-44549-pip-open-webui.html</link>
     <description><![CDATA[Score 47/100 MEDIUM — CVSS 7.3 — ### Summary
