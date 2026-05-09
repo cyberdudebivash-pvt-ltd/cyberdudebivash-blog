@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-09T06:58:49.033Z",
+  "generated": "2026-05-09T08:48:03.141Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 860,
+    "total_nodes": 862,
     "actors": 8,
-    "cves": 217,
-    "campaigns": 83,
+    "cves": 218,
+    "campaigns": 84,
     "malware": 0,
     "iocs": 118,
-    "edges": 326
+    "edges": 327
   },
   "nodes": {
     "actor:lockbit": {
@@ -16427,6 +16427,44 @@
         "first_seen": "2026-05-09"
       },
       "connections": []
+    },
+    "CVE-2026-29201": {
+      "id": "CVE-2026-29201",
+      "type": "CVE",
+      "name": "cPanel, WHM Release Fixes for Three New Vulnerabilities — Patch Now",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-05-09",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-29201": {
+      "id": "campaign:cve-2026-29201",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-09",
+        "last_seen": "2026-05-09",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-29201 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-29201",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -19399,6 +19437,15 @@
       "target": "ioc:sha1:80a7b4cf3fba6b55389c0ef491a48190f7c8996a",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-05-09",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-29201→includes→CVE-2026-29201",
+      "source": "campaign:cve-2026-29201",
+      "target": "CVE-2026-29201",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-05-09",
       "sources": []
     }
