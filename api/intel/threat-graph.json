@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-08T23:34:07.974Z",
+  "generated": "2026-05-09T01:20:30.314Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 853,
+    "total_nodes": 860,
     "actors": 8,
-    "cves": 213,
+    "cves": 217,
     "campaigns": 83,
     "malware": 0,
-    "iocs": 115,
-    "edges": 323
+    "iocs": 118,
+    "edges": 326
   },
   "nodes": {
     "actor:lockbit": {
@@ -16305,6 +16305,128 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-44900": {
+      "id": "CVE-2026-44900",
+      "type": "CVE",
+      "name": "epa4all-client has a VAU Signature bypass",
+      "attributes": {
+        "cvss": 8.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "com.oviva.telematik:epa4all-client",
+        "published": "2026-05-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.machinespirits.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:machinespirits.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:www.machinespirits.com": {
+      "id": "ioc:domain:www.machinespirits.com",
+      "type": "IOC",
+      "name": "www.machinespirits.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-05-09"
+      },
+      "connections": []
+    },
+    "ioc:domain:machinespirits.com": {
+      "id": "ioc:domain:machinespirits.com",
+      "type": "IOC",
+      "name": "machinespirits.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-05-09"
+      },
+      "connections": []
+    },
+    "CVE-2026-44983": {
+      "id": "CVE-2026-44983",
+      "type": "CVE",
+      "name": "smallbitvec: Integer overflow in safe API leads to heap buffer overflow",
+      "attributes": {
+        "cvss": 7.3,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "rust",
+        "product": "smallbitvec",
+        "published": "2026-05-09",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-44966": {
+      "id": "CVE-2026-44966",
+      "type": "CVE",
+      "name": "Velocity.js has a Prototype Pollution vulnerability through #set path assignment",
+      "attributes": {
+        "cvss": 8.3,
+        "threat_level": "MEDIUM",
+        "priority_score": 46,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "velocityjs",
+        "published": "2026-05-09",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-44895": {
+      "id": "CVE-2026-44895",
+      "type": "CVE",
+      "name": "@yoda.digital/gitlab-mcp-server's SSE transport has no authentication and wildcard CORS, exposing all 86 GitLab tools",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "@yoda.digital/gitlab-mcp-server",
+        "published": "2026-05-09",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:80a7b4cf3fba6b55389c0ef491a48190f7c8996a",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:80a7b4cf3fba6b55389c0ef491a48190f7c8996a": {
+      "id": "ioc:sha1:80a7b4cf3fba6b55389c0ef491a48190f7c8996a",
+      "type": "IOC",
+      "name": "80a7b4cf3fba6b55389c0ef491a48190f7c8996a",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-05-09"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -19251,6 +19373,33 @@
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-05-08",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-44900→linked_to→ioc:domain:www.machinespirits.com",
+      "source": "CVE-2026-44900",
+      "target": "ioc:domain:www.machinespirits.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-09",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-44900→linked_to→ioc:domain:machinespirits.com",
+      "source": "CVE-2026-44900",
+      "target": "ioc:domain:machinespirits.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-09",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-44895→linked_to→ioc:sha1:80a7b4cf3fba6b55389c0ef491a48190f7c8996a",
+      "source": "CVE-2026-44895",
+      "target": "ioc:sha1:80a7b4cf3fba6b55389c0ef491a48190f7c8996a",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-05-09",
       "sources": []
     }
   ]
