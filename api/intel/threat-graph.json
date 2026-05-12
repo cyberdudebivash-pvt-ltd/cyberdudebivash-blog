@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-12T20:58:34.336Z",
+  "generated": "2026-05-12T22:20:08.752Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 984,
+    "total_nodes": 988,
     "actors": 8,
     "cves": 254,
-    "campaigns": 89,
+    "campaigns": 90,
     "malware": 0,
     "iocs": 126,
-    "edges": 342
+    "edges": 343
   },
   "nodes": {
     "actor:lockbit": {
@@ -18673,6 +18673,80 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "DARKREADING-f09f7005b78f7a1d": {
+      "id": "DARKREADING-f09f7005b78f7a1d",
+      "type": "Intel",
+      "name": "It's Patch Tuesday for Microsoft and Not a Zero-Day In Sight",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-05-12",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "WIRED_SECURITY-e45f01f4eb022da7": {
+      "id": "WIRED_SECURITY-e45f01f4eb022da7",
+      "type": "Intel",
+      "name": "Foxconn Ransomware Attack Shows Nothing Is Safe Forever",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "wired_security",
+        "product": "Threat Intelligence",
+        "published": "2026-05-12",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "KREBSONSECURITY-5070bf3d82edfb11": {
+      "id": "KREBSONSECURITY-5070bf3d82edfb11",
+      "type": "Intel",
+      "name": "Patch Tuesday, May 2026 Edition",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "KrebsOnSecurity",
+        "product": "Threat Intelligence",
+        "published": "2026-05-12",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-4537a0a2": {
+      "id": "campaign:cluster-4537a0a2",
+      "type": "Campaign",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-12",
+        "last_seen": "2026-05-12",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "DARKREADING-f09f7005b78f7a1d",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -21787,6 +21861,15 @@
       "id": "campaign:cluster-964794b6→includes→BLEEPINGCOMPUTER-eebcadf82da7bfb5",
       "source": "campaign:cluster-964794b6",
       "target": "BLEEPINGCOMPUTER-eebcadf82da7bfb5",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-12",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-4537a0a2→includes→DARKREADING-f09f7005b78f7a1d",
+      "source": "campaign:cluster-4537a0a2",
+      "target": "DARKREADING-f09f7005b78f7a1d",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-12",
