@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-13T01:26:33.678Z",
+  "generated": "2026-05-13T05:29:50.722Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 641,
+  "total_published": 642,
   "s2n_stats": {
-    "passed": 65,
-    "suppressed": 29,
-    "avg_qs": 0.541
+    "passed": 66,
+    "suppressed": 28,
+    "avg_qs": 0.54
   },
   "items": [
     {
@@ -136,6 +136,48 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "SANS_ISC-ba8be069c18ab46b",
+      "title": "ISC Stormcast For Wednesday, May 13th, 2026 https://isc.sans.edu/podcastdetail/9930, (Wed, May 13th)",
+      "description": "(c) SANS Internet Storm Center. https://isc.sans.edu Creative Commons Attribution-Noncommercial 3.0 United States License.",
+      "cvss": 6.5,
+      "final_ps": 44,
+      "quality_score": 0.505,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sans_isc",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sans_isc"
+      ],
+      "first_seen": "2026-05-13",
+      "last_seen": "2026-05-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SANS ISC",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 2,
+      "refs": [
+        "https://isc.sans.edu/diary/rss/32984"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (sans_isc)",
+          "data_confidence=0.80",
+          "ioc_presence=2 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.505"
+        ],
+        "priority": [
+          "base_ps=44 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3535,6 +3577,52 @@
       }
     },
     {
+      "id": "CVE-2026-44697",
+      "title": "Klever-Go MultiDataInterceptor has remote OOM via crafted compressed P2P payload",
+      "description": "",
+      "cvss": 8.6,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-13",
+      "last_seen": "2026-05-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/klever-io/klever-go",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44697",
+        "CVE-2026-44697"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-87m7-qffr-542v",
+        "https://github.com/klever-io/klever-go/security/advisories/GHSA-87m7-qffr-542v",
+        "https://github.com/advisories/GHSA-87m7-qffr-542v"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2026-44648",
       "title": "SillyTavern: Existing sessions are not invalidated after password change, allowing session reuse and account takeover",
       "description": "",
@@ -3579,7 +3667,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-44594",
@@ -3626,7 +3716,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-44660",
@@ -4248,104 +4340,6 @@
         "https://github.com/mantisbt/mantisbt/security/advisories/GHSA-7mqj-8gj2-cg59",
         "https://github.com/mantisbt/mantisbt/commit/5cb4b469295889f5d2b01677c9bf82c143e0fdaa",
         "https://mantisbt.org/bugs/view.php?id=37099"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-42071",
-      "title": "MantisBT has a Private Bugnote Attachment Content Leak via REST API",
-      "description": "A missing authorization check in MantisBT's file visibility function allows any authenticated user (REPORTER+) to download attachments on private bugnotes they should not be able to access, via the REST API endpoint GET /api/rest/issues/{id}/files and SOAP API mc_issue_attachment_get endpoint. ### I",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-11",
-      "last_seen": "2026-05-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "mantisbt/mantisbt",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42071",
-        "CVE-2026-42071"
-      ],
-      "ioc_count": 1,
-      "refs": [
-        "https://github.com/advisories/GHSA-pw5x-2mf9-3xc8",
-        "https://github.com/mantisbt/mantisbt/security/advisories/GHSA-pw5x-2mf9-3xc8",
-        "https://github.com/mantisbt/mantisbt/commit/029d9d203d9e4ae96b3e59d552fa7395cc1e5071",
-        "https://github.com/advisories/GHSA-xjmx-cprh-646r"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-40607",
-      "title": "MantisBT is Vulnerable to Stored XSS in Saved-Filter Owner Column",
-      "description": "Incorrect escaping of a saved filter's owner allows an attacker to inject arbitrary HTML on systems where $g_show_user_realname = ON. ### Impact\nCross-site scripting (XSS). Note that By default, only users with *Manager* access level or above can save their filters publicly ### Patches\n- 44f490bcf20",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-11",
-      "last_seen": "2026-05-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "mantisbt/mantisbt",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-40607",
-        "CVE-2026-40607"
-      ],
-      "ioc_count": 1,
-      "refs": [
-        "https://github.com/advisories/GHSA-f633-865q-2mhh",
-        "https://github.com/mantisbt/mantisbt/security/advisories/GHSA-f633-865q-2mhh",
-        "https://github.com/mantisbt/mantisbt/commit/44f490bcf20fd491c1b8f3fc9dd041d8c2a30010",
-        "https://mantisbt.org/bugs/view.php?id=37015"
       ],
       "explanation": {
         "quality": [
