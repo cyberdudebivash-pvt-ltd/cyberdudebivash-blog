@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-14T20:51:22.473Z",
+  "generated": "2026-05-14T22:04:36.060Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,7 +7,7 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 756,
+  "total_published": 767,
   "s2n_stats": {
     "passed": 62,
     "suppressed": 30,
@@ -3797,6 +3797,102 @@
       }
     },
     {
+      "id": "CVE-2026-46509",
+      "title": "Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution') in @ranfdev/deepobj",
+      "description": "### Impact\nPrototype pollution is possible when property paths contain `__proto__`/`constructor`/`prototype`. The property path must not be exposed as user input.",
+      "cvss": 8.2,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-14",
+      "last_seen": "2026-05-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@ranfdev/deepobj",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-46509",
+        "CVE-2026-46509"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-x7q7-fchv-8h2j",
+        "https://github.com/ranfdev/deepobj/security/advisories/GHSA-x7q7-fchv-8h2j",
+        "https://github.com/advisories/GHSA-x7q7-fchv-8h2j"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-45370",
+      "title": "python-utcp: Full Process Environment Exposed to CLI Subprocess - Secrets Leakage via Command Injection",
+      "description": "## Summary `_prepare_environment()` in `cli_communication_protocol.py` passes a full copy of `os.environ` to every CLI subprocess. When combined with the Command Injection vulnerability (CWE-78) in `_substitute_utcp_args()` tracked as GHSA-33p6-5jxp-p3x4, an attacker can exfiltrate all process-level",
+      "cvss": 7.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-14",
+      "last_seen": "2026-05-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "utcp-cli",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45370",
+        "CVE-2026-45370"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-5v57-8rxj-3p2r",
+        "https://github.com/universal-tool-calling-protocol/python-utcp/security/advisories/GHSA-5v57-8rxj-3p2r",
+        "https://github.com/advisories/GHSA-5v57-8rxj-3p2r"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-45672",
       "title": "Open WebUI: Jupyter code execution works despite `ENABLE_CODE_EXECUTION=false` — feature gate bypassed",
       "description": "### Summary The `/api/v1/utils/code/execute` endpoint executes arbitrary Python code via Jupyter for any verified user, even when the admin has set `ENABLE_CODE_EXECUTION=false`. The feature gate is not enforced on the API endpoint — the configuration says \"disabled\" but code still executes. ### Det",
@@ -4220,103 +4316,6 @@
         "https://github.com/open-webui/open-webui/security/advisories/GHSA-r472-mw7m-967f",
         "https://github.com/open-webui/open-webui/releases/tag/v0.9.5",
         "https://github.com/advisories/GHSA-r472-mw7m-967f"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-45013",
-      "title": "Apostrophe has a Weak Password Recovery Mechanism for Forgotten Password and Improper Input Validation",
-      "description": "## Summary ApostropheCMS's password reset flow constructs the reset URL using `req.hostname`, which is derived directly from the attacker-controlled HTTP `Host` header when `apos.baseUrl` is not explicitly configured. An unauthenticated attacker who knows a victim's email address can send a crafted ",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "apostrophe",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45013",
-        "CVE-2026-45013"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-gf43-24g3-5hw2",
-        "https://github.com/apostrophecms/apostrophe/security/advisories/GHSA-gf43-24g3-5hw2",
-        "https://github.com/advisories/GHSA-gf43-24g3-5hw2"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-44973",
-      "title": "go-billy has path traversal vulnerabilities",
-      "description": "### Impact\nMultiple path traversal issues exist across different components of `go-billy`. Insufficient path sanitization and boundary enforcement may allow crafted paths (e.g., using `..`) to escape intended base directories. While go-billy was not originally designed to provide a strong security b",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/go-git/go-billy/v5",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44973",
-        "CVE-2026-44973"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-qw64-3x98-g7q2",
-        "https://github.com/go-git/go-billy/security/advisories/GHSA-qw64-3x98-g7q2",
-        "https://github.com/go-git/go-billy/releases/tag/v5.9.0",
-        "https://github.com/go-git/go-billy/releases/tag/v6.0.0-alpha.1"
       ],
       "explanation": {
         "quality": [

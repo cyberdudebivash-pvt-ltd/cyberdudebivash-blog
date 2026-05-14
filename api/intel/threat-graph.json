@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-14T20:51:22.461Z",
+  "generated": "2026-05-14T22:04:36.050Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1155,
+    "total_nodes": 1160,
     "actors": 8,
-    "cves": 299,
-    "campaigns": 102,
+    "cves": 301,
+    "campaigns": 103,
     "malware": 0,
     "iocs": 143,
-    "edges": 394
+    "edges": 395
   },
   "nodes": {
     "actor:lockbit": {
@@ -21879,6 +21879,98 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-66c1096625f8a2e2": {
+      "id": "BLEEPINGCOMPUTER-66c1096625f8a2e2",
+      "type": "Intel",
+      "name": "Hackers exploit auth bypass flaw in Burst Statistics WordPress plugin",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-14",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-46509": {
+      "id": "CVE-2026-46509",
+      "type": "CVE",
+      "name": "Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution') in @ranfdev/deepobj",
+      "attributes": {
+        "cvss": 8.2,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "@ranfdev/deepobj",
+        "published": "2026-05-14",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-45370": {
+      "id": "CVE-2026-45370",
+      "type": "CVE",
+      "name": "python-utcp: Full Process Environment Exposed to CLI Subprocess - Secrets Leakage via Command Injection",
+      "attributes": {
+        "cvss": 7.7,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "utcp-cli",
+        "published": "2026-05-14",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "DARKREADING-ce40f577f63631b4": {
+      "id": "DARKREADING-ce40f577f63631b4",
+      "type": "Intel",
+      "name": "SecurityScorecard Snags Driftnet to Level Up Threat Intelligence",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-05-14",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-b243feeb": {
+      "id": "campaign:cluster-b243feeb",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-14",
+        "last_seen": "2026-05-14",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-66c1096625f8a2e2",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -25463,6 +25555,15 @@
       "target": "ioc:ipv4:169.254.169.254",
       "relationship": "linked_to",
       "confidence": 0.88,
+      "first_seen": "2026-05-14",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-b243feeb→includes→BLEEPINGCOMPUTER-66c1096625f8a2e2",
+      "source": "campaign:cluster-b243feeb",
+      "target": "BLEEPINGCOMPUTER-66c1096625f8a2e2",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-05-14",
       "sources": []
     }
