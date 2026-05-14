@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-14T17:26:58.804Z",
+  "generated": "2026-05-14T19:21:37.910Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,17 +8,17 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 99,
+  "count": 94,
   "items": [
     {
-      "id": "BLEEPINGCOMPUTER-a7fe37d873a31cb8",
-      "title": "18-year-old NGINX vulnerability allows DoS, potential RCE",
-      "description": "An 18-year-old flaw in the NGINX open-source web server, discovered using an autonomous scanning system, can be exploited for denial of service and, under certain conditions, remote code execution. [...]",
+      "id": "BLEEPINGCOMPUTER-e307c465878e5c77",
+      "title": "Windows 11 and Microsoft Edge hacked at Pwn2Own Berlin 2026",
+      "description": "On the first day of Pwn2Own Berlin 2026, security researchers collected $523,000 in cash awards after exploiting 24 unique zero-days. [...]",
       "cvss": 6.5,
-      "final_ps": 70,
+      "final_ps": 76,
       "quality_score": 0.51,
       "threat_level": "HIGH",
-      "type": "NEWS_REPORT",
+      "type": "ZERO_DAY",
       "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -35,7 +35,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.bleepingcomputer.com/news/security/18-year-old-nginx-vulnerability-allows-dos-potential-rce/"
+        "https://www.bleepingcomputer.com/news/security/windows-11-and-microsoft-edge-hacked-on-first-day-of-pwn2own-berlin-2026/"
       ],
       "explanation": {
         "quality": [
@@ -46,7 +46,7 @@
         ],
         "priority": [
           "+8 exploited_in_wild",
-          "+3 supply_chain"
+          "+7 zero_day"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -56,47 +56,49 @@
       "iocs": []
     },
     {
-      "id": "DARKREADING-821f70888b0b84a0",
-      "title": "'FrostyNeighbor' APT Carefully Targets Govt Orgs in Poland, Ukraine",
-      "description": "Attackers uniquely fingerprint victims before delivering spear-phishing payloads aimed at espionage, in the latest campaign from the Belarussian nation-state threat group.",
-      "cvss": 6.5,
-      "final_ps": 55,
-      "quality_score": 0.488,
-      "threat_level": "MEDIUM",
-      "type": "THREAT_ACTOR",
-      "source": "darkreading",
+      "id": "CVE-2026-20182",
+      "title": "Cisco Catalyst SD-WAN Controller Auth Bypass Actively Exploited to Gain Admin Access",
+      "description": "Cisco has released updates to address a maximum-severity authentication bypass flaw in Catalyst SD-WAN Controller that it said has been exploited in limited attacks.\nThe vulnerability, tracked as CVE-2026-20182, carries a CVSS score of 10.0.\n\"A vulnerability in the peering authentication in Cisco Ca",
+      "cvss": 8,
+      "final_ps": 69,
+      "quality_score": 0.538,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "thehackernews",
       "sources_confirmed": 1,
       "merged_sources": [
-        "darkreading"
+        "thehackernews"
       ],
       "first_seen": "2026-05-14",
       "last_seen": "2026-05-14",
-      "exploited": false,
+      "exploited": true,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "darkreading",
+      "vendor": "The Hacker News",
       "product": "Threat Intelligence",
       "due_date": null,
-      "cves": [],
+      "cves": [
+        "CVE-2026-20182"
+      ],
       "ioc_count": 0,
       "refs": [
-        "https://www.darkreading.com/cyberattacks-data-breaches/frostyneighbor-apt-govt-orgs-poland-ukraine"
+        "https://thehackernews.com/2026/05/cisco-catalyst-sd-wan-controller-auth.html"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.55 (darkreading)",
-          "data_confidence=0.80",
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=1.00",
           "recency=0d (score=1.00)",
-          "QS=0.488"
+          "QS=0.537"
         ],
         "priority": [
-          "+5 nation_state"
+          "+8 exploited_in_wild"
         ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "suppression": null,
         "merge": null
       },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -188,9 +190,9 @@
       "iocs": []
     },
     {
-      "id": "GHSA-42703aa855eac875",
-      "title": "FlowiseAI: Evaluator create+update mass-assignment allows cross-workspace evaluator takeover",
-      "description": "## Summary **Type:** Mass assignment via `Object.assign(entity, body)` -> client-controlled `workspaceId` (and on create, `id`) overwritten on the Evaluator entity -> cross-workspace data takeover and IDOR.\n**File:** `packages/server/src/Interface.Evaluation.ts`\n**Root cause:** The Evaluator control",
+      "id": "GHSA-1435c8c3b1955ef0",
+      "title": "Karakeep SDK has SSRF via metascraper-logo-favicon that bypasses validateUrl protections",
+      "description": "## Summary The `metascraper-logo-favicon` plugin makes HTTP requests to URLs extracted from attacker-controlled HTML without going through the application's `validateUrl()` SSRF protections. This allows any authenticated user to make the server fetch arbitrary internal URLs by bookmarking a page con",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -207,250 +209,15 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "npm",
-      "product": "flowise",
+      "product": "@karakeep/sdk",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-wxrr-jp8m-qq7f",
-        "https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-wxrr-jp8m-qq7f",
-        "https://github.com/FlowiseAI/Flowise/pull/6050",
-        "https://github.com/FlowiseAI/Flowise/commit/dc07f4062b852033554543a3cff3daf3433b0dac"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-97e7733460c64a91",
-      "title": "FlowiseAI: Evaluation create+update mass-assignment allows cross-workspace evaluation takeover",
-      "description": "## Summary **Type:** Mass assignment via `Object.assign(entity, body)` -> client-controlled `workspaceId` (and on create, `id`) overwritten on the Evaluation entity -> cross-workspace data takeover and IDOR.\n**File:** `packages/server/src/services/evaluations/index.ts`\n**Root cause:** The Evaluation",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "flowise",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-mq53-pc65-wjc4",
-        "https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-mq53-pc65-wjc4",
-        "https://github.com/FlowiseAI/Flowise/pull/6050",
-        "https://github.com/FlowiseAI/Flowise/commit/dc07f4062b852033554543a3cff3daf3433b0dac"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-032ca68810f2b5f6",
-      "title": "FlowiseAI: DatasetRow create+update mass-assignment allows cross-workspace row takeover",
-      "description": "## Summary **Type:** Mass assignment via `Object.assign(entity, body)` -> client-controlled `workspaceId` (and on create, `id`) overwritten on the DatasetRow entity -> cross-workspace data takeover and IDOR.\n**File:** `packages/server/src/services/dataset/index.ts`\n**Root cause:** The DatasetRow con",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "flowise",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7j65-65cr-6644",
-        "https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-7j65-65cr-6644",
-        "https://github.com/FlowiseAI/Flowise/pull/6051",
-        "https://github.com/FlowiseAI/Flowise/commit/49a2259bf2a6b4f3d4b50813cb5161cee0d40040"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-22e954df3e0e8e11",
-      "title": "FlowiseAI: Dataset create+update mass-assignment allows cross-workspace dataset takeover",
-      "description": "## Summary **Type:** Mass assignment via `Object.assign(entity, body)` -> client-controlled `workspaceId` (and on create, `id`) overwritten on the Dataset entity -> cross-workspace data takeover and IDOR.\n**File:** `packages/server/src/services/dataset/index.ts`\n**Root cause:** The Dataset controlle",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "flowise",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-5h9v-837x-m97r",
-        "https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-5h9v-837x-m97r",
-        "https://github.com/FlowiseAI/Flowise/pull/6051",
-        "https://github.com/FlowiseAI/Flowise/commit/49a2259bf2a6b4f3d4b50813cb5161cee0d40040"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-3810e1512788f429",
-      "title": "FlowiseAI: CustomTemplate create+update mass-assignment allows cross-workspace template takeover",
-      "description": "## Summary **Type:** Mass assignment via `Object.assign(entity, body)` -> client-controlled `workspaceId` (and on create, `id`) overwritten on the CustomTemplate entity -> cross-workspace data takeover and IDOR.\n**File:** `packages/server/src/services/marketplaces/index.ts`\n**Root cause:** The Custo",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "flowise",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-728h-4mwj-f2p4",
-        "https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-728h-4mwj-f2p4",
-        "https://github.com/FlowiseAI/Flowise/pull/6129",
-        "https://github.com/FlowiseAI/Flowise/commit/f64047bdcf4cbd6a30ec348b9e3f2899ff514e89"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-8a050efba25b3d28",
-      "title": "FlowiseAI: Assistant create+update mass-assignment allows cross-workspace assistant takeover",
-      "description": "## Summary **Type:** Mass assignment via `Object.assign(entity, body)` -> client-controlled `workspaceId` (and on create, `id`) overwritten on the Assistant entity -> cross-workspace data takeover and IDOR.\n**File:** `packages/server/src/services/assistants/index.ts`\n**Root cause:** The Assistant co",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "flowise",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-78pr-c5x5-jggc",
-        "https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-78pr-c5x5-jggc",
-        "https://github.com/FlowiseAI/Flowise/pull/6128",
-        "https://github.com/FlowiseAI/Flowise/commit/1cf247eab35c7c3d4db381d23e4dca682fba527b"
+        "https://github.com/advisories/GHSA-7rx4-c5vx-g8w3",
+        "https://github.com/karakeep-app/karakeep/security/advisories/GHSA-7rx4-c5vx-g8w3",
+        "https://github.com/karakeep-app/karakeep/pull/2763",
+        "https://github.com/karakeep-app/karakeep/commit/3dc321e7d49aa3a1a2493637fb2ee21616fe5fd9"
       ],
       "explanation": {
         "quality": [
@@ -606,38 +373,38 @@
       "iocs": []
     },
     {
-      "id": "THEHACKERNEWS-067f4aff97ee5175",
-      "title": "ThreatsDay Bulletin: PAN-OS RCE, Mythos cURL Bug, AI Tokenizer Attacks, and 10+ Stories",
-      "description": "Everything is still on fire.\nThis week feels dumb in the worst way — bad links, weak checks, fake help desks, shady forum posts, and people turning supply chain attacks into some cursed little game for clout and cash. Half of it feels new. Half of it feels like crap we should have fixed years ago.\nT",
+      "id": "BLEEPINGCOMPUTER-7edb19429daff7f5",
+      "title": "OpenAI confirms security breach in TanStack supply chain attack",
+      "description": "OpenAI says two employees' devices were breached in the recent TanStack supply chain attack that impacted hundreds of npm and PyPI packages, causing the company to rotate code-signing certificates for its applications as a precaution. [...]",
       "cvss": 6.5,
-      "final_ps": 46,
-      "quality_score": 0.408,
+      "final_ps": 47,
+      "quality_score": 0.45,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "thehackernews",
+      "type": "DATA_BREACH",
+      "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
-        "thehackernews"
+        "bleepingcomputer"
       ],
       "first_seen": "2026-05-14",
       "last_seen": "2026-05-14",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "The Hacker News",
+      "vendor": "BleepingComputer",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://thehackernews.com/2026/05/threatsday-bulletin-pan-os-rce-mythos.html"
+        "https://www.bleepingcomputer.com/news/security/openai-confirms-security-breach-in-tanstack-supply-chain-attack/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.55 (thehackernews)",
+          "source_weight=0.72 (bleepingcomputer)",
           "data_confidence=0.80",
           "recency=0d (score=1.00)",
-          "QS=0.408"
+          "QS=0.450"
         ],
         "priority": [
           "+3 supply_chain"
@@ -3890,6 +3657,254 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-45013",
+      "title": "Apostrophe has a Weak Password Recovery Mechanism for Forgotten Password and Improper Input Validation",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-14",
+      "last_seen": "2026-05-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "apostrophe",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45013",
+        "CVE-2026-45013"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-gf43-24g3-5hw2",
+        "https://github.com/apostrophecms/apostrophe/security/advisories/GHSA-gf43-24g3-5hw2",
+        "https://github.com/advisories/GHSA-gf43-24g3-5hw2"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-44973",
+      "title": "go-billy has path traversal vulnerabilities",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-14",
+      "last_seen": "2026-05-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/go-git/go-billy/v5",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44973",
+        "CVE-2026-44973"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-qw64-3x98-g7q2",
+        "https://github.com/go-git/go-billy/security/advisories/GHSA-qw64-3x98-g7q2",
+        "https://github.com/go-git/go-billy/releases/tag/v5.9.0",
+        "https://github.com/go-git/go-billy/releases/tag/v6.0.0-alpha.1"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-44541",
+      "title": "ethyca-fides has a DOM-based XSS vulnerability in fides.js via fides_description override",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-14",
+      "last_seen": "2026-05-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "ethyca-fides",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44541",
+        "CVE-2026-44541"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-5qrq-9645-g5g2",
+        "https://github.com/ethyca/fides/security/advisories/GHSA-5qrq-9645-g5g2",
+        "https://github.com/ethyca/fides/commit/67e43b10b1096c7f84d5c0eeba08ee3b7846b7cd",
+        "https://github.com/ethyca/fides/releases/tag/2.84.5"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-45012",
+      "title": "Apostrophe has authenticated SSRF in rich-text widget import via @apostrophecms/area/validate-widget",
+      "description": "",
+      "cvss": 7.6,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-14",
+      "last_seen": "2026-05-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "apostrophe",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45012",
+        "CVE-2026-45012"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-pr28-mf3q-qpg6",
+        "https://github.com/apostrophecms/apostrophe/security/advisories/GHSA-pr28-mf3q-qpg6",
+        "https://github.com/advisories/GHSA-pr28-mf3q-qpg6"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-45011",
+      "title": "Apostrophe has stored XSS via javascript: URL in Image Widget Link",
+      "description": "",
+      "cvss": 7.3,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-14",
+      "last_seen": "2026-05-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "apostrophe",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45011",
+        "CVE-2026-45011"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-5f64-7vfc-rcx6",
+        "https://github.com/apostrophecms/apostrophe/security/advisories/GHSA-5f64-7vfc-rcx6",
+        "https://github.com/apostrophecms/apostrophe/releases/tag/apostrophe%404.29.0",
+        "https://github.com/advisories/GHSA-5f64-7vfc-rcx6"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-44850",
       "title": "Portainer has a bind-mount restriction bypass via HostConfig.Mounts",
       "description": "",
@@ -4220,256 +4235,6 @@
         "https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-x5v6-pj28-cwwm",
         "https://github.com/FlowiseAI/Flowise/releases/tag/flowise%403.1.2",
         "https://github.com/advisories/GHSA-x5v6-pj28-cwwm"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42861",
-      "title": "FlowiseAI has Mass Assignment in Variable Update Endpoint that Allows Cross-Workspace Resource Reassignment",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "flowise",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42861",
-        "CVE-2026-42861"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-6fw7-3q8r-m5vj",
-        "https://github.com/FlowiseAI/Flowise/security/advisories/GHSA-6fw7-3q8r-m5vj",
-        "https://github.com/FlowiseAI/Flowise/releases/tag/flowise%403.1.2",
-        "https://github.com/advisories/GHSA-6fw7-3q8r-m5vj"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-43967",
-      "title": "Absinthe: Quadratic fragment-name uniqueness check",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "erlang",
-      "product": "absinthe",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-43967",
-        "CVE-2026-43967"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-9mhv-8h52-q7q2",
-        "https://github.com/absinthe-graphql/absinthe/security/advisories/GHSA-9mhv-8h52-q7q2",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-43967",
-        "https://github.com/absinthe-graphql/absinthe/commit/223600c520493dcaf95080af552c413099f92c9d"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42793",
-      "title": "Absinthe: Unbounded atom creation from parsed directive name",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "erlang",
-      "product": "absinthe",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42793",
-        "CVE-2026-42793"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-qf4g-9fqq-mmm7",
-        "https://github.com/absinthe-graphql/absinthe/security/advisories/GHSA-qf4g-9fqq-mmm7",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-42793",
-        "https://github.com/absinthe-graphql/absinthe/commit/dd842b938e3823f345c10416914ffab5d5536838"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-24899",
-      "title": "Fleet Windows MDM Azure AD JWT Authentication Bypass",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/fleetdm/fleet/v4",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-24899",
-        "CVE-2026-24899"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-ffg9-j72f-j6xm",
-        "https://github.com/fleetdm/fleet/security/advisories/GHSA-ffg9-j72f-j6xm",
-        "https://github.com/fleetdm/fleet/releases/tag/fleet-v4.82.0",
-        "https://github.com/advisories/GHSA-ffg9-j72f-j6xm"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-26062",
-      "title": "Fleet server may terminate unexpectedly when handling certain gRPC requests",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-14",
-      "last_seen": "2026-05-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/fleetdm/fleet/v4",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-26062",
-        "CVE-2026-26062"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-x67p-9m2r-fxqv",
-        "https://github.com/fleetdm/fleet/security/advisories/GHSA-x67p-9m2r-fxqv",
-        "https://github.com/fleetdm/fleet/releases/tag/fleet-v4.81.0",
-        "https://github.com/advisories/GHSA-x67p-9m2r-fxqv"
       ],
       "explanation": {
         "quality": [
