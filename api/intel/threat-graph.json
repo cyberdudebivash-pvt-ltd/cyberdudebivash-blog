@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-15T14:38:18.511Z",
+  "generated": "2026-05-15T16:26:55.365Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1208,
+    "total_nodes": 1211,
     "actors": 8,
     "cves": 303,
     "campaigns": 109,
     "malware": 0,
     "iocs": 152,
-    "edges": 427
+    "edges": 428
   },
   "nodes": {
     "actor:lockbit": {
@@ -562,6 +562,11 @@
         {
           "target": "campaign:cluster-cae23f5c",
           "relationship": "executes",
+          "confidence": 0.85
+        },
+        {
+          "target": "SECURITYWEEK-784162448fe992c3",
+          "relationship": "exploits",
           "confidence": 0.85
         }
       ],
@@ -22930,6 +22935,60 @@
           "confidence": 1
         }
       ]
+    },
+    "BLEEPINGCOMPUTER-59ee5aef3c258062": {
+      "id": "BLEEPINGCOMPUTER-59ee5aef3c258062",
+      "type": "Intel",
+      "name": "Avada Builder WordPress plugin flaws allow site credential theft",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-784162448fe992c3": {
+      "id": "SECURITYWEEK-784162448fe992c3",
+      "type": "Intel",
+      "name": "In Other News: Big Tech vs Canada Encryption Bill, Cisco&#8217;s Free AI Security Spec, Audi App Flaws",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "DATA_BREACH"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-273e7bc3c0f2b6b9": {
+      "id": "BLEEPINGCOMPUTER-273e7bc3c0f2b6b9",
+      "type": "Intel",
+      "name": "Microsoft backpedals: Edge to stop loading passwords into memory",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -26811,6 +26870,15 @@
       "target": "SENTINELONE-06f4af064afb84f1",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→SECURITYWEEK-784162448fe992c3",
+      "source": "actor:shinyhunters",
+      "target": "SECURITYWEEK-784162448fe992c3",
+      "relationship": "exploits",
+      "confidence": 0.85,
       "first_seen": "2026-05-15",
       "sources": []
     }
