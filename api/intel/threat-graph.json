@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-15T12:12:15.414Z",
+  "generated": "2026-05-15T14:38:18.511Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1204,
+    "total_nodes": 1208,
     "actors": 8,
     "cves": 303,
-    "campaigns": 108,
+    "campaigns": 109,
     "malware": 0,
     "iocs": 152,
-    "edges": 424
+    "edges": 427
   },
   "nodes": {
     "actor:lockbit": {
@@ -552,6 +552,16 @@
         {
           "target": "BLEEPINGCOMPUTER-2165657c7da68acb",
           "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "SENTINELONE-06f4af064afb84f1",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "campaign:cluster-cae23f5c",
+          "relationship": "executes",
           "confidence": 0.85
         }
       ],
@@ -22846,6 +22856,80 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "SENTINELONE-06f4af064afb84f1": {
+      "id": "SENTINELONE-06f4af064afb84f1",
+      "type": "Intel",
+      "name": "The Good, the Bad and the Ugly in Cybersecurity – Week 20",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "sentinelone",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-803f445be5a9367a": {
+      "id": "BLEEPINGCOMPUTER-803f445be5a9367a",
+      "type": "Intel",
+      "name": "Inside the REMUS Infostealer: Session Theft, MaaS, and Rapid Evolution",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-5e8adaffae2036d9": {
+      "id": "BLEEPINGCOMPUTER-5e8adaffae2036d9",
+      "type": "Intel",
+      "name": "Microsoft to automatically roll back faulty Windows drivers",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-cae23f5c": {
+      "id": "campaign:cluster-cae23f5c",
+      "type": "Campaign",
+      "name": "sentinelone Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-15",
+        "last_seen": "2026-05-15",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SENTINELONE-06f4af064afb84f1",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -26698,6 +26782,33 @@
       "id": "campaign:cluster-196d6949→includes→REDDIT_CYBER-89042476eca19da6",
       "source": "campaign:cluster-196d6949",
       "target": "REDDIT_CYBER-89042476eca19da6",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→SENTINELONE-06f4af064afb84f1",
+      "source": "actor:shinyhunters",
+      "target": "SENTINELONE-06f4af064afb84f1",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→executes→campaign:cluster-cae23f5c",
+      "source": "actor:shinyhunters",
+      "target": "campaign:cluster-cae23f5c",
+      "relationship": "executes",
+      "confidence": 0.85,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-cae23f5c→includes→SENTINELONE-06f4af064afb84f1",
+      "source": "campaign:cluster-cae23f5c",
+      "target": "SENTINELONE-06f4af064afb84f1",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-15",
