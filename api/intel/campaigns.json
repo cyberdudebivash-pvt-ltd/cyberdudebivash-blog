@@ -1,44 +1,61 @@
 {
   "campaigns": [
     {
-      "campaign_id": "campaign:cluster-ae006e5d",
-      "name": "Microsoft Ecosystem Targeting Campaign",
-      "severity": "HIGH",
-      "confidence": 0.9,
-      "item_count": 1,
-      "ioc_count": 0,
+      "campaign_id": "campaign:cve-2026-45574-and-cve-2026-45575",
+      "name": "maven com.oviva.telematik:epa4all-client Exploitation Campaign",
+      "severity": "MEDIUM",
+      "confidence": 0.83,
+      "item_count": 2,
+      "ioc_count": 1,
       "first_seen": "2026-05-15",
       "last_seen": "2026-05-15",
       "related_intel_ids": [
-        "BLEEPINGCOMPUTER-fc8da5e662db09ae"
+        "CVE-2026-45574",
+        "CVE-2026-45575"
       ],
       "related_intel": [
         {
-          "id": "BLEEPINGCOMPUTER-fc8da5e662db09ae",
-          "title": "Microsoft Exchange, Windows 11 hacked on second day of Pwn2Own",
-          "type": "ZERO_DAY",
-          "priority_score": 68,
+          "id": "CVE-2026-45574",
+          "title": "epa4all-client: TLS Certificate Validation Disabled in Production",
+          "type": "CVE_REPORT",
+          "priority_score": 48,
           "published": "2026-05-15",
-          "exploited": true,
+          "exploited": false,
+          "cisa_kev": false
+        },
+        {
+          "id": "CVE-2026-45575",
+          "title": "Improper Verification of Cryptographic Signature in com.oviva.telematik:epa4all-client",
+          "type": "CVE_REPORT",
+          "priority_score": 45,
+          "published": "2026-05-15",
+          "exploited": false,
           "cisa_kev": false
         }
       ],
-      "shared_iocs": [],
-      "shared_cves": [],
+      "shared_iocs": [
+        "domain:machinespirits.com"
+      ],
+      "shared_cves": [
+        "CVE-2026-45574",
+        "CVE-2026-45575"
+      ],
       "threat_actor": null,
       "threat_actors": [],
-      "max_priority_score": 68,
+      "max_priority_score": 48,
       "has_kev": false,
       "has_ransomware": false,
-      "has_exploited": true,
+      "has_exploited": false,
       "reasoning": [
-        "1 intel item(s) clustered with composite confidence 0.900",
-        "1 item(s) confirmed exploited in the wild"
+        "2 intel item(s) clustered with composite confidence 0.830",
+        "2 related CVEs: CVE-2026-45574, CVE-2026-45575",
+        "3 shared IOC(s) across items",
+        "Item CVE-2026-45575 joined cluster (score: 0.615): 1 shared IOC(s) (Jaccard: 1.000)"
       ],
       "clustering_model": "weighted_v2"
     }
   ],
-  "generated": "2026-05-15T18:08:19.559Z",
+  "generated": "2026-05-15T19:54:30.075Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0"
 }

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-15T18:08:19.563Z",
+  "generated": "2026-05-15T19:54:30.079Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,17 +8,17 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 91,
+  "count": 89,
   "items": [
     {
-      "id": "BLEEPINGCOMPUTER-fc8da5e662db09ae",
-      "title": "Microsoft Exchange, Windows 11 hacked on second day of Pwn2Own",
-      "description": "​During the second day of Pwn2Own Berlin 2026, competitors collected $385,750 in cash awards after exploiting 15 unique zero-day vulnerabilities in multiple products, including Windows 11, Microsoft Exchange, and Red Hat Enterprise Linux for Workstations. [...]",
+      "id": "BLEEPINGCOMPUTER-afb5616051f725fe",
+      "title": "Funnel Builder WordPress plugin bug exploited to steal credit cards",
+      "description": "A critical vulnerability in the Funnel Builder plugin for WordPress is being actively exploited to inject malicious JavaScript snippets into WooCommerce checkout pages. [...]",
       "cvss": 6.5,
-      "final_ps": 76,
+      "final_ps": 63,
       "quality_score": 0.51,
-      "threat_level": "HIGH",
-      "type": "ZERO_DAY",
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
       "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -35,7 +35,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.bleepingcomputer.com/news/security/pwn2own-day-two-hackers-demo-microsoft-exchange-windows-11-red-had-enterprise-linux-zero-days/"
+        "https://www.bleepingcomputer.com/news/security/funnel-builder-wordpress-plugin-bug-exploited-to-steal-credit-cards/"
       ],
       "explanation": {
         "quality": [
@@ -45,53 +45,7 @@
           "QS=0.510"
         ],
         "priority": [
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "THEHACKERNEWS-abf8d55ec17616a1",
-      "title": "Turla Turns Kazuar Backdoor Into Modular P2P Botnet for Persistent Access",
-      "description": "The Russian state-sponsored hacking group known as Turla has transformed its custom backdoor Kazuar into a modular peer-to-peer (P2P) botnet that's engineered for stealth and persistent access to compromised hosts. Turla, per the U.S. Cybersecurity and Infrastructure Security Agency (CISA), is asses",
-      "cvss": 6.5,
-      "final_ps": 63,
-      "quality_score": 0.488,
-      "threat_level": "MEDIUM",
-      "type": "THREAT_ACTOR",
-      "source": "thehackernews",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "thehackernews"
-      ],
-      "first_seen": "2026-05-15",
-      "last_seen": "2026-05-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "The Hacker News",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://thehackernews.com/2026/05/turla-turns-kazuar-backdoor-into.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (thehackernews)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.488"
-        ],
-        "priority": [
-          "+5 nation_state",
-          "+4 critical_infra"
+          "+8 exploited_in_wild"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -186,6 +140,52 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "GHSA-1111f479855bc0f2",
+      "title": "AVideo's Meet plugin: `uploadRecordedVideo.json.php` derives `users_id` from the uploaded filename and calls passwordles",
+      "description": "## Summary **Type:** Authorization-bypass via user-controlled identifier. The Meet plugin's recorded-video upload endpoint (`plugin/Meet/uploadRecordedVideo.json.php`) authenticates the caller using a single shared `Authorization: Bearer ` against `$objM->secret`. Once that check passes, the endpoin",
+      "cvss": 8.1,
+      "final_ps": 49,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-15",
+      "last_seen": "2026-05-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "WWBN/AVideo",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-qxvm-r42f-5p8j",
+        "https://github.com/WWBN/AVideo/security/advisories/GHSA-qxvm-r42f-5p8j",
+        "https://github.com/advisories/GHSA-qxvm-r42f-5p8j"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=49 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -313,97 +313,6 @@
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
           "QS=0.510"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "BLEEPINGCOMPUTER-7331c457b54df052",
-      "title": "Popular node-ipc npm package compromised to steal credentials",
-      "description": "Hackers have injected credential-stealing malware into newly published versions of node-ipc, a popular inter-process communication package, in a new supply chain attack targeting npm. [...]",
-      "cvss": 6.5,
-      "final_ps": 47,
-      "quality_score": 0.45,
-      "threat_level": "MEDIUM",
-      "type": "MALWARE_REPORT",
-      "source": "bleepingcomputer",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "bleepingcomputer"
-      ],
-      "first_seen": "2026-05-15",
-      "last_seen": "2026-05-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "BleepingComputer",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/security/popular-node-ipc-npm-package-compromised-to-steal-credentials/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "+3 supply_chain"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-e6dc88387e94a791",
-      "title": "goshs: SSH host key verification disabled, allowing transparent MITM of every tunnelled HTTP request",
-      "description": "### Summary The `--tunnel` / `-t` flag opens an outbound SSH connection to `localhost.run:22` with `HostKeyCallback: ssh.InsecureIgnoreHostKey()`. The Go documentation for that function states verbatim: *\"It should not be used for production code.\"* With the callback disabled the client accepts any ",
-      "cvss": 7.4,
-      "final_ps": 47,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-15",
-      "last_seen": "2026-05-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "goshs.de/goshs/v2",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-mxg3-432p-mr72",
-        "https://github.com/patrickhener/goshs/security/advisories/GHSA-mxg3-432p-mr72",
-        "https://github.com/patrickhener/goshs/commit/8f409cb08aacc6e94704334e8b1fb2cd50f5dd98",
-        "https://github.com/patrickhener/goshs/releases/tag/v2.0.7"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
         ],
         "priority": [
           "base_ps=47 (no boosts)"
@@ -3665,6 +3574,155 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-45574",
+      "title": "epa4all-client: TLS Certificate Validation Disabled in Production",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-15",
+      "last_seen": "2026-05-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "com.oviva.telematik:epa4all-client",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45574",
+        "CVE-2026-45574"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-5hhf-xmfx-4vvr",
+        "https://github.com/oviva-ag/epa4all-client/security/advisories/GHSA-5hhf-xmfx-4vvr",
+        "https://github.com/oviva-ag/epa4all-client/pull/36",
+        "https://github.com/oviva-ag/epa4all-client/commit/9111d6fbb939007036a7f74b2a93bb278cb5af32"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-45575",
+      "title": "Improper Verification of Cryptographic Signature in com.oviva.telematik:epa4all-client",
+      "description": "",
+      "cvss": 7.4,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-15",
+      "last_seen": "2026-05-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "com.oviva.telematik:epa4all-client",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45575",
+        "CVE-2026-45575"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-gqx7-6552-67hf",
+        "https://github.com/oviva-ag/epa4all-client/security/advisories/GHSA-gqx7-6552-67hf",
+        "https://github.com/oviva-ag/epa4all-client/pull/36",
+        "https://github.com/oviva-ag/epa4all-client/commit/9111d6fbb939007036a7f74b2a93bb278cb5af32"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-45578",
+      "title": "AVideo: OS command injection in on_publish.php execAsync via unescaped m3u8 URL",
+      "description": "",
+      "cvss": 8.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-15",
+      "last_seen": "2026-05-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "WWBN/AVideo",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45578",
+        "CVE-2026-45578"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-xw67-cg5f-4m2r",
+        "https://github.com/WWBN/AVideo/security/advisories/GHSA-xw67-cg5f-4m2r",
+        "https://github.com/advisories/GHSA-xw67-cg5f-4m2r"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-41147",
       "title": "NukeViet CMS: Stored Cross-Site Scripting (XSS) via insufficient server-side input sanitization in Request class",
       "description": "",
@@ -3945,156 +4003,6 @@
         "https://github.com/Budibase/budibase/security/advisories/GHSA-fgqv-jh4g-pvg2",
         "https://github.com/Budibase/budibase/releases/tag/3.38.1",
         "https://github.com/advisories/GHSA-fgqv-jh4g-pvg2"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-45548",
-      "title": "Budibase: SSRF in AI Extract File Automation Step via Missing IP Blacklist Validation",
-      "description": "",
-      "cvss": 7.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-15",
-      "last_seen": "2026-05-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "@budibase/server",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45548",
-        "CVE-2026-45548"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-rpj4-7x2v-wjrf",
-        "https://github.com/Budibase/budibase/security/advisories/GHSA-rpj4-7x2v-wjrf",
-        "https://github.com/Budibase/budibase/releases/tag/3.38.4",
-        "https://github.com/advisories/GHSA-rpj4-7x2v-wjrf"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-44716",
-      "title": "Pipecat: Path Traversal in Pipecat Runner `/files` Endpoint — Arbitrary File Read via `%2F`-Encoded Separator",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-15",
-      "last_seen": "2026-05-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "pipecat-ai",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44716",
-        "CVE-2026-44716"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-3363-2ph6-35wh",
-        "https://github.com/pipecat-ai/pipecat/security/advisories/GHSA-3363-2ph6-35wh",
-        "https://github.com/pipecat-ai/pipecat/pull/4417",
-        "https://github.com/pipecat-ai/pipecat/commit/7519c26ac5508573c35fa3a9c4717b013993d129"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-45364",
-      "title": "Better Auth: Rate limiter keys IPv6 addresses individually and is bypassable via prefix rotation",
-      "description": "",
-      "cvss": 7.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-15",
-      "last_seen": "2026-05-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "better-auth",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45364",
-        "CVE-2026-45364"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-p6v2-xcpg-h6xw",
-        "https://github.com/better-auth/better-auth/security/advisories/GHSA-p6v2-xcpg-h6xw",
-        "https://github.com/better-auth/better-auth/pull/7470",
-        "https://github.com/better-auth/better-auth/pull/7509"
       ],
       "explanation": {
         "quality": [
