@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-15T07:43:25.778Z",
+  "generated": "2026-05-15T10:08:47.620Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1167,
+    "total_nodes": 1199,
     "actors": 8,
-    "cves": 302,
-    "campaigns": 104,
+    "cves": 303,
+    "campaigns": 108,
     "malware": 0,
-    "iocs": 143,
-    "edges": 396
+    "iocs": 152,
+    "edges": 424
   },
   "nodes": {
     "actor:lockbit": {
@@ -6252,7 +6252,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-05-13"
+        "first_seen": "2026-05-15"
       },
       "connections": []
     },
@@ -12241,7 +12241,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-05-06"
+        "first_seen": "2026-05-15"
       },
       "connections": []
     },
@@ -20466,20 +20466,31 @@
     "CVE-2026-42945": {
       "id": "CVE-2026-42945",
       "type": "CVE",
-      "name": "18-Year-Old NGINX Rewrite Module Flaw Enables Unauthenticated RCE",
+      "name": "CVE-2026-42945 : NGINX Heap Buffer Overflow in rewrite module - Writeup and PoC",
       "attributes": {
         "cvss": 8,
         "threat_level": "MEDIUM",
-        "priority_score": 45,
+        "priority_score": 50,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "The Hacker News",
+        "vendor": "reddit_netsec",
         "product": "Threat Intelligence",
         "published": "2026-05-14",
         "type": "CVE_REPORT"
       },
-      "connections": []
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:depthfirst.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     },
     "SANS_ISC-9df3cf6a968c5dc6": {
       "id": "SANS_ISC-9df3cf6a968c5dc6",
@@ -22095,6 +22106,652 @@
       "connections": [
         {
           "target": "CVE-2026-42897",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "REDDIT_CYBER-6757d76e18da3c9b": {
+      "id": "REDDIT_CYBER-6757d76e18da3c9b",
+      "type": "Intel",
+      "name": "ssh-keysign-pwn: Linux LPE allows unprivileged users to read root-owned files. PoC with SSH server privkey",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 72,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "ZERO_DAY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "CVE-2025-31161": {
+      "id": "CVE-2025-31161",
+      "type": "CVE",
+      "name": "Detecting Exploitation of CrushFTP Vulnerability (CVE-2025-31161) With PacketSmith Yara Detection Module - Using track_state and flow_state",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 69,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-05-14",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-c76cfc0839dab71c": {
+      "id": "BLEEPINGCOMPUTER-c76cfc0839dab71c",
+      "type": "Intel",
+      "name": "Microsoft warns of Exchange zero-day flaw exploited in attacks",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-bf1fabeaf67b7855": {
+      "id": "REDDIT_CYBER-bf1fabeaf67b7855",
+      "type": "Intel",
+      "name": "A fix for the previous Linux kernel critical exploit has seemingly introduced another critical local privilege escalation exploit, a third in two weeks.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:cybernews.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:depthfirst.com": {
+      "id": "ioc:domain:depthfirst.com",
+      "type": "IOC",
+      "name": "depthfirst.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-05-15"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-da61c9b1fcdd9098": {
+      "id": "REDDIT_CYBER-da61c9b1fcdd9098",
+      "type": "Intel",
+      "name": "Two brothers deleted 96 federal databases after being fired – one googled how to hide the evidence afterward",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-05-14",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:c1ae7cfe90ba93c65e3e4535304bdf0e75e4c15e",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:c1ae7cfe90ba93c65e3e4535304bdf0e75e4c15e": {
+      "id": "ioc:sha1:c1ae7cfe90ba93c65e3e4535304bdf0e75e4c15e",
+      "type": "IOC",
+      "name": "c1ae7cfe90ba93c65e3e4535304bdf0e75e4c15e",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-05-15"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-b46d3794bbbad420": {
+      "id": "REDDIT_CYBER-b46d3794bbbad420",
+      "type": "Intel",
+      "name": "OpenAI confirms security breach in TanStack supply chain attack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-05-14",
+        "type": "DATA_BREACH"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:c8e4daa9722486cfa0931cb2a157957319712925",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:c8e4daa9722486cfa0931cb2a157957319712925": {
+      "id": "ioc:sha1:c8e4daa9722486cfa0931cb2a157957319712925",
+      "type": "IOC",
+      "name": "c8e4daa9722486cfa0931cb2a157957319712925",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-05-15"
+      },
+      "connections": []
+    },
+    "UNIT42-d2caebb17d3a5387": {
+      "id": "UNIT42-d2caebb17d3a5387",
+      "type": "Intel",
+      "name": "Gremlin Stealer&#039;s Evolved Tactics: Hiding in Plain Sight With Resource Files",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "unit42",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-cc92534db5e2e8ff": {
+      "id": "REDDIT_CYBER-cc92534db5e2e8ff",
+      "type": "Intel",
+      "name": "Interview for AI security engineer position at a fortune 500 company",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "SECURITYWEEK-19e9731750891f26": {
+      "id": "SECURITYWEEK-19e9731750891f26",
+      "type": "Intel",
+      "name": "TeamPCP Ups the Game, Releases Shai-Hulud Worm’s Source Code",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-527ed695859667d7": {
+      "id": "REDDIT_NETSEC-527ed695859667d7",
+      "type": "Intel",
+      "name": "Instrumenting QT6 desktop apps with Frida - Part 1",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:blog.samanl33t.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:blog.samanl33t.com": {
+      "id": "ioc:domain:blog.samanl33t.com",
+      "type": "IOC",
+      "name": "blog.samanl33t.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-05-15"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-20b80d9bfeed21fc": {
+      "id": "REDDIT_NETSEC-20b80d9bfeed21fc",
+      "type": "Intel",
+      "name": "From Vercel Typosquatting to an Obfuscated macOS Malware Loader",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:infosecwriteups.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:infosecwriteups.com": {
+      "id": "ioc:domain:infosecwriteups.com",
+      "type": "IOC",
+      "name": "infosecwriteups.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-05-15"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-3092027ab9393252": {
+      "id": "REDDIT_NETSEC-3092027ab9393252",
+      "type": "Intel",
+      "name": "HyperVenom: Using Hyper-V for Ring -1 Control from Usermode",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-05-14",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:gsmll.github.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:gsmll.github.io": {
+      "id": "ioc:domain:gsmll.github.io",
+      "type": "IOC",
+      "name": "gsmll.github.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-05-15"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-93709058e395042f": {
+      "id": "REDDIT_NETSEC-93709058e395042f",
+      "type": "Intel",
+      "name": "VELVET CHOLLIMA Infostealer Campaign Using Trading App as Lure",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-05-14",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:hybrid-analysis.blogspot.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:hybrid-analysis.blogspot.com": {
+      "id": "ioc:domain:hybrid-analysis.blogspot.com",
+      "type": "IOC",
+      "name": "hybrid-analysis.blogspot.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-05-15"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-89042476eca19da6": {
+      "id": "REDDIT_CYBER-89042476eca19da6",
+      "type": "Intel",
+      "name": "ANTS Hack: 19 million records exposed in French ID agency breach",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "DATA_BREACH"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:cybernews.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_NETSEC-9e64308612ae6c94": {
+      "id": "REDDIT_NETSEC-9e64308612ae6c94",
+      "type": "Intel",
+      "name": "Apple Maildrop lets you rewrite the filename, size, and icon on any icloud.com attachment link — no signature, no validation — reported July 2023, still live",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-05-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:icloud.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:icloud.com": {
+      "id": "ioc:domain:icloud.com",
+      "type": "IOC",
+      "name": "icloud.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-05-15"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-a3961884f731abe6": {
+      "id": "REDDIT_NETSEC-a3961884f731abe6",
+      "type": "Intel",
+      "name": "WaSteal: 126 Chrome extensions, 148K installs, one Brazilian operator silently sending WhatsApp user data and ad cookies to its servers",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-05-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:wascript.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:wascript.com": {
+      "id": "ioc:domain:wascript.com",
+      "type": "IOC",
+      "name": "wascript.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-05-15"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-3336bc96254d85a5": {
+      "id": "REDDIT_NETSEC-3336bc96254d85a5",
+      "type": "Intel",
+      "name": "/sbin/ping -G sweepmax has no bounds check on macOS: deterministic BSS out-of-bounds write, confirmed by Apple",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-05-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-193d091ac70932f9": {
+      "id": "REDDIT_CYBER-193d091ac70932f9",
+      "type": "Intel",
+      "name": "Has anyone read &quot;The Art of Deception&quot;? How does it hold up to now?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-4e9ec28dacda38e9": {
+      "id": "REDDIT_CYBER-4e9ec28dacda38e9",
+      "type": "Intel",
+      "name": "AI coding tools are shipping code faster than security can review it. What's your team doing about it",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-9eeadd36": {
+      "id": "campaign:cluster-9eeadd36",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-15",
+        "last_seen": "2026-05-15",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 4 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-6757d76e18da3c9b",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2025-31161": {
+      "id": "campaign:cve-2025-31161",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-14",
+        "last_seen": "2026-05-14",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2025-31161 | 4 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2025-31161",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-baf5865e": {
+      "id": "campaign:cluster-baf5865e",
+      "type": "Campaign",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-15",
+        "last_seen": "2026-05-15",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-c76cfc0839dab71c",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-196d6949": {
+      "id": "campaign:cluster-196d6949",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 2,
+        "first_seen": "2026-05-15",
+        "last_seen": "2026-05-15",
+        "confidence": 0.83,
+        "reasoning": "2 intel item(s) clustered with composite confidence 0.830 | 8 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-bf1fabeaf67b7855",
+          "relationship": "includes",
+          "confidence": 1
+        },
+        {
+          "target": "REDDIT_CYBER-89042476eca19da6",
           "relationship": "includes",
           "confidence": 1
         }
@@ -25699,6 +26356,258 @@
       "id": "campaign:cve-2026-42897→includes→CVE-2026-42897",
       "source": "campaign:cve-2026-42897",
       "target": "CVE-2026-42897",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-6757d76e18da3c9b→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-6757d76e18da3c9b",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "CVE-2025-31161→linked_to→ioc:domain:www.reddit.com",
+      "source": "CVE-2025-31161",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-bf1fabeaf67b7855→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-bf1fabeaf67b7855",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-bf1fabeaf67b7855→linked_to→ioc:domain:cybernews.com",
+      "source": "REDDIT_CYBER-bf1fabeaf67b7855",
+      "target": "ioc:domain:cybernews.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-42945→linked_to→ioc:domain:www.reddit.com",
+      "source": "CVE-2026-42945",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-42945→linked_to→ioc:domain:depthfirst.com",
+      "source": "CVE-2026-42945",
+      "target": "ioc:domain:depthfirst.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-da61c9b1fcdd9098→linked_to→ioc:sha1:c1ae7cfe90ba93c65e3e4535304bdf0e75e4c15e",
+      "source": "REDDIT_CYBER-da61c9b1fcdd9098",
+      "target": "ioc:sha1:c1ae7cfe90ba93c65e3e4535304bdf0e75e4c15e",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-b46d3794bbbad420→linked_to→ioc:sha1:c8e4daa9722486cfa0931cb2a157957319712925",
+      "source": "REDDIT_CYBER-b46d3794bbbad420",
+      "target": "ioc:sha1:c8e4daa9722486cfa0931cb2a157957319712925",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-cc92534db5e2e8ff→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-cc92534db5e2e8ff",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-527ed695859667d7→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-527ed695859667d7",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-527ed695859667d7→linked_to→ioc:domain:blog.samanl33t.com",
+      "source": "REDDIT_NETSEC-527ed695859667d7",
+      "target": "ioc:domain:blog.samanl33t.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-20b80d9bfeed21fc→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-20b80d9bfeed21fc",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-20b80d9bfeed21fc→linked_to→ioc:domain:infosecwriteups.com",
+      "source": "REDDIT_NETSEC-20b80d9bfeed21fc",
+      "target": "ioc:domain:infosecwriteups.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-3092027ab9393252→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-3092027ab9393252",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-3092027ab9393252→linked_to→ioc:domain:gsmll.github.io",
+      "source": "REDDIT_NETSEC-3092027ab9393252",
+      "target": "ioc:domain:gsmll.github.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-93709058e395042f→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-93709058e395042f",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-93709058e395042f→linked_to→ioc:domain:hybrid-analysis.blogspot.com",
+      "source": "REDDIT_NETSEC-93709058e395042f",
+      "target": "ioc:domain:hybrid-analysis.blogspot.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-89042476eca19da6→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-89042476eca19da6",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-89042476eca19da6→linked_to→ioc:domain:cybernews.com",
+      "source": "REDDIT_CYBER-89042476eca19da6",
+      "target": "ioc:domain:cybernews.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-9e64308612ae6c94→linked_to→ioc:domain:icloud.com",
+      "source": "REDDIT_NETSEC-9e64308612ae6c94",
+      "target": "ioc:domain:icloud.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-a3961884f731abe6→linked_to→ioc:domain:wascript.com",
+      "source": "REDDIT_NETSEC-a3961884f731abe6",
+      "target": "ioc:domain:wascript.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-193d091ac70932f9→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-193d091ac70932f9",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-4e9ec28dacda38e9→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-4e9ec28dacda38e9",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-9eeadd36→includes→REDDIT_CYBER-6757d76e18da3c9b",
+      "source": "campaign:cluster-9eeadd36",
+      "target": "REDDIT_CYBER-6757d76e18da3c9b",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2025-31161→includes→CVE-2025-31161",
+      "source": "campaign:cve-2025-31161",
+      "target": "CVE-2025-31161",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-baf5865e→includes→BLEEPINGCOMPUTER-c76cfc0839dab71c",
+      "source": "campaign:cluster-baf5865e",
+      "target": "BLEEPINGCOMPUTER-c76cfc0839dab71c",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-196d6949→includes→REDDIT_CYBER-bf1fabeaf67b7855",
+      "source": "campaign:cluster-196d6949",
+      "target": "REDDIT_CYBER-bf1fabeaf67b7855",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-15",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-196d6949→includes→REDDIT_CYBER-89042476eca19da6",
+      "source": "campaign:cluster-196d6949",
+      "target": "REDDIT_CYBER-89042476eca19da6",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-15",
