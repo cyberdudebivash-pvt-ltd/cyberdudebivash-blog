@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-15T04:30:09.883Z",
+  "generated": "2026-05-15T07:43:25.778Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1163,
+    "total_nodes": 1167,
     "actors": 8,
-    "cves": 301,
-    "campaigns": 103,
+    "cves": 302,
+    "campaigns": 104,
     "malware": 0,
     "iocs": 143,
-    "edges": 395
+    "edges": 396
   },
   "nodes": {
     "actor:lockbit": {
@@ -21466,17 +21466,17 @@
     "CVE-2026-20182": {
       "id": "CVE-2026-20182",
       "type": "CVE",
-      "name": "Cisco warns of new critical SD-WAN flaw exploited in zero-day attacks",
+      "name": "Cisco Patches Another SD-WAN Zero-Day, the Sixth Exploited in 2026",
       "attributes": {
         "cvss": 8,
-        "threat_level": "HIGH",
-        "priority_score": 75,
+        "threat_level": "CRITICAL",
+        "priority_score": 95,
         "exploited": true,
-        "cisa_kev": false,
+        "cisa_kev": true,
         "ransomware": false,
-        "vendor": "BleepingComputer",
+        "vendor": "SecurityWeek",
         "product": "Threat Intelligence",
-        "published": "2026-05-14",
+        "published": "2026-05-15",
         "type": "ZERO_DAY"
       },
       "connections": []
@@ -21632,12 +21632,12 @@
       "type": "Campaign",
       "name": "Cisco Infrastructure Attack Campaign",
       "attributes": {
-        "severity": "HIGH",
+        "severity": "CRITICAL",
         "item_count": 1,
-        "first_seen": "2026-05-14",
-        "last_seen": "2026-05-14",
+        "first_seen": "2026-05-15",
+        "last_seen": "2026-05-15",
         "confidence": 0.9,
-        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-20182 | 1 item(s) confirmed exploited in the wild"
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-20182 | 1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
       },
       "connections": [
         {
@@ -22025,6 +22025,80 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-42897": {
+      "id": "CVE-2026-42897",
+      "type": "CVE",
+      "name": "On-Prem Microsoft Exchange Server CVE-2026-42897 Exploited via Crafted Email",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-28268db44c5c7a30": {
+      "id": "SECURITYWEEK-28268db44c5c7a30",
+      "type": "Intel",
+      "name": "Chrome 148 Update Patches Critical Vulnerabilities",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SANS_ISC-ba15944b14d457dd": {
+      "id": "SANS_ISC-ba15944b14d457dd",
+      "type": "Intel",
+      "name": "&#x5b;Guest Diary&#x5d; New Malware Libraries means New Signatures, (Fri, May 15th)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SANS ISC",
+        "product": "Threat Intelligence",
+        "published": "2026-05-15",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-42897": {
+      "id": "campaign:cve-2026-42897",
+      "type": "Campaign",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-15",
+        "last_seen": "2026-05-15",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-42897 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-42897",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -25619,6 +25693,15 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-14",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-42897→includes→CVE-2026-42897",
+      "source": "campaign:cve-2026-42897",
+      "target": "CVE-2026-42897",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-15",
       "sources": []
     }
   ]
