@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-17T21:35:12.160Z",
+  "generated": "2026-05-17T22:33:52.521Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1250,
+    "total_nodes": 1252,
     "actors": 8,
     "cves": 315,
-    "campaigns": 112,
+    "campaigns": 113,
     "malware": 0,
     "iocs": 155,
-    "edges": 450
+    "edges": 451
   },
   "nodes": {
     "actor:lockbit": {
@@ -23782,6 +23782,44 @@
           "confidence": 1
         }
       ]
+    },
+    "BLEEPINGCOMPUTER-98faa7d9a6a59cee": {
+      "id": "BLEEPINGCOMPUTER-98faa7d9a6a59cee",
+      "type": "Intel",
+      "name": "New Windows 'MiniPlasma' zero-day exploit gives SYSTEM access, PoC released",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-17",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-123da22d": {
+      "id": "campaign:cluster-123da22d",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-17",
+        "last_seen": "2026-05-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-98faa7d9a6a59cee",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -27868,6 +27906,15 @@
       "id": "campaign:cluster-72c63d44→includes→FULLDIS-3ec06fc8ff9f1c52",
       "source": "campaign:cluster-72c63d44",
       "target": "FULLDIS-3ec06fc8ff9f1c52",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-123da22d→includes→BLEEPINGCOMPUTER-98faa7d9a6a59cee",
+      "source": "campaign:cluster-123da22d",
+      "target": "BLEEPINGCOMPUTER-98faa7d9a6a59cee",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-17",
