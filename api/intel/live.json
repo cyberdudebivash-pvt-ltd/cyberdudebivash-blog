@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-18T17:10:44.241Z",
+  "generated": "2026-05-18T19:03:59.504Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 864,
+  "total_published": 876,
   "s2n_stats": {
-    "passed": 61,
-    "suppressed": 33,
+    "passed": 64,
+    "suppressed": 31,
     "avg_qs": 0.538
   },
   "items": [
@@ -3849,139 +3849,59 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
-      "id": "REDDIT_NETSEC-33d6730f29aea952",
-      "title": "We probed 6,000 web apps for Stripe webhook signature checks. 1,542 don't bother",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Quick note from a scanning project I&amp;#39;ve been running. We hit 6,000 web apps with a payment-bypass probe last week, sending a minimal fake `checkout.session.completed` event to common webhook paths (`/api/webhook/stripe`, `/api/pay",
-      "cvss": 6.5,
-      "final_ps": 23,
-      "quality_score": 0.38,
-      "threat_level": "HIGH",
-      "type": "NEWS_REPORT",
-      "source": "reddit_netsec",
+      "id": "CVE-2026-32687",
+      "title": "Postgrex: Channel-name SQL injection in `Postgrex.Notifications.listen/3`",
+      "description": "### Summary SQL injection in `Postgrex.Notifications.listen/3`: the `channel` argument is interpolated straight into `LISTEN \"...\"` / `UNLISTEN \"...\"` without escaping the `\"` character. Any caller that lets a user influence the channel name (e.g. a pub/sub bridge that uses a tenant id or topic slug",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_netsec"
+        "github_advisories"
       ],
-      "first_seen": "2026-05-05",
-      "last_seen": "2026-05-05",
-      "exploited": true,
+      "first_seen": "2026-05-18",
+      "last_seen": "2026-05-18",
+      "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "reddit_netsec",
-      "product": "Threat Intelligence",
+      "vendor": "erlang",
+      "product": "postgrex",
       "due_date": null,
-      "cves": [],
-      "ioc_count": 5,
+      "cves": [
+        "CVE-2026-32687",
+        "CVE-2026-32687"
+      ],
+      "ioc_count": 0,
       "refs": [
-        "https://www.reddit.com/r/netsec/comments/1t45sa6/we_probed_6000_web_apps_for_stripe_webhook/"
+        "https://github.com/advisories/GHSA-r73h-97w8-m54h",
+        "https://github.com/elixir-ecto/ecto/security/advisories/GHSA-r73h-97w8-m54h",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-32687",
+        "https://github.com/elixir-ecto/postgrex/commit/7cdedbd4316bb65f82e6a9a4f922c0ac491cb770"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_netsec)",
-          "data_confidence=0.55",
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.380"
+          "QS=0.523"
         ],
         "priority": [
-          "+8 exploited_in_wild"
+          "base_ps=21 (no boosts)"
         ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "suppression": null,
         "merge": null
       },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
-      "id": "REDDIT_CYBER-a7d4a3a0e29c3797",
-      "title": "We are insider risk researchers focused on agentic AI, endpoint activity, and emerging threats. AMA",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;We are Alex and Armaan, insider risk researchers on the DTEX i3 team. We spend most of our time analyzing how new technologies introduce risk inside corporate environments, especially when they operate with legitimate access and little vi",
-      "cvss": 6.5,
-      "final_ps": 23,
-      "quality_score": 0.38,
-      "threat_level": "HIGH",
-      "type": "MALWARE_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-05-04",
-      "last_seen": "2026-05-04",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 5,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1t3m454/we_are_insider_risk_researchers_focused_on/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "REDDIT_CYBER-d13db308cf84df92",
-      "title": "CISA says ‘Copy Fail’ flaw now exploited to root Linux systems",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1t3h8fj/cisa_says_copy_fail_flaw_now_exploited_to_root/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/DyA4xewqi8FgrZaiyuDL53gM2myK1OgG06HULgJ7Y9k.jpeg?width=640&amp;amp;crop=smart&amp;a",
-      "cvss": 6.5,
-      "final_ps": 23,
-      "quality_score": 0.38,
-      "threat_level": "HIGH",
-      "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-05-04",
-      "last_seen": "2026-05-04",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1t3h8fj/cisa_says_copy_fail_flaw_now_exploited_to_root/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-45298",
-      "title": "Dozzle: Pre-auth SSRF with response-body reflection via POST /api/notifications/test-webhook (default no-auth deploy)",
-      "description": "## Summary In a default dozzle deploy (the documented quickstart, no `DOZZLE_AUTH_PROVIDER` set), `POST /api/notifications/test-webhook` is reachable without authentication and forwards an attacker-controlled URL into a `WebhookDispatcher` that: - Sends an HTTP POST to the supplied URL with attacker",
-      "cvss": 8.6,
+      "id": "CVE-2026-45678",
+      "title": "OpenTelemetry eBPF Instrumentation: Postgres BIND parsing can panic on malformed payloads",
+      "description": "### Summary The Postgres protocol parser assumes `BIND` message payloads contain a valid NUL-terminated portal name. A crafted empty or unterminated payload can make OBI slice beyond the end of the captured buffer and panic. ### Details The vulnerable logic is in [pkg/ebpf/common/sql_detect_postgres",
+      "cvss": 7.5,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -3997,17 +3917,163 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "go",
-      "product": "github.com/amir20/dozzle",
+      "product": "go.opentelemetry.io/obi",
       "due_date": null,
       "cves": [
-        "CVE-2026-45298",
-        "CVE-2026-45298"
+        "CVE-2026-45678",
+        "CVE-2026-45678"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://github.com/advisories/GHSA-pgvv-q3wf-mm9m",
+        "https://github.com/open-telemetry/opentelemetry-ebpf-instrumentation/security/advisories/GHSA-pgvv-q3wf-mm9m",
+        "https://github.com/advisories/GHSA-pgvv-q3wf-mm9m"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-8159",
+      "title": "multiparty vulnerable to ReDoS via filename parsing",
+      "description": "### Impact multiparty@4.2.3 and lower versions are vulnerable to denial of service via regular expression backtracking in the `Content-Disposition` filename parameter parser. A multipart upload with a long header value containing `!filename=\"1` repeated can cause regex matching to take seconds, bloc",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-18",
+      "last_seen": "2026-05-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "multiparty",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-8159",
+        "CVE-2026-8159"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://github.com/advisories/GHSA-65x3-rw7q-gx94",
+        "https://github.com/pillarjs/multiparty/security/advisories/GHSA-65x3-rw7q-gx94",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-8159",
+        "https://cna.openjsf.org/security-advisories.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-45716",
+      "title": "Budibase: Builder-to-Admin Privilege Escalation via onboardUsers Endpoint Without SMTP Configuration",
+      "description": "## Summary The `POST /api/global/users/onboard` endpoint is protected by `workspaceBuilderOrAdmin` middleware, allowing any user with builder permissions to access it. When SMTP email is not configured (the default for self-hosted Budibase instances), this endpoint bypasses the admin-restricted invi",
+      "cvss": 8.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-18",
+      "last_seen": "2026-05-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@budibase/worker",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45716",
+        "CVE-2026-45716"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-c54j-xp92-wh28",
+        "https://github.com/Budibase/budibase/security/advisories/GHSA-c54j-xp92-wh28",
+        "https://github.com/Budibase/budibase/releases/tag/3.38.1",
+        "https://github.com/advisories/GHSA-c54j-xp92-wh28"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-45727",
+      "title": "CloakBrowser: Unauthenticated path traversal via fingerprint parameter in cloakserve leads to arbitrary directory deleti",
+      "description": "The `cloakserve` CDP multiplexer uses the user-supplied `fingerprint` query parameter directly as a filesystem path component when creating Chrome profile directories. An unauthenticated attacker who can reach the cloakserve port can supply a crafted `fingerprint` value containing path traversal seq",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-18",
+      "last_seen": "2026-05-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "cloakbrowser",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45727",
+        "CVE-2026-45727"
       ],
       "ioc_count": 1,
       "refs": [
-        "https://github.com/advisories/GHSA-3v9w-6365-9w54",
-        "https://github.com/amir20/dozzle/security/advisories/GHSA-3v9w-6365-9w54",
-        "https://github.com/advisories/GHSA-3v9w-6365-9w54"
+        "https://github.com/advisories/GHSA-mf33-gv72-w2h5",
+        "https://github.com/CloakHQ/CloakBrowser/security/advisories/GHSA-mf33-gv72-w2h5",
+        "https://github.com/advisories/GHSA-mf33-gv72-w2h5"
       ],
       "explanation": {
         "quality": [
@@ -4026,59 +4092,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-45270",
-      "title": "CI4MS: Stored XSS in Pages Module Content via Broken html_purify Validation Rule",
-      "description": "## Summary The `Pages` backend module registers the `html_purify` validation rule on language-keyed page content but persists the raw, un-purified POST value into the database. The public renderer for pages (`Home::index()` → `app/Views/templates/default/pages.php`) emits `$pageInfo->content` withou",
-      "cvss": 8.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-18",
-      "last_seen": "2026-05-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "ci4-cms-erp/ci4ms",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45270",
-        "CVE-2026-45270"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-gqr2-7hcg-rchf",
-        "https://github.com/ci4-cms-erp/ci4ms/security/advisories/GHSA-gqr2-7hcg-rchf",
-        "https://github.com/ci4-cms-erp/ci4ms/releases/tag/0.31.9.0",
-        "https://github.com/advisories/GHSA-gqr2-7hcg-rchf"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-45325",
-      "title": "@tmlmobilidade/utils has prototype pollution in its setValueAtPath",
-      "description": "### Impact\nPrototype pollution vulnerability in @tmlmobilidade/utils for setValueAtPath(). ### Patches\nA fix is available in versions 20260509.0340.15 and up.",
-      "cvss": 8.2,
+      "id": "CVE-2026-45707",
+      "title": "n8n-MCP: Multi-tenant MCP requests fall back to process-level n8n credentials when tenant headers are absent or incomple",
+      "description": "## Summary When `ENABLE_MULTI_TENANT=true`, the HTTP transport documents that the target n8n instance is selected per-request from `x-n8n-url` / `x-n8n-key` headers. Requests that omitted those headers — or supplied only one of them — silently fell back to the process-level `N8N_API_URL` / `N8N_API_",
+      "cvss": 8.1,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4094,18 +4111,18 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "npm",
-      "product": "@tmlmobilidade/utils",
+      "product": "n8n-mcp",
       "due_date": null,
       "cves": [
-        "CVE-2026-45325",
-        "CVE-2026-45325"
+        "CVE-2026-45707",
+        "CVE-2026-45707"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-cmxg-94mg-jq94",
-        "https://github.com/tmlmobilidade/go/security/advisories/GHSA-cmxg-94mg-jq94",
-        "https://github.com/tmlmobilidade/go/commit/b10505baa7ba0701f830a05f3007c0a6bdd00eb7",
-        "https://github.com/tmlmobilidade/go/blob/prd/packages/utils/src/generic/value-at-path.ts"
+        "https://github.com/advisories/GHSA-jxx9-px88-pj69",
+        "https://github.com/czlonkowski/n8n-mcp/security/advisories/GHSA-jxx9-px88-pj69",
+        "https://github.com/czlonkowski/n8n-mcp/commit/853015d0897be7cf2d9d4726de195c938e4395ab",
+        "https://github.com/czlonkowski/n8n-mcp/releases/tag/v2.51.2"
       ],
       "explanation": {
         "quality": [
@@ -4124,10 +4141,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-45302",
-      "title": "parse-nested-form-data has Prototype Pollution via `__proto__` in FormData field names",
-      "description": "## Summary `parseFormData()` walks bracket and dot-notation FormData field names into nested objects without filtering reserved property keys. A single FormData field whose name begins with `__proto__`, or contains `.__proto__.` mid-path, causes the parser to traverse onto `Object.prototype` and ass",
-      "cvss": 8.2,
+      "id": "CVE-2026-8162",
+      "title": "multiparty vulnerable to Denial of Service via Uncaught Exception in filename* parameter parsing",
+      "description": "### Impact multiparty@4.2.3 and lower versions are vulnerable to denial of service via uncaught exception. By sending a `multipart/form-data` request with a `Content-Disposition: filename*=utf-8''` header containing a malformed percent-encoding (e.g., `%FF`, `%GG`), the parser invokes `decodeURI` on",
+      "cvss": 7.5,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4143,18 +4160,18 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "npm",
-      "product": "parse-nested-form-data",
+      "product": "multiparty",
       "due_date": null,
       "cves": [
-        "CVE-2026-45302",
-        "CVE-2026-45302"
+        "CVE-2026-8162",
+        "CVE-2026-8162"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-xp7r-j8r6-j9h3",
-        "https://github.com/milamer/parse-nested-form-data/security/advisories/GHSA-xp7r-j8r6-j9h3",
-        "https://github.com/milamer/parse-nested-form-data/commit/527ad58eb486e32438f7198fb88315c20449d792",
-        "https://github.com/milamer/parse-nested-form-data/releases/tag/v1.0.1"
+        "https://github.com/advisories/GHSA-xh3c-6gcq-g4rv",
+        "https://github.com/pillarjs/multiparty/security/advisories/GHSA-xh3c-6gcq-g4rv",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-8162",
+        "https://cna.openjsf.org/security-advisories.html"
       ],
       "explanation": {
         "quality": [
@@ -4173,9 +4190,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-46385",
-      "title": "iskorotkov/avro: CPU Exhaustion in Decoder",
-      "description": "# CPU Exhaustion in Avro Decoder via Unbounded Block-Count Iteration ## Summary The Avro array and map decoders looped over an attacker-controlled block-count value without checking the underlying reader's error state inside the loop body. `Reader.ReadBlockHeader` returns the count as a Go `int`, wh",
+      "id": "CVE-2026-8161",
+      "title": "multiparty: Denial of Service via Prototype Pollution leads to Uncaught Exception",
+      "description": "### Impact multiparty@4.2.3 and lower versions are vulnerable to denial of service via uncaught exception. By sending a `multipart/form-data` request with a field name that collides with an inherited `Object.prototype` property (e.g., `__proto__`, `constructor`, `toString`), the parser invokes `.pus",
       "cvss": 7.5,
       "final_ps": 21,
       "quality_score": 0.523,
@@ -4191,18 +4208,19 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/iskorotkov/avro/v2",
+      "vendor": "npm",
+      "product": "multiparty",
       "due_date": null,
       "cves": [
-        "CVE-2026-46385",
-        "CVE-2026-46385"
+        "CVE-2026-8161",
+        "CVE-2026-8161"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-w8j3-pq8g-8m7w",
-        "https://github.com/iskorotkov/avro/security/advisories/GHSA-w8j3-pq8g-8m7w",
-        "https://github.com/advisories/GHSA-w8j3-pq8g-8m7w"
+        "https://github.com/advisories/GHSA-qxch-whhj-8956",
+        "https://github.com/pillarjs/multiparty/security/advisories/GHSA-qxch-whhj-8956",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-8161",
+        "https://cna.openjsf.org/security-advisories.html"
       ],
       "explanation": {
         "quality": [
@@ -4221,10 +4239,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-46384",
-      "title": "iskorotkov/avro: Integer Overflow in Decoder",
-      "description": "# Integer Overflow in Avro Decoder ## Summary Several Avro decoder paths read attacker-controlled 64-bit values from the wire format and either narrowed them to platform-sized `int` before bounds-checking, or summed them with overflow-prone signed-`int` arithmetic. On 32-bit targets (`GOARCH=386`, `",
-      "cvss": 7.5,
+      "id": "CVE-2026-42306",
+      "title": "Docker: Race condition in docker cp allows bind mount redirection to host path",
+      "description": "## Summary A race condition during `docker cp` mount setup allows a malicious container to redirect a bind mount target to an arbitrary host path, potentially overwriting host files or causing denial of service. ## Details When copying files into a container, the daemon sets up a temporary filesyste",
+      "cvss": 7.2,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4240,17 +4258,17 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "go",
-      "product": "github.com/iskorotkov/avro/v2",
+      "product": "github.com/docker/docker",
       "due_date": null,
       "cves": [
-        "CVE-2026-46384",
-        "CVE-2026-46384"
+        "CVE-2026-42306",
+        "CVE-2026-42306"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-mc57-h6j3-3hmv",
-        "https://github.com/iskorotkov/avro/security/advisories/GHSA-mc57-h6j3-3hmv",
-        "https://github.com/advisories/GHSA-mc57-h6j3-3hmv"
+        "https://github.com/advisories/GHSA-rg2x-37c3-w2rh",
+        "https://github.com/moby/moby/security/advisories/GHSA-rg2x-37c3-w2rh",
+        "https://github.com/advisories/GHSA-rg2x-37c3-w2rh"
       ],
       "explanation": {
         "quality": [
@@ -4269,10 +4287,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-45300",
-      "title": "async-http-client: Cookie header not stripped on cross-origin redirect",
-      "description": "## Summary async-http-client leaks `Cookie` headers to cross-origin redirect targets. When following a redirect across a security boundary (different origin, or HTTPS→HTTP downgrade), the `propagatedHeaders()` method in `Redirect30xInterceptor.java` strips `Authorization` and `Proxy-Authorization` h",
-      "cvss": 7.4,
+      "id": "CVE-2026-41567",
+      "title": "Docker: `PUT /containers/{id}/archive` executes container binary on the host",
+      "description": "## Summary When a user uploads a compressed archive into a container, a malicious image can execute arbitrary code with daemon (host root) privileges. ## Details When handling `PUT /containers/{id}/archive` requests with compressed archives, the daemon decompresses them using external system binarie",
+      "cvss": 7.2,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4287,19 +4305,18 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "maven",
-      "product": "org.asynchttpclient:async-http-client",
+      "vendor": "go",
+      "product": "github.com/moby/moby/v2",
       "due_date": null,
       "cves": [
-        "CVE-2026-45300",
-        "CVE-2026-45300"
+        "CVE-2026-41567",
+        "CVE-2026-41567"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-fmxf-pm6p-7xgm",
-        "https://github.com/AsyncHttpClient/async-http-client/security/advisories/GHSA-fmxf-pm6p-7xgm",
-        "https://github.com/AsyncHttpClient/async-http-client/commit/3b0e3e9e",
-        "https://github.com/AsyncHttpClient/async-http-client/releases/tag/async-http-client-project-3.0.10"
+        "https://github.com/advisories/GHSA-x86f-5xw2-fm2r",
+        "https://github.com/moby/moby/security/advisories/GHSA-x86f-5xw2-fm2r",
+        "https://github.com/advisories/GHSA-x86f-5xw2-fm2r"
       ],
       "explanation": {
         "quality": [
