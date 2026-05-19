@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-19T04:38:01.263Z",
+  "generated": "2026-05-19T08:06:40.136Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1331,
+    "total_nodes": 1335,
     "actors": 8,
-    "cves": 346,
-    "campaigns": 117,
+    "cves": 347,
+    "campaigns": 118,
     "malware": 0,
     "iocs": 160,
-    "edges": 465
+    "edges": 466
   },
   "nodes": {
     "actor:lockbit": {
@@ -25273,6 +25273,80 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-8153": {
+      "id": "CVE-2026-8153",
+      "type": "CVE",
+      "name": "Critical Vulnerability Exposes Industrial Robot Fleets to Hacking",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-05-19",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "THEHACKERNEWS-4a1d4c8f1f41bdb4": {
+      "id": "THEHACKERNEWS-4a1d4c8f1f41bdb4",
+      "type": "Intel",
+      "name": "Popular GitHub Action Tags Redirected to Imposter Commit to Steal CI/CD Credentials",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-05-19",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "THEHACKERNEWS-52fff2d015b90eff": {
+      "id": "THEHACKERNEWS-52fff2d015b90eff",
+      "type": "Intel",
+      "name": "Mini Shai-Hulud Pushes Malicious AntV npm Packages via Compromised Maintainer Account",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-05-19",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-8153": {
+      "id": "campaign:cve-2026-8153",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-19",
+        "last_seen": "2026-05-19",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-8153 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-8153",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -29497,6 +29571,15 @@
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-05-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-8153→includes→CVE-2026-8153",
+      "source": "campaign:cve-2026-8153",
+      "target": "CVE-2026-8153",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-19",
       "sources": []
     }
   ]
