@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-19T21:00:33.175Z",
+  "generated": "2026-05-19T22:22:29.281Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1392,
+    "total_nodes": 1396,
     "actors": 8,
     "cves": 363,
-    "campaigns": 122,
+    "campaigns": 123,
     "malware": 0,
     "iocs": 166,
-    "edges": 482
+    "edges": 483
   },
   "nodes": {
     "actor:lockbit": {
@@ -26404,6 +26404,80 @@
           "confidence": 1
         }
       ]
+    },
+    "DARKREADING-77185292db513378": {
+      "id": "DARKREADING-77185292db513378",
+      "type": "Intel",
+      "name": "Windows Zero-Day Barrage Continues After Patch Tuesday",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-05-19",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "DARKREADING-c0c38a9f3a338454": {
+      "id": "DARKREADING-c0c38a9f3a338454",
+      "type": "Intel",
+      "name": "Verizon DBIR: Enterprises Face a Dangerous Vulnerability Glut",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-05-19",
+        "type": "DATA_BREACH"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-9234d7acb070271e": {
+      "id": "BLEEPINGCOMPUTER-9234d7acb070271e",
+      "type": "Intel",
+      "name": "Cybercrime service disrupted for abusing Microsoft platform to sign malware",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-19",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "campaign:cluster-327543a3": {
+      "id": "campaign:cluster-327543a3",
+      "type": "Campaign",
+      "name": "darkreading Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-19",
+        "last_seen": "2026-05-19",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "DARKREADING-77185292db513378",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -30778,6 +30852,15 @@
       "id": "campaign:cve-2026-46377-and-cve-2026-46378→includes→CVE-2026-46378",
       "source": "campaign:cve-2026-46377-and-cve-2026-46378",
       "target": "CVE-2026-46378",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-19",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-327543a3→includes→DARKREADING-77185292db513378",
+      "source": "campaign:cluster-327543a3",
+      "target": "DARKREADING-77185292db513378",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-19",
