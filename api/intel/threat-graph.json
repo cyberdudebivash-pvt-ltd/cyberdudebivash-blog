@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-21T21:52:42.785Z",
+  "generated": "2026-05-21T23:01:46.097Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1504,
+    "total_nodes": 1506,
     "actors": 8,
-    "cves": 384,
+    "cves": 385,
     "campaigns": 132,
     "malware": 0,
-    "iocs": 168,
-    "edges": 497
+    "iocs": 169,
+    "edges": 498
   },
   "nodes": {
     "actor:lockbit": {
@@ -28453,6 +28453,41 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-46701": {
+      "id": "CVE-2026-46701",
+      "type": "CVE",
+      "name": "Network-AI: Unauthenticated Cross-Origin MCP Tool Invocation via Empty Default Secret",
+      "attributes": {
+        "cvss": 7.6,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "network-ai",
+        "published": "2026-05-21",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:c12686e181f231cf8d7bcf836a96d78f0f0877ac",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:c12686e181f231cf8d7bcf836a96d78f0f0877ac": {
+      "id": "ioc:sha1:c12686e181f231cf8d7bcf836a96d78f0f0877ac",
+      "type": "IOC",
+      "name": "c12686e181f231cf8d7bcf836a96d78f0f0877ac",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-05-21"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -32964,6 +32999,15 @@
       "target": "ioc:domain:containerd.io",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-05-21",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-46701→linked_to→ioc:sha1:c12686e181f231cf8d7bcf836a96d78f0f0877ac",
+      "source": "CVE-2026-46701",
+      "target": "ioc:sha1:c12686e181f231cf8d7bcf836a96d78f0f0877ac",
+      "relationship": "linked_to",
+      "confidence": 0.9,
       "first_seen": "2026-05-21",
       "sources": []
     }
