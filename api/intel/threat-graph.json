@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-22T08:03:35.148Z",
+  "generated": "2026-05-22T11:15:05.522Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1548,
+    "total_nodes": 1555,
     "actors": 8,
-    "cves": 390,
-    "campaigns": 142,
+    "cves": 391,
+    "campaigns": 144,
     "malware": 0,
     "iocs": 179,
-    "edges": 532
+    "edges": 534
   },
   "nodes": {
     "actor:lockbit": {
@@ -29331,6 +29331,136 @@
           "confidence": 1
         }
       ]
+    },
+    "CVE-2026-34926": {
+      "id": "CVE-2026-34926",
+      "type": "CVE",
+      "name": "TrendAI Patches Apex One Zero-Day Exploited in the Wild",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 75,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-05-22",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "UNIT42-bd9f2b93173fe309": {
+      "id": "UNIT42-bd9f2b93173fe309",
+      "type": "Intel",
+      "name": "Paved With Intent: ROADtools and Nation-State Tactics in the Cloud",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "unit42",
+        "product": "Threat Intelligence",
+        "published": "2026-05-22",
+        "type": "THREAT_ACTOR"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-8b6f12ec311ac67d": {
+      "id": "SECURITYWEEK-8b6f12ec311ac67d",
+      "type": "Intel",
+      "name": "&#8216;First VPN&#8217; Cybercrime Service Disrupted, Administrator Arrested",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-05-22",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-9bcbe56358d97ba5": {
+      "id": "BLEEPINGCOMPUTER-9bcbe56358d97ba5",
+      "type": "Intel",
+      "name": "US and Canada arrest and charge suspected Kimwolf botnet admin",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-05-22",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "THEHACKERNEWS-96e878cc71987ab6": {
+      "id": "THEHACKERNEWS-96e878cc71987ab6",
+      "type": "Intel",
+      "name": "Kimwolf DDoS Botnet Operator Arrested in Canada Over DDoS-for-Hire Attacks",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-05-22",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-34926": {
+      "id": "campaign:cve-2026-34926",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-22",
+        "last_seen": "2026-05-22",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-34926 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-34926",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-833d54a5": {
+      "id": "campaign:cluster-833d54a5",
+      "type": "Campaign",
+      "name": "ADT Data Breach Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-05-22",
+        "last_seen": "2026-05-22",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "UNIT42-bd9f2b93173fe309",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -34155,6 +34285,24 @@
       "id": "campaign:cluster-0dc12ab5→includes→REDDIT_CYBER-47e4859932caa4ab",
       "source": "campaign:cluster-0dc12ab5",
       "target": "REDDIT_CYBER-47e4859932caa4ab",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-22",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-34926→includes→CVE-2026-34926",
+      "source": "campaign:cve-2026-34926",
+      "target": "CVE-2026-34926",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-22",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-833d54a5→includes→UNIT42-bd9f2b93173fe309",
+      "source": "campaign:cluster-833d54a5",
+      "target": "UNIT42-bd9f2b93173fe309",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-22",
