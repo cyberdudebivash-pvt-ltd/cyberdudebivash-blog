@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-22T23:48:07.799Z",
+  "generated": "2026-05-23T01:32:02.041Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1585,
+    "total_nodes": 1589,
     "actors": 8,
-    "cves": 393,
+    "cves": 396,
     "campaigns": 148,
     "malware": 0,
-    "iocs": 181,
-    "edges": 547
+    "iocs": 182,
+    "edges": 548
   },
   "nodes": {
     "actor:lockbit": {
@@ -30048,6 +30048,77 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-47125": {
+      "id": "CVE-2026-47125",
+      "type": "CVE",
+      "name": "Arcane: Missing admin authorization on global variables endpoint",
+      "attributes": {
+        "cvss": 8.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/getarcaneapp/arcane/backend",
+        "published": "2026-05-23",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-46717": {
+      "id": "CVE-2026-46717",
+      "type": "CVE",
+      "name": "Nezha Monitoring: RoleMember-reachable SSRF with full response-body reflection via POST /api/v1/notification",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/nezhahq/nezha",
+        "published": "2026-05-23",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:50dc8e660326b9f22990898142c58b7a5312b42a",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:50dc8e660326b9f22990898142c58b7a5312b42a": {
+      "id": "ioc:sha1:50dc8e660326b9f22990898142c58b7a5312b42a",
+      "type": "IOC",
+      "name": "50dc8e660326b9f22990898142c58b7a5312b42a",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-05-23"
+      },
+      "connections": []
+    },
+    "CVE-2026-47138": {
+      "id": "CVE-2026-47138",
+      "type": "CVE",
+      "name": "Parse Server: Pre-authentication denial of service via client version header regex backtracking",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "parse-server",
+        "published": "2026-05-23",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -35010,6 +35081,15 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-22",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-46717→linked_to→ioc:sha1:50dc8e660326b9f22990898142c58b7a5312b42a",
+      "source": "CVE-2026-46717",
+      "target": "ioc:sha1:50dc8e660326b9f22990898142c58b7a5312b42a",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-05-23",
       "sources": []
     }
   ]
