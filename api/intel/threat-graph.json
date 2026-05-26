@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-26T16:28:14.327Z",
+  "generated": "2026-05-26T19:03:21.254Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1666,
+    "total_nodes": 1670,
     "actors": 8,
-    "cves": 401,
-    "campaigns": 162,
+    "cves": 402,
+    "campaigns": 163,
     "malware": 0,
-    "iocs": 186,
-    "edges": 576
+    "iocs": 187,
+    "edges": 578
   },
   "nodes": {
     "actor:lockbit": {
@@ -31582,6 +31582,79 @@
           "confidence": 1
         }
       ]
+    },
+    "WIRED_SECURITY-7029b958bcac1003": {
+      "id": "WIRED_SECURITY-7029b958bcac1003",
+      "type": "Intel",
+      "name": "Internet Starts to Return in Iran After 3-Month Blackout",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "wired_security",
+        "product": "Threat Intelligence",
+        "published": "2026-05-26",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "CVE-2026-28445": {
+      "id": "CVE-2026-28445",
+      "type": "CVE",
+      "name": "Typebot has Stored XSS via Rating Block Custom Icon that Bypasses isUnsafe Sandbox in Builder Preview",
+      "attributes": {
+        "cvss": 8.7,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "@typebot.io/js",
+        "published": "2026-05-26",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:builder.typebot.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:builder.typebot.io": {
+      "id": "ioc:domain:builder.typebot.io",
+      "type": "IOC",
+      "name": "builder.typebot.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-05-26"
+      },
+      "connections": []
+    },
+    "campaign:cluster-5ad80a77": {
+      "id": "campaign:cluster-5ad80a77",
+      "type": "Campaign",
+      "name": "wired_security Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-26",
+        "last_seen": "2026-05-26",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "WIRED_SECURITY-7029b958bcac1003",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -36802,6 +36875,24 @@
       "id": "campaign:cve-2026-45659→includes→CVE-2026-45659",
       "source": "campaign:cve-2026-45659",
       "target": "CVE-2026-45659",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-26",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-28445→linked_to→ioc:domain:builder.typebot.io",
+      "source": "CVE-2026-28445",
+      "target": "ioc:domain:builder.typebot.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-05-26",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-5ad80a77→includes→WIRED_SECURITY-7029b958bcac1003",
+      "source": "campaign:cluster-5ad80a77",
+      "target": "WIRED_SECURITY-7029b958bcac1003",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-26",
