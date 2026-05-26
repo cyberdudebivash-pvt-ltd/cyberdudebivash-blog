@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-26T09:30:58.314Z",
+  "generated": "2026-05-26T16:28:14.341Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,44 +8,45 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 97,
+  "count": 111,
   "items": [
     {
-      "id": "BLEEPINGCOMPUTER-f52da2d76287a460",
-      "title": "CISA orders feds to patch actively exploited Drupal vulnerability",
-      "description": "CISA has given U.S. government agencies until Wednesday evening to secure their servers against an SQL injection vulnerability in the Drupal content management system (CMS) that it flagged as actively exploited. [...]",
+      "id": "SECURITYWEEK-4f923ac5144745b2",
+      "title": "Hackers Exploited KnowledgeDeliver Zero-Day for Web Shell Deployment",
+      "description": "Hardcoded machineKey values in a configuration file enabled ViewState deserialization attacks leading to remote code execution. The post Hackers Exploited KnowledgeDeliver Zero-Day for Web Shell Deployment appeared first on SecurityWeek .",
       "cvss": 6.5,
-      "final_ps": 63,
-      "quality_score": 0.51,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "bleepingcomputer",
+      "final_ps": 76,
+      "quality_score": 0.505,
+      "threat_level": "HIGH",
+      "type": "ZERO_DAY",
+      "source": "securityweek",
       "sources_confirmed": 1,
       "merged_sources": [
-        "bleepingcomputer"
+        "securityweek"
       ],
       "first_seen": "2026-05-26",
       "last_seen": "2026-05-26",
       "exploited": true,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "BleepingComputer",
+      "vendor": "SecurityWeek",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-patch-actively-exploited-drupal-vulnerability/"
+        "https://www.securityweek.com/hackers-exploited-knowledgedeliver-zero-day-for-web-shell-deployment/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
+          "source_weight=0.70 (securityweek)",
           "data_confidence=0.80",
           "recency=0d (score=1.00)",
-          "QS=0.510"
+          "QS=0.505"
         ],
         "priority": [
-          "+8 exploited_in_wild"
+          "+8 exploited_in_wild",
+          "+7 zero_day"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -55,14 +56,14 @@
       "iocs": []
     },
     {
-      "id": "THEHACKERNEWS-d7176b5f9a469c4e",
-      "title": "Iranian Hackers Deploy MiniFast and MiniJunk V2 via Phishing and SEO Poisoning",
-      "description": "The Iranian state-sponsored threat actor known as Nimbus Manticore (aka Screening Serpens and UNC1549) has been attributed to a fresh campaign using lures impersonating organizations in the aviation and software sectors across the U.S., Europe, and the Middle East following the joint U.S.-Israeli mi",
-      "cvss": 6.5,
-      "final_ps": 55,
-      "quality_score": 0.488,
-      "threat_level": "MEDIUM",
-      "type": "THREAT_ACTOR",
+      "id": "CVE-2026-45659",
+      "title": "Microsoft Patches SharePoint RCE Flaw CVE-2026-45659 Across Server Versions",
+      "description": "Microsoft has rolled out updates to fix a remote code execution vulnerability impacting SharePoint that could be exploited by bad actors in attacks without requiring any specialized conditions to be met. The vulnerability, tracked as CVE-2026-45659, carries a CVSS score of 8.8. It has been assigned ",
+      "cvss": 8,
+      "final_ps": 69,
+      "quality_score": 0.538,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
       "source": "thehackernews",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -70,32 +71,34 @@
       ],
       "first_seen": "2026-05-26",
       "last_seen": "2026-05-26",
-      "exploited": false,
+      "exploited": true,
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "The Hacker News",
       "product": "Threat Intelligence",
       "due_date": null,
-      "cves": [],
+      "cves": [
+        "CVE-2026-45659"
+      ],
       "ioc_count": 0,
       "refs": [
-        "https://thehackernews.com/2026/05/iranian-hackers-deploy-minifast-and.html"
+        "https://thehackernews.com/2026/05/microsoft-patches-sharepoint-rce-flaw.html"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.55 (thehackernews)",
-          "data_confidence=0.80",
+          "data_confidence=1.00",
           "recency=0d (score=1.00)",
-          "QS=0.488"
+          "QS=0.537"
         ],
         "priority": [
-          "+5 nation_state"
+          "+8 exploited_in_wild"
         ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "suppression": null,
         "merge": null
       },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -323,6 +326,50 @@
       "iocs": []
     },
     {
+      "id": "SECURITYWEEK-b2529a22f35f7173",
+      "title": "Open Source DockSec Uses AI to Cut Through Vulnerability Noise in Docker Images",
+      "description": "DockSec, an OWASP incubator project, correlates findings from multiple container security scanners and uses AI to generate plain-English remediation guidance and exact Dockerfile fixes. The post Open Source DockSec Uses AI to Cut Through Vulnerability Noise in Docker Images appeared first on Securit",
+      "cvss": 6.5,
+      "final_ps": 47,
+      "quality_score": 0.445,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/open-source-docksec-uses-ai-to-cut-through-vulnerability-noise-in-docker-images/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-32202",
       "title": "CVE-2026-32202: Microsoft Windows Protection Mechanism Failure Vulnerability — CISA KEV Active Exploitation",
       "description": "",
@@ -415,14 +462,14 @@
       "iocs": []
     },
     {
-      "id": "BLEEPINGCOMPUTER-e10f4c628a35d8e8",
-      "title": "Microsoft: Domain Controller lookup may fail on Windows Server 2016",
-      "description": "Microsoft has confirmed a new known issue affecting Windows Server 2016 systems that causes domain controller lookups to fail after installing the KB5087537 May 2026 security update. [...]",
+      "id": "BLEEPINGCOMPUTER-3fd648e4b333f4bf",
+      "title": "How Varonis Atlas integrates Claude Compliance API for AI governance",
+      "description": "AI governance requires visibility into how AI tools interact with enterprise data. Varonis explains how its Atlas platform uses Claude Compliance API data to help monitor usage, investigate risk, and support compliance. [...]",
       "cvss": 6.5,
       "final_ps": 41,
       "quality_score": 0.45,
       "threat_level": "LOW",
-      "type": "CVE_REPORT",
+      "type": "NEWS_REPORT",
       "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -439,7 +486,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.bleepingcomputer.com/news/microsoft/microsoft-domain-controller-lookup-may-fail-on-windows-server-2016/"
+        "https://www.bleepingcomputer.com/news/security/how-varonis-atlas-integrates-claude-compliance-api-for-ai-governance/"
       ],
       "explanation": {
         "quality": [
@@ -459,14 +506,14 @@
       "iocs": []
     },
     {
-      "id": "BLEEPINGCOMPUTER-23b18c28868e845a",
-      "title": "7-Eleven data breach exposes personal information of 185,000 people",
-      "description": "The ShinyHunters extortion gang stole the personal information of over 183,000 people after hacking the systems of convenience store chain giant 7-Eleven in April, according to data breach notification service Have I Been Pwned. [...]",
+      "id": "BLEEPINGCOMPUTER-c0298b5db3748164",
+      "title": "Microsoft Defender can now automatically isolate hacked endpoints",
+      "description": "Microsoft is testing a new Defender for Endpoint capability that will automatically isolate compromised endpoints to thwart attackers' attempts to move laterally across the network. [...]",
       "cvss": 6.5,
       "final_ps": 41,
       "quality_score": 0.45,
       "threat_level": "LOW",
-      "type": "DATA_BREACH",
+      "type": "NEWS_REPORT",
       "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -483,7 +530,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.bleepingcomputer.com/news/security/7-eleven-data-breach-exposes-personal-information-of-185-000-people/"
+        "https://www.bleepingcomputer.com/news/microsoft/microsoft-defender-can-now-automatically-isolate-hacked-endpoints/"
       ],
       "explanation": {
         "quality": [
@@ -491,6 +538,358 @@
           "data_confidence=0.80",
           "recency=0d (score=1.00)",
           "QS=0.450"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "BLEEPINGCOMPUTER-d6abd5f9ff5e9b48",
+      "title": "Webinar: Too many tools are slowing network incident response",
+      "description": "IT teams often need to jump between monitoring dashboards, infrastructure tools, ticketing systems, and communication platforms during network incidents. This webinar explores how automation and AI-assisted workflows can help reduce manual coordination and improve incident response times. [...]",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.45,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/webinar-too-many-tools-are-slowing-network-incident-response/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.450"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-b905720cad5c09e3",
+      "title": "AppOmni’s Marlin AI Brings Autonomous Investigation to SaaS Security",
+      "description": "Marlin AI automatically analyzes SaaS misconfigurations, investigates related activity across enterprise environments, and recommends remediation steps — while stopping short of fully autonomous corrective action. The post AppOmni’s Marlin AI Brings Autonomous Investigation to SaaS Security appeared",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.445,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/appomnis-marlin-ai-brings-autonomous-investigation-to-saas-security/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-fe3b06ae17de8705",
+      "title": "Iranian APT Targets Aviation, Software Companies With Updated Tools",
+      "description": "Nimbus Manticore has continued its operations during and after the US military campaign against Iran. The post Iranian APT Targets Aviation, Software Companies With Updated Tools appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.445,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/iranian-apt-targets-aviation-software-companies-with-updated-tools/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-5089da86a5bf460c",
+      "title": "185,000 Likely Impacted by 7-Eleven Data Breach",
+      "description": "The allegedly stolen information leaked by ShinyHunters contains email addresses, names, addresses, and dates of birth. The post 185,000 Likely Impacted by 7-Eleven Data Breach appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.445,
+      "threat_level": "LOW",
+      "type": "DATA_BREACH",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/185000-likely-impacted-by-7-eleven-data-breach/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-f2c99417ae24b0a6",
+      "title": "Anthropic Expands Claude&#8217;s Enterprise Security Governance With 28 New Integrations",
+      "description": "Notable integrations include CrowdStrike, Palo Alto Networks, Microsoft, Okta, Zscaler, Netskope, Cloudflare, Fortinet, and Wiz. The post Anthropic Expands Claude&#8217;s Enterprise Security Governance With 28 New Integrations appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.445,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/anthropic-expands-claudes-enterprise-security-reach-with-28-new-integrations/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-3a5aabee5ed7c1e3",
+      "title": "Watch on Demand: Threat Detection &#038; Incident Response Summit &#8211; All Sessions Available",
+      "description": "Register to enjoy free access and explore the tools, strategies, and frameworks needed to build a resilient security program for a world where every minute counts. The post Watch on Demand: Threat Detection &amp; Incident Response Summit &#8211; All Sessions Available appeared first on SecurityWeek ",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.445,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/watch-on-demand-threat-detection-incident-response-summit-all-sessions-available/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-1b194bc283c2d2ad",
+      "title": "Lithuania Suspects Foreign Involvement in Data Leak of Over 600,000 National Register Entries",
+      "description": "Lithuanian authorities are on high alert after a massive data leak involving more than 600,000 entries from national data registers. The post Lithuania Suspects Foreign Involvement in Data Leak of Over 600,000 National Register Entries appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.445,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/lithuania-suspects-foreign-involvement-in-data-leak-of-over-600000-national-register-entries/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-e434e779da41cfb3",
+      "title": "Admins of Bulletproof Hosting Service Used by Russian Hackers Arrested in Netherlands",
+      "description": "The two own Dutch companies that allegedly provided bulletproof hosting services to Russia-aligned threat actors. The post Admins of Bulletproof Hosting Service Used by Russian Hackers Arrested in Netherlands appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.445,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/admins-of-bulletproof-hosting-service-used-by-russian-hackers-arrested-in-netherlands/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
         ],
         "priority": [
           "base_ps=41 (no boosts)"
@@ -1148,6 +1547,138 @@
       "iocs": []
     },
     {
+      "id": "THEHACKERNEWS-32f263b197af1f9a",
+      "title": "[THN Webinar] New AI DDoS Attacks Are Smarter. Learn How to Fight Back",
+      "description": "Every single day, hackers are finding new ways to crash websites and steal data. But right now, something has changed. Hackers are no longer working alone. They are now using powerful Artificial Intelligence (AI) tools to make their attacks faster, stronger, and much harder to stop. According to rec",
+      "cvss": 6.5,
+      "final_ps": 39,
+      "quality_score": 0.408,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "thehackernews",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "thehackernews"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "The Hacker News",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://thehackernews.com/2026/05/new-ai-ddos-attacks-are-smarter-learn.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "THEHACKERNEWS-8489ebc9089681d7",
+      "title": "MFA Prompt Bombing: Why Your Second Factor Isn't Saving You",
+      "description": "Multi-factor authentication (MFA) was supposed to close a critical gap in identity security. It meant that, even if an attacker possessed the account credentials, they couldn't log in without the second factor. While that logic was sound, attackers have now figured out that they don't need to steal ",
+      "cvss": 6.5,
+      "final_ps": 39,
+      "quality_score": 0.408,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "thehackernews",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "thehackernews"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "The Hacker News",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://thehackernews.com/2026/05/mfa-prompt-bombing-why-your-second.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-4af14e19d10cf852",
+      "title": "Remembering Tim Wilson, Whose Legacy Lives on at Dark Reading",
+      "description": "The co-founder and former editor-in-chief passed away five years ago in November. As Dark Reading enters is third decade, we pause to celebrate and honor Wilson's instrumental role in building and elevating the media site.",
+      "cvss": 6.5,
+      "final_ps": 39,
+      "quality_score": 0.408,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/cybersecurity-operations/remembering-tim-wilson-legacy-dark-reading"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-31635",
       "title": "DirtyDecrypt PoC Released for Linux Kernel CVE-2026-31635 LPE Vulnerability",
       "description": "",
@@ -1410,7 +1941,7 @@
         "quality": [
           "source_weight=0.55 (darkreading)",
           "data_confidence=0.55",
-          "recency=-8d (score=0.85)",
+          "recency=-7d (score=0.85)",
           "QS=0.343"
         ],
         "priority": [
@@ -1454,7 +1985,7 @@
         "quality": [
           "source_weight=0.55 (darkreading)",
           "data_confidence=0.55",
-          "recency=-24d (score=0.85)",
+          "recency=-23d (score=0.85)",
           "QS=0.343"
         ],
         "priority": [
@@ -1465,6 +1996,53 @@
       },
       "suppressed": true,
       "suppression_reason": "Quality score below minimum threshold (QS < 0.35)",
+      "iocs": []
+    },
+    {
+      "id": "CISA-6e5951df4ac8152d",
+      "title": "ABB B&amp;R Automation Runtime DoS Vulnerability in System Diagnostics Manager (SDM)",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 35,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-3450"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-04"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild",
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -1737,6 +2315,303 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CISA-5c3549124cf4cb44",
+      "title": "ABB Terra AC",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-5517"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-01"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-7453d9b4c7717aa7",
+      "title": "ABB LVS MConfig",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-9970"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-06"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-28f1466151d49552",
+      "title": "ABB Ability Camera Connect",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2024-46461",
+        "CVE-2023-47360",
+        "CVE-2023-47359",
+        "CVE-2023-46814",
+        "CVE-2022-41325",
+        "CVE-2020-26664",
+        "CVE-2019-19721",
+        "CVE-2019-13962",
+        "CVE-2019-13615",
+        "CVE-2019-13602",
+        "CVE-2019-5460",
+        "CVE-2019-5459",
+        "CVE-2019-5439",
+        "CVE-2018-11529",
+        "CVE-2017-17670",
+        "CVE-2017-10699",
+        "CVE-2017-9301",
+        "CVE-2017-9300",
+        "CVE-2017-8313",
+        "CVE-2017-8312",
+        "CVE-2017-8311",
+        "CVE-2017-8310"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-05"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-222c7d7b84c2e77f",
+      "title": "Eppendorf BioFlo 320",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-7251"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-medical-advisories/icsma-26-146-01"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-c6a8ec996d80b875",
+      "title": "ABB AbilityTM Zenon Remote Transport Vulnerability",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-8754"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-03"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-9acd78827337e63e",
+      "title": "ABB AC500 V2",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-7745"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-02"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -4142,219 +5017,6 @@
         ],
         "priority": [
           "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "DARKREADING-15085c624a6cee8c",
-      "title": "Helping Romance Scam Victims Requires a Proactive, Empathic Approach",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 25,
-      "quality_score": 0.413,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "darkreading",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "darkreading"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "darkreading",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.darkreading.com/cybersecurity-operations/building-teams-to-help-cyber-scam-victims"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (darkreading)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.413"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "THEHACKERNEWS-2173cfa17bd4ca1a",
-      "title": "VECT 2.0 Ransomware Irreversibly Destroys Files Over 131KB on Windows, Linux, ESXi",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 24,
-      "quality_score": 0.353,
-      "threat_level": "LOW",
-      "type": "RANSOMWARE",
-      "source": "thehackernews",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "thehackernews"
-      ],
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "The Hacker News",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://thehackernews.com/2026/04/vect-20-ransomware-irreversibly.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (thehackernews)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.353"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "DARKREADING-abf01d7c5ec1bbe2",
-      "title": "Feuding Ransomware Groups Leak Each Other's Data",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 24,
-      "quality_score": 0.353,
-      "threat_level": "LOW",
-      "type": "RANSOMWARE",
-      "source": "darkreading",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "darkreading"
-      ],
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "darkreading",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.darkreading.com/threat-intelligence/feuding-ransomware-groups-leak-data"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (darkreading)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.353"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "RECORDED_FUTURE-387f4b99da8a69ad",
-      "title": "Lazarus Doesn't Need AGI",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 24,
-      "quality_score": 0.473,
-      "threat_level": "LOW",
-      "type": "DATA_BREACH",
-      "source": "recorded_future",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "recorded_future"
-      ],
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "recorded_future",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.recordedfuture.com/blog/lazarus-does-not-need-agi"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.75 (recorded_future)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "actor_confidence=named_actor",
-          "QS=0.472"
-        ],
-        "priority": [
-          "+5 nation_state"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "SANS_ISC-047c47bed76d0168",
-      "title": "ISC Stormcast For Tuesday, May 26th, 2026 https://isc.sans.edu/podcastdetail/9944, (Tue, May 26th)",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 16,
-      "quality_score": 0.39,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sans_isc",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sans_isc"
-      ],
-      "first_seen": "2026-05-26",
-      "last_seen": "2026-05-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "SANS ISC",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://isc.sans.edu/diary/rss/33020"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.70 (sans_isc)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.390"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
