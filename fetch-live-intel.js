@@ -1493,7 +1493,15 @@ function writeLiveIntel(allItems, state) {
         existingItems = Array.isArray(ex.items) ? ex.items : [];
       } catch(_) {}
     }
-    const newItems = allItems.map(item => ({
+    const newItems = allItems.map(item => {
+      // Compute resolved slug FIRST — item.slug may be null for many pipeline sources.
+      // Using it directly in the object literal would make `link` always null when item.slug is falsy
+      // because JS object literals cannot reference sibling properties during construction.
+      const resolvedSlug = item.slug ||
+        slugify(item.id.startsWith('CVE')
+          ? `${item.id}-${item.vendor||''}-${item.product||''}`
+          : item.title.slice(0, 60));
+      return {
       id: item.id, title: (item.title||'').slice(0,120), desc: (item.desc||'').slice(0,200),
       cvss: item.cvss||0, type: item.type||'INTEL', source: item.source||'',
       pubDate: item.pubDate||isoNow(), exploited: !!item.exploited, cisaKev: !!item.cisaKev,
@@ -1501,10 +1509,11 @@ function writeLiveIntel(allItems, state) {
       dueDate: item.dueDate||null, refs: (item.refs||[]).slice(0,2),
       priority: item.priority||0, threatLevel: item.threatLevel||'HIGH',
       sourceCount: item.sourceCount||1, iocCount: (item.iocs||[]).length,
-      slug: item.slug || slugify(item.id.startsWith('CVE')?`${item.id}-${item.vendor||''}-${item.product||''}`:item.title.slice(0,60)),
-      link: item.slug ? `${CFG.baseUrl}/posts/${item.slug}.html` : null,
+      slug: resolvedSlug,
+      link: resolvedSlug ? `${CFG.baseUrl}/posts/${resolvedSlug}.html` : null,
       _addedAt: new Date().toISOString(),
-    }));
+      };
+    });
     // Merge: new items override existing by id, then sort DESC by priority→pubDate, trim to window
     const merged = [...newItems];
     const newIds = new Set(newItems.map(i => i.id));

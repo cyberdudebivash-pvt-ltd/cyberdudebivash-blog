@@ -223,14 +223,26 @@
   }
 
   /* ── RENDER CARD ─────────────────────────────────────────── */
+  function stripEntities(s) {
+    // Decode common HTML entities and strip tags so desc renders as plain text
+    return (s||'').replace(/<[^>]+>/g,'')
+      .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')
+      .replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&nbsp;/g,' ')
+      .replace(/\s+/g,' ').trim();
+  }
+
   function card(item) {
     var threat = item.threat || classify(item.desc||'');
     var sev    = sevColor(item.score);
     var vendor = (item.vendors&&item.vendors[0])||item.product||'Unknown';
-    var desc   = (item.desc||'').slice(0,175) + ((item.desc||'').length>175?'…':'');
+    // Strip raw HTML entities from description before display
+    var rawDesc = stripEntities(item.desc||'');
+    var desc   = rawDesc.slice(0,175) + (rawDesc.length>175?'…':'');
     var product= item.product||(item.desc&&'')||'';
-    var slug   = slugify((item.id||'')+(vendor?'-'+vendor:'')+(product&&product!==vendor?'-'+product:''));
-    var href   = item.link || '/posts/'+slug+'.html';
+    // Use item.slug directly when available (populated by pipeline),
+    // avoiding the ID-hash fallback that generates non-existent post URLs.
+    var slug   = item.slug || slugify((item.id||'')+(vendor?'-'+vendor:'')+(product&&product!==vendor?'-'+product:''));
+    var href   = item.link || (item.slug ? '/posts/'+item.slug+'.html' : null) || '#';
 
     var badges = '';
     if (item.exploited) badges += '<span class="lfw-b lfw-b-exploit">⚡ ACTIVELY EXPLOITED</span>';
