@@ -9,7 +9,7 @@
 
   <!-- Open Graph -->
   <meta property="og:title" content="CYBERDUDEBIVASH SENTINEL APEX Pricing — Threat Intelligence Plans for Security Teams">
-  <meta property="og:description" content="Free, Pro (₹1,499/mo), and Enterprise plans. Pre-disclosure CVE reports, IOC feeds, SIEM rules, and dedicated analyst access for SOC teams.">
+  <meta property="og:description" content="Free, Pro (₹1,499/$18/mo), and Enterprise (₹4,999/$60/mo) plans. Pre-disclosure CVE reports, IOC feeds, SIEM rules, and dedicated analyst access for SOC teams worldwide.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://blog.cyberdudebivash.in/pricing.html">
   <meta property="og:image" content="https://blog.cyberdudebivash.in/og-image.png">
@@ -19,7 +19,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@cyberdudebivash">
   <meta name="twitter:title" content="CYBERDUDEBIVASH SENTINEL APEX Pricing — Threat Intelligence Plans">
-  <meta name="twitter:description" content="Free, Pro (₹1,499/mo), and Enterprise plans. Pre-disclosure CVE reports, IOC feeds, SIEM rules, and dedicated analyst access.">
+  <meta name="twitter:description" content="Free, Pro (₹1,499/$18/mo), and Enterprise (₹4,999/$60/mo) plans. Pre-disclosure CVE reports, IOC feeds, SIEM rules, and dedicated analyst access for global SOC teams.">
   <meta name="twitter:image" content="https://blog.cyberdudebivash.in/og-image.png">
 
   <title>Pricing — CYBERDUDEBIVASH SENTINEL APEX Threat Intelligence Plans | CyberDudeBivash</title>
@@ -525,6 +525,36 @@
       .compare-table { font-size: 0.78rem; }
       .modal { padding: 1.25rem; }
     }
+
+    /* ── Currency Toggle ─────────────────────────────────────────── */
+    .currency-toggle-wrap {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin-bottom: 2rem;
+    }
+    .currency-toggle-wrap span {
+      font-size: 13px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1px; transition: color .2s;
+    }
+    .currency-toggle-wrap span.active { color: var(--cyan); }
+    .toggle-switch {
+      position: relative; width: 54px; height: 28px; cursor: pointer;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0;
+      background: rgba(0,255,224,0.12);
+      border: 1px solid rgba(0,255,224,0.3);
+      border-radius: 28px; transition: background .25s;
+    }
+    .toggle-slider::before {
+      content: ""; position: absolute;
+      height: 20px; width: 20px; left: 3px; top: 3px;
+      background: var(--cyan); border-radius: 50%;
+      transition: transform .25s;
+    }
+    .toggle-switch input:checked + .toggle-slider { background: rgba(0,255,224,0.2); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(26px); }
+    .plan-currency-note { font-size: 11px; color: var(--muted); text-align: center; margin-top: -1rem; margin-bottom: 1.5rem; }
   </style>
 </head>
 <body>
@@ -576,14 +606,26 @@
 
 <!-- ── Pricing Cards ────────────────────────────────────────────── -->
 <section class="pricing-section">
+
+  <!-- Currency Toggle -->
+  <div class="currency-toggle-wrap" id="currencyToggleWrap">
+    <span id="inrLabel" class="active">INR ₹</span>
+    <label class="toggle-switch" title="Switch currency">
+      <input type="checkbox" id="currencyToggle" onchange="switchCurrency(this.checked)">
+      <span class="toggle-slider"></span>
+    </label>
+    <span id="usdLabel">USD $</span>
+  </div>
+  <p class="plan-currency-note" id="currencyNote">Prices shown in Indian Rupees (INR). Toggle for USD equivalent.</p>
+
   <div class="pricing-grid">
 
     <!-- Free -->
     <div class="plan-card">
       <div class="plan-name">Free Tier</div>
       <div class="plan-price-row">
-        <span class="plan-currency">₹</span>
-        <span class="plan-price">0</span>
+        <span class="plan-currency" data-inr="₹" data-usd="$">₹</span>
+        <span class="plan-price" data-inr="0" data-usd="0">0</span>
         <span class="plan-period">/month</span>
       </div>
       <p class="plan-tagline">Get started with live threat data.</p>
@@ -610,8 +652,8 @@
       <div class="popular-badge">⚡ Most Popular</div>
       <div class="plan-name">SOC Professional</div>
       <div class="plan-price-row">
-        <span class="plan-currency">₹</span>
-        <span class="plan-price">1,499</span>
+        <span class="plan-currency" data-inr="₹" data-usd="$">₹</span>
+        <span class="plan-price" data-inr="1,499" data-usd="18">1,499</span>
         <span class="plan-period">/month</span>
       </div>
       <p class="plan-tagline">Full intel access for active SOC teams.</p>
@@ -637,8 +679,8 @@
     <div class="plan-card">
       <div class="plan-name">Enterprise</div>
       <div class="plan-price-row">
-        <span class="plan-currency">₹</span>
-        <span class="plan-price">4,999</span>
+        <span class="plan-currency" data-inr="₹" data-usd="$">₹</span>
+        <span class="plan-price" data-inr="4,999" data-usd="60">4,999</span>
         <span class="plan-period">/month</span>
       </div>
       <p class="plan-tagline">Maximum intel depth for enterprise SOCs.</p>
@@ -1460,5 +1502,40 @@ document.addEventListener('keydown', e => {
 });
 </script>
 
+
+  <script>
+    function switchCurrency(isUSD) {
+      const currencies = document.querySelectorAll('.plan-currency[data-inr]');
+      const prices = document.querySelectorAll('.plan-price[data-inr]');
+      const inrLabel = document.getElementById('inrLabel');
+      const usdLabel = document.getElementById('usdLabel');
+      const note = document.getElementById('currencyNote');
+
+      currencies.forEach(el => { el.textContent = isUSD ? el.dataset.usd : el.dataset.inr; });
+      prices.forEach(el => { el.textContent = isUSD ? el.dataset.usd : el.dataset.inr; });
+
+      if (isUSD) {
+        inrLabel.classList.remove('active');
+        usdLabel.classList.add('active');
+        note.textContent = 'Prices shown in USD ($1 ≈ ₹84). Billed in INR at checkout.';
+      } else {
+        usdLabel.classList.remove('active');
+        inrLabel.classList.add('active');
+        note.textContent = 'Prices shown in Indian Rupees (INR). Toggle for USD equivalent.';
+      }
+    }
+
+    // Auto-detect user locale — default to USD for non-IN visitors
+    (function() {
+      try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const locale = navigator.language || '';
+        if (!tz.startsWith('Asia/Kolkata') && !locale.startsWith('en-IN')) {
+          const toggle = document.getElementById('currencyToggle');
+          if (toggle) { toggle.checked = true; switchCurrency(true); }
+        }
+      } catch(e) {}
+    })();
+  </script>
 </body>
 </html>
