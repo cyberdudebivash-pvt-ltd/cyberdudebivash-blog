@@ -1076,7 +1076,9 @@ function generatePostHTML(item) {
   const cveIds  = item.cves||(item.id?.startsWith('CVE')?[item.id]:[]);
   const cveRows = cveIds.slice(0,5).map(cve=>`<tr><td style="font-family:var(--mono);color:var(--apex-cyan)">${escHtml(cve)}</td><td><a href="https://nvd.nist.gov/vuln/detail/${escHtml(cve)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">NVD →</a></td><td>${cvss}</td></tr>`).join('\n');
   const iocRows = (item.iocs||[]).filter(ioc=>ioc&&ioc.value).slice(0,10).map(ioc=>`<tr><td style="font-family:var(--mono);font-size:11px;color:var(--apex-cyan)">${escHtml(String(ioc.value||'').slice(0,80))}</td><td>${escHtml(ioc.type||'ioc')}</td><td style="text-align:center">${Math.round((ioc.confidence_score||0.8)*100)}%</td><td style="color:var(--apex-muted);font-size:11px">${escHtml(ioc.first_seen||isoNow())}</td></tr>`).join('\n');
-  const refLinks = (item.refs||[]).slice(0,5).map(r=>`<li><a href="${escHtml(r)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">${escHtml(String(r).replace(/https?:\/\//,'').slice(0,70))}</a></li>`).join('\n');
+  // v5.1: Filter refs to valid URLs only — prevents NVD GHSA description strings leaking into hrefs
+  const validRefs = (item.refs||[]).filter(r => typeof r === 'string' && /^https?:\/\//i.test(r.trim()));
+  const refLinks = validRefs.slice(0,5).map(r=>`<li><a href="${escHtml(r)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">${escHtml(r.replace(/https?:\/\//,'').slice(0,70))}</a></li>`).join('\n');
   const playbookItems = playbook.map((s,i)=>`<li class="action-item"><span class="action-num">${i+1}</span>${escHtml(s)}</li>`).join('\n      ');
   const bizImpactItems = bizImpact.map(b=>`<li class="impact-item">⚠️ ${escHtml(b)}</li>`).join('\n');
   const chainRows = attackChain.map((step,i)=>`<tr${i===0?' class="chain-first"':i===attackChain.length-1?' class="chain-last"':''}>
