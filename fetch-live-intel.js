@@ -99,6 +99,18 @@ const isoNow = () => new Date().toISOString().slice(0, 10);
 const isoNowFull = () => new Date().toISOString();
 const md5 = s => crypto.createHash('md5').update(String(s)).digest('hex').slice(0, 16);
 
+// ── ATOMIC WRITE — write to .tmp then rename to prevent truncation on SIGKILL ──
+function safeWriteSync(filePath, data, encoding = 'utf8') {
+  const tmp = filePath + '.tmp';
+  try {
+    fs.writeFileSync(tmp, data, encoding);
+    fs.renameSync(tmp, filePath);
+  } catch (e) {
+    try { fs.unlinkSync(tmp); } catch (_) {}
+    throw e;
+  }
+}
+
 // ── PHASE 3: LOCK MECHANISM — prevents overlapping runs ─────────────────
 function acquireLock() {
   try {
@@ -307,7 +319,7 @@ function saveState(state) {
   const now      = Date.now();
   state.published = state.published.filter(p => (now - new Date(p.date || 0).getTime()) < ttlMs);
   if (state.published.length > 3000) state.published = state.published.slice(0, 2000);
-  fs.writeFileSync(CFG.statePath, JSON.stringify(state, null, 2), 'utf8');
+  safeWriteSync(CFG.statePath, JSON.stringify(state, null, 2), 'utf8');
 }
 // Returns last fetch timestamp for a named source (epoch ms), or null if never fetched
 function getSourceLastFetch(state, source) {
@@ -1335,7 +1347,7 @@ function updateIndexHTML(newCards) {
   html = html.replace(MARKER, `${cardBlock}\n\n    ${MARKER}`);
   const today = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}).toUpperCase();
   html = html.replace(/BREAKING INTELLIGENCE &mdash;[^<]+ &mdash; UPDATED LIVE/, `BREAKING INTELLIGENCE &mdash; ${today} &mdash; UPDATED LIVE`);
-  fs.writeFileSync(CFG.indexPath, html, 'utf8');
+  safeWriteSync(CFG.indexPath, html, 'utf8');
   log(`index.html updated: +${newCards.length} cards.`);
 }
 
@@ -1346,13 +1358,13 @@ function updateRSS(newItems) {
     return `  <item>\n    <title><![CDATA[${item.title}]]></title>\n    <link>${link}</link>\n    <description><![CDATA[Score ${item.priority||0}/100 ${item.threatLevel||'HIGH'} — CVSS ${item.cvss} — ${(item.desc||'').slice(0,300)}. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>\n    <pubDate>${new Date().toUTCString()}</pubDate>\n    <guid isPermaLink="true">${link}</guid>\n    <category>Threat Intelligence</category>\n    <category>${item.cisaKev?'CISA KEV':item.type||'CVE Analysis'}</category>\n  </item>`;
   }).join('\n');
   if (!fs.existsSync(CFG.rssPath)) {
-    fs.writeFileSync(CFG.rssPath, `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n  <channel>\n    <title>CYBERDUDEBIVASH SENTINEL APEX — Global Threat Intelligence</title>\n    <link>${CFG.baseUrl}</link>\n    <description>Real-time cybersecurity intelligence by CYBERDUDEBIVASH SENTINEL APEX v4.0.</description>\n    <language>en-us</language>\n    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n    <atom:link href="${CFG.baseUrl}/rss.xml" rel="self" type="application/rss+xml"/>\n${rssItems}\n  </channel>\n</rss>`, 'utf8');
+    safeWriteSync(CFG.rssPath, `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n  <channel>\n    <title>CYBERDUDEBIVASH SENTINEL APEX — Global Threat Intelligence</title>\n    <link>${CFG.baseUrl}</link>\n    <description>Real-time cybersecurity intelligence by CYBERDUDEBIVASH SENTINEL APEX v4.0.</description>\n    <language>en-us</language>\n    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n    <atom:link href="${CFG.baseUrl}/rss.xml" rel="self" type="application/rss+xml"/>\n${rssItems}\n  </channel>\n</rss>`, 'utf8');
     log('rss.xml created fresh.'); return;
   }
   let rss = fs.readFileSync(CFG.rssPath, 'utf8');
   rss = rss.replace(/(<lastBuildDate>)[^<]*(<\/lastBuildDate>)/, `$1${new Date().toUTCString()}$2`);
   rss = rss.includes('<item>') ? rss.replace(/(<item>)/, `${rssItems}\n  $1`) : rss.replace('</channel>', `${rssItems}\n  </channel>`);
-  fs.writeFileSync(CFG.rssPath, rss, 'utf8');
+  safeWriteSync(CFG.rssPath, rss, 'utf8');
   log(`rss.xml updated: +${newItems.length} items.`);
 }
 
@@ -1363,7 +1375,7 @@ function updateSitemap(slugs) {
     let sitemap = fs.existsSync(CFG.sitemapPath) ? fs.readFileSync(CFG.sitemapPath,'utf8') : `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>`;
     const entries = slugs.map(slug=>`  <url>\n    <loc>${CFG.baseUrl}/posts/${slug}.html</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`).join('\n');
     sitemap = sitemap.replace('</urlset>', `${entries}\n</urlset>`);
-    fs.writeFileSync(CFG.sitemapPath, sitemap, 'utf8');
+    safeWriteSync(CFG.sitemapPath, sitemap, 'utf8');
     log(`sitemap.xml updated: +${slugs.length} URLs.`);
   } catch(e) { warn(`Sitemap update failed: ${e.message}`); }
 }
@@ -1411,7 +1423,7 @@ function writeAPIFiles(allItems, state) {
       return new Date(b.first_seen||b.published||0) - new Date(a.first_seen||a.published||0);
     });
     const rolledLiveItems = mergedLive.slice(0, CFG.apiLiveWindow || 100);
-    fs.writeFileSync(apiLivePath, JSON.stringify({
+    safeWriteSync(apiLivePath, JSON.stringify({
       ...apiMeta, endpoint: '/api/intel/live.json',
       description: `S2N live threat intelligence feed — top ${CFG.apiLiveWindow||100} items by final_ps`,
       total_published: state.totalPublished || 0,
@@ -1421,7 +1433,7 @@ function writeAPIFiles(allItems, state) {
     log(`api/intel/live.json: ${rolledLiveItems.length} items (S2N passed=${s2nResult.stats.passed}).`);
 
     // ── /api/intel/top-threats.json — final_ps≥70 AND quality_score≥0.60 ──
-    fs.writeFileSync(path.join(CFG.apiDir, 'top-threats.json'), JSON.stringify({
+    safeWriteSync(path.join(CFG.apiDir, 'top-threats.json'), JSON.stringify({
       ...apiMeta, endpoint: '/api/intel/top-threats.json',
       description: 'S2N top threats: final_ps ≥ 70 AND quality_score ≥ 0.60',
       count: topItems.length,
@@ -1431,7 +1443,7 @@ function writeAPIFiles(allItems, state) {
 
     // ── /api/intel/raw.json — unfiltered (paid tier, includes suppressed) ─
     const rawDir = path.join(CFG.apiDir);
-    fs.writeFileSync(path.join(rawDir, 'raw.json'), JSON.stringify({
+    safeWriteSync(path.join(rawDir, 'raw.json'), JSON.stringify({
       ...apiMeta, endpoint: '/api/intel/raw.json',
       description: 'Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.',
       note: 'Access requires Enterprise API key. Includes suppression_reason and full IOC data.',
@@ -1458,7 +1470,7 @@ function writeAPIFiles(allItems, state) {
       if (!iocMap.has(k)) iocMap.set(k, { ...ioc, source_count: 1 });
       else { const ex = iocMap.get(k); ex.source_count++; ex.confidence_score = Math.min(0.99, (ex.confidence_score||0.5) + 0.05); }
     });
-    fs.writeFileSync(path.join(CFG.apiDir, 'iocs.json'), JSON.stringify({
+    safeWriteSync(path.join(CFG.apiDir, 'iocs.json'), JSON.stringify({
       ...apiMeta, endpoint: '/api/intel/iocs.json',
       description: 'Enriched IOC feed with confidence scoring',
       count: iocMap.size,
@@ -1468,7 +1480,7 @@ function writeAPIFiles(allItems, state) {
 
     // ── /api/intel/ransomware.json — ransomware-specific ────────────────
     const ransomItems = s2nResult.passed.filter(i => i.ransomware || i.type==='RANSOMWARE');
-    fs.writeFileSync(path.join(CFG.apiDir, 'ransomware.json'), JSON.stringify({
+    safeWriteSync(path.join(CFG.apiDir, 'ransomware.json'), JSON.stringify({
       ...apiMeta, endpoint: '/api/intel/ransomware.json',
       description: 'Ransomware-specific threat intelligence (S2N-filtered)',
       count: ransomItems.length,
@@ -1489,7 +1501,7 @@ function writeAPIFiles(allItems, state) {
       .forEach(item => {
         const orig = allItems.find(o => o.id === item.id) || item;
         const cveFile = path.join(apiCveDir, `${item.id}.json`);
-        fs.writeFileSync(cveFile, JSON.stringify({
+        safeWriteSync(cveFile, JSON.stringify({
           ...apiMeta, endpoint: `/api/intel/cve/${item.id}.json`,
           id: item.id, title: item.title, description: item.description||orig.desc,
           cvss: item.cvss||0, final_ps: item.final_ps||0, quality_score: item.quality_score||0,
@@ -1552,7 +1564,7 @@ function writeLiveIntel(allItems, state) {
       if (ps !== 0) return ps;
       return new Date(b.pubDate||0) - new Date(a.pubDate||0);
     });    const liveItems = merged.slice(0, CFG.liveRollingWindow || 150);
-    fs.writeFileSync(CFG.liveJsonPath, JSON.stringify({
+    safeWriteSync(CFG.liveJsonPath, JSON.stringify({
       generatedAt: new Date().toISOString(), totalPublished: state.totalPublished||0,
       source: 'CYBERDUDEBIVASH SENTINEL APEX v5.0', platform: 'blog.cyberdudebivash.in',
       version: '5.0',
@@ -1798,7 +1810,7 @@ async function main() {
           markPublished(state, { id:item.id, slug, title });
           continue;
         }
-        fs.writeFileSync(filePath, html, 'utf8');
+        safeWriteSync(filePath, html, 'utf8');
         log(`✅ [${item.threatLevel||'HIGH'}] [${item.type}] ${slug}.html (score=${item.priority||0}, srcs=${item.sourceCount||1})`);
         markPublished(state, { id:item.id, slug, title });
         generatedCards.push({ card: generatePostCard(item, slug, title) });
@@ -1811,7 +1823,7 @@ async function main() {
             if (!fs.existsSync(apiCveDir)) fs.mkdirSync(apiCveDir, { recursive: true });
             const cveFile   = path.join(apiCveDir, `${item.id}.json`);
             const existing  = fs.existsSync(cveFile) ? JSON.parse(fs.readFileSync(cveFile,'utf8')) : {};
-            fs.writeFileSync(cveFile, JSON.stringify({ ...existing, report_url:`${CFG.baseUrl}/posts/${slug}.html`, slug }, null, 2), 'utf8');
+            safeWriteSync(cveFile, JSON.stringify({ ...existing, report_url:`${CFG.baseUrl}/posts/${slug}.html`, slug }, null, 2), 'utf8');
           } catch(_) {}
         }
       } catch(e) { err(`Failed to generate: ${item.id} — ${e.message}`); }
@@ -1825,20 +1837,4 @@ async function main() {
       updateSitemap(newSlugs);
     }
 
-    saveState(state);
-    validateAndReport(enrichedItems, generatedCards, state, T0, sourceStats);
-
-  } catch(fatalErr) {
-    err(`FATAL: ${fatalErr.message}\n${fatalErr.stack||''}`);
-    safeRelease();
-    process.exit(1);
-  }
-
-  safeRelease();
-}
-
-main().catch(e => {
-  err(`UNHANDLED: ${e.message}\n${e.stack||''}`);
-  releaseLock();
-  process.exit(1);
-});
+    saveState
