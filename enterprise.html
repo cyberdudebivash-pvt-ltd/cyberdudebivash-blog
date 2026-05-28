@@ -109,6 +109,28 @@
     .roi-line span:last-child{color:var(--c);font-weight:700}
     .roi-line.total span:last-child{font-size:1.2rem}
 
+    /* BOOKING SECTION */
+    .booking-section{max-width:900px;margin:0 auto 3rem;padding:0 1rem}
+    .booking-header{text-align:center;margin-bottom:2rem}
+    .booking-header h2{font-size:1.9rem;font-weight:900;color:#fff;margin-bottom:.5rem}
+    .booking-header p{color:var(--muted);font-size:.9rem;max-width:560px;margin:0 auto}
+    .booking-options{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
+    @media(max-width:700px){.booking-options{grid-template-columns:1fr}}
+    .booking-card{background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:14px;padding:1.5rem;text-align:center;transition:border-color .2s,transform .2s;cursor:pointer;text-decoration:none;display:block}
+    .booking-card:hover{border-color:var(--c);transform:translateY(-3px)}
+    .booking-card.featured{border-color:rgba(0,255,224,.4);background:rgba(0,255,224,.04)}
+    .booking-icon{font-size:1.8rem;margin-bottom:.75rem}
+    .booking-title{font-size:.95rem;font-weight:800;color:#f1f5f9;margin-bottom:.4rem}
+    .booking-duration{font-size:.75rem;font-weight:700;color:var(--c);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
+    .booking-desc{font-size:.78rem;color:var(--muted);line-height:1.5}
+    .booking-badge{display:inline-block;background:linear-gradient(135deg,var(--c),var(--c2));color:#000;font-size:.65rem;font-weight:800;padding:.15rem .6rem;border-radius:50px;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em}
+    .booking-cta-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
+    .btn-book{background:linear-gradient(135deg,var(--c),var(--c2));color:#000;font-weight:800;padding:.85rem 2.2rem;border-radius:8px;text-decoration:none;font-size:.95rem;display:inline-flex;align-items:center;gap:.5rem;transition:transform .2s,box-shadow .2s;box-shadow:0 0 30px rgba(0,255,224,.25);border:none;cursor:pointer}
+    .btn-book:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,255,224,.45)}
+    .btn-book-outline{background:transparent;border:1px solid rgba(0,255,224,.4);color:var(--c);font-weight:700;padding:.85rem 2rem;border-radius:8px;text-decoration:none;font-size:.9rem;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s}
+    .btn-book-outline:hover{border-color:var(--c);background:rgba(0,255,224,.08)}
+    .booking-trust{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;font-size:.75rem;color:var(--muted)}
+    .booking-trust span{display:flex;align-items:center;gap:.3rem}
     /* CONTACT FORM */
     .contact-section{background:linear-gradient(135deg,rgba(0,255,224,.04),rgba(0,100,200,.04));border:1px solid var(--border);border-radius:20px;padding:3rem;max-width:800px;margin:0 auto}
     .contact-section h2{font-size:1.8rem;font-weight:900;color:#fff;margin-bottom:.5rem}
@@ -149,7 +171,7 @@
     <a href="/products.html">Products</a>
     <a href="/pricing.html">Pricing</a>
     <a href="/enterprise.html" class="active">Enterprise</a>
-    <a href="#contact" class="nav-cta">📧 Get Proposal</a>
+    <a href="#book" class="nav-cta">⚡ Book Call</a>
   </div>
 </nav>
 <div class='section-nav-bar' style='background:#060a14;border-top:1px solid #1a2535;padding:6px 20px;font-size:.78em;display:flex;gap:16px;flex-wrap:wrap'><a href="/intel/">Intel Hub</a> | <a href="/breaking/">Breaking</a> | <a href="/malware/">Malware</a> | <a href="/ai-security/">AI Security</a></div>
@@ -168,7 +190,7 @@
     <span style="background:rgba(255,255,255,.06);border:1px solid var(--border);padding:.35rem .9rem;border-radius:6px;font-size:.72rem;font-weight:700;color:var(--muted);">MITRE ATT&CK MAPPED</span>
   </div>
   <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-    <a href="#contact" class="btn-primary">📧 Request Enterprise Proposal</a>
+    <a href="#book" class="btn-primary">⚡ Book Enterprise Strategy Call</a>
     <a href="#pricing" class="btn-outline">View Enterprise Pricing →</a>
   </div>
 </div>
@@ -353,8 +375,53 @@
   </div>
 </section>
 
+<!-- CONSULTATION BOOKING -->
+<section id="book" style="padding:5rem 1.5rem 0;">
+  <div class="booking-section">
+    <div class="booking-header">
+      <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,255,224,.1);border:1px solid rgba(0,255,224,.3);border-radius:50px;padding:.3rem .9rem;font-size:.7rem;font-weight:800;color:var(--c);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem;">⚡ BOOK A STRATEGY CALL</div>
+      <h2>Talk to Our Enterprise Team</h2>
+      <p>30–60 minute sessions with senior cybersecurity engineers. No sales pitch — just real strategy for your environment.</p>
+    </div>
+
+    <div class="booking-options">
+      <a href="https://cal.com/cyberdudebivash/discovery" target="_blank" rel="noopener" class="booking-card">
+        <div class="booking-icon">🔍</div>
+        <div class="booking-title">Discovery Call</div>
+        <div class="booking-duration">30 Minutes • Free</div>
+        <div class="booking-desc">Explore fit, discuss your threat landscape, and assess Sentinel APEX alignment with your SOC stack.</div>
+      </a>
+      <a href="https://cal.com/cyberdudebivash/enterprise-deep-dive" target="_blank" rel="noopener" class="booking-card featured">
+        <div class="booking-badge">Most Popular</div>
+        <div class="booking-icon">🏢</div>
+        <div class="booking-title">Enterprise Deep Dive</div>
+        <div class="booking-duration">60 Minutes • Free</div>
+        <div class="booking-desc">Custom integration architecture, ROI modelling, SIEM mapping, and detailed proposal generation.</div>
+      </a>
+      <a href="https://cal.com/cyberdudebivash/mssp-partner" target="_blank" rel="noopener" class="booking-card">
+        <div class="booking-icon">🤝</div>
+        <div class="booking-title">MSSP Partner Session</div>
+        <div class="booking-duration">45 Minutes • Free</div>
+        <div class="booking-desc">White-label intelligence feeds, reseller pricing, co-managed SOC partnership structure, and SLA terms.</div>
+      </a>
+    </div>
+
+    <div class="booking-cta-row">
+      <a href="https://cal.com/cyberdudebivash/enterprise-deep-dive" target="_blank" rel="noopener" class="btn-book" onclick="window.CX?.TRACK?.event('book_call_click',{type:'enterprise'})">⚡ Book Enterprise Call — Free</a>
+      <a href="#contact" class="btn-book-outline">📧 Submit Written Inquiry Instead</a>
+    </div>
+
+    <div class="booking-trust">
+      <span>🔒 No obligation or commitment</span>
+      <span>⏱ Confirmed within 1 business day</span>
+      <span>🌐 Available globally via Zoom / Teams</span>
+      <span>🎯 Senior engineer — no junior SDRs</span>
+    </div>
+  </div>
+</section>
+
 <!-- CONTACT FORM -->
-<section id="contact">
+<section id="contact" style="padding:3rem 1.5rem 5rem;">
   <div class="contact-section">
     <h2>📧 Request Enterprise Proposal</h2>
     <p>Tell us about your environment. We'll build a custom proposal with ROI projections within 24 hours.</p>
