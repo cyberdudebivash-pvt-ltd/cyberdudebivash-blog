@@ -1,47 +1,210 @@
 {
   "campaigns": [
     {
-      "campaign_id": "campaign:cve-2026-35616",
-      "name": "BleepingComputer Threat Exploitation Campaign",
-      "severity": "HIGH",
+      "campaign_id": "campaign:cve-2026-33825",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "severity": "CRITICAL",
       "confidence": 0.9,
       "item_count": 1,
-      "ioc_count": 0,
+      "ioc_count": 1,
       "first_seen": "2026-05-28",
       "last_seen": "2026-05-28",
       "related_intel_ids": [
-        "CVE-2026-35616"
+        "CVE-2026-33825"
       ],
       "related_intel": [
         {
-          "id": "CVE-2026-35616",
-          "title": "Hackers exploit FortiClient EMS flaw to push infostealer malware",
-          "type": "MALWARE_REPORT",
-          "priority_score": 65,
+          "id": "CVE-2026-33825",
+          "title": "Microsoft vs Chaotic Eclipse: three zero-days now actively exploited",
+          "type": "ZERO_DAY",
+          "priority_score": 85,
           "published": "2026-05-28",
           "exploited": true,
           "cisa_kev": false
         }
       ],
-      "shared_iocs": [],
+      "shared_iocs": [
+        "domain:www.reddit.com"
+      ],
       "shared_cves": [
-        "CVE-2026-35616"
+        "CVE-2026-33825",
+        "CVE-2026-41091",
+        "CVE-2026-45498"
       ],
       "threat_actor": null,
       "threat_actors": [],
-      "max_priority_score": 65,
+      "max_priority_score": 85,
       "has_kev": false,
       "has_ransomware": false,
       "has_exploited": true,
       "reasoning": [
         "1 intel item(s) clustered with composite confidence 0.900",
-        "Single CVE basis: CVE-2026-35616",
+        "3 related CVEs: CVE-2026-33825, CVE-2026-41091, CVE-2026-45498",
+        "3 shared IOC(s) across items",
         "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cluster-fa714e35",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 2,
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "related_intel_ids": [
+        "REDDIT_NETSEC-d8ed8dda5659183a"
+      ],
+      "related_intel": [
+        {
+          "id": "REDDIT_NETSEC-d8ed8dda5659183a",
+          "title": "Threat Intel: Lithuania Investigates B2B Credential Misuse Exposing 600,000 National Registry Records",
+          "type": "ZERO_DAY",
+          "priority_score": 78,
+          "published": "2026-05-27",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "domain:www.reddit.com",
+        "domain:www.technadu.com"
+      ],
+      "shared_cves": [],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 78,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "5 shared IOC(s) across items",
+        "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2017-17215",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 3,
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "related_intel_ids": [
+        "CVE-2017-17215"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2017-17215",
+          "title": "A week after Dutch FIOD seized 800+ servers, the hosting network's ASN (AS209847) is still scanning at its normal daily rate",
+          "type": "CVE_REPORT",
+          "priority_score": 75,
+          "published": "2026-05-27",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "ipv4:94.131.105.0",
+        "ipv4:92.118.232.0",
+        "domain:www.reddit.com"
+      ],
+      "shared_cves": [
+        "CVE-2017-17215"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 75,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2017-17215",
+        "6 shared IOC(s) across items",
+        "1 item(s) confirmed exploited in the wild"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cluster-9a0d929e",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "severity": "LOW",
+      "confidence": 0.88,
+      "item_count": 4,
+      "ioc_count": 1,
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-28",
+      "related_intel_ids": [
+        "REDDIT_NETSEC-75b97d7b903436f9",
+        "REDDIT_NETSEC-56136186bdc3423f",
+        "REDDIT_NETSEC-2c5e61d9897cc5df",
+        "REDDIT_NETSEC-623a86c4ae37abaa"
+      ],
+      "related_intel": [
+        {
+          "id": "REDDIT_NETSEC-75b97d7b903436f9",
+          "title": "RCE in Strix Agent(Sandbox): A practical guide to prompt injections with impact",
+          "type": "AI_SECURITY",
+          "priority_score": 44,
+          "published": "2026-05-27",
+          "exploited": false,
+          "cisa_kev": false
+        },
+        {
+          "id": "REDDIT_NETSEC-56136186bdc3423f",
+          "title": "Visual Studio Extensions Revisited",
+          "type": "NEWS_REPORT",
+          "priority_score": 42,
+          "published": "2026-05-28",
+          "exploited": false,
+          "cisa_kev": false
+        },
+        {
+          "id": "REDDIT_NETSEC-2c5e61d9897cc5df",
+          "title": "Drupal PostgreSQL SQL Injection: From SELECT-Only to RCE",
+          "type": "NEWS_REPORT",
+          "priority_score": 42,
+          "published": "2026-05-28",
+          "exploited": false,
+          "cisa_kev": false
+        },
+        {
+          "id": "REDDIT_NETSEC-623a86c4ae37abaa",
+          "title": "MalShark: MCP-Powered Malware Traffic Analysis — Benchmarked Against Real Malware",
+          "type": "MALWARE_REPORT",
+          "priority_score": 40,
+          "published": "2026-05-27",
+          "exploited": false,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "domain:www.reddit.com"
+      ],
+      "shared_cves": [],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 44,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": false,
+      "reasoning": [
+        "4 intel item(s) clustered with composite confidence 0.880",
+        "13 shared IOC(s) across items",
+        "Item REDDIT_NETSEC-56136186bdc3423f joined cluster (score: 0.602): 1 shared IOC(s) (Jaccard: 1.000)",
+        "Item REDDIT_NETSEC-2c5e61d9897cc5df joined cluster (score: 0.617): 1 shared IOC(s) (Jaccard: 1.000)",
+        "Item REDDIT_NETSEC-623a86c4ae37abaa joined cluster (score: 0.626): 1 shared IOC(s) (Jaccard: 1.000)"
       ],
       "clustering_model": "weighted_v2"
     }
   ],
-  "generated": "2026-05-28T19:12:48.379Z",
+  "generated": "2026-05-28T21:23:31.514Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0"
 }
