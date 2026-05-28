@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-28T16:35:30.485Z",
+  "generated": "2026-05-28T17:05:12.331Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 150,
+  "count": 170,
   "items": [
     {
       "id": "EXPLOITDB-e3ffa4adadf71ba2",
@@ -736,6 +736,106 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-47243",
+      "title": "Kata guest escape: runtime-rs guest-root to host-root escape via virtiofs",
+      "description": "### Summary In the runtime-rs standalone virtio-fs path, verified here with QEMU (and verified with Cloud Hypervisor too), Kata Containers runs host `virtiofsd` as root with: ```\n--sandbox none --seccomp none\n``` If an attacker has root-equivalent execution inside the Kata guest VM, they can send ra",
+      "cvss": 7.5,
+      "final_ps": 61,
+      "quality_score": 0.578,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/kata-containers/kata-containers",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47243",
+        "CVE-2026-47243"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-2gv2-cffp-j227",
+        "https://github.com/kata-containers/kata-containers/security/advisories/GHSA-2gv2-cffp-j227",
+        "https://github.com/kata-containers/kata-containers/commit/ffa59ce3aa7877d067c9a372df0c329a23a01744",
+        "https://github.com/kata-containers/kata-containers/releases/tag/3.31.0"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.578"
+        ],
+        "priority": [
+          "+12 PoC_available"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-45704",
+      "title": "Pimcore has a CustomReports Share Bypass",
+      "description": "### Summary `CustomReports` uses inconsistent authorization between the report listing endpoint and the report detail endpoint. - The listing flow filters reports based on report-sharing rules\n- The detail flow only checks generic `reports` or `reports_config` permissions As a result, a low-privileg",
+      "cvss": 7.5,
+      "final_ps": 61,
+      "quality_score": 0.578,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "pimcore/pimcore",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45704",
+        "CVE-2026-45704"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-jwcc-gv4m-93x6",
+        "https://github.com/pimcore/pimcore/security/advisories/GHSA-jwcc-gv4m-93x6",
+        "https://github.com/pimcore/pimcore/pull/19099",
+        "https://github.com/pimcore/pimcore/commit/1893ff1cd116e442b995ddf17e8c6e0aa372268e"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.578"
+        ],
+        "priority": [
+          "+12 PoC_available"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "THEHACKERNEWS-5deaf9976d1e89d6",
       "title": "AI Chatbot Recommendations Redirect Users to Cryptojacking Malware Sites",
       "description": "Microsoft has warned of an active cryptojacking campaign that makes use of artificial intelligence (AI) chatbot interactions as a mechanism for surfacing malicious download sites. \"This emerging delivery technique extends social engineering beyond conventional search results and increases the visibi",
@@ -765,6 +865,50 @@
       "explanation": {
         "quality": [
           "source_weight=0.55 (thehackernews)",
+          "data_confidence=0.80",
+          "recency=1d (score=0.85)",
+          "QS=0.453"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-5379a99f095b5590",
+      "title": "AI-Assisted Exploit Development Outpaces Scanner Detection",
+      "description": "Attackers are using AI to dramatically reduce the time they need to develop a working exploit for a CVE, according to new research.",
+      "cvss": 6.5,
+      "final_ps": 60,
+      "quality_score": 0.453,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/threat-intelligence/ai-assisted-exploit-development-scanner-detection"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
           "data_confidence=0.80",
           "recency=1d (score=0.85)",
           "QS=0.453"
@@ -824,6 +968,50 @@
       "iocs": []
     },
     {
+      "id": "MICROSOFT_SECURITY-e3b2ef4a07f101e9",
+      "title": "The Gentlemen ransomware: Dissecting a self-propagating Go encryptor",
+      "description": "Microsoft Threat Intelligence presents a comprehensive analysis of The Gentlemen, a Go-based ransomware deployed by affiliates of Storm-2697 that combines per-file ephemeral key encryption with an aggressive self-propagation module to deploy itself across an entire network using series of simultaneo",
+      "cvss": 6.5,
+      "final_ps": 60,
+      "quality_score": 0.45,
+      "threat_level": "MEDIUM",
+      "type": "RANSOMWARE",
+      "source": "microsoft_security",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "microsoft_security"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "microsoft_security",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.microsoft.com/en-us/security/blog/2026/05/28/the-gentlemen-ransomware-dissecting-a-self-propagating-go-encryptor/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (microsoft_security)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.450"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "WIRED_SECURITY-8d8b9639385066e6",
       "title": "The AI Era Is Creating a Bug-Hunting Arms Race",
       "description": "As attackers ramp up their AI exploit development, the search for software vulnerabilities is changing rapidly.",
@@ -859,6 +1047,50 @@
         ],
         "priority": [
           "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-015a527109d637fc",
+      "title": "Ransomware Actors Show Up In Person to Steal Law Firm Data",
+      "description": "The FBI warned that the extortion gang Silent Ransom Group is targeting law firms and social-engineering its way into servers and databases.",
+      "cvss": 6.5,
+      "final_ps": 58,
+      "quality_score": 0.408,
+      "threat_level": "MEDIUM",
+      "type": "RANSOMWARE",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/cyberattacks-data-breaches/ransomware-actors-steal-law-firm-data"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -1002,6 +1234,124 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-45725",
+      "title": "compliance-trestle Remote Fetching Mechanism has an Arbitrary File Write via Cache Path Traversal",
+      "description": "## Summary The compliance-trestle library's remote fetching cache mechanism (HTTPSFetcher and SFTPFetcher) constructs the local cache file path from the URL path component without sanitizing path traversal sequences (`../`). When a remote OSCAL profile references a URL with traversal in its path, th",
+      "cvss": 7.5,
+      "final_ps": 51,
+      "quality_score": 0.608,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "compliance-trestle",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45725",
+        "CVE-2026-45725"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-g3vg-vx23-3858",
+        "https://github.com/oscal-compass/compliance-trestle/security/advisories/GHSA-g3vg-vx23-3858",
+        "https://github.com/oscal-compass/compliance-trestle/commit/89f4e53d159e8ff901da4d7c3b51c9556bd32ec0",
+        "https://github.com/oscal-compass/compliance-trestle/commit/9abc492329fcc8d0557182317de9bde854385da3"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "ioc_presence=1 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.608"
+        ],
+        "priority": [
+          "base_ps=51 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "url",
+          "value": "https://github.com/IBM/compliance-trestle",
+          "confidence_score": 0.82,
+          "first_seen": "2026-05-28",
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "id": "CVE-2026-45077",
+      "title": "Symfony has Unauthenticated PHP Object Deserialization in MonologBridge server:log Listener",
+      "description": "### Description `Symfony\\Bridge\\Monolog\\Command\\ServerLogCommand` (the `server:log` console command) is a development-time helper that opens a TCP listener and displays log records pushed to it by the application's logging pipeline. Two unsafe defaults combine into a remotely reachable PHP object-de",
+      "cvss": 7.5,
+      "final_ps": 51,
+      "quality_score": 0.608,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "symfony/monolog-bridge",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45077",
+        "CVE-2026-45077"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-m7v2-7gxm-vc2v",
+        "https://github.com/symfony/symfony/security/advisories/GHSA-m7v2-7gxm-vc2v",
+        "https://github.com/symfony/symfony/commit/0891b2f293896c488e26943dc034334364b77fc4",
+        "https://github.com/FriendsOfPHP/security-advisories/blob/master/symfony/monolog-bridge/CVE-2026-45077.yaml"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "ioc_presence=1 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.608"
+        ],
+        "priority": [
+          "base_ps=51 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "ipv4",
+          "value": "0.0.0.0",
+          "confidence_score": 0.88,
+          "first_seen": "2026-05-28",
+          "source_count": 1
+        }
+      ]
+    },
+    {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
       "description": "",
@@ -1131,6 +1481,104 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-44726",
+      "title": "Deno's TLS retry copies stale upgrade hook, risking plaintext traffic",
+      "description": "## Summary A flaw in Deno's Node.js tls compatibility layer could cause a TLS client to transmit application data in plaintext after a connection retry. When `autoSelectFamily was enabled and the first address-family attempt failed, the socket reinitialization path reused a stale TLS upgrade hook th",
+      "cvss": 7.4,
+      "final_ps": 48,
+      "quality_score": 0.578,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "deno",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44726",
+        "CVE-2026-44726"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-chqv-56wv-7564",
+        "https://github.com/denoland/deno/security/advisories/GHSA-chqv-56wv-7564",
+        "https://github.com/advisories/GHSA-chqv-56wv-7564"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.578"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-44982",
+      "title": "CrowdSec AppSec silently drops request body for chunked / HTTP-2 requests",
+      "description": "## Summary The CrowdSec AppSec component fails to read the HTTP request body for any request whose `Content-Length` is not positive — most notably HTTP/1.1 requests using `Transfer-Encoding: chunked` and HTTP/2 requests sent without a `content-length` header. Coraza is then evaluated against an empt",
+      "cvss": 7.2,
+      "final_ps": 48,
+      "quality_score": 0.578,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/crowdsecurity/crowdsec",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44982",
+        "CVE-2026-44982"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-rw47-hm26-6wr7",
+        "https://github.com/crowdsecurity/crowdsec/security/advisories/GHSA-rw47-hm26-6wr7",
+        "https://github.com/advisories/GHSA-rw47-hm26-6wr7"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.578"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -1360,6 +1808,50 @@
       "iocs": []
     },
     {
+      "id": "DARKREADING-c07d2abe4c388e06",
+      "title": "State Cyber Leaders Beg Congress for More Funding, Support",
+      "description": "A recent congressional hearing highlighted how states are reeling from federal cutbacks to important cybergrants and information-sharing initiatives amid damaging attacks to critical infrastructure.",
+      "cvss": 6.5,
+      "final_ps": 46,
+      "quality_score": 0.393,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/threat-intelligence/state-leaders-beg-congress-resume-cyber-funding"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=1d (score=0.85)",
+          "QS=0.393"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "SECURITYWEEK-77dce74f0a563675",
       "title": "Vulnerability in Popular Conference Software Granted Attackers a 100% Talk Acceptance Rate",
       "description": "Novee researchers discovered an account takeover vulnerability in the open source CFP management tool Pretalx. The post Vulnerability in Popular Conference Software Granted Attackers a 100% Talk Acceptance Rate appeared first on SecurityWeek .",
@@ -1492,6 +1984,50 @@
       "iocs": []
     },
     {
+      "id": "DARKREADING-f0ec8134b26ee9dc",
+      "title": "Shai-Hulud Hackers TeamPCP: Lucky or Skilled?",
+      "description": "TeamPCP, the cybercrime group behind later waves of the Shai-Hulud worm, has done significant damage to the open source ecosystem. But it's not necessarily due to skill alone.",
+      "cvss": 6.5,
+      "final_ps": 44,
+      "quality_score": 0.393,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/application-security/shai-hulud-hackers-teampcp-lucky-skilled"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=1d (score=0.85)",
+          "QS=0.393"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "SANS_ISC-d51d10c4f9041e23",
       "title": "ISC Stormcast For Thursday, May 28th, 2026 https://isc.sans.edu/podcastdetail/9948, (Thu, May 28th)",
       "description": "(c) SANS Internet Storm Center. https://isc.sans.edu Creative Commons Attribution-Noncommercial 3.0 United States License.",
@@ -1587,6 +2123,50 @@
         ],
         "priority": [
           "+3 supply_chain"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-661e9261a92af152",
+      "title": "Focus on Cyber Insurance: How Quantifying Risk Is Reshaping Security",
+      "description": "In this latest installment of the Reporters' Notebook video series, we discuss how cyber insurance is forcing organizations to quantify risk, what's covered (and what's not), and why this could be the best thing to happen to cybersecurity.",
+      "cvss": 6.5,
+      "final_ps": 42,
+      "quality_score": 0.408,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/cyber-risk/focus-cyber-insurance-quantifying-risk-reshape-security"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -3145,6 +3725,50 @@
       "iocs": []
     },
     {
+      "id": "WIRED_SECURITY-e6051ae5b0648a47",
+      "title": "The Pentagon Knew Enemies Could Track Troops’ Phones for Years. Now They Are",
+      "description": "The US military has long known that cheap fixes could stop location data from exposing its troops. It adopted almost none—and now says adversaries are using the data to target soldiers during a war.",
+      "cvss": 6.5,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "wired_security",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "wired_security"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "wired_security",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.wired.com/story/the-pentagon-knew-enemies-could-track-troops-phones-for-years-now-they-are/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.65 (wired_security)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "WIRED_SECURITY-c08809e9137a6e24",
       "title": "Scammers Are Using Your Real Hotel Reservations to Trick You With Spear-Phishing Attacks",
       "description": "Customer data from more than 350 hotels around the world may have been accessed as part of realistic reservation-hijacking scams.",
@@ -3366,6 +3990,138 @@
       "explanation": {
         "quality": [
           "source_weight=0.55 (thehackernews)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-1ddeac22173dd1da",
+      "title": "Agentic AI Isn't Risky; the Way Orgs Deploy It Is",
+      "description": "AI agents aren't black boxes — they're models interacting with software tools. The risk lies in their overlap.",
+      "cvss": 6.5,
+      "final_ps": 39,
+      "quality_score": 0.408,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/application-security/agentic-ai-risky"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-f9e3e44259cb7447",
+      "title": "BTMOB RAT Spreads Across Brazil, LatAm via MaaS Model",
+      "description": "An advanced remote access Trojan is propagating online. Notably, it's delivered via an operator licensing model and features a no-code malware-development interface.",
+      "cvss": 6.5,
+      "final_ps": 39,
+      "quality_score": 0.408,
+      "threat_level": "LOW",
+      "type": "MALWARE_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/cyberattacks-data-breaches/btmob-rat-brazil-latam-maas-model"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-714cc324828dedbd",
+      "title": "Nordic CISOs Handle Rising Cyber Threats Remarkably Well",
+      "description": "Artificial intelligence notwithstanding, the vast majority of CISOs in northern Europe say they're facing no more serious cyberattacks than they did two years ago.",
+      "cvss": 6.5,
+      "final_ps": 39,
+      "quality_score": 0.408,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/cybersecurity-analytics/nordic-cisos-rising-cyber-threats"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
           "data_confidence=0.80",
           "recency=0d (score=1.00)",
           "QS=0.408"
@@ -3677,6 +4433,182 @@
       "explanation": {
         "quality": [
           "source_weight=0.55 (thehackernews)",
+          "data_confidence=0.80",
+          "recency=1d (score=0.85)",
+          "QS=0.393"
+        ],
+        "priority": [
+          "base_ps=37 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-ddb7ce86c7ef6390",
+      "title": "Latin American Cybercriminals Hoover Up Government Data",
+      "description": "A purported leak exposing 5.8 million records of Uruguayan citizens is the latest incident where cybercriminals targeted government agencies to monetize citizen data.",
+      "cvss": 6.5,
+      "final_ps": 37,
+      "quality_score": 0.393,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/cyberattacks-data-breaches/latin-american-cybercriminals-government-data"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=1d (score=0.85)",
+          "QS=0.393"
+        ],
+        "priority": [
+          "base_ps=37 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-84f8de1ff423fd18",
+      "title": "Cybersecurity Evolution: How We Went From Perimeter Defense to AI-Native Security",
+      "description": "The cybersecurity industry of 2006 barely resembled today's billion-dollar behemoth. As part of Dark Reading's 20th anniversary celebration, we trace the industry's evolution through a technology lens.",
+      "cvss": 6.5,
+      "final_ps": 37,
+      "quality_score": 0.393,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-27",
+      "last_seen": "2026-05-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/cybersecurity-operations/cybersecurity-evolution-perimeter-defense-to-ai-native-security"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=1d (score=0.85)",
+          "QS=0.393"
+        ],
+        "priority": [
+          "base_ps=37 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-4da00b063d1a2885",
+      "title": "Feeding Frenzy: 'Megalodon' Malware Infects Thousands of GitHub Repos",
+      "description": "In just six hours, the campaign quietly pushed thousands of malicious commits to more than 5,500 GitHub repositories, stealing credentials, developer secrets, and more.",
+      "cvss": 6.5,
+      "final_ps": 37,
+      "quality_score": 0.393,
+      "threat_level": "LOW",
+      "type": "MALWARE_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/application-security/megalodon-malware-infects-thousands-github-repos"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=1d (score=0.85)",
+          "QS=0.393"
+        ],
+        "priority": [
+          "base_ps=37 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-c8736eae0229868f",
+      "title": "For Enterprises, Security Remains Agentic AI's Biggest Challenge",
+      "description": "Every company needs an agentic AI strategy, but the tools to allow agentic AI frameworks be safely and securely adopted are just starting to appear.",
+      "cvss": 6.5,
+      "final_ps": 37,
+      "quality_score": 0.393,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-05-26",
+      "last_seen": "2026-05-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/application-security/enterprises-agentic-ai-security-biggest-challenge"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
           "data_confidence=0.80",
           "recency=1d (score=0.85)",
           "QS=0.393"
@@ -4194,6 +5126,380 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CISA-a6da19aea46994a1",
+      "title": "ABB EIBPORT",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2021-22291"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-03"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-9e1cdf218003c206",
+      "title": "Jinan USR IOT Technology Limited (PUSR) USR-W610 RS232/485 to Wi-Fi/Ethernet Converter",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-7786"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-02"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-73f2731ba15421b5",
+      "title": "ABB Busch-Welcome 2 Wire Door Opener Actuator",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-7705"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-04"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-ffe7381d9d8728c3",
+      "title": "Fourth Frontier Frontier X Mobile Application, Frontier X2",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-5768"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-medical-advisories/icsma-26-148-01"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-737d0072e06bb635",
+      "title": "CP Plus 8 Ch. Network Video Recorder",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-6824"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-05"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-a52ba80994ed828f",
+      "title": "XCharge C6",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-9037",
+        "CVE-2026-9038",
+        "CVE-2026-9039"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-08"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-6b629ce27d3928fc",
+      "title": "KMW CCTV Security Cameras",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-5386"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-06"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CISA-023182bc37f9a3f3",
+      "title": "MacGregor Voyage Data Recorder (VDR) G4e",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 31,
+      "quality_score": 0.575,
+      "threat_level": "LOW",
+      "type": "ADVISORY",
+      "source": "cisa_alerts",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_alerts"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "CISA US-CERT",
+      "product": "Multiple Products",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42941",
+        "CVE-2026-42951",
+        "CVE-2026-44611",
+        "CVE-2026-42929",
+        "CVE-2026-40425"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-01"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_alerts)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.575"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -6270,148 +7576,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-3854",
-      "title": "Researchers Discover Critical GitHub CVE-2026-3854 RCE Flaw Exploitable via Single Git Push",
-      "description": "",
-      "cvss": 8,
-      "final_ps": 27,
-      "quality_score": 0.483,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "thehackernews",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "thehackernews"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "The Hacker News",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-3854"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://thehackernews.com/2026/04/researchers-discover-critical-github.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (thehackernews)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.483"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2021-21735",
-      "title": "[SECURITY ADVISORY] CVE-2021-21735 - ZTE ZXHN H168N V3.5 Unauthenticated Admin Credential Leak",
-      "description": "",
-      "cvss": 8,
-      "final_ps": 26,
-      "quality_score": 0.48,
-      "threat_level": "LOW",
-      "type": "ZERO_DAY",
-      "source": "fulldisclosure",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "fulldisclosure"
-      ],
-      "first_seen": "2026-05-26",
-      "last_seen": "2026-05-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "SecLists",
-      "product": "Multiple Targets",
-      "due_date": null,
-      "cves": [
-        "CVE-2021-21735"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://seclists.org/fulldisclosure/2026/May/21"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.78 (fulldisclosure)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.480"
-        ],
-        "priority": [
-          "+7 zero_day"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-47243",
-      "title": "Kata guest escape: runtime-rs guest-root to host-root escape via virtiofs",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-27",
-      "last_seen": "2026-05-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/kata-containers/kata-containers",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47243",
-        "CVE-2026-47243"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-2gv2-cffp-j227",
-        "https://github.com/kata-containers/kata-containers/security/advisories/GHSA-2gv2-cffp-j227",
-        "https://github.com/kata-containers/kata-containers/commit/ffa59ce3aa7877d067c9a372df0c329a23a01744",
-        "https://github.com/kata-containers/kata-containers/releases/tag/3.31.0"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-45704",
-      "title": "Pimcore has a CustomReports Share Bypass",
+      "id": "CVE-2026-45067",
+      "title": "Symfony has Email Header / SMTP Command Injection via CRLF in Symfony\\Component\\Mime\\Address",
       "description": "",
       "cvss": 7.5,
       "final_ps": 21,
@@ -6429,216 +7595,18 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "composer",
-      "product": "pimcore/pimcore",
+      "product": "symfony/mime",
       "due_date": null,
       "cves": [
-        "CVE-2026-45704",
-        "CVE-2026-45704"
+        "CVE-2026-45067",
+        "CVE-2026-45067"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-jwcc-gv4m-93x6",
-        "https://github.com/pimcore/pimcore/security/advisories/GHSA-jwcc-gv4m-93x6",
-        "https://github.com/pimcore/pimcore/pull/19099",
-        "https://github.com/pimcore/pimcore/commit/1893ff1cd116e442b995ddf17e8c6e0aa372268e"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-44726",
-      "title": "Deno's TLS retry copies stale upgrade hook, risking plaintext traffic",
-      "description": "",
-      "cvss": 7.4,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-27",
-      "last_seen": "2026-05-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "deno",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44726",
-        "CVE-2026-44726"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-chqv-56wv-7564",
-        "https://github.com/denoland/deno/security/advisories/GHSA-chqv-56wv-7564",
-        "https://github.com/advisories/GHSA-chqv-56wv-7564"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-44982",
-      "title": "CrowdSec AppSec silently drops request body for chunked / HTTP-2 requests",
-      "description": "",
-      "cvss": 7.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-27",
-      "last_seen": "2026-05-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/crowdsecurity/crowdsec",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44982",
-        "CVE-2026-44982"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-rw47-hm26-6wr7",
-        "https://github.com/crowdsecurity/crowdsec/security/advisories/GHSA-rw47-hm26-6wr7",
-        "https://github.com/advisories/GHSA-rw47-hm26-6wr7"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-45725",
-      "title": "compliance-trestle Remote Fetching Mechanism has an Arbitrary File Write via Cache Path Traversal",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-27",
-      "last_seen": "2026-05-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "compliance-trestle",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45725",
-        "CVE-2026-45725"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-g3vg-vx23-3858",
-        "https://github.com/oscal-compass/compliance-trestle/security/advisories/GHSA-g3vg-vx23-3858",
-        "https://github.com/oscal-compass/compliance-trestle/commit/89f4e53d159e8ff901da4d7c3b51c9556bd32ec0",
-        "https://github.com/oscal-compass/compliance-trestle/commit/9abc492329fcc8d0557182317de9bde854385da3"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-45077",
-      "title": "Symfony has Unauthenticated PHP Object Deserialization in MonologBridge server:log Listener",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-27",
-      "last_seen": "2026-05-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "symfony/monolog-bridge",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45077",
-        "CVE-2026-45077"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-m7v2-7gxm-vc2v",
-        "https://github.com/symfony/symfony/security/advisories/GHSA-m7v2-7gxm-vc2v",
-        "https://github.com/symfony/symfony/commit/0891b2f293896c488e26943dc034334364b77fc4",
-        "https://github.com/FriendsOfPHP/security-advisories/blob/master/symfony/monolog-bridge/CVE-2026-45077.yaml"
+        "https://github.com/advisories/GHSA-qpmx-3rfj-7rhv",
+        "https://github.com/symfony/symfony/security/advisories/GHSA-qpmx-3rfj-7rhv",
+        "https://github.com/symfony/symfony/commit/dc2dbd29211eb4ddc451373fa1374fb926e94604",
+        "https://github.com/FriendsOfPHP/security-advisories/blob/master/symfony/mime/CVE-2026-45067.yaml"
       ],
       "explanation": {
         "quality": [
@@ -6738,56 +7706,6 @@
         "https://github.com/advisories/GHSA-xm76-r88j-vm3g",
         "https://github.com/marcantondahmen/automad/security/advisories/GHSA-xm76-r88j-vm3g",
         "https://github.com/advisories/GHSA-xm76-r88j-vm3g"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-45067",
-      "title": "Symfony has Email Header / SMTP Command Injection via CRLF in Symfony\\Component\\Mime\\Address",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-27",
-      "last_seen": "2026-05-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "symfony/mime",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45067",
-        "CVE-2026-45067"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-qpmx-3rfj-7rhv",
-        "https://github.com/symfony/symfony/security/advisories/GHSA-qpmx-3rfj-7rhv",
-        "https://github.com/symfony/symfony/commit/dc2dbd29211eb4ddc451373fa1374fb926e94604",
-        "https://github.com/FriendsOfPHP/security-advisories/blob/master/symfony/mime/CVE-2026-45067.yaml"
       ],
       "explanation": {
         "quality": [
