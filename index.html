@@ -982,6 +982,162 @@
       text-transform: uppercase;
       letter-spacing: 2px;
     }
+
+    /* ═══ PHASE 2: ANIMATED COUNTER STATS ═══ */
+    .stat-num { transition: color 0.3s; }
+    .stat-num.counting { color: #00ffe0; }
+    .stat-item { position: relative; }
+    .stat-item::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--apex-cyan);
+      transition: width 0.6s ease;
+    }
+    .stat-item.counted::after { width: 60%; }
+    /* PHASE 2: GOD-MODE ENTERPRISE CTA BLOCK */
+    .ent-cta-block {
+      background: linear-gradient(135deg, rgba(0,255,224,0.04) 0%, rgba(168,85,247,0.04) 50%, rgba(255,77,109,0.03) 100%);
+      border-top: 1px solid rgba(0,255,224,0.12);
+      border-bottom: 1px solid rgba(168,85,247,0.12);
+      padding: 52px 20px;
+    }
+    .ent-cta-inner { max-width: 1200px; margin: 0 auto; }
+    .ent-cta-header { text-align: center; margin-bottom: 36px; }
+    .ent-cta-eyebrow {
+      display: inline-block; font-size: 10px; font-weight: 800;
+      letter-spacing: 3px; text-transform: uppercase; color: #00ffe0;
+      background: rgba(0,255,224,0.08); border: 1px solid rgba(0,255,224,0.25);
+      padding: 4px 14px; border-radius: 20px; margin-bottom: 14px;
+    }
+    .ent-cta-title {
+      font-size: clamp(22px, 3.5vw, 36px); font-weight: 900; line-height: 1.15;
+      color: #f1f5f9; margin-bottom: 10px;
+    }
+    .ent-cta-title span { color: #00ffe0; }
+    .ent-cta-sub { font-size: 15px; color: #94a3b8; max-width: 600px; margin: 0 auto; }
+    .ent-cta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 36px;
+    }
+    .ent-card {
+      background: rgba(15,23,42,0.7);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 28px 24px;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+    .ent-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .ent-card-cyan::before  { background: linear-gradient(90deg,#00ffe0,transparent); }
+    .ent-card-purple::before{ background: linear-gradient(90deg,#a855f7,transparent); }
+    .ent-card-red::before   { background: linear-gradient(90deg,#ff4d6d,transparent); }
+    .ent-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.15); }
+    .ent-card:hover::before { opacity: 1; }
+    .ent-card-cyan:hover  { box-shadow: 0 12px 40px rgba(0,255,224,0.12); }
+    .ent-card-purple:hover{ box-shadow: 0 12px 40px rgba(168,85,247,0.12); }
+    .ent-card-red:hover   { box-shadow: 0 12px 40px rgba(255,77,109,0.12); }
+    .ent-card-icon { font-size: 28px; margin-bottom: 14px; display: block; }
+    .ent-card-badge {
+      display: inline-block; font-size: 9px; font-weight: 800; letter-spacing: 2px;
+      text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px;
+    }
+    .badge-cyan   { background: rgba(0,255,224,0.12); color: #00ffe0; border: 1px solid rgba(0,255,224,0.3); }
+    .badge-purple { background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
+    .badge-red    { background: rgba(255,77,109,0.12); color: #ff4d6d; border: 1px solid rgba(255,77,109,0.3); }
+    .ent-card-title { font-size: 17px; font-weight: 800; color: #f1f5f9; margin-bottom: 8px; }
+    .ent-card-desc  { font-size: 13px; color: #64748b; line-height: 1.55; margin-bottom: 16px; }
+    .ent-card-features { display: flex; flex-direction: column; gap: 5px; margin-bottom: 18px; }
+    .ent-card-feature { font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 6px; }
+    .ent-card-feature::before { content: '✓'; color: #00ffe0; font-weight: 900; flex-shrink: 0; }
+    .ent-card-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+      padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; text-decoration: none;
+      transition: all 0.2s;
+    }
+    .cta-ent-cyan   { background: rgba(0,255,224,0.12); color: #00ffe0; border: 1px solid rgba(0,255,224,0.3); }
+    .cta-ent-purple { background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
+    .cta-ent-red    { background: rgba(255,77,109,0.12); color: #ff4d6d; border: 1px solid rgba(255,77,109,0.3); }
+    .cta-ent-cyan:hover   { background: rgba(0,255,224,0.22); color: #00ffe0; }
+    .cta-ent-purple:hover { background: rgba(168,85,247,0.22); color: #c084fc; }
+    .cta-ent-red:hover    { background: rgba(255,77,109,0.22); color: #ff4d6d; }
+    .ent-cta-bottom { text-align: center; }
+    .ent-cta-main-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, #00ffe0 0%, #06b6d4 100%);
+      color: #0a0f1e; font-size: 13px; font-weight: 900; letter-spacing: 1px;
+      text-transform: uppercase; padding: 14px 36px; border-radius: 8px;
+      text-decoration: none; transition: all 0.3s;
+      box-shadow: 0 0 30px rgba(0,255,224,0.25);
+    }
+    .ent-cta-main-btn:hover { box-shadow: 0 0 50px rgba(0,255,224,0.4); transform: translateY(-2px); }
+    .ent-cta-note { font-size: 11px; color: #475569; margin-top: 10px; }
+    /* AI SECURITY SPOTLIGHT */
+    .ai-spotlight {
+      padding: 48px 20px;
+      background: linear-gradient(135deg, rgba(168,85,247,0.05) 0%, rgba(0,255,224,0.03) 100%);
+      border-top: 1px solid rgba(168,85,247,0.1);
+    }
+    .ai-spotlight-inner { max-width: 1200px; margin: 0 auto; }
+    .ai-spotlight-header { text-align: center; margin-bottom: 32px; }
+    .ai-spotlight-eyebrow {
+      display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 3px;
+      text-transform: uppercase; color: #c084fc;
+      background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.25);
+      padding: 4px 14px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .ai-spotlight-title { font-size: clamp(20px, 3vw, 30px); font-weight: 900; color: #f1f5f9; margin-bottom: 8px; }
+    .ai-spotlight-title span { color: #c084fc; }
+    .ai-spotlight-sub { font-size: 14px; color: #64748b; }
+    .ai-hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+    .ai-hub-card {
+      display: flex; gap: 20px; align-items: flex-start;
+      background: rgba(15,23,42,0.6);
+      border: 1px solid rgba(168,85,247,0.15);
+      border-radius: 14px; padding: 24px;
+      text-decoration: none; transition: all 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .ai-hub-card:hover {
+      border-color: rgba(168,85,247,0.4);
+      box-shadow: 0 8px 32px rgba(168,85,247,0.15);
+      transform: translateY(-3px);
+    }
+    .ai-hub-card-icon {
+      width: 52px; height: 52px; flex-shrink: 0;
+      background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.25);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .ai-hub-card-body {}
+    .ai-hub-card-tag { font-size: 9px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #c084fc; margin-bottom: 6px; display: block; }
+    .ai-hub-card-title { font-size: 15px; font-weight: 800; color: #f1f5f9; margin-bottom: 6px; }
+    .ai-hub-card-desc  { font-size: 12px; color: #64748b; line-height: 1.5; margin-bottom: 10px; }
+    .ai-hub-card-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+    .ai-hub-stat { font-size: 11px; color: #94a3b8; background: rgba(255,255,255,0.04); padding: 3px 10px; border-radius: 4px; }
+    .ai-hub-card-arrow { position: absolute; top: 20px; right: 20px; font-size: 16px; color: rgba(168,85,247,0.5); transition: all 0.3s; }
+    .ai-hub-card:hover .ai-hub-card-arrow { color: #c084fc; transform: translateX(4px); }
+    @media (max-width: 768px) {
+      .ent-cta-block { padding: 36px 16px; }
+      .ai-spotlight { padding: 32px 16px; }
+      .ai-hub-grid { grid-template-columns: 1fr; }
+    }
+
     .section-label-line {
       flex: 1;
       height: 1px;
@@ -1834,28 +1990,32 @@ input:focus, textarea:focus {
   </div><!-- /hero-content -->
 </div>
 
-<!-- LIVE STATS -->
+<!-- LIVE STATS — PHASE 2: ANIMATED COUNTERS -->
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat-item">
-      <span class="stat-num">163</span>
+    <div class="stat-item" id="sc-cves">
+      <span class="stat-num" data-target="163" data-suffix="" data-decimals="0">0</span>
       <span class="stat-lbl">CVEs This Patch Tuesday</span>
     </div>
-    <div class="stat-item">
-      <span class="stat-num">6</span>
+    <div class="stat-item" id="sc-zerod">
+      <span class="stat-num" data-target="6" data-suffix="" data-decimals="0">0</span>
       <span class="stat-lbl">Active Zero-Days</span>
     </div>
-    <div class="stat-item">
-      <span class="stat-num">10.0</span>
+    <div class="stat-item" id="sc-cvss">
+      <span class="stat-num" data-target="10.0" data-suffix="" data-decimals="1" style="color:#ff4d6d">0</span>
       <span class="stat-lbl">Highest CVSS Score</span>
     </div>
-    <div class="stat-item">
-      <span class="stat-num">11</span>
-      <span class="stat-lbl">Reports Published</span>
+    <div class="stat-item" id="sc-reports">
+      <span class="stat-num" data-target="2400" data-suffix="+" data-decimals="0">0</span>
+      <span class="stat-lbl">Detection Rules Published</span>
     </div>
-    <div class="stat-item">
-      <span class="stat-num">24/7</span>
-      <span class="stat-lbl">CYBERDUDEBIVASH SENTINEL APEX Monitoring</span>
+    <div class="stat-item" id="sc-soc">
+      <span class="stat-num" data-target="4800" data-suffix="+" data-decimals="0" style="color:#c084fc">0</span>
+      <span class="stat-lbl">SOC Professionals Reached</span>
+    </div>
+    <div class="stat-item" id="sc-kev">
+      <span class="stat-num" data-target="1200" data-suffix="+" data-decimals="0" style="color:#fb923c">0</span>
+      <span class="stat-lbl">CISA KEV Entries Tracked</span>
     </div>
   </div>
 </div>
@@ -1867,6 +2027,68 @@ input:focus, textarea:focus {
   <span class="gtb-item"><span class="gtb-dot"></span>&nbsp;Updated <strong>every 10 min</strong></span>
   <span class="gtb-item">&#127758; Used by SOC teams <strong>globally</strong></span>
 </div>
+
+<!-- ═══ PHASE 2: ENTERPRISE SOC COMMAND CENTER CTA BLOCK ═══ -->
+<section class="ent-cta-block" aria-label="Enterprise cybersecurity services">
+  <div class="ent-cta-inner">
+    <div class="ent-cta-header">
+      <span class="ent-cta-eyebrow">&#9875; Enterprise Security Services</span>
+      <h2 class="ent-cta-title">Your SOC Deserves <span>SENTINEL APEX</span> Grade Intelligence</h2>
+      <p class="ent-cta-sub">Real-time threat data, detection engineering, and AI-powered security consulting — built for CISOs and enterprise security teams.</p>
+    </div>
+    <div class="ent-cta-grid">
+      <!-- Card 1: Threat Intelligence API -->
+      <a href="https://intel.cyberdudebivash.com/api/intel/" target="_blank" rel="noopener" class="ent-card ent-card-cyan" onclick="if(window.trackEvent)window.trackEvent('ent_cta_click',{service:'api'})">
+        <span class="ent-card-icon">&#128225;</span>
+        <span class="ent-card-badge badge-cyan">FREE TIER AVAILABLE</span>
+        <div class="ent-card-title">Threat Intelligence API</div>
+        <p class="ent-card-desc">Programmatic access to live CVE feeds, IOC bundles, YARA rules, and pre-disclosure intelligence. SIEM-ready JSON output.</p>
+        <div class="ent-card-features">
+          <span class="ent-card-feature">Real-time CVE &amp; KEV data feeds</span>
+          <span class="ent-card-feature">1,200+ CISA KEV entries</span>
+          <span class="ent-card-feature">YARA + Sigma rule delivery</span>
+          <span class="ent-card-feature">Splunk / Elastic / QRadar compatible</span>
+        </div>
+        <span class="ent-card-cta cta-ent-cyan">Access API &rarr;</span>
+      </a>
+      <!-- Card 2: Enterprise Consulting -->
+      <a href="enterprise.html#book" class="ent-card ent-card-purple" onclick="if(window.trackEvent)window.trackEvent('ent_cta_click',{service:'consulting'})">
+        <span class="ent-card-icon">&#128104;&#8205;&#128187;</span>
+        <span class="ent-card-badge badge-purple">BOOK A SESSION</span>
+        <div class="ent-card-title">AI Security Consulting</div>
+        <p class="ent-card-desc">Direct engagement with CYBERDUDEBIVASH — AI threat modeling, zero-trust architecture reviews, and SOC maturity assessments.</p>
+        <div class="ent-card-features">
+          <span class="ent-card-feature">MITRE ATT&amp;CK gap analysis</span>
+          <span class="ent-card-feature">LLM security &amp; OWASP LLM Top 10</span>
+          <span class="ent-card-feature">Detection engineering workshops</span>
+          <span class="ent-card-feature">Enterprise CISO advisory</span>
+        </div>
+        <span class="ent-card-cta cta-ent-purple">Book Consultation &rarr;</span>
+      </a>
+      <!-- Card 3: Detection Packs -->
+      <a href="products.html" class="ent-card ent-card-red" onclick="if(window.trackEvent)window.trackEvent('ent_cta_click',{service:'detection_packs'})">
+        <span class="ent-card-icon">&#128737;&#65039;</span>
+        <span class="ent-card-badge badge-red">INSTANT DOWNLOAD</span>
+        <div class="ent-card-title">Detection Engineering Packs</div>
+        <p class="ent-card-desc">Production-ready Sigma megapacks, YARA rulesets, and IR playbooks. Deploy to your SIEM in minutes. Updated weekly.</p>
+        <div class="ent-card-features">
+          <span class="ent-card-feature">2,400+ Sigma detection rules</span>
+          <span class="ent-card-feature">YARA malware signatures</span>
+          <span class="ent-card-feature">Nation-state APT coverage</span>
+          <span class="ent-card-feature">MITRE ATT&amp;CK mapped</span>
+        </div>
+        <span class="ent-card-cta cta-ent-red">Browse Packs &rarr;</span>
+      </a>
+    </div>
+    <div class="ent-cta-bottom">
+      <a href="enterprise.html" class="ent-cta-main-btn" onclick="if(window.trackEvent)window.trackEvent('ent_cta_main_click',{})">
+        &#9889; Enterprise Solutions — Get Started Free
+      </a>
+      <p class="ent-cta-note">No credit card required &nbsp;&bull;&nbsp; Free tier available &nbsp;&bull;&nbsp; Trusted by 4,800+ security professionals</p>
+    </div>
+  </div>
+</section>
+
 
 <!-- INTELLIGENCE HUB NAV -->
 <div class="intel-hub-bar">
@@ -1902,6 +2124,48 @@ input:focus, textarea:focus {
     <button type="submit" class="nl-btn">Subscribe Free</button>
   </form>
 </div>
+
+<!-- ═══ PHASE 2: AI SECURITY SPOTLIGHT ═══ -->
+<section class="ai-spotlight" aria-label="AI Security research hubs">
+  <div class="ai-spotlight-inner">
+    <div class="ai-spotlight-header">
+      <span class="ai-spotlight-eyebrow">&#129504; AI &amp; Machine Learning Security</span>
+      <h2 class="ai-spotlight-title">The World's Most Comprehensive <span>AI Security</span> Research</h2>
+      <p class="ai-spotlight-sub">Deep-dive technical coverage across OWASP LLM threats and MITRE ATT&amp;CK detection engineering</p>
+    </div>
+    <div class="ai-hub-grid">
+      <a href="owasp-llm-top10.html" class="ai-hub-card" onclick="if(window.trackEvent)window.trackEvent('ai_hub_click',{hub:'owasp-llm'})">
+        <div class="ai-hub-card-icon">&#128736;&#65039;</div>
+        <div class="ai-hub-card-body">
+          <span class="ai-hub-card-tag">OWASP LLM Top 10 — 2025</span>
+          <div class="ai-hub-card-title">LLM Security &amp; Prompt Injection Deep Dive</div>
+          <p class="ai-hub-card-desc">Complete technical coverage of all 10 OWASP LLM risks — prompt injection, training data poisoning, model DoS, supply chain attacks and more. Enterprise defensive playbooks included.</p>
+          <div class="ai-hub-card-stats">
+            <span class="ai-hub-stat">10 LLM Risks Covered</span>
+            <span class="ai-hub-stat">Enterprise Playbooks</span>
+            <span class="ai-hub-stat">Real Attack Cases</span>
+          </div>
+        </div>
+        <span class="ai-hub-card-arrow">&#8594;</span>
+      </a>
+      <a href="mitre-attack-detection.html" class="ai-hub-card" onclick="if(window.trackEvent)window.trackEvent('ai_hub_click',{hub:'mitre-attack'})">
+        <div class="ai-hub-card-icon">&#127919;</div>
+        <div class="ai-hub-card-body">
+          <span class="ai-hub-card-tag">MITRE ATT&amp;CK Framework</span>
+          <div class="ai-hub-card-title">ATT&amp;CK Detection Engineering Hub</div>
+          <p class="ai-hub-card-desc">All 14 MITRE ATT&amp;CK tactics with 28 production Sigma rule stubs, SOC playbooks, and threat hunting guides. Built for detection engineers and threat hunters.</p>
+          <div class="ai-hub-card-stats">
+            <span class="ai-hub-stat">14 Tactics (TA0001→TA0043)</span>
+            <span class="ai-hub-stat">28 Sigma Rules</span>
+            <span class="ai-hub-stat">SOC Playbooks</span>
+          </div>
+        </div>
+        <span class="ai-hub-card-arrow">&#8594;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
 
 <!-- FEATURED INTELLIGENCE SECTION -->
 <div class="featured-intel-section">
@@ -3192,5 +3456,57 @@ document.addEventListener('keydown', function(e) {
 <script src="/revenue-cta-block.js" defer></script>
 <script src="/ux-controller.js" defer></script>
 <script src="/live-feed-widget.js" defer></script>
+<script>
+
+// ═══ PHASE 2: ANIMATED COUNTER STATS ═══
+(function() {
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+  function animateCounter(el, target, decimals, suffix, duration) {
+    var start = null;
+    var startVal = 0;
+    el.classList.add('counting');
+    function step(ts) {
+      if (!start) start = ts;
+      var elapsed = ts - start;
+      var progress = Math.min(elapsed / duration, 1);
+      var eased = easeOutCubic(progress);
+      var val = startVal + (target - startVal) * eased;
+      el.textContent = (decimals > 0 ? val.toFixed(decimals) : Math.floor(val).toLocaleString()) + suffix;
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = (decimals > 0 ? target.toFixed(decimals) : Math.floor(target).toLocaleString()) + suffix;
+        el.classList.remove('counting');
+        el.closest('.stat-item').classList.add('counted');
+      }
+    }
+    requestAnimationFrame(step);
+  }
+  var countersStarted = false;
+  function startCounters() {
+    if (countersStarted) return;
+    countersStarted = true;
+    document.querySelectorAll('.stat-num[data-target]').forEach(function(el, i) {
+      var target   = parseFloat(el.getAttribute('data-target'));
+      var suffix   = el.getAttribute('data-suffix') || '';
+      var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
+      setTimeout(function() { animateCounter(el, target, decimals, suffix, 1800); }, i * 120);
+    });
+  }
+  // Trigger on intersection
+  if ('IntersectionObserver' in window) {
+    var statsBar = document.querySelector('.stats-bar');
+    if (statsBar) {
+      var obs = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) { startCounters(); obs.disconnect(); }
+      }, { threshold: 0.3 });
+      obs.observe(statsBar);
+    }
+  } else {
+    setTimeout(startCounters, 800);
+  }
+})();
+
+</script>
 </body>
 </html>
