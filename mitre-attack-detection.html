@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MITRE ATT&CK Detection Engineering Hub | CYBERDUDEBIVASH SENTINEL APEX</title>
+  <meta name="description" content="Enterprise MITRE ATT&CK detection engineering reference: 14 tactics, high-value technique coverage, Sigma detection rules, SIEM integration guidance, and SOC operations playbooks for production-grade threat detection.">
+  <meta name="keywords" content="MITRE ATT&CK, detection engineering, Sigma rules, SIEM detection, threat hunting, SOC operations, ATT&CK techniques, security detections, threat detection, adversary tactics, MITRE ATT&CK framework, detection rules, EDR detection, UEBA detection">
+  <meta name="author" content="CYBERDUDEBIVASH">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://blog.cyberdudebivash.in/mitre-attack-detection.html">
+
+  <!-- OpenGraph -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="MITRE ATT&CK Detection Engineering Hub | CYBERDUDEBIVASH SENTINEL APEX">
+  <meta property="og:description" content="Enterprise detection engineering reference: 14 ATT&CK tactics, Sigma rules, SIEM integration, SOC playbooks. Built for production SOC teams.">
+  <meta property="og:url" content="https://blog.cyberdudebivash.in/mitre-attack-detection.html">
+  <meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
+  <meta property="og:image" content="https://blog.cyberdudebivash.in/og-mitre-detection.png">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MITRE ATT&CK Detection Engineering Hub">
+  <meta name="twitter:description" content="14 ATT&CK tactics. Sigma rules. SIEM integration. SOC playbooks. Production-grade detection engineering.">
+  <meta name="twitter:image" content="https://blog.cyberdudebivash.in/og-mitre-detection.png">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "MITRE ATT&CK Detection Engineering Hub",
+    "description": "Enterprise MITRE ATT&CK detection engineering reference: 14 tactics, Sigma rules, SIEM guidance, and SOC playbooks for production-grade threat detection.",
+    "author": {"@type": "Person", "name": "CYBERDUDEBIVASH", "url": "https://blog.cyberdudebivash.in"},
+    "publisher": {"@type": "Organization", "name": "CYBERDUDEBIVASH SENTINEL APEX", "url": "https://blog.cyberdudebivash.in"},
+    "datePublished": "2026-05-28",
+    "dateModified": "2026-05-28",
+    "url": "https://blog.cyberdudebivash.in/mitre-attack-detection.html",
+    "mainEntityOfPage": "https://blog.cyberdudebivash.in/mitre-attack-detection.html",
+    "keywords": ["MITRE ATT&CK", "detection engineering", "Sigma rules", "SIEM", "threat hunting", "SOC operations", "threat detection"],
+    "articleSection": "Detection Engineering"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type": "ListItem", "position": 1, "name": "CYBERDUDEBIVASH SENTINEL APEX", "item": "https://blog.cyberdudebivash.in/"},
+      {"@type": "ListItem", "position": 2, "name": "Detection Engineering", "item": "https://blog.cyberdudebivash.in/"},
+      {"@type": "ListItem", "position": 3, "name": "MITRE ATT&CK Detection Hub", "item": "https://blog.cyberdudebivash.in/mitre-attack-detection.html"}
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="apex-v13.css">
+  <style>
+    /* ═══════════════════════════════════════════
+       MITRE ATT&CK HUB — DETECTION ENGINEERING
+       Theme: Red/orange adversary-focused palette
+    ═══════════════════════════════════════════ */
+    :root {
+      --attck-red: #e53e3e;
+      --attck-orange: #dd6b20;
+      --attck-amber: #d69e2e;
+      --attck-dark: #0a0a0f;
+      --attck-surface: #111118;
+      --attck-card: #16161f;
+      --attck-border: rgba(229, 62, 62, 0.2);
+      --attck-glow: rgba(229, 62, 62, 0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--attck-dark); color: #e2e8f0; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+
+    /* NAV */
+    .nav { background: rgba(10,10,15,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--attck-border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; }
+    .nav-brand { font-size: 0.9rem; font-weight: 700; color: var(--attck-red); letter-spacing: 0.05em; text-decoration: none; }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { color: #94a3b8; text-decoration: none; font-size: 0.82rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: #e2e8f0; }
+    .nav-cta { background: var(--attck-red); color: #fff; padding: 0.4rem 1rem; border-radius: 6px; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: background 0.2s; }
+    .nav-cta:hover { background: #c53030; }
+
+    /* HERO */
+    .hero { background: linear-gradient(135deg, #0a0a0f 0%, #1a0505 40%, #0f0a05 100%); border-bottom: 1px solid var(--attck-border); padding: 5rem 2rem 4rem; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(229,62,62,0.08), transparent); pointer-events: none; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(229,62,62,0.1); border: 1px solid rgba(229,62,62,0.3); color: var(--attck-red); padding: 0.35rem 1rem; border-radius: 20px; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1.5rem; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; color: #f1f5f9; line-height: 1.15; margin-bottom: 1.2rem; max-width: 900px; margin-left: auto; margin-right: auto; }
+    .hero h1 span { background: linear-gradient(135deg, var(--attck-red), var(--attck-orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-sub { font-size: 1.05rem; color: #94a3b8; max-width: 680px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .hero-stats { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin-top: 2rem; }
+    .hero-stat { text-align: center; }
+    .hero-stat .num { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--attck-red), var(--attck-orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero-stat .lbl { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.2rem; }
+    .hero-actions { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+    .btn-primary { background: var(--attck-red); color: #fff; padding: 0.75rem 1.75rem; border-radius: 8px; font-size: 0.9rem; font-weight: 700; text-decoration: none; transition: background 0.2s, transform 0.1s; border: none; cursor: pointer; }
+    .btn-primary:hover { background: #c53030; transform: translateY(-1px); }
+    .btn-outline { background: transparent; color: #e2e8f0; padding: 0.75rem 1.75rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); transition: border-color 0.2s; }
+    .btn-outline:hover { border-color: var(--attck-red); color: var(--attck-red); }
+
+    /* LAYOUT */
+    .container { max-width: 1240px; margin: 0 auto; padding: 0 2rem; }
+    .section { padding: 4rem 0; }
+    .section-header { margin-bottom: 2.5rem; }
+    .section-header h2 { font-size: 1.6rem; font-weight: 800; color: #f1f5f9; }
+    .section-header p { color: #64748b; margin-top: 0.5rem; font-size: 0.92rem; }
+    .section-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--attck-red); margin-bottom: 0.5rem; }
+
+    /* TACTICS GRID */
+    .tactics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.2rem; }
+    .tactic-card { background: var(--attck-card); border: 1px solid var(--attck-border); border-radius: 12px; padding: 1.5rem; transition: border-color 0.2s, box-shadow 0.2s; position: relative; overflow: hidden; }
+    .tactic-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--attck-red), var(--attck-orange)); opacity: 0; transition: opacity 0.2s; }
+    .tactic-card:hover { border-color: var(--attck-red); box-shadow: 0 4px 24px var(--attck-glow); }
+    .tactic-card:hover::before { opacity: 1; }
+    .tactic-id { font-size: 0.7rem; font-weight: 700; color: var(--attck-red); letter-spacing: 0.1em; font-family: 'Courier New', monospace; margin-bottom: 0.4rem; }
+    .tactic-name { font-size: 1rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.5rem; }
+    .tactic-desc { font-size: 0.82rem; color: #94a3b8; line-height: 1.5; margin-bottom: 1rem; }
+    .tactic-techniques { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+    .tech-tag { font-size: 0.7rem; background: rgba(229,62,62,0.1); border: 1px solid rgba(229,62,62,0.25); color: #fca5a5; padding: 0.2rem 0.5rem; border-radius: 4px; font-family: 'Courier New', monospace; }
+    .tactic-stat { font-size: 0.75rem; color: #64748b; }
+    .tactic-stat span { color: var(--attck-orange); font-weight: 600; }
+
+    /* DETECTION SECTION */
+    .detections-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+    .detection-card { background: var(--attck-card); border: 1px solid var(--attck-border); border-radius: 12px; overflow: hidden; }
+    .detection-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--attck-border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .detection-title { font-size: 1rem; font-weight: 700; color: #f1f5f9; }
+    .detection-meta { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+    .badge { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .badge-crit { background: rgba(229,62,62,0.2); border: 1px solid rgba(229,62,62,0.4); color: #fca5a5; }
+    .badge-high { background: rgba(221,107,32,0.2); border: 1px solid rgba(221,107,32,0.4); color: #fdba74; }
+    .badge-med { background: rgba(214,158,46,0.2); border: 1px solid rgba(214,158,46,0.4); color: #fcd34d; }
+    .badge-tactic { background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: #a5b4fc; }
+    .badge-tid { background: rgba(229,62,62,0.1); border: 1px solid rgba(229,62,62,0.25); color: #fca5a5; font-family: 'Courier New', monospace; }
+    .detection-body { padding: 1.5rem; }
+    .detection-desc { font-size: 0.85rem; color: #94a3b8; margin-bottom: 1.25rem; line-height: 1.6; }
+    .detection-tabs { display: flex; gap: 0; border: 1px solid var(--attck-border); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; }
+    .det-tab { padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; color: #64748b; background: transparent; border: none; cursor: pointer; transition: background 0.15s, color 0.15s; border-right: 1px solid var(--attck-border); }
+    .det-tab:last-child { border-right: none; }
+    .det-tab.active, .det-tab:hover { background: rgba(229,62,62,0.1); color: var(--attck-red); }
+    .code-block { background: #0d0d14; border: 1px solid rgba(229,62,62,0.15); border-radius: 8px; padding: 1rem 1.25rem; font-family: 'Courier New', monospace; font-size: 0.78rem; line-height: 1.65; color: #e2e8f0; overflow-x: auto; white-space: pre; }
+    .code-block .cm { color: #4b5563; }
+    .code-block .kw { color: #f87171; }
+    .code-block .str { color: #86efac; }
+    .code-block .num { color: #fbbf24; }
+    .code-block .key { color: #93c5fd; }
+    .detection-signals { margin-top: 1.25rem; }
+    .signals-label { font-size: 0.72rem; font-weight: 700; color: var(--attck-red); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+    .signal-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.5rem; }
+    .signal-item { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.8rem; color: #94a3b8; }
+    .signal-item::before { content: '●'; color: var(--attck-red); font-size: 0.6rem; margin-top: 0.3rem; flex-shrink: 0; }
+
+    /* SIEM MATRIX */
+    .siem-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2rem; }
+    .siem-card { background: var(--attck-card); border: 1px solid var(--attck-border); border-radius: 12px; padding: 1.5rem; transition: border-color 0.2s; }
+    .siem-card:hover { border-color: rgba(229,62,62,0.5); }
+    .siem-logo { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .siem-name { font-size: 0.95rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.4rem; }
+    .siem-desc { font-size: 0.8rem; color: #64748b; margin-bottom: 1rem; line-height: 1.5; }
+    .siem-features { display: flex; flex-direction: column; gap: 0.4rem; }
+    .siem-feat { font-size: 0.78rem; color: #94a3b8; display: flex; align-items: center; gap: 0.5rem; }
+    .siem-feat::before { content: '✓'; color: #86efac; font-weight: 700; font-size: 0.7rem; }
+
+    /* COVERAGE MATRIX */
+    .coverage-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .coverage-table th { background: rgba(229,62,62,0.1); border: 1px solid var(--attck-border); padding: 0.6rem 1rem; text-align: left; color: #f1f5f9; font-weight: 700; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .coverage-table td { border: 1px solid rgba(229,62,62,0.1); padding: 0.6rem 1rem; color: #94a3b8; vertical-align: middle; }
+    .coverage-table tr:hover td { background: rgba(229,62,62,0.04); }
+    .cov-dot { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 0.65rem; font-weight: 700; }
+    .cov-high { background: rgba(134,239,172,0.15); color: #86efac; border: 1px solid rgba(134,239,172,0.3); }
+    .cov-med { background: rgba(253,186,116,0.15); color: #fdba74; border: 1px solid rgba(253,186,116,0.3); }
+    .cov-low { background: rgba(229,62,62,0.15); color: #fca5a5; border: 1px solid rgba(229,62,62,0.3); }
+
+    /* PRIORITY TECHNIQUES */
+    .priority-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.2rem; }
+    .priority-card { background: var(--attck-card); border: 1px solid var(--attck-border); border-radius: 12px; padding: 1.5rem; }
+    .prio-rank { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--attck-red); margin-bottom: 0.5rem; }
+    .prio-tid { font-family: 'Courier New', monospace; font-size: 0.85rem; color: #fca5a5; font-weight: 700; margin-bottom: 0.4rem; }
+    .prio-name { font-size: 1rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.5rem; }
+    .prio-tactic { font-size: 0.75rem; color: #64748b; margin-bottom: 0.75rem; }
+    .prio-desc { font-size: 0.8rem; color: #94a3b8; line-height: 1.55; margin-bottom: 1rem; }
+    .prio-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    /* PLAYBOOK SECTION */
+    .playbook-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; }
+    .playbook-card { background: var(--attck-card); border: 1px solid var(--attck-border); border-radius: 12px; padding: 1.5rem; }
+    .pb-phase { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--attck-orange); margin-bottom: 0.5rem; }
+    .pb-title { font-size: 0.95rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.75rem; }
+    .pb-steps { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .pb-step { display: flex; gap: 0.75rem; font-size: 0.8rem; color: #94a3b8; }
+    .pb-num { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: rgba(229,62,62,0.15); border: 1px solid rgba(229,62,62,0.3); color: #fca5a5; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; }
+
+    /* CTA SECTION */
+    .cta-section { background: linear-gradient(135deg, #0f0505 0%, #1a0505 50%, #0a0a0f 100%); border-top: 1px solid var(--attck-border); border-bottom: 1px solid var(--attck-border); padding: 4rem 2rem; }
+    .cta-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; max-width: 1100px; margin: 0 auto; }
+    .cta-card { background: rgba(229,62,62,0.06); border: 1px solid rgba(229,62,62,0.25); border-radius: 14px; padding: 2rem; text-align: center; }
+    .cta-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .cta-title { font-size: 1.05rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.75rem; }
+    .cta-desc { font-size: 0.82rem; color: #94a3b8; margin-bottom: 1.5rem; line-height: 1.6; }
+    .cta-btn { display: inline-block; background: var(--attck-red); color: #fff; padding: 0.6rem 1.5rem; border-radius: 8px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: background 0.2s; }
+    .cta-btn:hover { background: #c53030; }
+    .cta-btn-outline { background: transparent; border: 1px solid rgba(229,62,62,0.5); color: var(--attck-red); }
+    .cta-btn-outline:hover { background: rgba(229,62,62,0.1); }
+
+    /* FOOTER NAV */
+    .page-footer { background: #07070c; border-top: 1px solid rgba(229,62,62,0.1); padding: 2rem; text-align: center; }
+    .footer-links { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .footer-links a { color: #64748b; text-decoration: none; font-size: 0.8rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--attck-red); }
+    .footer-copy { font-size: 0.75rem; color: #374151; }
+
+    /* DIVIDER */
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--attck-border), transparent); margin: 3rem 0; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero { padding: 3rem 1.5rem 2.5rem; }
+      .hero-stats { gap: 1.5rem; }
+      .tactics-grid, .siem-grid, .priority-grid, .playbook-grid, .cta-grid { grid-template-columns: 1fr; }
+      .coverage-table { font-size: 0.72rem; }
+      .coverage-table th, .coverage-table td { padding: 0.5rem 0.6rem; }
+      .container { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-brand">⬡ CYBERDUDEBIVASH® SENTINEL APEX</a>
+  <ul class="nav-links">
+    <li><a href="/">Intelligence</a></li>
+    <li><a href="/owasp-llm-top10.html">OWASP LLM</a></li>
+    <li><a href="/mitre-attack-detection.html">ATT&amp;CK Detection</a></li>
+    <li><a href="/products.html">Detection Packs</a></li>
+    <li><a href="/intel.html">Threat Intel Hub</a></li>
+  </ul>
+  <a href="/enterprise.html" class="nav-cta">Enterprise SOC →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">⚔ Detection Engineering Reference</div>
+  <h1>MITRE ATT&amp;CK<br><span>Detection Engineering Hub</span></h1>
+  <p class="hero-sub">Production-grade detection coverage across the full ATT&amp;CK matrix. Sigma rules, SIEM integration patterns, SOC playbooks, and enterprise detection engineering guidance built for analyst teams.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">14</div><div class="lbl">ATT&amp;CK Tactics</div></div>
+    <div class="hero-stat"><div class="num">200+</div><div class="lbl">Techniques</div></div>
+    <div class="hero-stat"><div class="num">Sigma</div><div class="lbl">Detection Format</div></div>
+    <div class="hero-stat"><div class="num">6</div><div class="lbl">SIEM Integrations</div></div>
+  </div>
+  <div class="hero-actions">
+    <a href="/products.html" class="btn-primary">Get Detection Packs →</a>
+    <a href="/enterprise.html" class="btn-outline">Enterprise SOC Consultation</a>
+  </div>
+</section>
+
+<!-- TACTICS GRID -->
+<section class="section" style="background: var(--attck-surface);">
+<div class="container">
+  <div class="section-header">
+    <div class="section-label">Full Matrix Coverage</div>
+    <h2>14 ATT&amp;CK Tactics — Adversary Lifecycle</h2>
+    <p>Complete MITRE ATT&amp;CK Enterprise matrix coverage from initial access through exfiltration and impact.</p>
+  </div>
+  <div class="tactics-grid">
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0001</div>
+      <div class="tactic-name">Initial Access</div>
+      <div class="tactic-desc">Adversary techniques to gain an initial foothold within a network — phishing, exploit public-facing applications, supply chain compromise.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1566</span><span class="tech-tag">T1190</span><span class="tech-tag">T1195</span><span class="tech-tag">T1133</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>HIGH</span> · <span>9</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0002</div>
+      <div class="tactic-name">Execution</div>
+      <div class="tactic-desc">Techniques for running adversary-controlled code — command and scripting interpreters, scheduled tasks, WMI, container execution.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1059</span><span class="tech-tag">T1053</span><span class="tech-tag">T1047</span><span class="tech-tag">T1204</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>HIGH</span> · <span>14</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0003</div>
+      <div class="tactic-name">Persistence</div>
+      <div class="tactic-desc">Techniques to maintain their foothold — boot/logon autostart, account creation, scheduled tasks, implants, hijack execution flow.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1547</span><span class="tech-tag">T1098</span><span class="tech-tag">T1543</span><span class="tech-tag">T1505</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>HIGH</span> · <span>19</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0004</div>
+      <div class="tactic-name">Privilege Escalation</div>
+      <div class="tactic-desc">Gaining higher-level permissions — process injection, token manipulation, exploitation of vulnerabilities, abuse elevation control mechanisms.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1055</span><span class="tech-tag">T1134</span><span class="tech-tag">T1548</span><span class="tech-tag">T1068</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>HIGH</span> · <span>13</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0005</div>
+      <div class="tactic-name">Defense Evasion</div>
+      <div class="tactic-desc">Techniques to avoid detection — obfuscation, masquerading, disabling security tools, living-off-the-land binaries (LOLBins), rootkits.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1562</span><span class="tech-tag">T1036</span><span class="tech-tag">T1027</span><span class="tech-tag">T1218</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>MED</span> · <span>42</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0006</div>
+      <div class="tactic-name">Credential Access</div>
+      <div class="tactic-desc">Stealing credentials — credential dumping, OS credential store access, brute force, keylogging, MFA interception.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1003</span><span class="tech-tag">T1110</span><span class="tech-tag">T1557</span><span class="tech-tag">T1539</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>HIGH</span> · <span>17</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0007</div>
+      <div class="tactic-name">Discovery</div>
+      <div class="tactic-desc">Internal network reconnaissance — account, file, network, system, and domain discovery for situational awareness before lateral movement.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1087</span><span class="tech-tag">T1083</span><span class="tech-tag">T1046</span><span class="tech-tag">T1018</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>MED</span> · <span>31</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0008</div>
+      <div class="tactic-name">Lateral Movement</div>
+      <div class="tactic-desc">Moving through the target environment — remote services, pass-the-hash, pass-the-ticket, exploitation of remote services.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1021</span><span class="tech-tag">T1550</span><span class="tech-tag">T1563</span><span class="tech-tag">T1570</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>HIGH</span> · <span>9</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0009</div>
+      <div class="tactic-name">Collection</div>
+      <div class="tactic-desc">Gathering data of interest — data from local and network drives, email collection, screen capture, input capture, clipboard data.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1560</span><span class="tech-tag">T1114</span><span class="tech-tag">T1113</span><span class="tech-tag">T1056</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>MED</span> · <span>17</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0010</div>
+      <div class="tactic-name">Exfiltration</div>
+      <div class="tactic-desc">Stealing data from target network — exfiltration over C2 channel, HTTPS, DNS, cloud storage, physical media, and scheduled transfers.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1041</span><span class="tech-tag">T1048</span><span class="tech-tag">T1567</span><span class="tech-tag">T1029</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>MED</span> · <span>9</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0011</div>
+      <div class="tactic-name">Command &amp; Control</div>
+      <div class="tactic-desc">Communicating with compromised systems — web protocols, encrypted channels, domain fronting, fast-flux DNS, proxy chaining.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1071</span><span class="tech-tag">T1573</span><span class="tech-tag">T1090</span><span class="tech-tag">T1568</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>HIGH</span> · <span>18</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0040</div>
+      <div class="tactic-name">Impact</div>
+      <div class="tactic-desc">Disrupting availability or integrity — data encryption for ransom, disk wiping, denial of service, resource hijacking, defacement.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1486</span><span class="tech-tag">T1485</span><span class="tech-tag">T1498</span><span class="tech-tag">T1496</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>HIGH</span> · <span>13</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0042</div>
+      <div class="tactic-name">Resource Development</div>
+      <div class="tactic-desc">Establishing resources for operations — acquire infrastructure, develop capabilities, stage capabilities, obtain capabilities from 3rd parties.</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1583</span><span class="tech-tag">T1584</span><span class="tech-tag">T1585</span><span class="tech-tag">T1587</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>LOW</span> · <span>8</span> techniques</div>
+    </div>
+
+    <div class="tactic-card">
+      <div class="tactic-id">TA0043</div>
+      <div class="tactic-name">Reconnaissance</div>
+      <div class="tactic-desc">Gathering information about the target — active scanning, gather victim info, phishing for information, search open sources (OSINT).</div>
+      <div class="tactic-techniques">
+        <span class="tech-tag">T1595</span><span class="tech-tag">T1592</span><span class="tech-tag">T1589</span><span class="tech-tag">T1598</span>
+      </div>
+      <div class="tactic-stat">Detection coverage: <span>LOW</span> · <span>10</span> techniques</div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- HIGH-PRIORITY TECHNIQUES -->
+<section class="section">
+<div class="container">
+  <div class="section-header">
+    <div class="section-label">Priority Detections</div>
+    <h2>Highest-Value Techniques — Detection ROI</h2>
+    <p>Techniques with the highest adversary usage frequency and broadest applicability across threat actor groups. Detect these first.</p>
+  </div>
+  <div class="priority-grid">
+
+    <div class="priority-card">
+      <div class="prio-rank">Priority 1 — Universal</div>
+      <div class="prio-tid">T1059.001 — PowerShell</div>
+      <div class="prio-name">Command and Scripting Interpreter: PowerShell</div>
+      <div class="prio-tactic">Execution · Used by 80%+ of threat actor groups</div>
+      <div class="prio-desc">Adversaries abuse PowerShell for execution, discovery, lateral movement, and C2. Encoded commands (-EncodedCommand), download cradles (IEX), AMSI bypass, and constrained language mode bypasses are primary detection targets.</div>
+      <div class="prio-meta">
+        <span class="badge badge-crit">Critical</span>
+        <span class="badge badge-tactic">Execution</span>
+        <span class="badge badge-tid">T1059.001</span>
+      </div>
+    </div>
+
+    <div class="priority-card">
+      <div class="prio-rank">Priority 1 — Universal</div>
+      <div class="prio-tid">T1566.001 — Spearphishing Attachment</div>
+      <div class="prio-name">Phishing: Spearphishing Attachment</div>
+      <div class="prio-tactic">Initial Access · #1 initial access vector industry-wide</div>
+      <div class="prio-desc">Malicious email attachments — Office macros, LNK files, ISO images, PDF exploits. Initial access into 90%+ of enterprise breaches starts here. Detections must cover email gateway, endpoint, and sandbox detonation signals.</div>
+      <div class="prio-meta">
+        <span class="badge badge-crit">Critical</span>
+        <span class="badge badge-tactic">Initial Access</span>
+        <span class="badge badge-tid">T1566.001</span>
+      </div>
+    </div>
+
+    <div class="priority-card">
+      <div class="prio-rank">Priority 1 — Ransomware</div>
+      <div class="prio-tid">T1486 — Data Encrypted for Impact</div>
+      <div class="prio-name">Data Encrypted for Impact</div>
+      <div class="prio-tactic">Impact · Terminal ransomware encryption stage</div>
+      <div class="prio-desc">Ransomware encryption phase — ChaCha20/AES bulk file encryption, extension renaming, shadow copy deletion (vssadmin), MBR destruction. Detecting this late-stage TTP requires behavioral analytics and honeypot file tripwires.</div>
+      <div class="prio-meta">
+        <span class="badge badge-crit">Critical</span>
+        <span class="badge badge-tactic">Impact</span>
+        <span class="badge badge-tid">T1486</span>
+      </div>
+    </div>
+
+    <div class="priority-card">
+      <div class="prio-rank">Priority 1 — Credential</div>
+      <div class="prio-tid">T1003.001 — LSASS Memory</div>
+      <div class="prio-name">OS Credential Dumping: LSASS Memory</div>
+      <div class="prio-tactic">Credential Access · Pass-the-hash pivot enabler</div>
+      <div class="prio-desc">Mimikatz, ProcDump, comsvcs.dll MiniDump — dumping LSASS process memory to extract NTLM hashes, Kerberos tickets, and clear-text credentials. PPL bypass and kernel driver attacks are active evasion routes.</div>
+      <div class="prio-meta">
+        <span class="badge badge-crit">Critical</span>
+        <span class="badge badge-tactic">Credential Access</span>
+        <span class="badge badge-tid">T1003.001</span>
+      </div>
+    </div>
+
+    <div class="priority-card">
+      <div class="prio-rank">Priority 2 — Living-off-Land</div>
+      <div class="prio-tid">T1218 — Signed Binary Proxy Execution</div>
+      <div class="prio-name">System Binary Proxy Execution (LOLBins)</div>
+      <div class="prio-tactic">Defense Evasion · Antivirus bypass mechanism</div>
+      <div class="prio-desc">Using legitimate signed Windows binaries to execute malicious payloads — regsvr32, mshta, certutil, wscript, rundll32. These bypass application whitelisting and appear as normal system activity without behavioral context.</div>
+      <div class="prio-meta">
+        <span class="badge badge-high">High</span>
+        <span class="badge badge-tactic">Defense Evasion</span>
+        <span class="badge badge-tid">T1218</span>
+      </div>
+    </div>
+
+    <div class="priority-card">
+      <div class="prio-rank">Priority 2 — Lateral Movement</div>
+      <div class="prio-tid">T1021.002 — SMB/Windows Admin Shares</div>
+      <div class="prio-name">Remote Services: SMB/Windows Admin Shares</div>
+      <div class="prio-tactic">Lateral Movement · Post-credential compromise pivot</div>
+      <div class="prio-desc">Using stolen credentials to access ADMIN$, C$, IPC$ shares for file copy and execution. PsExec, Impacket smbexec/wmiexec, and Cobalt Strike SMB lateral movement all generate characteristic SMB authentication events.</div>
+      <div class="prio-meta">
+        <span class="badge badge-high">High</span>
+        <span class="badge badge-tactic">Lateral Movement</span>
+        <span class="badge badge-tid">T1021.002</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- SIGMA DETECTION RULES -->
+<section class="section" style="background: var(--attck-surface);">
+<div class="container">
+  <div class="section-header">
+    <div class="section-label">Sigma Detection Library</div>
+    <h2>Production Detection Rules — Sigma Format</h2>
+    <p>Platform-agnostic Sigma rules for high-priority ATT&amp;CK techniques. Convert to Splunk SPL, Elastic EQL, Microsoft Sentinel KQL, or Chronicle using <a href="https://github.com/SigmaHQ/sigma" style="color: var(--attck-red);">sigmatools</a>.</p>
+  </div>
+  <div class="detections-grid">
+
+    <!-- T1059.001 PowerShell -->
+    <div class="detection-card">
+      <div class="detection-header">
+        <div>
+          <div class="detection-title">PowerShell Encoded Command Execution</div>
+        </div>
+        <div class="detection-meta">
+          <span class="badge badge-crit">Critical</span>
+          <span class="badge badge-tactic">Execution</span>
+          <span class="badge badge-tid">T1059.001</span>
+        </div>
+      </div>
+      <div class="detection-body">
+        <div class="detection-desc">Detects PowerShell execution with Base64-encoded commands via -EncodedCommand or -enc flags — a primary technique for obfuscating download cradles, AMSI bypasses, and in-memory payload execution.</div>
+        <div class="code-block"><span class="kw">title:</span> <span class="str">PowerShell Encoded Command Execution</span>
+<span class="kw">id:</span> <span class="str">a6eb3fef-8b15-4b8e-9d5a-7c1e2f3d8b9a</span>
+<span class="kw">status:</span> <span class="str">production</span>
+<span class="kw">description:</span> <span class="str">Detects PowerShell -EncodedCommand execution used</span>
+<span class="str">  to obfuscate malicious payloads and bypass defenses</span>
+<span class="kw">references:</span>
+  <span class="str">- https://attack.mitre.org/techniques/T1059/001/</span>
+<span class="kw">author:</span> <span class="str">CYBERDUDEBIVASH SENTINEL APEX Detection Engineering</span>
+<span class="kw">date:</span> <span class="num">2026-05-28</span>
+<span class="kw">tags:</span>
+  <span class="str">- attack.execution</span>
+  <span class="str">- attack.t1059.001</span>
+  <span class="str">- attack.defense_evasion</span>
+  <span class="str">- attack.t1027</span>
+<span class="kw">logsource:</span>
+  <span class="kw">category:</span> <span class="str">process_creation</span>
+  <span class="kw">product:</span> <span class="str">windows</span>
+<span class="kw">detection:</span>
+  <span class="kw">selection:</span>
+    <span class="kw">Image|endswith:</span>
+      <span class="str">- '\powershell.exe'</span>
+      <span class="str">- '\pwsh.exe'</span>
+    <span class="kw">CommandLine|contains:</span>
+      <span class="str">- ' -EncodedCommand '</span>
+      <span class="str">- ' -enc '</span>
+      <span class="str">- ' -EC '</span>
+      <span class="str">- ' -e '</span>
+  <span class="kw">filter_legitimate:</span>
+    <span class="kw">ParentImage|endswith:</span>
+      <span class="str">- '\sccm.exe'</span>
+      <span class="str">- '\ccmexec.exe'</span>
+  <span class="kw">condition:</span> <span class="str">selection and not filter_legitimate</span>
+<span class="kw">falsepositives:</span>
+  <span class="str">- Legitimate automation scripts using encoded commands</span>
+  <span class="str">- SCCM client management operations</span>
+<span class="kw">level:</span> <span class="str">high</span></div>
+        <div class="detection-signals">
+          <div class="signals-label">Correlated Detection Signals</div>
+          <div class="signal-list">
+            <div class="signal-item">AMSI bypass strings in CommandLine</div>
+            <div class="signal-item">IEX/Invoke-Expression with download</div>
+            <div class="signal-item">Outbound HTTP/S from powershell.exe</div>
+            <div class="signal-item">Unusual parent process (Word, Excel, browser)</div>
+            <div class="signal-item">Base64 length > 500 characters</div>
+            <div class="signal-item">-NoProfile -WindowStyle Hidden flags</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T1003.001 LSASS -->
+    <div class="detection-card">
+      <div class="detection-header">
+        <div>
+          <div class="detection-title">LSASS Memory Access — Credential Dumping</div>
+        </div>
+        <div class="detection-meta">
+          <span class="badge badge-crit">Critical</span>
+          <span class="badge badge-tactic">Credential Access</span>
+          <span class="badge badge-tid">T1003.001</span>
+        </div>
+      </div>
+      <div class="detection-body">
+        <div class="detection-desc">Detects attempts to read LSASS process memory to extract credential material. Covers ProcDump, comsvcs.dll MiniDump, Task Manager dump, and direct LSASS handle acquisition via OpenProcess.</div>
+        <div class="code-block"><span class="kw">title:</span> <span class="str">LSASS Memory Dump Attempt</span>
+<span class="kw">id:</span> <span class="str">b9d7f3c2-1e4a-5b8d-9c0f-2a3e4d5f6b7c</span>
+<span class="kw">status:</span> <span class="str">production</span>
+<span class="kw">description:</span> <span class="str">Detects LSASS memory access for credential extraction</span>
+<span class="kw">tags:</span>
+  <span class="str">- attack.credential_access</span>
+  <span class="str">- attack.t1003.001</span>
+<span class="kw">logsource:</span>
+  <span class="kw">category:</span> <span class="str">process_access</span>
+  <span class="kw">product:</span> <span class="str">windows</span>
+<span class="kw">detection:</span>
+  <span class="kw">selection_lsass_access:</span>
+    <span class="kw">TargetImage|endswith:</span> <span class="str">'\lsass.exe'</span>
+    <span class="kw">GrantedAccess|contains:</span>
+      <span class="str">- '0x1010'</span>
+      <span class="str">- '0x1410'</span>
+      <span class="str">- '0x147a'</span>
+      <span class="str">- '0x143a'</span>
+  <span class="kw">selection_procdump:</span>
+    <span class="kw">Image|endswith:</span> <span class="str">'\procdump.exe'</span>
+    <span class="kw">CommandLine|contains:</span> <span class="str">'lsass'</span>
+  <span class="kw">selection_comsvcs:</span>
+    <span class="kw">CommandLine|contains|all:</span>
+      <span class="str">- 'comsvcs.dll'</span>
+      <span class="str">- 'MiniDump'</span>
+  <span class="kw">condition:</span> <span class="str">1 of selection_*</span>
+<span class="kw">falsepositives:</span>
+  <span class="str">- CrowdStrike/SentinelOne agent self-inspection</span>
+  <span class="str">- Authorized red team activity</span>
+  <span class="str">- Windows Error Reporting (WER) creating crash dumps</span>
+<span class="kw">level:</span> <span class="str">critical</span></div>
+        <div class="detection-signals">
+          <div class="signals-label">Correlated Detection Signals</div>
+          <div class="signal-list">
+            <div class="signal-item">SeDebugPrivilege token acquisition</div>
+            <div class="signal-item">Mimikatz binary hash or strings</div>
+            <div class="signal-item">.dmp file written to unusual path</div>
+            <div class="signal-item">LSASS handle with PROCESS_VM_READ</div>
+            <div class="signal-item">PPL bypass driver load event</div>
+            <div class="signal-item">Subsequent pass-the-hash SMB auth</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T1486 Ransomware Encryption -->
+    <div class="detection-card">
+      <div class="detection-header">
+        <div>
+          <div class="detection-title">Ransomware — Bulk File Encryption & Shadow Copy Deletion</div>
+        </div>
+        <div class="detection-meta">
+          <span class="badge badge-crit">Critical</span>
+          <span class="badge badge-tactic">Impact</span>
+          <span class="badge badge-tid">T1486</span>
+        </div>
+      </div>
+      <div class="detection-body">
+        <div class="detection-desc">Detects the terminal encryption phase of ransomware operations — rapid file extension changes, vssadmin shadow copy deletion, MBR wiping, and ransom note creation. At this stage, containment is critical within minutes.</div>
+        <div class="code-block"><span class="kw">title:</span> <span class="str">Ransomware Shadow Copy Deletion and Bulk Encryption</span>
+<span class="kw">id:</span> <span class="str">c3e8a1d4-2f5b-6c9e-0a1b-3d4e5f6c7d8e</span>
+<span class="kw">status:</span> <span class="str">production</span>
+<span class="kw">description:</span> <span class="str">Detects ransomware pre-encryption and encryption activity</span>
+<span class="kw">tags:</span>
+  <span class="str">- attack.impact</span>
+  <span class="str">- attack.t1486</span>
+  <span class="str">- attack.t1490</span>
+<span class="kw">logsource:</span>
+  <span class="kw">category:</span> <span class="str">process_creation</span>
+  <span class="kw">product:</span> <span class="str">windows</span>
+<span class="kw">detection:</span>
+  <span class="kw">selection_vssadmin:</span>
+    <span class="kw">Image|endswith:</span> <span class="str">'\vssadmin.exe'</span>
+    <span class="kw">CommandLine|contains:</span>
+      <span class="str">- 'delete shadows'</span>
+      <span class="str">- 'resize shadowstorage'</span>
+  <span class="kw">selection_wbadmin:</span>
+    <span class="kw">Image|endswith:</span> <span class="str">'\wbadmin.exe'</span>
+    <span class="kw">CommandLine|contains:</span> <span class="str">'delete catalog'</span>
+  <span class="kw">selection_bcdedit:</span>
+    <span class="kw">Image|endswith:</span> <span class="str">'\bcdedit.exe'</span>
+    <span class="kw">CommandLine|contains:</span>
+      <span class="str">- 'recoveryenabled no'</span>
+      <span class="str">- 'bootstatuspolicy ignoreallfailures'</span>
+  <span class="kw">selection_cipher:</span>
+    <span class="kw">Image|endswith:</span> <span class="str">'\cipher.exe'</span>
+    <span class="kw">CommandLine|contains:</span> <span class="str">'/w:'</span>
+  <span class="kw">condition:</span> <span class="str">1 of selection_*</span>
+<span class="kw">falsepositives:</span>
+  <span class="str">- Backup software performing legitimate shadow management</span>
+  <span class="str">- Windows Server Backup configuration</span>
+<span class="kw">level:</span> <span class="str">critical</span></div>
+        <div class="detection-signals">
+          <div class="signals-label">Correlated Detection Signals</div>
+          <div class="signal-list">
+            <div class="signal-item">High-frequency file rename events (&gt;100/sec)</div>
+            <div class="signal-item">Novel file extensions appearing across shares</div>
+            <div class="signal-item">README.txt / HOW_TO_DECRYPT.txt created</div>
+            <div class="signal-item">CPU spike + disk I/O saturation</div>
+            <div class="signal-item">Network share enumeration prior to encryption</div>
+            <div class="signal-item">taskkill /F of backup/AV processes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- T1021.002 Lateral Movement -->
+    <div class="detection-card">
+      <div class="detection-header">
+        <div>
+          <div class="detection-title">Lateral Movement via SMB Admin Shares</div>
+        </div>
+        <div class="detection-meta">
+          <span class="badge badge-high">High</span>
+          <span class="badge badge-tactic">Lateral Movement</span>
+          <span class="badge badge-tid">T1021.002</span>
+        </div>
+      </div>
+      <div class="detection-body">
+        <div class="detection-desc">Detects lateral movement using administrative SMB shares (ADMIN$, C$, IPC$) — characteristic of PsExec, Impacket tooling, Cobalt Strike lateral movement modules, and automated ransomware propagation.</div>
+        <div class="code-block"><span class="kw">title:</span> <span class="str">Lateral Movement via SMB Admin Share Access</span>
+<span class="kw">id:</span> <span class="str">d4f9b2e5-3a6c-7d0f-1b2c-4e5f6a7b8c9d</span>
+<span class="kw">status:</span> <span class="str">production</span>
+<span class="kw">description:</span> <span class="str">Detects suspicious SMB administrative share access</span>
+<span class="str">  indicating lateral movement activity</span>
+<span class="kw">tags:</span>
+  <span class="str">- attack.lateral_movement</span>
+  <span class="str">- attack.t1021.002</span>
+<span class="kw">logsource:</span>
+  <span class="kw">product:</span> <span class="str">windows</span>
+  <span class="kw">service:</span> <span class="str">security</span>
+<span class="kw">detection:</span>
+  <span class="kw">selection:</span>
+    <span class="kw">EventID:</span> <span class="num">5140</span>
+    <span class="kw">ShareName|contains:</span>
+      <span class="str">- '\ADMIN$'</span>
+      <span class="str">- '\C$'</span>
+      <span class="str">- '\IPC$'</span>
+  <span class="kw">filter_domain_controllers:</span>
+    <span class="kw">SubjectUserName|endswith:</span> <span class="str">'$'</span>
+  <span class="kw">filter_backup:</span>
+    <span class="kw">IpAddress:</span>
+      <span class="str">- '127.0.0.1'</span>
+  <span class="kw">condition:</span> <span class="str">selection and not 1 of filter_*</span>
+<span class="kw">falsepositives:</span>
+  <span class="str">- Legitimate remote administration (SCCM, Ansible)</span>
+  <span class="str">- IT helpdesk operations</span>
+<span class="kw">level:</span> <span class="str">medium</span></div>
+        <div class="detection-signals">
+          <div class="signals-label">Correlated Detection Signals</div>
+          <div class="signal-list">
+            <div class="signal-item">New service installation (Event 7045) on remote host</div>
+            <div class="signal-item">PSEXESVC service creation</div>
+            <div class="signal-item">Logon Type 3 from non-admin workstation</div>
+            <div class="signal-item">Executable dropped to ADMIN$ then executed</div>
+            <div class="signal-item">Pass-the-hash NTLM authentication</div>
+            <div class="signal-item">Spray of admin share access to multiple hosts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- SIEM INTEGRATION -->
+<section class="section">
+<div class="container">
+  <div class="section-header">
+    <div class="section-label">Platform Integration</div>
+    <h2>SIEM &amp; EDR Integration Guidance</h2>
+    <p>Sigma rules convert to native query languages for all major platforms. Sentinel APEX Detection Packs include pre-converted, tuned rules for each platform.</p>
+  </div>
+  <div class="siem-grid">
+
+    <div class="siem-card">
+      <div class="siem-logo">🔵</div>
+      <div class="siem-name">Microsoft Sentinel</div>
+      <div class="siem-desc">Convert Sigma to KQL (Kusto Query Language). Deploy as Analytics Rules with MITRE ATT&amp;CK tactic mapping and alert enrichment via UEBA.</div>
+      <div class="siem-features">
+        <div class="siem-feat">Sigma → KQL via sigma-cli + kusto backend</div>
+        <div class="siem-feat">MITRE ATT&amp;CK tactic/technique metadata</div>
+        <div class="siem-feat">UEBA enrichment for behavioral context</div>
+        <div class="siem-feat">Automation rules for SOAR integration</div>
+        <div class="siem-feat">Alert fusion with incident correlation</div>
+      </div>
+    </div>
+
+    <div class="siem-card">
+      <div class="siem-logo">🟡</div>
+      <div class="siem-name">Splunk SIEM</div>
+      <div class="siem-desc">Convert Sigma to Splunk SPL. Deploy as correlation searches in Enterprise Security with risk-based alerting (RBA) and ESCU framework alignment.</div>
+      <div class="siem-features">
+        <div class="siem-feat">Sigma → SPL via sigma-cli + splunk backend</div>
+        <div class="siem-feat">Risk-Based Alerting (RBA) risk scores</div>
+        <div class="siem-feat">ESCU detection framework alignment</div>
+        <div class="siem-feat">Notable event generation + correlation</div>
+        <div class="siem-feat">Adaptive Response for automated containment</div>
+      </div>
+    </div>
+
+    <div class="siem-card">
+      <div class="siem-logo">🟢</div>
+      <div class="siem-name">Elastic Security</div>
+      <div class="siem-desc">Convert Sigma to Elastic EQL or ES|QL. Deploy via Detection Engine with prebuilt rule templates and ML-based anomaly detection jobs.</div>
+      <div class="siem-features">
+        <div class="siem-feat">Sigma → EQL via sigma-cli + elasticsearch</div>
+        <div class="siem-feat">Event Query Language (EQL) sequences</div>
+        <div class="siem-feat">ML anomaly detection integration</div>
+        <div class="siem-feat">Entity Analytics for user risk scoring</div>
+        <div class="siem-feat">Fleet integration for endpoint telemetry</div>
+      </div>
+    </div>
+
+    <div class="siem-card">
+      <div class="siem-logo">🔴</div>
+      <div class="siem-name">CrowdStrike Falcon</div>
+      <div class="siem-desc">Deploy Sigma as Custom IOA (Indicator of Attack) rules or Fusion SOAR workflows. Correlate with Threat Graph and identity protection events.</div>
+      <div class="siem-features">
+        <div class="siem-feat">Custom IOA rules via Falcon Prevent</div>
+        <div class="siem-feat">Falcon Insight XDR event search</div>
+        <div class="siem-feat">Threat Graph behavioral correlation</div>
+        <div class="siem-feat">Fusion SOAR automated response</div>
+        <div class="siem-feat">Identity Protection Kerberos detections</div>
+      </div>
+    </div>
+
+    <div class="siem-card">
+      <div class="siem-logo">⚫</div>
+      <div class="siem-name">Google Chronicle</div>
+      <div class="siem-desc">Convert Sigma to YARA-L 2.0 for Chronicle SIEM. Deploy as Rules with detection engine scheduling and context-enriched entity graph.</div>
+      <div class="siem-features">
+        <div class="siem-feat">Sigma → YARA-L via sigma-cli + chronicle</div>
+        <div class="siem-feat">Entity enrichment via UDMS model</div>
+        <div class="siem-feat">IOC retrohunt across petabyte-scale logs</div>
+        <div class="siem-feat">SOAR integration via Chronicle SOAR</div>
+        <div class="siem-feat">GCP security telemetry native ingestion</div>
+      </div>
+    </div>
+
+    <div class="siem-card">
+      <div class="siem-logo">🟣</div>
+      <div class="siem-name">Palo Alto Cortex XDR</div>
+      <div class="siem-desc">Deploy BIOC (Behavioral Indicator of Compromise) rules for ATT&amp;CK technique coverage. Correlate XDR alerts with Cortex XSOAR automated response.</div>
+      <div class="siem-features">
+        <div class="siem-feat">BIOC rule creation for behavioral detection</div>
+        <div class="siem-feat">XQL (XDR Query Language) hunting</div>
+        <div class="siem-feat">Causality Chain (CC) visualization</div>
+        <div class="siem-feat">Cortex XSOAR SOAR automation</div>
+        <div class="siem-feat">Unit 42 threat intel integration</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- DETECTION COVERAGE MATRIX -->
+<section class="section" style="background: var(--attck-surface);">
+<div class="container">
+  <div class="section-header">
+    <div class="section-label">Coverage Assessment</div>
+    <h2>Detection Coverage Matrix — Enterprise SOC</h2>
+    <p>Recommended detection coverage targets for enterprise SOC teams. Gaps represent high-priority investments for detection engineering roadmaps.</p>
+  </div>
+  <div style="overflow-x: auto;">
+  <table class="coverage-table">
+    <thead>
+      <tr>
+        <th>Tactic</th>
+        <th>Technique</th>
+        <th>T-ID</th>
+        <th>EDR</th>
+        <th>SIEM</th>
+        <th>Network</th>
+        <th>UEBA</th>
+        <th>Priority</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Initial Access</td><td>Spearphishing Attachment</td><td><span style="font-family:monospace;color:#fca5a5;">T1566.001</span></td>
+        <td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-med">M</span></td><td><span class="cov-dot cov-low">L</span></td>
+        <td><span class="badge badge-crit">P1</span></td>
+      </tr>
+      <tr>
+        <td>Execution</td><td>PowerShell</td><td><span style="font-family:monospace;color:#fca5a5;">T1059.001</span></td>
+        <td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-low">L</span></td><td><span class="cov-dot cov-med">M</span></td>
+        <td><span class="badge badge-crit">P1</span></td>
+      </tr>
+      <tr>
+        <td>Execution</td><td>Windows Management Instrumentation</td><td><span style="font-family:monospace;color:#fca5a5;">T1047</span></td>
+        <td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-med">M</span></td><td><span class="cov-dot cov-low">L</span></td><td><span class="cov-dot cov-low">L</span></td>
+        <td><span class="badge badge-high">P2</span></td>
+      </tr>
+      <tr>
+        <td>Persistence</td><td>Boot/Logon Autostart — Registry Run Keys</td><td><span style="font-family:monospace;color:#fca5a5;">T1547.001</span></td>
+        <td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-low">L</span></td><td><span class="cov-dot cov-low">L</span></td>
+        <td><span class="badge badge-high">P2</span></td>
+      </tr>
+      <tr>
+        <td>Privilege Esc.</td><td>Process Injection</td><td><span style="font-family:monospace;color:#fca5a5;">T1055</span></td>
+        <td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-med">M</span></td><td><span class="cov-dot cov-low">L</span></td><td><span class="cov-dot cov-low">L</span></td>
+        <td><span class="badge badge-crit">P1</span></td>
+      </tr>
+      <tr>
+        <td>Defense Evasion</td><td>Signed Binary Proxy Exec (LOLBins)</td><td><span style="font-family:monospace;color:#fca5a5;">T1218</span></td>
+        <td><span class="cov-dot cov-med">M</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-low">L</span></td><td><span class="cov-dot cov-low">L</span></td>
+        <td><span class="badge badge-high">P2</span></td>
+      </tr>
+      <tr>
+        <td>Credential Access</td><td>OS Credential Dumping — LSASS</td><td><span style="font-family:monospace;color:#fca5a5;">T1003.001</span></td>
+        <td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-low">L</span></td><td><span class="cov-dot cov-high">H</span></td>
+        <td><span class="badge badge-crit">P1</span></td>
+      </tr>
+      <tr>
+        <td>Lateral Movement</td><td>SMB / Windows Admin Shares</td><td><span style="font-family:monospace;color:#fca5a5;">T1021.002</span></td>
+        <td><span class="cov-dot cov-med">M</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-high">H</span></td>
+        <td><span class="badge badge-crit">P1</span></td>
+      </tr>
+      <tr>
+        <td>C&amp;C</td><td>Encrypted Channel — TLS</td><td><span style="font-family:monospace;color:#fca5a5;">T1573.002</span></td>
+        <td><span class="cov-dot cov-low">L</span></td><td><span class="cov-dot cov-med">M</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-med">M</span></td>
+        <td><span class="badge badge-high">P2</span></td>
+      </tr>
+      <tr>
+        <td>Exfiltration</td><td>Exfiltration Over Web Service</td><td><span style="font-family:monospace;color:#fca5a5;">T1567</span></td>
+        <td><span class="cov-dot cov-low">L</span></td><td><span class="cov-dot cov-med">M</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-high">H</span></td>
+        <td><span class="badge badge-high">P2</span></td>
+      </tr>
+      <tr>
+        <td>Impact</td><td>Data Encrypted for Impact (Ransomware)</td><td><span style="font-family:monospace;color:#fca5a5;">T1486</span></td>
+        <td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-low">L</span></td><td><span class="cov-dot cov-high">H</span></td>
+        <td><span class="badge badge-crit">P1</span></td>
+      </tr>
+      <tr>
+        <td>Impact</td><td>Inhibit System Recovery</td><td><span style="font-family:monospace;color:#fca5a5;">T1490</span></td>
+        <td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-high">H</span></td><td><span class="cov-dot cov-low">L</span></td><td><span class="cov-dot cov-low">L</span></td>
+        <td><span class="badge badge-crit">P1</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div style="margin-top: 1rem; display: flex; gap: 1.5rem; font-size: 0.75rem; color: #64748b;">
+    <div><span class="cov-dot cov-high" style="display:inline-flex;">H</span> High coverage (detect reliably)</div>
+    <div><span class="cov-dot cov-med" style="display:inline-flex;">M</span> Medium (partial, tuning required)</div>
+    <div><span class="cov-dot cov-low" style="display:inline-flex;">L</span> Low/gap (detection investment needed)</div>
+  </div>
+</div>
+</section>
+
+<!-- SOC PLAYBOOKS -->
+<section class="section">
+<div class="container">
+  <div class="section-header">
+    <div class="section-label">SOC Operations</div>
+    <h2>Detection Response Playbooks</h2>
+    <p>Structured response workflows for high-priority ATT&amp;CK technique detections. Designed for L1/L2 analysts with clear triage, escalation, and containment steps.</p>
+  </div>
+  <div class="playbook-grid">
+
+    <div class="playbook-card">
+      <div class="pb-phase">Credential Threat</div>
+      <div class="pb-title">LSASS Dump Alert Triage — T1003.001</div>
+      <ul class="pb-steps">
+        <li class="pb-step"><div class="pb-num">1</div><div>Confirm LSASS access event — validate GrantedAccess flags (0x1010, 0x1410, 0x147a)</div></li>
+        <li class="pb-step"><div class="pb-num">2</div><div>Identify source process — check parent chain for unusual ancestry (cmd.exe, powershell.exe, Office app)</div></li>
+        <li class="pb-step"><div class="pb-num">3</div><div>Check for Mimikatz strings in memory or on disk — search endpoint for sekurlsa, logonpasswords, wdigest</div></li>
+        <li class="pb-step"><div class="pb-num">4</div><div>Review subsequent auth logs — look for lateral movement via NTLM pass-the-hash within 30 minutes</div></li>
+        <li class="pb-step"><div class="pb-num">5</div><div>Isolate endpoint if confirmed — revoke affected user credentials via AD immediately</div></li>
+        <li class="pb-step"><div class="pb-num">6</div><div>Force password reset for all accounts active on host at time of dump</div></li>
+      </ul>
+    </div>
+
+    <div class="playbook-card">
+      <div class="pb-phase">Ransomware — CRITICAL</div>
+      <div class="pb-title">Active Ransomware Encryption — T1486</div>
+      <ul class="pb-steps">
+        <li class="pb-step"><div class="pb-num">1</div><div>Confirm encryption indicator — vssadmin delete or mass file extension change events</div></li>
+        <li class="pb-step"><div class="pb-num">2</div><div>Immediately isolate affected host from network — block all outbound and lateral SMB</div></li>
+        <li class="pb-step"><div class="pb-num">3</div><div>Identify patient zero — trace lateral movement path back to initial infection vector</div></li>
+        <li class="pb-step"><div class="pb-num">4</div><div>Scan all adjacent systems — check for dormant ransomware payload pre-detonation</div></li>
+        <li class="pb-step"><div class="pb-num">5</div><div>Invoke IR retainer and notify legal — ransomware is a reportable incident in most jurisdictions</div></li>
+        <li class="pb-step"><div class="pb-num">6</div><div>Preserve forensic artifacts before remediation — memory dump, SIEM logs, network PCAP</div></li>
+      </ul>
+    </div>
+
+    <div class="playbook-card">
+      <div class="pb-phase">Lateral Movement</div>
+      <div class="pb-title">SMB Admin Share Lateral Movement — T1021.002</div>
+      <ul class="pb-steps">
+        <li class="pb-step"><div class="pb-num">1</div><div>Identify source and destination hosts — map Logon Type 3 events with admin share access (Event 5140)</div></li>
+        <li class="pb-step"><div class="pb-num">2</div><div>Check for service installation on destination — Event 7045 PSEXESVC or unusual service name</div></li>
+        <li class="pb-step"><div class="pb-num">3</div><div>Trace credential source — identify which account was used and how it was obtained</div></li>
+        <li class="pb-step"><div class="pb-num">4</div><div>Map lateral movement graph — identify all hosts accessed from source within prior 24 hours</div></li>
+        <li class="pb-step"><div class="pb-num">5</div><div>Contain affected accounts — disable and rotate credentials for compromised service accounts</div></li>
+        <li class="pb-step"><div class="pb-num">6</div><div>Block NTLM authentication where Kerberos is available — reduce pass-the-hash exposure</div></li>
+      </ul>
+    </div>
+
+    <div class="playbook-card">
+      <div class="pb-phase">Execution Alert</div>
+      <div class="pb-title">Suspicious PowerShell Execution — T1059.001</div>
+      <ul class="pb-steps">
+        <li class="pb-step"><div class="pb-num">1</div><div>Decode Base64 command — use CyberChef or in-SIEM decode to reveal actual payload intent</div></li>
+        <li class="pb-step"><div class="pb-num">2</div><div>Check for download cradle — IEX, Invoke-WebRequest, DownloadString with external URL</div></li>
+        <li class="pb-step"><div class="pb-num">3</div><div>Inspect parent process — Office document or browser spawn is high-confidence phishing indicator</div></li>
+        <li class="pb-step"><div class="pb-num">4</div><div>Review network connections from powershell.exe — check DNS queries and outbound HTTP/S</div></li>
+        <li class="pb-step"><div class="pb-num">5</div><div>Detonate any dropped files in sandbox — extract IOCs for platform-wide blocking</div></li>
+        <li class="pb-step"><div class="pb-num">6</div><div>Correlate with email gateway — identify delivery method and scope of phishing campaign</div></li>
+      </ul>
+    </div>
+
+    <div class="playbook-card">
+      <div class="pb-phase">Defense Evasion</div>
+      <div class="pb-title">LOLBin Proxy Execution — T1218</div>
+      <ul class="pb-steps">
+        <li class="pb-step"><div class="pb-num">1</div><div>Identify LOLBin in use — certutil, mshta, regsvr32, rundll32, wscript, cmstp</div></li>
+        <li class="pb-step"><div class="pb-num">2</div><div>Extract payload path or URL from CommandLine — identify remote or local payload source</div></li>
+        <li class="pb-step"><div class="pb-num">3</div><div>Check LOLBin child processes and network connections — map post-execution activity</div></li>
+        <li class="pb-step"><div class="pb-num">4</div><div>Correlate with AppLocker/WDAC bypass indicators if policy is deployed</div></li>
+        <li class="pb-step"><div class="pb-num">5</div><div>Block LOLBin command patterns at endpoint policy layer if not already blocked</div></li>
+      </ul>
+    </div>
+
+    <div class="playbook-card">
+      <div class="pb-phase">Persistence Detection</div>
+      <div class="pb-title">Registry Autostart Persistence — T1547.001</div>
+      <ul class="pb-steps">
+        <li class="pb-step"><div class="pb-num">1</div><div>Identify new registry Run/RunOnce key — check HKLM and HKCU for unsigned or unusual entries</div></li>
+        <li class="pb-step"><div class="pb-num">2</div><div>Validate executable path — check file hash against threat intel, verify code signing</div></li>
+        <li class="pb-step"><div class="pb-num">3</div><div>Check registry write process ancestry — map the process chain that installed the key</div></li>
+        <li class="pb-step"><div class="pb-num">4</div><div>Review creation timestamp against other security events in same timeframe</div></li>
+        <li class="pb-step"><div class="pb-num">5</div><div>Remove malicious key and quarantine executable — verify removal and reboot persistence</div></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ENTERPRISE CTA -->
+<div class="cta-section">
+  <div style="text-align:center; margin-bottom: 2.5rem;">
+    <div class="section-label" style="text-align:center;">Enterprise Detection Engineering</div>
+    <h2 style="font-size:1.8rem; font-weight:800; color:#f1f5f9;">Deploy Production-Grade ATT&amp;CK Detection Coverage</h2>
+    <p style="color:#64748b; max-width: 600px; margin: 0.75rem auto 0; font-size: 0.9rem;">Sentinel APEX provides pre-tuned, production-certified detection packs for your SIEM platform — built by detection engineers for SOC operations teams.</p>
+  </div>
+  <div class="cta-grid">
+    <div class="cta-card">
+      <div class="cta-icon">🎯</div>
+      <div class="cta-title">Detection Pack Library</div>
+      <div class="cta-desc">300+ Sigma rules pre-converted for Splunk, Sentinel, Elastic, and Chronicle. Full ATT&amp;CK coverage with false-positive baselines and tuning guidance for enterprise environments.</div>
+      <a href="/products.html" class="cta-btn">View Detection Packs →</a>
+    </div>
+    <div class="cta-card">
+      <div class="cta-icon">🔬</div>
+      <div class="cta-title">Detection Engineering Consultation</div>
+      <div class="cta-desc">Bespoke detection engineering for your environment. Detection gap analysis, Sigma rule development, SIEM tuning, threat hunting playbooks, and SOC maturity assessment.</div>
+      <a href="/enterprise.html" class="cta-btn">Book Consultation →</a>
+    </div>
+    <div class="cta-card">
+      <div class="cta-icon">⚡</div>
+      <div class="cta-title">Threat Intelligence API</div>
+      <div class="cta-desc">Real-time ATT&amp;CK technique telemetry via Sentinel APEX API. Enrich your SIEM alerts with live adversary TTP data, IOC context, and detection priority scoring.</div>
+      <a href="https://intel.cyberdudebivash.com" class="cta-btn cta-btn-outline">Access Sentinel APEX API →</a>
+    </div>
+  </div>
+</div>
+
+<!-- INTERNAL LINKS -->
+<section class="section" style="background: var(--attck-surface);">
+<div class="container">
+  <div class="section-header">
+    <div class="section-label">Related Intelligence</div>
+    <h2>Continue Your Security Research</h2>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem;">
+    <a href="/owasp-llm-top10.html" style="background: var(--attck-card); border: 1px solid var(--attck-border); border-radius: 10px; padding: 1.25rem; text-decoration: none; transition: border-color 0.2s; display: block;">
+      <div style="font-size: 0.7rem; color: var(--attck-red); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem;">AI Security</div>
+      <div style="font-size: 0.9rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.3rem;">OWASP LLM Top 10 2025</div>
+      <div style="font-size: 0.78rem; color: #64748b;">Complete AI security risk framework with MITRE ATLAS mappings, detection signals, and enterprise controls.</div>
+    </a>
+    <a href="/intel.html" style="background: var(--attck-card); border: 1px solid var(--attck-border); border-radius: 10px; padding: 1.25rem; text-decoration: none; transition: border-color 0.2s; display: block;">
+      <div style="font-size: 0.7rem; color: var(--attck-red); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem;">Threat Intelligence</div>
+      <div style="font-size: 0.9rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.3rem;">Live Threat Intelligence Hub</div>
+      <div style="font-size: 0.78rem; color: #64748b;">Real-time CVE feeds, threat actor tracking, and intelligence reports from 27 sources.</div>
+    </a>
+    <a href="/products.html" style="background: var(--attck-card); border: 1px solid var(--attck-border); border-radius: 10px; padding: 1.25rem; text-decoration: none; transition: border-color 0.2s; display: block;">
+      <div style="font-size: 0.7rem; color: var(--attck-red); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem;">Products</div>
+      <div style="font-size: 0.9rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.3rem;">Detection Pack Store</div>
+      <div style="font-size: 0.78rem; color: #64748b;">Production Sigma rule packs for Splunk, Sentinel, Elastic, and Chronicle — tuned for enterprise.</div>
+    </a>
+    <a href="/enterprise.html" style="background: var(--attck-card); border: 1px solid var(--attck-border); border-radius: 10px; padding: 1.25rem; text-decoration: none; transition: border-color 0.2s; display: block;">
+      <div style="font-size: 0.7rem; color: var(--attck-red); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem;">Enterprise</div>
+      <div style="font-size: 0.9rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.3rem;">SOC Consulting Services</div>
+      <div style="font-size: 0.78rem; color: #64748b;">Detection engineering, threat hunting, SIEM deployment, and MSSP partnership programs.</div>
+    </a>
+  </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  <div class="footer-links">
+    <a href="/">Home</a>
+    <a href="/intel.html">Threat Intel</a>
+    <a href="/owasp-llm-top10.html">OWASP LLM Top 10</a>
+    <a href="/mitre-attack-detection.html">ATT&amp;CK Detection</a>
+    <a href="/products.html">Detection Packs</a>
+    <a href="/enterprise.html">Enterprise</a>
+    <a href="/newsletter.html">Newsletter</a>
+    <a href="https://intel.cyberdudebivash.com">Sentinel APEX</a>
+  </div>
+  <div class="footer-copy">© 2026 CYBERDUDEBIVASH® SENTINEL APEX — Enterprise Cybersecurity Detection Engineering</div>
+</footer>
+
+</body>
+</html>
