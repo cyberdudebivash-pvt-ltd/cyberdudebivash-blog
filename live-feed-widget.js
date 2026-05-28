@@ -172,6 +172,9 @@
     var threat = (item.threatLabel&&item.threatColor)
       ? {type:item.threatType||'CVE', label:item.threatLabel, color:item.threatColor}
       : classify(desc);
+    // FIX: resolve post URL here so buildCard always has a valid href
+    // Priority: item.link (absolute URL) > /posts/{slug}.html > null (shows no button)
+    var postLink = item.link || (item.slug ? '/posts/'+item.slug+'.html' : null) || null;
     return {
       id:       item.id||item.cveID||'—',
       desc:     desc,
@@ -183,7 +186,9 @@
       exploited:!!item.exploited,
       dueDate:  item.dueDate||null,
       refs:     item.refs||[],
-      threat:   threat
+      threat:   threat,
+      slug:     item.slug||null,
+      link:     postLink
     };
   }
 
