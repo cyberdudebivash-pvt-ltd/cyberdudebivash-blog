@@ -47,8 +47,28 @@ jobs:
           echo "⚡ SENTINEL APEX v5.0 — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           echo "27 Sources | Tiered Parallel | Stream-Like | Lock Mechanism | Health Mon."
           node --version
-          test -f fetch-live-intel.js || (echo "❌ fetch-live-intel.js missing" && exit 1)
-          # Remove stale lock if older than 8 minutes
+
+          # ── CRITICAL: File existence checks ──────────────────────────────
+          test -f fetch-live-intel.js || (echo "❌ FATAL: fetch-live-intel.js missing" && exit 1)
+
+          # ── CRITICAL: Node.js syntax validation (fail-fast gate) ─────────
+          echo "🔍 Syntax-checking fetch-live-intel.js..."
+          if ! node --check fetch-live-intel.js 2>&1; then
+            echo "❌ FATAL: fetch-live-intel.js has a syntax error — aborting pipeline"
+            echo "::error title=Engine Syntax Error::fetch-live-intel.js failed node --check. File may be truncated or corrupted. Restore from last good commit."
+            exit 1
+          fi
+          FILE_LINES=$(wc -l < fetch-live-intel.js)
+          FILE_BYTES=$(wc -c < fetch-live-intel.js)
+          echo "✅ Syntax OK — ${FILE_LINES} lines, ${FILE_BYTES} bytes"
+
+          # ── Minimum size guard (< 1000 lines = definitely truncated) ─────
+          if [ "$FILE_LINES" -lt 1000 ]; then
+            echo "❌ FATAL: fetch-live-intel.js is suspiciously small (${FILE_LINES} lines)"
+            exit 1
+          fi
+
+          # ── Stale lock cleanup ────────────────────────────────────────────
           if [ -f pipeline.lock ]; then
             LOCK_AGE=$(( $(date +%s) - $(stat -c %Y pipeline.lock 2>/dev/null || echo 0) ))
             if [ "$LOCK_AGE" -gt 480 ]; then
@@ -58,7 +78,7 @@ jobs:
               echo "ℹ️ Lock file present (age: ${LOCK_AGE}s) — pipeline self-manages"
             fi
           fi
-          echo "✅ Engine verified"
+          echo "✅ Engine verified — ready to run"
 
       - name: "Initialize intel-state.json"
         run: |
@@ -85,16 +105,18 @@ jobs:
           OTX_API_KEY: ${{ secrets.OTX_API_KEY }}
           DEBUG: ${{ github.event.inputs.debug }}
         run: |
+          echo "🚀 Starting SENTINEL APEX v5.0 pipeline at $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           timeout 290 node fetch-live-intel.js
           EXIT_CODE=$?
+          rm -f pipeline.lock 2>/dev/null || true
           if [ $EXIT_CODE -eq 0 ]; then
-            echo "✅ Pipeline completed successfully"
+            echo "✅ Pipeline completed successfully (exit 0)"
           elif [ $EXIT_CODE -eq 143 ] || [ $EXIT_CODE -eq 124 ]; then
-            echo "⚠️ Pipeline timed out — partial results may have been written"
-            rm -f pipeline.lock
+            echo "⚠️ Pipeline timed out after 290s — partial results written atomically (safeWriteSync active)"
+            echo "ℹ️ Timeout exit is non-fatal — continuing to detect changes and commit"
           else
-            echo "❌ Pipeline exited with code $EXIT_CODE"
-            rm -f pipeline.lock
+            echo "::error title=Pipeline Runtime Error::Pipeline exited with code ${EXIT_CODE}. Check Node.js output above for root cause."
+            rm -f pipeline.lock 2>/dev/null || true
             exit $EXIT_CODE
           fi
 

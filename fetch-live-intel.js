@@ -99,6 +99,7 @@ const isoNow = () => new Date().toISOString().slice(0, 10);
 const isoNowFull = () => new Date().toISOString();
 const md5 = s => crypto.createHash('md5').update(String(s)).digest('hex').slice(0, 16);
 
+
 // ── ATOMIC WRITE — write to .tmp then rename to prevent truncation on SIGKILL ──
 function safeWriteSync(filePath, data, encoding = 'utf8') {
   const tmp = filePath + '.tmp';
@@ -1837,4 +1838,20 @@ async function main() {
       updateSitemap(newSlugs);
     }
 
-    saveState
+    saveState(state);
+    validateAndReport(enrichedItems, generatedCards, state, T0, sourceStats);
+
+  } catch(fatalErr) {
+    err(`FATAL: ${fatalErr.message}\n${fatalErr.stack||''}`);
+    safeRelease();
+    process.exit(1);
+  }
+
+  safeRelease();
+}
+
+main().catch(e => {
+  err(`UNHANDLED: ${e.message}\n${e.stack||''}`);
+  releaseLock();
+  process.exit(1);
+});
