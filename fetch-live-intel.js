@@ -37,12 +37,13 @@ const CFG = {
 
   // ── Timing & limits ────────────────────────────────────────────────
   nvdLookbackHours:   72,      // fallback when no prior source state
+  nvdMinLookbackHours: 4,     // v5.1: minimum lookback floor — prevents 5-min window starvation
   kevLookbackDays:    7,
   maxNewPostsPerRun:  15,      // v5: increased
   minCVSS:            7.0,
   minPriorityScore:   35,      // v5: lower bar = more signal captured
-  sourceTimeoutMs:    8000,    // per-source hard timeout (Phase 2)
-  requestTimeoutMs:   12000,
+  sourceTimeoutMs:    20000,   // v5.1: increased from 8000 — NVD API needs more time
+  requestTimeoutMs:   18000,   // v5.1: increased from 12000
   maxRssItems:        12,
   dedupTtlDays:       30,
   liveRollingWindow:  150,     // v5: increased window
@@ -336,18 +337,28 @@ function markPublished(state, item) {
 async function fetchNVD(state) {
   const end   = new Date();
   const lastFetch = getSourceLastFetch(state, 'nvd');
-  const start = lastFetch ? new Date(lastFetch) : new Date(Date.now() - CFG.nvdLookbackHours * 3600000);
+  // v5.1: Enforce minimum 4-hour lookback floor.
+  // Without this, the 5-min cron window starves NVD (CVEs aren't published every 5 min).
+  const minLookbackMs = CFG.nvdMinLookbackHours * 3600000;
+  const minStart = new Date(Date.now() - minLookbackMs);
+  const rawStart = lastFetch ? new Date(lastFetch) : new Date(Date.now() - CFG.nvdLookbackHours * 3600000);
+  // Use the EARLIER of rawStart and minStart to ensure we cover at least nvdMinLookbackHours
+  const start = rawStart < minStart ? rawStart : minStart;
   const fmt   = d => d.toISOString().slice(0,23);
-  const apiUrl     = `${CFG.nvdApi}?pubStartDate=${encodeURIComponent(fmt(start))}&pubEndDate=${encodeURIComponent(fmt(end))}&cvssV3SeverityExact=CRITICAL&resultsPerPage=20&noRejected`;
-  const apiUrlHigh = `${CFG.nvdApi}?lastModStartDate=${encodeURIComponent(fmt(start))}&lastModEndDate=${encodeURIComponent(fmt(end))}&cvssV3SeverityExact=CRITICAL&resultsPerPage=15&noRejected`;
-  log(`NVD: fetching CRITICAL CVEs since ${start.toISOString()}...`);
+  // Fetch CRITICAL and HIGH severity CVEs for broader signal coverage
+  const apiUrl      = `${CFG.nvdApi}?pubStartDate=${encodeURIComponent(fmt(start))}&pubEndDate=${encodeURIComponent(fmt(end))}&cvssV3SeverityExact=CRITICAL&resultsPerPage=20&noRejected`;
+  const apiUrlHigh  = `${CFG.nvdApi}?pubStartDate=${encodeURIComponent(fmt(start))}&pubEndDate=${encodeURIComponent(fmt(end))}&cvssV3SeverityExact=HIGH&resultsPerPage=15&noRejected`;
+  const apiUrlMod   = `${CFG.nvdApi}?lastModStartDate=${encodeURIComponent(fmt(start))}&lastModEndDate=${encodeURIComponent(fmt(end))}&cvssV3SeverityExact=CRITICAL&resultsPerPage=15&noRejected`;
+  log(`NVD: fetching CRITICAL+HIGH CVEs since ${start.toISOString()} (min floor: ${CFG.nvdMinLookbackHours}h)...`);
   try {
     await sleep(600);
-    let raw;
-    try { raw = await fetchWithRetry(apiUrl, {}, 2); }
-    catch(e1) { warn(`NVD pubDate failed (${e1.message}), trying lastMod...`); raw = await fetchWithRetry(apiUrlHigh, {}, 2); }
-    const data = JSON.parse(raw);
-    const items = (data.vulnerabilities||[]).map(v => {
+    // v5.1: Fetch CRITICAL, HIGH, and recently-modified CRITICAL CVEs — merge and deduplicate
+    const parseVulns = (raw) => {
+      try {
+        return (JSON.parse(raw).vulnerabilities||[]);
+      } catch(_) { return []; }
+    };
+    const mapVuln = (v) => {
       const cve = v.cve, id = cve.id;
       const desc   = (cve.descriptions||[]).find(d=>d.lang==='en')?.value||'';
       const met    = cve.metrics?.cvssMetricV31?.[0]||cve.metrics?.cvssMetricV30?.[0]||null;
@@ -360,12 +371,27 @@ async function fetchNVD(state) {
       const vendor  = (cpe.match(/cpe:2\.3:[aoh]:([^:]+):/)||[])[1]?.replace(/_/g,' ')||'Unknown Vendor';
       const product = (cpe.match(/cpe:2\.3:[aoh]:[^:]+:([^:]+):/)||[])[1]?.replace(/_/g,' ')||desc.split(/\s+/).slice(0,3).join(' ')||'Unknown Product';
       const iocs = extractIOCs(desc, []);
-      return { source:'nvd', type:'CVE_REPORT', id, title:`${id} — ${vendor} ${product} CVSS ${cvss} Critical Vulnerability`,
+      const sevLabel = cvss >= 9.0 ? 'Critical Vulnerability' : 'High Severity Vulnerability';
+      return { source:'nvd', type:'CVE_REPORT', id, title:`${id} — ${vendor} ${product} CVSS ${cvss} ${sevLabel}`,
         desc, cvss, vector, cweId, refs, pubDate, vendor, product, exploited:false, cisaKev:false, ransomware:false,
         iocs, sourceCount:1, daysOld: Math.floor((Date.now()-new Date(pubDate).getTime())/86400000) };
-    }).filter(i => i.cvss >= CFG.minCVSS);
+    };
+    // Parallel fetches for CRITICAL pub, HIGH pub, CRITICAL lastMod
+    const [rawCrit, rawHighPub, rawMod] = await Promise.allSettled([
+      fetchWithRetry(apiUrl, {}, 2),
+      fetchWithRetry(apiUrlHigh, {}, 2),
+      fetchWithRetry(apiUrlMod, {}, 2),
+    ]);
+    const seenIds = new Set();
+    const allVulns = [
+      ...(rawCrit.status==='fulfilled' ? parseVulns(rawCrit.value) : []),
+      ...(rawHighPub.status==='fulfilled' ? parseVulns(rawHighPub.value) : []),
+      ...(rawMod.status==='fulfilled' ? parseVulns(rawMod.value) : []),
+    ].filter(v => { const id = v?.cve?.id; if (!id||seenIds.has(id)) return false; seenIds.add(id); return true; });
+    const items = allVulns.map(mapVuln).filter(i => i.cvss >= CFG.minCVSS);
     setSourceLastFetch(state, 'nvd', Date.now());
-    log(`NVD: ${items.length} items (since ${start.toISOString().slice(0,10)}).`); return items;
+    log(`NVD: ${items.length} items CRITICAL+HIGH (since ${start.toISOString().slice(0,10)}, ${allVulns.length} raw).`);
+    return items;
   } catch(e) { warn(`NVD failed: ${e.message}`); return []; }
 }
 
@@ -1075,6 +1101,7 @@ function generatePostHTML(item) {
 <link rel="alternate" type="application/rss+xml" title="CYBERDUDEBIVASH SENTINEL APEX" href="${CFG.baseUrl}/rss.xml">
 <title>${escHtml(metaTitle)}</title>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"${escHtml(item.title)}","description":"${escHtml(metaDesc)}","datePublished":"${today}","dateModified":"${today}","author":{"@type":"Organization","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"${CFG.baseUrl}"},"publisher":{"@type":"Organization","name":"CYBERDUDEBIVASH"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CYBERDUDEBIVASH SENTINEL APEX","item":"${CFG.baseUrl}/"},{"@type":"ListItem","position":2,"name":"Intelligence Reports","item":"${CFG.baseUrl}/"},{"@type":"ListItem","position":3,"name":"${escHtml(item.title.slice(0,120))}","item":"${CFG.baseUrl}/posts/${slug}.html"}]}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-yellow:#ffe000;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
