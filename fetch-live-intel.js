@@ -1562,6 +1562,84 @@ function genPlaybook(item) {
 }
 
 // ── PHASE 6+7: ADVANCED HTML REPORT GENERATOR ──────────────────────────
+// ── PHASE 7: QUALITY GATE — PUBLICATION VALIDATOR ───────────────────────
+// Rejects any intelligence item that fails minimum quality requirements.
+// Returns { pass: bool, reasons: string[] }
+function qualityGate(item) {
+  const reasons = [];
+  const text = (item.title||'') + ' ' + (item.desc||'');
+
+  // Required fields
+  if (!item.id)                            reasons.push('Missing: id');
+  if (!item.title || item.title.length<10) reasons.push('Missing/too-short: title');
+  if (!item.desc  || item.desc.length<20)  reasons.push('Missing/too-short: description');
+  if (!item.source)                        reasons.push('Missing: source');
+  if (!item.type || item.type==='NEWS_REPORT') {
+    // Allow NEWS_REPORT only if score is high enough
+    if ((item.priority||0) < 30) reasons.push('NEWS_REPORT with low priority — insufficient intelligence value');
+  }
+
+  // Severity must be assignable
+  const hasCvss   = typeof item.cvss === 'number' && item.cvss > 0;
+  const hasTl     = !!item.threatLevel;
+  if (!hasCvss && !hasTl) reasons.push('Missing: cvss or threatLevel');
+
+  // Must have at least one reference or link
+  const refs = item.refs || item.references || [];
+  const link = item.link;
+  if (refs.length === 0 && !link) reasons.push('Missing: references / link');
+
+  // Intelligence score must be calculable
+  if (typeof item.priority !== 'number') reasons.push('Missing: priority score');
+
+  // Classification must be meaningful
+  const validTypes = ['CVE_REPORT','ZERO_DAY','RANSOMWARE','MALWARE_REPORT','DATA_BREACH',
+    'THREAT_ACTOR','AI_SECURITY','DARK_WEB','SUPPLY_CHAIN','CLOUD_SECURITY',
+    'CRITICAL_INFRASTRUCTURE','SOCIAL_ENGINEERING','DETECTION_ENGINEERING',
+    'INCIDENT','ADVISORY','NEWS_REPORT'];
+  if (item.type && !validTypes.includes(item.type)) reasons.push(`Unknown type: ${item.type}`);
+
+  // Reject obvious duplicates / placeholder content
+  if (/^test|^placeholder|^sample/i.test(item.title||'')) reasons.push('Placeholder/test content rejected');
+
+  return { pass: reasons.length === 0, reasons };
+}
+
+// ── PHASE 9: SENTINEL APEX INTEGRATION ENRICHER ──────────────────────────
+// Stamps every publishable item with Sentinel APEX metadata for cross-platform consumption.
+function sentinelApexStamp(item) {
+  const text = (item.title||'') + ' ' + (item.desc||'');
+  return {
+    ...item,
+    // Sentinel APEX routing tags
+    sentinel_apex: {
+      published_at:      new Date().toISOString(),
+      platform_version:  'v5.3',
+      content_hubs: [
+        ...(item.type === 'AI_SECURITY' ? ['ai-security-hub'] : []),
+        ...(item.type === 'MALWARE_REPORT' || item.type === 'RANSOMWARE' ? ['malware-intelligence'] : []),
+        ...(item.type === 'DARK_WEB' ? ['dark-web-intelligence'] : []),
+        ...(['CVE_REPORT','ZERO_DAY','ADVISORY'].includes(item.type) ? ['vulnerability-intelligence'] : []),
+        ...(['THREAT_ACTOR','SUPPLY_CHAIN'].includes(item.type) ? ['threat-actor-tracking'] : []),
+        'threat-intelligence-hub',  // every item goes to main hub
+      ],
+      detection_ready: ['CVE_REPORT','ZERO_DAY','MALWARE_REPORT','RANSOMWARE','ADVISORY'].includes(item.type),
+      api_eligible:    (item.priority||0) >= 40,
+      mssp_relevant:   (item.priority||0) >= 50 || item.cisaKev || item.exploited,
+    },
+    // Ensure universal schema fields are present
+    category:           item.category || item.type,
+    intelligence_score: item.priority || 0,
+    confidence:         item.confidence || 0.55,
+    affected_industries: item.affected_industries || [],
+    ai_security_tags:   item.ai_security_tags || [],
+    darkweb_tags:       item.darkweb_tags || [],
+    threat_actor:       item.threat_actor || [],
+    first_seen:         item.first_seen || item.pubDate || new Date().toISOString().slice(0,10),
+    updated_at:         new Date().toISOString(),
+  };
+}
+
 function generatePostHTML(item) {
   const mitre = getMitre(item);
   const execSummary = genExecutiveSummary(item);
@@ -2126,6 +2204,16 @@ function writeLiveIntel(allItems, state) {
 
 // ── VALIDATION REPORT ─────────────────────────────────────────────────
 function validateAndReport(allItems, generatedCards, state, T0, sourceStats) {
+  // ── PHASE 8: PUBLICATION ENGINE STATS ────────────────────────────────
+  const apexItems = allItems.filter(i=>i.sentinel_apex?.api_eligible);
+  const hubMap = {};
+  allItems.forEach(i=>(i.sentinel_apex?.content_hubs||[]).forEach(h=>{hubMap[h]=(hubMap[h]||0)+1;}));
+  log('\n── PHASE 8+9: SENTINEL APEX PUBLICATION REPORT ─────────────────');
+  log(`  API-eligible items: ${apexItems.length}`);
+  log(`  MSSP-relevant items: ${allItems.filter(i=>i.sentinel_apex?.mssp_relevant).length}`);
+  log(`  Detection-ready items: ${allItems.filter(i=>i.sentinel_apex?.detection_ready).length}`);
+  Object.entries(hubMap).sort((a,b)=>b[1]-a[1]).forEach(([hub,cnt])=>log(`  ${hub}: ${cnt} items`));
+  log('  ──────────────────────────────────────────────────────────────');
   const sourceCount  = allItems.reduce((acc,i) => { (i._sources||[i.source]).forEach(s=>acc.add(s)); return acc; }, new Set()).size;
   const critCount    = allItems.filter(i=>i.threatLevel==='CRITICAL').length;
   const highCount    = allItems.filter(i=>i.threatLevel==='HIGH').length;
@@ -2308,6 +2396,20 @@ async function main() {
       warn(`Enrichment non-fatal: ${enrichErr.message}. Continuing unenriched.`);
     }
 
+    // ── PHASE 3: Normalize to universal schema ────────────────────────
+    enrichedItems = enrichedItems.map(i => {
+      try { return normalizeToUniversalSchema(i); } catch(_) { return i; }
+    });
+    log(`  Universal schema normalization: ${enrichedItems.length} items normalized`);
+
+    // ── PHASE 9: Sentinel APEX stamps ────────────────────────────────
+    enrichedItems = enrichedItems.map(i => {
+      try { return sentinelApexStamp(i); } catch(_) { return i; }
+    });
+    const apexEligible = enrichedItems.filter(i=>i.sentinel_apex?.api_eligible).length;
+    const msspRelevant = enrichedItems.filter(i=>i.sentinel_apex?.mssp_relevant).length;
+    log(`  Sentinel APEX: ${apexEligible} API-eligible, ${msspRelevant} MSSP-relevant items`);
+
     // ── PHASE 9: PERFORMANCE — per-source new count ──────────────────
     const totalFetched  = Object.values(sourceStats).reduce((s,v)=>s+v.fetched,0);
     const newAfterDedup = enrichedItems.filter(i=>i.id&&!isPublished(state,i.id)).length;
@@ -2350,8 +2452,18 @@ async function main() {
     const toPublish     = newItems.slice(0, CFG.maxNewPostsPerRun);
     const generatedCards= [], rssItems = [], newSlugs = [];
 
+    let qualityPassed = 0, qualityRejected = 0;
     for (const item of toPublish) {
       try {
+        // ── PHASE 7: QUALITY GATE ─────────────────────────────────────
+        const qg = qualityGate(item);
+        if (!qg.pass) {
+          warn(`QUALITY GATE REJECTED: ${item.id} — ${qg.reasons.join('; ')}`);
+          qualityRejected++;
+          continue;
+        }
+        qualityPassed++;
+
         const { slug, title, html } = generatePostHTML(item);
         const filePath = path.join(CFG.postsDir, `${slug}.html`);
         if (fs.existsSync(filePath)) {
@@ -2385,6 +2497,7 @@ async function main() {
       updateSitemap(newSlugs);
     }
 
+    log(`  Quality gate: ${qualityPassed} passed, ${qualityRejected} rejected`);
     saveState(state);
     validateAndReport(enrichedItems, generatedCards, state, T0, sourceStats);
 
