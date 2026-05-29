@@ -494,14 +494,156 @@ async function fetchGitHubAdvisories(state) {
 
 // ── RSS NORMALIZER ─────────────────────────────────────────────────────
 function classifyNews(text) {
-  if (/zero.?day|0.?day|unpatched|no patch available/i.test(text))        return 'ZERO_DAY';
-  if (/ransomware|ransom demand|encryption attack|lockbit|qilin|akira|blackcat/i.test(text)) return 'RANSOMWARE';
-  if (/data breach|breach|leaked|exposed data|records stolen|database dump/i.test(text)) return 'DATA_BREACH';
-  if (/apt\d|nation.state|lazarus|volt typhoon|sandworm|cozy bear|fancy bear|apt group|state.sponsored/i.test(text)) return 'THREAT_ACTOR';
-  if (/malware|trojan|\brat\b|backdoor|botnet|stealer|infostealer|loader|dropper/i.test(text)) return 'MALWARE_REPORT';
-  if (/ai security|llm|prompt injection|artificial intelligence.*security|ml.*attack|gpt.*hack|deepfake/i.test(text)) return 'AI_SECURITY';
-  if (/patch tuesday|security update|advisory|cve-\d/i.test(text))        return 'CVE_REPORT';
+  const t = String(text||'').toLowerCase();
+  // Priority order: most specific first
+  if (/zero.?day|0.?day|unpatched exploit|no patch available|n-day exploit/i.test(t))          return 'ZERO_DAY';
+  if (/ransomware|ransom demand|encryption attack|lockbit|qilin|akira|blackcat|ransomhub|cl0p|black basta|play ransomware/i.test(t)) return 'RANSOMWARE';
+  if (/nation.state|state.sponsored|apt\s?\d|lazarus|volt typhoon|sandworm|cozy bear|fancy bear|salt typhoon|scatter spider|kimsuky|charming kitten|muddywater|turla/i.test(t)) return 'THREAT_ACTOR';
+  if (/supply chain|solarwinds|xz utils|npm package|pypi package|open.?source.*attack|dependency confusion|typosquat/i.test(t)) return 'SUPPLY_CHAIN';
+  if (/prompt injection|jailbreak|llm|large language model|gpt.*(hack|vuln|attack)|chatgpt.*security|ai.*attack|model poisoning|adversarial ml|deepfake.*attack|ai governance|agentic ai.*risk|owasp llm|ai red team/i.test(t)) return 'AI_SECURITY';
+  if (/dark web|darkweb|tor network|onion.*market|leak.*site|ransomware.*victim|data.*for sale|stolen.*credentials|underground forum|initial access broker|malware.*market/i.test(t)) return 'DARK_WEB';
+  if (/cloud.*breach|aws.*exploit|azure.*vuln|gcp.*attack|s3.*exposed|kubernetes.*attack|container.*escape|serverless.*attack|iam.*misconfigur|cloud misconfigur/i.test(t)) return 'CLOUD_SECURITY';
+  if (/data breach|breach notification|records stolen|database dump|leaked|exposed data|personal.*data.*exposed|pii.*exposed|hipaa.*breach|gdpr.*breach/i.test(t)) return 'DATA_BREACH';
+  if (/malware|trojan|\brat\b|backdoor|botnet|stealer|infostealer|loader|dropper|rootkit|spyware|keylogger|worm|virus/i.test(t)) return 'MALWARE_REPORT';
+  if (/sigma rule|yara rule|detection engineering|hunting query|spl query|kql detection|siem rule|edr detection/i.test(t)) return 'DETECTION_ENGINEERING';
+  if (/critical infrastructure|scada|ics|ot security|industrial control|power grid|water treatment|hospital.*attack|healthcare.*breach|energy sector/i.test(t)) return 'CRITICAL_INFRASTRUCTURE';
+  if (/phishing|spear.*phishing|business email compromise|bec|vishing|smishing|social engineering|credential.*harvest/i.test(t)) return 'SOCIAL_ENGINEERING';
+  if (/patch tuesday|security update|cve-\d|advisory|vulnerability.*disclosed|security.*bulletin/i.test(t)) return 'CVE_REPORT';
+  if (/incident response|security incident|breach response|data exposure|security event|security alert/i.test(t)) return 'INCIDENT';
   return 'NEWS_REPORT';
+}
+
+// ── PHASE 4 v5.3: SUBCATEGORY CLASSIFIER ─────────────────────────────────
+function classifySubcategory(type, text) {
+  const t = String(text||'').toLowerCase();
+  switch(type) {
+    case 'CVE_REPORT': case 'ZERO_DAY':
+      if (/remote code execution|rce/i.test(t))      return 'RCE';
+      if (/sql injection|sqli/i.test(t))             return 'SQL_INJECTION';
+      if (/privilege escalation|eop|lpe/i.test(t))  return 'PRIVILEGE_ESCALATION';
+      if (/auth bypass|unauthenticated/i.test(t))    return 'AUTH_BYPASS';
+      if (/buffer overflow|heap overflow/i.test(t))  return 'MEMORY_CORRUPTION';
+      if (/xss|cross.site script/i.test(t))          return 'XSS';
+      if (/ssrf/i.test(t))                           return 'SSRF';
+      if (/path traversal|directory traversal/i.test(t)) return 'PATH_TRAVERSAL';
+      if (/deserialization/i.test(t))                return 'DESERIALIZATION';
+      if (/command injection/i.test(t))              return 'COMMAND_INJECTION';
+      return 'VULNERABILITY';
+    case 'RANSOMWARE':
+      if (/lockbit/i.test(t))    return 'LOCKBIT';
+      if (/akira/i.test(t))      return 'AKIRA';
+      if (/qilin/i.test(t))      return 'QILIN';
+      if (/blackcat|alphv/i.test(t)) return 'BLACKCAT';
+      if (/ransomhub/i.test(t))  return 'RANSOMHUB';
+      if (/black basta/i.test(t)) return 'BLACK_BASTA';
+      if (/cl0p/i.test(t))       return 'CLOP';
+      return 'RANSOMWARE_GROUP';
+    case 'AI_SECURITY':
+      if (/prompt injection/i.test(t))  return 'PROMPT_INJECTION';
+      if (/model poisoning|data poisoning/i.test(t)) return 'MODEL_POISONING';
+      if (/jailbreak/i.test(t))         return 'JAILBREAK';
+      if (/llm|large language/i.test(t)) return 'LLM_VULNERABILITY';
+      if (/deepfake/i.test(t))          return 'DEEPFAKE';
+      if (/agentic|ai agent/i.test(t))  return 'AGENTIC_AI_RISK';
+      if (/adversarial/i.test(t))       return 'ADVERSARIAL_ML';
+      return 'AI_VULNERABILITY';
+    case 'THREAT_ACTOR':
+      if (/lazarus|north korea|dprk/i.test(t))       return 'NORTH_KOREA';
+      if (/volt typhoon|salt typhoon|china|prc/i.test(t)) return 'CHINA_NEXUS';
+      if (/sandworm|cozy bear|fancy bear|russia|apt28|apt29/i.test(t)) return 'RUSSIA_NEXUS';
+      if (/iran|charming kitten|muddywater/i.test(t)) return 'IRAN_NEXUS';
+      if (/scatter spider/i.test(t))                 return 'CYBERCRIME';
+      return 'APT';
+    case 'MALWARE_REPORT':
+      if (/ransomware/i.test(t))    return 'RANSOMWARE_PAYLOAD';
+      if (/stealer|infostealer/i.test(t)) return 'INFOSTEALER';
+      if (/botnet/i.test(t))        return 'BOTNET';
+      if (/loader|dropper/i.test(t)) return 'LOADER';
+      if (/backdoor/i.test(t))      return 'BACKDOOR';
+      if (/rootkit/i.test(t))       return 'ROOTKIT';
+      return 'MALWARE';
+    default: return '';
+  }
+}
+
+// ── PHASE 3 v5.3: UNIVERSAL INTELLIGENCE SCHEMA NORMALIZER ───────────────
+function normalizeToUniversalSchema(item) {
+  const text = (item.title||'') + ' ' + (item.desc||'');
+  const type = item.type || classifyNews(text);
+  const subcategory = item.subcategory || classifySubcategory(type, text);
+
+  // Affected industries
+  const affectedIndustries = [];
+  if (/health|hospital|medical|hipaa|pharma/i.test(text))            affectedIndustries.push('Healthcare');
+  if (/finance|bank|fintech|payment|swift|credit card/i.test(text)) affectedIndustries.push('Financial Services');
+  if (/energy|power grid|oil|gas|utility|water/i.test(text))        affectedIndustries.push('Energy & Utilities');
+  if (/government|federal|agency|dod|nsa|fbi|dhs/i.test(text))     affectedIndustries.push('Government');
+  if (/education|university|school|academic/i.test(text))           affectedIndustries.push('Education');
+  if (/retail|e.commerce|shopify|magecart/i.test(text))             affectedIndustries.push('Retail');
+  if (/telecom|isp|carrier|5g|network provider/i.test(text))        affectedIndustries.push('Telecommunications');
+  if (/manufacturing|industrial|factory|ot|scada/i.test(text))      affectedIndustries.push('Manufacturing');
+  if (/technology|software|saas|cloud|tech company/i.test(text))    affectedIndustries.push('Technology');
+  if (/defense|military|contractor|weapons/i.test(text))            affectedIndustries.push('Defense');
+
+  // AI security tags
+  const aiSecurityTags = [];
+  if (/prompt injection/i.test(text))         aiSecurityTags.push('prompt-injection');
+  if (/llm|large language model/i.test(text)) aiSecurityTags.push('llm');
+  if (/jailbreak/i.test(text))               aiSecurityTags.push('jailbreak');
+  if (/model poisoning/i.test(text))         aiSecurityTags.push('model-poisoning');
+  if (/deepfake/i.test(text))               aiSecurityTags.push('deepfake');
+  if (/owasp llm/i.test(text))              aiSecurityTags.push('owasp-llm');
+  if (/agentic ai|ai agent/i.test(text))    aiSecurityTags.push('agentic-ai');
+  if (/adversarial ml/i.test(text))         aiSecurityTags.push('adversarial-ml');
+  if (/ai governance/i.test(text))          aiSecurityTags.push('ai-governance');
+
+  // Dark web tags
+  const darkwebTags = [];
+  if (/dark web|darkweb/i.test(text))        darkwebTags.push('dark-web');
+  if (/leak site/i.test(text))              darkwebTags.push('leak-site');
+  if (/stolen credentials/i.test(text))     darkwebTags.push('credentials');
+  if (/initial access broker/i.test(text))  darkwebTags.push('iab');
+  if (/ransomware.*victim|victim.*leak/i.test(text)) darkwebTags.push('ransomware-leak');
+
+  // Threat actor extraction
+  const actorMap = {
+    'Lazarus Group': /lazarus|hidden cobra|bluenoroff/i,
+    'Volt Typhoon': /volt typhoon/i,
+    'Salt Typhoon': /salt typhoon/i,
+    'Sandworm': /sandworm/i,
+    'Cozy Bear': /cozy bear|apt29/i,
+    'Fancy Bear': /fancy bear|apt28/i,
+    'Scatter Spider': /scatter spider|octo tempest/i,
+    'Charming Kitten': /charming kitten|apt35/i,
+    'LockBit': /lockbit/i,
+    'Akira': /\bakira\b/i,
+    'RansomHub': /ransomhub/i,
+    'Black Basta': /black basta/i,
+    'Cl0p': /\bcl0p\b|\bclop\b/i,
+  };
+  const detectedActors = Object.entries(actorMap)
+    .filter(([, re]) => re.test(text))
+    .map(([name]) => name);
+
+  // Confidence scoring
+  const sourceTrustMap = { nvd:1.0, cisa_kev:1.0, cisa_alerts:0.95, github_advisories:0.90, msrc:0.90, cisco_psirt:0.88, ncsc_uk:0.92, exploitdb:0.82, packetstorm:0.80, fulldisclosure:0.78, talos:0.85, unit42:0.85, crowdstrike:0.85, sentinelone:0.85, rapid7:0.82, googleprojectzero:0.90, urlhaus:0.80, threatfox:0.80, malwarebazaar:0.82, ransomwatch:0.78, otx:0.80, bleepingcomputer:0.72, thehackernews:0.70, krebsonsecurity:0.70, securityweek:0.70, darkreading:0.68, reddit_netsec:0.42, ai_incident_db:0.75 };
+  const baseConf = sourceTrustMap[item.source] || 0.55;
+  const corrBonus = Math.min(0.15, ((item.sourceCount||1) - 1) * 0.05);
+  const kevBonus  = item.cisaKev ? 0.10 : 0;
+  const confidence = Math.min(1.0, Math.round((baseConf + corrBonus + kevBonus) * 100) / 100);
+
+  return {
+    ...item,
+    category:             type,
+    subcategory:          subcategory || null,
+    confidence:           confidence,
+    affected_industries:  item.affected_industries || affectedIndustries,
+    affected_organizations: item.affected_organizations || [],
+    threat_actor:         detectedActors.length ? detectedActors : (item.threatActor ? [item.threatActor] : []),
+    ai_security_tags:     aiSecurityTags,
+    darkweb_tags:         darkwebTags,
+    intelligence_score:   item.priority || 0,
+  };
 }
 
 function rssToIntel(item, source) {
@@ -767,6 +909,196 @@ async function fetchRecordedFuture(state) {
   return fetchRSS(CFG.recordedFutureRss, 'recorded_future', 8, state);
 }
 
+// ── PHASE 2B: EXPANDED INTELLIGENCE SOURCES v5.3 ─────────────────────────
+
+async function fetchMalwareBazaar() {
+  return new Promise(resolve => {
+    const body = JSON.stringify({ query:'get_recent', selector:'time', limit:25 });
+    const req = https.request({ hostname:'mb-api.abuse.ch', path:'/api/v1/', method:'POST',
+      headers:{'Content-Type':'application/json','Content-Length':Buffer.byteLength(body),'User-Agent':'CYBERDUDEBIVASH-SENTINEL/5.3'}
+    }, res => {
+      let d=''; res.on('data',c=>d+=c); res.on('end',()=>{
+        try {
+          const j = JSON.parse(d);
+          if (j.query_status !== 'ok' || !Array.isArray(j.data)) return resolve([]);
+          const items = j.data.slice(0,15).map(s => {
+            const text = `MalwareBazaar Sample: ${s.tags?.join(', ')||'malware'} — ${s.file_name||'unknown'} SHA256: ${s.sha256_hash}`;
+            return {
+              source:'malwarebazaar', type:'MALWARE_REPORT',
+              id:`MALWAREBAZAAR-${s.sha256_hash?.slice(0,16)||md5(s.file_name||Math.random().toString())}`,
+              title:`Malware Sample: ${s.tags?.join(' / ')||'Unknown Malware'} (${s.file_type||'binary'})`,
+              desc:text, cvss:7.5, refs:[`https://bazaar.abuse.ch/sample/${s.sha256_hash}/`].filter(Boolean),
+              pubDate:s.first_seen?.slice(0,10)||isoNow(), vendor:'MalwareBazaar', product:'Malware Sample',
+              exploited:true, ransomware:/ransomware|ransom/i.test(text),
+              iocs:[{ type:'sha256', value:s.sha256_hash, confidence_score:0.95, first_seen:s.first_seen||isoNow() }].filter(i=>i.value),
+              sourceCount:1, malwareFamily:s.signature||null, malwareTag:s.tags?.[0]||null,
+            };
+          }).filter(i=>i.id);
+          resolve(items);
+        } catch(e) { resolve([]); }
+      });
+    });
+    req.on('error',()=>resolve([])); req.setTimeout(12000,()=>{req.destroy();resolve([])});
+    req.write(body); req.end();
+  });
+}
+
+async function fetchNCSCUK(state) {
+  const items = await fetchRSS('https://www.ncsc.gov.uk/api/1/services/v1/report-rss-feed.xml', 'ncsc_uk', 10, state);
+  return items.map(i=>({...i, type:classifyNews((i.title||'')+(i.desc||'')), cvss:Math.max(i.cvss||7.0,7.5)}));
+}
+
+async function fetchCiscoPSIRT(state) {
+  return new Promise(resolve => {
+    const opts = {
+      hostname:'sec.cloudapps.cisco.com', path:'/security/advisories/cisco-sa-all.rss',
+      headers:{'User-Agent':'CYBERDUDEBIVASH-SENTINEL/5.3','Accept':'application/rss+xml'},
+    };
+    https.get(opts, res => {
+      let d=''; res.on('data',c=>d+=c); res.on('end',()=>{
+        try {
+          const items = [];
+          const titleRe = /<title>([^<]+)<\/title>/g;
+          const linkRe = /<link>([^<]+)<\/link>/g;
+          const descRe = /<description>([^<]+)<\/description>/g;
+          let tm, lm, dm; const titles=[], links=[], descs=[];
+          while((tm=titleRe.exec(d))!==null) titles.push(tm[1]);
+          while((lm=linkRe.exec(d))!==null) links.push(lm[1]);
+          while((dm=descRe.exec(d))!==null) descs.push(dm[1]);
+          for(let i=1;i<Math.min(titles.length,12);i++) {
+            const text = (titles[i]||'')+(descs[i]||'');
+            const cves = extractCVEs(text);
+            const id = cves[0]||('CISCO-PSIRT-'+md5(titles[i]||'').slice(0,12));
+            if (!id||isSeenId(id, state)) continue;
+            items.push({
+              source:'cisco_psirt', type:'CVE_REPORT', id,
+              title:titles[i]||'Cisco Security Advisory', desc:(descs[i]||'').replace(/&lt;[^>]*&gt;/g,'').slice(0,600),
+              cvss:8.0, refs:[links[i]].filter(Boolean), pubDate:isoNow(),
+              vendor:'Cisco', product:'Cisco Products', exploited:false, cisaKev:false,
+              ransomware:false, cves, sourceCount:1,
+            });
+          }
+          resolve(items);
+        } catch(e) { resolve([]); }
+      });
+    }).on('error',()=>resolve([])).setTimeout(12000,()=>resolve([]));
+  });
+}
+
+async function fetchOTX(state) {
+  if (!CFG.otxApiKey) return [];
+  return new Promise(resolve => {
+    https.get({
+      hostname:'otx.alienvault.com', path:'/api/v1/pulses/subscribed?limit=20',
+      headers:{'X-OTX-API-KEY':CFG.otxApiKey,'User-Agent':'CYBERDUDEBIVASH-SENTINEL/5.3'},
+    }, res => {
+      let d=''; res.on('data',c=>d+=c); res.on('end',()=>{
+        try {
+          const j = JSON.parse(d);
+          if (!j.results) return resolve([]);
+          const items = j.results.slice(0,15).map(p => {
+            const text = (p.name||'')+(p.description||'');
+            const cves = extractCVEs(text);
+            const id = cves[0]||('OTX-'+md5(p.id?.toString()||p.name||'').slice(0,12));
+            if (!id||isSeenId(id, state)) return null;
+            const iocs = (p.indicators||[]).slice(0,5).map(i=>({
+              type:i.type==='IPv4'?'ipv4':i.type==='domain'?'domain':i.type==='URL'?'url':'hash',
+              value:i.indicator, confidence_score:0.78, first_seen:i.created||isoNow(),
+            }));
+            return {
+              source:'otx', type:classifyNews(text), id,
+              title:p.name||'OTX Threat Pulse', desc:(p.description||'').slice(0,600),
+              cvss:cves.length?7.5:6.0, refs:[`https://otx.alienvault.com/pulse/${p.id}`].filter(Boolean),
+              pubDate:p.created?.slice(0,10)||isoNow(), vendor:'AlienVault OTX', product:'Threat Intelligence',
+              exploited:/exploit|in the wild/i.test(text), ransomware:/ransomware/i.test(text),
+              cves, iocs, sourceCount:1,
+            };
+          }).filter(Boolean);
+          resolve(items);
+        } catch(e) { resolve([]); }
+      });
+    }).on('error',()=>resolve([])).setTimeout(12000,()=>resolve([]));
+  });
+}
+
+async function fetchRansomWatch(state) {
+  return new Promise(resolve => {
+    https.get({
+      hostname:'ransomwatch.telemetry.ltd', path:'/v2/RSS.xml',
+      headers:{'User-Agent':'CYBERDUDEBIVASH-SENTINEL/5.3','Accept':'application/rss+xml'},
+    }, res => {
+      let d=''; res.on('data',c=>d+=c); res.on('end',()=>{
+        try {
+          const titleRe = /<title><!\[CDATA\[([^\]]+)\]\]><\/title>|<title>([^<]+)<\/title>/g;
+          const linkRe  = /<link>([^<]+)<\/link>/g;
+          const pubRe   = /<pubDate>([^<]+)<\/pubDate>/g;
+          const titles=[],links=[],pubs=[];
+          let m;
+          while((m=titleRe.exec(d))!==null) titles.push(m[1]||m[2]||'');
+          while((m=linkRe.exec(d))!==null) links.push(m[1]||'');
+          while((m=pubRe.exec(d))!==null) pubs.push(m[1]||'');
+          const items = [];
+          for(let i=1;i<Math.min(titles.length,15);i++) {
+            const title = titles[i]||'';
+            const id = 'RANSOMWATCH-'+md5(title).slice(0,12);
+            if (!title||isSeenId(id, state)) continue;
+            const group = title.match(/^([^:]+):/)?.[1]?.trim()||'Unknown';
+            items.push({
+              source:'ransomwatch', type:'RANSOMWARE', id,
+              title:`Ransomware Victim Listed: ${title}`,
+              desc:`RansomWatch dark web monitoring: ${group} ransomware group has listed a new victim. Data leak site activity detected. Organizations should verify exposure.`,
+              cvss:8.5, refs:[links[i]].filter(Boolean),
+              pubDate:pubs[i]?new Date(pubs[i]).toISOString().slice(0,10):isoNow(),
+              vendor:group, product:'Ransomware Victim', exploited:true, ransomware:true,
+              cisaKev:false, cves:[], sourceCount:1,
+              darkweb_tags:['ransomware-leak','dark-web'],
+            });
+          }
+          resolve(items);
+        } catch(e) { resolve([]); }
+      });
+    }).on('error',()=>resolve([])).setTimeout(12000,()=>resolve([]));
+  });
+}
+
+async function fetchAIIncidentDB(state) {
+  return new Promise(resolve => {
+    https.get({
+      hostname:'incidentdatabase.ai', path:'/rss.xml',
+      headers:{'User-Agent':'CYBERDUDEBIVASH-SENTINEL/5.3','Accept':'application/rss+xml'},
+    }, res => {
+      let d=''; res.on('data',c=>d+=c); res.on('end',()=>{
+        try {
+          const titleRe = /<title><!\[CDATA\[([^\]]+)\]\]><\/title>|<title>([^<]+)<\/title>/g;
+          const linkRe  = /<link>([^<]+)<\/link>/g;
+          const descRe  = /<description><!\[CDATA\[([^\]]+)\]\]><\/description>|<description>([^<]+)<\/description>/g;
+          const titles=[],links=[],descs=[];
+          let m;
+          while((m=titleRe.exec(d))!==null) titles.push(m[1]||m[2]||'');
+          while((m=linkRe.exec(d))!==null) links.push(m[1]||'');
+          while((m=descRe.exec(d))!==null) descs.push(m[1]||m[2]||'');
+          const items = [];
+          for(let i=1;i<Math.min(titles.length,10);i++) {
+            const title = titles[i]||'';
+            const id = 'AIINCIDENT-'+md5(title).slice(0,12);
+            if (!title||isSeenId(id, state)) continue;
+            items.push({
+              source:'ai_incident_db', type:'AI_SECURITY', id,
+              title:`AI Security Incident: ${title}`,
+              desc:(descs[i]||title).slice(0,600),
+              cvss:6.5, refs:[links[i]].filter(Boolean),
+              pubDate:isoNow(), vendor:'AI Incident Database', product:'AI Systems',
+              exploited:false, ransomware:false, cisaKev:false,
+              cves:[], sourceCount:1, ai_security_tags:['ai-incident','llm'],
+            });
+          }
+          resolve(items);
+        } catch(e) { resolve([]); }
+      });
+    }).on('error',()=>resolve([])).setTimeout(12000,()=>resolve([]));
+  });
+}
+
 // ── PHASE 3+5: PRIORITY SCORING ENGINE WITH SIGNAL BOOSTING ───────────
 function computePriorityScore(item) {
   let score = 0;
@@ -901,6 +1233,20 @@ function filterSignalFromNoise(items) {
 // ── MITRE ATT&CK MAPPING ─────────────────────────────────────────────
 function getMitre(item) {
   const t = ((item.desc||'')+(item.title||'')).toLowerCase();
+  const type = item.type || item.category || '';
+
+  // ── MITRE ATLAS — AI Security Framework ──────────────────────────────
+  if (type === 'AI_SECURITY' || /prompt injection|llm|model poison|adversarial ml|ai.*attack/i.test(t)) {
+    if (/prompt injection/i.test(t))        return { framework:'ATLAS', tactic:'ML Model Access', technique:'AML.T0051 — LLM Prompt Injection', sub:'AML.T0054 — Prompt Injection via Jailbreak', atlas:true };
+    if (/model poison|data poison/i.test(t)) return { framework:'ATLAS', tactic:'ML Attack Staging', technique:'AML.T0018 — Backdoor ML Model', sub:'AML.T0020 — Poison Training Data', atlas:true };
+    if (/adversarial/i.test(t))             return { framework:'ATLAS', tactic:'ML Model Access', technique:'AML.T0015 — Evade ML Model', sub:'AML.T0043 — Craft Adversarial Data', atlas:true };
+    if (/jailbreak/i.test(t))              return { framework:'ATLAS', tactic:'ML Model Access', technique:'AML.T0054 — LLM Jailbreak', sub:'AML.T0051 — LLM Prompt Injection', atlas:true };
+    if (/deepfake/i.test(t))              return { framework:'ATLAS', tactic:'ML Attack Staging', technique:'AML.T0012 — Valid Accounts', sub:'AML.T0013 — Synthetic Content Generation', atlas:true };
+    if (/supply chain/i.test(t))          return { framework:'ATLAS', tactic:'ML Supply Chain Compromise', technique:'AML.T0010 — ML Supply Chain Compromise', sub:'AML.T0011 — Publish Poisoned Datasets', atlas:true };
+    return { framework:'ATLAS', tactic:'ML Attack Staging', technique:'AML.T0040 — ML Attack Staging', sub:'AML.T0000 — AI/ML System Enumeration', atlas:true };
+  }
+
+  // ── MITRE ATT&CK ─────────────────────────────────────────────────────
   if (/remote code execution|rce|arbitrary code execution/i.test(t))      return { tactic:'Execution',             technique:'T1203 — Exploitation for Client Execution',     sub:'T1059 — Command & Scripting Interpreter' };
   if (/privilege escalation|lpe|eop|elevation of privilege/i.test(t))     return { tactic:'Privilege Escalation',  technique:'T1068 — Exploitation for Privilege Escalation', sub:'T1134 — Access Token Manipulation' };
   if (/auth bypass|unauthenticated|authentication bypass/i.test(t))       return { tactic:'Initial Access',        technique:'T1190 — Exploit Public-Facing Application',     sub:'T1078 — Valid Accounts' };
@@ -911,11 +1257,170 @@ function getMitre(item) {
   if (/deserialization|unsafe deserialization/i.test(t))                  return { tactic:'Execution',             technique:'T1059 — Command & Scripting Interpreter',       sub:'T1203 — Exploitation for Client Execution' };
   if (/ssrf|server.side request forgery/i.test(t))                        return { tactic:'Collection',            technique:'T1213 — Data from Information Repositories',    sub:'T1190 — Exploit Public-Facing Application' };
   if (/supply chain/i.test(t))                                             return { tactic:'Initial Access',        technique:'T1195 — Supply Chain Compromise',               sub:'T1199 — Trusted Relationship' };
-  if (/ransomware/i.test(t)||item.type==='RANSOMWARE')                    return { tactic:'Impact',                technique:'T1486 — Data Encrypted for Impact',             sub:'T1490 — Inhibit System Recovery' };
-  if (/malware|trojan|backdoor|loader/i.test(t)||item.type==='MALWARE_REPORT') return { tactic:'Execution',        technique:'T1059 — Command & Scripting Interpreter',       sub:'T1055 — Process Injection' };
-  if (/data breach|exfiltrat/i.test(t)||item.type==='DATA_BREACH')        return { tactic:'Exfiltration',          technique:'T1041 — Exfiltration Over C2 Channel',          sub:'T1005 — Data from Local System' };
-  if (/apt|nation.state|threat actor/i.test(t)||item.type==='THREAT_ACTOR') return { tactic:'Persistence',         technique:'T1078 — Valid Accounts',                        sub:'T1136 — Create Account' };
+  if (/ransomware/i.test(t)||type==='RANSOMWARE')                    return { tactic:'Impact',                technique:'T1486 — Data Encrypted for Impact',             sub:'T1490 — Inhibit System Recovery' };
+  if (/malware|trojan|backdoor|loader/i.test(t)||type==='MALWARE_REPORT') return { tactic:'Execution',        technique:'T1059 — Command & Scripting Interpreter',       sub:'T1055 — Process Injection' };
+  if (/data breach|exfiltrat/i.test(t)||type==='DATA_BREACH')        return { tactic:'Exfiltration',          technique:'T1041 — Exfiltration Over C2 Channel',          sub:'T1005 — Data from Local System' };
+  if (/apt|nation.state|threat actor/i.test(t)||type==='THREAT_ACTOR') return { tactic:'Persistence',         technique:'T1078 — Valid Accounts',                        sub:'T1136 — Create Account' };
   return { tactic:'Initial Access', technique:'T1190 — Exploit Public-Facing Application', sub:'T1203 — Exploitation for Client Execution' };
+}
+
+// ── PHASE 6: CTI WRITER v5.3 ────────────────────────────────────────────
+
+function genExecutiveSummary(item) {
+  const vendor=item.vendor||'the affected vendor', product=item.product||'affected product';
+  const cvss=item.cvss||7.0, tl=item.threatLevel||'HIGH', score=item.priority||0;
+  const srcList = (item._sources||[item.source]).join(', ');
+  return `CYBERDUDEBIVASH SENTINEL APEX has confirmed a ${tl}-tier threat intelligence signal for ${item.id} affecting ${vendor} ${product}. Composite threat score: ${score}/100. Intelligence corroborated across ${item.sourceCount||1} source(s): ${srcList}. CVSS base score: ${cvss}. ${item.cisaKev?'CISA KEV confirmed — active exploitation documented in federal advisory.':item.exploited?'Active exploitation detected in the wild — emergency response required.':'Exploitation probability assessed as HIGH based on vulnerability characteristics.'} ${item.ransomware?'Ransomware-as-a-service operators have been observed using this attack vector.':''}`;
+}
+
+function genBusinessImpact(item) {
+  const product=item.product||'affected product', vendor=item.vendor||'vendor';
+  const cvss=item.cvss||7.0;
+  const impacts = [];
+  if (cvss>=9.0||item.cisaKev) impacts.push('Complete system compromise possible — treat as active incident');
+  if (item.ransomware) impacts.push('Ransomware deployment risk — offline backup integrity verification required immediately');
+  if (item.exploited) impacts.push('Threat actors actively targeting this vulnerability — attack window is open now');
+  if (/rce|remote code/i.test((item.desc||'')+(item.title||''))) impacts.push('Remote code execution — full server takeover without authentication possible');
+  if (/priv|escalation|lpe|eop/i.test((item.desc||'')+(item.title||''))) impacts.push('Privilege escalation — local attacker can become SYSTEM/root');
+  if (/auth bypass|unauthenticated/i.test((item.desc||'')+(item.title||''))) impacts.push('Authentication bypass — all access controls circumvented');
+  if (/data breach|exfiltrat/i.test((item.desc||'')+(item.title||''))) impacts.push('Data exfiltration risk — customer and sensitive data at risk');
+  if (/supply chain/i.test((item.desc||'')+(item.title||''))) impacts.push('Supply chain compromise — downstream customers may be affected');
+  const industries = item.affected_industries||[];
+  if (industries.length) impacts.push(`Sectors at elevated risk: ${industries.join(', ')}`);
+  if (!impacts.length) impacts.push(`${vendor} ${product} users face material security risk requiring immediate remediation`);
+  return impacts;
+}
+
+function genAttackChain(item) {
+  const t = ((item.desc||'')+(item.title||'')).toLowerCase();
+  const chain = [];
+  chain.push({ phase:'Reconnaissance', detail:`Attacker identifies exposed ${item.product||'target'} instances via Shodan, Censys, or targeted scanning`, tactic:'TA0043' });
+  if (/unauthenticated|no auth|auth bypass/i.test(t)) {
+    chain.push({ phase:'Initial Access', detail:'Unauthenticated exploitation — no credentials required. Single HTTP request sufficient', tactic:'T1190' });
+  } else if (/phishing|email|attachment/i.test(t)) {
+    chain.push({ phase:'Initial Access', detail:`Spear-phishing with malicious attachment or link targeting ${item.vendor||'vendor'} users`, tactic:'T1566' });
+  } else {
+    chain.push({ phase:'Initial Access', detail:`Exploitation of ${item.id} in ${item.vendor||'vendor'} ${item.product||'product'}`, tactic:'T1190' });
+  }
+  if (/rce|remote code|code execution/i.test(t)) chain.push({ phase:'Execution', detail:'Remote code execution achieved — attacker runs arbitrary commands on target system', tactic:'T1203' });
+  if (/escalation|lpe|eop|priv/i.test(t)) chain.push({ phase:'Privilege Escalation', detail:'Local privilege escalation to SYSTEM/root for full control', tactic:'T1068' });
+  chain.push({ phase:'Persistence', detail:'Backdoor, scheduled task, or new admin account created for persistent access', tactic:'T1053' });
+  if (item.ransomware) {
+    chain.push({ phase:'Lateral Movement', detail:'Credential harvesting and network spread using Mimikatz, BloodHound, or living-off-the-land techniques', tactic:'T1550' });
+    chain.push({ phase:'Impact', detail:'Data encrypted with double-extortion — exfiltration before encryption. Ransomware demand issued', tactic:'T1486' });
+  } else if (item.type==='DATA_BREACH') {
+    chain.push({ phase:'Collection', detail:'Sensitive data harvested from databases, file shares, and cloud storage', tactic:'T1005' });
+    chain.push({ phase:'Exfiltration', detail:'Data exfiltrated via encrypted C2 channel to attacker-controlled infrastructure', tactic:'T1041' });
+  } else {
+    chain.push({ phase:'Command & Control', detail:'Attacker establishes persistent C2 channel using HTTPS or DNS tunneling', tactic:'T1071' });
+    chain.push({ phase:'Impact / Objectives', detail:'Intellectual property theft, espionage, cryptomining, or preparation for future attack stage', tactic:'T1657' });
+  }
+  return chain;
+}
+
+function genCommentary(item) {
+  const vendor=item.vendor||'the affected vendor', product=item.product||'the affected product', cvss=item.cvss||7.0;
+  const urgency = cvss>=9.5?'MAXIMUM':cvss>=9.0?'CRITICAL':cvss>=8.0?'HIGH':'ELEVATED';
+  const typeCommentary = {
+    CVE_REPORT:`This ${cvss>=9?'critical':'high-severity'} vulnerability in ${vendor} ${product} (CVSS ${cvss}) represents a significant attack surface. SENTINEL APEX assesses exploitation to be technically feasible with moderate effort.`,
+    ZERO_DAY:`This zero-day vulnerability is being actively exploited before a vendor patch is available. SENTINEL APEX intelligence shows unpatched vulnerabilities are consistently weaponized within 24-72 hours of public disclosure. Nation-state APT groups and ransomware operators race to weaponize newly disclosed zero-days.`,
+    RANSOMWARE:`SENTINEL APEX is tracking active ransomware campaign activity. Modern ransomware operations are double-extortion campaigns combining data theft with encryption. Incident response readiness, offline backups, and network segmentation are non-negotiable defensive requirements.`,
+    MALWARE_REPORT:`Active malware campaign infrastructure has been identified and confirmed. This campaign is using live distribution infrastructure currently serving payloads. The IOCs in this report should be blocked immediately across all security controls — firewall, proxy, EDR, and email gateway.`,
+    DATA_BREACH:`A data breach or significant data exposure event has been identified. SENTINEL APEX recommends immediate assessment of third-party data sharing relationships. Credential stuffing attacks typically follow major breach disclosures within 48-72 hours.`,
+    THREAT_ACTOR:`Nation-state or APT actor activity has been observed. State-sponsored cyber operations have dramatically increased in targeting critical infrastructure, defense supply chains, and financial systems. TTPs include living-off-the-land techniques, supply chain compromise, and persistence through legitimate tooling.`,
+    AI_SECURITY:`AI and machine learning security vulnerabilities represent an emerging attack surface that most organizations are unprepared to defend. SENTINEL APEX tracks AI security threats including prompt injection, model poisoning, and AI-assisted cyberattacks. Reference OWASP LLM Top 10 and MITRE ATLAS for defensive controls.`,
+    DARK_WEB:`SENTINEL APEX dark web monitoring has detected significant underground activity related to this intelligence item. Dark web intelligence provides early warning of emerging threats before they materialize in enterprise environments. Immediate threat hunting is recommended.`,
+    SUPPLY_CHAIN:`Supply chain attacks represent some of the highest-impact threat vectors — a single compromise can cascade across thousands of downstream victims. SENTINEL APEX recommends immediate software bill of materials (SBOM) analysis and dependency audit.`,
+    NEWS_REPORT:`SENTINEL APEX is monitoring this developing security event. Analysts are tracking indicators, attribution signals, and potential downstream impact.`,
+  };
+  const base = typeCommentary[item.type]||typeCommentary['NEWS_REPORT'];
+  const kevNote = item.cisaKev ? `\n\nCISA KNOWN EXPLOITED VULNERABILITY: Added to KEV catalog confirming active exploitation. ${item.dueDate?`Federal agencies must remediate by ${item.dueDate}.`:'All organizations must patch immediately.'} Required action: ${item.reqAction||'Apply vendor patch immediately.'}` : '';
+  const rsNote  = item.ransomware ? `\n\nRANSOMWARE CORRELATION: Ransomware-as-a-service groups have been observed using this attack vector.` : '';
+  const multiSrc = (item.sourceCount||1)>=2 ? `\n\nMULTI-SOURCE CORROBORATION: This intelligence has been confirmed across ${item.sourceCount} independent sources, elevating confidence rating to HIGH.` : '';
+  const urgencyNote = `\n\nSENTINEL APEX URGENCY: ${urgency}. Score: ${item.priority||0}/100 ${item.threatLevel||'HIGH'}. ${item.exploited?'Active exploitation confirmed — treat as active incident requiring immediate response.':'Patch before exploitation activity begins.'}`;
+  return base+kevNote+rsNote+multiSrc+urgencyNote;
+}
+
+function genPlaybook(item) {
+  const p = item.product||'affected product', v = item.vendor||'vendor';
+  const steps = [
+    `IMMEDIATE (0-1hr): Identify all instances of ${p} in your environment via CMDB/asset inventory`,
+    `IMMEDIATE (0-1hr): Apply ${v} vendor patch — no maintenance window exception for ${item.threatLevel||'HIGH'} threats`,
+    `IMMEDIATE (1-2hr): If no patch available: implement WAF rules, ACLs, or network-level compensating controls`,
+    `SHORT-TERM (2-4hr): Deploy Sigma detection rule to SIEM — validate alert generation in test environment`,
+    `SHORT-TERM (4-8hr): Threat hunt for indicators of prior exploitation using IOCs from this report`,
+    `SHORT-TERM (8-24hr): Review access logs for exploitation attempts matching attack chain patterns above`,
+    item.cisaKev?`MANDATORY: CISA KEV listed — federal agencies patch by ${item.dueDate||'required date'}. All organizations treat as priority-1`:null,
+    item.ransomware?`RANSOMWARE: Verify offline backup integrity. Isolate any systems showing ransomware indicators. Contact IR retainer immediately`:null,
+    `LONG-TERM: Add to vulnerability management program. Track patch compliance metrics.`,
+    `LONG-TERM: Update threat model to include ${item.type||'this threat category'} attack scenarios`,
+  ].filter(Boolean);
+  return steps;
+}
+
+// ── PHASE 6: TYPE-SPECIFIC INTELLIGENCE SECTION GENERATORS ───────────────
+function genAISecSection(item, escHtml) {
+  const t = ((item.title||'')+(item.desc||'')).toLowerCase();
+  const attackType = /prompt injection/i.test(t)?'Prompt Injection':/model poison/i.test(t)?'Model Poisoning':/jailbreak/i.test(t)?'Jailbreak / Safety Bypass':/adversarial ml/i.test(t)?'Adversarial ML':/deepfake/i.test(t)?'Synthetic Media / Deepfake':/agentic|ai agent/i.test(t)?'Agentic AI Abuse':/supply chain/i.test(t)?'AI Supply Chain Attack':'AI Security Vulnerability';
+  const modelImpact = /gpt|chatgpt|openai/i.test(t)?'OpenAI GPT Models':/claude|anthropic/i.test(t)?'Anthropic Claude':/gemini|google/i.test(t)?'Google Gemini':/llama|meta/i.test(t)?'Meta LLaMA':/copilot|microsoft/i.test(t)?'Microsoft Copilot':'Large Language Models (LLMs)';
+  const owaspRef = /prompt injection/i.test(t)?'LLM01:2025 — Prompt Injection':/sensitive data|data leak/i.test(t)?'LLM02:2025 — Sensitive Information Disclosure':/supply chain/i.test(t)?'LLM03:2025 — Supply Chain Vulnerabilities':/overreliance/i.test(t)?'LLM09:2025 — Overreliance':'OWASP LLM Top 10 — See full catalog';
+  const atlasMapping = item.mitre?.atlas?`${item.mitre.technique} / ${item.mitre.sub}`:/prompt injection/i.test(t)?'AML.T0051 — LLM Prompt Injection / AML.T0054 — Jailbreak':/model poison/i.test(t)?'AML.T0018 — Backdoor ML Model / AML.T0020 — Poison Training Data':/adversarial/i.test(t)?'AML.T0015 — Evade ML Model / AML.T0043 — Craft Adversarial Data':'AML.T0040 — ML Attack Staging';
+  const govImpact = /gdpr|hipaa|compliance|regulation/i.test(t)?'Regulatory compliance risk — AI governance frameworks (NIST AI RMF, EU AI Act) require incident disclosure.':/enterprise|corporate|business/i.test(t)?'Enterprise AI trust risk — unauthorized model manipulation may violate AI governance policies.':'AI deployment risk — organizations using affected models must audit all AI-assisted workflows.';
+  return `<div style="background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(0,153,255,0.04));border:1px solid rgba(139,92,246,0.25);border-radius:12px;padding:1.5rem;margin:2rem 0">
+      <h2 class="sh" style="margin-top:0"><span>🤖</span> AI Security Intelligence Analysis</h2>
+      <table class="tbl"><thead><tr><th>Dimension</th><th>Assessment</th></tr></thead><tbody>
+        <tr><td style="color:var(--apex-muted)">AI Attack Type</td><td style="color:#a78bfa;font-weight:700">${escHtml(attackType)}</td></tr>
+        <tr><td style="color:var(--apex-muted)">Affected AI Systems</td><td style="color:var(--apex-cyan)">${escHtml(modelImpact)}</td></tr>
+        <tr><td style="color:var(--apex-muted)">OWASP LLM Top 10</td><td style="color:var(--apex-orange)">${escHtml(owaspRef)}</td></tr>
+        <tr><td style="color:var(--apex-muted)">MITRE ATLAS Mapping</td><td style="color:var(--apex-cyan);font-family:monospace;font-size:12px">${escHtml(atlasMapping)}</td></tr>
+        <tr><td style="color:var(--apex-muted)">AI Governance Impact</td><td style="font-size:13px">${escHtml(govImpact)}</td></tr>
+      </tbody></table>
+      <div style="margin-top:1rem;padding:.75rem 1rem;background:rgba(139,92,246,0.06);border-left:3px solid #8b5cf6;border-radius:4px;font-size:13px;color:var(--apex-muted)">
+        <strong style="color:#a78bfa">SENTINEL APEX AI Security Guidance:</strong> Implement input validation, output filtering, prompt injection defenses, and continuous red-teaming. Reference: <a href="/owasp-llm-top10.html" style="color:#8b5cf6">OWASP LLM Top 10</a> · <a href="/mitre-attack-detection.html" style="color:#8b5cf6">MITRE ATLAS Hub</a>
+      </div></div>`;
+}
+
+function genMalwareSection(item, escHtml) {
+  const t = ((item.title||'')+(item.desc||'')).toLowerCase();
+  const family = item.malwareFamily||item.malwareTag||(/lockbit/i.test(t)?'LockBit':/akira/i.test(t)?'Akira':/ransomhub/i.test(t)?'RansomHub':/black basta/i.test(t)?'Black Basta':/qilin/i.test(t)?'Qilin':/cl0p/i.test(t)?'Cl0p':/stealer/i.test(t)?'Infostealer':/botnet/i.test(t)?'Botnet':'Unknown Malware Family');
+  const initAccess = /phishing|email/i.test(t)?'Spear-phishing (T1566) / Malicious attachment delivery':/exploit|vulnerability|cve/i.test(t)?'Exploit public-facing application (T1190)':/usb|removable/i.test(t)?'Replication through removable media (T1091)':/supply chain/i.test(t)?'Supply chain compromise (T1195)':'Drive-by compromise / Trojanized software (T1189)';
+  const persistence = /scheduled task|cron/i.test(t)?'Scheduled Task/Job (T1053)':/registry/i.test(t)?'Boot/Logon Autostart — Registry Run Keys (T1547.001)':/service/i.test(t)?'Create/Modify System Process (T1543)':'Persistence via startup folder / WMI subscription (T1546)';
+  const defEvasion = /obfuscat/i.test(t)?'Obfuscated files or information (T1027)':/living.off|lolbin/i.test(t)?'Living-off-the-land binaries (T1218)':/process inject/i.test(t)?'Process injection (T1055)':'Code signing (T1553) / Masquerading (T1036)';
+  const c2 = /https|http/i.test(t)?'Encrypted channel — HTTPS C2 (T1071.001)':/dns/i.test(t)?'DNS tunneling C2 (T1071.004)':/telegram/i.test(t)?'Messaging app C2 — Telegram (T1102)':'Custom C2 protocol over standard ports (T1571)';
+  const lateral = /pass.the.hash|pth/i.test(t)?'Pass the Hash (T1550.002)':/mimikatz|credential/i.test(t)?'Credential dumping via Mimikatz/LSASS (T1003.001)':/rdp/i.test(t)?'Remote Desktop Protocol lateral movement (T1021.001)':'SMB/Windows Admin Shares (T1021.002) / BloodHound AD recon';
+  return `<div style="background:linear-gradient(135deg,rgba(239,68,68,0.06),rgba(251,146,60,0.04));border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:1.5rem;margin:2rem 0">
+      <h2 class="sh" style="margin-top:0"><span>🦠</span> Malware Technical Intelligence — ${escHtml(family)}</h2>
+      <table class="tbl"><thead><tr><th>Attack Phase</th><th>TTP — MITRE ATT&amp;CK</th></tr></thead><tbody>
+        <tr><td style="color:var(--apex-orange);font-weight:700">Initial Access</td><td style="font-size:13px">${escHtml(initAccess)}</td></tr>
+        <tr><td style="color:var(--apex-orange);font-weight:700">Persistence</td><td style="font-size:13px">${escHtml(persistence)}</td></tr>
+        <tr><td style="color:var(--apex-orange);font-weight:700">Defense Evasion</td><td style="font-size:13px">${escHtml(defEvasion)}</td></tr>
+        <tr><td style="color:var(--apex-orange);font-weight:700">Command &amp; Control</td><td style="font-size:13px">${escHtml(c2)}</td></tr>
+        <tr><td style="color:var(--apex-orange);font-weight:700">Lateral Movement</td><td style="font-size:13px">${escHtml(lateral)}</td></tr>
+        ${item.type==='RANSOMWARE'?`<tr><td style="color:var(--apex-red);font-weight:700">Impact</td><td style="font-size:13px">Data Encrypted for Impact (T1486) — Double extortion: exfiltration precedes encryption. Ransom demand issued via Tor-based leak site.</td></tr>`:''}
+      </tbody></table>
+      <div style="margin-top:1rem;padding:.75rem 1rem;background:rgba(239,68,68,0.06);border-left:3px solid #ef4444;border-radius:4px;font-size:13px;color:var(--apex-muted)">
+        <strong style="color:#f87171">SENTINEL APEX Malware Response:</strong> Block all IOCs at firewall, proxy, and EDR immediately. Deploy Sigma/YARA rules. Verify offline backup integrity. ${item.type==='RANSOMWARE'?'If ransomware deployed: isolate affected systems, do NOT pay ransom without legal consultation, contact FBI IC3.':'If malware detected: isolate host, collect forensic image, revoke compromised credentials.'}
+      </div></div>`;
+}
+
+function genDarkWebSection(item, escHtml) {
+  const t = ((item.title||'')+(item.desc||'')).toLowerCase();
+  const leakType = /credential|password/i.test(t)?'Credential Leak / Combolist':/database|records/i.test(t)?'Database Dump / PII Exposure':/source code/i.test(t)?'Source Code Leak':/access|rdp|vpn/i.test(t)?'Initial Access Broker (IAB) Listing':/ransom|victim/i.test(t)?'Ransomware Victim Listing':'Dark Web Intelligence Report';
+  const actor = (item.threat_actor||[]).join(', ')||(item.vendor||'Unknown Threat Actor');
+  const forum = /breach forums/i.test(t)?'BreachForums':/exploit.in/i.test(t)?'Exploit.in':/xss.is/i.test(t)?'XSS.is':/telegram/i.test(t)?'Telegram Channel':'Underground Forum / Leak Site';
+  const riskLevel = item.cisaKev||/critical|million records/i.test(t)?'CRITICAL — Immediate action required':/high|thousand|breach/i.test(t)?'HIGH — Assess exposure within 24 hours':'ELEVATED — Monitor and assess affected accounts';
+  return `<div style="background:linear-gradient(135deg,rgba(15,23,42,0.8),rgba(30,41,59,0.6));border:1px solid rgba(148,163,184,0.15);border-radius:12px;padding:1.5rem;margin:2rem 0">
+      <h2 class="sh" style="margin-top:0"><span>🕵️</span> Dark Web Intelligence Report</h2>
+      <table class="tbl"><thead><tr><th>Intelligence Dimension</th><th>Assessment</th></tr></thead><tbody>
+        <tr><td style="color:var(--apex-muted)">Leak / Listing Type</td><td style="color:var(--apex-red);font-weight:700">${escHtml(leakType)}</td></tr>
+        <tr><td style="color:var(--apex-muted)">Threat Actor</td><td style="color:var(--apex-cyan)">${escHtml(actor)}</td></tr>
+        <tr><td style="color:var(--apex-muted)">Distribution Venue</td><td style="color:var(--apex-orange)">${escHtml(forum)}</td></tr>
+        <tr><td style="color:var(--apex-muted)">Exposure Risk Level</td><td style="font-weight:700;color:${riskLevel.startsWith('CRITICAL')?'var(--apex-red)':riskLevel.startsWith('HIGH')?'var(--apex-orange)':'var(--apex-yellow)'}">${escHtml(riskLevel)}</td></tr>
+        <tr><td style="color:var(--apex-muted)">Dark Web Tags</td><td style="font-size:12px">${(item.darkweb_tags||['dark-web-intelligence']).map(tag=>`<span style="display:inline-block;padding:2px 7px;border:1px solid rgba(148,163,184,0.2);border-radius:3px;font-size:11px;color:var(--apex-muted);margin:2px">${escHtml(tag)}</span>`).join('')}</td></tr>
+      </tbody></table>
+      <div style="margin-top:1rem;padding:.75rem 1rem;background:rgba(15,23,42,0.6);border-left:3px solid #475569;border-radius:4px;font-size:13px;color:var(--apex-muted)">
+        <strong style="color:#94a3b8">SENTINEL APEX Dark Web Guidance:</strong> If your organization is identified in this listing: immediately rotate all potentially exposed credentials, notify affected users per GDPR/CCPA timelines, assess downstream third-party risk. Contact <a href="/contact.html" style="color:#94a3b8">SENTINEL APEX Enterprise</a> for dark web monitoring and breach response retainer.
+      </div></div>`;
 }
 
 // ── SIGMA RULE ─────────────────────────────────────────────────────────
@@ -1059,13 +1564,17 @@ function genPlaybook(item) {
 // ── PHASE 6+7: ADVANCED HTML REPORT GENERATOR ──────────────────────────
 function generatePostHTML(item) {
   const mitre = getMitre(item);
-  const commentary = genCommentary(item);
+  const execSummary = genExecutiveSummary(item);
+  const bizImpact   = genBusinessImpact(item);
+  const attackChain = genAttackChain(item);
+  const commentary  = genCommentary(item);
+  const playbook    = genPlaybook(item);
+  // Type-specific sections
+  const aiSecSection   = item.type==='AI_SECURITY' ? genAISecSection(item, escHtml) : '';
+  const malwareSection = (item.type==='MALWARE_REPORT'||item.type==='RANSOMWARE') ? genMalwareSection(item, escHtml) : '';
+  const darkwebSection = item.type==='DARK_WEB' ? genDarkWebSection(item, escHtml) : '';
   const sigma = genSigma(item);
   const yara  = genYARA(item);
-  const playbook = genPlaybook(item);
-  const execSummary = genExecutiveSummary(item);
-  const bizImpact = genBusinessImpact(item);
-  const attackChain = genAttackChain(item);
   const pubDateFmt = fmtDate(item.pubDate||isoNow()), today = isoNow();
   const cvss = item.cvss||7.0;
   const cvssColor = cvss>=9.0?'#ff3b3b':cvss>=7.0?'#ff8c00':'#ffe000';
@@ -1240,6 +1749,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
     <ul class="alist">${playbookItems}</ul>
     <h2 class="sh"><span>📎</span> Intelligence References</h2>
     <ul style="list-style:none;padding:0">${refLinks}${item.id?.startsWith('CVE')?`<li><a href="https://nvd.nist.gov/vuln/detail/${escHtml(item.id)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">📌 NVD — ${escHtml(item.id)}</a></li>`:''}</ul>
+    ${aiSecSection}${malwareSection}${darkwebSection}
     <!-- SENTINEL APEX: Newsletter capture + Related Resources -->
     <div style="background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(0,153,255,0.06));border:1px solid rgba(139,92,246,0.3);border-radius:14px;padding:1.75rem;margin:2.5rem 0;text-align:center">
       <div style="font-size:10px;color:#8b5cf6;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.6rem">SENTINEL INTEL BRIEF — FREE</div>
@@ -1762,6 +2272,12 @@ async function main() {
       [fetchMicrosoftSecBlog,'microsoft_security'],
       [fetchWiredSecurity,  'wired_security'],
       [fetchRecordedFuture, 'recorded_future'],
+      [()=>fetchMalwareBazaar(), 'malwarebazaar'],
+      [s=>fetchNCSCUK(s), 'ncsc_uk'],
+      [s=>fetchCiscoPSIRT(s), 'cisco_psirt'],
+      [s=>fetchOTX(s), 'otx'],
+      [s=>fetchRansomWatch(s), 'ransomwatch'],
+      [s=>fetchAIIncidentDB(s), 'ai_incident_db'],
     ], state);
     tier3Batches.forEach((b,idx) => { const k=['reddit_netsec','reddit_cyber','cert_eu','microsoft_security','wired_security','recorded_future'][idx]; if(k) sourceStats[k]={fetched:b.length}; });
 
