@@ -1,4 +1,4 @@
-name: 🛰 SENTINEL APEX — Auto RSS Generator
+name: "🛰 SENTINEL APEX — Auto RSS Generator"
 
 on:
   push:
@@ -7,60 +7,64 @@ on:
       - 'posts/**'
       - 'generate-rss.js'
   schedule:
-    # Regenerate every 6 hours to keep feed fresh
-    - cron: '0 */6 * * *'
+    - cron: '0 */6 * * *'   # Regenerate every 6 hours
   workflow_dispatch:
-    # Allow manual trigger from GitHub Actions UI
 
 permissions:
   contents: write
 
 jobs:
   generate-rss:
-    name: Generate RSS Feed
+    name: "Generate & Validate RSS Feed"
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
-      - name: 📥 Checkout repository
+      - name: "📥 Checkout repository"
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: ⚙️ Setup Node.js
+      - name: "⚙️ Setup Node.js"
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: 🛰 Generate RSS feed
-        run: node generate-rss.js
+      - name: "🛰 Generate RSS feed"
+        run: |
+          echo "🛰 Generating RSS feed — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          node generate-rss.js
+          echo "✅ generate-rss.js completed"
 
-      - name: ✅ Validate RSS XML
+      - name: "✅ Validate RSS XML"
         run: |
           if [ ! -f "rss.xml" ]; then
-            echo "❌ ERROR: rss.xml was not generated!"
+            echo "::error title=RSS Generation Failed::rss.xml was not generated"
             exit 1
           fi
-          # Check RSS file is not empty
+
           size=$(wc -c < rss.xml)
           if [ "$size" -lt 500 ]; then
-            echo "❌ ERROR: rss.xml is too small (${size} bytes). Something went wrong."
+            echo "::error title=RSS Too Small::rss.xml is only ${size} bytes — generation may have failed"
             exit 1
           fi
-          # Check for required RSS elements
+
           if ! grep -q '<rss version="2.0"' rss.xml; then
-            echo "❌ ERROR: rss.xml missing <rss version=\"2.0\"> declaration"
+            echo "::error title=RSS Invalid::rss.xml missing <rss version=\"2.0\"> declaration"
             exit 1
           fi
+
           if ! grep -q '<item>' rss.xml; then
-            echo "❌ ERROR: rss.xml has no <item> elements"
+            echo "::error title=RSS No Items::rss.xml has no <item> elements"
             exit 1
           fi
+
           item_count=$(grep -c '<item>' rss.xml)
           echo "✅ rss.xml validated: ${size} bytes, ${item_count} items"
           echo "📡 Feed: https://blog.cyberdudebivash.in/rss.xml"
 
-      - name: 🔍 Check for changes
+      - name: "🔍 Check for changes"
         id: check_changes
         run: |
           if git diff --quiet rss.xml 2>/dev/null; then
@@ -71,17 +75,36 @@ jobs:
             echo "📝 rss.xml has changes — will commit"
           fi
 
-      - name: 📦 Commit updated rss.xml
+      - name: "📦 Commit and push rss.xml"
         if: steps.check_changes.outputs.changed == 'true'
         run: |
-          git config --local user.email "bivash@cyberdudebivash.com"
-          git config --local user.name "SENTINEL APEX Bot"
+          git config user.name "CYBERDUDEBIVASH"
+          git config user.email "bivash@cyberdudebivash.com"
           git add rss.xml
-          git commit -m "🛰 [SENTINEL APEX] Auto-update rss.xml — $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git commit -m "🛰 [SENTINEL APEX] Auto-update rss.xml — $(date -u '+%Y-%m-%d %H:%M UTC') [skip ci]"
 
-      - name: 🚀 Push to main
-        if: steps.check_changes.outputs.changed == 'true'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          # Push with retry + rebase on conflict
+          for i in 1 2 3; do
+            git push origin main && echo "✅ Push succeeded (attempt $i)" && break
+            if [ $i -lt 3 ]; then
+              echo "⚠️ Push attempt $i failed — rebasing..."
+              git pull --rebase origin main
+              sleep $((i * 3))
+            else
+              echo "::error title=RSS Push Failed::Failed to push rss.xml after 3 attempts"
+              exit 1
+            fi
+          done
+
+      - name: "📋 Run summary"
+        if: always()
+        run: |
+          echo "════════════════════════════════════"
+          echo "🛰 SENTINEL APEX RSS Generator Done"
+          echo "Timestamp : $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          echo "Trigger   : ${{ github.event_name }}"
+          if [ -f rss.xml ]; then
+            echo "RSS size  : $(wc -c < rss.xml) bytes"
+            echo "RSS items : $(grep -c '<item>' rss.xml || echo 0)"
+          fi
+          echo "════════════════════════════════════"

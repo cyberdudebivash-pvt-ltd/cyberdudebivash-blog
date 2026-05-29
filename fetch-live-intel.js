@@ -2184,8 +2184,10 @@ function writeLiveIntel(allItems, state) {
       if (ps !== 0) return ps;
       return new Date(b.pubDate||0) - new Date(a.pubDate||0);
     });    const liveItems = merged.slice(0, CFG.liveRollingWindow || 150);
+    const _liveGenTs = new Date().toISOString();
     safeWriteSync(CFG.liveJsonPath, JSON.stringify({
-      generatedAt: new Date().toISOString(), totalPublished: state.totalPublished||0,
+      generatedAt: _liveGenTs, lastUpdated: _liveGenTs, totalPublished: state.totalPublished||0,
+      metadata: { generated: _liveGenTs, version: '5.0', pipeline: 'SENTINEL APEX v5.0', platform: 'blog.cyberdudebivash.in' },
       source: 'CYBERDUDEBIVASH SENTINEL APEX v5.0', platform: 'blog.cyberdudebivash.in',
       version: '5.0',
       stats: {
