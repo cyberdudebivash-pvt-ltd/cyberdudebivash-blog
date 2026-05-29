@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Fri, 29 May 2026 22:21:15 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 29 May 2026 23:47:56 GMT</lastBuildDate>
     <pubDate>Fri, 29 May 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,7 +31,88 @@
       <height>144</height>
     </image>
 
-      <item>
+        <item>
+    <title><![CDATA[PraisonAI Platform: Missing role checks let any workspace member become owner and control workspace membership]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-47405-pip-praisonai-platform.html</link>
+    <description><![CDATA[Score 54/100 MEDIUM — CVSS 8.8 — ### Summary PraisonAI Platform has a broken workspace authorization check that allows any authenticated low-privilege workspace member to escalate their own role to `owner`. The issue is caused by privileged workspace-management routes using the shared dependency `require_workspace_member(...)` with. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 29 May 2026 23:47:56 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-47405-pip-praisonai-platform.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[praisonai-platform: IDOR in dependency endpoints allows cross-workspace issue linking, reading, and deletion due to missing ownership checks]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-47406-pip-praisonai-platform.html</link>
+    <description><![CDATA[Score 51/100 MEDIUM — CVSS 8.1 — ## Summary **Type:** Insecure Direct Object Reference. The dependency endpoints (`POST/GET /workspaces/{workspace_id}/issues/{issue_id}/dependencies` and `DELETE .../dependencies/{dep_id}`) gate access on `require_workspace_member(workspace_id)` only, then dispatch to `DependencyService` calls that . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 29 May 2026 23:47:56 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-47406-pip-praisonai-platform.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI Platform workspace-scoped routes allow cross-workspace object access by global object ID]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-47399-pip-praisonai-platform.html</link>
+    <description><![CDATA[Score 48/100 MEDIUM — CVSS 8.8 — ### Summary PraisonAI Platform's workspace-scoped REST routes contain a systemic object-level authorization flaw that allows an authenticated user from one workspace to access, modify, and delete objects belonging to another workspace by supplying the victim object's global UUID. The affected patter. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 29 May 2026 23:47:56 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-47399-pip-praisonai-platform.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI has Cross-Workspace IDOR and Privilege Escalation via Platform API]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-48169-pip-praisonai-platform.html</link>
+    <description><![CDATA[Score 48/100 MEDIUM — CVSS 8.8 — ### Summary The PraisonAI Platform API has two authorization failures that together break workspace isolation. The service layer for issues and projects performs global primary-key lookups without checking workspace ownership, so any authenticated user can read, modify, and delete resources in any w. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 29 May 2026 23:47:56 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-48169-pip-praisonai-platform.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[praisonai-platform: Missing authorization on member removal enables full workspace takeover by any user regardless of role]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-47409-pip-praisonai-platform.html</link>
+    <description><![CDATA[Score 45/100 MEDIUM — CVSS 8.1 — ## Summary **Type:** Authorization bypass enabling owner lockout. The `DELETE /workspaces/{workspace_id}/members/{user_id}` endpoint is gated only by `require_workspace_member(workspace_id)` (default `min_role="member"`). Any member can remove any other member, including the workspace owner, using a. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 29 May 2026 23:47:56 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-47409-pip-praisonai-platform.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI: Arbitrary code execution via unguarded `spec.loader.exec_module` in `agents_generator.py` - sibling of CVE-2026-44334]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-47398-pip-praisonai.html</link>
+    <description><![CDATA[Score 45/100 MEDIUM — CVSS 8.1 — Arbitrary code execution via ungated spec.loader.exec_module in agents_generator.py (v4.6.32 chokepoint refactor bypass) Summary The v4.6.32 chokepoint refactor (which patched CVE-2026-44334 / GHSA-xcmw-grxf-wjhj) added the PRAISONAI_ALLOW_LOCAL_TOOLS env-var gate to the tool_override.py sinks. Howe. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 29 May 2026 23:47:56 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-47398-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[praisonai-platform: Label endpoints' unchecked label_id/issue_id enable cross-workspace label IDOR (edit, delete, link)]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-47414-pip-praisonai-platform.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.6 — ## Summary **Type:** Insecure Direct Object Reference. Five label endpoints — `PATCH /workspaces/{workspace_id}/labels/{label_id}`, `DELETE .../labels/{label_id}`, `POST .../issues/{issue_id}/labels/{label_id}`, `DELETE .../issues/{issue_id}/labels/{label_id}`, `GET .../issues/{issue_id}/labels` — g. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 29 May 2026 23:47:56 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-47414-pip-praisonai-platform.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI has an Arbitrary File Write in Python API]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-47397-pip-praisonai.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — # Bug Report: Arbitrary File Write in Python API ## Summary Hidden metadata in a webpage causes PraisonAI agents to write attacker-controlled content to arbitrary paths. `write_file` skips path validation when `workspace=None` (always `None` in production). ## Affected PraisonAI output_file: /tmp/fl. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 29 May 2026 23:47:56 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-47397-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI vulnerable to unauthenticated arbitrary file read via MCP workflow.show, workflow.validate, deploy.validate]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-47394-pip-praisonai.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ## Summary The fix for GHSA-9mqq-jqxf-grvw / CVE-2026-44336 is incomplete. The original advisory description named four vulnerable handlers in `mcp_server/adapters/cli_tools.py`: > "registers four file-handling tools by default, `praisonai.rules.create`, `praisonai.rules.show`, `praisonai.rules.dele. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Fri, 29 May 2026 23:47:56 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-47394-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
     <title><![CDATA[formie's unauthenticated front-end submission editing can overwrite existing submissions]]></title>
     <link>https://blog.cyberdudebivash.in/posts/cve-2026-47266-composer-verbb-formie.html</link>
     <description><![CDATA[Score 45/100 MEDIUM — CVSS 7.5 — ### Impact

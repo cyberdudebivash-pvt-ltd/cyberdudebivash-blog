@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-29T22:21:15.934Z",
+  "generated": "2026-05-29T23:47:56.278Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 105,
+  "total_published": 112,
   "s2n_stats": {
     "passed": 83,
-    "suppressed": 19,
+    "suppressed": 15,
     "avg_qs": 0.555
   },
   "items": [
@@ -3921,6 +3921,438 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-47406",
+      "title": "praisonai-platform: IDOR in dependency endpoints allows cross-workspace issue linking, reading, and deletion due to miss",
+      "description": "## Summary **Type:** Insecure Direct Object Reference. The dependency endpoints (`POST/GET /workspaces/{workspace_id}/issues/{issue_id}/dependencies` and `DELETE .../dependencies/{dep_id}`) gate access on `require_workspace_member(workspace_id)` only, then dispatch to `DependencyService` calls that ",
+      "cvss": 8.1,
+      "final_ps": 24,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-29",
+      "last_seen": "2026-05-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "praisonai-platform",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47406",
+        "CVE-2026-47406"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4x6r-9v57-3gqw",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-4x6r-9v57-3gqw",
+        "https://github.com/advisories/GHSA-4x6r-9v57-3gqw"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47397",
+      "title": "PraisonAI has an Arbitrary File Write in Python API",
+      "description": "# Bug Report: Arbitrary File Write in Python API ## Summary Hidden metadata in a webpage causes PraisonAI agents to write attacker-controlled content to arbitrary paths. `write_file` skips path validation when `workspace=None` (always `None` in production). ## Affected PraisonAI output_file: /tmp/fl",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-29",
+      "last_seen": "2026-05-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "PraisonAI",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47397",
+        "CVE-2026-47397"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-hvhp-v2gc-268q",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-hvhp-v2gc-268q",
+        "https://github.com/advisories/GHSA-hvhp-v2gc-268q"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47405",
+      "title": "PraisonAI Platform: Missing role checks let any workspace member become owner and control workspace membership",
+      "description": "### Summary PraisonAI Platform has a broken workspace authorization check that allows any authenticated low-privilege workspace member to escalate their own role to `owner`. The issue is caused by privileged workspace-management routes using the shared dependency `require_workspace_member(...)` with",
+      "cvss": 8.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-29",
+      "last_seen": "2026-05-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "praisonai-platform",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47405",
+        "CVE-2026-47405"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-h37g-4h4p-9x97",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-h37g-4h4p-9x97",
+        "https://github.com/advisories/GHSA-h37g-4h4p-9x97"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47399",
+      "title": "PraisonAI Platform workspace-scoped routes allow cross-workspace object access by global object ID",
+      "description": "### Summary PraisonAI Platform's workspace-scoped REST routes contain a systemic object-level authorization flaw that allows an authenticated user from one workspace to access, modify, and delete objects belonging to another workspace by supplying the victim object's global UUID. The affected patter",
+      "cvss": 8.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-29",
+      "last_seen": "2026-05-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "praisonai-platform",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47399",
+        "CVE-2026-47399"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-6h6v-6m7w-7vxx",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-6h6v-6m7w-7vxx",
+        "https://github.com/advisories/GHSA-6h6v-6m7w-7vxx"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-48169",
+      "title": "PraisonAI has Cross-Workspace IDOR and Privilege Escalation via Platform API",
+      "description": "### Summary The PraisonAI Platform API has two authorization failures that together break workspace isolation. The service layer for issues and projects performs global primary-key lookups without checking workspace ownership, so any authenticated user can read, modify, and delete resources in any w",
+      "cvss": 8.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-29",
+      "last_seen": "2026-05-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "praisonai-platform",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-48169",
+        "CVE-2026-48169"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-gv23-xrm3-8c62",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-gv23-xrm3-8c62",
+        "https://github.com/advisories/GHSA-gv23-xrm3-8c62"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47409",
+      "title": "praisonai-platform: Missing authorization on member removal enables full workspace takeover by any user regardless of ro",
+      "description": "## Summary **Type:** Authorization bypass enabling owner lockout. The `DELETE /workspaces/{workspace_id}/members/{user_id}` endpoint is gated only by `require_workspace_member(workspace_id)` (default `min_role=\"member\"`). Any member can remove any other member, including the workspace owner, using a",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-29",
+      "last_seen": "2026-05-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "praisonai-platform",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47409",
+        "CVE-2026-47409"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-w388-2392-px73",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-w388-2392-px73",
+        "https://github.com/advisories/GHSA-w388-2392-px73"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47398",
+      "title": "PraisonAI: Arbitrary code execution via unguarded `spec.loader.exec_module` in `agents_generator.py` - sibling of CVE-20",
+      "description": "Arbitrary code execution via ungated spec.loader.exec_module in agents_generator.py (v4.6.32 chokepoint refactor bypass) Summary The v4.6.32 chokepoint refactor (which patched CVE-2026-44334 / GHSA-xcmw-grxf-wjhj) added the PRAISONAI_ALLOW_LOCAL_TOOLS env-var gate to the tool_override.py sinks. Howe",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-29",
+      "last_seen": "2026-05-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "PraisonAI",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47398",
+        "CVE-2026-47398"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-78r8-wwqv-r299",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-78r8-wwqv-r299",
+        "https://github.com/advisories/GHSA-78r8-wwqv-r299"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47414",
+      "title": "praisonai-platform: Label endpoints' unchecked label_id/issue_id enable cross-workspace label IDOR (edit, delete, link)",
+      "description": "## Summary **Type:** Insecure Direct Object Reference. Five label endpoints — `PATCH /workspaces/{workspace_id}/labels/{label_id}`, `DELETE .../labels/{label_id}`, `POST .../issues/{issue_id}/labels/{label_id}`, `DELETE .../issues/{issue_id}/labels/{label_id}`, `GET .../issues/{issue_id}/labels` — g",
+      "cvss": 7.6,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-29",
+      "last_seen": "2026-05-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "praisonai-platform",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47414",
+        "CVE-2026-47414"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-5jx9-w35f-vp65",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-5jx9-w35f-vp65",
+        "https://github.com/advisories/GHSA-5jx9-w35f-vp65"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47394",
+      "title": "PraisonAI vulnerable to unauthenticated arbitrary file read via MCP workflow.show, workflow.validate, deploy.validate",
+      "description": "## Summary The fix for GHSA-9mqq-jqxf-grvw / CVE-2026-44336 is incomplete. The original advisory description named four vulnerable handlers in `mcp_server/adapters/cli_tools.py`: > \"registers four file-handling tools by default, `praisonai.rules.create`, `praisonai.rules.show`, `praisonai.rules.dele",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-29",
+      "last_seen": "2026-05-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "PraisonAI",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47394",
+        "CVE-2026-47394"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-9cr9-25q5-8prj",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-9cr9-25q5-8prj",
+        "https://github.com/advisories/GHSA-9cr9-25q5-8prj"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-47266",
       "title": "formie's unauthenticated front-end submission editing can overwrite existing submissions",
       "description": "### Impact\nUnauthenticated users could modify existing submissions by posting a known or guessed submission ID to `formie/submissions/save-submission`. ### Patches\n[2.2.21](https://github.com/verbb/formie/releases/tag/2.2.21), [3.1.26](https://github.com/verbb/formie/releases/tag/3.1.26) ### Workaro",
@@ -3952,443 +4384,6 @@
         "https://github.com/verbb/formie/security/advisories/GHSA-pgxq-p76c-x9cg",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-47266",
         "https://github.com/verbb/formie/releases/tag/2.2.21"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47231",
-      "title": "Admidio has IDOR in `documents-files.php` `mode=move_save` that lets any folder-uploader exfiltrate files from private f",
-      "description": "## Summary `modules/documents-files.php` gates state-changing modes by checking that the actor has `hasUploadRight()` on the URL parameter `folder_uuid`. The `move_save` handler then operates on a *separate* URL parameter `file_uuid` and calls `File::moveToFolder($destFolderUUID)`. `File::moveToFold",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-29",
-      "last_seen": "2026-05-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "admidio/admidio",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47231",
-        "CVE-2026-47231"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-x628-457g-2pw9",
-        "https://github.com/Admidio/admidio/security/advisories/GHSA-x628-457g-2pw9",
-        "https://github.com/advisories/GHSA-x628-457g-2pw9"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47211",
-      "title": "ouroboros-ai Vulnerable to Remote Code Execution via Untrusted Project-Directory .env",
-      "description": "### Impact\nA Remote Code Execution (RCE) vulnerability was discovered in Ouroboros. If a user clones a malicious repository and runs Ouroboros commands within that directory, it can lead to arbitrary code execution and potential system takeover. The vulnerability (CWE-426: Untrusted Search Path & CW",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-29",
-      "last_seen": "2026-05-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "ouroboros-ai",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47211",
-        "CVE-2026-47211"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-c4m7-2gwp-vw76",
-        "https://github.com/Q00/ouroboros/security/advisories/GHSA-c4m7-2gwp-vw76",
-        "https://github.com/Q00/ouroboros/pull/1078",
-        "https://github.com/Q00/ouroboros/commit/4e70b760b4eb157469b58645339ba831f6513d37"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47695",
-      "title": "CC-Tweaked has an SSRF Protection Bypass with NAT64",
-      "description": "### Summary CC-Tweaked's HTTP API (`http.request`, `http.websocket`) blocks requests to private network ranges to prevent server-side request forgery (SSRF). This protection can be bypassed on IPv6-capable servers using NAT64 well-known prefix addresses (`64:ff9b::/96`). An attacker who can execute ",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-29",
-      "last_seen": "2026-05-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "cc.tweaked:cc-tweaked-1.21-core",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47695",
-        "CVE-2026-47695"
-      ],
-      "ioc_count": 2,
-      "refs": [
-        "https://github.com/advisories/GHSA-5jh9-2h63-pw4q",
-        "https://github.com/cc-tweaked/CC-Tweaked/security/advisories/GHSA-5jh9-2h63-pw4q",
-        "https://github.com/advisories/GHSA-5jh9-2h63-pw4q"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47201",
-      "title": "authentik's XML Signature Wrapping in SAML Source ACS allows authentication as arbitrary federated user",
-      "description": "### Summary authentik's SAML Source ACS endpoint is vulnerable to XML Signature Wrapping when validating upstream SAML responses. An attacker with any account at the upstream IdP can reuse a valid signed assertion to authenticate as another federated user. ### Patches authentik 2026.5.1, 2026.2.4 an",
-      "cvss": 8.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-29",
-      "last_seen": "2026-05-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "goauthentik.io",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47201",
-        "CVE-2026-47201"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-c3m2-jqmq-pvp3",
-        "https://github.com/goauthentik/authentik/security/advisories/GHSA-c3m2-jqmq-pvp3",
-        "https://github.com/goauthentik/authentik/commit/a370d76d23c7de0fceed064ca322e33e6ebf0119",
-        "https://github.com/advisories/GHSA-c3m2-jqmq-pvp3"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47260",
-      "title": "Koel Vulnerable to SSRF via Podcast Episode Enclosure URLs",
-      "description": "## Summary Koel validates the podcast feed URL via the `SafeUrl` rule (DNS resolution + public IP check), but the individual episode ` ` values extracted from the RSS XML are stored directly into the database without any SSRF validation. When a user plays an episode, the server downloads the full HT",
-      "cvss": 7.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-29",
-      "last_seen": "2026-05-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "phanan/koel",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47260",
-        "CVE-2026-47260"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7j2f-6h2r-6cqc",
-        "https://github.com/koel/koel/security/advisories/GHSA-7j2f-6h2r-6cqc",
-        "https://github.com/koel/koel/commit/8708f077efd7d8a332b32e954d65bc837f3a413a",
-        "https://github.com/koel/koel/commit/be1e867982dcadefd4a75d768ce950b1d5234cdf"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-46702",
-      "title": "russh: Post-decompression SSH packet size was not bounded, allowing remote oversized compressed packets",
-      "description": "### Summary When SSH compression is enabled, `russh` accepted compressed packets whose on-wire size passed the normal transport packet-length checks but whose decompressed size was much larger. This allowed a remote peer to send oversized post-decompression packets that should have been rejected. In",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-29",
-      "last_seen": "2026-05-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "russh",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-46702",
-        "CVE-2026-46702"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wwx6-x28x-8259",
-        "https://github.com/Eugeny/russh/security/advisories/GHSA-wwx6-x28x-8259",
-        "https://github.com/advisories/GHSA-wwx6-x28x-8259"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47255",
-      "title": "AgenticMail API/storage and outbound relay hardening fixes",
-      "description": "The current upstream main branch at commit 7e0206d was reviewed, and the fix-first patch set was rebased on 2026-05-18. The patches cover: validated and bound inactive-agent hour filtering; storage SQL identifier validation; metadata-backed ownership checks for raw storage SQL; blocking direct stora",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-29",
-      "last_seen": "2026-05-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "@agenticmail/api",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47255",
-        "CVE-2026-47255"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wjjv-3mj2-39hf",
-        "https://github.com/agenticmail/agenticmail/security/advisories/GHSA-wjjv-3mj2-39hf",
-        "https://github.com/agenticmail/agenticmail/commit/1408de543fa3577d8c2d4fdb289c75fe6faafac7",
-        "https://github.com/agenticmail/agenticmail/commit/234b811e426a0743170f3b10bc43419d64330155"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-38739",
-      "title": "ezsystems/ezpublish-legacy has a SQL injection in dfscleanup",
-      "description": "NB: All tags and branches in this repository are past their end of life, so the vulnerability will not be fixed. The advisory is posted on the request of the researcher, for the information of anyone who might still use this software. ### Impact\nThere is a security vulnerability in eZ Publish Legacy",
-      "cvss": 7.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-29",
-      "last_seen": "2026-05-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "ezsystems/ezpublish-legacy",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-38739",
-        "CVE-2026-38739"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-xg9x-h37w-h3r3",
-        "https://github.com/ezsystems/ezpublish-legacy/security/advisories/GHSA-xg9x-h37w-h3r3",
-        "https://github.com/advisories/GHSA-xg9x-h37w-h3r3"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-44494",
-      "title": "axios Vulnerable to Full Man-in-the-Middle via Prototype Pollution Gadget in `config.proxy`",
-      "description": "# Vulnerability Disclosure: Full Man-in-the-Middle via Prototype Pollution Gadget in `config.proxy` ## Summary The Axios library is vulnerable to a Prototype Pollution \"Gadget\" attack that allows any `Object.prototype` pollution in the application's dependency tree to be escalated into a **full Man-",
-      "cvss": 8.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-29",
-      "last_seen": "2026-05-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "axios",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44494",
-        "CVE-2026-44494"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-35jp-ww65-95wh",
-        "https://github.com/axios/axios/security/advisories/GHSA-35jp-ww65-95wh",
-        "https://github.com/advisories/GHSA-fvcv-3m26-pcqx",
-        "https://github.com/advisories/GHSA-35jp-ww65-95wh"
       ],
       "explanation": {
         "quality": [
