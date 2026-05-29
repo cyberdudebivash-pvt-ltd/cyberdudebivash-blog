@@ -169,6 +169,8 @@
     .pg-btn { background: var(--apex-card); border: 1px solid var(--apex-border); color: var(--apex-muted); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all .2s; }
     .pg-btn:hover, .pg-btn.active { border-color: var(--apex-cyan); color: var(--apex-cyan); background: #001a1a; }
   </style>
+<!-- Fuse.js — client-side search engine -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/7.0.0/fuse.min.js" crossorigin="anonymous"></script>
 <script src="/security-engine.js"></script>
 <link rel="stylesheet" href="/apex-v12.css">
   <!-- Google Analytics 4 — CYBERDUDEBIVASH SENTINEL APEX -->
@@ -249,18 +251,21 @@
 
     <!-- CONTROLS -->
     <div class="archive-controls">
-      <input type="search" id="archiveSearch" class="search-input" placeholder="🔍 Search archived intel (CVE ID, threat actor, product...)">
+      <input type="search" id="archiveSearch" class="search-input" placeholder="🔍 Search 1,300+ intel reports — CVE ID, vendor, threat actor, product...">
       <select id="categoryFilter" class="filter-select">
         <option value="all">All Categories</option>
-        <option value="vuln">Vulnerabilities</option>
         <option value="cve">CVEs</option>
         <option value="zerod">Zero-Days</option>
-        <option value="malware">Malware</option>
+        <option value="malware">Malware / Ransomware</option>
+        <option value="vuln">Vulnerabilities</option>
         <option value="incident">Incidents</option>
-        <option value="news">News</option>
+        <option value="news">News / Advisory</option>
       </select>
-      <button class="clear-cache-btn" onclick="clearArchiveCache()">🗑 Clear Archive Cache</button>
+      <button class="clear-cache-btn" onclick="clearArchiveCache()">🗑 Clear Cache</button>
     </div>
+
+    <!-- FUSE.JS SEARCH RESULTS (hidden by default) -->
+    <div id="searchResultsBox" style="display:none;margin-bottom:24px"></div>
 
     <!-- DYNAMIC ARCHIVE (from localStorage) -->
     <div id="dynamicArchive">
@@ -639,30 +644,140 @@ function clearArchiveCache() {
   location.reload();
 }
 
-// Search/filter functionality
-document.getElementById('archiveSearch').addEventListener('input', function() {
-  const q = this.value.toLowerCase();
-  document.querySelectorAll('.archive-card, .static-archive-card').forEach(card => {
-    const text = card.textContent.toLowerCase();
-    card.style.display = q === '' || text.includes(q) ? '' : 'none';
+// ── SENTINEL APEX: Fuse.js Search Engine ──────────────────────────────────
+var _fuseIndex = null, _fuseEngine = null, _allItems = [];
+
+function initFuseSearch(items) {
+  _allItems = items;
+  _fuseEngine = new Fuse(items, {
+    keys: [
+      { name: 'id',      weight: 0.35 },
+      { name: 'title',   weight: 0.30 },
+      { name: 'desc',    weight: 0.20 },
+      { name: 'vendor',  weight: 0.08 },
+      { name: 'product', weight: 0.07 }
+    ],
+    threshold: 0.35,
+    includeScore: true,
+    minMatchCharLength: 2
   });
+  console.log('[SENTINEL APEX Search] Indexed', items.length, 'items');
+}
+
+function renderSearchResults(results, query) {
+  var container = document.getElementById('searchResultsBox');
+  if (!container) return;
+  if (!results || results.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="ei">🔍</div><h3>No results for "' + escapeHTML(query) + '"</h3><p>Try a CVE ID, vendor name, or threat type. Example: CVE-2026, Microsoft, ransomware.</p></div>';
+    container.style.display = 'block';
+    return;
+  }
+  var html = '<div style="font-size:12px;color:var(--apex-muted);margin-bottom:14px;font-weight:600">' + results.length + ' results for "<span style="color:var(--apex-cyan)">' + escapeHTML(query) + '</span>"</div>';
+  results.slice(0, 50).forEach(function(r) {
+    var item = r.item || r;
+    var cvss = item.cvss || item.score || null;
+    var cvssColor = cvss >= 9 ? 'var(--apex-red)' : cvss >= 7 ? 'var(--apex-orange)' : 'var(--apex-yellow)';
+    var href = item.link || (item.slug ? '/posts/' + item.slug + '.html' : '#');
+    var exploitedBadge = item.exploited ? '<span class="ac-badge badge-crit" style="font-size:9px">EXPLOITED</span>' : '';
+    var cisaBadge = item.cisaKev ? '<span class="ac-badge" style="background:#003366;color:#60aaff;border:1px solid #3399ff;font-size:9px">CISA KEV</span>' : '';
+    html += '<a href="' + escapeHTML(href) + '" class="static-archive-card" style="display:flex">' +
+      '<div class="sac-info"><div class="ac-header">' +
+        (cvss ? '<span class="ac-badge ' + (cvss>=9?'badge-crit':'badge-high') + '">CVSS ' + cvss + '</span>' : '') +
+        exploitedBadge + cisaBadge +
+      '</div>' +
+      '<div class="sac-title">' + escapeHTML((item.title || item.id || 'Unknown').slice(0, 120)) + '</div>' +
+      '<div class="sac-meta">' +
+        '<span class="ac-source">' + escapeHTML(item.source || 'SENTINEL APEX') + '</span>' +
+        (item.id ? '<span style="font-family:monospace;font-size:11px">' + escapeHTML(item.id) + '</span>' : '') +
+        (item.vendor ? '<span>' + escapeHTML(item.vendor) + '</span>' : '') +
+        (item.published ? '<span>' + escapeHTML(String(item.published).slice(0,10)) + '</span>' : '') +
+      '</div></div><div class="sac-arrow">→</div></a>';
+  });
+  container.innerHTML = html;
+  container.style.display = 'block';
+}
+
+function hideSearchResults() {
+  var container = document.getElementById('searchResultsBox');
+  if (container) container.style.display = 'none';
+}
+
+// Fetch intel index and initialise Fuse on load
+fetch('/live-intel.json').then(function(r){ return r.json(); }).then(function(data) {
+  if (data && data.items) initFuseSearch(data.items);
+}).catch(function(e){ console.warn('[SENTINEL APEX Search] Could not load live-intel.json:', e); });
+
+// Enhanced search with Fuse.js
+document.getElementById('archiveSearch').addEventListener('input', function() {
+  var q = this.value.trim();
+  var searchBox = document.getElementById('searchResultsBox');
+
+  if (q.length < 2) {
+    // Restore normal archive view
+    hideSearchResults();
+    document.querySelectorAll('.archive-card, .static-archive-card').forEach(function(c){ c.style.display = ''; });
+    document.querySelectorAll('.date-group, .static-archive-section, .archive-stats').forEach(function(c){ c.style.display = ''; });
+    return;
+  }
+
+  // Hide default view, show search results
+  document.querySelectorAll('.date-group, .static-archive-section').forEach(function(c){ c.style.display = 'none'; });
+  document.getElementById('dynamicArchive').style.display = 'none';
+
+  if (_fuseEngine) {
+    var results = _fuseEngine.search(q);
+    renderSearchResults(results.map(function(r){ return r; }), q);
+    // GA4 search event
+    if (typeof gtag === 'function') gtag('event','search',{search_term:q,event_category:'site_search'});
+  } else {
+    // Fallback DOM search
+    if (searchBox) { searchBox.style.display = 'none'; }
+    document.getElementById('dynamicArchive').style.display = '';
+    document.querySelectorAll('.date-group, .static-archive-section').forEach(function(c){ c.style.display = ''; });
+    var ql = q.toLowerCase();
+    document.querySelectorAll('.archive-card, .static-archive-card').forEach(function(card) {
+      card.style.display = ql === '' || card.textContent.toLowerCase().includes(ql) ? '' : 'none';
+    });
+  }
 });
 
 document.getElementById('categoryFilter').addEventListener('change', function() {
-  const cat = this.value;
+  var cat = this.value;
+  var searchInput = document.getElementById('archiveSearch');
+  if (searchInput) searchInput.value = '';
+  hideSearchResults();
+  document.querySelectorAll('.date-group, .static-archive-section').forEach(function(c){ c.style.display = ''; });
+  document.getElementById('dynamicArchive').style.display = '';
+
   if (cat === 'all') {
-    document.querySelectorAll('.archive-card, .static-archive-card').forEach(c => c.style.display = '');
+    document.querySelectorAll('.archive-card, .static-archive-card').forEach(function(c){ c.style.display = ''; });
     return;
   }
-  document.querySelectorAll('.archive-card, .static-archive-card').forEach(card => {
-    const text = card.textContent.toLowerCase();
-    const matches = {
+
+  // Filter using Fuse index if available
+  if (_fuseEngine && _allItems.length) {
+    var filterMap = {
+      vuln: 'vulnerability', cve: 'CVE', zerod: 'zero-day',
+      malware: 'malware', incident: 'incident', news: 'news'
+    };
+    var term = filterMap[cat] || cat;
+    var results = _fuseEngine.search(term);
+    renderSearchResults(results.map(function(r){ return r; }), cat);
+    document.querySelectorAll('.date-group, .static-archive-section').forEach(function(c){ c.style.display = 'none'; });
+    document.getElementById('dynamicArchive').style.display = 'none';
+    return;
+  }
+
+  // Fallback DOM filter
+  document.querySelectorAll('.archive-card, .static-archive-card').forEach(function(card) {
+    var text = card.textContent.toLowerCase();
+    var matches = {
       vuln: ['vulnerability','vuln','cve'], cve: ['cve-','cve '],
       zerod: ['zero-day','zeroday','0-day'], malware: ['malware','ransomware','trojan','botnet'],
       incident: ['incident','breach','attack'], news: ['news','update','advisory']
     };
-    const keywords = matches[cat] || [];
-    card.style.display = keywords.some(kw => text.includes(kw)) ? '' : 'none';
+    var keywords = matches[cat] || [];
+    card.style.display = keywords.some(function(kw){ return text.includes(kw); }) ? '' : 'none';
   });
 });
 

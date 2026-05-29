@@ -1,0 +1,106 @@
+name: "🚀 SENTINEL APEX — Production Smoke Test"
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'posts/**'
+      - 'intel-state.json'
+      - 'live-intel.json'
+      - 'rss.xml'
+      - 'sitemap.xml'
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    name: "Production URL Health Check"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Only run after deployment settles (Vercel needs ~60s to propagate)
+
+    steps:
+      - name: "⏳ Wait for Vercel deployment"
+        run: sleep 90
+
+      - name: "🚀 Smoke test — critical pages"
+        run: |
+          echo "🚀 SENTINEL APEX Smoke Test — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          BASE="https://blog.cyberdudebivash.in"
+          FAILED=0
+
+          check_url() {
+            local url="$1"
+            local label="$2"
+            local min_size="${3:-1000}"
+
+            HTTP_STATUS=$(curl -s -o /tmp/page_response -w "%{http_code}" \
+              "$url" --max-time 15 -L \
+              -H "User-Agent: SENTINEL-APEX-SmokeTest/1.0")
+
+            if [ "$HTTP_STATUS" != "200" ]; then
+              echo "❌ FAIL [$label] HTTP ${HTTP_STATUS} — $url"
+              echo "::error title=Smoke Test Failed::$label returned HTTP ${HTTP_STATUS}. URL: $url"
+              FAILED=$((FAILED+1))
+              return
+            fi
+
+            BODY_SIZE=$(wc -c < /tmp/page_response)
+            if [ "$BODY_SIZE" -lt "$min_size" ]; then
+              echo "❌ FAIL [$label] Response too small (${BODY_SIZE} bytes < ${min_size}) — $url"
+              echo "::error title=Smoke Test Failed::$label returned only ${BODY_SIZE} bytes — possible empty page"
+              FAILED=$((FAILED+1))
+              return
+            fi
+
+            echo "✅ OK  [$label] HTTP 200, ${BODY_SIZE} bytes"
+          }
+
+          # Critical pages
+          check_url "$BASE/" "Homepage" 50000
+          check_url "$BASE/intelligence.html" "Intel Hub" 20000
+          check_url "$BASE/pricing.html" "Pricing" 10000
+          check_url "$BASE/products.html" "Products" 10000
+          check_url "$BASE/enterprise.html" "Enterprise" 10000
+          check_url "$BASE/contact.html" "Contact/Sales" 10000
+          check_url "$BASE/archive.html" "Archive" 20000
+          check_url "$BASE/live-intel.json" "Live Intel API" 50000
+          check_url "$BASE/rss.xml" "RSS Feed" 5000
+          check_url "$BASE/sitemap.xml" "Sitemap" 1000
+
+          echo ""
+          echo "══════════════════════════════════"
+          if [ "$FAILED" -gt 0 ]; then
+            echo "❌ SMOKE TEST FAILED — $FAILED page(s) unhealthy"
+            echo "::error title=Production Smoke Test Failed::${FAILED} critical page(s) are not responding correctly. Check Vercel deployment logs."
+            exit 1
+          else
+            echo "✅ ALL PAGES HEALTHY — Production smoke test passed"
+          fi
+          echo "══════════════════════════════════"
+
+      - name: "🔍 Content integrity check"
+        if: success()
+        run: |
+          echo "🔍 Checking live-intel.json content integrity..."
+
+          curl -s "https://blog.cyberdudebivash.in/live-intel.json" | node -e "
+            const d = JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
+            const items = d.items || [];
+            console.log('Items in feed  :', items.length);
+            console.log('Critical items :', (d.stats||{}).critical || 0);
+            console.log('Last updated   :', d.metadata?.generated || 'unknown');
+
+            if (items.length < 10) {
+              console.error('::error title=Feed Content Error::live-intel.json has only', items.length, 'items');
+              process.exit(1);
+            }
+
+            // Check $49 pricing regression
+            const json = JSON.stringify(d);
+            if (json.includes('\$49/mo') || json.includes('\$49/month')) {
+              console.error('::warning title=Pricing Regression::live-intel.json contains old \$49/mo pricing reference');
+            }
+
+            console.log('✅ Content integrity OK');
+          "

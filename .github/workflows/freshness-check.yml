@@ -1,0 +1,76 @@
+name: "⚡ SENTINEL APEX — Intel Feed Freshness Monitor"
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # Every 30 minutes
+  workflow_dispatch:
+
+jobs:
+  freshness-check:
+    name: "Verify live-intel.json is not stale"
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: "Check live-intel.json freshness"
+        run: |
+          echo "⚡ SENTINEL APEX — Freshness Check — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+
+          # Fetch live-intel.json from production
+          HTTP_STATUS=$(curl -s -o /tmp/live-intel.json -w "%{http_code}" \
+            "https://blog.cyberdudebivash.in/live-intel.json" \
+            --max-time 15 \
+            -H "Cache-Control: no-cache")
+
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error title=Feed Fetch Failed::live-intel.json returned HTTP ${HTTP_STATUS} — platform may be down"
+            exit 1
+          fi
+
+          FILE_SIZE=$(wc -c < /tmp/live-intel.json)
+          echo "✅ Fetched live-intel.json — ${FILE_SIZE} bytes"
+
+          if [ "$FILE_SIZE" -lt 10000 ]; then
+            echo "::error title=Feed Too Small::live-intel.json is only ${FILE_SIZE} bytes — possible corruption or empty feed"
+            exit 1
+          fi
+
+          # Check item count and freshness
+          node -e "
+            const d = require('/tmp/live-intel.json');
+            const items = d.items || [];
+            if (items.length < 10) {
+              console.error('FATAL: Only ' + items.length + ' items in feed (expected 50+)');
+              process.exit(1);
+            }
+
+            // Find most recent item
+            const sorted = [...items].sort((a,b) => new Date(b.published||0) - new Date(a.published||0));
+            const latest = sorted[0];
+            const latestDate = new Date(latest.published || latest.pubDate || 0);
+            const ageMinutes = Math.floor((Date.now() - latestDate.getTime()) / 60000);
+
+            console.log('Items in feed  : ' + items.length);
+            console.log('Latest item    : ' + latest.id);
+            console.log('Published at   : ' + latestDate.toISOString());
+            console.log('Age (minutes)  : ' + ageMinutes);
+
+            // Alert if feed is more than 45 minutes stale
+            if (ageMinutes > 45) {
+              console.error('::error title=Stale Intel Feed::Feed is ' + ageMinutes + ' minutes old — SENTINEL APEX pipeline may have failed. Check Actions: https://github.com/cyberdudebivash/cyberdudebivash-blog/actions');
+              // Non-fatal: pipeline may have just run but sources had no new items
+              if (ageMinutes > 120) {
+                process.exit(1);  // Fatal if > 2 hours stale
+              }
+            } else {
+              console.log('✅ Feed is fresh (' + ageMinutes + ' minutes old)');
+            }
+          " 2>&1
+
+          echo "✅ Freshness check complete"
+
+      - name: "Alert on staleness"
+        if: failure()
+        run: |
+          echo "::error title=SENTINEL APEX Feed Alert::Intel feed may be stale or unreachable. Manual pipeline trigger recommended: https://github.com/cyberdudebivash/cyberdudebivash-blog/actions/workflows/sentinel-apex.yml"
+          echo "Timestamp: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"

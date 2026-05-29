@@ -84,7 +84,7 @@
     const msgs = [
       `<span class="apex-sticky-badge">🔴 LIVE</span> <strong>CVE-2026-28401 CVSS 10.0</strong> — Ivanti Connect Secure actively exploited. Get instant alerts.`,
       `<span class="apex-sticky-badge">⚡ HOT</span> <strong>Volt Typhoon</strong> pre-positioned in US critical infrastructure. Stay ahead of nation-state threats.`,
-      `<span class="apex-sticky-badge">🛡️ PRO</span> Get <strong>48-hour pre-disclosure</strong> CVE reports before public release. SOC Pro — $49/mo.`,
+      `<span class="apex-sticky-badge">🛡️ PRO</span> Get <strong>48-hour pre-disclosure</strong> CVE reports before public release. SOC Pro — $18/mo.`,
     ];
     const msgDiv = el('div', { class: 'apex-sticky-msg' });
     msgDiv.innerHTML = msgs[Math.floor(Math.random() * msgs.length)];
@@ -354,7 +354,7 @@
       overlay.innerHTML = `
         <div class="apex-paywall-lock">🔒</div>
         <div class="apex-paywall-title">Full IOC Data — SOC Pro Members Only</div>
-        <div class="apex-paywall-sub">Complete indicator list, YARA signatures, and SIEM queries available to SOC Pro subscribers ($49/mo) and Enterprise clients.</div>
+        <div class="apex-paywall-sub">Complete indicator list, YARA signatures, and SIEM queries available to SOC Pro subscribers ($18/mo) and Enterprise clients.</div>
         <div class="apex-paywall-btns">
           <a href="${CFG.pricingUrl}" class="apex-inline-cta-btn">Unlock with SOC Pro →</a>
           <a href="mailto:${CFG.email}?subject=Free%20Trial%20Request" class="apex-inline-cta-btn outline">Request Free Trial</a>
@@ -547,7 +547,7 @@
     bar.innerHTML = `
       <div class="apex-bottom-msg">
         <strong>🔒 Full IOC data, YARA rules &amp; SIEM queries</strong> locked for SOC Pro members.
-        Unlock everything for <strong>$49/month</strong>.
+        Unlock everything for <strong>$18/month</strong>.
       </div>
       <div class="apex-bottom-btns">
         <a href="${CFG.pricingUrl}" class="apex-bottom-btn primary">Unlock SOC Pro →</a>

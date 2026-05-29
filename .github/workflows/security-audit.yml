@@ -1,0 +1,121 @@
+name: "🔒 SENTINEL APEX — Security Audit & Dependency Check"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'api/**'
+      - 'fetch-live-intel.js'
+      - 'generate-rss.js'
+  schedule:
+    - cron: '0 6 * * 1'   # Every Monday at 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  security-audit:
+    name: "npm audit + Security Validation"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "📥 Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: "⚙️ Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "🔒 npm audit — High/Critical vulnerabilities"
+        run: |
+          echo "🔒 SENTINEL APEX Security Audit — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+
+          if [ ! -f "package.json" ]; then
+            echo "ℹ️  No package.json found — static site, skipping npm audit"
+            exit 0
+          fi
+
+          npm install --ignore-scripts --no-fund 2>/dev/null || true
+          echo ""
+          echo "=== npm audit (high/critical) ==="
+          if ! npm audit --audit-level=high --json 2>/dev/null | node -e "
+            const d = JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
+            const vulns = d.vulnerabilities || {};
+            const high = Object.values(vulns).filter(v => v.severity === 'high' || v.severity === 'critical');
+            if (high.length > 0) {
+              console.error('FAIL: ' + high.length + ' high/critical vulnerabilities found:');
+              high.forEach(v => console.error('  - ' + v.name + ' [' + v.severity.toUpperCase() + '] via ' + (v.via||[]).map(x=>x.url||x).slice(0,2).join(', ')));
+              process.exit(1);
+            } else {
+              console.log('✅ No high/critical vulnerabilities found');
+              const all = Object.keys(vulns).length;
+              if (all > 0) console.log('ℹ️  ' + all + ' low/moderate vulnerabilities (acceptable)');
+            }
+          "; then
+            echo "::error title=Security Vulnerabilities Found::npm audit detected high or critical severity vulnerabilities. Run 'npm audit fix' locally and review output."
+            exit 1
+          fi
+
+      - name: "🔍 Secret Exposure Check"
+        run: |
+          echo "🔍 Checking for accidentally committed secrets..."
+
+          # Check for common secret patterns in committed files (not .env files)
+          PATTERNS=(
+            "sk_live_"
+            "sk_test_"
+            "AKIA[A-Z0-9]{16}"
+            "ghp_[A-Za-z0-9]{36}"
+            "xoxb-[0-9]{11}"
+          )
+
+          FOUND=0
+          for pattern in "${PATTERNS[@]}"; do
+            if git grep -rE "$pattern" -- '*.js' '*.html' '*.json' '*.yml' '*.yaml' 2>/dev/null | grep -v "node_modules" | grep -v ".git" | grep -v "# example" | head -5; then
+              echo "::warning title=Potential Secret Exposure::Pattern '$pattern' found in tracked files. Review above matches."
+              FOUND=1
+            fi
+          done
+
+          if [ "$FOUND" -eq 0 ]; then
+            echo "✅ No secret patterns detected in tracked files"
+          fi
+
+      - name: "🔐 Security Headers Validation"
+        run: |
+          echo "🔐 Validating vercel.json security headers..."
+
+          if [ ! -f "vercel.json" ]; then
+            echo "⚠️  vercel.json not found — cannot validate headers"
+            exit 0
+          fi
+
+          node -e "
+            const v = require('./vercel.json');
+            const headers = v.headers || [];
+            const required = ['Strict-Transport-Security','X-Frame-Options','X-Content-Type-Options','Referrer-Policy'];
+            const allHeaders = headers.flatMap(h => (h.headers||[]).map(x => x.key));
+            const missing = required.filter(r => !allHeaders.includes(r));
+            if (missing.length > 0) {
+              console.warn('⚠️  Missing security headers: ' + missing.join(', '));
+            } else {
+              console.log('✅ All required security headers present: ' + required.join(', '));
+            }
+            const hasHSTS = allHeaders.includes('Strict-Transport-Security');
+            console.log('HSTS:             ' + (hasHSTS ? '✅' : '❌'));
+            console.log('X-Frame-Options:  ' + (allHeaders.includes('X-Frame-Options') ? '✅' : '❌'));
+            console.log('CSP present:      ' + (allHeaders.includes('Content-Security-Policy') ? '✅' : '❌'));
+          "
+
+      - name: "📋 Audit Summary"
+        if: always()
+        run: |
+          echo "════════════════════════════════════"
+          echo "🔒 SENTINEL APEX Security Audit Done"
+          echo "Timestamp : $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          echo "Trigger   : ${{ github.event_name }}"
+          echo "════════════════════════════════════"
