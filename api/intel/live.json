@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-29T04:27:14.299Z",
+  "generated": "2026-05-29T04:44:03.780Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,7 +7,7 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 0,
+  "total_published": 48,
   "s2n_stats": {
     "passed": 88,
     "suppressed": 68,
@@ -140,10 +140,10 @@
       }
     },
     {
-      "id": "CVE-2026-5394",
-      "title": "Pimcore Platform - SQL Injection in DataObject composite index handling during class definition import/save",
-      "description": "## Description\nAn authenticated administrative user who can import or save DataObject class definitions can inject attacker-controlled composite index metadata and trigger unintended SQL execution in the backend. The vulnerable flow accepts `compositeIndices` from imported JSON, stores the values wi",
-      "cvss": 7.5,
+      "id": "CVE-2026-47179",
+      "title": "Arcane Has an Authenticated Arbitrary Host File Read via Docker Compose Include Directives",
+      "description": "## Summary `ProjectService.GetProjectFileContent` returns the contents of any Docker Compose include directive declared in a project's compose file before any path-traversal validation runs. Because `ProjectService.CreateProject` writes attacker-supplied compose content to disk without validating in",
+      "cvss": 7.7,
       "final_ps": 49,
       "quality_score": 0.578,
       "threat_level": "MEDIUM",
@@ -158,19 +158,19 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "composer",
-      "product": "pimcore/pimcore",
+      "vendor": "go",
+      "product": "github.com/getarcaneapp/arcane/backend",
       "due_date": null,
       "cves": [
-        "CVE-2026-5394",
-        "CVE-2026-5394"
+        "CVE-2026-47179",
+        "CVE-2026-47179"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-r2f4-ff2p-xc64",
-        "https://github.com/pimcore/pimcore/security/advisories/GHSA-r2f4-ff2p-xc64",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-5394",
-        "https://github.com/pimcore/pimcore/pull/19108"
+        "https://github.com/advisories/GHSA-c3px-h233-h6fq",
+        "https://github.com/getarcaneapp/arcane/security/advisories/GHSA-c3px-h233-h6fq",
+        "https://github.com/getarcaneapp/arcane/commit/b6cbffabf61dbc3f12a28d3b5830e3c6b7e67daf",
+        "https://github.com/advisories/GHSA-c3px-h233-h6fq"
       ],
       "explanation": {
         "quality": [
@@ -187,11 +187,11 @@
       }
     },
     {
-      "id": "CVE-2026-45808",
-      "title": "OpenBao's cross-namespace lease revocation via legacy sys/revoke path bypasses ACL",
-      "description": "# Impact OpenBao's namespaces provide multi-tenant separation. A tenant who intentionally leaks lease identifiers can have their lease and underlying credential revoked or renewed by a user in another tenant via the legacy, undocumented `sys/revoke` and `sys/renew` endpoints. # Patch This will be ad",
-      "cvss": 7.5,
-      "final_ps": 49,
+      "id": "CVE-2026-44730",
+      "title": "OpenCTI: Privilege escalation via graphQL API is abusable by organization admins, due to incorrect ACL on userEdit relat",
+      "description": "### Summary\nAn organization admin can escalate their privileges by adding a user from a different organization with higher privileges, to their own organization. ### Impact\nFull platform access, access to sensitive or proprietary information.",
+      "cvss": 7.2,
+      "final_ps": 48,
       "quality_score": 0.578,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
@@ -205,19 +205,19 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/openbao/openbao",
+      "vendor": "pip",
+      "product": "pycti",
       "due_date": null,
       "cves": [
-        "CVE-2026-45808",
-        "CVE-2026-45808"
+        "CVE-2026-44730",
+        "CVE-2026-44730"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-v8v8-cm84-m686",
-        "https://github.com/openbao/openbao/security/advisories/GHSA-v8v8-cm84-m686",
-        "https://github.com/openbao/openbao/pull/3152",
-        "https://github.com/openbao/openbao/commit/c0495646b41cea0e3f5a1030132e9cf5c2375b5c"
+        "https://github.com/advisories/GHSA-q537-qhj4-wcjx",
+        "https://github.com/OpenCTI-Platform/opencti/security/advisories/GHSA-q537-qhj4-wcjx",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-44730",
+        "https://github.com/pypa/advisory-database/tree/main/vulns/pycti/PYSEC-2026-167.yaml"
       ],
       "explanation": {
         "quality": [
@@ -227,7 +227,7 @@
           "QS=0.578"
         ],
         "priority": [
-          "base_ps=49 (no boosts)"
+          "base_ps=48 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4242,10 +4242,108 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-42305",
-      "title": "Dulwich has an arbitrary file write via NTFS-hostile tree entries on Windows",
-      "description": "## Impact Arbitrary file write leading to remote code execution when cloning or checking out a malicious Git repository on Windows. Dulwich's path-element validator accepted tree entries whose filenames contained bytes that Windows interprets as structural path syntax: - \\ — the Windows path separat",
-      "cvss": 8.8,
+      "id": "CVE-2026-46345",
+      "title": "compliance-trestle - jinja has an Arbitrary File Write via Path Traversal",
+      "description": "**Relevant Products/Components:** * `trestle/core/commands/author/jinja.py`\n* `trestle author jinja` --- ## Detailed Description: The `-o/--output` argument in `trestle author jinja` allows writing files outside the intended workspace. The application does not properly validate: * `../`\n* `..\\`\n* ab",
+      "cvss": 8.4,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "compliance-trestle",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-46345",
+        "CVE-2026-46345"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-4q5v-7g7x-j79w",
+        "https://github.com/oscal-compass/compliance-trestle/security/advisories/GHSA-4q5v-7g7x-j79w",
+        "https://github.com/oscal-compass/compliance-trestle/commit/247fcce289f60103f3d8e28d8ec51a6986b94fb6",
+        "https://github.com/oscal-compass/compliance-trestle/commit/7d107b3ac53caca7bde97a6278b23cd739d94525"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-46439",
+      "title": "compliance-trestle Vulnerable to Remote Code Execution via Recursive Server-Side Template Injection (SSTI)",
+      "description": "A High severity Server-Side Template Injection (SSTI) vulnerability exists in the `trestle author jinja` command. The command recursively evaluates rendered templates, allowing an attacker to achieve arbitrary command execution with privileges of the running process by injecting malicious payloads i",
+      "cvss": 7.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-05-28",
+      "last_seen": "2026-05-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "compliance-trestle",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-46439",
+        "CVE-2026-46439"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-gg2g-p7xc-qqmm",
+        "https://github.com/oscal-compass/compliance-trestle/security/advisories/GHSA-gg2g-p7xc-qqmm",
+        "https://github.com/oscal-compass/compliance-trestle/commit/247fcce289f60103f3d8e28d8ec51a6986b94fb6",
+        "https://github.com/oscal-compass/compliance-trestle/commit/7d107b3ac53caca7bde97a6278b23cd739d94525"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-42563",
+      "title": "Dulwich Vulnerable to Command Injection via Merge Driver Path",
+      "description": "## Summary Dulwich's `ProcessMergeDriver` substitutes the file path (from the git tree, controllable by an attacker via a malicious branch) into the merge driver command via the `%P` placeholder and executes it with `subprocess.run(..., shell=True)`. An attacker who can cause a victim to merge an un",
+      "cvss": 7.5,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4264,113 +4362,15 @@
       "product": "dulwich",
       "due_date": null,
       "cves": [
-        "CVE-2026-42305",
-        "CVE-2026-42305"
+        "CVE-2026-42563",
+        "CVE-2026-42563"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-897w-fcg9-f6xj",
-        "https://github.com/jelmer/dulwich/security/advisories/GHSA-897w-fcg9-f6xj",
+        "https://github.com/advisories/GHSA-9277-mp7x-85jf",
+        "https://github.com/jelmer/dulwich/security/advisories/GHSA-9277-mp7x-85jf",
         "https://github.com/jelmer/dulwich/releases/tag/dulwich-1.2.5",
-        "https://github.com/advisories/GHSA-897w-fcg9-f6xj"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47179",
-      "title": "Arcane Has an Authenticated Arbitrary Host File Read via Docker Compose Include Directives",
-      "description": "## Summary `ProjectService.GetProjectFileContent` returns the contents of any Docker Compose include directive declared in a project's compose file before any path-traversal validation runs. Because `ProjectService.CreateProject` writes attacker-supplied compose content to disk without validating in",
-      "cvss": 7.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/getarcaneapp/arcane/backend",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47179",
-        "CVE-2026-47179"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-c3px-h233-h6fq",
-        "https://github.com/getarcaneapp/arcane/security/advisories/GHSA-c3px-h233-h6fq",
-        "https://github.com/getarcaneapp/arcane/commit/b6cbffabf61dbc3f12a28d3b5830e3c6b7e67daf",
-        "https://github.com/advisories/GHSA-c3px-h233-h6fq"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-44730",
-      "title": "OpenCTI: Privilege escalation via graphQL API is abusable by organization admins, due to incorrect ACL on userEdit relat",
-      "description": "### Summary\nAn organization admin can escalate their privileges by adding a user from a different organization with higher privileges, to their own organization. ### Impact\nFull platform access, access to sensitive or proprietary information.",
-      "cvss": 7.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "pycti",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44730",
-        "CVE-2026-44730"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-q537-qhj4-wcjx",
-        "https://github.com/OpenCTI-Platform/opencti/security/advisories/GHSA-q537-qhj4-wcjx",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-44730",
-        "https://github.com/pypa/advisory-database/tree/main/vulns/pycti/PYSEC-2026-167.yaml"
+        "https://github.com/advisories/GHSA-9277-mp7x-85jf"
       ],
       "explanation": {
         "quality": [
