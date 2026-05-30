@@ -1,15 +1,15 @@
 {
-  "generated": "2026-05-30T05:37:20.783Z",
+  "generated": "2026-05-30T08:08:45.244Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1944,
+    "total_nodes": 1946,
     "actors": 8,
-    "cves": 476,
-    "campaigns": 200,
+    "cves": 477,
+    "campaigns": 201,
     "malware": 0,
     "iocs": 200,
-    "edges": 669
+    "edges": 670
   },
   "nodes": {
     "actor:lockbit": {
@@ -36872,6 +36872,44 @@
         "type": "SUPPLY_CHAIN"
       },
       "connections": []
+    },
+    "CVE-2026-0257": {
+      "id": "CVE-2026-0257",
+      "type": "CVE",
+      "name": "PAN-OS GlobalProtect Authentication Bypass (CVE-2026-0257) Under Active Exploitation",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-05-30",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-0257": {
+      "id": "campaign:cve-2026-0257",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-05-30",
+        "last_seen": "2026-05-30",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-0257 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-0257",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -42932,6 +42970,15 @@
       "relationship": "linked_to",
       "confidence": 0.88,
       "first_seen": "2026-05-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-0257→includes→CVE-2026-0257",
+      "source": "campaign:cve-2026-0257",
+      "target": "CVE-2026-0257",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-05-30",
       "sources": []
     }
   ]
