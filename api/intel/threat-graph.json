@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-01T01:37:27.316Z",
+  "generated": "2026-06-01T06:33:22.556Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 1972,
+    "total_nodes": 1976,
     "actors": 8,
-    "cves": 477,
-    "campaigns": 202,
+    "cves": 478,
+    "campaigns": 203,
     "malware": 0,
     "iocs": 206,
-    "edges": 689
+    "edges": 690
   },
   "nodes": {
     "actor:lockbit": {
@@ -37439,6 +37439,80 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-8979": {
+      "id": "CVE-2026-8979",
+      "type": "CVE",
+      "name": "CyberDanube Security Research 20260528-0 | Multiple Vulnerabilities in Multiple Vulnerabilities in Mennekes Amtron Series",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecLists",
+        "product": "Multiple Targets",
+        "published": "2026-06-01",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "FULLDIS-027fcc7256ffb16f": {
+      "id": "FULLDIS-027fcc7256ffb16f",
+      "type": "Intel",
+      "name": "bmcweb (OpenBMC web server): four vulnerabilities — two unfixed, GHSA without a CVE",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 54,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecLists",
+        "product": "Multiple Targets",
+        "published": "2026-06-01",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "SANS_ISC-e6fe90b63bb225e7": {
+      "id": "SANS_ISC-e6fe90b63bb225e7",
+      "type": "Intel",
+      "name": "ISC Stormcast For Monday, June 1st, 2026 https://isc.sans.edu/podcastdetail/9952, (Mon, Jun 1st)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 40,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SANS ISC",
+        "product": "Threat Intelligence",
+        "published": "2026-06-01",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-8979": {
+      "id": "campaign:cve-2026-8979",
+      "type": "Campaign",
+      "name": "SecLists Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-06-01",
+        "last_seen": "2026-06-01",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 2 related CVEs: CVE-2026-8979, CVE-2026-8980 | 1 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-8979",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -43679,6 +43753,15 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-05-30",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-8979→includes→CVE-2026-8979",
+      "source": "campaign:cve-2026-8979",
+      "target": "CVE-2026-8979",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-01",
       "sources": []
     }
   ]
