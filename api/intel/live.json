@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-02T21:52:39.874Z",
+  "generated": "2026-06-02T23:43:15.726Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,13 +7,56 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 200,
+  "total_published": 206,
   "s2n_stats": {
-    "passed": 82,
-    "suppressed": 21,
+    "passed": 83,
+    "suppressed": 18,
     "avg_qs": 0.554
   },
   "items": [
+    {
+      "id": "CVE-2026-8206",
+      "title": "Critical Kirki flaw exploited to hijack WordPress admin accounts",
+      "description": "Hackers are exploiting a critical privilege escalation vulnerability (CVE-2026-8206) in the Kirki plugin for WordPress to take over any user account, including those belonging to administrators. [...]",
+      "cvss": 8,
+      "final_ps": 70,
+      "quality_score": 0.58,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-06-02",
+      "last_seen": "2026-06-02",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-8206"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/critical-kirki-flaw-exploited-to-hijack-wordpress-admin-accounts/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.580"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -2458,7 +2501,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CISA-ead48e07821f0249",
@@ -4327,54 +4372,6 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-47423",
-      "title": "DOMPurify XSS via selectedcontent re-clone",
-      "description": "### Summary\nDOMPurify 3.4.4 allows `selectedcontent` by default, allowing a chain in which browsers \"re-clone\" an XSS payload after sanitization, effectively bypassing DOMPurify. ### Details\nThe chain is as follows:\n1. The browser parses the input and creates a ` ` clone from the selected ` `\n2. DOM",
-      "cvss": 8.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-01",
-      "last_seen": "2026-06-01",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "dompurify",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47423",
-        "CVE-2026-47423"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-87xg-pxx2-7hvx",
-        "https://github.com/cure53/DOMPurify/security/advisories/GHSA-87xg-pxx2-7hvx",
-        "https://github.com/advisories/GHSA-87xg-pxx2-7hvx"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
     }
   ]
 }
