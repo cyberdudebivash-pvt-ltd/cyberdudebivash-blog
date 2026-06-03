@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-03T02:13:41.415Z",
+  "generated": "2026-06-03T07:16:39.820Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2054,
+    "total_nodes": 2058,
     "actors": 8,
     "cves": 490,
-    "campaigns": 211,
+    "campaigns": 212,
     "malware": 0,
     "iocs": 206,
-    "edges": 698
+    "edges": 699
   },
   "nodes": {
     "actor:lockbit": {
@@ -38933,6 +38933,80 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-ce624652d3301e1f": {
+      "id": "BLEEPINGCOMPUTER-ce624652d3301e1f",
+      "type": "Intel",
+      "name": "VS Code zero-day lets hackers steal GitHub tokens in one click",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-03",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "THEHACKERNEWS-c61cb5fecc948887": {
+      "id": "THEHACKERNEWS-c61cb5fecc948887",
+      "type": "Intel",
+      "name": "Weedhack Attacks Minecraft Users, CountLoader Hits 86K, Miners Spread via Pirated Content",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-06-03",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "MICROSOFT_SECURITY-677f5a4448c4dca9": {
+      "id": "MICROSOFT_SECURITY-677f5a4448c4dca9",
+      "type": "Intel",
+      "name": "Preinstall to persistence: Inside the Red Hat npm Miasma credential-stealing campaign",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "microsoft_security",
+        "product": "Threat Intelligence",
+        "published": "2026-06-03",
+        "type": "SUPPLY_CHAIN"
+      },
+      "connections": []
+    },
+    "campaign:cluster-cfbba2b0": {
+      "id": "campaign:cluster-cfbba2b0",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-03",
+        "last_seen": "2026-06-03",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-ce624652d3301e1f",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -45254,6 +45328,15 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-06-02",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-cfbba2b0→includes→BLEEPINGCOMPUTER-ce624652d3301e1f",
+      "source": "campaign:cluster-cfbba2b0",
+      "target": "BLEEPINGCOMPUTER-ce624652d3301e1f",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-03",
       "sources": []
     }
   ]
