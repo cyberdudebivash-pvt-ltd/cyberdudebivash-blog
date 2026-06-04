@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-04T16:38:05.836Z",
+  "generated": "2026-06-04T19:06:12.982Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,13 +7,57 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 271,
+  "total_published": 286,
   "s2n_stats": {
     "passed": 85,
-    "suppressed": 20,
-    "avg_qs": 0.555
+    "suppressed": 16,
+    "avg_qs": 0.554
   },
   "items": [
+    {
+      "id": "CVE-2026-20230",
+      "title": "Cisco Patches CVE-2026-20230 in Unified CM as Exploit Code Goes Public",
+      "description": "Cisco has patched a bug in Unified Communications Manager that lets an unauthenticated attacker on the network write files to the box and, from there, climb to root. It is tracked as CVE-2026-20230, and proof-of-concept exploit code is already public. Cisco's PSIRT says it has not seen the flaw used",
+      "cvss": 8,
+      "final_ps": 81,
+      "quality_score": 0.538,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "thehackernews",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "thehackernews"
+      ],
+      "first_seen": "2026-06-04",
+      "last_seen": "2026-06-04",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "The Hacker News",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-20230"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://thehackernews.com/2026/06/cisco-patches-cve-2026-20230-in-unified.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.537"
+        ],
+        "priority": [
+          "+12 PoC_available",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -2459,7 +2503,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CISA-9acd78827337e63e",
@@ -4019,6 +4065,55 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-49279",
+      "title": "WWBN AVideo: Stored XSS via autoEvalCodeOnHTML Bypass in MessageSQLite WebSocket Handler (CVE-2026-43874 Bypass)",
+      "description": "# AVideo: Stored XSS via `autoEvalCodeOnHTML` in MessageSQLite WebSocket Handler ## Summary AVideo has a stored XSS vulnerability in the WebSocket messaging system. The `MessageSQLite.php` handler only strips `autoEvalCodeOnHTML` from `$json['msg']`, but `msgToResourceId()` reads from `$msg['json']`",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-04",
+      "last_seen": "2026-06-04",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "wwbn/avideo",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49279",
+        "CVE-2026-49279"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-2fhx-q92v-5fhv",
+        "https://github.com/WWBN/AVideo/security/advisories/GHSA-2fhx-q92v-5fhv",
+        "https://github.com/WWBN/AVideo/commit/3e0b3ce2bfa766183ff0ae227439394db57b1a23",
+        "https://github.com/advisories/GHSA-2fhx-q92v-5fhv"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-34077",
       "title": "React Router vulnerable to Denial of Service via reflected user input in single-fetch",
       "description": "A DoS vulnerability exists in the React Router v7 [Framework Mode](https://reactrouter.com/start/modes#framework), as well as Remix v2.9.0+ with [Single Fetch](https://v2.remix.run/docs/guides/single-fetch) enabled. In some scenarios the underlying serialization algorithm can become a bottleneck whe",
@@ -4264,12 +4359,12 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-44487",
-      "title": "Axios: Proxy-Authorization Credential Leak to Origin Server Across HTTP-to-HTTPS Redirect in Axios Node.js HTTP Adapter",
-      "description": "## Summary Axios’s Node.js HTTP adapter may forward a `Proxy-Authorization` header to a redirected origin during specific proxy-to-direct redirect flows. This affects Node.js usage, where an initial HTTP request is sent through an authenticated HTTP proxy, redirects are followed, and the redirected ",
+      "id": "GHSA-cc97e34286523c04",
+      "title": "Klever-Go P2P MultiDataInterceptor leaks global throttler slots on malformed compressed batches (DoS)",
+      "description": "## Publisher note **Fixed in `v1.7.17`.** Operators running `< v1.7.17` should upgrade. The decompression-error path in `MultiDataInterceptor.ProcessReceivedMessage` now releases the global throttler slot before returning (guarded `defer` after `StartProcessing()`, disabled when the asynchronous gor",
       "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "final_ps": 20,
+      "quality_score": 0.493,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "github_advisories",
@@ -4282,133 +4377,32 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "npm",
-      "product": "axios",
+      "vendor": "go",
+      "product": "github.com/klever-io/klever-go",
       "due_date": null,
-      "cves": [
-        "CVE-2026-44487",
-        "CVE-2026-44487"
-      ],
-      "ioc_count": 0,
+      "cves": [],
+      "ioc_count": 1,
       "refs": [
-        "https://github.com/advisories/GHSA-p92q-9vqr-4j8v",
-        "https://github.com/axios/axios/security/advisories/GHSA-p92q-9vqr-4j8v",
-        "https://github.com/axios/axios/releases/tag/v0.32.0",
-        "https://github.com/axios/axios/releases/tag/v1.16.0"
+        "https://github.com/advisories/GHSA-74m6-4hjp-7226",
+        "https://github.com/klever-io/klever-go/security/advisories/GHSA-74m6-4hjp-7226",
+        "https://github.com/klever-io/klever-go/commit/333f6ec910906e227705fc5767dc897d8fbfc862",
+        "https://github.com/klever-io/klever-go/commit/68b94a40824fac2d848a4ded6eb7c91ada6ce9ef"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.493"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=20 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-44486",
-      "title": "Axios: Proxy-Authorization header leaks to redirect target when proxy is re-evaluated to direct connection",
-      "description": "### Summary Axios’ Node.js HTTP adapter can leak proxy credentials to a redirect target in affected versions. When a request is sent through an authenticated proxy, Axios may add a `Proxy-Authorization` header. If Axios then follows a redirect and the redirected request is no longer sent through tha",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-04",
-      "last_seen": "2026-06-04",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "axios",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44486",
-        "CVE-2026-44486"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-j5f8-grm9-p9fc",
-        "https://github.com/axios/axios/security/advisories/GHSA-j5f8-grm9-p9fc",
-        "https://github.com/axios/axios/pull/10794",
-        "https://github.com/axios/axios/commit/afca61a070728e717203c2bc21e7b589b59b858b"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-42211",
-      "title": "React Router's vendored turbo-stream v2 allows arbitrary constructor invocation via TYPE_ERROR deserialization leading t",
-      "description": "When using React Router v7 in [Framework Mode](https://reactrouter.com/start/modes#framework), there exists a combination of steps that could potentially allow unauthorized RCE through external requests. This first requires the application code to have an existing prototype pollution vulnerability. ",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-03",
-      "last_seen": "2026-06-03",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "react-router",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42211",
-        "CVE-2026-42211"
-      ],
-      "ioc_count": 4,
-      "refs": [
-        "https://github.com/advisories/GHSA-49rj-9fvp-4h2h",
-        "https://github.com/remix-run/react-router/security/advisories/GHSA-49rj-9fvp-4h2h",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-42211",
-        "https://github.com/advisories/GHSA-49rj-9fvp-4h2h"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     }
   ]
 }
