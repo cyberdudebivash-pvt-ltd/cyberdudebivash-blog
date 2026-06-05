@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-05T16:42:45.552Z",
+  "generated": "2026-06-05T18:31:14.143Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 103,
+  "count": 101,
   "items": [
     {
       "id": "CVE-2023-27351",
@@ -99,14 +99,14 @@
       "iocs": []
     },
     {
-      "id": "BLEEPINGCOMPUTER-01f7e99693c1d8f1",
-      "title": "Over 900 US gas station tank gauge systems exposed to attacks",
-      "description": "Over 900 automatic tank gauge (ATG) systems across the United States, used to monitor fuel and chemical storage tanks across various critical infrastructure sectors, have been found exposed online and are vulnerable to ongoing attacks. [...]",
+      "id": "BLEEPINGCOMPUTER-f7ffee89a8649e77",
+      "title": "Dark web Nemesis Market vendor gets 26 years for selling drugs",
+      "description": "A California man was sentenced to more than 26 years in federal prison for trafficking fentanyl and methamphetamine through Nemesis Market, one of the world's largest dark web marketplaces. [...]",
       "cvss": 6.5,
       "final_ps": 49,
       "quality_score": 0.45,
       "threat_level": "MEDIUM",
-      "type": "CRITICAL_INFRASTRUCTURE",
+      "type": "DARK_WEB",
       "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -123,7 +123,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.bleepingcomputer.com/news/security/over-900-us-gas-station-tank-gauge-systems-exposed-to-attacks/"
+        "https://www.bleepingcomputer.com/news/security/dark-web-nemesis-market-vendor-gets-26-years-for-selling-drugs/"
       ],
       "explanation": {
         "quality": [
@@ -143,9 +143,9 @@
       "iocs": []
     },
     {
-      "id": "GHSA-66eb2fb5c27494a0",
-      "title": "klever-go: REST API slow-header connection exhaustion via Gin Engine.Run",
-      "description": "### Summary The Klever seednode REST API starts a Gin engine with `Engine.Run(restAPIInterface)`. In Gin v1.9.1, `Engine.Run` calls Go's default `http.ListenAndServe`, which constructs an HTTP server without application-level `ReadHeaderTimeout`, `ReadTimeout`, or `MaxHeaderBytes` limits. An unauthe",
+      "id": "GHSA-e862134dc748dda8",
+      "title": "Klever-Go KVM: Unauthenticated remote node crash (nil-pointer DoS) in klever-go P2P transaction interceptor (txVersionCh",
+      "description": "## Summary\nEvery transaction gossiped on the klever-go P2P network is decoded and validated\nsynchronously inside the libp2p pubsub topic-validator callback. The validator\n`txVersionChecker.CheckTxVersion` dereferences `tx.RawData.Version` with no nil\ncheck. A protobuf `Transaction` whose embedded `R",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -167,57 +167,10 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-w4c6-7r69-w7j9",
-        "https://github.com/klever-io/klever-go/security/advisories/GHSA-w4c6-7r69-w7j9",
+        "https://github.com/advisories/GHSA-rm5c-5x2p-48wr",
+        "https://github.com/klever-io/klever-go/security/advisories/GHSA-rm5c-5x2p-48wr",
         "https://github.com/klever-io/klever-go/releases/tag/v1.7.18",
-        "https://github.com/advisories/GHSA-w4c6-7r69-w7j9"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-e82e8ea00f3015ca",
-      "title": "klever-go: Unbounded goroutine spawn on direct-message ingress enables peer-driven DoS",
-      "description": "### Summary `networkMessenger.directMessageHandler` in `network/p2p/libp2p/netMessenger.go` spawns a fresh goroutine for every incoming direct message before the antiflood layer makes an admission decision. There is no semaphore, throttler, or bound on concurrent in-flight spawns. A single connected",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/klever-io/klever-go",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-hf2g-6j7h-98wg",
-        "https://github.com/klever-io/klever-go/security/advisories/GHSA-hf2g-6j7h-98wg",
-        "https://github.com/klever-io/klever-go/releases/tag/v1.7.18",
-        "https://github.com/advisories/GHSA-hf2g-6j7h-98wg"
+        "https://github.com/advisories/GHSA-rm5c-5x2p-48wr"
       ],
       "explanation": {
         "quality": [
@@ -419,41 +372,41 @@
       "iocs": []
     },
     {
-      "id": "SECURITYWEEK-b5dcf863a986c728",
-      "title": "OWASP Incubator Project Helps Developers Find and Fix Vulnerable Dependencies in Seconds",
-      "description": "CVE Lite CLI is a free, open-source command line tool that scans your projects in seconds and tells you exactly which included packages contain a vulnerability. The post OWASP Incubator Project Helps Developers Find and Fix Vulnerable Dependencies in Seconds appeared first on SecurityWeek .",
+      "id": "MICROSOFT_SECURITY-ad9b2943b73f6644",
+      "title": "Securing CI/CD in an agentic world: Claude Code Github action case",
+      "description": "Microsoft Threat Intelligence identified a prompt injection pathway in Claude Code GitHub Action that allowed access to workflow secrets under specific conditions. This research examines the attack chain, responsible disclosure process, Anthropic's mitigation, and guidance for securing AI-powered CI",
       "cvss": 6.5,
-      "final_ps": 47,
-      "quality_score": 0.445,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "securityweek",
+      "final_ps": 43,
+      "quality_score": 0.45,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "microsoft_security",
       "sources_confirmed": 1,
       "merged_sources": [
-        "securityweek"
+        "microsoft_security"
       ],
       "first_seen": "2026-06-05",
       "last_seen": "2026-06-05",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "SecurityWeek",
+      "vendor": "microsoft_security",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.securityweek.com/owasp-incubator-project-helps-developers-find-and-fix-vulnerable-dependencies-in-seconds/"
+        "https://www.microsoft.com/en-us/security/blog/2026/06/05/securing-ci-cd-in-agentic-world-claude-code-github-action-case/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.70 (securityweek)",
+          "source_weight=0.72 (microsoft_security)",
           "data_confidence=0.80",
           "recency=0d (score=1.00)",
-          "QS=0.445"
+          "QS=0.450"
         ],
         "priority": [
-          "+3 supply_chain"
+          "base_ps=43 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -546,6 +499,50 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "BLEEPINGCOMPUTER-5045e688925a9ade",
+      "title": "Chinese APT deploys new malware to keep access to hacked networks",
+      "description": "A Chinese espionage group tracked as UNC5221 has been accessing Microsoft 365 environments using the Brickstorm backdoor and previously undocumented malware named Plenet and AgentPSD. [...]",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.45,
+      "threat_level": "LOW",
+      "type": "MALWARE_REPORT",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-06-05",
+      "last_seen": "2026-06-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/chinese-apt-deploys-new-malware-to-keep-access-to-hacked-networks/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.450"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -1377,94 +1374,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "THEHACKERNEWS-a8bf8fbef4274f3e",
-      "title": "Android Spyware Asin Targets Arabic Users via Fake News, PDF and War Map Apps",
-      "description": "Arabic-speaking users have emerged as the target of a new Android spyware codenamed Asin, according to findings from ESET. The Slovakian cybersecurity company said it first detected the malware spread via multiple campaigns in early 2025, with each attack wave making use of distinct websites mimicki",
-      "cvss": 6.5,
-      "final_ps": 39,
-      "quality_score": 0.408,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "thehackernews",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "thehackernews"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "The Hacker News",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://thehackernews.com/2026/06/android-spyware-asin-targets-arabic.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (thehackernews)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.408"
-        ],
-        "priority": [
-          "base_ps=39 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "DARKREADING-6a2c21f706c2604b",
-      "title": "Adaptive, Agentic AI Worms Loom as Next Enterprise Threat",
-      "description": "AI worms, or &quot;viruses with wings and brains,&quot; adapt to new environments, seek out vulnerabilities, and will likely strike within a year, researchers say.",
-      "cvss": 6.5,
-      "final_ps": 39,
-      "quality_score": 0.408,
-      "threat_level": "LOW",
-      "type": "MALWARE_REPORT",
-      "source": "darkreading",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "darkreading"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "darkreading",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.darkreading.com/cyber-risk/adaptive-agentic-ai-worms-enterprise-cyber-threat"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (darkreading)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.408"
-        ],
-        "priority": [
-          "base_ps=39 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
