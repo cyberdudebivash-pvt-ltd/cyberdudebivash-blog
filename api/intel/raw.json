@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-05T18:31:14.143Z",
+  "generated": "2026-06-05T20:31:12.158Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,8 +8,52 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 101,
+  "count": 98,
   "items": [
+    {
+      "id": "BLEEPINGCOMPUTER-b65d207804377cc8",
+      "title": "CISA: Hackers now exploit SolarWinds Serv-U flaw to crash servers",
+      "description": "CISA warned today that hackers are now actively exploiting a recently patched high-severity SolarWinds Serv-U flaw to crash servers. [...]",
+      "cvss": 6.5,
+      "final_ps": 63,
+      "quality_score": 0.51,
+      "threat_level": "MEDIUM",
+      "type": "SUPPLY_CHAIN",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-06-05",
+      "last_seen": "2026-06-05",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/cisa-hackers-now-exploit-solarwinds-serv-u-flaw-to-crash-servers/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.510"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -99,53 +143,9 @@
       "iocs": []
     },
     {
-      "id": "BLEEPINGCOMPUTER-f7ffee89a8649e77",
-      "title": "Dark web Nemesis Market vendor gets 26 years for selling drugs",
-      "description": "A California man was sentenced to more than 26 years in federal prison for trafficking fentanyl and methamphetamine through Nemesis Market, one of the world's largest dark web marketplaces. [...]",
-      "cvss": 6.5,
-      "final_ps": 49,
-      "quality_score": 0.45,
-      "threat_level": "MEDIUM",
-      "type": "DARK_WEB",
-      "source": "bleepingcomputer",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "bleepingcomputer"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "BleepingComputer",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/security/dark-web-nemesis-market-vendor-gets-26-years-for-selling-drugs/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "+4 critical_infra"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-e862134dc748dda8",
-      "title": "Klever-Go KVM: Unauthenticated remote node crash (nil-pointer DoS) in klever-go P2P transaction interceptor (txVersionCh",
-      "description": "## Summary\nEvery transaction gossiped on the klever-go P2P network is decoded and validated\nsynchronously inside the libp2p pubsub topic-validator callback. The validator\n`txVersionChecker.CheckTxVersion` dereferences `tx.RawData.Version` with no nil\ncheck. A protobuf `Transaction` whose embedded `R",
+      "id": "GHSA-e9ccb1c147eaf59c",
+      "title": "skillctl: Path traversal and symlink-follow in skillctl allow arbitrary file disclosure and deletion",
+      "description": "## Impact `skillctl` 0.1.0 and 0.1.1 contained four path-safety vulnerabilities that, in combination, allowed an attacker to: 1. **Exfiltrate arbitrary files on the operator's machine** by publishing a malicious skills library containing a symlink inside a skill folder (e.g. `niania → /home/user/.aw",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -161,16 +161,16 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/klever-io/klever-go",
+      "vendor": "rust",
+      "product": "skillctl",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-rm5c-5x2p-48wr",
-        "https://github.com/klever-io/klever-go/security/advisories/GHSA-rm5c-5x2p-48wr",
-        "https://github.com/klever-io/klever-go/releases/tag/v1.7.18",
-        "https://github.com/advisories/GHSA-rm5c-5x2p-48wr"
+        "https://github.com/advisories/GHSA-wx3m-whqv-xv47",
+        "https://github.com/umanio-agency/skillctl/security/advisories/GHSA-wx3m-whqv-xv47",
+        "https://github.com/umanio-agency/skillctl/commit/827fff5c0698dd9e48e777d5907cf7bc19b91aca",
+        "https://github.com/umanio-agency/skillctl/releases/tag/v0.1.2"
       ],
       "explanation": {
         "quality": [
@@ -372,50 +372,6 @@
       "iocs": []
     },
     {
-      "id": "MICROSOFT_SECURITY-ad9b2943b73f6644",
-      "title": "Securing CI/CD in an agentic world: Claude Code Github action case",
-      "description": "Microsoft Threat Intelligence identified a prompt injection pathway in Claude Code GitHub Action that allowed access to workflow secrets under specific conditions. This research examines the attack chain, responsible disclosure process, Anthropic's mitigation, and guidance for securing AI-powered CI",
-      "cvss": 6.5,
-      "final_ps": 43,
-      "quality_score": 0.45,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "microsoft_security",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "microsoft_security"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "microsoft_security",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.microsoft.com/en-us/security/blog/2026/06/05/securing-ci-cd-in-agentic-world-claude-code-github-action-case/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.72 (microsoft_security)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "base_ps=43 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-32202",
       "title": "CVE-2026-32202: Microsoft Windows Protection Mechanism Failure Vulnerability — CISA KEV Active Exploitation",
       "description": "",
@@ -499,50 +455,6 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "BLEEPINGCOMPUTER-5045e688925a9ade",
-      "title": "Chinese APT deploys new malware to keep access to hacked networks",
-      "description": "A Chinese espionage group tracked as UNC5221 has been accessing Microsoft 365 environments using the Brickstorm backdoor and previously undocumented malware named Plenet and AgentPSD. [...]",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.45,
-      "threat_level": "LOW",
-      "type": "MALWARE_REPORT",
-      "source": "bleepingcomputer",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "bleepingcomputer"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "BleepingComputer",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/security/chinese-apt-deploys-new-malware-to-keep-access-to-hacked-networks/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -1748,50 +1660,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "DARKREADING-b96d2bd8e6c23ea1",
-      "title": "Name That Toon Contest",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 35,
-      "quality_score": 0.343,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "darkreading",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "darkreading"
-      ],
-      "first_seen": "2026-06-26",
-      "last_seen": "2026-06-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "darkreading",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.darkreading.com/events/celebrate-20-years-of-dark-reading-name-that-toon-contest"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (darkreading)",
-          "data_confidence=0.55",
-          "recency=-21d (score=0.85)",
-          "QS=0.343"
-        ],
-        "priority": [
-          "base_ps=35 (no boosts)"
-        ],
-        "suppression": "Quality score below minimum threshold (QS < 0.35)",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Quality score below minimum threshold (QS < 0.35)",
       "iocs": []
     },
     {
@@ -4250,6 +4118,206 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-47762",
+      "title": "TinyMCE Cross-Site Scripting (XSS) vulnerability through `mce:protected` comments",
+      "description": "",
+      "cvss": 8.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-05",
+      "last_seen": "2026-06-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "tinymce",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47762",
+        "CVE-2026-47762"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-v98h-vmpc-fpqv",
+        "https://github.com/tinymce/tinymce/security/advisories/GHSA-v98h-vmpc-fpqv",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-47762",
+        "https://www.tiny.cloud/docs/tinymce/7/7.9.3-release-notes/#overview"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-47759",
+      "title": "TinyMCE Cross-Site Scripting (XSS) vulnerability using through data-mce- prefixed src, href, style attributes",
+      "description": "",
+      "cvss": 8.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-05",
+      "last_seen": "2026-06-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "tinymce",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47759",
+        "CVE-2026-47759"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-q742-qvgc-gc2f",
+        "https://github.com/tinymce/tinymce/security/advisories/GHSA-q742-qvgc-gc2f",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-47759",
+        "https://www.tiny.cloud/docs/tinymce/7/7.9.3-release-notes/#overview"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-47761",
+      "title": "TinyMCE Cross-Site Scripting (XSS) vulnerability using media plugin `data-mce-object` injection",
+      "description": "",
+      "cvss": 8.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-05",
+      "last_seen": "2026-06-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "tinymce",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47761",
+        "CVE-2026-47761"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-vg35-5wq7-3x7w",
+        "https://github.com/tinymce/tinymce/security/advisories/GHSA-vg35-5wq7-3x7w",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-47761",
+        "https://www.tiny.cloud/docs/tinymce/7/7.9.3-release-notes/#overview"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-47760",
+      "title": "TinyMCE Cross-Site Scripting (XSS) vulnerability using sanitization bypass through nested SVGs",
+      "description": "",
+      "cvss": 8.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-05",
+      "last_seen": "2026-06-05",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "tinymce",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47760",
+        "CVE-2026-47760"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-mh5m-5hw4-5c69",
+        "https://github.com/tinymce/tinymce/security/advisories/GHSA-mh5m-5hw4-5c69",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-47760",
+        "https://github.com/advisories/GHSA-mh5m-5hw4-5c69"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-48017",
       "title": "DbGate: Remote Code Execution via functionName injection in loadReader endpoint",
       "description": "",
@@ -4430,206 +4498,6 @@
         "https://github.com/nocodb/nocodb/security/advisories/GHSA-hj85-ph9q-78jg",
         "https://github.com/nocodb/nocodb/releases/tag/2026.05.1",
         "https://github.com/advisories/GHSA-hj85-ph9q-78jg"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-47383",
-      "title": "NocoDB: Stored Cross-Site Scripting via Row Comments",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "nocodb",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47383",
-        "CVE-2026-47383"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-jf3g-4gwg-4h66",
-        "https://github.com/nocodb/nocodb/security/advisories/GHSA-jf3g-4gwg-4h66",
-        "https://github.com/nocodb/nocodb/releases/tag/2026.05.1",
-        "https://github.com/advisories/GHSA-jf3g-4gwg-4h66"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-47261",
-      "title": "wasmtime-wasi: WASI path_open(TRUNCATE) bypasses `FilePerms::WRITE` host restriction",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "wasmtime-wasi",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47261",
-        "CVE-2026-47261"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-2r75-cxrj-cmph",
-        "https://github.com/bytecodealliance/wasmtime/security/advisories/GHSA-2r75-cxrj-cmph",
-        "https://github.com/bytecodealliance/wasmtime/releases/tag/v24.0.9",
-        "https://github.com/bytecodealliance/wasmtime/releases/tag/v36.0.10"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-47249",
-      "title": "Klever-Go KVM: Hash-array amplification in P2P resolver request handling",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/klever-io/klever-go",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47249",
-        "CVE-2026-47249"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-w342-mj6g-v9c4",
-        "https://github.com/klever-io/klever-go/security/advisories/GHSA-w342-mj6g-v9c4",
-        "https://github.com/klever-io/klever-go/releases/tag/v1.7.18",
-        "https://github.com/advisories/GHSA-w342-mj6g-v9c4"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-45726",
-      "title": "Omni: Reader-level users can retrieve imported cluster CA keys via ResourceService",
-      "description": "",
-      "cvss": 7.6,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/siderolabs/omni",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45726",
-        "CVE-2026-45726"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wv8c-6mx2-xf4j",
-        "https://github.com/siderolabs/omni/security/advisories/GHSA-wv8c-6mx2-xf4j",
-        "https://github.com/siderolabs/omni/releases/tag/v1.6.6",
-        "https://github.com/siderolabs/omni/releases/tag/v1.7.3"
       ],
       "explanation": {
         "quality": [
