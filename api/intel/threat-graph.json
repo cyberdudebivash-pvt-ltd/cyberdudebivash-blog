@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-05T04:04:13.993Z",
+  "generated": "2026-06-05T08:15:40.071Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2155,
+    "total_nodes": 2161,
     "actors": 8,
-    "cves": 513,
-    "campaigns": 220,
+    "cves": 514,
+    "campaigns": 221,
     "malware": 0,
     "iocs": 208,
-    "edges": 714
+    "edges": 716
   },
   "nodes": {
     "actor:lockbit": {
@@ -12002,7 +12002,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-05-06"
+        "first_seen": "2026-06-05"
       },
       "connections": []
     },
@@ -40796,6 +40796,122 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-20245": {
+      "id": "CVE-2026-20245",
+      "type": "CVE",
+      "name": "Cisco Warns of 7th SD-WAN Zero-Day Exploited in 2026",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 70,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-05",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "THEHACKERNEWS-51f8dac1e193e414": {
+      "id": "THEHACKERNEWS-51f8dac1e193e414",
+      "type": "Intel",
+      "name": "PCPJack Hijacks 230 AWS, Google Cloud, and Azure Servers for Covert SMTP Relay Network",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 39,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-06-05",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:hunt.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "THEHACKERNEWS-ba671eb286bfab25": {
+      "id": "THEHACKERNEWS-ba671eb286bfab25",
+      "type": "Intel",
+      "name": "FIFA World Cup 2026 Scams Are Already Live: Fake Sites, Banking Malware, and Stolen Logins",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-06-05",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-ee68c0dc7011f0f1": {
+      "id": "SECURITYWEEK-ee68c0dc7011f0f1",
+      "type": "Intel",
+      "name": "Nightclub Giant RCI Says Data Breach Affects 40,000 Individuals",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-05",
+        "type": "DATA_BREACH"
+      },
+      "connections": []
+    },
+    "SANS_ISC-f4c22d9422bfcae6": {
+      "id": "SANS_ISC-f4c22d9422bfcae6",
+      "type": "Intel",
+      "name": "The Evil MSI Background is Back&#x21;, (Fri, Jun 5th)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SANS ISC",
+        "product": "Threat Intelligence",
+        "published": "2026-06-05",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-20245": {
+      "id": "campaign:cve-2026-20245",
+      "type": "Campaign",
+      "name": "Cisco Infrastructure Attack Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-05",
+        "last_seen": "2026-06-05",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-20245 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-20245",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -47260,6 +47376,24 @@
       "target": "ioc:domain:www.revive-adserver.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-05",
+      "sources": []
+    },
+    {
+      "id": "THEHACKERNEWS-51f8dac1e193e414→linked_to→ioc:domain:hunt.io",
+      "source": "THEHACKERNEWS-51f8dac1e193e414",
+      "target": "ioc:domain:hunt.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-05",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-20245→includes→CVE-2026-20245",
+      "source": "campaign:cve-2026-20245",
+      "target": "CVE-2026-20245",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-05",
       "sources": []
     }
