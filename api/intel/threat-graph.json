@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-06T08:12:07.563Z",
+  "generated": "2026-06-06T10:24:06.947Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2206,
+    "total_nodes": 2210,
     "actors": 8,
-    "cves": 530,
-    "campaigns": 224,
+    "cves": 531,
+    "campaigns": 225,
     "malware": 0,
     "iocs": 209,
-    "edges": 724
+    "edges": 725
   },
   "nodes": {
     "actor:lockbit": {
@@ -41747,6 +41747,80 @@
           "confidence": 1
         }
       ]
+    },
+    "CVE-2026-28318": {
+      "id": "CVE-2026-28318",
+      "type": "CVE",
+      "name": "CISA Adds Actively Exploited SolarWinds Serv-U DoS Flaw to KEV Catalog",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "CRITICAL",
+        "priority_score": 90,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-06-06",
+        "type": "SUPPLY_CHAIN"
+      },
+      "connections": []
+    },
+    "THEHACKERNEWS-da2fca79c0c6d04c": {
+      "id": "THEHACKERNEWS-da2fca79c0c6d04c",
+      "type": "Intel",
+      "name": "Free Apps Are Quietly Turning Smart TVs Into Web-Scraping Proxies for AI",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-06-06",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-71d2229ba8bc7e6f": {
+      "id": "SECURITYWEEK-71d2229ba8bc7e6f",
+      "type": "Intel",
+      "name": "Opal Security Raises $23 Million for AI-Native Identity Governance",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-06",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-28318": {
+      "id": "campaign:cve-2026-28318",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "CRITICAL",
+        "item_count": 1,
+        "first_seen": "2026-06-06",
+        "last_seen": "2026-06-06",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-28318 | 1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-28318",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -48299,6 +48373,15 @@
       "id": "campaign:cluster-542649f3→includes→THEHACKERNEWS-28ecb8d88842de5f",
       "source": "campaign:cluster-542649f3",
       "target": "THEHACKERNEWS-28ecb8d88842de5f",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-06",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-28318→includes→CVE-2026-28318",
+      "source": "campaign:cve-2026-28318",
+      "target": "CVE-2026-28318",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-06-06",
