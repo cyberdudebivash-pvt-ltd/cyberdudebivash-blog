@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-06T05:37:28.789Z",
+  "generated": "2026-06-06T08:12:07.563Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2203,
+    "total_nodes": 2206,
     "actors": 8,
     "cves": 530,
-    "campaigns": 223,
+    "campaigns": 224,
     "malware": 0,
     "iocs": 209,
-    "edges": 723
+    "edges": 724
   },
   "nodes": {
     "actor:lockbit": {
@@ -41691,6 +41691,62 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "THEHACKERNEWS-28ecb8d88842de5f": {
+      "id": "THEHACKERNEWS-28ecb8d88842de5f",
+      "type": "Intel",
+      "name": "AI Agent Uncovers 21 Zero-Days in FFmpeg; Chrome Patches Record 429 Bugs",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-06-06",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "THEHACKERNEWS-ed7cb5908ca7edf7": {
+      "id": "THEHACKERNEWS-ed7cb5908ca7edf7",
+      "type": "Intel",
+      "name": "Miasma Worm Hits 73 Microsoft GitHub Repositories in Major Supply Chain Attack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-06-06",
+        "type": "SUPPLY_CHAIN"
+      },
+      "connections": []
+    },
+    "campaign:cluster-542649f3": {
+      "id": "campaign:cluster-542649f3",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-06",
+        "last_seen": "2026-06-06",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "THEHACKERNEWS-28ecb8d88842de5f",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -48237,6 +48293,15 @@
       "relationship": "exploits",
       "confidence": 0.85,
       "first_seen": "2026-06-05",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-542649f3→includes→THEHACKERNEWS-28ecb8d88842de5f",
+      "source": "campaign:cluster-542649f3",
+      "target": "THEHACKERNEWS-28ecb8d88842de5f",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-06",
       "sources": []
     }
   ]
