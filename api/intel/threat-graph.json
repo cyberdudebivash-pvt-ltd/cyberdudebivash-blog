@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-07T13:10:51.287Z",
+  "generated": "2026-06-07T15:02:37.469Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2212,
+    "total_nodes": 2215,
     "actors": 8,
     "cves": 531,
-    "campaigns": 225,
+    "campaigns": 226,
     "malware": 0,
     "iocs": 209,
-    "edges": 725
+    "edges": 726
   },
   "nodes": {
     "actor:lockbit": {
@@ -41857,6 +41857,62 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-60bf91b4795059bb": {
+      "id": "BLEEPINGCOMPUTER-60bf91b4795059bb",
+      "type": "Intel",
+      "name": "Silent Ransom Group targets law firms with fake IT support calls",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 73,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-07",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-8e1be0ce669efcf8": {
+      "id": "BLEEPINGCOMPUTER-8e1be0ce669efcf8",
+      "type": "Intel",
+      "name": "C0XMO botnet spreads via DD-WRT router flaw, kills rival malware",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-07",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-95c5cf0b": {
+      "id": "campaign:cluster-95c5cf0b",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-07",
+        "last_seen": "2026-06-07",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-60bf91b4795059bb",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -48421,6 +48477,15 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-06-06",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-95c5cf0b→includes→BLEEPINGCOMPUTER-60bf91b4795059bb",
+      "source": "campaign:cluster-95c5cf0b",
+      "target": "BLEEPINGCOMPUTER-60bf91b4795059bb",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-07",
       "sources": []
     }
   ]
