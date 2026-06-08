@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-08T19:49:25.314Z",
+  "generated": "2026-06-08T21:40:16.369Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2253,
+    "total_nodes": 2260,
     "actors": 8,
-    "cves": 536,
-    "campaigns": 229,
+    "cves": 537,
+    "campaigns": 231,
     "malware": 0,
     "iocs": 210,
-    "edges": 733
+    "edges": 735
   },
   "nodes": {
     "actor:lockbit": {
@@ -42617,6 +42617,136 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "DARKREADING-9b94c05f7e35c23b": {
+      "id": "DARKREADING-9b94c05f7e35c23b",
+      "type": "Intel",
+      "name": "Check Point VPN Flaw Exploited Since Early May",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 83,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-06-08",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "CVE-2026-23111": {
+      "id": "CVE-2026-23111",
+      "type": "CVE",
+      "name": "One-Character Linux Kernel Flaw Enables Local Root Access, Exploits Now Public",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "DARKREADING-90d8438932f03613": {
+      "id": "DARKREADING-90d8438932f03613",
+      "type": "Intel",
+      "name": "Silent Ransom Group Hits US Law Firms in Escalating Extortion Attacks",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-06-08",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-95e6516b4a567895": {
+      "id": "BLEEPINGCOMPUTER-95e6516b4a567895",
+      "type": "Intel",
+      "name": "New Shai-Hulud attack trojanizes 19 science-focused PyPI packages",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-08",
+        "type": "SUPPLY_CHAIN"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-b4639bcf7e9dd5d9": {
+      "id": "BLEEPINGCOMPUTER-b4639bcf7e9dd5d9",
+      "type": "Intel",
+      "name": "New Apple feature automatically changes your compromised passwords",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-08",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-1e855678": {
+      "id": "campaign:cluster-1e855678",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-08",
+        "last_seen": "2026-06-08",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "DARKREADING-9b94c05f7e35c23b",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-23111": {
+      "id": "campaign:cve-2026-23111",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-08",
+        "last_seen": "2026-06-08",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-23111 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-23111",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -49252,6 +49382,24 @@
       "target": "ioc:domain:java.net",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-08",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-1e855678→includes→DARKREADING-9b94c05f7e35c23b",
+      "source": "campaign:cluster-1e855678",
+      "target": "DARKREADING-9b94c05f7e35c23b",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-08",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-23111→includes→CVE-2026-23111",
+      "source": "campaign:cve-2026-23111",
+      "target": "CVE-2026-23111",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-08",
       "sources": []
     }
