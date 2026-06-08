@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-08T17:31:38.370Z",
+  "generated": "2026-06-08T19:49:25.333Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 375,
+  "total_published": 381,
   "s2n_stats": {
-    "passed": 84,
-    "suppressed": 19,
-    "avg_qs": 0.555
+    "passed": 85,
+    "suppressed": 14,
+    "avg_qs": 0.554
   },
   "items": [
     {
@@ -4114,6 +4114,251 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-44249",
+      "title": "Netty has an IPv6 Subnet Filter Bypass via Incorrect Comparator Masking",
+      "description": "### Summary\nAn attacker can bypass IPv6 subnet rules due to an incorrect masking operation in IpSubnetFilterRule.compareTo(). Valid public IP addresses can bypass the restrictions. ### Details\n`io.netty.handler.ipfilter.IpSubnetFilterRule#compareTo(java.net.InetSocketAddress)` method performs a bitw",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-08",
+      "last_seen": "2026-06-08",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "io.netty:netty-handler",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44249",
+        "CVE-2026-44249"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-3qp7-7mw8-wx86",
+        "https://github.com/netty/netty/security/advisories/GHSA-3qp7-7mw8-wx86",
+        "https://github.com/netty/netty/releases/tag/netty-4.1.135.Final",
+        "https://github.com/netty/netty/releases/tag/netty-4.2.15.Final"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-44893",
+      "title": "Netty: HAProxy SSL TLV parsing leaks retained slice on invalid TLV length",
+      "description": "When decoding a PP2_TYPE_SSL TLV, HAProxyMessage.readNextTLV() first calls `header.retainedSlice(header.readerIndex(), length)` and only then reads the 1-byte client field and 4-byte verify field. If the attacker sets the TLV length below 5, the subsequent readByte/readInt throws IndexOutOfBoundsExc",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-08",
+      "last_seen": "2026-06-08",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "io.netty:netty-codec-haproxy",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44893",
+        "CVE-2026-44893"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-cc37-9q2j-3hfv",
+        "https://github.com/netty/netty/security/advisories/GHSA-cc37-9q2j-3hfv",
+        "https://github.com/netty/netty/releases/tag/netty-4.1.135.Final",
+        "https://github.com/netty/netty/releases/tag/netty-4.2.15.Final"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-44892",
+      "title": "Netty has a Vulnerable Default Configuration Which Leads to Denial of Service via Unbounded HTTP/3 Header Size",
+      "description": "### Summary\nThe default configuration of the `Http3ConnectionHandler` in the Netty HTTP/3 codec lacks an enforced maximum header size limit. When a peer does not explicitly specify `HTTP3_SETTINGS_MAX_FIELD_SECTION_SIZE`, the implementation defaults to an unbounded limit. This insecure default confi",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-08",
+      "last_seen": "2026-06-08",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "io.netty:netty-codec-http3",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44892",
+        "CVE-2026-44892"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-c2rx-5r8w-8xr2",
+        "https://github.com/netty/netty/security/advisories/GHSA-c2rx-5r8w-8xr2",
+        "https://github.com/netty/netty/releases/tag/netty-4.2.15.Final",
+        "https://github.com/advisories/GHSA-c2rx-5r8w-8xr2"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-44890",
+      "title": "Netty has Unbounded Direct Memory Consumption in its RedisDecoder",
+      "description": "### Summary\nAn attacker can cause DoS by sending crafted Redis payloads across multiple connections without `\\r\\n`. This exhausts the server's direct memory pool (OutOfDirectMemoryError), preventing legitimate connections from being processed. ### Details\nio.netty.handler.codec.redis.RedisDecoder de",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-08",
+      "last_seen": "2026-06-08",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "io.netty:netty-codec-redis",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44890",
+        "CVE-2026-44890"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-6ghj-frrj-jjj3",
+        "https://github.com/netty/netty/security/advisories/GHSA-6ghj-frrj-jjj3",
+        "https://github.com/netty/netty/releases/tag/netty-4.1.135.Final",
+        "https://github.com/netty/netty/releases/tag/netty-4.2.15.Final"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-44250",
+      "title": "Netty: Memory Exhaustion in RedisArrayAggregator due to Deeply Nested Arrays",
+      "description": "### Summary\nAn attacker can cause DoS by sending a crafted Redis payload with deeply nested arrays. This forces the server to allocate a massive number of state objects and collections, leading to memory exhaustion and an OutOfMemoryError. ### Details\nio.netty.handler.codec.redis.RedisArrayAggregato",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-08",
+      "last_seen": "2026-06-08",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "io.netty:netty-codec-redis",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44250",
+        "CVE-2026-44250"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-3244-j874-rhc2",
+        "https://github.com/netty/netty/security/advisories/GHSA-3244-j874-rhc2",
+        "https://github.com/netty/netty/releases/tag/netty-4.1.135.Final",
+        "https://github.com/netty/netty/releases/tag/netty-4.2.15.Final"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-24425",
       "title": "Twig: Possible sandbox bypass when using a source policy",
       "description": "# Description When using the sandbox with a `SourcePolicyInterface`, Twig does not always apply the sandbox restriction that forbids non-`Closure` callbacks for callback-accepting filters. The issue affects the `sort`, `filter`, `map`, and `reduce` filters. In the affected versions, the runtime chec",
@@ -4161,245 +4406,6 @@
       },
       "suppressed": false,
       "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47743",
-      "title": "Shopper: Multiple data integrity and disclosure issues in admin Livewire components",
-      "description": "## Impact Three related defects on admin Livewire components allowed data tampering, sensitive data disclosure, and stored XSS: - **IDOR via unlocked properties.** Several Livewire components in the admin panel exposed Eloquent model identifiers as public properties without the `#[Locked]` attribute",
-      "cvss": 8.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "shopper/framework",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47743",
-        "CVE-2026-47743"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-hr9v-r8r2-hg7j",
-        "https://github.com/shopperlabs/shopper/security/advisories/GHSA-hr9v-r8r2-hg7j",
-        "https://github.com/shopperlabs/shopper/pull/511",
-        "https://github.com/advisories/GHSA-hr9v-r8r2-hg7j"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47732",
-      "title": "Twig: Sandbox: multiple `__toString()` policy bypasses via unguarded string coercion points",
-      "description": "### Description `SandboxNodeVisitor` enforces `SecurityPolicy::checkMethodAllowed()` for implicit `__toString()` calls by wrapping selected AST nodes in `CheckToStringNode`. The set of wrapped nodes is incomplete, and several Twig language constructs still trigger PHP string coercion on a `Stringabl",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "twig/twig",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47732",
-        "CVE-2026-47732"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-pr2w-4gpj-cpq4",
-        "https://github.com/twigphp/Twig/security/advisories/GHSA-pr2w-4gpj-cpq4",
-        "https://github.com/FriendsOfPHP/security-advisories/blob/master/twig/twig/CVE-2026-47732.yaml",
-        "https://github.com/twigphp/Twig/releases/tag/v3.26.0"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47762",
-      "title": "TinyMCE Cross-Site Scripting (XSS) vulnerability through `mce:protected` comments",
-      "description": "### Impact\nStored XSS vulnerability via forged mce:protected comments. Allows attackers to bypass sanitization and inject scripts that execute when content is restored. Impacts users who utilize the protect option. ### Patches\nPatched by validating decoded mce:protected content against configured pr",
-      "cvss": 8.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "tinymce",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47762",
-        "CVE-2026-47762"
-      ],
-      "ioc_count": 2,
-      "refs": [
-        "https://github.com/advisories/GHSA-v98h-vmpc-fpqv",
-        "https://github.com/tinymce/tinymce/security/advisories/GHSA-v98h-vmpc-fpqv",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-47762",
-        "https://www.tiny.cloud/docs/tinymce/7/7.9.3-release-notes/#overview"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47759",
-      "title": "TinyMCE Cross-Site Scripting (XSS) vulnerability using through data-mce- prefixed src, href, style attributes",
-      "description": "### Impact\nStored XSS vulnerability via unsanitized data-mce-* attributes (data-mce-href, data-mce-src, data-mce-style). Allows attackers to inject malicious values that override safe attributes during serialization, bypassing validation. ### Patches\nPatched by stripping unsafe data-mce-* attributes",
-      "cvss": 8.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-05",
-      "last_seen": "2026-06-05",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "tinymce",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47759",
-        "CVE-2026-47759"
-      ],
-      "ioc_count": 2,
-      "refs": [
-        "https://github.com/advisories/GHSA-q742-qvgc-gc2f",
-        "https://github.com/tinymce/tinymce/security/advisories/GHSA-q742-qvgc-gc2f",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-47759",
-        "https://www.tiny.cloud/docs/tinymce/7/7.9.3-release-notes/#overview"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "SANS_ISC-faff9f0fc26e9169",
-      "title": "ISC Stormcast For Monday, June 8th, 2026 https://isc.sans.edu/podcastdetail/9962, (Mon, Jun 8th)",
-      "description": "(c) SANS Internet Storm Center. https://isc.sans.edu Creative Commons Attribution-Noncommercial 3.0 United States License.",
-      "cvss": 6.5,
-      "final_ps": 16,
-      "quality_score": 0.39,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sans_isc",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sans_isc"
-      ],
-      "first_seen": "2026-06-08",
-      "last_seen": "2026-06-08",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "SANS ISC",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 2,
-      "refs": [
-        "https://isc.sans.edu/diary/rss/33058"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.70 (sans_isc)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.390"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     }
   ]
 }

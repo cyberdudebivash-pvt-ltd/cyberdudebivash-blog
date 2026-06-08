@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Mon, 08 Jun 2026 17:31:38 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 08 Jun 2026 19:49:25 GMT</lastBuildDate>
     <pubDate>Mon, 08 Jun 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,7 +31,77 @@
       <height>144</height>
     </image>
 
-    <item>
+      <item>
+    <title><![CDATA[Netty has an IPv6 Subnet Filter Bypass via Incorrect Comparator Masking]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44249-maven-io-netty-netty-handler.html</link>
+    <description><![CDATA[Score 46/100 MEDIUM — CVSS 8.1 — ### Summary
+An attacker can bypass IPv6 subnet rules due to an incorrect masking operation in IpSubnetFilterRule.compareTo(). Valid public IP addresses can bypass the restrictions. ### Details
+`io.netty.handler.ipfilter.IpSubnetFilterRule#compareTo(java.net.InetSocketAddress)` method performs a bitw. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 19:49:25 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44249-maven-io-netty-netty-handler.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Netty: HAProxy SSL TLV parsing leaks retained slice on invalid TLV length]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44893-maven-io-netty-netty-codec-haproxy.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — When decoding a PP2_TYPE_SSL TLV, HAProxyMessage.readNextTLV() first calls `header.retainedSlice(header.readerIndex(), length)` and only then reads the 1-byte client field and 4-byte verify field. If the attacker sets the TLV length below 5, the subsequent readByte/readInt throws IndexOutOfBoundsExc. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 19:49:25 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44893-maven-io-netty-netty-codec-haproxy.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Netty has a Vulnerable Default Configuration Which Leads to Denial of Service via Unbounded HTTP/3 Header Size]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44892-maven-io-netty-netty-codec-http3.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary
+The default configuration of the `Http3ConnectionHandler` in the Netty HTTP/3 codec lacks an enforced maximum header size limit. When a peer does not explicitly specify `HTTP3_SETTINGS_MAX_FIELD_SECTION_SIZE`, the implementation defaults to an unbounded limit. This insecure default confi. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 19:49:25 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44892-maven-io-netty-netty-codec-http3.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Netty has Unbounded Direct Memory Consumption in its RedisDecoder]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44890-maven-io-netty-netty-codec-redis.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary
+An attacker can cause DoS by sending crafted Redis payloads across multiple connections without `\r\n`. This exhausts the server's direct memory pool (OutOfDirectMemoryError), preventing legitimate connections from being processed. ### Details
+io.netty.handler.codec.redis.RedisDecoder de. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 19:49:25 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44890-maven-io-netty-netty-codec-redis.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Netty: Memory Exhaustion in RedisArrayAggregator due to Deeply Nested Arrays]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44250-maven-io-netty-netty-codec-redis.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — ### Summary
+An attacker can cause DoS by sending a crafted Redis payload with deeply nested arrays. This forces the server to allocate a massive number of state objects and collections, leading to memory exhaustion and an OutOfMemoryError. ### Details
+io.netty.handler.codec.redis.RedisArrayAggregato. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 19:49:25 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44250-maven-io-netty-netty-codec-redis.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[WhatsApp says it disrupted new NSO spyware phishing attacks]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/whatsapp-says-it-disrupted-new-nso-spyware-phishing-attacks.html</link>
+    <description><![CDATA[Score 38/100 LOW — CVSS 6.5 — WhatsApp has detected and stopped spear-phishing campaigns allegedly conducted by the NSO Group after investigating user reports of social engineering attacks. [...]. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 19:49:25 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/whatsapp-says-it-disrupted-new-nso-spyware-phishing-attacks.html</guid>
+    <category>Threat Intelligence</category>
+    <category>AI_SECURITY</category>
+  </item>
+  <item>
+    <title><![CDATA[Iran Signed a Ceasefire — Its Hackers Didn't]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/iran-signed-a-ceasefire-its-hackers-didn-t.html</link>
+    <description><![CDATA[Score 38/100 LOW — CVSS 6.5 — An extension of the Geneva Conventions could impose restrictions on cyberwarfare under ceasefire conditions and close a major loophole in international conflict.. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 19:49:25 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/iran-signed-a-ceasefire-its-hackers-didn-t.html</guid>
+    <category>Threat Intelligence</category>
+    <category>NEWS_REPORT</category>
+  </item>
+  <item>
     <title><![CDATA[Gogs patches critical zero-day enabling remote code execution]]></title>
     <link>https://blog.cyberdudebivash.in/posts/gogs-patches-critical-zero-day-enabling-remote-code-executio.html</link>
     <description><![CDATA[Score 68/100 HIGH — CVSS 6.5 — Gogs has patched a critical security zero-day flaw that can allow attackers to compromise Internet-facing instances and access any repositories (including private ones). [...]. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>

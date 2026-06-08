@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-08T17:31:38.351Z",
+  "generated": "2026-06-08T19:49:25.314Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2245,
+    "total_nodes": 2253,
     "actors": 8,
-    "cves": 531,
+    "cves": 536,
     "campaigns": 229,
     "malware": 0,
-    "iocs": 209,
-    "edges": 732
+    "iocs": 210,
+    "edges": 733
   },
   "nodes": {
     "actor:lockbit": {
@@ -42474,6 +42474,149 @@
           "confidence": 1
         }
       ]
+    },
+    "CVE-2026-44249": {
+      "id": "CVE-2026-44249",
+      "type": "CVE",
+      "name": "Netty has an IPv6 Subnet Filter Bypass via Incorrect Comparator Masking",
+      "attributes": {
+        "cvss": 8.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 46,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty:netty-handler",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:java.net",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:java.net": {
+      "id": "ioc:domain:java.net",
+      "type": "IOC",
+      "name": "java.net",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-08"
+      },
+      "connections": []
+    },
+    "CVE-2026-44893": {
+      "id": "CVE-2026-44893",
+      "type": "CVE",
+      "name": "Netty: HAProxy SSL TLV parsing leaks retained slice on invalid TLV length",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty:netty-codec-haproxy",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-44892": {
+      "id": "CVE-2026-44892",
+      "type": "CVE",
+      "name": "Netty has a Vulnerable Default Configuration Which Leads to Denial of Service via Unbounded HTTP/3 Header Size",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty:netty-codec-http3",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-44890": {
+      "id": "CVE-2026-44890",
+      "type": "CVE",
+      "name": "Netty has Unbounded Direct Memory Consumption in its RedisDecoder",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty:netty-codec-redis",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-44250": {
+      "id": "CVE-2026-44250",
+      "type": "CVE",
+      "name": "Netty: Memory Exhaustion in RedisArrayAggregator due to Deeply Nested Arrays",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty:netty-codec-redis",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-e0b7f1e492530eb9": {
+      "id": "BLEEPINGCOMPUTER-e0b7f1e492530eb9",
+      "type": "Intel",
+      "name": "WhatsApp says it disrupted new NSO spyware phishing attacks",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-08",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "DARKREADING-ddac8554a3bb0c4d": {
+      "id": "DARKREADING-ddac8554a3bb0c4d",
+      "type": "Intel",
+      "name": "Iran Signed a Ceasefire — Its Hackers Didn't",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-06-08",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -49100,6 +49243,15 @@
       "target": "BLEEPINGCOMPUTER-c80c1e61c4eb6c71",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-08",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-44249→linked_to→ioc:domain:java.net",
+      "source": "CVE-2026-44249",
+      "target": "ioc:domain:java.net",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-08",
       "sources": []
     }
