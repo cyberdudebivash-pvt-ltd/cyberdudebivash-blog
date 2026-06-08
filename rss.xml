@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Mon, 08 Jun 2026 21:40:16 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 08 Jun 2026 23:04:26 GMT</lastBuildDate>
     <pubDate>Mon, 08 Jun 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,7 +31,74 @@
       <height>144</height>
     </image>
 
-    <item>
+      <item>
+    <title><![CDATA[Netty Vulnerable to DNS Cache Poisoning via Missing Bailiwick Checks in CNAME Records]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-45674-maven-io-netty-netty-resolver-dns.html</link>
+    <description><![CDATA[Score 50/100 MEDIUM — CVSS 8.7 — ### Summary
+Netty's DnsResolveContext fails to validate the origin (bailiwick) of CNAME records in DNS responses. ### Details
+In `io.netty.resolver.dns.DnsResolveContext#buildAliasMap`, the resolver processes the ANSWER section of a DNS response and blindly caches all CNAME records it finds. Accordi. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 23:04:26 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-45674-maven-io-netty-netty-resolver-dns.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Netty's Default QUIC token handler accepts any client-supplied token]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-44894-maven-io-netty-netty-codec-classes-quic.html</link>
+    <description><![CDATA[Score 50/100 MEDIUM — CVSS 7.5 — NoQuicTokenHandler is the tokenHandler used when the application does not set one. Its writeToken() returns false (server will not send Retry — acceptable), but validateToken() unconditionally `return 0`. In QuicheQuicServerCodec.handlePacket(), a non-negative return from validateToken() is interpre. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 23:04:26 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-44894-maven-io-netty-netty-codec-classes-quic.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Netty has Insufficient Bailiwick Validation for NS Records]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-47691-maven-io-netty-netty-resolver-dns.html</link>
+    <description><![CDATA[Score 48/100 MEDIUM — CVSS 8.7 — ### Summary
+Netty's `DnsResolveContext` insufficiently validates the bailiwick of NS records, enabling DNS Cache Poisoning. An attacker controlling an authoritative name server for a subdomain can poison the cache for parent domains (like `.co.uk`). ### Details
+In `io.netty.resolver.dns.DnsResolveCo. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 23:04:26 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-47691-maven-io-netty-netty-resolver-dns.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Netty: SCTP reassembly nests buffers without bound]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-46340-maven-io-netty-netty-transport-sctp.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — For each non-complete SctpMessage fragment the handler does `fragments.put(streamId, Unpooled.wrappedBuffer(frag, byteBuf))`, wrapping the previous accumulator and the new slice into a *new* CompositeByteBuf every time. After N fragments the accumulator is an N-deep chain of composites, each holding. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 23:04:26 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-46340-maven-io-netty-netty-transport-sctp.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Netty: SNI handler pre-allocates up to 16 MiB from nine attacker bytes]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-45416-maven-io-netty-netty-handler.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — SslClientHelloHandler.decode() reads the 24-bit TLS handshake length and, when the ClientHello does not fit in the first record, eagerly allocates `ctx.alloc().buffer(handshakeLength)` (line 161). The guard at line 140 is `handshakeLength > maxClientHelloLength && maxClientHelloLength != 0`, and the. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 23:04:26 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-45416-maven-io-netty-netty-handler.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[NFCShare Android malware spreads via fake banking app updates on GitHub]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/nfcshare-android-malware-spreads-via-fake-banking-app-update.html</link>
+    <description><![CDATA[Score 38/100 LOW — CVSS 6.5 — New variants of the NFCShare Android malware are being distributed as fake updates for legitimate banking apps hosted on GitHub. [...]. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 23:04:26 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/nfcshare-android-malware-spreads-via-fake-banking-app-update.html</guid>
+    <category>Threat Intelligence</category>
+    <category>MALWARE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[SoFi confirms third-party data breach at Hong Kong subsidiary]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/sofi-confirms-third-party-data-breach-at-hong-kong-subsidiar.html</link>
+    <description><![CDATA[Score 38/100 LOW — CVSS 6.5 — SoFi Hong Kong is warning that it suffered a data breach after hackers gained access to a database at a third-party vendor containing customer information. [...]. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Mon, 08 Jun 2026 23:04:26 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/sofi-confirms-third-party-data-breach-at-hong-kong-subsidiar.html</guid>
+    <category>Threat Intelligence</category>
+    <category>DATA_BREACH</category>
+  </item>
+  <item>
     <title><![CDATA[Check Point VPN Flaw Exploited Since Early May]]></title>
     <link>https://blog.cyberdudebivash.in/posts/check-point-vpn-flaw-exploited-since-early-may.html</link>
     <description><![CDATA[Score 83/100 HIGH — CVSS 6.5 — A newly discovered, critical zero-day vulnerability is under attack; a Qilin ransomware affiliate has been blamed for at least one incident.. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>

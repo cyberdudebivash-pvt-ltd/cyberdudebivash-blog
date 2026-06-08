@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-08T21:40:16.369Z",
+  "generated": "2026-06-08T23:04:25.977Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2260,
+    "total_nodes": 2268,
     "actors": 8,
-    "cves": 537,
+    "cves": 542,
     "campaigns": 231,
     "malware": 0,
-    "iocs": 210,
-    "edges": 735
+    "iocs": 211,
+    "edges": 736
   },
   "nodes": {
     "actor:lockbit": {
@@ -42747,6 +42747,149 @@
           "confidence": 1
         }
       ]
+    },
+    "CVE-2026-45674": {
+      "id": "CVE-2026-45674",
+      "type": "CVE",
+      "name": "Netty Vulnerable to DNS Cache Poisoning via Missing Bailiwick Checks in CNAME Records",
+      "attributes": {
+        "cvss": 8.7,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty:netty-resolver-dns",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:datatracker.ietf.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:datatracker.ietf.org": {
+      "id": "ioc:domain:datatracker.ietf.org",
+      "type": "IOC",
+      "name": "datatracker.ietf.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-08"
+      },
+      "connections": []
+    },
+    "CVE-2026-44894": {
+      "id": "CVE-2026-44894",
+      "type": "CVE",
+      "name": "Netty's Default QUIC token handler accepts any client-supplied token",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty:netty-codec-classes-quic",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-47691": {
+      "id": "CVE-2026-47691",
+      "type": "CVE",
+      "name": "Netty has Insufficient Bailiwick Validation for NS Records",
+      "attributes": {
+        "cvss": 8.7,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty:netty-resolver-dns",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-46340": {
+      "id": "CVE-2026-46340",
+      "type": "CVE",
+      "name": "Netty: SCTP reassembly nests buffers without bound",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty:netty-transport-sctp",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-45416": {
+      "id": "CVE-2026-45416",
+      "type": "CVE",
+      "name": "Netty: SNI handler pre-allocates up to 16 MiB from nine attacker bytes",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty:netty-handler",
+        "published": "2026-06-08",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-75f0f0772197de96": {
+      "id": "BLEEPINGCOMPUTER-75f0f0772197de96",
+      "type": "Intel",
+      "name": "NFCShare Android malware spreads via fake banking app updates on GitHub",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-08",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-b345ab9d8bfd5074": {
+      "id": "BLEEPINGCOMPUTER-b345ab9d8bfd5074",
+      "type": "Intel",
+      "name": "SoFi confirms third-party data breach at Hong Kong subsidiary",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-08",
+        "type": "DATA_BREACH"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -49400,6 +49543,15 @@
       "target": "CVE-2026-23111",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-08",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-45674→linked_to→ioc:domain:datatracker.ietf.org",
+      "source": "CVE-2026-45674",
+      "target": "ioc:domain:datatracker.ietf.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-08",
       "sources": []
     }
