@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-09T22:48:39.419Z",
+  "generated": "2026-06-10T00:02:29.145Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2357,
+    "total_nodes": 2359,
     "actors": 8,
     "cves": 554,
-    "campaigns": 241,
+    "campaigns": 242,
     "malware": 0,
     "iocs": 223,
-    "edges": 773
+    "edges": 774
   },
   "nodes": {
     "actor:lockbit": {
@@ -44582,6 +44582,44 @@
           "confidence": 1
         }
       ]
+    },
+    "BLEEPINGCOMPUTER-2e20fb8b2cf8f509": {
+      "id": "BLEEPINGCOMPUTER-2e20fb8b2cf8f509",
+      "type": "Intel",
+      "name": "Microsoft Defender 'RoguePlanet' zero-day grants SYSTEM privileges",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-09",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-1465a473": {
+      "id": "campaign:cluster-1465a473",
+      "type": "Campaign",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-09",
+        "last_seen": "2026-06-09",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-2e20fb8b2cf8f509",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -51578,6 +51616,15 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-06-09",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-1465a473→includes→BLEEPINGCOMPUTER-2e20fb8b2cf8f509",
+      "source": "campaign:cluster-1465a473",
+      "target": "BLEEPINGCOMPUTER-2e20fb8b2cf8f509",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-10",
       "sources": []
     }
   ]
