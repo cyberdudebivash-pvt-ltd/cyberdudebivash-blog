@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-10T21:15:39.643Z",
+  "generated": "2026-06-10T23:00:13.933Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2472,
+    "total_nodes": 2474,
     "actors": 8,
     "cves": 569,
     "campaigns": 260,
     "malware": 0,
     "iocs": 238,
-    "edges": 836
+    "edges": 837
   },
   "nodes": {
     "actor:lockbit": {
@@ -45553,18 +45553,18 @@
     "CVE-2026-5027": {
       "id": "CVE-2026-5027",
       "type": "CVE",
-      "name": "Unpatched Langflow Flaw CVE-2026-5027 Exploited for Unauthenticated RCE",
+      "name": "Path traversal flaw in AI dev platform Langflow exploited in attacks",
       "attributes": {
         "cvss": 8,
         "threat_level": "HIGH",
-        "priority_score": 81,
+        "priority_score": 65,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "The Hacker News",
+        "vendor": "BleepingComputer",
         "product": "Threat Intelligence",
         "published": "2026-06-10",
-        "type": "SUPPLY_CHAIN"
+        "type": "AI_SECURITY"
       },
       "connections": []
     },
@@ -46070,7 +46070,7 @@
     "campaign:cve-2026-5027": {
       "id": "campaign:cve-2026-5027",
       "type": "Campaign",
-      "name": "The Threat Exploitation Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
       "attributes": {
         "severity": "HIGH",
         "item_count": 1,
@@ -46833,6 +46833,48 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-1576a31d22e981f7": {
+      "id": "REDDIT_CYBER-1576a31d22e981f7",
+      "type": "Intel",
+      "name": "Continuous learning",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-10",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "DARKREADING-b67fe7c7dde110ea": {
+      "id": "DARKREADING-b67fe7c7dde110ea",
+      "type": "Intel",
+      "name": "CISA Rewrites Federal Patching Requirements for AI Threat Era",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-06-10",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -54395,6 +54437,15 @@
       "target": "REDDIT_CYBER-b57603eb8126a3c3",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-10",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-1576a31d22e981f7→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-1576a31d22e981f7",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-10",
       "sources": []
     }
