@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-11T14:56:05.301Z",
+  "generated": "2026-06-11T18:21:35.134Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,57 +7,13 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 543,
+  "total_published": 558,
   "s2n_stats": {
-    "passed": 82,
-    "suppressed": 24,
+    "passed": 81,
+    "suppressed": 17,
     "avg_qs": 0.556
   },
   "items": [
-    {
-      "id": "CVE-2026-35273",
-      "title": "Oracle Addresses PeopleSoft Vulnerability Amid Reports of Zero-Day Attacks",
-      "description": "Oracle has released mitigations for CVE-2026-35273, but it has not said whether it’s a zero-day exploited in ShinyHunters attacks. The post Oracle Addresses PeopleSoft Vulnerability Amid Reports of Zero-Day Attacks appeared first on SecurityWeek .",
-      "cvss": 8,
-      "final_ps": 83,
-      "quality_score": 0.575,
-      "threat_level": "HIGH",
-      "type": "ZERO_DAY",
-      "source": "securityweek",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "securityweek"
-      ],
-      "first_seen": "2026-06-11",
-      "last_seen": "2026-06-11",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "SecurityWeek",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-35273"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.securityweek.com/oracle-addresses-peoplesoft-vulnerability-amid-reports-of-zero-day-attacks/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.70 (securityweek)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -1218,6 +1174,50 @@
           "+3 supply_chain"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-35273",
+      "title": "Oracle Addresses PeopleSoft Vulnerability Amid Reports of Zero-Day Attacks",
+      "description": "",
+      "cvss": 8,
+      "final_ps": 36,
+      "quality_score": 0.52,
+      "threat_level": "LOW",
+      "type": "ZERO_DAY",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-06-11",
+      "last_seen": "2026-06-11",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-35273"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/oracle-addresses-peoplesoft-vulnerability-amid-reports-of-zero-day-attacks/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.520"
+        ],
+        "priority": [
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": null,
         "merge": null
       }
     },
@@ -4162,6 +4162,55 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-48050",
+      "title": "Arc: Unauthenticated access to Go debug pprof endpoints leaks runtime state and enables CPU-burn DoS",
+      "description": "### Summary Arc registers Go's `net/http/pprof` handlers at `/debug/pprof/*` via `app.Use(pprof.New())` in `internal/api/server.go`, and `/debug/pprof` is added to `PublicPrefixes` in `cmd/arc/main.go`. The auth middleware short-circuits before the token check on prefix match, so the endpoints are r",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-11",
+      "last_seen": "2026-06-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/basekick-labs/arc",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-48050",
+        "CVE-2026-48050"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-j93g-rp6m-j32m",
+        "https://github.com/Basekick-Labs/arc/security/advisories/GHSA-j93g-rp6m-j32m",
+        "https://github.com/Basekick-Labs/arc/commit/32a4091fb949f9cf060cdd804a07f6450dc426a8",
+        "https://github.com/Basekick-Labs/arc/releases/tag/v26.06.1"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-48054",
       "title": "OpenZeppelin Contracts Wizard has Code Injection in Generated Hardhat and Foundry Tests via Unsanitized opts.name / opts",
       "description": "## Summary The OpenZeppelin Contracts Wizard generated Hardhat (`test/test.ts`) and Foundry (`test/ .t.sol`) example test files that interpolated user-supplied strings (`opts.name`, `opts.uri`) into the test source without escaping. A crafted input could produce a generated test file in which the in",
@@ -4340,54 +4389,6 @@
         "https://github.com/grpc/grpc-node/security/advisories/GHSA-99f4-grh7-6pcq",
         "https://github.com/grpc/grpc-node/releases/tag/%40grpc%2Fgrpc-js%401.10.12",
         "https://github.com/grpc/grpc-node/releases/tag/%40grpc%2Fgrpc-js%401.11.4"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48006",
-      "title": "Netty's Lack of Lifecycle Cleanup Leads to Pooled ByteBuf Leak in RedisArrayAggregator",
-      "description": "### Impact\nThe RedisArrayAggregator handler permanently leaks pooled direct-memory buffers when a Redis pipeline connection closes before a RESP array aggregate completes. The handler retains child messages in per-handler state (`depths` field) but defines no `channelInactive`, `handlerRemoved`, or ",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-11",
-      "last_seen": "2026-06-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "io.netty:netty-codec-redis",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48006",
-        "CVE-2026-48006"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-6jv9-x5w9-2ccm",
-        "https://github.com/netty/netty/security/advisories/GHSA-6jv9-x5w9-2ccm",
-        "https://github.com/advisories/GHSA-6jv9-x5w9-2ccm"
       ],
       "explanation": {
         "quality": [
