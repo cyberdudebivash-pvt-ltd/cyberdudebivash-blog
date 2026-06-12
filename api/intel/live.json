@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-12T20:22:32.750Z",
+  "generated": "2026-06-12T22:05:51.743Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 600,
+  "total_published": 615,
   "s2n_stats": {
-    "passed": 80,
-    "suppressed": 21,
-    "avg_qs": 0.557
+    "passed": 81,
+    "suppressed": 14,
+    "avg_qs": 0.555
   },
   "items": [
     {
@@ -1878,9 +1878,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2490,7 +2488,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CISA-5c3549124cf4cb44",
@@ -4068,6 +4068,153 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-54091",
+      "title": "File Browser has incorrect access control for public directory shares via rule path rebasing",
+      "description": "### Summary\nFile Browser's public share handlers rebase the share owner's filesystem root to the shared directory and then evaluate descendant paths against the owner's global and per-user rules using the rebased relative path instead of the original path relative to the owner's scope. As a result, ",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/filebrowser/filebrowser/v2",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54091",
+        "CVE-2026-54091"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-j9jx-hp4c-ghhh",
+        "https://github.com/filebrowser/filebrowser/security/advisories/GHSA-j9jx-hp4c-ghhh",
+        "https://github.com/filebrowser/filebrowser/commit/e07c59df0b850f5924d5b1683e8609661ddcf534",
+        "https://github.com/filebrowser/filebrowser/releases/tag/v2.63.6"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54096",
+      "title": "File Browser: Improper Access Control Occurs via Pre-Created Public Share for a Non-existent Path",
+      "description": "### Summary\nThis is similar vulnrability of **`CVE-2026-0035`**, which was fixed in Android `MediaProvider` with **high** severity. In the original Java issue, `MediaStore.createWriteRequest()` accepted attacker-controlled URIs and created a future grant even when the referenced media item did not e",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/filebrowser/filebrowser/v2",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54096",
+        "CVE-2026-54096"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-3q2p-72cj-682c",
+        "https://github.com/filebrowser/filebrowser/security/advisories/GHSA-3q2p-72cj-682c",
+        "https://github.com/filebrowser/filebrowser/commit/166583db632e088e9f0adce30aec43bb9d9019f4",
+        "https://github.com/filebrowser/filebrowser/releases/tag/v2.63.7"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54097",
+      "title": "File Browser: Cross-user unauthorized share-link deletion via unbounded prefix match in DeleteWithPathPrefix",
+      "description": "### Summary\nA low-privileged authenticated user of filebrowser (with `create` + `delete` permissions in their own isolated scope) can silently destroy share-link records belonging to any other user — including the administrator — by performing a legitimate DELETE on a file in their own directory who",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/filebrowser/filebrowser",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54097",
+        "CVE-2026-54097"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-5ww9-jg6q-38r7",
+        "https://github.com/filebrowser/filebrowser/security/advisories/GHSA-5ww9-jg6q-38r7",
+        "https://github.com/filebrowser/filebrowser/commit/0231b7ebdfbe77a6c54027d30c4856c3fd81ee4d",
+        "https://github.com/filebrowser/filebrowser/releases/tag/v2.63.6"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-49741",
       "title": "TYPO3 CMS has Privilege Escalation & SQL Injection in its Form Framework",
       "description": "### Problem\nBackend users with write access to the `form_definition` database table were able to directly create, update, or delete form definition records via `DataHandler`, bypassing the Form Framework's persistence validation and permission checks. This allowed injecting arbitrary form configurat",
@@ -4215,111 +4362,13 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-47346",
-      "title": "TYPO3 CMS has Broken Access Control in its Form Framework",
-      "description": "### Problem\nBackend users with file write permissions were able to upload form definition files with mixed-case extensions (e.g., `.FORM.YAML`) to bypass the Form Framework's upload restriction. Maliciously crafted form definition files can be used to execute arbitrary SQL statements, allowing attac",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "typo3/cms-core",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47346",
-        "CVE-2026-47346"
-      ],
-      "ioc_count": 2,
-      "refs": [
-        "https://github.com/advisories/GHSA-hwvq-2w67-rvxp",
-        "https://github.com/TYPO3/typo3/security/advisories/GHSA-hwvq-2w67-rvxp",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-47346",
-        "https://github.com/TYPO3/typo3/commit/2030617e6f273cee7b756c695f0a48a45a31eb47"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-49742",
-      "title": "TYPO3 CMS has Broken Access Control in its Media Module",
-      "description": "### Problem\nBackend users with file download permissions were able to download files from the fallback storage of the file abstraction layer (FAL) via the Media Module. Since the fallback storage resolves paths relative to the server's document root, this could expose sensitive files such as log fil",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "typo3/cms-core",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49742",
-        "CVE-2026-49742"
-      ],
-      "ioc_count": 2,
-      "refs": [
-        "https://github.com/advisories/GHSA-chm7-4vch-h8vr",
-        "https://github.com/TYPO3/typo3/security/advisories/GHSA-chm7-4vch-h8vr",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-49742",
-        "https://github.com/TYPO3/typo3/commit/ad636b6183843b57c758a1e12174a75093ac93c3"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53999",
-      "title": "Radius Controller May Delete a Container Resource via an Injected Deployment Annotation (Multi-Tenant Installs)",
-      "description": "# Radius Controller May Delete a Container Resource via an Injected Deployment Annotation (Multi-Tenant Installs) ## Summary A configuration-validation issue in the Radius Kubernetes controller can cause it to issue a `DELETE` for the container resource referenced by a tampered `radapp.io/status` an",
-      "cvss": 7.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
+      "id": "CVE-2026-54092",
+      "title": "File Browser has a DoS Vulnerability via Public Login API",
+      "description": "### Summary\nUnchecked passwords maximums allow for an arbitrarily large password to be passed into the login API. This spikes CPU and memory, and after testing, crashes, heavily lags any container created, and has even made my docker daemon start to send errors with status code 500 even after the co",
+      "cvss": 6.5,
+      "final_ps": 19,
+      "quality_score": 0.483,
+      "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "github_advisories",
       "sources_confirmed": 1,
@@ -4332,77 +4381,28 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "go",
-      "product": "github.com/radius-project/radius",
+      "product": "github.com/filebrowser/filebrowser/v2",
       "due_date": null,
       "cves": [
-        "CVE-2026-53999",
-        "CVE-2026-53999"
-      ],
-      "ioc_count": 1,
-      "refs": [
-        "https://github.com/advisories/GHSA-fp5j-4fj2-4jvq",
-        "https://github.com/radius-project/radius/security/advisories/GHSA-fp5j-4fj2-4jvq",
-        "https://github.com/radius-project/radius/releases/tag/v0.58.0",
-        "https://github.com/advisories/GHSA-fp5j-4fj2-4jvq"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48152",
-      "title": "Budibase: Basic app users can exfiltrate stored REST datasource auth by rewriting datasource base URL",
-      "description": "### Summary\nBudibase stores external REST datasource credentials server-side and documents that database credentials are applied server-side and are not exposed in the UI. The REST datasource implementation redacts stored Basic/Bearer/OAuth2 auth secrets before returning datasource data to clients. ",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "@budibase/server",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48152",
-        "CVE-2026-48152"
+        "CVE-2026-54092",
+        "CVE-2026-54092"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-3gp5-q4jw-3v94",
-        "https://github.com/Budibase/budibase/security/advisories/GHSA-3gp5-q4jw-3v94",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-48152",
-        "https://github.com/advisories/GHSA-3gp5-q4jw-3v94"
+        "https://github.com/advisories/GHSA-w5fm-68j4-fpc4",
+        "https://github.com/filebrowser/filebrowser/security/advisories/GHSA-w5fm-68j4-fpc4",
+        "https://github.com/filebrowser/filebrowser/commit/847d08bdd135e5c3659f2e6dea2f0cd36617af9b",
+        "https://github.com/filebrowser/filebrowser/releases/tag/v2.63.6"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
+          "data_confidence=0.55",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.483"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=19 (no boosts)"
         ],
         "suppression": null,
         "merge": null
