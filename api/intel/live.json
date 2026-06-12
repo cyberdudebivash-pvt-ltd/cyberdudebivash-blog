@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-12T18:01:26.357Z",
+  "generated": "2026-06-12T20:22:32.750Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 597,
+  "total_published": 600,
   "s2n_stats": {
-    "passed": 81,
-    "suppressed": 15,
-    "avg_qs": 0.556
+    "passed": 80,
+    "suppressed": 21,
+    "avg_qs": 0.557
   },
   "items": [
     {
@@ -1878,7 +1878,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2488,9 +2490,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-5c3549124cf4cb44",
@@ -4068,10 +4068,304 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-48146",
-      "title": "Budibase: SSRF via OAuth2 Config Validation — Missing fetchWithBlacklist Protection",
-      "description": "### Summary The OAuth2 token fetch function in `packages/server/src/sdk/workspace/oauth2/utils.ts` (line 59) uses raw `fetch(config.url)` with **no SSRF protection**. The safe wrapper `fetchWithBlacklist()` exists in the same codebase and is used in every other outbound HTTP call (automation steps, ",
+      "id": "CVE-2026-49741",
+      "title": "TYPO3 CMS has Privilege Escalation & SQL Injection in its Form Framework",
+      "description": "### Problem\nBackend users with write access to the `form_definition` database table were able to directly create, update, or delete form definition records via `DataHandler`, bypassing the Form Framework's persistence validation and permission checks. This allowed injecting arbitrary form configurat",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "typo3/cms-core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49741",
+        "CVE-2026-49741"
+      ],
+      "ioc_count": 3,
+      "refs": [
+        "https://github.com/advisories/GHSA-jh32-v29g-68pq",
+        "https://github.com/TYPO3/typo3/security/advisories/GHSA-jh32-v29g-68pq",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49741",
+        "https://github.com/TYPO3/typo3/commit/c90493c13b633f328cf2c066182c90a1655ff0fc"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-11607",
+      "title": "TYPO3 CMS has Broken Access Control in its Form Framework",
+      "description": "### Problem\nBackend users with access to the Form Framework were able to use files not ending in `.form.yaml` as form definitions, which were processed without denying the incorrect file extension. Maliciously crafted form definition files can be used to execute arbitrary SQL statements, allowing at",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "typo3/cms-core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-11607",
+        "CVE-2026-11607"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://github.com/advisories/GHSA-pjpj-v387-x4vq",
+        "https://github.com/TYPO3/typo3/security/advisories/GHSA-pjpj-v387-x4vq",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-11607",
+        "https://github.com/TYPO3/typo3/commit/040d50d082a01f9e8bd113effd91290a9bb3b69e"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47343",
+      "title": "TYPO3 CMS: Destructive Actions on File Mount Folders",
+      "description": "### Problem\nNon-privileged backend users with file mount access were able to perform write operations (move, delete, rename) on folders representing the root of an active file mount due to missing authorization restrictions. ### Solution\nUpdate to TYPO3 versions 10.4.57 ELTS, 11.5.51 ELTS, 12.4.46 E",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "typo3/cms-core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47343",
+        "CVE-2026-47343"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://github.com/advisories/GHSA-3v8v-4wg6-r7qh",
+        "https://github.com/TYPO3/typo3/security/advisories/GHSA-3v8v-4wg6-r7qh",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-47343",
+        "https://github.com/TYPO3/typo3/commit/504e72470ff72aaf5d2256878bf473747f389798"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47346",
+      "title": "TYPO3 CMS has Broken Access Control in its Form Framework",
+      "description": "### Problem\nBackend users with file write permissions were able to upload form definition files with mixed-case extensions (e.g., `.FORM.YAML`) to bypass the Form Framework's upload restriction. Maliciously crafted form definition files can be used to execute arbitrary SQL statements, allowing attac",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "typo3/cms-core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47346",
+        "CVE-2026-47346"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://github.com/advisories/GHSA-hwvq-2w67-rvxp",
+        "https://github.com/TYPO3/typo3/security/advisories/GHSA-hwvq-2w67-rvxp",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-47346",
+        "https://github.com/TYPO3/typo3/commit/2030617e6f273cee7b756c695f0a48a45a31eb47"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-49742",
+      "title": "TYPO3 CMS has Broken Access Control in its Media Module",
+      "description": "### Problem\nBackend users with file download permissions were able to download files from the fallback storage of the file abstraction layer (FAL) via the Media Module. Since the fallback storage resolves paths relative to the server's document root, this could expose sensitive files such as log fil",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "typo3/cms-core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49742",
+        "CVE-2026-49742"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://github.com/advisories/GHSA-chm7-4vch-h8vr",
+        "https://github.com/TYPO3/typo3/security/advisories/GHSA-chm7-4vch-h8vr",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49742",
+        "https://github.com/TYPO3/typo3/commit/ad636b6183843b57c758a1e12174a75093ac93c3"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53999",
+      "title": "Radius Controller May Delete a Container Resource via an Injected Deployment Annotation (Multi-Tenant Installs)",
+      "description": "# Radius Controller May Delete a Container Resource via an Injected Deployment Annotation (Multi-Tenant Installs) ## Summary A configuration-validation issue in the Radius Kubernetes controller can cause it to issue a `DELETE` for the container resource referenced by a tampered `radapp.io/status` an",
       "cvss": 7.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-12",
+      "last_seen": "2026-06-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/radius-project/radius",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53999",
+        "CVE-2026-53999"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-fp5j-4fj2-4jvq",
+        "https://github.com/radius-project/radius/security/advisories/GHSA-fp5j-4fj2-4jvq",
+        "https://github.com/radius-project/radius/releases/tag/v0.58.0",
+        "https://github.com/advisories/GHSA-fp5j-4fj2-4jvq"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-48152",
+      "title": "Budibase: Basic app users can exfiltrate stored REST datasource auth by rewriting datasource base URL",
+      "description": "### Summary\nBudibase stores external REST datasource credentials server-side and documents that database credentials are applied server-side and are not exposed in the UI. The REST datasource implementation redacts stored Basic/Bearer/OAuth2 auth secrets before returning datasource data to clients. ",
+      "cvss": 8.1,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4090,305 +4384,15 @@
       "product": "@budibase/server",
       "due_date": null,
       "cves": [
-        "CVE-2026-48146",
-        "CVE-2026-48146"
+        "CVE-2026-48152",
+        "CVE-2026-48152"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-g6qx-g4pr-92v7",
-        "https://github.com/Budibase/budibase/security/advisories/GHSA-g6qx-g4pr-92v7",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-48146",
-        "https://github.com/advisories/GHSA-g6qx-g4pr-92v7"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-28980",
-      "title": "SwiftNIO NIOHTTP1:  HTTPDecoder accepts unbounded HTTP/1 header blocks, enabling remote DoS",
-      "description": "### Summary The `HTTPDecoder` in `NIOHTTP1` enforces no limit on the total size of an HTTP/1 message's header block or on the number of header fields per message. A remote peer can submit an arbitrary number of small, valid headers in a single request and have them all accumulated into the resulting",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "swift",
-      "product": "github.com/apple/swift-nio",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-28980",
-        "CVE-2026-28980"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-rj37-6j9x-74q6",
-        "https://github.com/apple/swift-nio/security/advisories/GHSA-rj37-6j9x-74q6",
-        "https://github.com/advisories/GHSA-rj37-6j9x-74q6"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-43671",
-      "title": "SwiftNIO: Out-of-bounds write via ByteBuffer index and length UInt32 overflow",
-      "description": "### Summary A program using swift-nio is vulnerable to a potential out-of-bounds write when attacker-controlled index or length values exceeding `UInt32.max` are passed to some `ByteBuffer` methods. This affects all swift-nio versions from 1.0.0 to 2.99.0. It is fixed in 2.100.0 and later releases. ",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "swift",
-      "product": "github.com/apple/swift-nio",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-43671",
-        "CVE-2026-43671"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-r3rc-9hpw-54v9",
-        "https://github.com/apple/swift-nio/security/advisories/GHSA-r3rc-9hpw-54v9",
-        "https://github.com/advisories/GHSA-r3rc-9hpw-54v9"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48113",
-      "title": "Chisel has an ACL Bypass via Post-Handshake SSH Channel ExtraData Injection",
-      "description": "### Summary Authenticated chisel clients can bypass `--authfile` ACL restrictions and tunnel traffic to arbitrary destinations reachable from the server. The ACL is enforced only during the initial handshake against declared remotes, but never on subsequent SSH channels that carry actual traffic. A ",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-12",
-      "last_seen": "2026-06-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/jpillora/chisel",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48113",
-        "CVE-2026-48113"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-24fp-5v3p-rvpw",
-        "https://github.com/jpillora/chisel/security/advisories/GHSA-24fp-5v3p-rvpw",
-        "https://github.com/advisories/GHSA-24fp-5v3p-rvpw"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48089",
-      "title": "DevGuard has improper authorization on public assets",
-      "description": "### Impact On a DevGuard API instance with one or more **public assets**, any authenticated user — including users from a different organization with no membership or role in the affected org/project — can create, update, reapply, and delete **VEX rules** on those public assets. The same flaw affect",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-11",
-      "last_seen": "2026-06-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/l3montree-dev/devguard",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48089",
-        "CVE-2026-48089"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-6p54-fw2f-q7gf",
-        "https://github.com/l3montree-dev/devguard/security/advisories/GHSA-6p54-fw2f-q7gf",
-        "https://github.com/l3montree-dev/devguard/commit/1be88ec1309a5dc0566e35a23bdc4ea3ecd11417",
-        "https://github.com/advisories/GHSA-6p54-fw2f-q7gf"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2025-27511",
-      "title": "GeoServer DB2 DataStore Extension has a JNDI Vulnerability via Store Connection",
-      "description": "## Summary Administrator can perform JNDI attack through specially crafted DB2 jdbc url leading to Remote Code Execution (RCE). ## Impact If GeoServer has DB2 extension installed, this vulnerability can lead to executing arbitrary code. ## Details Authenticated users can access Vector Data Sources p",
-      "cvss": 7.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-11",
-      "last_seen": "2026-06-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "org.geoserver.extension:gs-db2",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-27511",
-        "CVE-2025-27511"
-      ],
-      "ioc_count": 3,
-      "refs": [
-        "https://github.com/advisories/GHSA-g628-r368-6vh7",
-        "https://github.com/geoserver/geoserver/security/advisories/GHSA-g628-r368-6vh7",
-        "https://github.com/geoserver/geoserver/releases/tag/2.27.0",
-        "https://github.com/advisories/GHSA-g628-r368-6vh7"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48109",
-      "title": " MessagePack's LZ4 decompression may fail with AccessViolationException after dereferencing memory from bad input",
-      "description": "### Impact A vulnerability exists in the optional LZ4 decompression path used by MessagePack compression modes `Lz4Block` and `Lz4BlockArray`. The decoder implementation is based on a deprecated fast-decompression algorithm that does not take a source-length bound. A remote attacker can send a craft",
-      "cvss": 8.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-11",
-      "last_seen": "2026-06-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "nuget",
-      "product": "MessagePack",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48109",
-        "CVE-2026-48109"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-hv8m-jj95-wg3x",
-        "https://github.com/MessagePack-CSharp/MessagePack-CSharp/security/advisories/GHSA-hv8m-jj95-wg3x",
-        "https://github.com/advisories/GHSA-hv8m-jj95-wg3x"
+        "https://github.com/advisories/GHSA-3gp5-q4jw-3v94",
+        "https://github.com/Budibase/budibase/security/advisories/GHSA-3gp5-q4jw-3v94",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-48152",
+        "https://github.com/advisories/GHSA-3gp5-q4jw-3v94"
       ],
       "explanation": {
         "quality": [
