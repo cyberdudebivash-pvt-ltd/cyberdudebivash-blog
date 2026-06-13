@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-13T09:42:08.949Z",
+  "generated": "2026-06-13T11:33:09.911Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2611,
+    "total_nodes": 2615,
     "actors": 8,
     "cves": 603,
-    "campaigns": 267,
+    "campaigns": 268,
     "malware": 0,
     "iocs": 252,
-    "edges": 896
+    "edges": 900
   },
   "nodes": {
     "actor:lockbit": {
@@ -741,6 +741,16 @@
         },
         {
           "target": "campaign:cluster-ad165eb7",
+          "relationship": "executes",
+          "confidence": 0.85
+        },
+        {
+          "target": "WIRED_SECURITY-016081c23e689552",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "campaign:cluster-0126936a",
           "relationship": "executes",
           "confidence": 0.85
         }
@@ -49546,6 +49556,86 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "WIRED_SECURITY-016081c23e689552": {
+      "id": "WIRED_SECURITY-016081c23e689552",
+      "type": "Intel",
+      "name": "The FCC Wants to Kill Burner Phones",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 83,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "wired_security",
+        "product": "Threat Intelligence",
+        "published": "2026-06-13",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-e27f2a8ed6d49711": {
+      "id": "REDDIT_CYBER-e27f2a8ed6d49711",
+      "type": "Intel",
+      "name": "Cyber awareness game for companies that want real awareness culture?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-66d6650c9b211b16": {
+      "id": "BLEEPINGCOMPUTER-66d6650c9b211b16",
+      "type": "Intel",
+      "name": "US Gov asks Anthropic to ban 'foreign national' access to Fable, Mythos",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-13",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-0126936a": {
+      "id": "campaign:cluster-0126936a",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-13",
+        "last_seen": "2026-06-13",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "WIRED_SECURITY-016081c23e689552",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -57648,6 +57738,42 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-13",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→WIRED_SECURITY-016081c23e689552",
+      "source": "actor:shinyhunters",
+      "target": "WIRED_SECURITY-016081c23e689552",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-06-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-e27f2a8ed6d49711→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-e27f2a8ed6d49711",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-13",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→executes→campaign:cluster-0126936a",
+      "source": "actor:shinyhunters",
+      "target": "campaign:cluster-0126936a",
+      "relationship": "executes",
+      "confidence": 0.85,
+      "first_seen": "2026-06-13",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-0126936a→includes→WIRED_SECURITY-016081c23e689552",
+      "source": "campaign:cluster-0126936a",
+      "target": "WIRED_SECURITY-016081c23e689552",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-13",
       "sources": []
     }
