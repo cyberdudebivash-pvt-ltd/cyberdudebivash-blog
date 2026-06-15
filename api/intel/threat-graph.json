@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-15T21:27:47.936Z",
+  "generated": "2026-06-15T23:20:45.706Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2740,
+    "total_nodes": 2744,
     "actors": 8,
     "cves": 624,
     "campaigns": 276,
     "malware": 0,
-    "iocs": 267,
-    "edges": 965
+    "iocs": 269,
+    "edges": 967
   },
   "nodes": {
     "actor:lockbit": {
@@ -52126,6 +52126,75 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-05e303fde293f7d9": {
+      "id": "BLEEPINGCOMPUTER-05e303fde293f7d9",
+      "type": "Intel",
+      "name": "DOJ seizes CFAKE, SOCFAKE deepfake nude sites under TAKE IT DOWN Act",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:cfake.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:socfake.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:cfake.com": {
+      "id": "ioc:domain:cfake.com",
+      "type": "IOC",
+      "name": "cfake.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-15"
+      },
+      "connections": []
+    },
+    "ioc:domain:socfake.com": {
+      "id": "ioc:domain:socfake.com",
+      "type": "IOC",
+      "name": "socfake.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-15"
+      },
+      "connections": []
+    },
+    "UNIT42-ab9799add6f5b40d": {
+      "id": "UNIT42-ab9799add6f5b40d",
+      "type": "Intel",
+      "name": "Inside the Modern SOC: The 72-Minute Race",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "unit42",
+        "product": "Threat Intelligence",
+        "published": "2026-06-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -60847,6 +60916,24 @@
       "id": "REDDIT_NETSEC-c1320eb1d1d1862e→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_NETSEC-c1320eb1d1d1862e",
       "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-15",
+      "sources": []
+    },
+    {
+      "id": "BLEEPINGCOMPUTER-05e303fde293f7d9→linked_to→ioc:domain:cfake.com",
+      "source": "BLEEPINGCOMPUTER-05e303fde293f7d9",
+      "target": "ioc:domain:cfake.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-15",
+      "sources": []
+    },
+    {
+      "id": "BLEEPINGCOMPUTER-05e303fde293f7d9→linked_to→ioc:domain:socfake.com",
+      "source": "BLEEPINGCOMPUTER-05e303fde293f7d9",
+      "target": "ioc:domain:socfake.com",
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-06-15",
