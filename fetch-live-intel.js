@@ -1565,18 +1565,42 @@ function genPlaybook(item) {
 // ── PHASE 7: QUALITY GATE — PUBLICATION VALIDATOR ───────────────────────
 // Rejects any intelligence item that fails minimum quality requirements.
 // Returns { pass: bool, reasons: string[] }
+// Non-threat keywords that indicate career/learning Reddit posts — not intelligence
+const REDDIT_NOISE_RE = /\b(imposter syndrome|feeling stuck|career advice|study resources?|coursera|udemy|comptia|cissp prep|ceh prep|certif|job hunt|resume|interview|internship|beginner|newbie|starting out|how do i get into|roadmap for|which course|what should i learn|self.?study|boot.?camp|bootcamp|entry.?level|junior.?position|hiring|laid.?off|getting.?into|switching.?careers?|broke into|landed a job|salary|compensation|my first|imposter|burn.?out|burnout|overwhelmed|rant:|feeling low|mental health|advice needed|tips for|suggestions for)\b/i;
+
+// Minimum priority thresholds by source type
+const SOURCE_MIN_PRIORITY = {
+  reddit_cyber: 55,   // r/cybersecurity — lots of career noise; require high-signal
+  reddit_netsec: 42,  // r/netsec — better signal but still needs filtering
+};
+const DEFAULT_NEWS_REPORT_MIN = 35;
+
 function qualityGate(item) {
   const reasons = [];
   const text = (item.title||'') + ' ' + (item.desc||'');
+  const src = item.source || '';
 
   // Required fields
   if (!item.id)                            reasons.push('Missing: id');
   if (!item.title || item.title.length<10) reasons.push('Missing/too-short: title');
   if (!item.desc  || item.desc.length<20)  reasons.push('Missing/too-short: description');
   if (!item.source)                        reasons.push('Missing: source');
-  if (!item.type || item.type==='NEWS_REPORT') {
-    // Allow NEWS_REPORT only if score is high enough
-    if ((item.priority||0) < 30) reasons.push('NEWS_REPORT with low priority — insufficient intelligence value');
+
+  // Source-specific quality gates
+  if (src === 'reddit_cyber' || src === 'reddit_netsec') {
+    // Reject career/learning noise from Reddit — zero intelligence value
+    if (REDDIT_NOISE_RE.test(item.title||'')) {
+      reasons.push(`Reddit non-intelligence content rejected: career/learning topic`);
+    }
+    const minPri = SOURCE_MIN_PRIORITY[src] || 42;
+    if ((item.priority||0) < minPri) {
+      reasons.push(`Reddit source requires priority >= ${minPri} (got ${item.priority||0})`);
+    }
+  } else if (!item.type || item.type==='NEWS_REPORT') {
+    // For non-Reddit sources, allow NEWS_REPORT with priority >= threshold
+    if ((item.priority||0) < DEFAULT_NEWS_REPORT_MIN) {
+      reasons.push(`NEWS_REPORT with low priority (${item.priority||0} < ${DEFAULT_NEWS_REPORT_MIN}) — insufficient intelligence value`);
+    }
   }
 
   // Severity must be assignable
@@ -1663,7 +1687,11 @@ function generatePostHTML(item) {
   const typeLabel = typeLabels[item.type]||'⚡ INTEL';
   const slug = slugify(item.id.startsWith('CVE')?`${item.id}-${item.vendor}-${item.product}`:item.title.slice(0,60));
   const metaTitle = `${item.title} | CYBERDUDEBIVASH SENTINEL APEX`;
-  const metaDesc  = `${item.id} — ${tl} Score ${score}/100. ${(item.desc||'').slice(0,140)}. Full analysis, IOCs, detection rules, attack chain by CYBERDUDEBIVASH.`;
+  const isCVEItem = /^CVE-/i.test(item.id);
+  const cleanDescText = (item.desc||'').replace(/<[^>]+>/g,' ').replace(/&[a-zA-Z]+;/g,' ').replace(/\s+/g,' ').trim();
+  const metaDesc = isCVEItem
+    ? `${item.id} (CVSS ${cvss}) — ${cleanDescText.slice(0,130)}. Analysis, IOCs and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.`
+    : `${(cleanDescText.slice(0,155)||item.title.slice(0,155))}. Cybersecurity analysis, IOCs, and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.`;
   const badges = [
     item.cisaKev?`<span class="badge bdg-cisa">⚠️ CISA KEV</span>`:'',
     item.exploited?`<span class="badge bdg-red">⚡ ACTIVELY EXPLOITED</span>`:'',
