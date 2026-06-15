@@ -205,6 +205,7 @@
       <a href="https://cyberdudebivash.in" target="_blank">AI Hub</a>
       <a href="pricing.html">Pricing</a>
       <a href="archive.html" class="active">Archive</a>
+      <a href="/search.html">🔍 Search</a>
       <a href="mailto:bivash@cyberdudebivash.com?subject=Enterprise%20Access" class="nav-cta">Enterprise Access</a>
     </nav>
   </div>
@@ -272,9 +273,21 @@
       <!-- Populated by JavaScript from intelligence.html localStorage cache -->
     </div>
 
+    <!-- ALL PUBLISHED REPORTS — search-index.json powered -->
+    <div id="searchIndexArchive">
+      <div class="section-heading" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <span>📋 All Published Intelligence Reports (<span id="siTotal">Loading…</span>)</span>
+        <span style="font-size:11px;color:var(--apex-muted);font-weight:600">Sorted newest first</span>
+      </div>
+      <div id="siCards"></div>
+      <div style="text-align:center;margin-top:20px">
+        <button id="siLoadMore" onclick="siLoadMore()" style="display:none;background:#0d1117;border:1px solid #00ffe040;color:#00ffe0;padding:10px 28px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.04em">Load More Reports ↓</button>
+      </div>
+    </div>
+
     <!-- STATIC PUBLISHED POSTS ARCHIVE -->
     <div class="static-archive-section">
-      <div class="section-heading">📄 Published Reports Archive — April 2026</div>
+      <div class="section-heading">📄 Highlighted Reports Archive — April 2026</div>
 
       <a href="posts/cve-2026-33825-microsoft-defender-zero-day-bluehammer-redsun.html" class="static-archive-card">
         <div class="sac-info">
@@ -782,7 +795,84 @@ document.getElementById('categoryFilter').addEventListener('change', function() 
 });
 
 // Load on DOMContentLoaded
-document.addEventListener('DOMContentLoaded', loadDynamicArchive);
+document.addEventListener('DOMContentLoaded', function() {
+  loadDynamicArchive();
+  loadSearchIndexArchive();
+});
+
+// ── SENTINEL APEX: Search-Index Powered Full Archive ───────────────────────
+var _siAll = [], _siOffset = 0;
+var SI_PAGE = 30;
+var TYPE_COLORS = { CVE:'#ff8c00', 'ZERO-DAY':'#ff3b3b', RANSOMWARE:'#a855f7', 'AI SECURITY':'#00ffe0', ADVISORY:'#3b82f6', INTEL:'#6b7280' };
+
+function siCard(e) {
+  var color = TYPE_COLORS[e.tp] || '#6b7280';
+  var href = '/posts/' + escapeHTML(e.s) + '.html';
+  var shortDesc = e.desc ? escapeHTML(e.desc.slice(0, 110)) + (e.desc.length > 110 ? '…' : '') : '';
+  return '<a href="' + href + '" class="static-archive-card" style="display:flex;text-decoration:none">' +
+    '<div class="sac-info">' +
+      '<div class="ac-header">' +
+        '<span class="ac-badge" style="background:' + color + '22;color:' + color + ';border:1px solid ' + color + '44;font-size:9px">' + escapeHTML(e.tp) + '</span>' +
+        '<span class="ac-badge badge-gen" style="font-size:9px">' + escapeHTML(e.d) + '</span>' +
+      '</div>' +
+      '<div class="sac-title">' + escapeHTML(e.t.slice(0, 130)) + '</div>' +
+      (shortDesc ? '<div style="font-size:11px;color:#6b7280;margin-top:4px;line-height:1.5">' + shortDesc + '</div>' : '') +
+    '</div>' +
+    '<div class="sac-arrow">→</div></a>';
+}
+
+function siRender() {
+  var batch = _siAll.slice(_siOffset, _siOffset + SI_PAGE);
+  var html = batch.map(siCard).join('');
+  document.getElementById('siCards').insertAdjacentHTML('beforeend', html);
+  _siOffset += batch.length;
+  var btn = document.getElementById('siLoadMore');
+  if (btn) btn.style.display = _siOffset < _siAll.length ? 'inline-block' : 'none';
+}
+
+function siLoadMore() {
+  siRender();
+  if (typeof gtag === 'function') gtag('event', 'archive_load_more', { offset: _siOffset });
+}
+
+function siFilterByType(tp) {
+  _siAll = (window._siAllRaw || []).filter(function(e) { return !tp || e.tp === tp; });
+  _siOffset = 0;
+  document.getElementById('siCards').innerHTML = '';
+  document.getElementById('siTotal').textContent = _siAll.length.toLocaleString() + ' reports';
+  siRender();
+}
+
+function loadSearchIndexArchive() {
+  fetch('/search-index.json').then(function(r) { return r.json(); }).then(function(data) {
+    if (!Array.isArray(data) || data.length === 0) return;
+    window._siAllRaw = data;
+    _siAll = data;
+    document.getElementById('siTotal').textContent = data.length.toLocaleString() + ' reports';
+    document.getElementById('totalArchived').textContent = data.length.toLocaleString();
+    siRender();
+    // Wire up category filter to also filter search-index cards
+    var catSel = document.getElementById('categoryFilter');
+    if (catSel) {
+      catSel.addEventListener('change', function() {
+        var val = catSel.value;
+        var typeMap = { cve:'CVE', zerod:'ZERO-DAY', malware:'RANSOMWARE', vuln:'CVE', news:'INTEL' };
+        siFilterByType(typeMap[val] || (val === 'all' ? '' : null));
+      }, { once: false });
+    }
+    // Upgrade Fuse search to also include search-index data
+    if (typeof Fuse !== 'undefined') {
+      var fuseItems = data.map(function(e) {
+        return { title: e.t, slug: e.s, link: '/posts/' + e.s + '.html', source: e.tp, published: e.d, desc: e.desc };
+      });
+      initFuseSearch(fuseItems);
+    }
+  }).catch(function(e) {
+    console.warn('[SENTINEL APEX Archive] search-index.json load failed:', e);
+    var el = document.getElementById('siTotal');
+    if (el) el.textContent = '1,953+ reports';
+  });
+}
 </script>
 <script src="/monetization.js" defer></script>
 <script src="/conversion-engine.js" defer></script>
