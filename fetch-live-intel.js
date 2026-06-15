@@ -1568,10 +1568,13 @@ function genPlaybook(item) {
 // Non-threat keywords that indicate career/learning Reddit posts — not intelligence
 const REDDIT_NOISE_RE = /\b(imposter syndrome|feeling stuck|career advice|study resources?|coursera|udemy|comptia|cissp prep|ceh prep|certif|job hunt|resume|interview|internship|beginner|newbie|starting out|how do i get into|roadmap for|which course|what should i learn|self.?study|boot.?camp|bootcamp|entry.?level|junior.?position|hiring|laid.?off|getting.?into|switching.?careers?|broke into|landed a job|salary|compensation|my first|imposter|burn.?out|burnout|overwhelmed|rant:|feeling low|mental health|advice needed|tips for|suggestions for)\b/i;
 
-// Minimum priority thresholds by source type
+// Minimum priority thresholds by source type.
+// Base score for a 0-day-old reddit post with CVSS 6.5 and no bonuses = 38.
+// Setting threshold to 42 ensures at least one bonus (AI security, nation-state, etc.)
+// is present. REDDIT_NOISE_RE handles explicit career/learning content separately.
 const SOURCE_MIN_PRIORITY = {
-  reddit_cyber: 55,   // r/cybersecurity — lots of career noise; require high-signal
-  reddit_netsec: 42,  // r/netsec — better signal but still needs filtering
+  reddit_cyber: 42,   // r/cybersecurity — career noise filtered; require 1+ relevance bonus
+  reddit_netsec: 40,  // r/netsec — better signal; require slight quality bar
 };
 const DEFAULT_NEWS_REPORT_MIN = 35;
 
@@ -2026,6 +2029,30 @@ function updateSitemap(slugs) {
     safeWriteSync(CFG.sitemapPath, sitemap, 'utf8');
     log(`sitemap.xml updated: +${slugs.length} URLs.`);
   } catch(e) { warn(`Sitemap update failed: ${e.message}`); }
+}
+
+function updateSearchIndex(newItems) {
+  const indexPath = path.join(__dirname, 'search-index.json');
+  try {
+    const existing = fs.existsSync(indexPath) ? JSON.parse(fs.readFileSync(indexPath,'utf8')) : [];
+    const existingSlugs = new Set(existing.map(e => e.s));
+    const today = isoNow();
+    const typeMap = { CVE_REPORT:'CVE', ZERO_DAY:'ZERO-DAY', RANSOMWARE:'RANSOMWARE',
+      MALWARE_REPORT:'RANSOMWARE', AI_SECURITY:'AI SECURITY', ADVISORY:'ADVISORY' };
+    const newEntries = newItems
+      .filter(item => item.slug && !existingSlugs.has(item.slug))
+      .map(item => ({
+        t: item.title || '',
+        s: item.slug,
+        d: (item.pubDate || today).slice(0,10),
+        desc: (item.desc||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,120),
+        tp: typeMap[item.type] || 'INTEL',
+      }));
+    if (newEntries.length === 0) return;
+    const updated = [...newEntries, ...existing].slice(0, 5000);
+    safeWriteSync(indexPath, JSON.stringify(updated), 'utf8');
+    log(`search-index.json: +${newEntries.length} entries (total: ${updated.length})`);
+  } catch(e) { warn(`Search index update failed: ${e.message}`); }
 }
 
 // ── PHASE 5: ENTERPRISE API PLATFORM (S2N-powered static JSON endpoints) ──
@@ -2525,6 +2552,7 @@ async function main() {
       updateIndexHTML(generatedCards);
       updateRSS(rssItems);
       updateSitemap(newSlugs);
+      updateSearchIndex(rssItems);
     }
 
     log(`  Quality gate: ${qualityPassed} passed, ${qualityRejected} rejected`);
