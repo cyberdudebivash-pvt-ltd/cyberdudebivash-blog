@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-17T19:33:18.425Z",
+  "generated": "2026-06-17T21:32:31.563Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 2946,
+    "total_nodes": 2949,
     "actors": 8,
     "cves": 677,
-    "campaigns": 291,
+    "campaigns": 292,
     "malware": 0,
     "iocs": 291,
-    "edges": 1041
+    "edges": 1042
   },
   "nodes": {
     "actor:lockbit": {
@@ -56043,6 +56043,62 @@
           "confidence": 1
         }
       ]
+    },
+    "DARKREADING-4f14539838a4996b": {
+      "id": "DARKREADING-4f14539838a4996b",
+      "type": "Intel",
+      "name": "INC Ransomware Thrives by Mastering the Basics",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 60,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-06-17",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-0453d68a113fe74c": {
+      "id": "BLEEPINGCOMPUTER-0453d68a113fe74c",
+      "type": "Intel",
+      "name": "Google to use UK and EU user IP addresses for ad personalization",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-57bb67b6": {
+      "id": "campaign:cluster-57bb67b6",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-06-17",
+        "last_seen": "2026-06-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "DARKREADING-4f14539838a4996b",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -65448,6 +65504,15 @@
       "id": "campaign:cve-2026-50656→includes→CVE-2026-50656",
       "source": "campaign:cve-2026-50656",
       "target": "CVE-2026-50656",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-57bb67b6→includes→DARKREADING-4f14539838a4996b",
+      "source": "campaign:cluster-57bb67b6",
+      "target": "DARKREADING-4f14539838a4996b",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-06-17",
