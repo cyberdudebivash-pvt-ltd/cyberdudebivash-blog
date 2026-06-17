@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-17T05:09:11.181Z",
+  "generated": "2026-06-17T10:03:55.224Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,44 +8,138 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 94,
+  "count": 103,
   "items": [
     {
-      "id": "REDDIT_CYBER-959bfdaff8eae84c",
-      "title": "Critical Copilot vulnerability allowed hackers to steal 2FA code from users",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1u7e74s/critical_copilot_vulnerability_allowed_hackers_to/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/4kV-82rXs1-pg9duIA6DUstbX3JJdcl-FZmaQ9ng02Y.jpeg?width=640&amp;amp;crop=smart&am",
-      "cvss": 6.5,
-      "final_ps": 69,
-      "quality_score": 0.585,
-      "threat_level": "HIGH",
-      "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
+      "id": "CVE-2026-48907",
+      "title": "CISA Warns of Actively Exploited Joomla JCE Flaw Allowing PHP Code Execution",
+      "description": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) on Tuesday added a maximum-severity security flaw impacting Widget Factory Joomla Content Editor (JCE) to its Known Exploited Vulnerabilities (KEV) catalog, citing evidence of active exploitation. The vulnerability, tracked as CVE-2026",
+      "cvss": 8,
+      "final_ps": 99,
+      "quality_score": 0.538,
+      "threat_level": "CRITICAL",
+      "type": "CVE_REPORT",
+      "source": "thehackernews",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_cyber"
+        "thehackernews"
       ],
-      "first_seen": "2026-06-16",
-      "last_seen": "2026-06-16",
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
       "exploited": true,
-      "cisa_kev": false,
+      "cisa_kev": true,
       "ransomware": false,
-      "vendor": "reddit_cyber",
+      "vendor": "The Hacker News",
       "product": "Threat Intelligence",
       "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
+      "cves": [
+        "CVE-2026-48907"
+      ],
+      "ioc_count": 0,
       "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1u7e74s/critical_copilot_vulnerability_allowed_hackers_to/"
+        "https://thehackernews.com/2026/06/cisa-warns-of-actively-exploited-joomla.html"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_cyber)",
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.537"
+        ],
+        "priority": [
+          "+15 CISA_KEV",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-2eb56099bd87d4a9",
+      "title": "Microsoft Working on Patch for &#8216;RoguePlanet&#8217; Zero-Day",
+      "description": "The public PoC code exploits a race condition in Microsoft Defender to spawn a command prompt with System privileges. The post Microsoft Working on Patch for &#8216;RoguePlanet&#8217; Zero-Day appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 88,
+      "quality_score": 0.505,
+      "threat_level": "CRITICAL",
+      "type": "ZERO_DAY",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/microsoft-working-on-patch-for-rogueplanet-zero-day/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
           "data_confidence=0.80",
-          "ioc_presence=7 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.505"
+        ],
+        "priority": [
+          "+12 PoC_available",
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_NETSEC-ec7428a9c7b06e38",
+      "title": "Extortion group FulcrumSec leaks initial samples from 1.3TB Novo Nordisk data breach following failed $25M ransom demand",
+      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Following a limited incident disclosure by Novo Nordisk on June 11, the cyber extortion group FulcrumSec has claimed responsibility for an extensive network intrusion resulting in the exfiltration of 1.3 TB of data (approximately 700,000 ",
+      "cvss": 6.5,
+      "final_ps": 88,
+      "quality_score": 0.585,
+      "threat_level": "CRITICAL",
+      "type": "RANSOMWARE",
+      "source": "reddit_netsec",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_netsec"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "reddit_netsec",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 5,
+      "refs": [
+        "https://www.reddit.com/r/netsec/comments/1u85kty/extortion_group_fulcrumsec_leaks_initial_samples/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_netsec)",
+          "data_confidence=0.80",
+          "ioc_presence=5 IOCs",
           "recency=0d (score=1.00)",
           "QS=0.585"
         ],
         "priority": [
+          "+10 ransomware_confirmed",
           "+8 exploited_in_wild"
         ],
         "suppression": null,
@@ -55,36 +149,22 @@
       "suppression_reason": null,
       "iocs": [
         {
-          "type": "sha1",
-          "value": "36ac6b0651fb377e8d741cc9d9ee7017ea706c56",
-          "confidence_score": 0.9,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
           "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1u7e74s/critical_copilot_vulnerability_allowed_hacke",
+          "value": "https://www.reddit.com/user/technadu&quot;&gt;",
           "confidence_score": 0.82,
           "first_seen": "2026-06-17",
           "source_count": 1
         },
         {
           "type": "url",
-          "value": "https://external-preview.redd.it/4kV-82rXs1-pg9duIA6DUstbX3JJdcl-FZmaQ9ng02Y.jpeg?width=640&amp;amp;",
+          "value": "https://www.technadu.com/hackers-claim-1tb-data-theft-from-wegovy-and-ozempic-maker-novo-nordisk-dem",
           "confidence_score": 0.82,
           "first_seen": "2026-06-17",
           "source_count": 1
         },
         {
           "type": "url",
-          "value": "https://www.reddit.com/user/rkhunter_&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://arstechnica.com/security/2026/06/critical-copilot-vulnerability-allowed-hackers-to-seal-2fa-",
+          "value": "https://www.reddit.com/r/netsec/comments/1u85kty/extortion_group_fulcrumsec_leaks_initial_samples/&q",
           "confidence_score": 0.82,
           "first_seen": "2026-06-17",
           "source_count": 1
@@ -98,7 +178,7 @@
         },
         {
           "type": "domain",
-          "value": "arstechnica.com",
+          "value": "www.technadu.com",
           "confidence_score": 0.75,
           "first_seen": "2026-06-17",
           "source_count": 1
@@ -106,189 +186,93 @@
       ]
     },
     {
-      "id": "CVE-2026-39949",
-      "title": "CVE-2026-39949: Authenticated Remote Code Execution in Cacti ≤ 1.2.30",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;During recent testing on Cacti, an authenticated remote code execution vulnerability was discovered that allows users with graph management privileges to execute arbitrary commands on the underlying OS.&lt;/p&gt; &lt;p&gt;The vulnerabilit",
-      "cvss": 8,
-      "final_ps": 54,
-      "quality_score": 0.595,
-      "threat_level": "MEDIUM",
-      "type": "SOCIAL_ENGINEERING",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-06-16",
-      "last_seen": "2026-06-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-39949"
-      ],
-      "ioc_count": 6,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1u7q6ta/cve202639949_authenticated_remote_code_execution/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=1.00",
-          "ioc_presence=6 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.595"
-        ],
-        "priority": [
-          "base_ps=54 (no boosts)"
-        ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "url",
-          "value": "https://github.com/lukehebe/Vulnerability-Disclosures/blob/main/CVE-2026-39949.md&quot;&gt;https://g",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://github.com/lukehebe/CVE-2026-39949/tree/main&quot;&gt;https://github.com/lukehebe/CVE-2026-3",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://github.com/Cacti/cacti/blob/develop/CHANGELOG#L231&quot;&gt;https://github.com/Cacti/cacti/b",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/sysinternalssuite&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1u7q6ta/cve202639949_authenticated_remote_code_execu",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        }
-      ]
-    },
-    {
-      "id": "REDDIT_CYBER-f9543188f472129a",
-      "title": "Mastra npm org compromised: 116 malicious packages, 28M downloads per month",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1u7yph7/mastra_npm_org_compromised_116_malicious_packages/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/-zRvfmhqDL0f15mqrGtMjrZZHz9lpXUGzhkUpQ2E4pg.png?width=640&amp;amp;crop=smart&amp",
+      "id": "BLEEPINGCOMPUTER-e564c26475689296",
+      "title": "Microsoft working on Defender patch for RoguePlanet zero-day",
+      "description": "Microsoft confirmed that it's working on a security patch for a Defender zero-day vulnerability named \"RoguePlanet,\" disclosed one week ago. [...]",
       "cvss": 6.5,
-      "final_ps": 53,
-      "quality_score": 0.525,
-      "threat_level": "MEDIUM",
-      "type": "SUPPLY_CHAIN",
-      "source": "reddit_cyber",
+      "final_ps": 76,
+      "quality_score": 0.51,
+      "threat_level": "HIGH",
+      "type": "ZERO_DAY",
+      "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_cyber"
+        "bleepingcomputer"
       ],
       "first_seen": "2026-06-17",
       "last_seen": "2026-06-17",
-      "exploited": false,
+      "exploited": true,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "reddit_cyber",
+      "vendor": "BleepingComputer",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
-      "ioc_count": 7,
+      "ioc_count": 0,
       "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1u7yph7/mastra_npm_org_compromised_116_malicious_packages/"
+        "https://www.bleepingcomputer.com/news/microsoft/microsoft-working-on-defender-patch-for-rogueplanet-zero-day/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_cyber)",
+          "source_weight=0.72 (bleepingcomputer)",
           "data_confidence=0.80",
-          "ioc_presence=7 IOCs",
           "recency=0d (score=1.00)",
-          "QS=0.525"
+          "QS=0.510"
         ],
         "priority": [
-          "+3 supply_chain"
+          "+8 exploited_in_wild",
+          "+7 zero_day"
         ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
       "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "sha1",
-          "value": "a868a57f788992c9624ce526cfa3087df1db5b04",
-          "confidence_score": 0.9,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1u7yph7/mastra_npm_org_compromised_116_malicious_pac",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://external-preview.redd.it/-zRvfmhqDL0f15mqrGtMjrZZHz9lpXUGzhkUpQ2E4pg.png?width=640&amp;amp;c",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/bugvader25&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.endorlabs.com/learn/mastra-npm-org-compromised-multiple-packages-trojanized-to-drop-a-re",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.endorlabs.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        }
-      ]
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-7542c9548f829f4e",
+      "title": "Joomla, LiteSpeed Vulnerabilities Exploited in Attacks",
+      "description": "The flaws allow attackers to execute arbitrary PHP code and gain root privileges on shared hosting servers. The post Joomla, LiteSpeed Vulnerabilities Exploited in Attacks appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 63,
+      "quality_score": 0.505,
+      "threat_level": "MEDIUM",
+      "type": "AI_SECURITY",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/joomla-litespeed-vulnerabilities-exploited-in-attacks/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.505"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
     },
     {
       "id": "CVE-2023-27351",
@@ -561,243 +545,199 @@
       "iocs": []
     },
     {
-      "id": "REDDIT_CYBER-010b536bff30858c",
-      "title": "Nothing on the Internet Is Secure Anymore",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1u7mbsp/nothing_on_the_internet_is_secure_anymore/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/onX_gNFDK7rHlqKJ7H67dPNtAtQ_BU5sp2o35sGfokc.jpeg?width=640&amp;amp;crop=smart&amp;amp;au",
+      "id": "REDDIT_NETSEC-8657a3269edbe840",
+      "title": "Getting a CVE Without Shipping Slop",
+      "description": "&amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/Mindless-Study1898&quot;&gt; /u/Mindless-Study1898 &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://www.credrelay.com/p/getting-a-cve-without-shipping-slop&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt; &amp;#32; &lt;sp",
       "cvss": 6.5,
       "final_ps": 47,
       "quality_score": 0.525,
       "threat_level": "MEDIUM",
       "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
+      "source": "reddit_netsec",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-06-16",
-      "last_seen": "2026-06-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1u7mbsp/nothing_on_the_internet_is_secure_anymore/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "ioc_presence=7 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.525"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "sha1",
-          "value": "72d2feca9ca1da8f231969aa5077d5f1d8607c71",
-          "confidence_score": 0.9,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1u7mbsp/nothing_on_the_internet_is_secure_anymore/&q",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://external-preview.redd.it/onX_gNFDK7rHlqKJ7H67dPNtAtQ_BU5sp2o35sGfokc.jpeg?width=640&amp;amp;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/theatlantic&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.theatlantic.com/technology/2026/06/ai-hacking-cybersecurity-banks/687562/?utm_source=red",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.theatlantic.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        }
-      ]
-    },
-    {
-      "id": "REDDIT_CYBER-05bbd5bbb38f5aa7",
-      "title": "Hackers Are Hijacking Entire Roblox Games Now",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1u7e2mw/hackers_are_hijacking_entire_roblox_games_now/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/lDWnWeIzcj9st_JXs_86syWDbILRlXGtngnLCVorIjc.png?width=640&amp;amp;crop=smart&amp;amp",
-      "cvss": 6.5,
-      "final_ps": 47,
-      "quality_score": 0.525,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-06-16",
-      "last_seen": "2026-06-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 6,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1u7e2mw/hackers_are_hijacking_entire_roblox_games_now/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "ioc_presence=6 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.525"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "sha1",
-          "value": "8ca9a18f02e6e49491bc07f8b429d259eec15fde",
-          "confidence_score": 0.9,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1u7e2mw/hackers_are_hijacking_entire_roblox_games_no",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://external-preview.redd.it/lDWnWeIzcj9st_JXs_86syWDbILRlXGtngnLCVorIjc.png?width=640&amp;amp;c",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/rkhunter_&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.404media.co/hackers-are-hijacking-entire-roblox-games-now/&quot;&gt;[link]&lt;/a&gt;&lt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-17",
-          "source_count": 1
-        }
-      ]
-    },
-    {
-      "id": "SANS_ISC-d89428934ebef0df",
-      "title": "ISC Stormcast For Wednesday, June 17th, 2026 https://isc.sans.edu/podcastdetail/9976, (Wed, Jun 17th)",
-      "description": "(c) SANS Internet Storm Center. https://isc.sans.edu Creative Commons Attribution-Noncommercial 3.0 United States License.",
-      "cvss": 6.5,
-      "final_ps": 44,
-      "quality_score": 0.505,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sans_isc",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sans_isc"
+        "reddit_netsec"
       ],
       "first_seen": "2026-06-17",
       "last_seen": "2026-06-17",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "SANS ISC",
+      "vendor": "reddit_netsec",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
-      "ioc_count": 2,
+      "ioc_count": 5,
       "refs": [
-        "https://isc.sans.edu/diary/rss/33082"
+        "https://www.reddit.com/r/netsec/comments/1u7za1g/getting_a_cve_without_shipping_slop/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.70 (sans_isc)",
+          "source_weight=0.42 (reddit_netsec)",
           "data_confidence=0.80",
-          "ioc_presence=2 IOCs",
+          "ioc_presence=5 IOCs",
           "recency=0d (score=1.00)",
-          "QS=0.505"
+          "QS=0.525"
         ],
         "priority": [
-          "base_ps=44 (no boosts)"
+          "base_ps=47 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null,
+      "suppressed": true,
+      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
       "iocs": [
         {
           "type": "url",
-          "value": "https://isc.sans.edu/podcastdetail/9976,",
+          "value": "https://www.reddit.com/user/Mindless-Study1898&quot;&gt;",
           "confidence_score": 0.82,
           "first_seen": "2026-06-17",
           "source_count": 1
         },
         {
           "type": "url",
-          "value": "https://isc.sans.edu",
+          "value": "https://www.credrelay.com/p/getting-a-cve-without-shipping-slop&quot;&gt;[link]&lt;/a&gt;&lt;/span&g",
           "confidence_score": 0.82,
+          "first_seen": "2026-06-17",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://www.reddit.com/r/netsec/comments/1u7za1g/getting_a_cve_without_shipping_slop/&quot;&gt;[comm",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-17",
+          "source_count": 1
+        },
+        {
+          "type": "domain",
+          "value": "www.reddit.com",
+          "confidence_score": 0.75,
+          "first_seen": "2026-06-17",
+          "source_count": 1
+        },
+        {
+          "type": "domain",
+          "value": "www.credrelay.com",
+          "confidence_score": 0.75,
+          "first_seen": "2026-06-17",
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "id": "THEHACKERNEWS-6332b5691b35a537",
+      "title": "144 Mastra npm Packages Compromised via Hijacked Contributor Account",
+      "description": "As many as 144 npm packages associated with the Mastra namespace (\"@mastra/*\"), a popular open-source JavaScript and TypeScript framework for building artificial intelligence (AI) applications, have been compromised as part of a software supply chain attack codenamed easy-day-js, per findings from J",
+      "cvss": 6.5,
+      "final_ps": 46,
+      "quality_score": 0.408,
+      "threat_level": "MEDIUM",
+      "type": "SUPPLY_CHAIN",
+      "source": "thehackernews",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "thehackernews"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "The Hacker News",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://thehackernews.com/2026/06/144-mastra-npm-packages-compromised-via.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_NETSEC-1d3833155340fce0",
+      "title": "QoS Policies to Restrict EDR Traffic and Detection Strategies",
+      "description": "&amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/netbiosX&quot;&gt; /u/netbiosX &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://ipurple.team/2026/06/17/qos-policies/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt; &amp;#32; &lt;span&gt;&lt;a href=&quot;https://www.red",
+      "cvss": 6.5,
+      "final_ps": 45,
+      "quality_score": 0.495,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "reddit_netsec",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_netsec"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_netsec",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 4,
+      "refs": [
+        "https://www.reddit.com/r/netsec/comments/1u85hnb/qos_policies_to_restrict_edr_traffic_and/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_netsec)",
+          "data_confidence=0.80",
+          "ioc_presence=4 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.495"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
+      "iocs": [
+        {
+          "type": "url",
+          "value": "https://www.reddit.com/user/netbiosX&quot;&gt;",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-17",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://ipurple.team/2026/06/17/qos-policies/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-17",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://www.reddit.com/r/netsec/comments/1u85hnb/qos_policies_to_restrict_edr_traffic_and/&quot;&gt;",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-17",
+          "source_count": 1
+        },
+        {
+          "type": "domain",
+          "value": "www.reddit.com",
+          "confidence_score": 0.75,
           "first_seen": "2026-06-17",
           "source_count": 1
         }
@@ -847,6 +787,228 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_CYBER-6757d76e18da3c9b",
+      "title": "ssh-keysign-pwn: Linux LPE allows unprivileged users to read root-owned files. PoC with SSH server privkey",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 42,
+      "quality_score": 0.38,
+      "threat_level": "LOW",
+      "type": "ZERO_DAY",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-05-15",
+      "last_seen": "2026-05-15",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1tdpq0a/sshkeysignpwn_linux_lpe_allows_unprivileged_users/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+12 PoC_available",
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "BLEEPINGCOMPUTER-4cd4fe87e954ecde",
+      "title": "Kodak confirms data breach claimed by ShinyHunters extortion gang",
+      "description": "Kodak has confirmed that it's working with external cybersecurity experts to investigate a security breach after hackers gained access to some of the company's data. [...]",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.45,
+      "threat_level": "LOW",
+      "type": "DATA_BREACH",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/kodak-confirms-data-breach-claimed-by-shinyhunters-extortion-gang/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.450"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-154c9e2c6b23917c",
+      "title": "Oracle&#8217;s Second Monthly Security Updates Deliver 245 Patches",
+      "description": "Oracle has released its June 2026 Critical Security Patch Update to fix vulnerabilities in Communications, EBS, Enterprise Manager and other products. The post Oracle&#8217;s Second Monthly Security Updates Deliver 245 Patches appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.445,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/oracles-second-monthly-security-updates-deliver-245-patches/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-2149327855d063e7",
+      "title": "Chrome and Firefox Updated to Patch Critical, High-Severity Vulnerabilities",
+      "description": "The browser updates address multiple memory safety bugs that could potentially lead to remote code execution. The post Chrome and Firefox Updated to Patch Critical, High-Severity Vulnerabilities appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.445,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/chrome-and-firefox-updated-to-patch-critical-high-severity-vulnerabilities/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-1fbca2a8198eecdc",
+      "title": "3 Recently Patched Fortinet FortiSandbox Vulnerabilities in Hacker Crosshairs",
+      "description": "SOCRadar has detected 30,000 compromised Fortinet firewalls that expose networks to hacking. The post 3 Recently Patched Fortinet FortiSandbox Vulnerabilities in Hacker Crosshairs appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.445,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/3-recently-patched-fortinet-fortisandbox-vulnerabilities-in-hacker-crosshairs/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.445"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -1672,6 +1834,94 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "THEHACKERNEWS-ecc0d33c2b0bb24a",
+      "title": "Malicious JetBrains Plugins Steal AI API Keys as Chrome Extensions Capture Chatbot Chats",
+      "description": "Cybersecurity researchers have flagged a \"coordinated malware campaign\" on the JetBrains Marketplace that has published no less than 15 malicious plugins capable of exfiltrating artificial intelligence (AI) provider keys. \"Every plugin poses as an AI coding assistant built on DeepSeek and other larg",
+      "cvss": 6.5,
+      "final_ps": 39,
+      "quality_score": 0.408,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "thehackernews",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "thehackernews"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "The Hacker News",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://thehackernews.com/2026/06/malicious-jetbrains-plugins-steal-ai.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "DARKREADING-74178f07d12ba980",
+      "title": "UK Social Media Ban for Minors Has Privacy Experts Worried",
+      "description": "The UK will ban adolescents under 16 years old from user-to-user social-media platforms, despite age-verification issues and privacy concerns.",
+      "cvss": 6.5,
+      "final_ps": 39,
+      "quality_score": 0.408,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/cyber-risk/uk-social-media-ban-privacy-experts-worried"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -2604,6 +2854,53 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-32710",
+      "title": "CVE-2026-32710 MariaDB JSON_SCHEMA_VALID heap buffer overflow leading to RCE",
+      "description": "",
+      "cvss": 8,
+      "final_ps": 33,
+      "quality_score": 0.45,
+      "threat_level": "LOW",
+      "type": "ZERO_DAY",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-05-06",
+      "last_seen": "2026-05-06",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-32710"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1t5tk68/cve202632710_mariadb_json_schema_valid_heap/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.450"
+        ],
+        "priority": [
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -4488,101 +4785,47 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-54304",
-      "title": "n8n: SecurityScorecard Node Leaks API Token to User-Controlled Host",
+      "id": "SANS_ISC-d89428934ebef0df",
+      "title": "ISC Stormcast For Wednesday, June 17th, 2026 https://isc.sans.edu/podcastdetail/9976, (Wed, Jun 17th)",
       "description": "",
-      "cvss": 7.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "cvss": 6.5,
+      "final_ps": 16,
+      "quality_score": 0.39,
       "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
+      "type": "NEWS_REPORT",
+      "source": "sans_isc",
       "sources_confirmed": 1,
       "merged_sources": [
-        "github_advisories"
+        "sans_isc"
       ],
-      "first_seen": "2026-06-16",
-      "last_seen": "2026-06-16",
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "npm",
-      "product": "n8n",
+      "vendor": "SANS ISC",
+      "product": "Threat Intelligence",
       "due_date": null,
-      "cves": [
-        "CVE-2026-54304",
-        "CVE-2026-54304"
-      ],
+      "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-rm2v-h48j-895m",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-rm2v-h48j-895m",
-        "https://github.com/advisories/GHSA-rm2v-h48j-895m"
+        "https://isc.sans.edu/diary/rss/33082"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
+          "source_weight=0.70 (sans_isc)",
+          "data_confidence=0.55",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.390"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=16 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54302",
-      "title": "n8n: Stored XSS in Chat Trigger Node",
-      "description": "",
-      "cvss": 7.6,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-16",
-      "last_seen": "2026-06-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "n8n",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54302",
-        "CVE-2026-54302"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-42h7-m79w-wvg5",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-42h7-m79w-wvg5",
-        "https://github.com/advisories/GHSA-42h7-m79w-wvg5"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     }
   ]
