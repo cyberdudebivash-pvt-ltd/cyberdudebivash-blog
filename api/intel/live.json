@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-18T10:59:17.400Z",
+  "generated": "2026-06-18T14:18:27.928Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,13 +7,55 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 878,
+  "total_published": 885,
   "s2n_stats": {
-    "passed": 84,
-    "suppressed": 19,
-    "avg_qs": 0.554
+    "passed": 82,
+    "suppressed": 37,
+    "avg_qs": 0.556
   },
   "items": [
+    {
+      "id": "REDDIT_CYBER-9d6c5ee7c6a6c492",
+      "title": "Attackers drop DragonForce ransomware leveraging MS Teams relay systems",
+      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1u93qma/attackers_drop_dragonforce_ransomware_leveraging/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/3iICdbnflVmcN7X_AHCOmZZvE1hT7ajAn9YgHyw5L5g.jpeg?width=640&amp;amp;crop=smart&amp",
+      "cvss": 6.5,
+      "final_ps": 66,
+      "quality_score": 0.525,
+      "threat_level": "HIGH",
+      "type": "RANSOMWARE",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 7,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1u93qma/attackers_drop_dragonforce_ransomware_leveraging/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.80",
+          "ioc_presence=7 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.525"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -2010,7 +2052,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -4282,138 +4326,88 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-55409",
-      "title": "Filament: Disabled RichEditor field state can be used for XSS",
-      "description": "In Filament v3, a disabled `RichEditor` field rendered its raw state without sanitizing HTML. Where the data stored in this field's state isn't sanitized already when the form state was filled, an attacker could plant malicious HTML or JavaScript and achieve XSS that executes for users who view the ",
-      "cvss": 7.6,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "id": "GHSA-d643975f7a602e98",
+      "title": "PraisonAI: Unauthenticated Local File Inclusion via agent_file path in PraisonAI Jobs API",
+      "description": "### Summary\nAn unauthenticated attacker can read arbitrary files on the server by supplying an absolute filesystem path in the `agent_file` field of the Jobs API. The field has no path validation, no allowlist, and no authentication is required to submit jobs. ### Details\nThe `agent_file` field in `",
+      "cvss": 7.5,
+      "final_ps": 20,
+      "quality_score": 0.493,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
         "github_advisories"
-      ],
-      "first_seen": "2026-06-17",
-      "last_seen": "2026-06-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "filament/forms",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55409",
-        "CVE-2026-55409"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-m9cv-24rx-8mv7",
-        "https://github.com/filamentphp/filament/security/advisories/GHSA-m9cv-24rx-8mv7",
-        "https://github.com/filamentphp/filament/pull/20029",
-        "https://github.com/filamentphp/filament/releases/tag/v3.3.53"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55405",
-      "title": "LangChain4j: SQL injection via metadata filters in langchain4j-mariadb and langchain4j-pgvector",
-      "description": "### Summary\nThe MariaDB and pgvector embedding stores build metadata-filter SQL by string-concatenating\nfilter **keys** (and, in MariaDB, string **values**) directly into the query without adequate\nescaping. A crafted metadata key in `EmbeddingSearchRequest.filter()` can break out of its SQL\ncontext",
-      "cvss": 7.6,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-17",
-      "last_seen": "2026-06-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "dev.langchain4j:langchain4j-mariadb",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55405",
-        "CVE-2026-55405"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-2mfg-cc43-9pcj",
-        "https://github.com/langchain4j/langchain4j/security/advisories/GHSA-2mfg-cc43-9pcj",
-        "https://github.com/advisories/GHSA-2mfg-cc43-9pcj"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "SANS_ISC-cfa1728c9e140e8d",
-      "title": "ISC Stormcast For Thursday, June 18th, 2026 https://isc.sans.edu/podcastdetail/9978, (Thu, Jun 18th)",
-      "description": "(c) SANS Internet Storm Center. https://isc.sans.edu Creative Commons Attribution-Noncommercial 3.0 United States License.",
-      "cvss": 6.5,
-      "final_ps": 16,
-      "quality_score": 0.39,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sans_isc",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sans_isc"
       ],
       "first_seen": "2026-06-18",
       "last_seen": "2026-06-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "SANS ISC",
-      "product": "Threat Intelligence",
+      "vendor": "pip",
+      "product": "praisonai",
       "due_date": null,
       "cves": [],
-      "ioc_count": 2,
+      "ioc_count": 1,
       "refs": [
-        "https://isc.sans.edu/diary/rss/33088"
+        "https://github.com/advisories/GHSA-p4pj-vh7h-6cqh",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-p4pj-vh7h-6cqh",
+        "https://github.com/advisories/GHSA-p4pj-vh7h-6cqh"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.70 (sans_isc)",
-          "data_confidence=0.55",
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.390"
+          "QS=0.493"
         ],
         "priority": [
-          "base_ps=16 (no boosts)"
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
+    },
+    {
+      "id": "GHSA-0fc1225c360e76e9",
+      "title": "praisonaiagents: SSRF guard validates literal IPs only and never resolves DNS",
+      "description": "# praisonaiagents: SSRF guard validates literal IPs only and never resolves DNS **Researcher:** Kai Aizen — SnailSploit (@SnailSploit), Adversarial & Offensive Security Research\n**Target:** https://github.com/MervinPraison/PraisonAI\n**Weakness:** CWE-918 Server-Side Request Forgery (SSRF). --- ## Su",
+      "cvss": 8.5,
+      "final_ps": 20,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "praisonaiagents",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-vxgj-xg5c-p4h7",
+        "https://github.com/MervinPraison/PraisonAI/security/advisories/GHSA-vxgj-xg5c-p4h7",
+        "https://github.com/advisories/GHSA-vxgj-xg5c-p4h7"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
