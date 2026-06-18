@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-18T19:56:14.443Z",
+  "generated": "2026-06-18T22:19:55.104Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -19,17 +19,17 @@
       "quality_score": 0.595,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
-      "source": "reddit_netsec",
+      "source": "reddit_cyber",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_netsec"
+        "reddit_cyber"
       ],
       "first_seen": "2026-06-18",
       "last_seen": "2026-06-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "reddit_netsec",
+      "vendor": "reddit_cyber",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [
@@ -37,11 +37,11 @@
       ],
       "ioc_count": 5,
       "refs": [
-        "https://www.reddit.com/r/netsec/comments/1u9dncq/cve20265667_unauthenticated_remote_control_of/"
+        "https://www.reddit.com/r/cybersecurity/comments/1u9doic/cve20265667_unauthenticated_remote_control_of/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_netsec)",
+          "source_weight=0.42 (reddit_cyber)",
           "data_confidence=1.00",
           "ioc_presence=5 IOCs",
           "recency=0d (score=1.00)",
@@ -72,7 +72,7 @@
         },
         {
           "type": "url",
-          "value": "https://www.reddit.com/r/netsec/comments/1u9dncq/cve20265667_unauthenticated_remote_control_of/&quot",
+          "value": "https://www.reddit.com/r/cybersecurity/comments/1u9doic/cve20265667_unauthenticated_remote_control_o",
           "confidence_score": 0.82,
           "first_seen": "2026-06-18",
           "source_count": 1
@@ -179,6 +179,147 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "GHSA-4ec1abdc41ff2b85",
+      "title": "PHP JWT Framework: JWSVerifier uses algorithm from unprotected header, enabling algorithm confusion attacks",
+      "description": "## Summary `JWSVerifier::getAlgorithm()` in `src/Library/Signature/JWSVerifier.php` (line 144) merges protected and unprotected headers using PHP's spread operator: ```php\n$completeHeader = [...$signature->getProtectedHeader(), ...$signature->getHeader()];\n``` In PHP, when spreading arrays with dupl",
+      "cvss": 7.5,
+      "final_ps": 48,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "web-token/jwt-framework",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-jc38-x7x8-2xc8",
+        "https://github.com/web-token/jwt-framework/security/advisories/GHSA-jc38-x7x8-2xc8",
+        "https://github.com/FriendsOfPHP/security-advisories/blob/master/web-token/jwt-library/GHSA-jc38-x7x8-2xc8.yaml",
+        "https://github.com/advisories/GHSA-jc38-x7x8-2xc8"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-8e51a4ff72147124",
+      "title": "PHP JWT Library: PBES2-HS*+A*KW unwrap accepts an unbounded p2c iteration count, enabling CPU-amplification denial of se",
+      "description": "### Impact When a JWE uses a password-based key-encryption algorithm (`PBES2-HS256+A128KW`, `PBES2-HS384+A192KW`, `PBES2-HS512+A256KW`), `PBES2AESKW::unwrapKey()` reads the `p2c` (PBKDF2 iteration count) parameter directly from the attacker-controlled JOSE header and passes it to `hash_pbkdf2()` wit",
+      "cvss": 7.5,
+      "final_ps": 48,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "web-token/jwt-library",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-3prj-6hqw-cm82",
+        "https://github.com/web-token/jwt-framework/security/advisories/GHSA-3prj-6hqw-cm82",
+        "https://github.com/FriendsOfPHP/security-advisories/blob/master/web-token/jwt-library/GHSA-3prj-6hqw-cm82.yaml",
+        "https://github.com/advisories/GHSA-3prj-6hqw-cm82"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-00cb6d8a0fa0ef07",
+      "title": "spomky-labs/otphp: Unbounded digits parameter in a provisioning URI triggers an uncaught DivisionByZeroError in OTP gene",
+      "description": "## Summary The `digits` parameter parsed from a provisioning URI is validated only with a lower bound (`$value > 0`) and has no upper bound (`src/OTP.php:353-357`). OTP generation computes `$code % (10 ** $this->getDigits())` (`src/OTP.php:283`). When `digits` is large enough that `10 ** digits` ove",
+      "cvss": 7.5,
+      "final_ps": 48,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "spomky-labs/otphp",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-g7m4-839x-ch6v",
+        "https://github.com/Spomky-Labs/otphp/security/advisories/GHSA-g7m4-839x-ch6v",
+        "https://github.com/FriendsOfPHP/security-advisories/blob/master/spomky-labs/otphp/GHSA-g7m4-839x-ch6v.yaml",
+        "https://github.com/advisories/GHSA-g7m4-839x-ch6v"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -364,6 +505,270 @@
       "iocs": []
     },
     {
+      "id": "REDDIT_CYBER-ebcfc9fed2851a03",
+      "title": "Leak Hunt, a game that teaches you to spot leaked credentials",
+      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1u9ddlk/leak_hunt_a_game_that_teaches_you_to_spot_leaked/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/iaonHsUaCOhHW4MzqmfGs0QtqIONMJiMkChkcsWgEag.jpeg?width=640&amp;amp;crop=smart&amp",
+      "cvss": 6.5,
+      "final_ps": 47,
+      "quality_score": 0.525,
+      "threat_level": "MEDIUM",
+      "type": "DATA_BREACH",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 7,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1u9ddlk/leak_hunt_a_game_that_teaches_you_to_spot_leaked/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.80",
+          "ioc_presence=7 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.525"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
+      "iocs": [
+        {
+          "type": "sha1",
+          "value": "a1fa9905ffe8c286b5d3992bd00c45ba15202efe",
+          "confidence_score": 0.9,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://www.reddit.com/r/cybersecurity/comments/1u9ddlk/leak_hunt_a_game_that_teaches_you_to_spot_le",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://external-preview.redd.it/iaonHsUaCOhHW4MzqmfGs0QtqIONMJiMkChkcsWgEag.jpeg?width=640&amp;amp;",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://www.reddit.com/user/finncmdbar&quot;&gt;",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://hunt.infisical.com/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "domain",
+          "value": "www.reddit.com",
+          "confidence_score": 0.75,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "domain",
+          "value": "hunt.infisical.com",
+          "confidence_score": 0.75,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "id": "REDDIT_CYBER-a26967df3fde5bcb",
+      "title": "Attacking UPS Network Cards to Take Down Data Centers",
+      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Team82 uncovered two vulnerabilities in &lt;a href=&quot;https://www.vertiv.com/en-us/products-catalog/monitoring-control-and-management/monitoring/liebert-is-unity-dp-communications-card/&quot;&gt;Vertiv’s Liebert IS-UNITY-DP network car",
+      "cvss": 6.5,
+      "final_ps": 47,
+      "quality_score": 0.525,
+      "threat_level": "MEDIUM",
+      "type": "AI_SECURITY",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 7,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1u9givj/attacking_ups_network_cards_to_take_down_data/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.80",
+          "ioc_presence=7 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.525"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
+      "iocs": [
+        {
+          "type": "url",
+          "value": "https://www.vertiv.com/en-us/products-catalog/monitoring-control-and-management/monitoring/liebert-i",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://claroty.com/team82/research/attacking-ups-network-cards-to-take-down-data-centers&quot;&gt;h",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://www.reddit.com/user/clarotyofficial&quot;&gt;",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://www.reddit.com/r/cybersecurity/comments/1u9givj/attacking_ups_network_cards_to_take_down_dat",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "domain",
+          "value": "www.vertiv.com",
+          "confidence_score": 0.75,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "domain",
+          "value": "claroty.com",
+          "confidence_score": 0.75,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "domain",
+          "value": "www.reddit.com",
+          "confidence_score": 0.75,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        }
+      ]
+    },
+    {
+      "id": "REDDIT_CYBER-381c88adf81ca9fb",
+      "title": "Update to my VirusTotal-CLI project",
+      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Added a new IP resolution technique.&lt;/p&gt; &lt;p&gt;previous versions include:&lt;/p&gt; &lt;ol&gt; &lt;li&gt;file scan/report&lt;/li&gt; &lt;li&gt;url scan/report&lt;/li&gt; &lt;li&gt;domain scan/report&lt;/li&gt; &lt;li&gt;ip scan/r",
+      "cvss": 6.5,
+      "final_ps": 45,
+      "quality_score": 0.495,
+      "threat_level": "MEDIUM",
+      "type": "MALWARE_REPORT",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 4,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1u9ewzz/update_to_my_virustotalcli_project/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.80",
+          "ioc_presence=4 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.495"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
+      "iocs": [
+        {
+          "type": "url",
+          "value": "https://github.com/Soumyo001/VirusTotal-CLI&quot;&gt;https://github.com/Soumyo001/VirusTotal-CLI&lt;",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://www.reddit.com/user/OneLittle6430&quot;&gt;",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://www.reddit.com/r/cybersecurity/comments/1u9ewzz/update_to_my_virustotalcli_project/&quot;&gt",
+          "confidence_score": 0.82,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        },
+        {
+          "type": "domain",
+          "value": "www.reddit.com",
+          "confidence_score": 0.75,
+          "first_seen": "2026-06-18",
+          "source_count": 1
+        }
+      ]
+    },
+    {
       "id": "CVE-2026-32202",
       "title": "CVE-2026-32202: Microsoft Windows Protection Mechanism Failure Vulnerability — CISA KEV Active Exploitation",
       "description": "",
@@ -407,184 +812,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "REDDIT_CYBER-6757d76e18da3c9b",
-      "title": "ssh-keysign-pwn: Linux LPE allows unprivileged users to read root-owned files. PoC with SSH server privkey",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 42,
-      "quality_score": 0.38,
-      "threat_level": "LOW",
-      "type": "ZERO_DAY",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-05-15",
-      "last_seen": "2026-05-15",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1tdpq0a/sshkeysignpwn_linux_lpe_allows_unprivileged_users/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+12 PoC_available",
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "BLEEPINGCOMPUTER-bd4d4a08fe5d3b6d",
-      "title": "Nintendo confirms data stolen in WebMD subsidiary cyberattack",
-      "description": "Nintendo of America has confirmed to BleepingComputer that threat actors stole survey data from the third-party TinyPulse service used internally, but its systems were not compromised. [...]",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.45,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "bleepingcomputer",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "bleepingcomputer"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "BleepingComputer",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/security/nintendo-confirms-data-stolen-in-webmd-subsidiary-cyberattack/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "KREBSONSECURITY-48b37da9881396d1",
-      "title": "&#8216;Popa&#8217; Botnet Linked to Publicly-Traded Israeli Firm",
-      "description": "For the past four years, a sprawling Android-based botnet called Popa has forced millions of consumer TV boxes to relay Internet traffic linked to advertising fraud, account takeovers, and mass data-scraping efforts. This week, researchers from multiple security firms concluded that the Popa botnet ",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.445,
-      "threat_level": "LOW",
-      "type": "MALWARE_REPORT",
-      "source": "krebsonsecurity",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "krebsonsecurity"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "KrebsOnSecurity",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://krebsonsecurity.com/2026/06/popa-botnet-linked-to-publicly-traded-israeli-firm/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.70 (krebsonsecurity)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.445"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "MICROSOFT_SECURITY-b8a8214a13072d6a",
-      "title": "New Forrester study shows customers who unified with Microsoft Security benefited from 124% ROI",
-      "description": "New Forrester Total Economic Impact™ study shows Microsoft Security consolidation delivers ROI, lowers risk, and prepares organizations to secure AI. The post New Forrester study shows customers who unified with Microsoft Security benefited from 124% ROI appeared first on Microsoft Security Blog .",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.45,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "microsoft_security",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "microsoft_security"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "microsoft_security",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.microsoft.com/en-us/security/blog/2026/06/18/new-forrester-study-shows-customers-who-unified-with-microsoft-security-benefited-from-124-roi/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.72 (microsoft_security)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -1413,41 +1640,41 @@
       "iocs": []
     },
     {
-      "id": "DARKREADING-db7f0881b032afdc",
-      "title": "Operation Escaneo Signals Shift in LatAm Threat Landscape",
-      "description": "The threat group's curious business model may combine opportunistic monetization alongside intel collection, without much coordination between the two.",
+      "id": "WIRED_SECURITY-ffd482a186da8abf",
+      "title": "How the Peter Thiel-Linked Dialog Club Secretly Ranks Its Members",
+      "description": "Leaked files show the invite-only network grades members by their money and fame, shaping who’s in, who’s out, and who pays.",
       "cvss": 6.5,
-      "final_ps": 39,
-      "quality_score": 0.408,
+      "final_ps": 40,
+      "quality_score": 0.433,
       "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "darkreading",
+      "type": "DATA_BREACH",
+      "source": "wired_security",
       "sources_confirmed": 1,
       "merged_sources": [
-        "darkreading"
+        "wired_security"
       ],
       "first_seen": "2026-06-18",
       "last_seen": "2026-06-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "darkreading",
+      "vendor": "wired_security",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.darkreading.com/cybersecurity-operations/operation-escaneo-signals-shift-latam-threat-landscape"
+        "https://www.wired.com/story/how-peter-thiels-private-dialog-club-secretly-ranks-its-members/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.55 (darkreading)",
+          "source_weight=0.65 (wired_security)",
           "data_confidence=0.80",
           "recency=0d (score=1.00)",
-          "QS=0.408"
+          "QS=0.432"
         ],
         "priority": [
-          "base_ps=39 (no boosts)"
+          "base_ps=40 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -1457,14 +1684,14 @@
       "iocs": []
     },
     {
-      "id": "DARKREADING-2d57260d68c7e926",
-      "title": "FIFA Bug Exposes World Cup Streams to Remote Takeover",
-      "description": "A hacker could have &quot;Rickrolled&quot; the World Cup — or worse — thanks to FIFA's unenforced Entra access controls.",
+      "id": "DARKREADING-eec0a4c620496ea3",
+      "title": "Novo Nordisk Breach Exposes Software Development Pipeline Risk",
+      "description": "A leaked GitHub token underscores what most organizations get wrong: Treating secrets management as a tooling problem rather than an identity problem.",
       "cvss": 6.5,
       "final_ps": 39,
       "quality_score": 0.408,
       "threat_level": "LOW",
-      "type": "NEWS_REPORT",
+      "type": "DATA_BREACH",
       "source": "darkreading",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -1481,7 +1708,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.darkreading.com/application-security/fifa-bug-world-cup-streams-remote-takeover"
+        "https://www.darkreading.com/cyber-risk/novo-nordisk-breach-exposes-dev-pipeline-risk"
       ],
       "explanation": {
         "quality": [
@@ -2524,96 +2751,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "REDDIT_NETSEC-ec7428a9c7b06e38",
-      "title": "Extortion group FulcrumSec leaks initial samples from 1.3TB Novo Nordisk data breach following failed $25M ransom demand",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 33,
-      "quality_score": 0.38,
-      "threat_level": "LOW",
-      "type": "RANSOMWARE",
-      "source": "reddit_netsec",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_netsec"
-      ],
-      "first_seen": "2026-06-17",
-      "last_seen": "2026-06-17",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "reddit_netsec",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/netsec/comments/1u85kty/extortion_group_fulcrumsec_leaks_initial_samples/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_netsec)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed",
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "REDDIT_CYBER-ff45a34463251100",
-      "title": "Critrical cPanel flaw mass-exploited in &quot;Sorry&quot; ransomware attacks",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 33,
-      "quality_score": 0.38,
-      "threat_level": "LOW",
-      "type": "RANSOMWARE",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-05-03",
-      "last_seen": "2026-05-03",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1t2ytwa/critrical_cpanel_flaw_massexploited_in_sorry/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed",
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -4253,6 +4390,356 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-53865",
+      "title": "OpenClaw: Workspace-derived service PATH could influence trash command selection",
+      "description": "",
+      "cvss": 7.1,
+      "final_ps": 25,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "openclaw",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53865",
+        "CVE-2026-53865"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-rx78-29qr-5hq8",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-rx78-29qr-5hq8",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53865",
+        "https://www.vulncheck.com/advisories/openclaw-arbitrary-command-execution-via-workspace-derived-service-path"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-53858",
+      "title": "OpenClaw: Workspace .env STATE_DIRECTORY could influence bundled runtime dependency roots",
+      "description": "",
+      "cvss": 7.1,
+      "final_ps": 24,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "openclaw",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53858",
+        "CVE-2026-53858"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-wc84-j36w-pw4x",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-wc84-j36w-pw4x",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53858",
+        "https://www.vulncheck.com/advisories/openclaw-arbitrary-runtime-dependency-loading-via-state-directory-environment-variable"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-53846",
+      "title": "OpenClaw: Workspace .env npm_execpath could influence bundled runtime dependency install",
+      "description": "",
+      "cvss": 7.1,
+      "final_ps": 24,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "openclaw",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53846",
+        "CVE-2026-53846"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-24vr-rprv-67rf",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-24vr-rprv-67rf",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53846",
+        "https://www.vulncheck.com/advisories/openclaw-arbitrary-package-manager-execution-via-workspace-env-npm-execpath"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-53849",
+      "title": "OpenClaw: Discord allowFrom could bind to mutable display names",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "openclaw",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53849",
+        "CVE-2026-53849"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-cw4q-gqg5-g38h",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-cw4q-gqg5-g38h",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53849",
+        "https://www.vulncheck.com/advisories/openclaw-privilege-escalation-via-mutable-discord-display-names-in-allowfrom"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-53857",
+      "title": "OpenClaw: Zalo allowFrom could bind to mutable display names",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "openclaw",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53857",
+        "CVE-2026-53857"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-8c59-hr4w-qg69",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-8c59-hr4w-qg69",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53857",
+        "https://www.vulncheck.com/advisories/openclaw-mutable-display-name-binding-in-zalo-allowfrom-policy"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-53855",
+      "title": "OpenClaw: Shell positional parameters could weaken strict inline-eval checks",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "openclaw",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53855",
+        "CVE-2026-53855"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-5cj2-3jr2-5h77",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-5cj2-3jr2-5h77",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53855",
+        "https://www.vulncheck.com/advisories/openclaw-shell-positional-parameters-bypass-in-inline-eval-checks"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-53853",
+      "title": "OpenClaw: Linux and macOS exec allowlists skipped configured argument patterns",
+      "description": "",
+      "cvss": 7.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-18",
+      "last_seen": "2026-06-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "openclaw",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53853",
+        "CVE-2026-53853"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-v2ww-5rh7-2h5v",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-v2ww-5rh7-2h5v",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53853",
+        "https://www.vulncheck.com/advisories/openclaw-argument-pattern-bypass-in-exec-allowlist-via-linux-and-macos"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-54695",
       "title": "Pipecat: Telephony WebSocket `/ws` Unauthenticated Call-Control Abuse via Attacker-Supplied Call SID",
       "description": "",
@@ -4284,355 +4771,6 @@
         "https://github.com/pipecat-ai/pipecat/security/advisories/GHSA-j8cv-x86q-rj85",
         "https://github.com/pipecat-ai/pipecat/pull/4660",
         "https://github.com/advisories/GHSA-j8cv-x86q-rj85"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54005",
-      "title": "Kirby: `pages.access` permission is not checked in the `site/find` REST API route",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "getkirby/cms",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54005",
-        "CVE-2026-54005"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-r3w8-2c5r-h9j9",
-        "https://github.com/getkirby/kirby/security/advisories/GHSA-r3w8-2c5r-h9j9",
-        "https://github.com/getkirby/kirby/releases/tag/4.9.4",
-        "https://github.com/getkirby/kirby/releases/tag/5.4.4"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54002",
-      "title": "Kirby: Cross-site scripting (XSS) from incomplete HTML/XML sanitization in `Dom::sanitize()`",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "getkirby/cms",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54002",
-        "CVE-2026-54002"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wr9h-4r83-f4v6",
-        "https://github.com/getkirby/kirby/security/advisories/GHSA-wr9h-4r83-f4v6",
-        "https://github.com/getkirby/kirby/releases/tag/4.9.4",
-        "https://github.com/getkirby/kirby/releases/tag/5.4.4"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-49276",
-      "title": "Kirby: Self cross-site scripting (self-XSS) in the writer field",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "getkirby/cms",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49276",
-        "CVE-2026-49276"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-rhj6-r49h-5932",
-        "https://github.com/getkirby/kirby/security/advisories/GHSA-rhj6-r49h-5932",
-        "https://github.com/getkirby/kirby/releases/tag/4.9.4",
-        "https://github.com/getkirby/kirby/releases/tag/5.4.4"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-9675",
-      "title": "undici WebSocket client vulnerable to denial of service via cumulative fragment bypass",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "undici",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-9675",
-        "CVE-2026-9675"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-38rv-x7px-6hhq",
-        "https://github.com/nodejs/undici/security/advisories/GHSA-38rv-x7px-6hhq",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-9675",
-        "https://cna.openjsf.org/security-advisories.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-9697",
-      "title": "undici vulnerable to TLS certificate validation bypass via dropped requestTls in SOCKS5 ProxyAgent",
-      "description": "",
-      "cvss": 7.4,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "undici",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-9697",
-        "CVE-2026-9697"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-vmh5-mc38-953g",
-        "https://github.com/nodejs/undici/security/advisories/GHSA-vmh5-mc38-953g",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-9697",
-        "https://cna.openjsf.org/security-advisories.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-28737",
-      "title": "Gitea: Stored XSS via glTF `extensionsRequired` in Gitea 3D File Viewer",
-      "description": "",
-      "cvss": 8.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-17",
-      "last_seen": "2026-06-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "code.gitea.io/gitea",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-28737",
-        "CVE-2026-28737"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-9cpj-qc93-vw8v",
-        "https://github.com/go-gitea/gitea/security/advisories/GHSA-9cpj-qc93-vw8v",
-        "https://github.com/advisories/GHSA-9cpj-qc93-vw8v"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-5079",
-      "title": "Multer vulnerable to Denial of Service via deeply nested field names",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-17",
-      "last_seen": "2026-06-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "multer",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-5079",
-        "CVE-2026-5079"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-72gw-mp4g-v24j",
-        "https://github.com/expressjs/multer/security/advisories/GHSA-72gw-mp4g-v24j",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-5079",
-        "https://cna.openjsf.org/security-advisories.html"
       ],
       "explanation": {
         "quality": [
