@@ -212,6 +212,40 @@ class TestRansomwareIntelSource(unittest.TestCase):
             result = self.source.discover(self.state)
         self.assertEqual(result, [])
 
+    def test_non_string_fields_coerced_safely(self):
+        """External API fields are not guaranteed to be strings — must not raise."""
+        victims = [{
+            "victim": 12345,
+            "group": 67890,
+            "discovered": _recent_iso(),
+            "activity": 999,
+            "country": 1,
+        }]
+        with patch("requests.get", return_value=_make_json_response(victims)):
+            result = self.source.discover(self.state)
+        self.assertEqual(len(result), 1)
+        self.assertIn("12345", result[0].title)
+        self.assertIn("67890", result[0].title)
+
+    def test_fallback_url_quotes_special_characters(self):
+        """Victim/group names with URL-unsafe characters must not produce a malformed URL."""
+        victims = [{
+            "victim": "AT&T Division #1",
+            "group": "Some Group?",
+            "discovered": _recent_iso(),
+        }]
+        with patch("requests.get", return_value=_make_json_response(victims)):
+            result = self.source.discover(self.state)
+        self.assertEqual(len(result), 1)
+        url = result[0].url
+        self.assertTrue(url.startswith("https://ransomware.live/group/"))
+        # Exactly one unescaped '#' — the path/fragment separator we inserted ourselves.
+        self.assertEqual(url.count("#"), 1)
+        path_part, fragment_part = url.split("#", 1)
+        self.assertNotIn("&", path_part)
+        self.assertNotIn("?", path_part)
+        self.assertNotIn(" ", url)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Data Breach Intel
@@ -318,6 +352,35 @@ class TestDataBreachIntelSource(unittest.TestCase):
             result = self.source.discover(self.state)
         self.assertEqual(result, [])
 
+    def test_non_string_fields_coerced_safely(self):
+        """HIBP fields are not guaranteed to be strings — must not raise."""
+        breaches = [{
+            "Name": "NumericTitleBreach",
+            "Title": 123456,
+            "Domain": 789,
+            "AddedDate": _recent_iso(),
+            "PwnCount": 1000,
+            "DataClasses": ["Email addresses"],
+        }]
+        with patch("requests.get", return_value=_make_json_response(breaches)):
+            result = self.source.discover(self.state)
+        self.assertEqual(len(result), 1)
+        self.assertIn("123456", result[0].title)
+
+    def test_non_list_data_classes_handled_gracefully(self):
+        """DataClasses is documented as a list — must not raise if the API returns something else."""
+        breaches = [{
+            "Name": "MalformedClassesBreach",
+            "Title": "Malformed Classes Breach",
+            "AddedDate": _recent_iso(),
+            "PwnCount": 10,
+            "DataClasses": "not-a-list",
+        }]
+        with patch("requests.get", return_value=_make_json_response(breaches)):
+            result = self.source.discover(self.state)
+        self.assertEqual(len(result), 1)
+        self.assertIn("account data", result[0].summary)
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Threat Actor Intel (AlienVault OTX)
@@ -417,6 +480,61 @@ class TestThreatActorIntelSource(unittest.TestCase):
         with patch("requests.get", return_value=_make_json_response(data)):
             result = source.discover(self.state)
         self.assertEqual(result, [])
+
+    def test_non_string_fields_coerced_safely(self):
+        """OTX pulse fields are not guaranteed to be strings — must not raise."""
+        self.config.alienvault_otx_key = "test-otx-key"
+        source = ThreatActorIntelSource(self.config)
+        data = {
+            "results": [{
+                "id": "abc125",
+                "name": 999,
+                "description": 42,
+                "adversary": 7,
+                "created": _recent_iso(),
+            }]
+        }
+        with patch("requests.get", return_value=_make_json_response(data)):
+            result = source.discover(self.state)
+        self.assertEqual(len(result), 1)
+        self.assertIn("999", result[0].title)
+
+    def test_non_list_tags_handled_gracefully(self):
+        """tags is documented as a list — must not raise if the API returns something else."""
+        self.config.alienvault_otx_key = "test-otx-key"
+        source = ThreatActorIntelSource(self.config)
+        data = {
+            "results": [{
+                "id": "abc126",
+                "name": "Malformed Tags Pulse",
+                "description": "",
+                "tags": "not-a-list",
+                "created": _recent_iso(),
+            }]
+        }
+        with patch("requests.get", return_value=_make_json_response(data)):
+            result = source.discover(self.state)
+        self.assertEqual(len(result), 1)
+        self.assertIn("emerging threat activity", result[0].summary)
+
+    def test_fallback_url_quotes_pulse_name(self):
+        """Pulse names with URL-unsafe characters must not produce a malformed search URL."""
+        self.config.alienvault_otx_key = "test-otx-key"
+        source = ThreatActorIntelSource(self.config)
+        data = {
+            "results": [{
+                "id": "",
+                "name": "Pulse With Spaces & Symbols?",
+                "description": "",
+                "created": _recent_iso(),
+            }]
+        }
+        with patch("requests.get", return_value=_make_json_response(data)):
+            result = source.discover(self.state)
+        self.assertEqual(len(result), 1)
+        url = result[0].url
+        self.assertNotIn(" ", url)
+        self.assertNotIn("&", url.split("?q=")[-1])
 
 
 if __name__ == "__main__":

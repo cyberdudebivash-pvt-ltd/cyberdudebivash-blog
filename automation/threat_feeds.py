@@ -8,6 +8,7 @@ AlienVault OTX threat-actor pulses.
 
 from datetime import datetime, timezone, timedelta
 from typing import Optional
+from urllib.parse import quote
 
 import requests
 
@@ -29,6 +30,11 @@ _CISA_ADVISORIES_URL = "https://www.cisa.gov/cybersecurity-advisories/all.xml"
 _RANSOMWARE_LIVE_URL = "https://api.ransomware.live/v2/recentvictims"
 _HIBP_BREACHES_URL = "https://haveibeenpwned.com/api/v3/breaches"
 _OTX_PULSES_URL = "https://otx.alienvault.com/api/v1/pulses/subscribed"
+
+
+def _safe_str(value: object) -> str:
+    """Coerce a possibly non-string external API field to a stripped string."""
+    return str(value).strip() if value is not None else ""
 
 
 class CISAAdvisoriesSource:
@@ -121,8 +127,8 @@ class RansomwareIntelSource:
             if not isinstance(v, dict):
                 continue
 
-            victim_name = (v.get("victim") or "").strip()
-            group = (v.get("group") or "Unknown Group").strip()
+            victim_name = _safe_str(v.get("victim"))
+            group = _safe_str(v.get("group")) or "Unknown Group"
             if not victim_name:
                 continue
 
@@ -136,9 +142,9 @@ class RansomwareIntelSource:
             if attack_date and attack_date < cutoff:
                 continue
 
-            sector = (v.get("activity") or v.get("sector") or "Unspecified Sector").strip()
-            country = (v.get("country") or "").strip()
-            post_url = (v.get("post_url") or v.get("url") or "").strip()
+            sector = _safe_str(v.get("activity") or v.get("sector")) or "Unspecified Sector"
+            country = _safe_str(v.get("country"))
+            post_url = _safe_str(v.get("post_url") or v.get("url"))
 
             title = f"{group} Ransomware Claims New Victim: {victim_name} | {sector} Sector"
             summary_parts = [
@@ -149,7 +155,7 @@ class RansomwareIntelSource:
                 summary_parts.append(f"Country: {country}.")
             summary = " ".join(summary_parts)
 
-            url = post_url or f"https://ransomware.live/group/{group.lower().replace(' ', '-')}#{victim_name.lower().replace(' ', '-')}"
+            url = post_url or f"https://ransomware.live/group/{quote(group.lower().replace(' ', '-'))}#{quote(victim_name.lower().replace(' ', '-'))}"
             content_hash = _compute_hash(url, title)
             if state.is_published(content_hash):
                 continue
@@ -207,8 +213,8 @@ class DataBreachIntelSource:
             if not isinstance(b, dict):
                 continue
 
-            name = (b.get("Name") or "").strip()
-            display_title = (b.get("Title") or name).strip()
+            name = _safe_str(b.get("Name"))
+            display_title = _safe_str(b.get("Title")) or name
             if not name:
                 continue
 
@@ -223,8 +229,9 @@ class DataBreachIntelSource:
                 continue
 
             pwn_count = b.get("PwnCount", 0) or 0
-            data_classes = b.get("DataClasses", []) or []
-            domain = (b.get("Domain") or "").strip()
+            raw_classes = b.get("DataClasses", [])
+            data_classes = raw_classes if isinstance(raw_classes, list) else []
+            domain = _safe_str(b.get("Domain"))
 
             title = f"Data Breach Disclosed: {display_title} — {pwn_count:,} Accounts Exposed"
             classes_str = ", ".join(data_classes[:6]) if data_classes else "account data"
@@ -303,7 +310,7 @@ class ThreatActorIntelSource:
             if not isinstance(p, dict):
                 continue
 
-            name = (p.get("name") or "").strip()
+            name = _safe_str(p.get("name"))
             if not name:
                 continue
 
@@ -311,15 +318,16 @@ class ThreatActorIntelSource:
             if created and created < cutoff:
                 continue
 
-            description = (p.get("description") or "").strip()
-            tags = p.get("tags", []) or []
-            adversary = (p.get("adversary") or "").strip()
+            description = _safe_str(p.get("description"))
+            raw_tags = p.get("tags", [])
+            tags = raw_tags if isinstance(raw_tags, list) else []
+            adversary = _safe_str(p.get("adversary"))
             pulse_id = p.get("id", "")
 
-            title = f"Threat Actor Pulse: {name}" + (f" — {adversary} Attribution" if adversary else "")
+            title = f"Threat Actor Pulse: {name}" + (f" — Tagged Adversary: {adversary}" if adversary else "")
             summary = description or f"Subscribed OTX pulse covering {', '.join(tags[:5]) if tags else 'emerging threat activity'}."
 
-            url = f"https://otx.alienvault.com/pulse/{pulse_id}" if pulse_id else f"https://otx.alienvault.com/browse/pulses?q={name}"
+            url = f"https://otx.alienvault.com/pulse/{pulse_id}" if pulse_id else f"https://otx.alienvault.com/browse/pulses?q={quote(name)}"
             content_hash = _compute_hash(url, title)
             if state.is_published(content_hash):
                 continue
