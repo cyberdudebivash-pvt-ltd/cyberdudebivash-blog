@@ -204,28 +204,54 @@ class ContentDiscoveryEngine:
         self.state = PublicationState(config.state_file)
 
     def discover(self) -> list[DiscoveredArticle]:
-        """Return new, unsynced articles ready for publication."""
-        candidates = self._discover_from_rss()
-        if not candidates:
-            logger.info("RSS returned no items, trying live-intel.json fallback")
-            candidates = self._discover_from_live_intel()
+        """Return new articles from all sources, priority-ordered: CISA KEV > NVD > RSS > live-intel."""
+        from .cisa_kev_source import CISAKEVSource
+        from .nvd_source import NVDCVESource
 
-        new_articles = []
-        for article in candidates:
-            if self.state.is_published(article.content_hash):
-                logger.debug("Skipping already-published article", extra={"url": article.url})
-                continue
-            new_articles.append(article)
+        all_new = []
 
-        new_articles.sort(key=lambda a: a.published_at, reverse=True)
-        result = new_articles[: self.config.max_posts_per_run]
+        # 1. CISA KEV — highest authority source
+        try:
+            kev = CISAKEVSource(self.config).discover(self.state)
+            all_new.extend(kev)
+            logger.info("CISA KEV source", extra={"new": len(kev)})
+        except Exception as e:
+            logger.error("CISA KEV source failed", extra={"error": str(e)})
+
+        # 2. NVD CVE — authoritative vulnerability data
+        try:
+            nvd = NVDCVESource(self.config).discover(self.state)
+            all_new.extend(nvd)
+            logger.info("NVD source", extra={"new": len(nvd)})
+        except Exception as e:
+            logger.error("NVD source failed", extra={"error": str(e)})
+
+        # 3. Own RSS feed
+        rss = self._discover_from_rss()
+        for a in rss:
+            if not self.state.is_published(a.content_hash):
+                all_new.append(a)
+
+        # 4. live-intel fallback only if nothing found yet
+        if not all_new:
+            live = self._discover_from_live_intel()
+            for a in live:
+                if not self.state.is_published(a.content_hash):
+                    all_new.append(a)
+
+        # Sort: by source priority first (stable), then by date within each source
+        _SOURCE_PRIORITY = {"cisa_kev": 0, "nvd": 1, "rss": 2, "live_intel": 3}
+        all_new.sort(key=lambda a: a.published_at, reverse=True)
+        all_new.sort(key=lambda a: _SOURCE_PRIORITY.get(a.source, 9))
+
+        result = all_new[: self.config.max_posts_per_run]
 
         logger.info(
             "Discovery complete",
             extra={
-                "candidates": len(candidates),
-                "new": len(new_articles),
+                "total_new": len(all_new),
                 "to_publish": len(result),
+                "sources": list({a.source for a in all_new}),
             },
         )
         return result
