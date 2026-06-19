@@ -1,0 +1,233 @@
+"""
+CYBERDUDEBIVASH® SENTINEL APEX — Blogger Syndication Engine
+Main orchestration pipeline. Runs content discovery → transformation → publication.
+
+Usage:
+    python -m automation.main              # Full pipeline
+    python -m automation.main --dry-run    # Validate without publishing
+    python -m automation.main --health     # Health check only
+"""
+
+import argparse
+import json
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+from .authority_transformer import AuthorityTransformer
+from .blogger_publisher import BloggerPublisher, BloggerPublishError, BloggerAuthError
+from .config import Config
+from .content_discovery import ContentDiscoveryEngine, PublicationState
+from .logger import setup_logger
+from .search_console_submitter import SearchConsoleSubmitter
+
+logger = setup_logger("main")
+
+
+def _write_run_report(report: dict, logs_dir: str) -> None:
+    """Persist a JSON run report for observability and auditing."""
+    Path(logs_dir).mkdir(parents=True, exist_ok=True)
+    ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    path = Path(logs_dir) / f"run-{ts}.json"
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(report, f, indent=2, ensure_ascii=False)
+    logger.info("Run report written", extra={"path": str(path)})
+
+
+def run_health_check(config: Config) -> bool:
+    """Verify all external dependencies are reachable."""
+    logger.info("Running health check")
+    issues = config.validate()
+    if issues:
+        logger.error("Missing required config", extra={"missing": issues})
+        return False
+
+    publisher = BloggerPublisher(config)
+    ok = publisher.health_check()
+    if not ok:
+        logger.error("Blogger health check failed")
+        return False
+
+    logger.info("All health checks passed")
+    return True
+
+
+def run_pipeline(config: Config, dry_run: bool = False) -> dict:
+    """Execute the full syndication pipeline."""
+    run_start = datetime.now(timezone.utc).isoformat()
+    report = {
+        "run_start": run_start,
+        "run_end": None,
+        "dry_run": dry_run,
+        "discovered": 0,
+        "published": 0,
+        "failed": 0,
+        "skipped": 0,
+        "posts": [],
+        "errors": [],
+    }
+
+    logger.info("Pipeline started", extra={"dry_run": dry_run, "run_start": run_start})
+
+    # Validate config
+    missing = config.validate()
+    if missing and not dry_run:
+        msg = f"Missing required secrets: {missing}"
+        logger.error(msg)
+        report["errors"].append(msg)
+        report["run_end"] = datetime.now(timezone.utc).isoformat()
+        return report
+
+    # Initialise components
+    discovery = ContentDiscoveryEngine(config)
+    transformer = AuthorityTransformer(config)
+    publisher = BloggerPublisher(config) if not dry_run else None
+    submitter = SearchConsoleSubmitter(config)
+
+    # --- Content Discovery ---
+    articles = discovery.discover()
+    report["discovered"] = len(articles)
+
+    if not articles:
+        logger.info("No new articles to syndicate this run")
+        report["run_end"] = datetime.now(timezone.utc).isoformat()
+        return report
+
+    # --- Transform and Publish ---
+    for article in articles:
+        post_result = {
+            "source_url": article.url,
+            "title": article.title,
+            "content_hash": article.content_hash,
+            "status": "pending",
+            "blogger_post_id": None,
+            "blogger_url": None,
+            "error": None,
+        }
+
+        try:
+            # Transform content
+            transformed = transformer.transform(article)
+            post_result["blogger_title"] = transformed["title"]
+            post_result["labels"] = transformed["labels"]
+            post_result["content_source"] = transformed["content_source"]
+
+            if dry_run:
+                logger.info(
+                    "DRY RUN — would publish",
+                    extra={"title": transformed["title"][:60], "labels": transformed["labels"]},
+                )
+                post_result["status"] = "dry_run"
+                report["skipped"] += 1
+            else:
+                # Publish to Blogger
+                blogger_post = publisher.publish_post(
+                    title=transformed["title"],
+                    content=transformed["content"],
+                    labels=transformed["labels"],
+                    is_draft=False,
+                )
+
+                blogger_post_id = blogger_post["id"]
+                blogger_url = blogger_post.get("url", "")
+
+                # Persist state
+                discovery.state.mark_published(article, blogger_post_id, blogger_url)
+
+                # Submit to Google
+                if blogger_url:
+                    submitter.submit_url(blogger_url)
+
+                post_result.update({
+                    "status": "published",
+                    "blogger_post_id": blogger_post_id,
+                    "blogger_url": blogger_url,
+                })
+                report["published"] += 1
+
+                logger.info(
+                    "Article syndicated",
+                    extra={
+                        "title": transformed["title"][:60],
+                        "blogger_url": blogger_url,
+                        "post_id": blogger_post_id,
+                    },
+                )
+
+                # Brief pause between posts to respect API rate limits
+                if article != articles[-1]:
+                    time.sleep(2.0)
+
+        except BloggerAuthError as e:
+            logger.error("Authentication error — stopping pipeline", extra={"error": str(e)})
+            post_result["status"] = "auth_error"
+            post_result["error"] = str(e)
+            report["errors"].append(str(e))
+            discovery.state.record_failure(article.url, str(e))
+            report["failed"] += 1
+            report["posts"].append(post_result)
+            break  # Auth errors are fatal; stop the run
+
+        except BloggerPublishError as e:
+            logger.error("Publish failed", extra={"url": article.url, "error": str(e)})
+            post_result["status"] = "publish_error"
+            post_result["error"] = str(e)
+            report["errors"].append(str(e))
+            discovery.state.record_failure(article.url, str(e))
+            report["failed"] += 1
+
+        except Exception as e:
+            logger.exception("Unexpected error processing article", extra={"url": article.url})
+            post_result["status"] = "error"
+            post_result["error"] = str(e)
+            report["errors"].append(str(e))
+            discovery.state.record_failure(article.url, str(e))
+            report["failed"] += 1
+
+        report["posts"].append(post_result)
+
+    report["run_end"] = datetime.now(timezone.utc).isoformat()
+
+    logger.info(
+        "Pipeline complete",
+        extra={
+            "discovered": report["discovered"],
+            "published": report["published"],
+            "failed": report["failed"],
+            "skipped": report["skipped"],
+        },
+    )
+
+    _write_run_report(report, config.logs_dir)
+    return report
+
+
+def main() -> int:
+    """CLI entry point."""
+    parser = argparse.ArgumentParser(
+        description="CYBERDUDEBIVASH® SENTINEL APEX Blogger Syndication Engine"
+    )
+    parser.add_argument("--dry-run", action="store_true", help="Validate without publishing")
+    parser.add_argument("--health", action="store_true", help="Run health check only")
+    parser.add_argument("--max-posts", type=int, default=None, help="Override max posts per run")
+    args = parser.parse_args()
+
+    config = Config.from_env()
+    if args.max_posts:
+        config.max_posts_per_run = args.max_posts
+
+    setup_logger("main", config.logs_dir)
+
+    if args.health:
+        ok = run_health_check(config)
+        return 0 if ok else 1
+
+    report = run_pipeline(config, dry_run=args.dry_run)
+
+    # Exit 1 if any articles failed (non-zero signals workflow failure)
+    return 1 if report["failed"] > 0 and report["published"] == 0 else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
