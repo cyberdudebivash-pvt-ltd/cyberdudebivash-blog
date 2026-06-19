@@ -51,6 +51,8 @@ module.exports = async (req, res) => {
   const okGuard = await sec.guardRequest(req, res, { allowedMethods: ['GET', 'OPTIONS'] });
   if (!okGuard) return;
 
+  if (!(await sec.globalIpRateLimit(req, res))) return;
+
   if (!verifyCronSecret(req)) {
     mw.apiError(res, 401, 'UNAUTHORIZED', 'Valid cron secret required');
     return;
