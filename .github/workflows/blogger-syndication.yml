@@ -71,6 +71,7 @@ jobs:
           from automation.authority_transformer import AuthorityTransformer
           from automation.blogger_publisher import BloggerPublisher
           from automation.seo_optimizer import SEOOptimizer
+          from automation.social_amplifier import SocialAmplifier
           from automation.main import run_pipeline
           print('All modules imported successfully')
           "
@@ -108,8 +109,14 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
           GOOGLE_SEARCH_CONSOLE_KEY: ${{ secrets.GOOGLE_SEARCH_CONSOLE_KEY }}
-          MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '5' }}
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
+          NEWSLETTER_SIGNUP_URL: ${{ secrets.NEWSLETTER_SIGNUP_URL }}
+          MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '8' }}
         run: |
           DRY_RUN_FLAG=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then

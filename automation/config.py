@@ -34,6 +34,15 @@ class Config:
     # Google Search Console
     google_search_console_key: str = ""
 
+    # Social amplification — Twitter/X API v2 (OAuth 1.0a)
+    twitter_api_key: str = ""
+    twitter_api_secret: str = ""
+    twitter_access_token: str = ""
+    twitter_access_secret: str = ""
+
+    # Newsletter (link to signup page — Substack, ConvertKit, etc.)
+    newsletter_signup_url: str = "https://cyberdudebivash.substack.com"
+
     # Source platform
     source_rss_url: str = "https://blog.cyberdudebivash.in/rss.xml"
     source_live_intel_url: str = "https://blog.cyberdudebivash.in/live-intel.json"
@@ -44,8 +53,8 @@ class Config:
     target_blog_url: str = "https://cyberbivash.blogspot.com"
     blogger_api_base: str = "https://www.googleapis.com/blogger/v3"
 
-    # Pipeline control
-    max_posts_per_run: int = 5
+    # Pipeline control — 8 posts/run → more indexed pages → more AdSense impressions
+    max_posts_per_run: int = 8
     max_article_age_hours: int = 48
     retry_attempts: int = 3
     retry_base_delay: float = 2.0
@@ -77,7 +86,12 @@ class Config:
             anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY", ""),
             nvd_api_key=os.environ.get("NVD_API_KEY", ""),
             google_search_console_key=os.environ.get("GOOGLE_SEARCH_CONSOLE_KEY", ""),
-            max_posts_per_run=int(os.environ.get("MAX_POSTS_PER_RUN", "5")),
+            twitter_api_key=os.environ.get("TWITTER_API_KEY", ""),
+            twitter_api_secret=os.environ.get("TWITTER_API_SECRET", ""),
+            twitter_access_token=os.environ.get("TWITTER_ACCESS_TOKEN", ""),
+            twitter_access_secret=os.environ.get("TWITTER_ACCESS_SECRET", ""),
+            newsletter_signup_url=os.environ.get("NEWSLETTER_SIGNUP_URL", "https://cyberdudebivash.substack.com"),
+            max_posts_per_run=int(os.environ.get("MAX_POSTS_PER_RUN", "8")),
         )
 
     def validate(self) -> list[str]:

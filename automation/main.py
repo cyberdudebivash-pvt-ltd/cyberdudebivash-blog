@@ -18,9 +18,10 @@ from pathlib import Path
 from .authority_transformer import AuthorityTransformer
 from .blogger_publisher import BloggerPublisher, BloggerPublishError, BloggerAuthError
 from .config import Config
-from .content_discovery import ContentDiscoveryEngine, PublicationState
+from .content_discovery import ContentDiscoveryEngine, DiscoveredArticle, PublicationState
 from .logger import setup_logger
 from .search_console_submitter import SearchConsoleSubmitter
+from .social_amplifier import SocialAmplifier
 
 logger = setup_logger("main")
 
@@ -84,9 +85,36 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
     transformer = AuthorityTransformer(config)
     publisher = BloggerPublisher(config) if not dry_run else None
     submitter = SearchConsoleSubmitter(config)
+    amplifier = SocialAmplifier(config)
+
+    # --- Retry Queue: prepend previously-failed articles for retry ---
+    retry_items = discovery.state.get_retry_queue()
+    retry_articles = []
+    for item in retry_items:
+        try:
+            retry_articles.append(DiscoveredArticle(
+                url=item["url"],
+                title=item["title"],
+                summary=item["summary"],
+                published_at=item["published_at"],
+                content_hash=item["content_hash"],
+                labels=item["labels"],
+                source=item["source"],
+                full_content=item.get("full_content"),
+            ))
+        except KeyError:
+            pass  # Malformed queue entry — skip silently
+
+    if retry_articles:
+        logger.info("Loaded retry queue", extra={"retry_count": len(retry_articles)})
 
     # --- Content Discovery ---
-    articles = discovery.discover()
+    fresh_articles = discovery.discover()
+    # Retry articles first (skip if already published or in fresh batch)
+    fresh_hashes = {a.content_hash for a in fresh_articles}
+    retry_deduped = [a for a in retry_articles if not discovery.state.is_published(a.content_hash) and a.content_hash not in fresh_hashes]
+    articles = retry_deduped + fresh_articles
+    articles = articles[: config.max_posts_per_run]
     report["discovered"] = len(articles)
 
     if not articles:
@@ -135,14 +163,23 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                 # Persist state
                 discovery.state.mark_published(article, blogger_post_id, blogger_url)
 
-                # Submit to Google
+                # Submit to Google Search Console
                 if blogger_url:
                     submitter.submit_url(blogger_url)
+
+                # Social amplification — Twitter/X auto-post
+                social_result = amplifier.amplify({
+                    "title": article.title,
+                    "blogger_title": transformed["title"],
+                    "labels": transformed["labels"],
+                    "blogger_url": blogger_url,
+                })
 
                 post_result.update({
                     "status": "published",
                     "blogger_post_id": blogger_post_id,
                     "blogger_url": blogger_url,
+                    "social": social_result,
                 })
                 report["published"] += 1
 
@@ -152,6 +189,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                         "title": transformed["title"][:60],
                         "blogger_url": blogger_url,
                         "post_id": blogger_post_id,
+                        "social": social_result,
                     },
                 )
 
@@ -175,6 +213,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             post_result["error"] = str(e)
             report["errors"].append(str(e))
             discovery.state.record_failure(article.url, str(e))
+            discovery.state.add_to_retry_queue(article, str(e))
             report["failed"] += 1
 
         except Exception as e:
@@ -183,6 +222,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             post_result["error"] = str(e)
             report["errors"].append(str(e))
             discovery.state.record_failure(article.url, str(e))
+            discovery.state.add_to_retry_queue(article, str(e))
             report["failed"] += 1
 
         report["posts"].append(post_result)
