@@ -1,0 +1,141 @@
+"""
+CYBERDUDEBIVASH® SENTINEL APEX — Monetization Injection Module
+Injects product/service CTAs, ecosystem links, and conversion blocks into articles.
+"""
+
+from .config import Config
+
+# Inline CSS for Blogger compatibility (no external stylesheets available)
+_INLINE_CSS = """
+<style>
+.apex-cta-block{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:28px 0;padding:20px 24px;background:linear-gradient(135deg,#0a0f1e 0%,#0d1525 100%);border:1px solid #1e3a5f;border-left:4px solid #00d4ff;border-radius:8px;color:#e2e8f0}
+.apex-cta-block h4{margin:0 0 8px;font-size:14px;font-weight:700;color:#00d4ff;text-transform:uppercase;letter-spacing:1px}
+.apex-cta-block p{margin:0 0 14px;font-size:14px;line-height:1.6;color:#a0b3cc}
+.apex-cta-grid{display:flex;flex-wrap:wrap;gap:10px}
+.apex-btn{display:inline-block;padding:9px 18px;border-radius:5px;font-size:13px;font-weight:700;text-decoration:none;letter-spacing:.5px}
+.apex-btn-primary{background:#00d4ff;color:#000}
+.apex-btn-secondary{background:transparent;border:1px solid #00d4ff;color:#00d4ff}
+.apex-btn-upgrade{background:linear-gradient(90deg,#f59e0b,#ef4444);color:#fff}
+.apex-banner{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:32px 0;padding:28px;background:linear-gradient(135deg,#050d1a 0%,#0a1628 100%);border:2px solid #00d4ff22;border-radius:10px;text-align:center;color:#e2e8f0}
+.apex-banner h3{margin:0 0 6px;font-size:22px;font-weight:800;color:#00d4ff}
+.apex-banner p{margin:0 0 18px;font-size:15px;color:#94a3b8;line-height:1.6}
+.apex-ecosystem{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+.apex-eco-item{padding:7px 14px;background:#0d1a2e;border:1px solid #1e3a5f;border-radius:5px;font-size:12px;color:#94a3b8;text-decoration:none}
+.apex-services{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:28px 0;padding:20px 24px;background:#0a0f1e;border:1px solid #1e3a5f;border-radius:8px;color:#e2e8f0}
+.apex-services h4{margin:0 0 12px;font-size:13px;font-weight:700;color:#f59e0b;text-transform:uppercase;letter-spacing:1px}
+.apex-services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.apex-svc-item{padding:10px 12px;background:#0d1525;border:1px solid #1e3a5f22;border-radius:5px}
+.apex-svc-item strong{display:block;font-size:12px;color:#00d4ff;margin-bottom:3px}
+.apex-svc-item span{font-size:11px;color:#64748b}
+.apex-about{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:32px 0;padding:20px 24px;background:#050d1a;border-top:2px solid #00d4ff33;color:#94a3b8;font-size:13px;line-height:1.7}
+.apex-about strong{color:#00d4ff}
+.apex-read-more{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:24px 0;text-align:center}
+.apex-read-more a{display:inline-block;padding:12px 28px;background:linear-gradient(90deg,#00d4ff,#0099cc);color:#000;font-weight:800;font-size:15px;border-radius:6px;text-decoration:none;letter-spacing:.5px}
+</style>
+"""
+
+
+class MonetizationInjector:
+    """Injects conversion-optimised CTAs into syndicated article HTML."""
+
+    def __init__(self, config: Config) -> None:
+        self.config = config
+
+    def inject_header_cta(self) -> str:
+        """Top-of-article brand banner + primary CTA."""
+        return f"""
+<div class="apex-banner">
+  <h3>⚡ CYBERDUDEBIVASH® SENTINEL APEX</h3>
+  <p>AI-Powered Cyber Threat Intelligence · Live CVE &amp; APT Tracking · Enterprise SOC Intelligence</p>
+  <div class="apex-ecosystem">
+    <a class="apex-btn apex-btn-primary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">🛡 Launch Sentinel APEX</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.api_url}" target="_blank" rel="noopener">⎋ Free API Key</a>
+    <a class="apex-btn apex-btn-upgrade" href="{self.config.sentinel_apex_url}/upgrade" target="_blank" rel="noopener">▲ Enterprise Plans</a>
+  </div>
+  <div class="apex-ecosystem" style="margin-top:10px">
+    <a class="apex-eco-item" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">Sentinel APEX ↗</a>
+    <a class="apex-eco-item" href="{self.config.api_url}" target="_blank" rel="noopener">Threat Intel API ↗</a>
+    <a class="apex-eco-item" href="{self.config.tools_url}" target="_blank" rel="noopener">Security Tools ↗</a>
+    <a class="apex-eco-item" href="{self.config.corporate_url}" target="_blank" rel="noopener">Enterprise Portal ↗</a>
+    <a class="apex-eco-item" href="{self.config.source_base_url}" target="_blank" rel="noopener">Research Blog ↗</a>
+  </div>
+</div>
+""".strip()
+
+    def inject_mid_products_cta(self) -> str:
+        """Mid-article products promotion block."""
+        return f"""
+<div class="apex-cta-block">
+  <h4>🛡 SENTINEL APEX ECOSYSTEM</h4>
+  <p>Get real-time threat intelligence, CVE analysis, YARA/Sigma rules, and SOC-ready intelligence feeds trusted by 4,800+ security professionals worldwide.</p>
+  <div class="apex-cta-grid">
+    <a class="apex-btn apex-btn-primary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">🛡 Sentinel APEX Platform</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.api_url}" target="_blank" rel="noopener">⎋ Threat Intelligence API</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.tools_url}" target="_blank" rel="noopener">🔧 Security Tools Hub</a>
+    <a class="apex-btn apex-btn-upgrade" href="{self.config.sentinel_apex_url}/upgrade" target="_blank" rel="noopener">▲ Enterprise Upgrade</a>
+  </div>
+</div>
+""".strip()
+
+    def inject_services_block(self) -> str:
+        """Mid-article services CTA grid."""
+        return f"""
+<div class="apex-services">
+  <h4>🏢 CYBERDUDEBIVASH® Enterprise Services</h4>
+  <div class="apex-services-grid">
+    <div class="apex-svc-item"><strong>Threat Intelligence</strong><span>CTI Advisory &amp; Premium Intel Briefs</span></div>
+    <div class="apex-svc-item"><strong>AI Security Assessment</strong><span>LLM · Prompt Injection · Agent Security</span></div>
+    <div class="apex-svc-item"><strong>Vulnerability Assessment</strong><span>API · SaaS · Cloud · Web Security</span></div>
+    <div class="apex-svc-item"><strong>SOC &amp; MSSP Services</strong><span>Co-Managed SOC · Threat Hunting</span></div>
+    <div class="apex-svc-item"><strong>AI Governance Consulting</strong><span>NIST AI RMF · ISO 42001 · OWASP LLM</span></div>
+    <div class="apex-svc-item"><strong>DevSecOps Optimization</strong><span>CI/CD Security · Pipeline Hardening</span></div>
+    <div class="apex-svc-item"><strong>Incident Response</strong><span>Digital Forensics · IR Retainer</span></div>
+    <div class="apex-svc-item"><strong>Detection Engineering</strong><span>2,400+ Sigma · YARA · SIEM Rules</span></div>
+  </div>
+  <div style="margin-top:14px">
+    <a class="apex-btn apex-btn-primary" href="{self.config.corporate_url}" target="_blank" rel="noopener">View All Services →</a>
+    <a class="apex-btn apex-btn-secondary" style="margin-left:8px" href="mailto:{self.config.contact_email}">Book Enterprise Call</a>
+  </div>
+</div>
+""".strip()
+
+    def inject_detection_packs_cta(self) -> str:
+        """Detection Engineering pack promotion."""
+        return f"""
+<div class="apex-cta-block">
+  <h4>🎯 Detection Engineering Packs — Instant Download</h4>
+  <p>2,400+ production-ready Sigma detection rules, YARA malware signatures, and IR playbooks — mapped to MITRE ATT&CK. Deploy to Splunk, Elastic, or Microsoft Sentinel in minutes. Updated weekly by CYBERDUDEBIVASH® analysts.</p>
+  <div class="apex-cta-grid">
+    <a class="apex-btn apex-btn-primary" href="{self.config.sentinel_apex_url}/detections" target="_blank" rel="noopener">Browse Detection Packs →</a>
+    <a class="apex-btn apex-btn-upgrade" href="{self.config.sentinel_apex_url}/upgrade" target="_blank" rel="noopener">▲ SOC Pro — $49/mo</a>
+  </div>
+</div>
+""".strip()
+
+    def inject_read_more_cta(self, source_url: str) -> str:
+        """Bottom CTA directing readers to the full original report."""
+        return f"""
+<div class="apex-read-more">
+  <a href="{source_url}" target="_blank" rel="noopener">📄 Read Full Intelligence Report on SENTINEL APEX →</a>
+</div>
+""".strip()
+
+    def inject_about_block(self) -> str:
+        """CYBERDUDEBIVASH® About section with ecosystem links."""
+        return f"""
+<div class="apex-about">
+  <strong>About CYBERDUDEBIVASH®</strong><br>
+  CYBERDUDEBIVASH® is an AI-native cybersecurity ecosystem specializing in Threat Intelligence, AI Security, SOC Operations, Managed Security Services, Incident Response, Threat Hunting, Security Automation, DevSecOps, and Enterprise Cyber Defense.<br><br>
+  <strong>Flagship Platforms:</strong>
+  <a href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">Sentinel APEX™ Intelligence Platform</a> ·
+  <a href="{self.config.api_url}" target="_blank" rel="noopener">Threat Intelligence API</a> ·
+  <a href="{self.config.tools_url}" target="_blank" rel="noopener">Security Tools Hub</a> ·
+  <a href="{self.config.corporate_url}" target="_blank" rel="noopener">Enterprise Portal</a><br><br>
+  <em>Defending the Future with AI-Powered Cybersecurity.</em><br>
+  Contact: <a href="mailto:{self.config.contact_email}">{self.config.contact_email}</a> ·
+  Website: <a href="{self.config.brand_url}" target="_blank" rel="noopener">{self.config.brand_url}</a>
+</div>
+""".strip()
+
+    def get_style_block(self) -> str:
+        return _INLINE_CSS

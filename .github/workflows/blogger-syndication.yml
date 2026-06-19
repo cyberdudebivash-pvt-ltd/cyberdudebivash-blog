@@ -1,0 +1,217 @@
+name: "⚡ CYBERDUDEBIVASH® — Blogger Syndication Engine"
+
+on:
+  schedule:
+    # Every 15 minutes — continuous syndication
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (validate without publishing)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      max_posts:
+        description: "Max posts per run (default: 5)"
+        required: false
+        default: "5"
+
+concurrency:
+  group: blogger-syndication
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  syndicate:
+    name: "📡 Syndicate to Blogger"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      # ──────────────────────────────────────────────
+      # 1. Checkout with full history for push access
+      # ──────────────────────────────────────────────
+      - name: "📥 Checkout Repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ──────────────────────────────────────────────
+      # 2. Python Setup
+      # ──────────────────────────────────────────────
+      - name: "🐍 Set Up Python 3.11"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+
+      # ──────────────────────────────────────────────
+      # 3. Install Dependencies
+      # ──────────────────────────────────────────────
+      - name: "📦 Install Dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ──────────────────────────────────────────────
+      # 4. Validate Syntax & Imports
+      # ──────────────────────────────────────────────
+      - name: "✅ Validate Module Imports"
+        run: |
+          python -c "
+          from automation.config import Config
+          from automation.content_discovery import ContentDiscoveryEngine
+          from automation.authority_transformer import AuthorityTransformer
+          from automation.blogger_publisher import BloggerPublisher
+          from automation.seo_optimizer import SEOOptimizer
+          from automation.main import run_pipeline
+          print('All modules imported successfully')
+          "
+
+      # ──────────────────────────────────────────────
+      # 5. Run Unit Tests
+      # ──────────────────────────────────────────────
+      - name: "🧪 Run Unit & Integration Tests"
+        run: |
+          python -m pytest tests/ -v \
+            --tb=short \
+            --timeout=30 \
+            -q \
+            2>&1 | head -100
+        continue-on-error: false
+
+      # ──────────────────────────────────────────────
+      # 6. Configure Git Identity
+      # ──────────────────────────────────────────────
+      - name: "🔧 Configure Git"
+        run: |
+          git config user.name "CYBERDUDEBIVASH"
+          git config user.email "bivash@cyberdudebivash.com"
+
+      # ──────────────────────────────────────────────
+      # 7. Run Syndication Pipeline
+      # ──────────────────────────────────────────────
+      - name: "⚡ Run Syndication Pipeline"
+        env:
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_SEARCH_CONSOLE_KEY: ${{ secrets.GOOGLE_SEARCH_CONSOLE_KEY }}
+          MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '5' }}
+        run: |
+          DRY_RUN_FLAG=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            DRY_RUN_FLAG="--dry-run"
+            echo "Running in DRY RUN mode — no posts will be published"
+          fi
+
+          python -m automation.main \
+            $DRY_RUN_FLAG \
+            --max-posts ${{ github.event.inputs.max_posts || '5' }} \
+            2>&1 | tee logs/pipeline-output.txt
+
+      # ──────────────────────────────────────────────
+      # 8. Commit State & Logs
+      # ──────────────────────────────────────────────
+      - name: "💾 Commit Publication State"
+        run: |
+          # Stage state file and logs (not pipeline logs to reduce noise)
+          git add data/published_posts.json || true
+          git add logs/*.json || true
+
+          if git diff --cached --quiet; then
+            echo "No state changes to commit"
+            exit 0
+          fi
+
+          PUBLISHED=$(python -c "
+          import json
+          try:
+            with open('data/published_posts.json') as f:
+              d = json.load(f)
+            print(d.get('total_published', 0))
+          except:
+            print(0)
+          ")
+
+          git commit -m "syndication: auto-published [${PUBLISHED} total posts] — $(date -u '+%Y-%m-%d %H:%M UTC')"
+
+          # Push with retry + rebase to handle concurrent writes
+          for attempt in 1 2 3; do
+            git pull --rebase origin ${{ github.ref_name }} --quiet 2>/dev/null || true
+            if git push origin ${{ github.ref_name }}; then
+              echo "Push succeeded on attempt ${attempt}"
+              break
+            fi
+            if [ $attempt -lt 3 ]; then
+              echo "Push failed, retrying in $((attempt * 3))s..."
+              sleep $((attempt * 3))
+            else
+              echo "Push failed after 3 attempts — state will sync next run"
+              exit 0
+            fi
+          done
+
+      # ──────────────────────────────────────────────
+      # 9. Pipeline Summary
+      # ──────────────────────────────────────────────
+      - name: "📊 Pipeline Summary"
+        if: always()
+        run: |
+          echo "=== CYBERDUDEBIVASH® Blogger Syndication Summary ==="
+          echo "Run timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+
+          # Parse latest run report
+          LATEST_REPORT=$(ls -t logs/run-*.json 2>/dev/null | head -1)
+          if [ -n "$LATEST_REPORT" ]; then
+            echo "Run report: $LATEST_REPORT"
+            python -c "
+          import json
+          import sys
+          try:
+            with open('$LATEST_REPORT') as f:
+              r = json.load(f)
+            print(f'Discovered: {r.get(\"discovered\", 0)}')
+            print(f'Published:  {r.get(\"published\", 0)}')
+            print(f'Failed:     {r.get(\"failed\", 0)}')
+            print(f'Dry run:    {r.get(\"dry_run\", False)}')
+            if r.get('errors'):
+              print(f'Errors: {r[\"errors\"]}')
+          except Exception as e:
+            print(f'Could not parse report: {e}')
+            "
+          else
+            echo "No run report found (no new content discovered)"
+          fi
+
+          TOTAL=$(python -c "
+          import json
+          try:
+            with open('data/published_posts.json') as f:
+              d = json.load(f)
+            print(d.get('total_published', 0))
+          except:
+            print(0)
+          " 2>/dev/null || echo "0")
+          echo "Total syndicated posts (all time): ${TOTAL}"
+          echo "Target blog: https://cyberbivash.blogspot.com"
+          echo "Source: https://blog.cyberdudebivash.in"
+
+      # ──────────────────────────────────────────────
+      # 10. Failure Alert
+      # ──────────────────────────────────────────────
+      - name: "🚨 Flag Pipeline Failure"
+        if: failure()
+        run: |
+          echo "::error::CYBERDUDEBIVASH® Blogger Syndication Pipeline FAILED"
+          echo "::error::Check logs above for diagnosis"
+          echo "::error::Contact: bivash@cyberdudebivash.com"
