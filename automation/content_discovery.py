@@ -196,6 +196,58 @@ def _is_recent(pub_date: Optional[datetime], max_age_hours: int) -> bool:
     return pub_date >= cutoff
 
 
+def _parse_feed_items(xml_text: str) -> list[dict]:
+    """Parse RSS 2.0 or Atom XML into raw item dicts: title, url, summary, pub_date.
+
+    Shared by the own-blog RSS reader and every external RSS-based source
+    (global news aggregator, CISA advisories) so feed-format quirks are
+    handled in exactly one place. Raises ET.ParseError on malformed XML —
+    callers are responsible for catching it and degrading gracefully.
+    """
+    root = ET.fromstring(xml_text)
+
+    ns = {"atom": "http://www.w3.org/2005/Atom"}
+    raw_items = root.findall(".//item") or root.findall(".//atom:entry", ns)
+
+    parsed: list[dict] = []
+    for item in raw_items:
+        def _text(tag: str) -> str:
+            # Use explicit None check — ET elements with text but no children are falsy
+            el = item.find(tag)
+            if el is None:
+                el = item.find(f"atom:{tag}", ns)
+            return (el.text or "").strip() if el is not None else ""
+
+        # Handle Atom link element (attribute-based)
+        url = _text("link")
+        if not url:
+            link_el = item.find("atom:link", ns)
+            if link_el is not None:
+                url = link_el.get("href", "")
+
+        title = _text("title")
+
+        if not url or not title:
+            continue
+
+        summary_raw = _text("description") or _text("summary") or _text("content")
+        clean_summary = (
+            BeautifulSoup(summary_raw, "lxml").get_text(separator=" ", strip=True)[:1500]
+            if summary_raw
+            else ""
+        )
+        pub_date_raw = _text("pubDate") or _text("published") or _text("updated")
+
+        parsed.append({
+            "title": title,
+            "url": url,
+            "summary": clean_summary,
+            "pub_date": pub_date_raw,
+        })
+
+    return parsed
+
+
 def _infer_labels(title: str, summary: str) -> list[str]:
     """Map content to Blogger labels based on keywords."""
     text = (title + " " + summary).lower()
@@ -270,35 +322,45 @@ class ContentDiscoveryEngine:
         self.state = PublicationState(config.state_file)
 
     def discover(self) -> list[DiscoveredArticle]:
-        """Return new articles from all sources, priority-ordered: CISA KEV > NVD > RSS > live-intel."""
+        """Return new articles from all sources, priority-ordered by source authority."""
         from .cisa_kev_source import CISAKEVSource
         from .nvd_source import NVDCVESource
+        from .rss_aggregator import GlobalRSSAggregator
+        from .threat_feeds import (
+            CISAAdvisoriesSource,
+            DataBreachIntelSource,
+            RansomwareIntelSource,
+            ThreatActorIntelSource,
+        )
 
-        all_new = []
+        all_new: list[DiscoveredArticle] = []
 
-        # 1. CISA KEV — highest authority source
-        try:
-            kev = CISAKEVSource(self.config).discover(self.state)
-            all_new.extend(kev)
-            logger.info("CISA KEV source", extra={"new": len(kev)})
-        except Exception as e:
-            logger.error("CISA KEV source failed", extra={"error": str(e)})
+        # Authoritative structured sources, highest authority first. Each is
+        # independently sandboxed — a failure in one never blocks the others.
+        sources = [
+            ("CISA KEV", CISAKEVSource),
+            ("NVD", NVDCVESource),
+            ("CISA Advisories", CISAAdvisoriesSource),
+            ("Ransomware Intel", RansomwareIntelSource),
+            ("Data Breach Intel", DataBreachIntelSource),
+            ("Threat Actor Intel", ThreatActorIntelSource),
+            ("Global RSS", GlobalRSSAggregator),
+        ]
+        for label, source_cls in sources:
+            try:
+                found = source_cls(self.config).discover(self.state)
+                all_new.extend(found)
+                logger.info(f"{label} source", extra={"new": len(found)})
+            except Exception as e:
+                logger.error(f"{label} source failed", extra={"error": str(e)})
 
-        # 2. NVD CVE — authoritative vulnerability data
-        try:
-            nvd = NVDCVESource(self.config).discover(self.state)
-            all_new.extend(nvd)
-            logger.info("NVD source", extra={"new": len(nvd)})
-        except Exception as e:
-            logger.error("NVD source failed", extra={"error": str(e)})
-
-        # 3. Own RSS feed
+        # Own RSS feed
         rss = self._discover_from_rss()
         for a in rss:
             if not self.state.is_published(a.content_hash):
                 all_new.append(a)
 
-        # 4. live-intel fallback only if nothing found yet
+        # live-intel fallback only if nothing found yet
         if not all_new:
             live = self._discover_from_live_intel()
             for a in live:
@@ -306,15 +368,36 @@ class ContentDiscoveryEngine:
                     all_new.append(a)
 
         # Sort: by source priority first (stable), then by date within each source
-        _SOURCE_PRIORITY = {"cisa_kev": 0, "nvd": 1, "rss": 2, "live_intel": 3}
+        _SOURCE_PRIORITY = {
+            "cisa_kev": 0,
+            "nvd": 1,
+            "cisa_advisory": 2,
+            "ransomware_intel": 3,
+            "breach_intel": 4,
+            "threat_actor_intel": 5,
+            "global_rss": 6,
+            "rss": 7,
+            "live_intel": 8,
+        }
         all_new.sort(key=lambda a: a.published_at, reverse=True)
         all_new.sort(key=lambda a: _SOURCE_PRIORITY.get(a.source, 9))
+
+        # Exact-hash dedup: independent sources (global RSS mirrors, CISA
+        # advisories, own RSS) can surface the identical (url, title) pair.
+        # Keep only the first (highest-priority) occurrence of each hash.
+        seen_hashes: set[str] = set()
+        hash_deduped: list[DiscoveredArticle] = []
+        for article in all_new:
+            if article.content_hash in seen_hashes:
+                continue
+            seen_hashes.add(article.content_hash)
+            hash_deduped.append(article)
 
         # Cross-source CVE dedup: if same CVE ID appears in CISA KEV + NVD, keep highest-priority only.
         # CISA KEV (priority 0) always wins over NVD (priority 1) for the same CVE.
         seen_cves: set[str] = set()
         deduped: list[DiscoveredArticle] = []
-        for article in all_new:
+        for article in hash_deduped:
             article_cves = _extract_cve_ids_from_text(article.title + " " + article.summary)
             # Check if any CVE in this article was already seen in a higher-priority source
             if article_cves and any(c in seen_cves for c in article_cves):
@@ -332,6 +415,7 @@ class ContentDiscoveryEngine:
             "Discovery complete",
             extra={
                 "total_new": len(all_new),
+                "after_hash_dedup": len(hash_deduped),
                 "after_cve_dedup": len(deduped),
                 "to_publish": len(result),
                 "sources": list({a.source for a in all_new}),
@@ -353,55 +437,29 @@ class ContentDiscoveryEngine:
             logger.error("RSS fetch failed", extra={"error": str(e)})
             return []
 
-        articles = []
         try:
-            root = ET.fromstring(resp.text)
+            items = _parse_feed_items(resp.text)
         except ET.ParseError as e:
             logger.error("RSS XML parse error", extra={"error": str(e)})
             return []
 
-        # Handle both RSS 2.0 and Atom feeds
-        ns = {"atom": "http://www.w3.org/2005/Atom"}
-        items = root.findall(".//item") or root.findall(".//atom:entry", ns)
-
+        articles = []
         for item in items:
-            def _text(tag: str) -> str:
-                # Use explicit None check — ET elements with text but no children are falsy
-                el = item.find(tag)
-                if el is None:
-                    el = item.find(f"atom:{tag}", ns)
-                return (el.text or "").strip() if el is not None else ""
-
-            # Handle Atom link element (attribute-based)
-            url = _text("link")
-            if not url:
-                link_el = item.find("atom:link", ns)
-                if link_el is not None:
-                    url = link_el.get("href", "")
-
-            title = _text("title")
-            summary = _text("description") or _text("summary") or _text("content")
-
-            if not url or not title:
-                continue
-
-            soup = BeautifulSoup(summary, "lxml")
-            clean_summary = soup.get_text(separator=" ", strip=True)[:1500]
-
-            pub_date_raw = _text("pubDate") or _text("published") or _text("updated")
-            pub_date = _parse_rfc_date(pub_date_raw)
+            url = item["url"]
+            title = item["title"]
+            pub_date = _parse_rfc_date(item["pub_date"])
 
             if not _is_recent(pub_date, self.config.max_article_age_hours):
                 continue
 
             content_hash = _compute_hash(url, title)
-            labels = _infer_labels(title, clean_summary)
+            labels = _infer_labels(title, item["summary"])
             pub_iso = pub_date.isoformat() if pub_date else datetime.now(timezone.utc).isoformat()
 
             articles.append(DiscoveredArticle(
                 url=url,
                 title=title,
-                summary=clean_summary,
+                summary=item["summary"],
                 published_at=pub_iso,
                 content_hash=content_hash,
                 labels=labels,

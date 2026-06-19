@@ -72,6 +72,8 @@ jobs:
           from automation.blogger_publisher import BloggerPublisher
           from automation.seo_optimizer import SEOOptimizer
           from automation.social_amplifier import SocialAmplifier
+          from automation.rss_aggregator import GlobalRSSAggregator
+          from automation.threat_feeds import CISAAdvisoriesSource, RansomwareIntelSource, DataBreachIntelSource, ThreatActorIntelSource
           from automation.main import run_pipeline
           print('All modules imported successfully')
           "
@@ -110,6 +112,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+          ALIENVAULT_OTX_KEY: ${{ secrets.ALIENVAULT_OTX_KEY }}
           GOOGLE_SEARCH_CONSOLE_KEY: ${{ secrets.GOOGLE_SEARCH_CONSOLE_KEY }}
           TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
           TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
