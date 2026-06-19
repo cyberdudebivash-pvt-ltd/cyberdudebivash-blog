@@ -6,7 +6,8 @@
     "api/v1/auth.js":            { "memory": 128, "maxDuration": 10 },
     "api/v1/billing.js":         { "memory": 256, "maxDuration": 15 },
     "api/v1/admin.js":           { "memory": 256, "maxDuration": 20 },
-    "api/v1/billing/webhook.js": { "memory": 128, "maxDuration": 10 }
+    "api/v1/billing/webhook.js": { "memory": 128, "maxDuration": 10 },
+    "api/cron/dispatch-intel.js": { "memory": 128, "maxDuration": 10 }
   },
 
   "headers": [
@@ -23,6 +24,18 @@
         { "key": "Permissions-Policy",           "value": "camera=(), microphone=(), geolocation=()" },
         { "key": "Cache-Control",               "value": "no-store, no-cache, must-revalidate" },
         { "key": "X-Powered-By",                 "value": "CYBERDUDEBIVASH SENTINEL APEX v4.0" }
+      ]
+    },
+    {
+      "source": "/api/cron/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options",  "value": "nosniff" },
+        { "key": "X-Frame-Options",         "value": "DENY" },
+        { "key": "Content-Security-Policy", "value": "default-src 'none'; frame-ancestors 'none'" },
+        { "key": "Referrer-Policy",         "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy",      "value": "camera=(), microphone=(), geolocation=()" },
+        { "key": "Cache-Control",           "value": "no-store, no-cache, must-revalidate" },
+        { "key": "X-Powered-By",            "value": "CYBERDUDEBIVASH SENTINEL APEX v4.0" }
       ]
     },
     {
