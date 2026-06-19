@@ -24,6 +24,7 @@ class Config:
 
     # External data source API keys
     nvd_api_key: str = ""
+    alienvault_otx_key: str = ""
 
     # Model selection per provider
     llm_model_groq: str = "llama-3.3-70b-versatile"
@@ -85,6 +86,7 @@ class Config:
             openrouter_api_key=os.environ.get("OPENROUTER_API_KEY", ""),
             anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY", ""),
             nvd_api_key=os.environ.get("NVD_API_KEY", ""),
+            alienvault_otx_key=os.environ.get("ALIENVAULT_OTX_KEY", ""),
             google_search_console_key=os.environ.get("GOOGLE_SEARCH_CONSOLE_KEY", ""),
             twitter_api_key=os.environ.get("TWITTER_API_KEY", ""),
             twitter_api_secret=os.environ.get("TWITTER_API_SECRET", ""),
