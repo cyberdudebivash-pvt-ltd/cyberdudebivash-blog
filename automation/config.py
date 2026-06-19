@@ -16,8 +16,16 @@ class Config:
     blogger_refresh_token: str = ""
     blogger_blog_id: str = ""
 
-    # Anthropic Claude AI
+    # LLM providers — tried in priority order: Groq → DeepSeek → OpenRouter → Anthropic
+    groq_api_key: str = ""
+    deepseek_api_key: str = ""
+    openrouter_api_key: str = ""
     anthropic_api_key: str = ""
+
+    # Model selection per provider
+    llm_model_groq: str = "llama-3.3-70b-versatile"
+    llm_model_deepseek: str = "deepseek-chat"
+    llm_model_openrouter: str = "deepseek/deepseek-chat"
     claude_model: str = "claude-opus-4-8"
 
     # Google Search Console
@@ -60,6 +68,9 @@ class Config:
             blogger_client_secret=os.environ.get("BLOGGER_CLIENT_SECRET", ""),
             blogger_refresh_token=os.environ.get("BLOGGER_REFRESH_TOKEN", ""),
             blogger_blog_id=os.environ.get("BLOGGER_BLOG_ID", ""),
+            groq_api_key=os.environ.get("GROQ_API_KEY", ""),
+            deepseek_api_key=os.environ.get("DEEPSEEK_API_KEY", ""),
+            openrouter_api_key=os.environ.get("OPENROUTER_API_KEY", ""),
             anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY", ""),
             google_search_console_key=os.environ.get("GOOGLE_SEARCH_CONSOLE_KEY", ""),
             max_posts_per_run=int(os.environ.get("MAX_POSTS_PER_RUN", "5")),

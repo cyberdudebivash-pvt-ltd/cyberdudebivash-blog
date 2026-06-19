@@ -1,0 +1,245 @@
+"""
+Tests for the multi-provider LLM client — provider priority, fallback, error handling.
+"""
+
+import unittest
+from unittest.mock import MagicMock, patch
+
+from automation.config import Config
+from automation.llm_client import call_llm, _call_openai_compat
+
+
+def _config(**kwargs) -> Config:
+    cfg = Config()
+    for k, v in kwargs.items():
+        setattr(cfg, k, v)
+    return cfg
+
+
+class TestCallLLMNoKeys(unittest.TestCase):
+    def test_returns_none_when_no_keys_set(self):
+        cfg = Config()  # All API keys are empty strings
+        result = call_llm(cfg, "test prompt")
+        self.assertIsNone(result)
+
+    def test_returns_none_when_only_empty_strings(self):
+        cfg = _config(
+            groq_api_key="",
+            deepseek_api_key="",
+            openrouter_api_key="",
+            anthropic_api_key="",
+        )
+        result = call_llm(cfg, "test prompt")
+        self.assertIsNone(result)
+
+
+class TestCallLLMGroqPriority(unittest.TestCase):
+    """Groq is tried first when key is set."""
+
+    def test_groq_called_first_when_key_set(self):
+        cfg = _config(groq_api_key="gsk-test", deepseek_api_key="ds-test")
+
+        mock_resp = MagicMock()
+        mock_resp.json.return_value = {
+            "choices": [{"message": {"content": "Groq analysis result"}}]
+        }
+        mock_resp.raise_for_status = MagicMock()
+
+        with patch("requests.post", return_value=mock_resp) as mock_post:
+            result = call_llm(cfg, "test prompt")
+
+        self.assertIsNotNone(result)
+        content, provider = result
+        self.assertEqual(provider, "groq")
+        self.assertEqual(content, "Groq analysis result")
+
+        # Verify Groq URL was hit
+        call_url = mock_post.call_args[0][0]
+        self.assertIn("groq.com", call_url)
+
+    def test_groq_returns_tuple_of_content_and_provider(self):
+        cfg = _config(groq_api_key="gsk-test")
+        mock_resp = MagicMock()
+        mock_resp.json.return_value = {
+            "choices": [{"message": {"content": "  Threat intel content  "}}]
+        }
+        mock_resp.raise_for_status = MagicMock()
+
+        with patch("requests.post", return_value=mock_resp):
+            result = call_llm(cfg, "test prompt")
+
+        self.assertIsInstance(result, tuple)
+        self.assertEqual(len(result), 2)
+        content, provider = result
+        self.assertEqual(content, "Threat intel content")
+        self.assertEqual(provider, "groq")
+
+
+class TestCallLLMDeepSeek(unittest.TestCase):
+    def test_deepseek_called_when_groq_fails(self):
+        cfg = _config(groq_api_key="bad-key", deepseek_api_key="ds-valid")
+
+        groq_resp = MagicMock()
+        groq_resp.raise_for_status.side_effect = Exception("Groq 401")
+
+        deepseek_resp = MagicMock()
+        deepseek_resp.json.return_value = {
+            "choices": [{"message": {"content": "DeepSeek analysis"}}]
+        }
+        deepseek_resp.raise_for_status = MagicMock()
+
+        with patch("requests.post", side_effect=[groq_resp, deepseek_resp]):
+            result = call_llm(cfg, "test prompt")
+
+        self.assertIsNotNone(result)
+        content, provider = result
+        self.assertEqual(provider, "deepseek")
+        self.assertEqual(content, "DeepSeek analysis")
+
+    def test_deepseek_used_when_only_deepseek_key(self):
+        cfg = _config(deepseek_api_key="ds-only-key")
+
+        mock_resp = MagicMock()
+        mock_resp.json.return_value = {
+            "choices": [{"message": {"content": "DeepSeek only result"}}]
+        }
+        mock_resp.raise_for_status = MagicMock()
+
+        with patch("requests.post", return_value=mock_resp) as mock_post:
+            result = call_llm(cfg, "test prompt")
+
+        call_url = mock_post.call_args[0][0]
+        self.assertIn("deepseek.com", call_url)
+        content, provider = result
+        self.assertEqual(provider, "deepseek")
+
+
+class TestCallLLMOpenRouter(unittest.TestCase):
+    def test_openrouter_used_when_only_openrouter_key(self):
+        cfg = _config(openrouter_api_key="sk-or-test")
+
+        mock_resp = MagicMock()
+        mock_resp.json.return_value = {
+            "choices": [{"message": {"content": "OpenRouter result"}}]
+        }
+        mock_resp.raise_for_status = MagicMock()
+
+        with patch("requests.post", return_value=mock_resp) as mock_post:
+            result = call_llm(cfg, "test prompt")
+
+        call_url = mock_post.call_args[0][0]
+        self.assertIn("openrouter.ai", call_url)
+        content, provider = result
+        self.assertEqual(provider, "openrouter")
+
+    def test_openrouter_sends_referer_header(self):
+        cfg = _config(openrouter_api_key="sk-or-test")
+
+        mock_resp = MagicMock()
+        mock_resp.json.return_value = {
+            "choices": [{"message": {"content": "OK"}}]
+        }
+        mock_resp.raise_for_status = MagicMock()
+
+        with patch("requests.post", return_value=mock_resp) as mock_post:
+            call_llm(cfg, "test prompt")
+
+        headers_sent = mock_post.call_args[1]["headers"]
+        self.assertIn("HTTP-Referer", headers_sent)
+        self.assertIn("cyberdudebivash.in", headers_sent["HTTP-Referer"])
+
+
+class TestCallLLMFallbackChain(unittest.TestCase):
+    def test_falls_through_all_failing_providers_to_none(self):
+        cfg = _config(
+            groq_api_key="bad-groq",
+            deepseek_api_key="bad-deepseek",
+            openrouter_api_key="bad-openrouter",
+        )
+
+        fail_resp = MagicMock()
+        fail_resp.raise_for_status.side_effect = Exception("HTTP 401")
+
+        with patch("requests.post", return_value=fail_resp):
+            result = call_llm(cfg, "test prompt")
+
+        self.assertIsNone(result)
+
+    def test_openrouter_is_last_resort_before_none(self):
+        cfg = _config(
+            groq_api_key="bad",
+            deepseek_api_key="bad",
+            openrouter_api_key="good-or",
+        )
+
+        fail_resp = MagicMock()
+        fail_resp.raise_for_status.side_effect = Exception("HTTP 401")
+
+        ok_resp = MagicMock()
+        ok_resp.json.return_value = {
+            "choices": [{"message": {"content": "Fallback content"}}]
+        }
+        ok_resp.raise_for_status = MagicMock()
+
+        with patch("requests.post", side_effect=[fail_resp, fail_resp, ok_resp]):
+            result = call_llm(cfg, "test prompt")
+
+        self.assertIsNotNone(result)
+        _, provider = result
+        self.assertEqual(provider, "openrouter")
+
+
+class TestOpenAICompatCall(unittest.TestCase):
+    def test_strips_whitespace_from_response(self):
+        mock_resp = MagicMock()
+        mock_resp.json.return_value = {
+            "choices": [{"message": {"content": "\n  content here  \n"}}]
+        }
+        mock_resp.raise_for_status = MagicMock()
+
+        with patch("requests.post", return_value=mock_resp):
+            result = _call_openai_compat(
+                url="https://api.example.com/v1/chat/completions",
+                api_key="test-key",
+                model="test-model",
+                prompt="test",
+                max_tokens=100,
+                extra_headers={},
+            )
+
+        self.assertEqual(result, "content here")
+
+    def test_raises_on_http_error(self):
+        mock_resp = MagicMock()
+        mock_resp.raise_for_status.side_effect = Exception("HTTP 429")
+
+        with patch("requests.post", return_value=mock_resp):
+            with self.assertRaises(Exception):
+                _call_openai_compat(
+                    url="https://api.example.com/v1/chat/completions",
+                    api_key="test-key",
+                    model="test-model",
+                    prompt="test",
+                    max_tokens=100,
+                    extra_headers={},
+                )
+
+
+class TestLLMModelConfig(unittest.TestCase):
+    """Verify model defaults are sane."""
+
+    def test_groq_default_model(self):
+        cfg = Config()
+        self.assertIn("llama", cfg.llm_model_groq.lower())
+
+    def test_deepseek_default_model(self):
+        cfg = Config()
+        self.assertIn("deepseek", cfg.llm_model_deepseek.lower())
+
+    def test_openrouter_default_model(self):
+        cfg = Config()
+        self.assertIn("deepseek", cfg.llm_model_openrouter.lower())
+
+
+if __name__ == "__main__":
+    unittest.main()

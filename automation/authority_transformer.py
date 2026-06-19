@@ -1,7 +1,7 @@
 """
 CYBERDUDEBIVASH® SENTINEL APEX — Authority Content Transformer
 Transforms source articles into enterprise-grade threat intelligence reports.
-Uses Claude AI when ANTHROPIC_API_KEY is available; falls back to structured templates.
+LLM priority: Groq → DeepSeek → OpenRouter → Anthropic → template fallback.
 """
 
 import json
@@ -13,6 +13,7 @@ from .category_mapper import primary_category
 from .config import Config
 from .content_discovery import DiscoveredArticle
 from .internal_linker import InternalLinker
+from .llm_client import call_llm
 from .logger import setup_logger
 from .monetization_injector import MonetizationInjector
 from .seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss
@@ -20,16 +21,8 @@ from .seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss
 logger = setup_logger("authority_transformer")
 
 
-def _safe_ai_enhance(config: Config, article: DiscoveredArticle) -> Optional[str]:
-    """Call Claude API to generate analyst-grade threat intelligence content."""
-    if not config.anthropic_api_key:
-        return None
-
-    try:
-        import anthropic
-        client = anthropic.Anthropic(api_key=config.anthropic_api_key)
-
-        prompt = f"""You are the CYBERDUDEBIVASH® SENTINEL APEX AI Security Analyst, an expert in cyber threat intelligence, vulnerability analysis, AI security, and enterprise security operations.
+def _build_analyst_prompt(article: DiscoveredArticle) -> str:
+    return f"""You are the CYBERDUDEBIVASH® SENTINEL APEX AI Security Analyst, an expert in cyber threat intelligence, vulnerability analysis, AI security, and enterprise security operations.
 
 Transform the following cybersecurity article into an enterprise-grade threat intelligence report. Write in the style of a senior CTI analyst at a Fortune 500 security team.
 
@@ -81,22 +74,6 @@ CRITICAL RULES:
 - Keep total length between 600-1200 words
 - Return ONLY the HTML sections, no preamble
 """
-
-        message = client.messages.create(
-            model=config.claude_model,
-            max_tokens=3000,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        content = message.content[0].text.strip()
-        logger.info("Claude API enhancement succeeded", extra={"title": article.title[:60]})
-        return content
-
-    except ImportError:
-        logger.warning("anthropic package not installed — using template fallback")
-        return None
-    except Exception as e:
-        logger.error("Claude API call failed", extra={"error": str(e)})
-        return None
 
 
 def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
@@ -257,11 +234,10 @@ class AuthorityTransformer:
         """Return full transformed post ready for Blogger publication."""
         logger.info("Transforming article", extra={"title": article.title[:80], "url": article.url})
 
-        # Generate core content
-        ai_content = _safe_ai_enhance(self.config, article)
-        if ai_content:
-            body_content = ai_content
-            content_source = "claude_ai"
+        # Generate core content — try LLM providers, fall back to template
+        llm_result = call_llm(self.config, _build_analyst_prompt(article))
+        if llm_result:
+            body_content, content_source = llm_result
         else:
             body_content = _template_enhance(article, self.config)
             content_source = "template"
