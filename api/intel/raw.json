@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-19T21:34:37.914Z",
+  "generated": "2026-06-19T22:35:28.413Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,44 +8,47 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 102,
+  "count": 107,
   "items": [
     {
-      "id": "BLEEPINGCOMPUTER-3912158d914e5a07",
-      "title": "Hackers exploit info disclosure bug in Gravity SMTP WordPress plugin",
-      "description": "Threat actors are exploiting an unauthenticated information disclosure vulnerability in the WordPress plugin Gravity SMTP, active on 100,000 sites. [...]",
-      "cvss": 6.5,
-      "final_ps": 63,
-      "quality_score": 0.51,
+      "id": "GHSA-e91c6476be0bf81c",
+      "title": "stigmem-node: decay sweep expires and counts facts across all tenants (cross-tenant BOLA)",
+      "description": "### Summary\nOn a multi-tenant stigmem node, a caller holding a `write` credential for **one** tenant can run a decay sweep that acts on **every** tenant's facts. The candidate-selection queries in `lifecycle/decay.py` (`_select_ttl_candidates`, `_select_confidence_candidates`) carried no `tenant_id`",
+      "cvss": 7.5,
+      "final_ps": 56,
+      "quality_score": 0.548,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "bleepingcomputer",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
-        "bleepingcomputer"
+        "github_advisories"
       ],
       "first_seen": "2026-06-19",
       "last_seen": "2026-06-19",
-      "exploited": true,
+      "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "BleepingComputer",
-      "product": "Threat Intelligence",
+      "vendor": "pip",
+      "product": "stigmem-node",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.bleepingcomputer.com/news/security/hackers-exploit-info-disclosure-bug-in-gravity-smtp-wordpress-plugin/"
+        "https://github.com/advisories/GHSA-6gqw-jqv7-v88m",
+        "https://github.com/eidetic-labs/stigmem/security/advisories/GHSA-6gqw-jqv7-v88m",
+        "https://github.com/eidetic-labs/stigmem/pull/728",
+        "https://github.com/advisories/GHSA-6gqw-jqv7-v88m"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
-          "data_confidence=0.80",
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
           "recency=0d (score=1.00)",
-          "QS=0.510"
+          "QS=0.547"
         ],
         "priority": [
-          "+8 exploited_in_wild"
+          "+4 critical_infra"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -53,89 +56,6 @@
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
-    },
-    {
-      "id": "CVE-2026-42530",
-      "title": "Use-after-free in the QPACK encoder of nginx HTTP/3 - CVE-2026-42530",
-      "description": "&amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/everping&quot;&gt; /u/everping &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://cystack.net/vi/research/cve-2026-42530-nginx-en&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt; &amp;#32; &lt;span&gt;&lt;a href=&quot;https",
-      "cvss": 8,
-      "final_ps": 54,
-      "quality_score": 0.595,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "reddit_netsec",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_netsec"
-      ],
-      "first_seen": "2026-06-19",
-      "last_seen": "2026-06-19",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_netsec",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42530"
-      ],
-      "ioc_count": 5,
-      "refs": [
-        "https://www.reddit.com/r/netsec/comments/1uab0j6/useafterfree_in_the_qpack_encoder_of_nginx_http3/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_netsec)",
-          "data_confidence=1.00",
-          "ioc_presence=5 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.595"
-        ],
-        "priority": [
-          "base_ps=54 (no boosts)"
-        ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/everping&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-19",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://cystack.net/vi/research/cve-2026-42530-nginx-en&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-19",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/netsec/comments/1uab0j6/useafterfree_in_the_qpack_encoder_of_nginx_http3/&q",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-19",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-19",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "cystack.net",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-19",
-          "source_count": 1
-        }
-      ]
     },
     {
       "id": "CVE-2023-27351",
@@ -226,10 +146,104 @@
       "iocs": []
     },
     {
-      "id": "GHSA-eedd9fecb98644b1",
-      "title": "VCR.py: Arbitrary code execution via unsafe YAML deserialization of cassette files",
-      "description": "### Summary vcrpy deserializes YAML cassette files with PyYAML's object-constructing loader (`yaml.CLoader` / `yaml.Loader`) instead of the safe loader (`yaml.CSafeLoader` / `yaml.SafeLoader`). A cassette containing a `!!python/object/apply:` (or similar) tag therefore executes arbitrary Python code",
-      "cvss": 7.8,
+      "id": "GHSA-5f5befa73d5dae26",
+      "title": "appium-mcp: Unescaped Locator Data XSS in MCP-UI Resource (createLocatorGeneratorUI)",
+      "description": "## Unescaped Locator Data XSS in MCP-UI Resource (createLocatorGeneratorUI) ### Summary `appium-mcp`'s `createLocatorGeneratorUI` function interpolates attacker-controlled element attributes — `text`, `content-desc`, `resource-id`, and locator selector values — directly into an HTML template literal",
+      "cvss": 8.2,
+      "final_ps": 49,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-19",
+      "last_seen": "2026-06-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "appium-mcp",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-x975-rgx4-5fh4",
+        "https://github.com/appium/appium-mcp/security/advisories/GHSA-x975-rgx4-5fh4",
+        "https://github.com/appium/appium-mcp/commit/e222bbbd6fe2b656a320efcd143563f08061a83d",
+        "https://github.com/appium/appium-mcp/releases/tag/v1.85.10"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=49 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-6c342511dc92029e",
+      "title": "EverOS: Path traversal in EverOS /api/v1/memory/add via unvalidated sender_id",
+      "description": "EverOS versions 1.0.0 and earlier are vulnerable to path traversal in the POST /api/v1/memory/add ingestion endpoint. The per-message sender_id field was not validated as a path-safe identifier (unlike app_id / project_id, which already enforced this). During user-memory extraction, sender_id is use",
+      "cvss": 8.2,
+      "final_ps": 49,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-19",
+      "last_seen": "2026-06-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "everos",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-c795-2g9c-j48m",
+        "https://github.com/EverMind-AI/EverOS/security/advisories/GHSA-c795-2g9c-j48m",
+        "https://github.com/EverMind-AI/EverOS/releases/tag/v1.0.1",
+        "https://github.com/advisories/GHSA-c795-2g9c-j48m"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=49 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-a2c1f33c823aa70b",
+      "title": "Anki's local HTTP server does not sufficiently validate requests",
+      "description": "## Summary Anki launches a local HTTP server to serve media files and web pages for parts of its interface. The server fails to validate requests in the following ways:\n1. No sufficient validation of the Origin header.\n2. Some endpoints are vulnerable to path traversal attacks. This allows malicious",
+      "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
       "threat_level": "MEDIUM",
@@ -245,14 +259,15 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "pip",
-      "product": "vcrpy",
+      "product": "aqt",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-rpj2-4hq8-938g",
-        "https://github.com/kevin1024/vcrpy/security/advisories/GHSA-rpj2-4hq8-938g",
-        "https://github.com/advisories/GHSA-rpj2-4hq8-938g"
+        "https://github.com/advisories/GHSA-869j-r97x-hx2g",
+        "https://github.com/ankitects/anki/security/advisories/GHSA-869j-r97x-hx2g",
+        "https://x.com/taviso/status/2051310678800253318",
+        "https://github.com/advisories/GHSA-869j-r97x-hx2g"
       ],
       "explanation": {
         "quality": [
@@ -272,10 +287,10 @@
       "iocs": []
     },
     {
-      "id": "GHSA-5058f5c0bd851495",
-      "title": "http4k: `HmacSha256.hash` (despite the `Hmac` naming) computed a plain unkeyed digest; clarified by deprecation in favou",
-      "description": "### Impact The `HmacSha256` class contained two functions:\n- `hash(payload)` — a plain unkeyed SHA-256 digest. The `Hmac` prefix in the class name was misleading; this function has no key parameter, so it could never have been an HMAC.\n- `hmacSHA256(key, data)` — a properly keyed HMAC-SHA256. A read",
-      "cvss": 7.5,
+      "id": "GHSA-960d221784b3b4d0",
+      "title": "SurrealDB: Arbitrary file read via DEFINE ANALYZER mapper() filter",
+      "description": "SurrealDB's full-text search lets you define a text analyzer whose `mapper` filter loads a term-mapping file from disk (`DEFINE ANALYZER ... FILTERS mapper(' ')`). A database user with the `EDITOR` or `OWNER` role could point that filter at any file the SurrealDB process can read and have its conten",
+      "cvss": 7.7,
       "final_ps": 48,
       "quality_score": 0.548,
       "threat_level": "MEDIUM",
@@ -290,16 +305,16 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "maven",
-      "product": "org.http4k:http4k-core",
+      "vendor": "rust",
+      "product": "surrealdb",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-m4w9-hjfw-vwj4",
-        "https://github.com/http4k/http4k/security/advisories/GHSA-m4w9-hjfw-vwj4",
-        "https://datatracker.ietf.org/doc/html/rfc2104",
-        "https://github.com/http4k/http4k/releases/tag/6.49.0.0"
+        "https://github.com/advisories/GHSA-cc8f-fcx3-gpjr",
+        "https://github.com/surrealdb/surrealdb/security/advisories/GHSA-cc8f-fcx3-gpjr",
+        "https://github.com/surrealdb/surrealdb/pull/5600",
+        "https://github.com/advisories/GHSA-cc8f-fcx3-gpjr"
       ],
       "explanation": {
         "quality": [
@@ -319,10 +334,10 @@
       "iocs": []
     },
     {
-      "id": "GHSA-433d4743edc6ca9c",
-      "title": "Ultimate Sitemap Parser (USP): XML Entity Expansion (Billion Laughs) DoS in XMLSitemapParser",
-      "description": "## XML Entity Expansion (Billion Laughs) DoS in XMLSitemapParser ### Summary `ultimate-sitemap-parser` version 1.8.0 and earlier parse attacker-controlled XML content using Python's `xml.parsers.expat` without any restriction on DTD declarations or recursive entity references. An attacker who can se",
-      "cvss": 7.5,
+      "id": "GHSA-d186d7adb230bd7d",
+      "title": "LangSmith SDK TracingMiddleware: Arbitrary server-side file read",
+      "description": "# Summary An attacker who can send an HTTP request to a server running the LangSmith SDK's `TracingMiddleware` can cause that server to read an arbitrary file from its local filesystem and upload the contents to LangSmith as a trace attachment. Depending on how the distributed trace system is deploy",
+      "cvss": 7.7,
       "final_ps": 48,
       "quality_score": 0.548,
       "threat_level": "MEDIUM",
@@ -338,14 +353,14 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "pip",
-      "product": "ultimate-sitemap-parser",
+      "product": "langsmith",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-p5wc-9w9r-m232",
-        "https://github.com/GateNLP/ultimate-sitemap-parser/security/advisories/GHSA-p5wc-9w9r-m232",
-        "https://github.com/advisories/GHSA-p5wc-9w9r-m232"
+        "https://github.com/advisories/GHSA-f4xh-w4cj-qxq8",
+        "https://github.com/langchain-ai/langsmith-sdk/security/advisories/GHSA-f4xh-w4cj-qxq8",
+        "https://github.com/advisories/GHSA-f4xh-w4cj-qxq8"
       ],
       "explanation": {
         "quality": [
@@ -365,9 +380,9 @@
       "iocs": []
     },
     {
-      "id": "GHSA-ad4484846c839287",
-      "title": "Ultimate Sitemap Parser (USP): Gzip Decompression Bomb Bypasses Sitemap Size Limit",
-      "description": "## Gzip Decompression Bomb Bypasses Sitemap Size Limit ### Summary `ultimate-sitemap-parser` enforces a 100 MiB size limit on sitemap responses, but applies it only to the **compressed** bytes received over the network. When a `.gz` sitemap is fetched, `usp/helpers.py:239` calls `gzip_lib.decompress",
+      "id": "GHSA-f8531ff85492f25c",
+      "title": "githubtoplanguages: Command Injection via Issue Title in Discord Notification Workflow",
+      "description": "### Summary A GitHub Actions workflow is vulnerable to command injection through the issue title. The workflow is triggered when an issue is opened or closed, and it directly inserts `github.event.issue.title` into a Bash variable assignment. If an issue title contains command substitution syntax, B",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -383,15 +398,62 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "pip",
-      "product": "ultimate-sitemap-parser",
+      "vendor": "actions",
+      "product": "gouef/githubtoplanguages",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-8823-qg2x-pv9f",
-        "https://github.com/GateNLP/ultimate-sitemap-parser/security/advisories/GHSA-8823-qg2x-pv9f",
-        "https://github.com/advisories/GHSA-8823-qg2x-pv9f"
+        "https://github.com/advisories/GHSA-c3xh-98xp-6qhf",
+        "https://github.com/gouef/githubtoplanguages/security/advisories/GHSA-c3xh-98xp-6qhf",
+        "https://github.com/gouef/githubtoplanguages/commit/157840482e592bd4f8e0617539e73cdbef26f1ac",
+        "https://github.com/advisories/GHSA-c3xh-98xp-6qhf"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-fbb8f05ff62d0b57",
+      "title": "Uni-CLI: Legacy HTTP MCP transport accepted browser-originated localhost requests",
+      "description": "## Impact Uni-CLI versions before 0.225.2 exposed the legacy JSON-RPC-over-HTTP MCP transport on loopback without validating browser Origin headers before routing requests. A malicious web page could send a CORS simple POST request, such as text/plain, to the local /mcp endpoint and deliver a JSON-R",
+      "cvss": 7.5,
+      "final_ps": 48,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-19",
+      "last_seen": "2026-06-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@zenalexa/unicli",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-v3f4-w7r7-v3hm",
+        "https://github.com/olo-dot-io/Uni-CLI/security/advisories/GHSA-v3f4-w7r7-v3hm",
+        "https://github.com/advisories/GHSA-v3f4-w7r7-v3hm"
       ],
       "explanation": {
         "quality": [
@@ -593,6 +655,52 @@
       "iocs": []
     },
     {
+      "id": "GHSA-34568d8853e261c5",
+      "title": "@jhb.software/payload-cloudinary-plugin: Arbitrary Cloudinary API Parameter Signing",
+      "description": "## Arbitrary Cloudinary API Parameter Signing in @jhb.software/payload-cloudinary-plugin ### Summary `@jhb.software/payload-cloudinary-plugin` v0.3.4 exposes a server-side signing endpoint (`POST /api/cloudinary-generate-signature`) that passes attacker-supplied `paramsToSign` directly to `cloudinar",
+      "cvss": 7.1,
+      "final_ps": 47,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-19",
+      "last_seen": "2026-06-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@jhb.software/payload-cloudinary-plugin",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-h5x8-xp6m-x6q4",
+        "https://github.com/jhb-software/payload-plugins/security/advisories/GHSA-h5x8-xp6m-x6q4",
+        "https://github.com/advisories/GHSA-h5x8-xp6m-x6q4"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-32202",
       "title": "CVE-2026-32202: Microsoft Windows Protection Mechanism Failure Vulnerability — CISA KEV Active Exploitation",
       "description": "",
@@ -676,6 +784,50 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "BLEEPINGCOMPUTER-1b1fd40c34f847a4",
+      "title": "Klue OAuth breach victim list grows as Icarus hackers claim attack",
+      "description": "Market intelligence platform Klue has publicly confirmed a recent security incident that allowed threat actors to steal OAuth tokens used to connect to customers' Salesforce environments, as the new \"Icarus\" extortion group publicly claims the attack. [...]",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.45,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-06-19",
+      "last_seen": "2026-06-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/klue-oauth-breach-victim-list-grows-as-icarus-hackers-claim-attack/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.450"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -4262,6 +4414,51 @@
       "iocs": []
     },
     {
+      "id": "REDDIT_CYBER-51999c5b8f0b1329",
+      "title": "PeopleSoft 0-day affecting hundreds of organizations steals gigabytes of data",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 30,
+      "quality_score": 0.38,
+      "threat_level": "LOW",
+      "type": "ZERO_DAY",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-06-13",
+      "last_seen": "2026-06-13",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1u4trq7/peoplesoft_0day_affecting_hundreds_of/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-55691",
       "title": "StarCitizenWiki Extension Embed Video: Stored XSS via unsanitized class passed to template",
       "description": "",
@@ -4709,12 +4906,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-54896",
-      "title": "Oj: Heap Buffer Overflow in Oj.dump Exception Serialization via Large Indent",
+      "id": "GHSA-68f8699f3dae0fba",
+      "title": "Lokka: Azure Resource Manager URL path validation issue",
       "description": "",
       "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "final_ps": 20,
+      "quality_score": 0.493,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "github_advisories",
@@ -4727,34 +4924,31 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "rubygems",
-      "product": "oj",
+      "vendor": "npm",
+      "product": "@merill/lokka",
       "due_date": null,
-      "cves": [
-        "CVE-2026-54896",
-        "CVE-2026-54896"
-      ],
+      "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-35w3-pjm6-wj95",
-        "https://github.com/ohler55/oj/security/advisories/GHSA-35w3-pjm6-wj95",
-        "https://github.com/advisories/GHSA-35w3-pjm6-wj95"
+        "https://github.com/advisories/GHSA-g2gw-q38m-vjfc",
+        "https://github.com/merill/lokka/security/advisories/GHSA-g2gw-q38m-vjfc",
+        "https://github.com/advisories/GHSA-g2gw-q38m-vjfc"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.493"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=20 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null,
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     }
   ]
