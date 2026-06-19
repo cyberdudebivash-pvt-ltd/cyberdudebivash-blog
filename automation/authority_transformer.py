@@ -28,7 +28,8 @@ Transform the following cybersecurity article into an enterprise-grade threat in
 
 ARTICLE TITLE: {article.title}
 ARTICLE URL: {article.url}
-ARTICLE SUMMARY: {article.summary[:2000]}
+ARTICLE CONTENT:
+{(article.full_content or article.summary)[:3000]}
 LABELS/CATEGORY: {', '.join(article.labels)}
 
 Generate a comprehensive threat intelligence report with EXACTLY these sections in HTML format (use <h3>, <p>, <ul>, <li> tags — NO inline styles):
@@ -329,6 +330,8 @@ class AuthorityTransformer:
 <!-- Generated: {datetime.now(timezone.utc).isoformat()} -->
 
 {self.monetization.inject_header_cta()}
+
+{self.monetization.inject_urgency_cta(article.labels)}
 
 <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e2e8f0;margin:20px 0;padding:14px 18px;background:#050d1a;border-radius:6px;font-size:12px;color:#64748b">
   {meta_bar}

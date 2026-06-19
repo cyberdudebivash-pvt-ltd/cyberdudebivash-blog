@@ -22,6 +22,9 @@ class Config:
     openrouter_api_key: str = ""
     anthropic_api_key: str = ""
 
+    # External data source API keys
+    nvd_api_key: str = ""
+
     # Model selection per provider
     llm_model_groq: str = "llama-3.3-70b-versatile"
     llm_model_deepseek: str = "deepseek-chat"
@@ -72,6 +75,7 @@ class Config:
             deepseek_api_key=os.environ.get("DEEPSEEK_API_KEY", ""),
             openrouter_api_key=os.environ.get("OPENROUTER_API_KEY", ""),
             anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY", ""),
+            nvd_api_key=os.environ.get("NVD_API_KEY", ""),
             google_search_console_key=os.environ.get("GOOGLE_SEARCH_CONSOLE_KEY", ""),
             max_posts_per_run=int(os.environ.get("MAX_POSTS_PER_RUN", "5")),
         )

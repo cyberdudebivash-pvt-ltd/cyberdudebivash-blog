@@ -137,5 +137,67 @@ class MonetizationInjector:
 </div>
 """.strip()
 
+    def inject_urgency_cta(self, labels: list) -> str:
+        """Return a category-specific high-conversion CTA block."""
+        label_set = set(l.lower() for l in labels)
+
+        if "cisa kev" in label_set:
+            return f"""
+<div class="apex-cta-block" style="border-left-color:#ef4444;background:linear-gradient(135deg,#1a0505 0%,#0d0505 100%)">
+  <h4 style="color:#ef4444">🚨 CISA FEDERAL MANDATE — ACTIVE EXPLOITATION CONFIRMED</h4>
+  <p>This vulnerability is actively exploited in the wild. Federal agencies face a legal remediation deadline. Enterprise organizations should treat this with equivalent urgency. CYBERDUDEBIVASH® provides rapid vulnerability assessment and remediation guidance.</p>
+  <div class="apex-cta-grid">
+    <a class="apex-btn" style="background:#ef4444;color:#fff" href="mailto:{self.config.contact_email}">🚨 Emergency Assessment Request</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">Monitor All KEV Entries →</a>
+  </div>
+</div>""".strip()
+
+        if "ransomware" in label_set:
+            return f"""
+<div class="apex-cta-block" style="border-left-color:#f59e0b">
+  <h4 style="color:#f59e0b">🔒 RANSOMWARE PROTECTION ASSESSMENT</h4>
+  <p>Ransomware groups are actively targeting organizations like yours. CYBERDUDEBIVASH® provides rapid ransomware readiness assessments — backup integrity validation, network segmentation review, endpoint detection coverage, and IR playbook development.</p>
+  <div class="apex-cta-grid">
+    <a class="apex-btn apex-btn-upgrade" href="mailto:{self.config.contact_email}">Get Ransomware Assessment →</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">Monitor Ransomware Threats</a>
+  </div>
+</div>""".strip()
+
+        if "apt" in label_set or "nation-state" in label_set:
+            return f"""
+<div class="apex-cta-block" style="border-left-color:#8b5cf6">
+  <h4 style="color:#8b5cf6">🎯 NATION-STATE THREAT HUNTING</h4>
+  <p>Advanced Persistent Threat actors use long-dwell techniques invisible to standard defenses. CYBERDUDEBIVASH® threat hunting services identify APT presence using MITRE ATT&CK TTPs, memory forensics, and behavioral analytics.</p>
+  <div class="apex-cta-grid">
+    <a class="apex-btn" style="background:#8b5cf6;color:#fff" href="mailto:{self.config.contact_email}">Request Threat Hunt →</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">APT Tracking Dashboard</a>
+  </div>
+</div>""".strip()
+
+        if "ai security" in label_set:
+            return f"""
+<div class="apex-cta-block" style="border-left-color:#10b981">
+  <h4 style="color:#10b981">🤖 AI SECURITY ASSESSMENT</h4>
+  <p>AI systems, LLMs, and agentic applications introduce novel attack surfaces. CYBERDUDEBIVASH® AI Security assessments cover OWASP LLM Top 10, prompt injection, data leakage, model manipulation, and supply chain attacks against AI systems.</p>
+  <div class="apex-cta-grid">
+    <a class="apex-btn" style="background:#10b981;color:#000" href="mailto:{self.config.contact_email}">Book AI Security Assessment →</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">AI Threat Intelligence →</a>
+  </div>
+</div>""".strip()
+
+        if "vulnerabilities" in label_set or "zero-day" in label_set or "critical cve" in label_set:
+            return f"""
+<div class="apex-cta-block">
+  <h4>🔍 VULNERABILITY EXPOSURE ASSESSMENT</h4>
+  <p>Are your systems exposed to this vulnerability? CYBERDUDEBIVASH® provides rapid vulnerability assessments covering API attack surfaces, cloud infrastructure, web applications, and network perimeter — with remediation-ready reports.</p>
+  <div class="apex-cta-grid">
+    <a class="apex-btn apex-btn-primary" href="mailto:{self.config.contact_email}">Request Vulnerability Scan →</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">Track Live CVEs →</a>
+  </div>
+</div>""".strip()
+
+        # Default
+        return self.inject_mid_products_cta()
+
     def get_style_block(self) -> str:
         return _INLINE_CSS
