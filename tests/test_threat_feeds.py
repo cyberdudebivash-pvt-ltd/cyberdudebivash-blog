@@ -453,13 +453,13 @@ class TestThreatActorIntelSource(unittest.TestCase):
         self.assertIn("Threat Intelligence", labels)
 
     def test_sends_api_key_header(self):
-        self.config.alienvault_otx_key = "secret-otx-key-999"
+        self.config.alienvault_otx_key = "test-otx-key-placeholder"
         source = ThreatActorIntelSource(self.config)
         with patch("requests.get", return_value=_make_json_response({"results": []})) as mock_get:
             source.discover(self.state)
         self.assertTrue(mock_get.called)
         headers_used = mock_get.call_args[1].get("headers", {})
-        self.assertEqual(headers_used.get("X-OTX-API-KEY"), "secret-otx-key-999")
+        self.assertEqual(headers_used.get("X-OTX-API-KEY"), "test-otx-key-placeholder")
 
     def test_already_published_filtered(self):
         self.config.alienvault_otx_key = "test-otx-key"
