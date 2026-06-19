@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-18T22:19:55.104Z",
+  "generated": "2026-06-19T00:07:14.063Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,90 +8,52 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 100,
+  "count": 96,
   "items": [
     {
-      "id": "CVE-2026-5667",
-      "title": "CVE-2026-5667: Unauthenticated Remote Control of Mitsubishi MAC-577IF-2E WiFi Adapters via Probe Request Reconnaissance",
-      "description": "&amp;#32; submitted by &amp;#32; &lt;a href=&quot;https://www.reddit.com/user/Ecstatic_Priority514&quot;&gt; /u/Ecstatic_Priority514 &lt;/a&gt; &lt;br/&gt; &lt;span&gt;&lt;a href=&quot;https://innerfirez.github.io/posts/the-secret-life-of-probe-requests/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt; &amp;#",
-      "cvss": 8,
-      "final_ps": 54,
-      "quality_score": 0.595,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "reddit_cyber",
+      "id": "BLEEPINGCOMPUTER-5bf0c00d6c0221e9",
+      "title": "Gentlemen ransomware uses multiple EDR killers to disable defenses",
+      "description": "The Gentlemen ransomware-as-a-service (RaaS) is actively developing and maintaining a suite of endpoint detection and response (EDR) killers to help affiliates evade detection in attacks. [...]",
+      "cvss": 6.5,
+      "final_ps": 82,
+      "quality_score": 0.51,
+      "threat_level": "HIGH",
+      "type": "RANSOMWARE",
+      "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_cyber"
+        "bleepingcomputer"
       ],
       "first_seen": "2026-06-18",
       "last_seen": "2026-06-18",
-      "exploited": false,
+      "exploited": true,
       "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
+      "ransomware": true,
+      "vendor": "BleepingComputer",
       "product": "Threat Intelligence",
       "due_date": null,
-      "cves": [
-        "CVE-2026-5667"
-      ],
-      "ioc_count": 5,
+      "cves": [],
+      "ioc_count": 0,
       "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1u9doic/cve20265667_unauthenticated_remote_control_of/"
+        "https://www.bleepingcomputer.com/news/security/gentlemen-ransomware-uses-multiple-edr-killers-to-disable-defenses/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=1.00",
-          "ioc_presence=5 IOCs",
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.80",
           "recency=0d (score=1.00)",
-          "QS=0.595"
+          "QS=0.510"
         ],
         "priority": [
-          "base_ps=54 (no boosts)"
+          "+10 ransomware_confirmed",
+          "+8 exploited_in_wild"
         ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
       "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/Ecstatic_Priority514&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://innerfirez.github.io/posts/the-secret-life-of-probe-requests/&quot;&gt;[link]&lt;/a&gt;&lt;/",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1u9doic/cve20265667_unauthenticated_remote_control_o",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "innerfirez.github.io",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        }
-      ]
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
     },
     {
       "id": "CVE-2023-27351",
@@ -179,147 +141,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "GHSA-4ec1abdc41ff2b85",
-      "title": "PHP JWT Framework: JWSVerifier uses algorithm from unprotected header, enabling algorithm confusion attacks",
-      "description": "## Summary `JWSVerifier::getAlgorithm()` in `src/Library/Signature/JWSVerifier.php` (line 144) merges protected and unprotected headers using PHP's spread operator: ```php\n$completeHeader = [...$signature->getProtectedHeader(), ...$signature->getHeader()];\n``` In PHP, when spreading arrays with dupl",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "web-token/jwt-framework",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-jc38-x7x8-2xc8",
-        "https://github.com/web-token/jwt-framework/security/advisories/GHSA-jc38-x7x8-2xc8",
-        "https://github.com/FriendsOfPHP/security-advisories/blob/master/web-token/jwt-library/GHSA-jc38-x7x8-2xc8.yaml",
-        "https://github.com/advisories/GHSA-jc38-x7x8-2xc8"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-8e51a4ff72147124",
-      "title": "PHP JWT Library: PBES2-HS*+A*KW unwrap accepts an unbounded p2c iteration count, enabling CPU-amplification denial of se",
-      "description": "### Impact When a JWE uses a password-based key-encryption algorithm (`PBES2-HS256+A128KW`, `PBES2-HS384+A192KW`, `PBES2-HS512+A256KW`), `PBES2AESKW::unwrapKey()` reads the `p2c` (PBKDF2 iteration count) parameter directly from the attacker-controlled JOSE header and passes it to `hash_pbkdf2()` wit",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "web-token/jwt-library",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-3prj-6hqw-cm82",
-        "https://github.com/web-token/jwt-framework/security/advisories/GHSA-3prj-6hqw-cm82",
-        "https://github.com/FriendsOfPHP/security-advisories/blob/master/web-token/jwt-library/GHSA-3prj-6hqw-cm82.yaml",
-        "https://github.com/advisories/GHSA-3prj-6hqw-cm82"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-00cb6d8a0fa0ef07",
-      "title": "spomky-labs/otphp: Unbounded digits parameter in a provisioning URI triggers an uncaught DivisionByZeroError in OTP gene",
-      "description": "## Summary The `digits` parameter parsed from a provisioning URI is validated only with a lower bound (`$value > 0`) and has no upper bound (`src/OTP.php:353-357`). OTP generation computes `$code % (10 ** $this->getDigits())` (`src/OTP.php:283`). When `digits` is large enough that `10 ** digits` ove",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "spomky-labs/otphp",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-g7m4-839x-ch6v",
-        "https://github.com/Spomky-Labs/otphp/security/advisories/GHSA-g7m4-839x-ch6v",
-        "https://github.com/FriendsOfPHP/security-advisories/blob/master/spomky-labs/otphp/GHSA-g7m4-839x-ch6v.yaml",
-        "https://github.com/advisories/GHSA-g7m4-839x-ch6v"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -505,270 +326,6 @@
       "iocs": []
     },
     {
-      "id": "REDDIT_CYBER-ebcfc9fed2851a03",
-      "title": "Leak Hunt, a game that teaches you to spot leaked credentials",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1u9ddlk/leak_hunt_a_game_that_teaches_you_to_spot_leaked/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/iaonHsUaCOhHW4MzqmfGs0QtqIONMJiMkChkcsWgEag.jpeg?width=640&amp;amp;crop=smart&amp",
-      "cvss": 6.5,
-      "final_ps": 47,
-      "quality_score": 0.525,
-      "threat_level": "MEDIUM",
-      "type": "DATA_BREACH",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1u9ddlk/leak_hunt_a_game_that_teaches_you_to_spot_leaked/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "ioc_presence=7 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.525"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "sha1",
-          "value": "a1fa9905ffe8c286b5d3992bd00c45ba15202efe",
-          "confidence_score": 0.9,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1u9ddlk/leak_hunt_a_game_that_teaches_you_to_spot_le",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://external-preview.redd.it/iaonHsUaCOhHW4MzqmfGs0QtqIONMJiMkChkcsWgEag.jpeg?width=640&amp;amp;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/finncmdbar&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://hunt.infisical.com/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "hunt.infisical.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        }
-      ]
-    },
-    {
-      "id": "REDDIT_CYBER-a26967df3fde5bcb",
-      "title": "Attacking UPS Network Cards to Take Down Data Centers",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Team82 uncovered two vulnerabilities in &lt;a href=&quot;https://www.vertiv.com/en-us/products-catalog/monitoring-control-and-management/monitoring/liebert-is-unity-dp-communications-card/&quot;&gt;Vertiv’s Liebert IS-UNITY-DP network car",
-      "cvss": 6.5,
-      "final_ps": 47,
-      "quality_score": 0.525,
-      "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1u9givj/attacking_ups_network_cards_to_take_down_data/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "ioc_presence=7 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.525"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "url",
-          "value": "https://www.vertiv.com/en-us/products-catalog/monitoring-control-and-management/monitoring/liebert-i",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://claroty.com/team82/research/attacking-ups-network-cards-to-take-down-data-centers&quot;&gt;h",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/clarotyofficial&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1u9givj/attacking_ups_network_cards_to_take_down_dat",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.vertiv.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "claroty.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        }
-      ]
-    },
-    {
-      "id": "REDDIT_CYBER-381c88adf81ca9fb",
-      "title": "Update to my VirusTotal-CLI project",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Added a new IP resolution technique.&lt;/p&gt; &lt;p&gt;previous versions include:&lt;/p&gt; &lt;ol&gt; &lt;li&gt;file scan/report&lt;/li&gt; &lt;li&gt;url scan/report&lt;/li&gt; &lt;li&gt;domain scan/report&lt;/li&gt; &lt;li&gt;ip scan/r",
-      "cvss": 6.5,
-      "final_ps": 45,
-      "quality_score": 0.495,
-      "threat_level": "MEDIUM",
-      "type": "MALWARE_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 4,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1u9ewzz/update_to_my_virustotalcli_project/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "ioc_presence=4 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.495"
-        ],
-        "priority": [
-          "base_ps=45 (no boosts)"
-        ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "url",
-          "value": "https://github.com/Soumyo001/VirusTotal-CLI&quot;&gt;https://github.com/Soumyo001/VirusTotal-CLI&lt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/OneLittle6430&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1u9ewzz/update_to_my_virustotalcli_project/&quot;&gt",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-18",
-          "source_count": 1
-        }
-      ]
-    },
-    {
       "id": "CVE-2026-32202",
       "title": "CVE-2026-32202: Microsoft Windows Protection Mechanism Failure Vulnerability — CISA KEV Active Exploitation",
       "description": "",
@@ -812,6 +369,52 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_CYBER-6757d76e18da3c9b",
+      "title": "ssh-keysign-pwn: Linux LPE allows unprivileged users to read root-owned files. PoC with SSH server privkey",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 42,
+      "quality_score": 0.38,
+      "threat_level": "LOW",
+      "type": "ZERO_DAY",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-05-15",
+      "last_seen": "2026-05-15",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1tdpq0a/sshkeysignpwn_linux_lpe_allows_unprivileged_users/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+12 PoC_available",
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -1637,94 +1240,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "WIRED_SECURITY-ffd482a186da8abf",
-      "title": "How the Peter Thiel-Linked Dialog Club Secretly Ranks Its Members",
-      "description": "Leaked files show the invite-only network grades members by their money and fame, shaping who’s in, who’s out, and who pays.",
-      "cvss": 6.5,
-      "final_ps": 40,
-      "quality_score": 0.433,
-      "threat_level": "LOW",
-      "type": "DATA_BREACH",
-      "source": "wired_security",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "wired_security"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "wired_security",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.wired.com/story/how-peter-thiels-private-dialog-club-secretly-ranks-its-members/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.65 (wired_security)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.432"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "DARKREADING-eec0a4c620496ea3",
-      "title": "Novo Nordisk Breach Exposes Software Development Pipeline Risk",
-      "description": "A leaked GitHub token underscores what most organizations get wrong: Treating secrets management as a tooling problem rather than an identity problem.",
-      "cvss": 6.5,
-      "final_ps": 39,
-      "quality_score": 0.408,
-      "threat_level": "LOW",
-      "type": "DATA_BREACH",
-      "source": "darkreading",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "darkreading"
-      ],
-      "first_seen": "2026-06-18",
-      "last_seen": "2026-06-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "darkreading",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.darkreading.com/cyber-risk/novo-nordisk-breach-exposes-dev-pipeline-risk"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (darkreading)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.408"
-        ],
-        "priority": [
-          "base_ps=39 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -2751,6 +2266,96 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_NETSEC-ec7428a9c7b06e38",
+      "title": "Extortion group FulcrumSec leaks initial samples from 1.3TB Novo Nordisk data breach following failed $25M ransom demand",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 33,
+      "quality_score": 0.38,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "reddit_netsec",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_netsec"
+      ],
+      "first_seen": "2026-06-17",
+      "last_seen": "2026-06-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "reddit_netsec",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/netsec/comments/1u85kty/extortion_group_fulcrumsec_leaks_initial_samples/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_netsec)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_CYBER-ff45a34463251100",
+      "title": "Critrical cPanel flaw mass-exploited in &quot;Sorry&quot; ransomware attacks",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 33,
+      "quality_score": 0.38,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-05-03",
+      "last_seen": "2026-05-03",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1t2ytwa/critrical_cpanel_flaw_massexploited_in_sorry/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -4387,6 +3992,51 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_CYBER-51999c5b8f0b1329",
+      "title": "PeopleSoft 0-day affecting hundreds of organizations steals gigabytes of data",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 30,
+      "quality_score": 0.38,
+      "threat_level": "LOW",
+      "type": "ZERO_DAY",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-06-13",
+      "last_seen": "2026-06-13",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1u4trq7/peoplesoft_0day_affecting_hundreds_of/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
