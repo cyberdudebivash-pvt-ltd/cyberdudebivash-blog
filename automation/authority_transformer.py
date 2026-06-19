@@ -347,7 +347,11 @@ class AuthorityTransformer:
 
 {related_block}
 
+{self.monetization.inject_newsletter_cta()}
+
 {self.monetization.inject_services_block()}
+
+{self.monetization.inject_api_cta()}
 
 {self.monetization.inject_detection_packs_cta()}
 

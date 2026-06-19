@@ -100,14 +100,57 @@ class MonetizationInjector:
 """.strip()
 
     def inject_detection_packs_cta(self) -> str:
-        """Detection Engineering pack promotion."""
+        """Detection Engineering pack promotion with YARA/Sigma preview."""
         return f"""
 <div class="apex-cta-block">
   <h4>🎯 Detection Engineering Packs — Instant Download</h4>
   <p>2,400+ production-ready Sigma detection rules, YARA malware signatures, and IR playbooks — mapped to MITRE ATT&CK. Deploy to Splunk, Elastic, or Microsoft Sentinel in minutes. Updated weekly by CYBERDUDEBIVASH® analysts.</p>
+  <div style="background:#020810;border:1px solid #1e3a5f;border-radius:4px;padding:10px 14px;margin:10px 0;font-family:monospace;font-size:11px;color:#00d4ff;overflow-x:auto">
+    <div style="color:#64748b;font-size:10px;margin-bottom:4px"># SAMPLE — CYBERDUDEBIVASH® YARA Rule (SOC Pro tier)</div>
+    rule APT_Lateral_Movement_SMB &#123;<br>
+    &nbsp;&nbsp;meta: author = "CYBERDUDEBIVASH® SENTINEL APEX" severity = "CRITICAL"<br>
+    &nbsp;&nbsp;strings: $smb_pipe = "\\\\IPC$" $psexec = "PSEXESVC"<br>
+    &nbsp;&nbsp;condition: all of them<br>
+    &#125;
+  </div>
   <div class="apex-cta-grid">
     <a class="apex-btn apex-btn-primary" href="{self.config.sentinel_apex_url}/detections" target="_blank" rel="noopener">Browse Detection Packs →</a>
     <a class="apex-btn apex-btn-upgrade" href="{self.config.sentinel_apex_url}/upgrade" target="_blank" rel="noopener">▲ SOC Pro — $49/mo</a>
+    <a class="apex-btn apex-btn-secondary" href="mailto:{self.config.contact_email}">Get Free Sample Pack</a>
+  </div>
+</div>
+""".strip()
+
+    def inject_newsletter_cta(self) -> str:
+        """Email newsletter signup — highest-value repeat visitor capture."""
+        return f"""
+<div class="apex-cta-block" style="border-left-color:#a855f7;background:linear-gradient(135deg,#0d0a1e 0%,#0a0f1e 100%)">
+  <h4 style="color:#a855f7">📩 WEEKLY THREAT INTELLIGENCE BRIEFING</h4>
+  <p>Join 2,400+ security professionals receiving CYBERDUDEBIVASH® weekly intelligence briefings — curated CVE alerts, APT campaign updates, AI security advisories, detection rule drops, and SOC operational intelligence.</p>
+  <p style="font-size:12px;color:#64748b;margin:-6px 0 12px">Free tier · No spam · Unsubscribe anytime · Enterprise tier available</p>
+  <div class="apex-cta-grid">
+    <a class="apex-btn" style="background:#a855f7;color:#fff" href="{self.config.newsletter_signup_url}" target="_blank" rel="noopener">Subscribe Free →</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">Explore Platform</a>
+  </div>
+</div>
+""".strip()
+
+    def inject_api_cta(self) -> str:
+        """Dedicated Threat Intelligence API conversion block — free→paid funnel."""
+        return f"""
+<div class="apex-cta-block" style="border-left-color:#f59e0b;background:linear-gradient(135deg,#0d0a00 0%,#0d0f1e 100%)">
+  <h4 style="color:#f59e0b">⎋ THREAT INTELLIGENCE API — FREE TIER AVAILABLE</h4>
+  <p>Integrate live CVE data, KEV alerts, malware intelligence, and AI threat summaries directly into your security stack — Splunk, Elastic, Microsoft Sentinel, SOAR, or custom tooling. RESTful JSON API. No vendor lock-in.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin:8px 0 12px;font-size:11px">
+    <div style="padding:6px 8px;background:#0a0f1e;border:1px solid #f59e0b22;border-radius:4px;color:#94a3b8">✓ Live CVE feed</div>
+    <div style="padding:6px 8px;background:#0a0f1e;border:1px solid #f59e0b22;border-radius:4px;color:#94a3b8">✓ CISA KEV stream</div>
+    <div style="padding:6px 8px;background:#0a0f1e;border:1px solid #f59e0b22;border-radius:4px;color:#94a3b8">✓ AI summaries</div>
+    <div style="padding:6px 8px;background:#0a0f1e;border:1px solid #f59e0b22;border-radius:4px;color:#94a3b8">✓ APT tracking</div>
+  </div>
+  <div class="apex-cta-grid">
+    <a class="apex-btn" style="background:#f59e0b;color:#000" href="{self.config.api_url}" target="_blank" rel="noopener">⎋ Get Free API Key</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.api_url}/docs" target="_blank" rel="noopener">📄 View API Docs</a>
+    <a class="apex-btn apex-btn-upgrade" href="{self.config.sentinel_apex_url}/upgrade" target="_blank" rel="noopener">▲ Enterprise API</a>
   </div>
 </div>
 """.strip()

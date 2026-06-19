@@ -7,6 +7,7 @@ Tracks published state to prevent duplicate syndication.
 import hashlib
 import json
 import os
+import re
 import time
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone, timedelta
@@ -15,6 +16,21 @@ from typing import Optional
 from urllib.parse import urlparse
 
 import xml.etree.ElementTree as ET
+
+_CVE_RE = re.compile(r"CVE-\d{4}-\d{4,}", re.IGNORECASE)
+
+
+def _extract_cve_ids_from_text(text: str) -> list[str]:
+    """Return unique CVE IDs found in text, normalised to uppercase."""
+    found = _CVE_RE.findall(text)
+    seen: set[str] = set()
+    result = []
+    for cve in found:
+        upper = cve.upper()
+        if upper not in seen:
+            seen.add(upper)
+            result.append(upper)
+    return result
 
 import requests
 from bs4 import BeautifulSoup
@@ -72,7 +88,16 @@ class PublicationState:
     def is_published(self, content_hash: str) -> bool:
         return content_hash in self._state["posts"]
 
+    def is_cve_published(self, cve_id: str) -> bool:
+        """Return True if this CVE was already published from any source."""
+        cve_norm = cve_id.upper()
+        for entry in self._state.get("posts", {}).values():
+            if cve_norm in entry.get("cves", []):
+                return True
+        return False
+
     def mark_published(self, article: DiscoveredArticle, blogger_post_id: str, blogger_url: str) -> None:
+        cves = _extract_cve_ids_from_text(article.title + " " + article.summary)
         self._state["posts"][article.content_hash] = {
             "source_url": article.url,
             "source_title": article.title,
@@ -81,8 +106,11 @@ class PublicationState:
             "published_at": datetime.now(timezone.utc).isoformat(),
             "labels": article.labels,
             "content_hash": article.content_hash,
+            "cves": cves,
         }
         self._state["total_published"] = len(self._state["posts"])
+        # Remove from retry queue on success
+        self._remove_from_retry_queue(article.content_hash)
         self.save()
 
     def record_failure(self, url: str, error: str) -> None:
@@ -91,9 +119,47 @@ class PublicationState:
             "error": error,
             "timestamp": datetime.now(timezone.utc).isoformat(),
         })
-        # Keep only last 100 failures
         self._state["failures"] = self._state["failures"][-100:]
         self.save()
+
+    # ── Retry Queue ──────────────────────────────────────────────────────────
+
+    def add_to_retry_queue(self, article: DiscoveredArticle, error: str) -> None:
+        """Queue a failed article for retry on the next pipeline run (max 3 attempts)."""
+        queue: list[dict] = self._state.setdefault("retry_queue", [])
+        # Remove any existing entry for the same article to reset attempt count
+        queue = [q for q in queue if q.get("content_hash") != article.content_hash]
+        existing_attempts = next(
+            (q.get("attempts", 1) for q in self._state.get("retry_queue", [])
+             if q.get("content_hash") == article.content_hash),
+            0,
+        )
+        queue.append({
+            "content_hash": article.content_hash,
+            "url": article.url,
+            "title": article.title,
+            "summary": article.summary,
+            "published_at": article.published_at,
+            "labels": article.labels,
+            "source": article.source,
+            "full_content": article.full_content,
+            "last_error": error,
+            "attempts": existing_attempts + 1,
+            "added_at": datetime.now(timezone.utc).isoformat(),
+        })
+        self._state["retry_queue"] = queue[-20:]  # Keep last 20 items max
+        self.save()
+
+    def get_retry_queue(self) -> list[dict]:
+        """Return all queued retry items (up to 3 past attempts)."""
+        return [
+            item for item in self._state.get("retry_queue", [])
+            if item.get("attempts", 1) <= 3
+        ]
+
+    def _remove_from_retry_queue(self, content_hash: str) -> None:
+        queue = self._state.get("retry_queue", [])
+        self._state["retry_queue"] = [q for q in queue if q.get("content_hash") != content_hash]
 
     @property
     def total_published(self) -> int:
@@ -244,12 +310,29 @@ class ContentDiscoveryEngine:
         all_new.sort(key=lambda a: a.published_at, reverse=True)
         all_new.sort(key=lambda a: _SOURCE_PRIORITY.get(a.source, 9))
 
-        result = all_new[: self.config.max_posts_per_run]
+        # Cross-source CVE dedup: if same CVE ID appears in CISA KEV + NVD, keep highest-priority only.
+        # CISA KEV (priority 0) always wins over NVD (priority 1) for the same CVE.
+        seen_cves: set[str] = set()
+        deduped: list[DiscoveredArticle] = []
+        for article in all_new:
+            article_cves = _extract_cve_ids_from_text(article.title + " " + article.summary)
+            # Check if any CVE in this article was already seen in a higher-priority source
+            if article_cves and any(c in seen_cves for c in article_cves):
+                logger.info(
+                    "Cross-source CVE duplicate skipped",
+                    extra={"title": article.title[:60], "cves": article_cves},
+                )
+                continue
+            deduped.append(article)
+            seen_cves.update(article_cves)
+
+        result = deduped[: self.config.max_posts_per_run]
 
         logger.info(
             "Discovery complete",
             extra={
                 "total_new": len(all_new),
+                "after_cve_dedup": len(deduped),
                 "to_publish": len(result),
                 "sources": list({a.source for a in all_new}),
             },
