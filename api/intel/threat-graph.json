@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-21T17:31:24.099Z",
+  "generated": "2026-06-21T17:47:00.159Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3219,
+    "total_nodes": 3221,
     "actors": 8,
     "cves": 717,
     "campaigns": 305,
     "malware": 0,
-    "iocs": 326,
-    "edges": 1150
+    "iocs": 327,
+    "edges": 1152
   },
   "nodes": {
     "actor:lockbit": {
@@ -61293,6 +61293,46 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_NETSEC-004ab9219683b02a": {
+      "id": "REDDIT_NETSEC-004ab9219683b02a",
+      "type": "Intel",
+      "name": "Scanning malicious websites with 'infinite' number of VPN tunnels (Part 1)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-21",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:discounttimu.substack.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:discounttimu.substack.com": {
+      "id": "ioc:domain:discounttimu.substack.com",
+      "type": "IOC",
+      "name": "discounttimu.substack.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-21"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -71679,6 +71719,24 @@
       "id": "REDDIT_CYBER-d74abfd1a37bb740→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_CYBER-d74abfd1a37bb740",
       "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-21",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-004ab9219683b02a→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-004ab9219683b02a",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-21",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-004ab9219683b02a→linked_to→ioc:domain:discounttimu.substack.com",
+      "source": "REDDIT_NETSEC-004ab9219683b02a",
+      "target": "ioc:domain:discounttimu.substack.com",
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-06-21",
