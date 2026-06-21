@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-21T11:01:36.921Z",
+  "generated": "2026-06-21T11:31:44.309Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3209,
+    "total_nodes": 3212,
     "actors": 8,
     "cves": 717,
     "campaigns": 305,
     "malware": 0,
-    "iocs": 324,
-    "edges": 1141
+    "iocs": 325,
+    "edges": 1143
   },
   "nodes": {
     "actor:lockbit": {
@@ -61075,6 +61075,65 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-e0ab380a9ef3f085": {
+      "id": "REDDIT_CYBER-e0ab380a9ef3f085",
+      "type": "Intel",
+      "name": "Building My Malware Lab Part 4!",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-21",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:bea8e199d4c13a51c3059d221a2147b7ca919f8b",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:bea8e199d4c13a51c3059d221a2147b7ca919f8b": {
+      "id": "ioc:sha1:bea8e199d4c13a51c3059d221a2147b7ca919f8b",
+      "type": "IOC",
+      "name": "bea8e199d4c13a51c3059d221a2147b7ca919f8b",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-21"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-805c1bd6a20f74e2": {
+      "id": "REDDIT_CYBER-805c1bd6a20f74e2",
+      "type": "Intel",
+      "name": "Microsegmentation, what is the real difficulties",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-21",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -71382,6 +71441,24 @@
       "target": "REDDIT_CYBER-a3e8fd24f137b527",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-21",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-e0ab380a9ef3f085→linked_to→ioc:sha1:bea8e199d4c13a51c3059d221a2147b7ca919f8b",
+      "source": "REDDIT_CYBER-e0ab380a9ef3f085",
+      "target": "ioc:sha1:bea8e199d4c13a51c3059d221a2147b7ca919f8b",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-06-21",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-805c1bd6a20f74e2→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-805c1bd6a20f74e2",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-21",
       "sources": []
     }
