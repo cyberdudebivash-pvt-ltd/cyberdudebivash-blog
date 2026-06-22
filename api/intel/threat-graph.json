@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-22T15:31:28.669Z",
+  "generated": "2026-06-22T16:01:41.582Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3270,
+    "total_nodes": 3272,
     "actors": 8,
     "cves": 717,
-    "campaigns": 310,
+    "campaigns": 311,
     "malware": 0,
     "iocs": 332,
-    "edges": 1190
+    "edges": 1191
   },
   "nodes": {
     "actor:lockbit": {
@@ -62380,6 +62380,44 @@
         "first_seen": "2026-06-22"
       },
       "connections": []
+    },
+    "MICROSOFT_SECURITY-1bc3d8591cf59299": {
+      "id": "MICROSOFT_SECURITY-1bc3d8591cf59299",
+      "type": "Intel",
+      "name": "One intrusion, two cyberattackers: Uncovering parallel threat activity",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 60,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "microsoft_security",
+        "product": "Threat Intelligence",
+        "published": "2026-06-22",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "campaign:cluster-d76dd392": {
+      "id": "campaign:cluster-d76dd392",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-06-22",
+        "last_seen": "2026-06-22",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "MICROSOFT_SECURITY-1bc3d8591cf59299",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -73128,6 +73166,15 @@
       "target": "ioc:sha1:eedbb8e9d864617216ffcdfe59c30e2f5c860768",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-d76dd392→includes→MICROSOFT_SECURITY-1bc3d8591cf59299",
+      "source": "campaign:cluster-d76dd392",
+      "target": "MICROSOFT_SECURITY-1bc3d8591cf59299",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-22",
       "sources": []
     }
