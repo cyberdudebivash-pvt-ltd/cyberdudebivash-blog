@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-22T06:01:38.424Z",
+  "generated": "2026-06-22T06:31:26.787Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3237,
+    "total_nodes": 3242,
     "actors": 8,
     "cves": 717,
-    "campaigns": 306,
+    "campaigns": 307,
     "malware": 0,
-    "iocs": 329,
-    "edges": 1164
+    "iocs": 330,
+    "edges": 1169
   },
   "nodes": {
     "actor:lockbit": {
@@ -45166,7 +45166,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-10"
+        "first_seen": "2026-06-22"
       },
       "connections": []
     },
@@ -61674,6 +61674,113 @@
         "type": "DATA_BREACH"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-2689bf8414773f50": {
+      "id": "REDDIT_NETSEC-2689bf8414773f50",
+      "type": "Intel",
+      "name": "Exploiting Auth0 Defaults in XSS Attacks - elttam",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-22",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.elttam.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "THEHACKERNEWS-9e82a399afc3d879": {
+      "id": "THEHACKERNEWS-9e82a399afc3d879",
+      "type": "Intel",
+      "name": "INTERPOL Warns Phishing, Ransomware, and AI Scams Are Rising Across Asia-Pacific",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-06-22",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-e31ed014880948b2": {
+      "id": "REDDIT_NETSEC-e31ed014880948b2",
+      "type": "Intel",
+      "name": "[News] RCE found in Meccha Chameleon",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-22",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:khaelkugler.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:khaelkugler.com": {
+      "id": "ioc:domain:khaelkugler.com",
+      "type": "IOC",
+      "name": "khaelkugler.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-22"
+      },
+      "connections": []
+    },
+    "campaign:cluster-f517b891": {
+      "id": "campaign:cluster-f517b891",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-06-22",
+        "last_seen": "2026-06-22",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 5 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_NETSEC-2689bf8414773f50",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -72188,6 +72295,51 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-2689bf8414773f50→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-2689bf8414773f50",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-2689bf8414773f50→linked_to→ioc:domain:www.elttam.com",
+      "source": "REDDIT_NETSEC-2689bf8414773f50",
+      "target": "ioc:domain:www.elttam.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-e31ed014880948b2→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-e31ed014880948b2",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-e31ed014880948b2→linked_to→ioc:domain:khaelkugler.com",
+      "source": "REDDIT_NETSEC-e31ed014880948b2",
+      "target": "ioc:domain:khaelkugler.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-f517b891→includes→REDDIT_NETSEC-2689bf8414773f50",
+      "source": "campaign:cluster-f517b891",
+      "target": "REDDIT_NETSEC-2689bf8414773f50",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-22",
       "sources": []
     }
