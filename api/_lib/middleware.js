@@ -10,11 +10,12 @@ const sec    = require('./security');
 
 const RATE_LIMITS = {
   free:       100,
-  pro:        5000,
+  starter:    5000,
+  pro:        25000,
   enterprise: 999999,
 };
 
-const TIERS = ['free', 'pro', 'enterprise'];
+const TIERS = ['free', 'starter', 'pro', 'enterprise'];
 
 function today() {
   return new Date().toISOString().slice(0, 10).replace(/-/g, '');

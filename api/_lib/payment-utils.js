@@ -9,14 +9,24 @@ const redis  = require('./redis');
 
 /* ─── PLAN CATALOGUE ─────────────────────────────────────────── */
 const PLANS = {
+  starter: {
+    tier:        'starter',
+    label:       'API Starter',
+    amount:      2499,
+    currency:    'INR',
+    period:      'month',
+    rateLimit:   5000,
+    description: 'Starter tier — 5,000 API calls/day, weekly intel digest, single API key',
+    upiNote:     'Transfer ₹2,499 to the UPI ID below. Include your intent ID in remarks.',
+  },
   pro: {
     tier:        'pro',
     label:       'SOC Pro',
     amount:      1499,
     currency:    'INR',
     period:      'month',
-    rateLimit:   5000,
-    description: 'Pro tier — 5,000 API calls/day, IOC access, detection rules, full intel reports',
+    rateLimit:   25000,
+    description: 'Pro tier — 25,000 API calls/day, IOC access, detection rules, full intel reports',
     upiNote:     'Transfer ₹1,499 to the UPI ID below. Include your intent ID in remarks.',
   },
   enterprise: {
