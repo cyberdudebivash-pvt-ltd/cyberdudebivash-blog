@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-22T20:31:43.410Z",
+  "generated": "2026-06-22T21:01:32.932Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -4258,6 +4258,54 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-44795",
+      "title": "Spinnaker has uon-safe yaml deserialization, allowing RCE when using specific types",
+      "description": "### Impact\nThere's an unsafe YAML processing vulnerability that bypasses safe deserialization. This impacts users when when performing:\n* CloudFormation deployments\n* CloudFoundry Baking The usage of a non-safe constructor use allows arbitrary loading of Java classes leading to RCE. ### Patches 2025",
+      "cvss": 8.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-22",
+      "last_seen": "2026-06-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "io.spinnaker.rosco:rosco-core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44795",
+        "CVE-2026-44795"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-c8q4-9h32-2ww8",
+        "https://github.com/spinnaker/spinnaker/security/advisories/GHSA-c8q4-9h32-2ww8",
+        "https://github.com/advisories/GHSA-c8q4-9h32-2ww8"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-41573",
       "title": "OpenAM has LDAP Injection via `_queryId` Parameter",
       "description": "OpenAM (Open Identity Platform) is an open-source IAM platform providing SSO, OAuth2, SAML, and OpenID Connect capabilities. The CREST REST API layer exposes user query endpoints under `/json/{realm}/users`. In `IdentityResourceV1.queryCollection()`, the HTTP query parameter `_queryId` is passed to ",
@@ -4338,55 +4386,6 @@
         "https://github.com/Comfy-Org/ComfyUI-Manager/security/advisories/GHSA-95pq-hr8p-f5g7",
         "https://nvd.nist.gov/vuln/detail/CVE-2025-67303",
         "https://github.com/Comfy-Org/ComfyUI-Manager/pull/2338/commits/e44c5cef58fb4973670b86433b9d24d077b44a26"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-33692",
-      "title": "AVideo Vulnerable to Unauthenticated .env File Exposure via Official Docker Compose Configuration",
-      "description": "## Vulnerability Details **CWE**: CWE-538 - Insertion of Sensitive Information into Externally-Accessible File or Directory The official `docker-compose.yml` (line 61) mounts the entire project root directory as the Apache document root: ```yaml\nvolumes: - \"./:/var/www/html/AVideo\"\n``` This causes t",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-22",
-      "last_seen": "2026-06-22",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "wwbn/avideo",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-33692",
-        "CVE-2026-33692"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wf69-r4mx-43rr",
-        "https://github.com/WWBN/AVideo/security/advisories/GHSA-wf69-r4mx-43rr",
-        "https://github.com/WWBN/AVideo/commit/7f418de1a95ab87bb8c8c3eb3702d71c351e098d",
-        "https://github.com/advisories/GHSA-wf69-r4mx-43rr"
       ],
       "explanation": {
         "quality": [
