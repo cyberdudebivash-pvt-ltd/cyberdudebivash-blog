@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-22T10:01:43.085Z",
+  "generated": "2026-06-22T10:31:47.499Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3255,
+    "total_nodes": 3259,
     "actors": 8,
     "cves": 717,
-    "campaigns": 309,
+    "campaigns": 310,
     "malware": 0,
     "iocs": 331,
-    "edges": 1181
+    "edges": 1186
   },
   "nodes": {
     "actor:lockbit": {
@@ -847,6 +847,16 @@
         {
           "target": "SECURITYWEEK-c4db17368292a6d3",
           "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "SECURITYWEEK-434528b8408f8c09",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "campaign:cluster-b7f8f36e",
+          "relationship": "executes",
           "confidence": 0.85
         }
       ],
@@ -46679,7 +46689,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-16"
+        "first_seen": "2026-06-22"
       },
       "connections": []
     },
@@ -62070,6 +62080,91 @@
           "confidence": 1
         }
       ]
+    },
+    "SECURITYWEEK-434528b8408f8c09": {
+      "id": "SECURITYWEEK-434528b8408f8c09",
+      "type": "Intel",
+      "name": "What the Latest ShinyHunters Breaches Reveal About Modern Cyberattacks",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-22",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-8d429e59a9321288": {
+      "id": "SECURITYWEEK-8d429e59a9321288",
+      "type": "Intel",
+      "name": "New Exploit Bypasses Apple&#8217;s Boot Defenses, Affects Millions of iPhones",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-22",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-c1e8d2c09374adbc": {
+      "id": "REDDIT_CYBER-c1e8d2c09374adbc",
+      "type": "Intel",
+      "name": "Gizmodo readers hit with ClickFix malware prompts after account compromise",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-22",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.theregister.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-b7f8f36e": {
+      "id": "campaign:cluster-b7f8f36e",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-22",
+        "last_seen": "2026-06-22",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-434528b8408f8c09",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -72735,6 +72830,51 @@
       "id": "campaign:cluster-d81ce2ae→includes→REDDIT_CYBER-020d4ce65af719a1",
       "source": "campaign:cluster-d81ce2ae",
       "target": "REDDIT_CYBER-020d4ce65af719a1",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→SECURITYWEEK-434528b8408f8c09",
+      "source": "actor:shinyhunters",
+      "target": "SECURITYWEEK-434528b8408f8c09",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-c1e8d2c09374adbc→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-c1e8d2c09374adbc",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-c1e8d2c09374adbc→linked_to→ioc:domain:www.theregister.com",
+      "source": "REDDIT_CYBER-c1e8d2c09374adbc",
+      "target": "ioc:domain:www.theregister.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→executes→campaign:cluster-b7f8f36e",
+      "source": "actor:shinyhunters",
+      "target": "campaign:cluster-b7f8f36e",
+      "relationship": "executes",
+      "confidence": 0.85,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-b7f8f36e→includes→SECURITYWEEK-434528b8408f8c09",
+      "source": "campaign:cluster-b7f8f36e",
+      "target": "SECURITYWEEK-434528b8408f8c09",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-06-22",
