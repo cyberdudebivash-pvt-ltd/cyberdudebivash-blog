@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-22T16:31:47.271Z",
+  "generated": "2026-06-22T17:01:49.845Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1092,
+  "total_published": 1093,
   "s2n_stats": {
-    "passed": 78,
-    "suppressed": 13,
+    "passed": 79,
+    "suppressed": 11,
     "avg_qs": 0.555
   },
   "items": [
@@ -4344,47 +4344,53 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
-      "id": "FULLDIS-da753706bb95f202",
-      "title": "APPLE-SA-06-16-2026-1 Beats Firmware Update 1B211",
-      "description": "&lt;p&gt;Posted by Apple Product Security via Fulldisclosure on Jun 20&lt;/p&gt;APPLE-SA-06-16-2026-1 Beats Firmware Update 1B211&lt;br&gt;\n&lt;br&gt;\nBeats Firmware Update 1B211 addresses the following issues.&lt;br&gt;\nInformation about the security content is also available at&lt;br&gt;\n&lt;a rel",
-      "cvss": 6.5,
-      "final_ps": 23,
-      "quality_score": 0.41,
+      "id": "CVE-2026-21887",
+      "title": "OpenCTI has Semi-Blind SSRF via Unvalidated External URL in Data Ingestion Feature",
+      "description": "### Summary\nThe OpenCTI platform’s data ingestion feature accepts user-supplied URLs without validation and uses the Axios HTTP client with its default configuration (allowAbsoluteUrls: true). This allows attackers to craft requests to arbitrary endpoints, including internal services, because Axios ",
+      "cvss": 7.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
       "threat_level": "MEDIUM",
-      "type": "ZERO_DAY",
-      "source": "fulldisclosure",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
-        "fulldisclosure"
+        "github_advisories"
       ],
-      "first_seen": "2026-06-21",
-      "last_seen": "2026-06-21",
+      "first_seen": "2026-06-22",
+      "last_seen": "2026-06-22",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "SecLists",
-      "product": "Multiple Targets",
+      "vendor": "pip",
+      "product": "pycti",
       "due_date": null,
-      "cves": [],
-      "ioc_count": 3,
+      "cves": [
+        "CVE-2026-21887",
+        "CVE-2026-21887"
+      ],
+      "ioc_count": 0,
       "refs": [
-        "https://seclists.org/fulldisclosure/2026/Jun/18"
+        "https://github.com/advisories/GHSA-ffm6-vvph-g5f5",
+        "https://github.com/OpenCTI-Platform/opencti/security/advisories/GHSA-ffm6-vvph-g5f5",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-21887",
+        "https://github.com/pypa/advisory-database/tree/main/vulns/pycti/PYSEC-2026-118.yaml"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.78 (fulldisclosure)",
-          "data_confidence=0.55",
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.410"
+          "QS=0.523"
         ],
         "priority": [
-          "+7 zero_day"
+          "base_ps=21 (no boosts)"
         ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "suppression": null,
         "merge": null
       },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
+      "suppressed": false,
+      "suppression_reason": null
     }
   ]
 }
