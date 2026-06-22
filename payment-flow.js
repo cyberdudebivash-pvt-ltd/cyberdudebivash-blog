@@ -17,11 +17,13 @@
   const SESSION_KEY = 'apex_pf_state';
 
   const PLANS = {
+    starter:    { name: 'API Starter', price: '₹2,499', amount: 2499, currency: 'INR' },
     pro:        { name: 'SOC Pro',    price: '₹1,499', amount: 1499, currency: 'INR' },
     enterprise: { name: 'Enterprise', price: '₹4,999', amount: 4999, currency: 'INR' },
   };
   const FEATURES = {
-    pro:        ['50 live threat items per request', 'Complete IOC feed access', 'SIGMA + Yara detection rules', 'Unlimited full-text search', '5,000 API calls/day'],
+    starter:    ['5,000 API calls/day', 'Weekly threat intel digest', 'Full-text search (unrestricted)', 'Single API key'],
+    pro:        ['50 live threat items per request', 'Complete IOC feed access', 'SIGMA + Yara detection rules', 'Unlimited full-text search', '25,000 API calls/day'],
     enterprise: ['Unlimited threat items', 'Unlimited API calls/day', 'STIX 2.1 bundle export', 'Bulk CSV/JSON export', 'Pre-disclosure CVE reports', 'All Pro features included'],
   };
 
