@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-22T17:01:49.817Z",
+  "generated": "2026-06-22T17:31:30.416Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3274,
+    "total_nodes": 3277,
     "actors": 8,
-    "cves": 718,
+    "cves": 719,
     "campaigns": 311,
     "malware": 0,
     "iocs": 332,
-    "edges": 1191
+    "edges": 1192
   },
   "nodes": {
     "actor:lockbit": {
@@ -62454,6 +62454,66 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-25119": {
+      "id": "CVE-2026-25119",
+      "type": "CVE",
+      "name": "Gogs has an Authentication Bypass via Unvalidated Reverse Proxy Headers",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "gogs.io/gogs",
+        "published": "2026-06-22",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-d644e7c721349cd4": {
+      "id": "REDDIT_CYBER-d644e7c721349cd4",
+      "type": "Intel",
+      "name": "OSCP vs OSDA",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-22",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-7ebad193cd50491c": {
+      "id": "BLEEPINGCOMPUTER-7ebad193cd50491c",
+      "type": "Intel",
+      "name": "Microsoft fixes AutoGen Studio flaw that enabled code execution",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-22",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -73211,6 +73271,15 @@
       "target": "MICROSOFT_SECURITY-1bc3d8591cf59299",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-22",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-d644e7c721349cd4→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-d644e7c721349cd4",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-22",
       "sources": []
     }
