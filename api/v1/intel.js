@@ -126,7 +126,7 @@ module.exports = async (req, res) => {
 
       /* ── GET ?action=iocs ──────────────────────────────────── */
       case 'iocs': {
-        if (user.tier === 'free') {
+        if (user.tier !== 'pro' && user.tier !== 'enterprise') {
           return apiError(res, 403, 'TIER_RESTRICTED',
             'IOC feed requires Pro or Enterprise plan. Upgrade at https://blog.cyberdudebivash.in/pricing.html',
             { 'X-Upgrade-URL': 'https://blog.cyberdudebivash.in/pricing.html' });

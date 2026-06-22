@@ -9,8 +9,11 @@ const crypto = require('crypto');
 
 const STRIPE_KEY       = process.env.STRIPE_SECRET_KEY       || '';
 const WEBHOOK_SECRET   = process.env.STRIPE_WEBHOOK_SECRET   || '';
+const PRICE_STARTER    = process.env.STRIPE_PRICE_STARTER    || '';
 const PRICE_PRO        = process.env.STRIPE_PRICE_PRO        || '';
 const PRICE_ENTERPRISE = process.env.STRIPE_PRICE_ENTERPRISE || '';
+
+const PRICE_BY_PLAN = { starter: PRICE_STARTER, pro: PRICE_PRO, enterprise: PRICE_ENTERPRISE };
 
 const STRIPE_BASE = 'https://api.stripe.com/v1';
 
@@ -71,7 +74,7 @@ async function createSubscription(customerId, priceId, trialDays = 0) {
 
 // Create checkout session (hosted payment page)
 async function createCheckoutSession(email, plan, successUrl, cancelUrl) {
-  const priceId = plan === 'enterprise' ? PRICE_ENTERPRISE : PRICE_PRO;
+  const priceId = PRICE_BY_PLAN[plan];
   if (!priceId) throw new Error(`Price ID for plan '${plan}' not configured`);
   return stripeRequest('POST', '/checkout/sessions', {
     mode:                        'subscription',
@@ -80,7 +83,7 @@ async function createCheckoutSession(email, plan, successUrl, cancelUrl) {
     'line_items[0][quantity]':   '1',
     success_url:                 successUrl,
     cancel_url:                  cancelUrl,
-    'subscription_data[trial_period_days]': plan === 'pro' ? '7' : '0',
+    'subscription_data[trial_period_days]': (plan === 'pro' || plan === 'starter') ? '7' : '0',
     'metadata[plan]':            plan,
   });
 }
@@ -101,6 +104,7 @@ function planToTier(plan) {
   const p = String(plan).toLowerCase();
   if (p.includes('enterprise')) return 'enterprise';
   if (p.includes('pro'))        return 'pro';
+  if (p.includes('starter'))    return 'starter';
   return 'free';
 }
 
@@ -112,6 +116,7 @@ module.exports = {
   cancelSubscription,
   getCustomerSubscriptions,
   planToTier,
+  PRICE_STARTER,
   PRICE_PRO,
   PRICE_ENTERPRISE,
 };

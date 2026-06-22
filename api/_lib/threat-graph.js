@@ -616,7 +616,7 @@ function getGraphForTier(graph, tier) {
   const allNodes = Object.values(graph.nodes || {});
   const limit    = tier === 'enterprise' ? 999 : tier === 'pro' ? 300 : 60;
 
-  const filtered = tier === 'free'
+  const filtered = (tier === 'free' || tier === 'starter')
     ? allNodes.filter(n => n.type === 'ThreatActor' ||
         (n.type === 'CVE' && (n.attributes?.priority_score || 0) >= 70) ||
         n.type === 'Campaign')

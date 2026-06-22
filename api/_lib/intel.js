@@ -213,9 +213,9 @@ function getIntel(type, tier, query = {}) {
     },
     tier_info: {
       tier,
-      full_access:       tier !== 'free',
-      ioc_access:        tier !== 'free',
-      detection_rules:   tier !== 'free',
+      full_access:       tier === 'pro' || tier === 'enterprise',
+      ioc_access:        tier === 'pro' || tier === 'enterprise',
+      detection_rules:   tier === 'pro' || tier === 'enterprise',
       realtime_feed:     tier === 'enterprise',
       upgrade_url:       tier !== 'enterprise' ? 'https://blog.cyberdudebivash.in/pricing.html' : null,
     },
@@ -300,7 +300,7 @@ function getGraph(tier) {
       return { nodes: [], edges: [], stats: {}, error: 'Graph not yet built — run fetch-live-intel.js' };
     }
     const result = getGraphForTier(graph, tier);
-    if (tier === 'free') {
+    if (tier === 'free' || tier === 'starter') {
       result._upgrade = 'Full graph (IOC nodes, malware nodes, all edges) available on Pro/Enterprise — https://blog.cyberdudebivash.in/pricing.html';
     }
     return result;
@@ -339,7 +339,7 @@ function getCampaigns(tier, query = {}) {
 
   // Tier gating on shared_iocs, related_intel depth, and reasoning (Phase 7)
   const tierPaged = paged.map(campaign => {
-    if (tier === 'free') {
+    if (tier === 'free' || tier === 'starter') {
       const { shared_iocs, related_intel, reasoning, clustering_model, ...safe } = campaign;
       return {
         ...safe,
@@ -359,7 +359,7 @@ function getCampaigns(tier, query = {}) {
     total,
     pagination: { page, limit, total, total_pages: Math.ceil(total / limit), has_next: offset + limit < total },
     generated: data.generated,
-    tier_info: { tier, full_ioc_access: tier !== 'free' },
+    tier_info: { tier, full_ioc_access: tier === 'pro' || tier === 'enterprise' },
   };
 }
 
@@ -376,7 +376,7 @@ function getCampaignDetail(campaignId, tier) {
 
   if (!campaign) return { found: false, campaign: null };
 
-  if (tier === 'free') {
+  if (tier === 'free' || tier === 'starter') {
     const { shared_iocs, ...safe } = campaign;
     return { found: true, campaign: { ...safe, shared_iocs: [], _upgrade: 'IOC list requires Pro plan' } };
   }
@@ -391,7 +391,7 @@ function getTopActorsAPI(tier, limit = 10) {
 
     // Tier gating on actor detail
     const tiered = actors.map(actor => {
-      if (tier === 'free') {
+      if (tier === 'free' || tier === 'starter') {
         return {
           id:               actor.id,
           name:             actor.name,

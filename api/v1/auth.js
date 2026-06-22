@@ -93,8 +93,8 @@ async function handleRegister(req, res) {
   if (!sec.validateEmail(email)) {
     return apiError(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
   }
-  if (!['free', 'pro', 'enterprise'].includes(plan)) {
-    return apiError(res, 400, 'INVALID_PLAN', 'plan must be: free, pro, or enterprise');
+  if (!['free', 'starter', 'pro', 'enterprise'].includes(plan)) {
+    return apiError(res, 400, 'INVALID_PLAN', 'plan must be: free, starter, pro, or enterprise');
   }
   if (plan !== 'free') {
     return apiError(res, 402, 'PAYMENT_REQUIRED',
@@ -122,7 +122,7 @@ async function handleRegister(req, res) {
       const pendingRaw = await redis.get(`user:pending:tier:${safeEmail}`);
       if (pendingRaw) {
         const pending = JSON.parse(pendingRaw);
-        if (pending && pending.tier && ['pro', 'enterprise'].includes(pending.tier)) {
+        if (pending && pending.tier && ['starter', 'pro', 'enterprise'].includes(pending.tier)) {
           activeTier      = pending.tier;
           tierActivatedBy = pending.transactionId || 'manual_payment';
           await redis.del(`user:pending:tier:${safeEmail}`).catch(() => {});
@@ -232,7 +232,8 @@ async function handleMe(req, res) {
       },
       tier_features: {
         free:       { intel_items: 10, ioc_access: false, detection_rules: false, description_full: false, rate_limit: 100 },
-        pro:        { intel_items: 50, ioc_access: true,  detection_rules: true,  description_full: true,  rate_limit: 5000 },
+        starter:    { intel_items: 10, ioc_access: false, detection_rules: false, description_full: false, rate_limit: 5000 },
+        pro:        { intel_items: 50, ioc_access: true,  detection_rules: true,  description_full: true,  rate_limit: 25000 },
         enterprise: { intel_items: 'unlimited', ioc_access: true, detection_rules: true, description_full: true, rate_limit: 'unlimited', stix_export: true, bulk_export: true },
       }[user.tier] || {},
       upgrade_url: user.tier !== 'enterprise' ? 'https://blog.cyberdudebivash.in/pricing.html' : null,

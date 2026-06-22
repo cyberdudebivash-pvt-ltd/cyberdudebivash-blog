@@ -391,8 +391,8 @@ async function handleSubscribe(req, res) {
   } catch (_) {}
 
   const plan = String(body.plan || 'pro').toLowerCase();
-  if (!['pro', 'enterprise'].includes(plan)) {
-    return fail(res, 400, 'INVALID_PLAN', 'plan must be "pro" or "enterprise"');
+  if (!['starter', 'pro', 'enterprise'].includes(plan)) {
+    return fail(res, 400, 'INVALID_PLAN', 'plan must be "starter", "pro", or "enterprise"');
   }
   if (user.tier === plan || user.tier === 'enterprise') {
     return fail(res, 400, 'ALREADY_ON_PLAN', `You are already on the ${user.tier} plan.`);
@@ -414,7 +414,7 @@ async function handleSubscribe(req, res) {
       checkout_url: session.url,
       session_id:   session.id,
       plan,
-      price: plan === 'pro' ? '₹1,499/month' : 'Custom pricing',
+      price: { starter: '₹2,499/month', pro: '₹1,499/month', enterprise: 'Custom pricing' }[plan],
     });
 
   } catch (e) {

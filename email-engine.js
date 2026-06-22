@@ -11,7 +11,10 @@
   // § 1. CONFIGURATION
   // ─────────────────────────────────────────────
   var CONFIG = {
-    // Choose provider: 'mailchimp' | 'convertkit' | 'formsubmit'
+    // Choose provider: 'mailchimp' | 'convertkit' | 'resend' | 'formsubmit'
+    // 'resend' is the production-grade ESP — set RESEND_API_KEY + RESEND_AUDIENCE_ID
+    // in Vercel, then flip this to 'resend'. The API key never touches the browser;
+    // this just calls our own /api/v1/newsletter endpoint, which holds the secret.
     provider: 'formsubmit',
 
     mailchimp: {
@@ -151,6 +154,30 @@
   };
 
   // ─────────────────────────────────────────────
+  // § 4b. RESEND SUBMISSION (server-side secret, via first-party API)
+  // ─────────────────────────────────────────────
+  var RESEND = {
+    submit: function(email, name, segment, source, cb) {
+      fetch('/api/v1/newsletter', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email:   email,
+          name:    name || '',
+          segment: segment || 'general',
+          source:  source || 'website'
+        })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var subscribed = !!(data && data.success && data.subscription && data.subscription.esp_status === 'subscribed');
+        if (cb) cb(subscribed, data);
+      })
+      .catch(function() { if (cb) cb(false, 'network_error'); });
+    }
+  };
+
+  // ─────────────────────────────────────────────
   // § 5. FORMSUBMIT FALLBACK
   // ─────────────────────────────────────────────
   var FORMSUBMIT = {
@@ -183,6 +210,9 @@
         break;
       case 'convertkit':
         CONVERTKIT.submit(opts.email, opts.name, cb);
+        break;
+      case 'resend':
+        RESEND.submit(opts.email, opts.name, opts.segment, opts.source, cb);
         break;
       default:
         // formsubmit — form must have correct action set

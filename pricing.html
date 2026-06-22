@@ -196,6 +196,10 @@
       color: #000;
     }
     .cta-enterprise:hover { opacity: 0.9; transform: scale(1.02); }
+    .cta-starter {
+      background: #0099ff; color: #fff;
+    }
+    .cta-starter:hover { background: #0088e0; transform: scale(1.02); }
     .plan-divider { border: none; border-top: 1px solid var(--border); margin: 0 0 1.25rem; }
     .features-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
     .features-list li {
@@ -651,6 +655,33 @@
       </ul>
     </div>
 
+    <!-- Starter -->
+    <div class="plan-card">
+      <div class="plan-name">API Starter</div>
+      <div class="plan-price-row">
+        <span class="plan-currency" data-inr="₹" data-usd="$">₹</span>
+        <span class="plan-price" data-inr="2,499" data-usd="29">2,499</span>
+        <span class="plan-period">/month</span>
+      </div>
+      <p class="plan-tagline">Higher quota for growing integrations.</p>
+      <button class="plan-cta cta-starter" onclick="PaymentFlow.startUpgrade('starter')">
+        Upgrade to Starter →
+      </button>
+      <hr class="plan-divider">
+      <ul class="features-list">
+        <li><span class="ico ico-check">✓</span> 10 live threat items per request</li>
+        <li><span class="ico ico-check">✓</span> CVE lookups (CVSS ≥ 7.0)</li>
+        <li><span class="ico ico-check">✓</span> 5,000 API calls/day</li>
+        <li><span class="ico ico-check">✓</span> Weekly threat intel digest</li>
+        <li><span class="ico ico-check">✓</span> Full-text search (unlimited)</li>
+        <li><span class="ico ico-cross">✗</span> IOC feed access</li>
+        <li><span class="ico ico-cross">✗</span> Detection rules (SIGMA/Yara)</li>
+        <li><span class="ico ico-cross">✗</span> Full threat descriptions</li>
+        <li><span class="ico ico-cross">✗</span> Actor/campaign details</li>
+        <li><span class="ico ico-cross">✗</span> STIX 2.1 export</li>
+      </ul>
+    </div>
+
     <!-- Pro -->
     <div class="plan-card popular">
       <div class="popular-badge">⚡ Most Popular</div>
@@ -669,7 +700,7 @@
         <li><span class="ico ico-check">✓</span> 50 live threat items per request</li>
         <li><span class="ico ico-check">✓</span> CVE lookups + full descriptions</li>
         <li><span class="ico ico-check">✓</span> Complete IOC feed</li>
-        <li><span class="ico ico-check">✓</span> 5,000 API calls/day</li>
+        <li><span class="ico ico-check">✓</span> 25,000 API calls/day</li>
         <li><span class="ico ico-check">✓</span> Ransomware + actor TTPs</li>
         <li><span class="ico ico-check">✓</span> SIGMA detection rules</li>
         <li><span class="ico ico-check">✓</span> Yara rule downloads</li>
@@ -717,36 +748,38 @@
       <tr>
         <th style="text-align:left">Feature</th>
         <th>Free</th>
+        <th>Starter</th>
         <th>Pro</th>
         <th>Enterprise</th>
       </tr>
     </thead>
     <tbody>
-      <tr class="cat-row"><td colspan="4">API Access</td></tr>
-      <tr><td>Daily API calls</td><td>100</td><td>5,000</td><td>Unlimited</td></tr>
-      <tr><td>Threat items per response</td><td>10</td><td>50</td><td>Unlimited</td></tr>
-      <tr><td>Response latency</td><td>&lt;200ms</td><td>&lt;150ms</td><td>&lt;80ms</td></tr>
+      <tr class="cat-row"><td colspan="5">API Access</td></tr>
+      <tr><td>Daily API calls</td><td>100</td><td>5,000</td><td>25,000</td><td>Unlimited</td></tr>
+      <tr><td>Threat items per response</td><td>10</td><td>10</td><td>50</td><td>Unlimited</td></tr>
+      <tr><td>Response latency</td><td>&lt;200ms</td><td>&lt;200ms</td><td>&lt;150ms</td><td>&lt;80ms</td></tr>
 
-      <tr class="cat-row"><td colspan="4">Threat Intelligence</td></tr>
-      <tr><td>Live threat feed</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
-      <tr><td>CVE lookup (CVSS ≥ 7.0)</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
-      <tr><td>Full threat descriptions</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
-      <tr><td>Top threats feed</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
-      <tr><td>Ransomware campaigns</td><td>Overview</td><td>Full + TTPs</td><td>Full + TTPs</td></tr>
-      <tr><td>Pre-disclosure CVE reports</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td></tr>
+      <tr class="cat-row"><td colspan="5">Threat Intelligence</td></tr>
+      <tr><td>Live threat feed</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>CVE lookup (CVSS ≥ 7.0)</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Full threat descriptions</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Top threats feed</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Weekly intel digest email</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Ransomware campaigns</td><td>Overview</td><td>Overview</td><td>Full + TTPs</td><td>Full + TTPs</td></tr>
+      <tr><td>Pre-disclosure CVE reports</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td></tr>
 
-      <tr class="cat-row"><td colspan="4">IOC & Detection</td></tr>
-      <tr><td>IOC feed access</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
-      <tr><td>Confidence score filters</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
-      <tr><td>SIGMA detection rules</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
-      <tr><td>Yara rules</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
-      <tr><td>STIX 2.1 export</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td></tr>
-      <tr><td>Bulk CSV/JSON export</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td></tr>
+      <tr class="cat-row"><td colspan="5">IOC & Detection</td></tr>
+      <tr><td>IOC feed access</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Confidence score filters</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>SIGMA detection rules</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Yara rules</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>STIX 2.1 export</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Bulk CSV/JSON export</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td></tr>
 
-      <tr class="cat-row"><td colspan="4">Search</td></tr>
-      <tr><td>Full-text search</td><td>5 results</td><td>Unlimited</td><td>Unlimited</td></tr>
-      <tr><td>CVE search</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
-      <tr><td>Actor/campaign search</td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr class="cat-row"><td colspan="5">Search</td></tr>
+      <tr><td>Full-text search</td><td>5 results</td><td>Unlimited</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td>CVE search</td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
+      <tr><td>Actor/campaign search</td><td><span class="dash">—</span></td><td><span class="dash">—</span></td><td><span class="tick">✓</span></td><td><span class="tick">✓</span></td></tr>
     </tbody>
   </table>
 </section>
@@ -1078,11 +1111,13 @@
 /* ── Config ─────────────────────────────────────────────────────── */
 const API_BASE = '/api/v1';
 const PLANS = {
+  starter:    { name: 'API Starter', price: '₹2,499', amount: 2499, currency: 'INR' },
   pro:        { name: 'SOC Pro',    price: '₹1,499', amount: 1499, currency: 'INR' },
   enterprise: { name: 'Enterprise', price: '₹4,999', amount: 4999, currency: 'INR' },
 };
 const PLAN_FEATURES = {
-  pro: ['50 live threat items per request', 'Complete IOC feed access', 'SIGMA + Yara detection rules', 'Unlimited full-text search', '5,000 API calls per day'],
+  starter: ['5,000 API calls per day', 'Weekly threat intel digest', 'Unlimited full-text search', 'Single API key'],
+  pro: ['50 live threat items per request', 'Complete IOC feed access', 'SIGMA + Yara detection rules', 'Unlimited full-text search', '25,000 API calls per day'],
   enterprise: ['Unlimited threat items', 'Unlimited API calls/day', 'STIX 2.1 bundle export', 'Bulk CSV/JSON export', 'Pre-disclosure CVE reports', 'All Pro features'],
 };
 const POLL_INTERVAL = 10000;
