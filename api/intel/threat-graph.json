@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-23T10:31:48.323Z",
+  "generated": "2026-06-23T11:01:40.433Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3337,
+    "total_nodes": 3338,
     "actors": 8,
     "cves": 740,
     "campaigns": 314,
     "malware": 0,
     "iocs": 337,
-    "edges": 1224
+    "edges": 1226
   },
   "nodes": {
     "actor:lockbit": {
@@ -63734,6 +63734,35 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_NETSEC-6d894c3642d05414": {
+      "id": "REDDIT_NETSEC-6d894c3642d05414",
+      "type": "Intel",
+      "name": "Cloudflare patches Copy-Fail across every server in two days",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-23",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:blog.cloudflare.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -74788,6 +74817,24 @@
       "target": "REDDIT_CYBER-2ca316c77b6ace34",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-6d894c3642d05414→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-6d894c3642d05414",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-6d894c3642d05414→linked_to→ioc:domain:blog.cloudflare.com",
+      "source": "REDDIT_NETSEC-6d894c3642d05414",
+      "target": "ioc:domain:blog.cloudflare.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-23",
       "sources": []
     }
