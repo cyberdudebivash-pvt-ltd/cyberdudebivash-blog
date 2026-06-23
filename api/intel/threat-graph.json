@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-23T20:31:45.185Z",
+  "generated": "2026-06-23T20:38:46.857Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3379,
+    "total_nodes": 3382,
     "actors": 8,
     "cves": 751,
     "campaigns": 317,
     "malware": 0,
-    "iocs": 339,
-    "edges": 1237
+    "iocs": 340,
+    "edges": 1239
   },
   "nodes": {
     "actor:lockbit": {
@@ -64540,6 +64540,65 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-ff7ce69d86c97128": {
+      "id": "REDDIT_CYBER-ff7ce69d86c97128",
+      "type": "Intel",
+      "name": "CISA kills CVSS",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-23",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:410b63e8724ea20a688cfeed73fe77ceb5b71dc1",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:410b63e8724ea20a688cfeed73fe77ceb5b71dc1": {
+      "id": "ioc:sha1:410b63e8724ea20a688cfeed73fe77ceb5b71dc1",
+      "type": "IOC",
+      "name": "410b63e8724ea20a688cfeed73fe77ceb5b71dc1",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-23"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-08c52cc97f06abc3": {
+      "id": "REDDIT_CYBER-08c52cc97f06abc3",
+      "type": "Intel",
+      "name": "New Ticketmaster breach?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-23",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -75709,6 +75768,24 @@
       "id": "REDDIT_CYBER-ee42cfaecb17ac4f→linked_to→ioc:domain:krebsonsecurity.com",
       "source": "REDDIT_CYBER-ee42cfaecb17ac4f",
       "target": "ioc:domain:krebsonsecurity.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-ff7ce69d86c97128→linked_to→ioc:sha1:410b63e8724ea20a688cfeed73fe77ceb5b71dc1",
+      "source": "REDDIT_CYBER-ff7ce69d86c97128",
+      "target": "ioc:sha1:410b63e8724ea20a688cfeed73fe77ceb5b71dc1",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-08c52cc97f06abc3→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-08c52cc97f06abc3",
+      "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-06-23",
