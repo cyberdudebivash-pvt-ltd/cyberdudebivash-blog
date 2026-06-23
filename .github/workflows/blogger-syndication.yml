@@ -15,9 +15,9 @@ on:
           - "false"
           - "true"
       max_posts:
-        description: "Max posts per run (default: 5)"
+        description: "Max posts per run (default: 12)"
         required: false
-        default: "5"
+        default: "12"
 
 concurrency:
   group: blogger-syndication
@@ -119,7 +119,7 @@ jobs:
           TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
           NEWSLETTER_SIGNUP_URL: ${{ secrets.NEWSLETTER_SIGNUP_URL }}
-          MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '8' }}
+          MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '12' }}
         run: |
           DRY_RUN_FLAG=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
@@ -129,7 +129,7 @@ jobs:
 
           python -m automation.main \
             $DRY_RUN_FLAG \
-            --max-posts ${{ github.event.inputs.max_posts || '5' }} \
+            --max-posts ${{ github.event.inputs.max_posts || '12' }} \
             2>&1 | tee logs/pipeline-output.txt
 
       # ──────────────────────────────────────────────

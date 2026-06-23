@@ -26,9 +26,9 @@ from .logger import setup_logger
 
 logger = setup_logger("rss_aggregator")
 
-_FEED_TIMEOUT_SECONDS = 7
-_MAX_ITEMS_PER_FEED = 4
-_MAX_WORKERS = 10
+_FEED_TIMEOUT_SECONDS = 10
+_MAX_ITEMS_PER_FEED = 6
+_MAX_WORKERS = 24
 
 
 @dataclass(frozen=True)
@@ -38,13 +38,14 @@ class _Feed:
 
 
 _GLOBAL_FEEDS: tuple[_Feed, ...] = (
+    # ── Tier 1: Breaking News & CVE Coverage ─────────────────────────────────
     _Feed("The Hacker News", "https://feeds.feedburner.com/TheHackersNews"),
     _Feed("BleepingComputer", "https://www.bleepingcomputer.com/feed/"),
     _Feed("Krebs on Security", "https://krebsonsecurity.com/feed/"),
     _Feed("Dark Reading", "https://www.darkreading.com/rss.xml"),
     _Feed("SecurityWeek", "https://www.securityweek.com/feed/"),
     _Feed("Security Affairs", "https://securityaffairs.com/feed"),
-    _Feed("The Record", "https://therecord.media/feed"),
+    _Feed("The Record by Recorded Future", "https://therecord.media/feed"),
     _Feed("Infosecurity Magazine", "https://www.infosecurity-magazine.com/rss/news/"),
     _Feed("Help Net Security", "https://www.helpnetsecurity.com/feed/"),
     _Feed("GBHackers Security", "https://gbhackers.com/feed/"),
@@ -53,6 +54,13 @@ _GLOBAL_FEEDS: tuple[_Feed, ...] = (
     _Feed("SC Media", "https://www.scmagazine.com/feed/"),
     _Feed("CSO Online", "https://www.csoonline.com/index.rss"),
     _Feed("Schneier on Security", "https://www.schneier.com/feed/atom/"),
+    _Feed("Wired Security", "https://www.wired.com/feed/category/security/latest/rss"),
+    _Feed("Ars Technica Security", "https://feeds.arstechnica.com/arstechnica/security"),
+    _Feed("ZDNet Security", "https://www.zdnet.com/topic/security/rss.xml"),
+    _Feed("TechCrunch Security", "https://techcrunch.com/category/security/feed/"),
+    _Feed("Cyber Defense Magazine", "https://www.cyberdefensemagazine.com/feed/"),
+
+    # ── Tier 2: Threat Intelligence & Vendor Research ────────────────────────
     _Feed("SANS Internet Storm Center", "https://isc.sans.edu/rssfeed_full.xml"),
     _Feed("Microsoft Security Blog", "https://www.microsoft.com/en-us/security/blog/feed/"),
     _Feed("Google Security Blog", "https://security.googleblog.com/feeds/posts/default"),
@@ -63,8 +71,63 @@ _GLOBAL_FEEDS: tuple[_Feed, ...] = (
     _Feed("ESET WeLiveSecurity", "https://www.welivesecurity.com/feed/"),
     _Feed("Malwarebytes Labs", "https://www.malwarebytes.com/blog/feed/index.xml"),
     _Feed("Sophos News", "https://news.sophos.com/en-us/feed/"),
+    _Feed("Fortinet FortiGuard Labs", "https://www.fortinet.com/blog/threat-research.rss"),
+    _Feed("Check Point Research", "https://research.checkpoint.com/feed/"),
+    _Feed("Trend Micro Research", "https://feeds.trendmicro.com/TrendMicroResearch"),
+    _Feed("Rapid7 Blog", "https://www.rapid7.com/blog/rss.xml"),
+    _Feed("Qualys Security Blog", "https://blog.qualys.com/feed"),
+    _Feed("Tenable Blog", "https://www.tenable.com/blog/feed"),
+    _Feed("Mandiant Blog", "https://www.mandiant.com/resources/blog/rss.xml"),
+    _Feed("SentinelOne Labs", "https://www.sentinelone.com/blog/feed/"),
+    _Feed("Recorded Future Blog", "https://www.recordedfuture.com/blog/feed/"),
+    _Feed("GreyNoise Blog", "https://www.greynoise.io/blog/rss.xml"),
+    _Feed("AttackIQ Blog", "https://www.attackiq.com/blog/feed/"),
+    _Feed("Huntress Labs Blog", "https://www.huntress.com/blog/rss.xml"),
+    _Feed("Binary Defense Blog", "https://www.binarydefense.com/blog/feed/"),
+    _Feed("Secureworks Blog", "https://www.secureworks.com/blog/rss"),
+    _Feed("Cybereason Blog", "https://www.cybereason.com/blog/rss.xml"),
+    _Feed("Red Canary Blog", "https://redcanary.com/blog/feed/"),
+    _Feed("Elastic Security Labs", "https://www.elastic.co/security-labs/rss/feed.xml"),
+    _Feed("Lumen Black Lotus Labs", "https://blog.lumen.com/category/black-lotus-labs/feed/"),
+    _Feed("Team Cymru Blog", "https://team-cymru.com/blog/feed/"),
+    _Feed("PortSwigger Research", "https://portswigger.net/research/rss"),
     _Feed("Tripwire State of Security", "https://www.tripwire.com/state-of-security/feed"),
+
+    # ── Tier 3: Government CERTs & Regulatory Bodies ─────────────────────────
+    _Feed("US-CERT Alerts", "https://www.cisa.gov/cybersecurity-advisories/all.xml"),
+    _Feed("NCSC UK Alerts", "https://www.ncsc.gov.uk/api/1/services/v1/report-rss-feed.xml"),
+    _Feed("ENISA News", "https://www.enisa.europa.eu/media/news-items/news-wires/RSS"),
+    _Feed("CERT-EU Publications", "https://www.cert.europa.eu/publications/rss"),
+    _Feed("Australian ASD ACSC", "https://www.cyber.gov.au/about-us/view-all-content/alerts-and-advisories/rss"),
+    _Feed("NIST NVD Recent CVEs", "https://nvd.nist.gov/feeds/xml/cve/misc/nvd-rss-analyzed.xml"),
+
+    # ── Tier 4: Cloud & DevSecOps Security ───────────────────────────────────
+    _Feed("AWS Security Blog", "https://aws.amazon.com/blogs/security/feed/"),
+    _Feed("Azure Security Blog", "https://techcommunity.microsoft.com/gxcuf89792/rss/board?board.id=AzureSecurityBlog"),
+    _Feed("Google Cloud Security Blog", "https://cloud.google.com/blog/topics/threat-intelligence/rss/"),
+    _Feed("Snyk Security Blog", "https://snyk.io/blog/category/security/feed/"),
+    _Feed("Aqua Security Blog", "https://www.aquasec.com/blog/feed/"),
+    _Feed("Lacework Blog", "https://www.lacework.com/blog/feed/"),
+    _Feed("Sysdig Blog", "https://sysdig.com/blog/feed/"),
+
+    # ── Tier 5: AI Security & Emerging Threats ───────────────────────────────
+    _Feed("MITRE ATT&CK Blog", "https://medium.com/feed/mitre-attack"),
+    _Feed("OWASP Blog", "https://owasp.org/feed.xml"),
+    _Feed("Protect AI Blog", "https://protectai.com/blog/rss.xml"),
+    _Feed("HiddenLayer Blog", "https://hiddenlayer.com/research/feed/"),
+    _Feed("LLM Security News", "https://llmsecurity.net/index.xml"),
+
+    # ── Tier 6: Community & Exploit Intelligence ──────────────────────────────
     _Feed("Reddit r/netsec", "https://www.reddit.com/r/netsec/.rss"),
+    _Feed("Reddit r/cybersecurity", "https://www.reddit.com/r/cybersecurity/.rss"),
+    _Feed("Full Disclosure", "https://seclists.org/rss/fulldisclosure.rss"),
+    _Feed("Packet Storm Security", "https://packetstormsecurity.com/headlines.xml"),
+    _Feed("Exploit-DB RSS", "https://www.exploit-db.com/rss.xml"),
+    _Feed("VulnHub Blog", "https://www.vulnhub.com/rss/blog/"),
+    _Feed("NCC Group Research", "https://research.nccgroup.com/feed/"),
+    _Feed("WithSecure Labs", "https://labs.withsecure.com/feed/"),
+    _Feed("Bugcrowd Blog", "https://www.bugcrowd.com/blog/feed/"),
+    _Feed("HackerOne Blog", "https://www.hackerone.com/resources/hackerone/feed"),
 )
 
 

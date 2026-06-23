@@ -5,18 +5,20 @@ Tests for CISAKEVSource — parsing, filtering, deduplication, label enforcement
 import os
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from unittest.mock import MagicMock, patch
 
 from automation.config import Config
 from automation.content_discovery import PublicationState, _compute_hash
 from automation.cisa_kev_source import CISAKEVSource
 
+_TODAY = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+_YESTERDAY = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
 
 MOCK_KEV_RESPONSE = {
     "title": "CISA Known Exploited Vulnerabilities Catalog",
-    "catalogVersion": "2026.06.19",
-    "dateReleased": "2026-06-19T00:00:00Z",
+    "catalogVersion": _TODAY,
+    "dateReleased": f"{_TODAY}T00:00:00Z",
     "count": 1,
     "vulnerabilities": [
         {
@@ -24,7 +26,7 @@ MOCK_KEV_RESPONSE = {
             "vendorProject": "Microsoft",
             "product": "Windows IKE",
             "vulnerabilityName": "Microsoft Windows IKE Remote Code Execution Vulnerability",
-            "dateAdded": "2026-06-19",
+            "dateAdded": _YESTERDAY,
             "shortDescription": (
                 "Microsoft Windows IKE contains a remote code execution vulnerability "
                 "that allows unauthenticated attackers to execute code at SYSTEM level."

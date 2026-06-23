@@ -54,9 +54,9 @@ class Config:
     target_blog_url: str = "https://cyberbivash.blogspot.com"
     blogger_api_base: str = "https://www.googleapis.com/blogger/v3"
 
-    # Pipeline control — 8 posts/run → more indexed pages → more AdSense impressions
-    max_posts_per_run: int = 8
-    max_article_age_hours: int = 48
+    # Pipeline control — 12 posts/run → more indexed pages → more AdSense impressions
+    max_posts_per_run: int = 12
+    max_article_age_hours: int = 72
     retry_attempts: int = 3
     retry_base_delay: float = 2.0
 

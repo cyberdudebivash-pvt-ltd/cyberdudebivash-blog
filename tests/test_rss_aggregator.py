@@ -156,7 +156,7 @@ class TestFetchFeed(unittest.TestCase):
         xml = f"""<?xml version="1.0"?><rss version="2.0"><channel><title>T</title>{many_items}</channel></rss>"""
         with patch("requests.get", return_value=_make_mock_response(xml)):
             items = self.source._fetch_feed(self.feed)
-        self.assertLessEqual(len(items), 4)
+        self.assertLessEqual(len(items), 6)
 
 
 if __name__ == "__main__":
