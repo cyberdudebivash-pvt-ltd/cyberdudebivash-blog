@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-23T21:01:55.000Z",
+  "generated": "2026-06-23T21:31:45.979Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3382,
+    "total_nodes": 3387,
     "actors": 8,
-    "cves": 751,
+    "cves": 753,
     "campaigns": 317,
     "malware": 0,
-    "iocs": 340,
-    "edges": 1239
+    "iocs": 341,
+    "edges": 1240
   },
   "nodes": {
     "actor:lockbit": {
@@ -64599,6 +64599,95 @@
           "confidence": 0.75
         }
       ]
+    },
+    "CVE-2026-54513": {
+      "id": "CVE-2026-54513",
+      "type": "CVE",
+      "name": "jackson-databind has an array subtype allowlist bypass in BasicPolymorphicTypeValidator (allowIfSubTypeIsArray)",
+      "attributes": {
+        "cvss": 8.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "com.fasterxml.jackson.core:jackson-databind",
+        "published": "2026-06-23",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-54512": {
+      "id": "CVE-2026-54512",
+      "type": "CVE",
+      "name": "jackson-databind has a PolymorphicTypeValidator bypass via generic type parameters that allows arbitrary class instantiation",
+      "attributes": {
+        "cvss": 8.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "com.fasterxml.jackson.core:jackson-databind",
+        "published": "2026-06-23",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-d0bed5536a392119": {
+      "id": "BLEEPINGCOMPUTER-d0bed5536a392119",
+      "type": "Intel",
+      "name": "Tata Electronics confirms cyberattack as hackers leak data",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-23",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-b727d8c1c9b7b266": {
+      "id": "REDDIT_CYBER-b727d8c1c9b7b266",
+      "type": "Intel",
+      "name": "New macOS ClickFix attack silently mounts DMGs to push infostealer",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-23",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:3498ddc76681c39e9aa2bb598aeb5e9cb491a8a0",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:3498ddc76681c39e9aa2bb598aeb5e9cb491a8a0": {
+      "id": "ioc:sha1:3498ddc76681c39e9aa2bb598aeb5e9cb491a8a0",
+      "type": "IOC",
+      "name": "3498ddc76681c39e9aa2bb598aeb5e9cb491a8a0",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-23"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -75788,6 +75877,15 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-b727d8c1c9b7b266→linked_to→ioc:sha1:3498ddc76681c39e9aa2bb598aeb5e9cb491a8a0",
+      "source": "REDDIT_CYBER-b727d8c1c9b7b266",
+      "target": "ioc:sha1:3498ddc76681c39e9aa2bb598aeb5e9cb491a8a0",
+      "relationship": "linked_to",
+      "confidence": 0.9,
       "first_seen": "2026-06-23",
       "sources": []
     }

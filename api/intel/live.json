@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-23T21:01:55.030Z",
+  "generated": "2026-06-23T21:31:46.009Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -10,7 +10,7 @@
   "total_published": 1179,
   "s2n_stats": {
     "passed": 82,
-    "suppressed": 10,
+    "suppressed": 11,
     "avg_qs": 0.554
   },
   "items": [
@@ -4171,6 +4171,104 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-54513",
+      "title": "jackson-databind has an array subtype allowlist bypass in BasicPolymorphicTypeValidator (allowIfSubTypeIsArray)",
+      "description": "## Summary\n`BasicPolymorphicTypeValidator.Builder.allowIfSubTypeIsArray()` allowlists any array type based only on `clazz.isArray()`, without validating the array's component (element) type against the configured allowlist. A PTV built with `allowIfSubTypeIsArray()` plus an explicit concrete-type al",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-23",
+      "last_seen": "2026-06-23",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "com.fasterxml.jackson.core:jackson-databind",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54513",
+        "CVE-2026-54513"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-rmj7-2vxq-3g9f",
+        "https://github.com/FasterXML/jackson-databind/security/advisories/GHSA-rmj7-2vxq-3g9f",
+        "https://github.com/FasterXML/jackson-databind/issues/5981",
+        "https://github.com/FasterXML/jackson-databind/issues/5983"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54512",
+      "title": "jackson-databind has a PolymorphicTypeValidator bypass via generic type parameters that allows arbitrary class instantia",
+      "description": "`jackson-databind`'s `PolymorphicTypeValidator` (PTV) is the primary safety mechanism guarding polymorphic deserialization. When polymorphic typing is enabled and a type identifier contains generic parameters (i.e. the type ID string contains ` ` when only `java.util.ArrayList` is allow-listed. The ",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-23",
+      "last_seen": "2026-06-23",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "com.fasterxml.jackson.core:jackson-databind",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54512",
+        "CVE-2026-54512"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-j3rv-43j4-c7qm",
+        "https://github.com/FasterXML/jackson-databind/security/advisories/GHSA-j3rv-43j4-c7qm",
+        "https://github.com/FasterXML/jackson-databind/issues/5988",
+        "https://github.com/FasterXML/jackson-databind/commit/434d6c511de7fdd9872f29157aafb6162d12d8d5"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-55441",
       "title": "Mise vulnerable to arbitrary command execution via task-include files in an untrusted, config-less repository",
       "description": "### Summary mise's trust feature gates config files (`mise.toml`, `.tool-versions`) through `trust_check`, but task-include files are loaded on a path that never reaches it. When a directory has a task-include dir (`mise-tasks/`, `.mise/tasks/`, …) but no config file, mise falls back to the default ",
@@ -4297,103 +4395,6 @@
         "https://github.com/advisories/GHSA-vvhj-w2jq-263q",
         "https://github.com/OpenIdentityPlatform/OpenAM/security/advisories/GHSA-vvhj-w2jq-263q",
         "https://github.com/advisories/GHSA-vvhj-w2jq-263q"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-45049",
-      "title": "OpenAM Unauthenticated Session Hijacking via Information Exposure in CDCServlet",
-      "description": "## Summary **Description** An Information Exposure Through Sent Data (CWE-201) issue in OpenAM's Cross-Domain Single Sign-On (CDSSO) servlet allows a logged-in user's raw OpenAM session token to be POSTed to an attacker-controlled URL. This impacts OpenAM Community Edition through version 16.0.6. Th",
-      "cvss": 8.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-23",
-      "last_seen": "2026-06-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "org.openidentityplatform.openam:openam-federation",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45049",
-        "CVE-2026-45049"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-r9pv-5rpp-vm8g",
-        "https://github.com/OpenIdentityPlatform/OpenAM/security/advisories/GHSA-r9pv-5rpp-vm8g",
-        "https://github.com/advisories/GHSA-r9pv-5rpp-vm8g"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55173",
-      "title": "AVideo has an incomplete fix of CVE-2026-33482: sanitizeFFmpegCommand still allows a single '&' (background operator), g",
-      "description": "### Summary The fix for CVE-2026-33482 (GHSA-pmj8-r2j7-xg6c) is incomplete. That advisory reported that `sanitizeFFmpegCommand()` (`plugin/API/standAlone/functions.php`) failed to strip `$(...)` command substitution, allowing OS command injection at the `execAsync()` `sh -c` sink. The fix (commit `2",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-23",
-      "last_seen": "2026-06-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "wwbn/avideo",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55173",
-        "CVE-2026-55173"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wc3f-xc32-435f",
-        "https://github.com/WWBN/AVideo/security/advisories/GHSA-wc3f-xc32-435f",
-        "https://github.com/WWBN/AVideo/commit/c1cfa2bea8a351a1d07f5758f82887403e3abf1f",
-        "https://github.com/advisories/GHSA-wc3f-xc32-435f"
       ],
       "explanation": {
         "quality": [
