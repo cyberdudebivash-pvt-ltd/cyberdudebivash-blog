@@ -334,14 +334,10 @@ main{flex:1;min-width:0;}
 .post-card-featured{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;}
 .post-card-featured .post-card-img-wrap{aspect-ratio:auto;min-height:280px;}
 .post-card-featured .post-card-body{padding:36px;}
-.posts-grid>.single-post{grid-column:1/-1;width:100%;max-width:100%;}
 .post-card-img-wrap{position:relative;overflow:hidden;aspect-ratio:16/9;background:var(--surface);}
 .post-card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;display:block;}
 .post-card:hover .post-card-img-wrap img{transform:scale(1.04);}
-.post-card-img-placeholder{width:100%;height:100%;background:linear-gradient(135deg,#0d1420 0%,#0a1628 40%,#071020 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;}
-.post-card-img-placeholder::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(0,245,255,0.06),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(139,92,246,0.06),transparent 60%);}
-.post-card-img-placeholder-icon{font-size:36px;filter:drop-shadow(0 0 12px rgba(0,245,255,0.4));position:relative;z-index:1;}
-.post-card-img-placeholder-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);opacity:0.7;position:relative;z-index:1;}
+.post-card-img-placeholder{width:100%;height:100%;background:linear-gradient(135deg,var(--surface),var(--card));display:flex;align-items:center;justify-content:center;font-size:40px;}
 .post-card-featured-badge{position:absolute;top:12px;left:12px;background:linear-gradient(135deg,var(--accent3),#e8890d);color:#000;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px;z-index:2;}
 .post-card-body{padding:22px;flex:1;display:flex;flex-direction:column;}
 .post-card-labels{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
@@ -776,7 +772,47 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
   .post-body{color:#333;}
 }
 ]]>
-/* ── Ecosystem Promo Cards ── */
+/* ── Post card upgrades ── */
+.posts-grid>.single-post{grid-column:1/-1;width:100%;}
+.post-card-img-wrap{position:relative;overflow:hidden;aspect-ratio:16/9;background:linear-gradient(135deg,#0d1420 0%,#091422 100%);}
+.post-card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;display:block;}
+.post-card:hover .post-card-img-wrap img{transform:scale(1.04);}
+.post-card-img-canvas{width:100%;height:100%;display:block;position:absolute;top:0;left:0;}
+.post-card-img-placeholder{display:none;}/* hidden – JS generates banner */
+/* Featured card */
+.post-card-featured{grid-column:1/-1;display:grid;grid-template-columns:1.2fr 1fr;align-items:stretch;}
+.post-card-featured .post-card-img-wrap{aspect-ratio:auto;min-height:300px;}
+.post-card-featured .post-card-body{padding:40px;}
+.post-card-featured .post-card-title{font-size:26px;line-height:1.25;}
+
+/* ── Breaking / Trending badges ── */
+.card-urgency-badge{position:absolute;top:12px;right:12px;z-index:3;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px;}
+.badge-breaking{background:#ef4444;color:#fff;animation:pulseBadge 1.5s infinite;}
+.badge-zeroday{background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;animation:pulseBadge 1.5s infinite;}
+.badge-trending{background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;}
+.badge-new{background:linear-gradient(135deg,#00f5ff,#00bcd4);color:#000;}
+.badge-hot{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;}
+@keyframes pulseBadge{0%,100%{opacity:1}50%{opacity:0.7}}
+
+/* ── Commercial label colors ── */
+.post-card-label.l-threat-intelligence{color:#00f5ff;border-color:rgba(0,245,255,0.25);background:rgba(0,245,255,0.06);}
+.post-card-label.l-vulnerabilities,.post-card-label.l-vulnerability{color:#ef4444;border-color:rgba(239,68,68,0.25);background:rgba(239,68,68,0.06);}
+.post-card-label.l-cve,.post-card-label.l-zero-day,.post-card-label.l-zero-days{color:#ef4444;border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.1);}
+.post-card-label.l-ransomware{color:#f59e0b;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);}
+.post-card-label.l-malware{color:#f97316;border-color:rgba(249,115,22,0.25);background:rgba(249,115,22,0.06);}
+.post-card-label.l-ai-security,.post-card-label.l-ai-threat{color:#a78bfa;border-color:rgba(139,92,246,0.3);background:rgba(139,92,246,0.08);}
+.post-card-label.l-default{color:var(--accent);border-color:var(--accent-dim);background:var(--accent-dim);}
+
+/* ── Enhanced card body ── */
+.post-card-title{color:#fff;font-family:'Outfit',sans-serif;font-weight:800;font-size:17px;line-height:1.35;margin-bottom:10px;transition:0.2s;}
+.post-card:hover .post-card-title{color:var(--accent);}
+.post-card-snippet{color:var(--text-secondary);font-size:13px;line-height:1.7;margin-bottom:16px;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.post-card-meta{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.post-card-date{color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;}
+.post-card-read{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:0.2s;background:var(--accent-dim);border:1px solid var(--accent-dim);border-radius:4px;padding:5px 12px;}
+.post-card-read:hover{background:var(--accent);color:#000;}
+
+/* ── Ecosystem promo cards ── */
 .eco-promo-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px;position:relative;}
 .eco-promo-slide{display:none;flex-direction:column;padding:20px;}
 .eco-promo-slide.active{display:flex;}
@@ -790,6 +826,7 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
 .eco-promo-dot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:0.2s;}
 .eco-promo-dot.active{background:var(--accent);transform:scale(1.3);}
 .eco-promo-glow{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent4));animation:shimmer 3s infinite;}
+/* Eco strip inline */
 .eco-strip-inline{background:linear-gradient(135deg,var(--surface),var(--card));border:1px solid var(--border);border-radius:14px;padding:24px;margin:32px 0;position:relative;overflow:hidden;}
 .eco-strip-inline::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent4));}
 .eco-strip-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
@@ -800,6 +837,8 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
 .eco-strip-item-name{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);}
 .eco-strip-item-desc{font-size:9px;color:var(--text-muted);line-height:1.4;}
 @media(max-width:600px){.eco-strip-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:900px){.post-card-featured{grid-template-columns:1fr;}.post-card-featured .post-card-img-wrap{min-height:220px;}}
+
 </b:skin>
 </head>
 <body>
@@ -1296,14 +1335,14 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
         <span class='eco-promo-badge'>🔧 Tools</span>
         <div class='eco-promo-icon'>🔧</div>
         <div class='eco-promo-title'>Security Tools Hub — 50+ Free Tools</div>
-        <div class='eco-promo-desc'>Hash analyzer, CVE lookup, encoder/decoder, port scanner, IP reputation, YARA generator. Free, browser-based, no login required.</div>
+        <div class='eco-promo-desc'>Hash analyzer, CVE lookup, encoder/decoder, port scanner, IP reputation, YARA generator. Free, browser-based.</div>
         <a class='eco-promo-cta' href='https://tools.cyberdudebivash.com/' rel='noopener' target='_blank'>OPEN TOOLS HUB ↗</a>
       </div>
       <div class='eco-promo-slide'>
         <span class='eco-promo-badge'>▲ Enterprise</span>
         <div class='eco-promo-icon'>▲</div>
         <div class='eco-promo-title'>Enterprise Upgrade — Unlimited Intelligence</div>
-        <div class='eco-promo-desc'>Unlimited API, dedicated SOC integration, priority threat feeds, white-label and enterprise SLA for MSSPs and Fortune 500 SOCs.</div>
+        <div class='eco-promo-desc'>Unlimited API, dedicated SOC integration, priority threat feeds, white-label and enterprise SLA for MSSPs.</div>
         <a class='eco-promo-cta' href='https://intel.cyberdudebivash.com/upgrade.html' rel='noopener' target='_blank'>ENTERPRISE PLANS ↗</a>
       </div>
       <div class='eco-promo-slide'>
@@ -1329,21 +1368,12 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
               <meta expr:content='data:post.url.canonical' itemprop='url'/>
               <meta expr:content='data:post.date.iso8601' itemprop='datePublished'/>
               <a expr:href='data:post.url' class='post-card-img-wrap' aria-hidden='true' tabindex='-1'>
+                <canvas class='post-card-img-canvas' data-post-title='data:post.title.escaped' data-post-label='' height='360' width='640' expr:data-post-title='data:post.title.escaped' expr:data-post-label='data:post.labels ? data:post.labels.first.name : &quot;&quot;'/>
                 <b:if cond='data:post.firstImageUrl'>
-                  <b:if cond='data:post.isFirstPost and data:blog.url == data:blog.homepageUrl'>
-                    <span class='post-card-featured-badge'>⭐ FEATURED INTEL</span>
-                  </b:if>
-                  <img alt='' expr:src='data:post.firstImageUrl' loading='lazy' onerror='this.style.display=&quot;none&quot;;this.nextElementSibling.style.display=&quot;flex&quot;;'/>
-                  <div class='post-card-img-placeholder' style='display:none;'>
-                    <span class='post-card-img-placeholder-icon'>🛡</span>
-                    <span class='post-card-img-placeholder-label'>Intel Report</span>
-                  </div>
-                <b:else/>
-                  <div class='post-card-img-placeholder'>
-                    <span class='post-card-img-placeholder-icon'>🛡</span>
-                    <b:if cond='data:post.labels'><span class='post-card-img-placeholder-label'><data:post.labels.first.name/></span>
-                    <b:else/><span class='post-card-img-placeholder-label'>Intel Report</span></b:if>
-                  </div>
+                  <img alt='' expr:src='data:post.firstImageUrl' loading='lazy' style='position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;' onerror='this.style.display=&quot;none&quot;;'/>
+                </b:if>
+                <b:if cond='data:post.isFirstPost and data:blog.url == data:blog.homepageUrl'>
+                  <span class='post-card-featured-badge' style='position:absolute;top:12px;left:12px;z-index:4;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;font-family:JetBrains Mono,monospace;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px;'>⭐ FEATURED INTEL</span>
                 </b:if>
               </a>
               <div class='post-card-body'>
@@ -1544,14 +1574,14 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
         <span class='eco-promo-badge'>🔧 Tools</span>
         <div class='eco-promo-icon'>🔧</div>
         <div class='eco-promo-title'>Security Tools Hub — 50+ Free Tools</div>
-        <div class='eco-promo-desc'>Hash analyzer, CVE lookup, encoder/decoder, port scanner, IP reputation, YARA generator. Free, browser-based, no login required.</div>
+        <div class='eco-promo-desc'>Hash analyzer, CVE lookup, encoder/decoder, port scanner, IP reputation, YARA generator. Free, browser-based.</div>
         <a class='eco-promo-cta' href='https://tools.cyberdudebivash.com/' rel='noopener' target='_blank'>OPEN TOOLS HUB ↗</a>
       </div>
       <div class='eco-promo-slide'>
         <span class='eco-promo-badge'>▲ Enterprise</span>
         <div class='eco-promo-icon'>▲</div>
         <div class='eco-promo-title'>Enterprise Upgrade — Unlimited Intelligence</div>
-        <div class='eco-promo-desc'>Unlimited API, dedicated SOC integration, priority threat feeds, white-label and enterprise SLA for MSSPs and Fortune 500 SOCs.</div>
+        <div class='eco-promo-desc'>Unlimited API, dedicated SOC integration, priority threat feeds, white-label and enterprise SLA for MSSPs.</div>
         <a class='eco-promo-cta' href='https://intel.cyberdudebivash.com/upgrade.html' rel='noopener' target='_blank'>ENTERPRISE PLANS ↗</a>
       </div>
       <div class='eco-promo-slide'>
@@ -2091,22 +2121,183 @@ document.querySelectorAll('a[href^="#"]').forEach(function(a){
 
 <script>
 //<![CDATA[
+/* ── Eco promo rotator ── */
 function ecoSlide(id,idx){
   var card=document.getElementById(id);if(!card)return;
-  var slides=card.querySelectorAll('.eco-promo-slide');
-  var dots=card.querySelectorAll('.eco-promo-dot');
-  slides.forEach(function(s,i){s.classList.toggle('active',i===idx);});
-  dots.forEach(function(d,i){d.classList.toggle('active',i===idx);});
+  card.querySelectorAll('.eco-promo-slide').forEach(function(s,i){s.classList.toggle('active',i===idx);});
+  card.querySelectorAll('.eco-promo-dot').forEach(function(d,i){d.classList.toggle('active',i===idx);});
 }
-// Auto-rotate all eco promo cards every 5s
 (function(){
-  var cards=document.querySelectorAll('.eco-promo-card');
-  cards.forEach(function(card){
+  document.querySelectorAll('.eco-promo-card').forEach(function(card){
+    if(!card.id)return;
+    var n=card.querySelectorAll('.eco-promo-slide').length;
+    if(n<2)return;
     var idx=0;
-    var slides=card.querySelectorAll('.eco-promo-slide');
-    if(slides.length<2)return;
-    setInterval(function(){idx=(idx+1)%slides.length;ecoSlide(card.id,idx);},5000);
+    setInterval(function(){idx=(idx+1)%n;ecoSlide(card.id,idx);},5000);
   });
+})();
+
+/* ── Canvas post banner generator ── */
+(function(){
+  var PALETTE={
+    'threat intelligence':['#0a1628','#0d1e35','#00f5ff','#0066ff'],
+    'vulnerabilities':['#1a0a0a','#200d0d','#ef4444','#dc2626'],
+    'vulnerability':['#1a0a0a','#200d0d','#ef4444','#dc2626'],
+    'zero-day':['#1a0000','#220000','#ff3333','#dc2626'],
+    'zero-days':['#1a0000','#220000','#ff3333','#dc2626'],
+    'cve':['#160a00','#1e0e00','#f97316','#ea580c'],
+    'ransomware':['#1a1200','#221800','#f59e0b','#d97706'],
+    'malware':['#180a00','#200d00','#fb923c','#f97316'],
+    'ai security':['#0a0a1a','#0d0d22','#a78bfa','#8b5cf6'],
+    'ai-security':['#0a0a1a','#0d0d22','#a78bfa','#8b5cf6'],
+    'nation-state':['#0a1a10','#0d2215','#22c55e','#16a34a'],
+    'apt':['#0a1a10','#0d2215','#22c55e','#16a34a'],
+    'cloud security':['#0a0f1a','#0d1422','#60a5fa','#3b82f6'],
+    'devsecops':['#0a1218','#0d1820','#06b6d4','#0891b2'],
+    'incident response':['#1a0d00','#221200','#fb923c','#f97316'],
+    'mitre':['#0a1010','#0d1818','#2dd4bf','#14b8a6'],
+    'default':['#0d1420','#0a1628','#00f5ff','#0066ff']
+  };
+
+  function esc(s){return s?s.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#\d+;/g,function(m){try{return String.fromCharCode(parseInt(m.slice(2,-1)));}catch(e){return m;}}):''}
+  function wrapText(ctx,text,maxW,x,y,lineH){
+    var words=text.split(' ');var line='';var lines=[];
+    for(var i=0;i<words.length;i++){
+      var t=(line?line+' ':'')+words[i];
+      if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=words[i];}
+      else{line=t;}
+    }
+    if(line)lines.push(line);
+    lines=lines.slice(0,3);
+    lines.forEach(function(l,i){ctx.fillText(l,x,y+i*lineH);});
+    return lines.length;
+  }
+
+  function drawBanner(canvas,rawTitle,rawLabel){
+    var dpr=window.devicePixelRatio||1;
+    var W=canvas.width,H=canvas.height;
+    var ctx=canvas.getContext('2d');
+    var label=(rawLabel||'').toLowerCase();
+    var pal=PALETTE[label]||PALETTE['default'];
+    var bg1=pal[0],bg2=pal[1],acc=pal[2],acc2=pal[3];
+    var title=esc(rawTitle||'Intelligence Report');
+
+    /* Background gradient */
+    var grd=ctx.createLinearGradient(0,0,W,H);
+    grd.addColorStop(0,bg1);grd.addColorStop(1,bg2);
+    ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+
+    /* Grid overlay */
+    ctx.strokeStyle=acc;ctx.globalAlpha=0.05;ctx.lineWidth=1;
+    for(var x=0;x<W;x+=53){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(var y=0;y<H;y+=52){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    ctx.globalAlpha=1;
+
+    /* Glow orbs */
+    var g1=ctx.createRadialGradient(W*0.75,H*0.25,0,W*0.75,H*0.25,W*0.4);
+    g1.addColorStop(0,acc+'18');g1.addColorStop(1,'transparent');
+    ctx.fillStyle=g1;ctx.fillRect(0,0,W,H);
+    var g2=ctx.createRadialGradient(W*0.15,H*0.75,0,W*0.15,H*0.75,W*0.35);
+    g2.addColorStop(0,acc2+'12');g2.addColorStop(1,'transparent');
+    ctx.fillStyle=g2;ctx.fillRect(0,0,W,H);
+
+    /* Top accent bar */
+    var barGrd=ctx.createLinearGradient(0,0,W,0);
+    barGrd.addColorStop(0,acc);barGrd.addColorStop(0.5,acc2);barGrd.addColorStop(1,'#8b5cf6');
+    ctx.fillStyle=barGrd;ctx.fillRect(0,0,W,3);
+
+    /* Brand text */
+    ctx.fillStyle=acc;ctx.globalAlpha=0.75;
+    ctx.font='bold 11px "JetBrains Mono",monospace';
+    ctx.letterSpacing='2px';
+    ctx.fillText('CYBERDUDEBIVASH® SENTINEL APEX',24,34);
+    ctx.globalAlpha=1;
+
+    /* Shield icon */
+    ctx.save();
+    ctx.translate(24,52);ctx.scale(1.4,1.4);
+    ctx.strokeStyle=acc;ctx.lineWidth=2;ctx.globalAlpha=0.5;
+    ctx.beginPath();
+    ctx.moveTo(16,2);ctx.lineTo(2,8);ctx.lineTo(2,18);
+    ctx.quadraticCurveTo(2,28,16,32);
+    ctx.quadraticCurveTo(30,28,30,18);
+    ctx.lineTo(30,8);ctx.closePath();ctx.stroke();
+    ctx.restore();ctx.globalAlpha=1;
+
+    /* Label badge */
+    var displayLabel=(rawLabel||'INTEL REPORT').toUpperCase();
+    ctx.font='bold 9px "JetBrains Mono",monospace';
+    var lw=ctx.measureText(displayLabel).width;
+    ctx.fillStyle=acc;ctx.globalAlpha=0.12;
+    ctx.beginPath();ctx.roundRect(24,100,lw+24,22,3);ctx.fill();
+    ctx.globalAlpha=0.6;
+    ctx.strokeStyle=acc;ctx.lineWidth=0.8;
+    ctx.beginPath();ctx.roundRect(24,100,lw+24,22,3);ctx.stroke();
+    ctx.globalAlpha=1;
+    ctx.fillStyle=acc;ctx.letterSpacing='1.5px';
+    ctx.fillText(displayLabel,34,115);
+
+    /* Title */
+    ctx.fillStyle='#ffffff';
+    ctx.font='800 15px "Outfit",Arial,sans-serif';
+    ctx.letterSpacing='0px';
+    wrapText(ctx,title,W-48,24,148,22);
+
+    /* Bottom bar */
+    ctx.fillStyle=bg1;ctx.globalAlpha=0.6;
+    ctx.fillRect(0,H-30,W,30);ctx.globalAlpha=1;
+    ctx.fillStyle=acc;ctx.globalAlpha=0.5;
+    ctx.font='9px "JetBrains Mono",monospace';ctx.letterSpacing='1px';
+    ctx.fillText('CYBERDUDEBIVASH.COM · THREAT INTELLIGENCE · AI SECURITY',24,H-10);
+    ctx.globalAlpha=1;
+  }
+
+  function initBanners(){
+    document.querySelectorAll('canvas.post-card-img-canvas').forEach(function(canvas){
+      var title=canvas.getAttribute('data-post-title')||'';
+      var label=canvas.getAttribute('data-post-label')||'';
+      drawBanner(canvas,title,label);
+    });
+  }
+
+  /* ── Urgency badges ── */
+  function applyUrgencyBadges(){
+    document.querySelectorAll('.post-card').forEach(function(card){
+      var wrap=card.querySelector('.post-card-img-wrap');
+      if(!wrap)return;
+      var labels=Array.from(card.querySelectorAll('.post-card-label')).map(function(l){return l.textContent.toLowerCase().trim();});
+      var title=(card.querySelector('.post-card-title')||{}).textContent||'';
+      var tl=title.toLowerCase();
+      var badge=document.createElement('span');
+      badge.className='card-urgency-badge';
+      if(labels.some(function(l){return l.includes('zero-day')||l.includes('zero day');})||tl.includes('zero-day')){
+        badge.className+=' badge-zeroday';badge.textContent='ZERO-DAY';
+      } else if(tl.includes('critical')||tl.includes('patch now')||tl.includes('actively exploit')){
+        badge.className+=' badge-breaking';badge.textContent='BREAKING';
+      } else if(labels.some(function(l){return l.includes('ransomware');})){
+        badge.className+=' badge-hot';badge.textContent='HOT';
+      } else if(labels.some(function(l){return l.includes('ai security')||l.includes('ai-security');})){
+        badge.className+=' badge-new';badge.textContent='AI INTEL';
+      } else {
+        badge.className+=' badge-trending';badge.textContent='INTEL';
+      }
+      wrap.appendChild(badge);
+    });
+  }
+
+  /* ── Label class enrichment ── */
+  function enrichLabels(){
+    document.querySelectorAll('.post-card-label').forEach(function(el){
+      var t=el.textContent.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+      el.classList.add('l-'+t);
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){initBanners();applyUrgencyBadges();enrichLabels();});
+  } else {
+    initBanners();applyUrgencyBadges();enrichLabels();
+  }
 })();
 //]]>
 </script>
