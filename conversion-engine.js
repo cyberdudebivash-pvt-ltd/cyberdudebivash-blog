@@ -34,8 +34,8 @@
      SECTION 0 — CONFIG
   ═══════════════════════════════════════════════════════════════════════ */
   var CFG = {
-    /* Analytics IDs — replace with real values */
-    gaId:        'G-XXXXXXXXXX',
+    /* Analytics IDs */
+    gaId:        'G-XTGLNMNNC7', /* blog.cyberdudebivash.in (GA4 property 539407169) */
     gadsId:      'AW-XXXXXXXXXX',
     fbPixelId:   'XXXXXXXXXXXXXXXXXX',
 
