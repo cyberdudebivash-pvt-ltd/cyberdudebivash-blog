@@ -242,5 +242,27 @@ class MonetizationInjector:
         # Default
         return self.inject_mid_products_cta()
 
+    def inject_mssp_cta(self) -> str:
+        """MSSP-specific conversion block — highest-value enterprise lead generation CTA."""
+        return f"""
+<div class="apex-cta-block" style="border-left-color:#10b981;background:linear-gradient(135deg,#050d0d 0%,#0a0f1e 100%)">
+  <h4 style="color:#10b981">🏢 MANAGED SECURITY SERVICES — CYBERDUDEBIVASH® MSSP</h4>
+  <p>Stop reacting to threats. Start preventing them. CYBERDUDEBIVASH® provides enterprise-grade co-managed SOC services, threat hunting retainers, AI security assessments, and white-label MSSP intelligence packages — trusted by security teams across financial services, healthcare, and critical infrastructure.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;margin:10px 0 14px;font-size:11px">
+    <div style="padding:8px 10px;background:#0a1a0a;border:1px solid #10b98133;border-radius:4px;color:#94a3b8">✓ 24/7 Co-Managed SOC</div>
+    <div style="padding:8px 10px;background:#0a1a0a;border:1px solid #10b98133;border-radius:4px;color:#94a3b8">✓ Threat Hunting Retainer</div>
+    <div style="padding:8px 10px;background:#0a1a0a;border:1px solid #10b98133;border-radius:4px;color:#94a3b8">✓ AI Security Assessments</div>
+    <div style="padding:8px 10px;background:#0a1a0a;border:1px solid #10b98133;border-radius:4px;color:#94a3b8">✓ White-Label Intelligence</div>
+    <div style="padding:8px 10px;background:#0a1a0a;border:1px solid #10b98133;border-radius:4px;color:#94a3b8">✓ Detection Engineering</div>
+    <div style="padding:8px 10px;background:#0a1a0a;border:1px solid #10b98133;border-radius:4px;color:#94a3b8">✓ IR Retainer Services</div>
+  </div>
+  <div class="apex-cta-grid">
+    <a class="apex-btn" style="background:#10b981;color:#000" href="mailto:{self.config.contact_email}">Book MSSP Discovery Call →</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.corporate_url}" target="_blank" rel="noopener">View MSSP Services</a>
+    <a class="apex-btn apex-btn-upgrade" href="{self.config.sentinel_apex_url}/upgrade" target="_blank" rel="noopener">▲ Enterprise Plans</a>
+  </div>
+</div>
+""".strip()
+
     def get_style_block(self) -> str:
         return _INLINE_CSS
