@@ -313,6 +313,36 @@ function applySecurityHeaders(res) {
 exports.applySecurityHeaders = applySecurityHeaders;
 
 /* ══════════════════════════════════════════════════════════════════
+   WEBHOOK RAW BODY READER
+   Payment-gateway webhooks (Stripe, Razorpay) sign the exact raw bytes
+   they sent. Vercel auto-parses JSON bodies before the handler runs, so
+   re-serializing req.body is not guaranteed byte-identical to what was
+   signed. Webhook handlers must export `config.api.bodyParser = false`
+   and call this to read the true raw stream for signature verification.
+══════════════════════════════════════════════════════════════════ */
+function readRawBody(req, maxBytes = 262144) {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    let bytes = 0;
+    let settled = false;
+    req.on('data', chunk => {
+      if (settled) return;
+      bytes += chunk.length;
+      if (bytes > maxBytes) {
+        settled = true;
+        reject(new Error('PAYLOAD_TOO_LARGE'));
+        req.destroy();
+        return;
+      }
+      data += chunk;
+    });
+    req.on('end', () => { if (!settled) { settled = true; resolve(data); } });
+    req.on('error', (err) => { if (!settled) { settled = true; reject(err); } });
+  });
+}
+exports.readRawBody = readRawBody;
+
+/* ══════════════════════════════════════════════════════════════════
    PHASE 3 — ADMIN AUTH
 ══════════════════════════════════════════════════════════════════ */
 
