@@ -204,6 +204,9 @@
 
           <!-- STEP 2: Payment details -->
           <div class="pf-step" id="pfs2">
+            <button class="pf-btn" id="pf-instant-btn" style="margin-bottom:.4rem;background:linear-gradient(135deg,#00ffe0,#00b8a3)" onclick="ApexPaymentFlow._payInstant()">⚡ Pay Instantly — Card / UPI / Wallet</button>
+            <p class="pf-hint" id="pf-instant-hint" style="margin:0 0 1rem">Instant activation via Razorpay — no waiting for manual review.</p>
+            <p class="pf-hint" style="margin:0 0 .85rem">— or pay manually via UPI/Bank Transfer —</p>
             <div class="pf-intent">
               <strong>Your Payment Reference (Intent ID)</strong>
               Use this as the remark/note when you pay.
@@ -455,11 +458,87 @@
     },
 
     async _poll() { await _doPoll(); },
+
+    async _payInstant() {
+      if (!S.email || !S.intentId) {
+        // Step 2 can be reached straight after step 1's create-intent call,
+        // so email is always set by this point — but guard defensively.
+        _toast('err', 'Error', 'Please complete Step 1 first.');
+        return;
+      }
+      const btn = _el('pf-instant-btn');
+      _btnLoad(btn, true, 'Opening secure checkout…');
+      try {
+        await _loadRazorpayScript();
+        const data = await _post(`${API_BASE}/billing?action=create-razorpay-order`, {
+          email: S.email, plan_type: S.plan,
+        });
+        if (!data._ok) {
+          if (data.error?.code === 'RAZORPAY_UNAVAILABLE') {
+            _toast('warn', 'Instant checkout unavailable', 'Please use UPI/Bank Transfer below.');
+            return;
+          }
+          throw new Error(data.error?.message || 'Could not start instant checkout.');
+        }
+        const order = data.order || data.data?.order;
+        if (!order || !order.order_id || !order.key_id) throw new Error('Malformed order response.');
+
+        const rzp = new window.Razorpay({
+          key:      order.key_id,
+          amount:   order.amount,
+          currency: order.currency,
+          name:     'CYBERDUDEBIVASH SENTINEL APEX',
+          description: `${order.plan_label || S.plan} — monthly subscription`,
+          order_id: order.order_id,
+          prefill:  { email: S.email },
+          theme:    { color: '#00ffe0' },
+          handler: async (resp) => {
+            _btnLoad(btn, true, 'Verifying payment…');
+            try {
+              const verify = await _post(`${API_BASE}/billing?action=verify-razorpay-payment`, {
+                email: S.email, plan_type: S.plan,
+                razorpay_order_id:   resp.razorpay_order_id,
+                razorpay_payment_id: resp.razorpay_payment_id,
+                razorpay_signature:  resp.razorpay_signature,
+              });
+              if (!verify._ok) throw new Error(verify.error?.message || 'Payment verification failed.');
+              try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
+              _showSuccess();
+            } catch (e) {
+              _toast('err', 'Verification Failed', e.message || 'Contact support with your payment ID.');
+            } finally {
+              _btnLoad(btn, false, '⚡ Pay Instantly — Card / UPI / Wallet');
+            }
+          },
+          modal: {
+            ondismiss: () => { _btnLoad(btn, false, '⚡ Pay Instantly — Card / UPI / Wallet'); },
+          },
+        });
+        rzp.open();
+      } catch (e) {
+        _toast('err', 'Error', e.message || 'Could not start instant checkout. Try UPI/Bank below.');
+        _btnLoad(btn, false, '⚡ Pay Instantly — Card / UPI / Wallet');
+      }
+    },
   };
 
   /* ══════════════════════════════════════════════════════════════
      PRIVATE HELPERS
   ══════════════════════════════════════════════════════════════ */
+  let _rzpScriptPromise = null;
+  function _loadRazorpayScript() {
+    if (window.Razorpay) return Promise.resolve();
+    if (_rzpScriptPromise) return _rzpScriptPromise;
+    _rzpScriptPromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      s.onload  = () => resolve();
+      s.onerror = () => { _rzpScriptPromise = null; reject(new Error('Could not load secure checkout.')); };
+      document.head.appendChild(s);
+    });
+    return _rzpScriptPromise;
+  }
+
   function _fillPayment(data) {
     const intentId = S.intentId || data.intent_id;
     _set('pf-intent-id', intentId || '—');
