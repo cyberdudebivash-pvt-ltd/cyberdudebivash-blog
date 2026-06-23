@@ -23,7 +23,7 @@ BASE_KEYWORDS = [
 
 
 def _extract_cve_ids(text: str) -> list[str]:
-    return list(set(re.findall(r"CVE-\d{4}-\d{4,}", text, re.IGNORECASE)))
+    return sorted({m.upper() for m in re.findall(r"CVE-\d{4}-\d{4,}", text, re.IGNORECASE)})
 
 
 def _extract_cvss(text: str) -> Optional[str]:

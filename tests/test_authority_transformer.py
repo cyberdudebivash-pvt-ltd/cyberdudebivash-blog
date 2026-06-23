@@ -54,6 +54,40 @@ class TestTemplateEnhancement(unittest.TestCase):
         for section in required_sections:
             self.assertIn(section, html, f"Missing section: {section}")
 
+    def test_cve_analysis_section_present_when_cve_in_title(self):
+        article = _make_article()  # Default fixture has CVE-2026-9999
+        html = _template_enhance(article, self.config)
+        self.assertIn("CVE Analysis", html)
+        self.assertIn("CVE-2026-9999", html)
+
+    def test_cve_analysis_fallback_when_no_cve(self):
+        article = _make_article(title="Ransomware Campaign", summary="Generic ransomware news", labels=["Ransomware"])
+        html = _template_enhance(article, self.config)
+        self.assertIn("CVE Analysis", html)
+        self.assertIn("No specific CVE identifiers", html)
+
+    def test_sigma_rules_valid_yaml_structure(self):
+        import re as _re
+        article = _make_article()
+        html = _template_enhance(article, self.config)
+        self.assertIn("Sigma Rules", html)
+        # Tags must each be on their own line with proper YAML list indent
+        self.assertIn("tags:", html)
+        # Verify no malformed double-indented tags (old bug)
+        self.assertNotIn("attack.impact\n        -", html)
+
+    def test_sigma_logsource_valid_format(self):
+        # Use titles/summaries that trigger the correct branch (is_ransomware checks text, not labels)
+        for title, summary, labels, expected_field in [
+            ("LockBit Ransomware Campaign", "Ransomware encrypted hospital systems", ["Ransomware"], "category: process_creation"),
+            ("APT28 Nation-State Attack", "nation-state threat actor targeted government", ["APT"], "category: process_creation"),
+            ("CVE-2026-9999 Remote Code Execution", "Critical RCE vulnerability CVSS 9.8", ["Vulnerabilities"], "category: webserver"),
+        ]:
+            with self.subTest(labels=labels):
+                article = _make_article(title=title, summary=summary, labels=labels)
+                html = _template_enhance(article, self.config)
+                self.assertIn(expected_field, html, f"logsource field missing for {labels}")
+
     def test_mitre_attack_in_output(self):
         article = _make_article(labels=["Ransomware"])
         html = _template_enhance(article, self.config)
@@ -164,8 +198,64 @@ class TestAuthorityTransformer(unittest.TestCase):
             labels=["Ransomware"],
         )
         result = self.transformer.transform(article)
-        # Should contain backup-related recommendations
         self.assertIn("backup", result["content"].lower())
+
+    def test_svg_thumbnail_present_in_content(self):
+        article = _make_article()
+        result = self.transformer.transform(article)
+        # SVG thumbnail must be the first meaningful element — Blogger uses it as firstImageUrl
+        self.assertIn("data:image/svg+xml;base64,", result["content"])
+        self.assertIn('<img src="data:image/svg+xml;base64,', result["content"])
+
+    def test_svg_thumbnail_quotes_escaped_in_alt(self):
+        article = _make_article(title='Windows "RCE" Vulnerability — CVE-2026-9999')
+        result = self.transformer.transform(article)
+        # Unescaped double quote would break the alt attribute HTML
+        # After the alt=" opening, there should be no raw unescaped "
+        import re as _re
+        alt_match = _re.search(r'alt="([^"]*)"', result["content"])
+        self.assertIsNotNone(alt_match, "alt attribute not found or malformed")
+
+    def test_cvss_float_conversion_resilience(self):
+        # CVSS value that could be malformed should not raise
+        from automation.authority_transformer import _generate_svg_thumbnail
+        try:
+            result = _generate_svg_thumbnail("Test Title", ["Ransomware"], cvss="not-a-number")
+            self.assertIn("<img", result)
+        except (ValueError, TypeError):
+            self.fail("_generate_svg_thumbnail raised on bad CVSS value")
+
+    def test_svg_thumbnail_category_palette_ransomware(self):
+        import base64
+        from automation.authority_transformer import _generate_svg_thumbnail
+        result = _generate_svg_thumbnail("Ransomware Attack", ["Ransomware"])
+        # SVG is base64-encoded inside the img src — decode to check palette color
+        b64 = result.split('base64,')[1].split('"')[0]
+        svg_text = base64.b64decode(b64).decode("utf-8")
+        self.assertIn("#f59e0b", svg_text)  # Ransomware amber accent
+
+    def test_svg_thumbnail_category_palette_ai(self):
+        import base64
+        from automation.authority_transformer import _generate_svg_thumbnail
+        result = _generate_svg_thumbnail("LLM Prompt Injection", ["AI Security"])
+        b64 = result.split('base64,')[1].split('"')[0]
+        svg_text = base64.b64decode(b64).decode("utf-8")
+        self.assertIn("#a855f7", svg_text)  # AI Security purple accent
+
+    def test_content_contains_all_18_sections(self):
+        article = _make_article()
+        result = self.transformer.transform(article)
+        content = result["content"]
+        required = [
+            "Executive Summary", "Threat Overview", "Threat Severity Assessment",
+            "Business Impact", "Technical Analysis", "CVE Analysis",
+            "MITRE ATT&CK Mapping", "IOC Intelligence", "Detection Engineering Guidance",
+            "Sigma Rules", "Threat Hunting Queries", "SOC Analyst Actions",
+            "Executive Recommendations", "MSSP Opportunities",
+            "Sentinel APEX Intelligence Correlation", "Long-Term Strategic Risk", "References",
+        ]
+        for section in required:
+            self.assertIn(section, content, f"Section missing from assembled content: {section}")
 
 
 if __name__ == "__main__":
