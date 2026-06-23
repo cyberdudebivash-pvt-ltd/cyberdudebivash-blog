@@ -35,15 +35,21 @@ class TestTemplateEnhancement(unittest.TestCase):
         html = _template_enhance(article, self.config)
         required_sections = [
             "Executive Summary",
-            "Threat Analysis",
+            "Threat Overview",
+            "Threat Severity Assessment",
             "Business Impact",
-            "SOC Recommendations",
-            "MITRE ATT&CK",
-            "Detection Opportunities",
-            "Threat Hunting",
-            "CYBERDUDEBIVASH® Analyst Commentary",
-            "Enterprise Recommendations",
-            "Key Takeaways",
+            "Technical Analysis",
+            "MITRE ATT&CK Mapping",
+            "IOC Intelligence",
+            "Detection Engineering Guidance",
+            "Sigma Rules",
+            "Threat Hunting Queries",
+            "SOC Analyst Actions",
+            "Executive Recommendations",
+            "MSSP Opportunities",
+            "Sentinel APEX Intelligence Correlation",
+            "Long-Term Strategic Risk",
+            "References",
         ]
         for section in required_sections:
             self.assertIn(section, html, f"Missing section: {section}")

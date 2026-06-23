@@ -96,7 +96,11 @@ class TestSEOOptimizer(unittest.TestCase):
         self.assertEqual(ld["@context"], "https://schema.org")
         self.assertIn("@graph", ld)
         types = [item.get("@type") for item in ld["@graph"]]
-        self.assertIn("Article", types)
+        # Article type is Article, NewsArticle, or TechArticle depending on content signals
+        self.assertTrue(
+            any(t in ["Article", "NewsArticle", "TechArticle"] for t in types),
+            f"No article type found in {types}",
+        )
         self.assertIn("Organization", types)
         self.assertIn("BreadcrumbList", types)
 
