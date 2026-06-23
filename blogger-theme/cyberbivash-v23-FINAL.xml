@@ -839,6 +839,89 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
 @media(max-width:600px){.eco-strip-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:900px){.post-card-featured{grid-template-columns:1fr;}.post-card-featured .post-card-img-wrap{min-height:220px;}}
 
+
+/* ── Social share bar ── */
+.social-share-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:24px 0;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;}
+.social-share-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-right:4px;white-space:nowrap;}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:0.2s;border:1px solid transparent;cursor:pointer;}
+.share-btn:hover{transform:translateY(-1px);filter:brightness(1.1);}
+.share-btn-x{background:#000;color:#fff;border-color:#333;}
+.share-btn-linkedin{background:#0077b5;color:#fff;}
+.share-btn-reddit{background:#ff4500;color:#fff;}
+.share-btn-hn{background:#f60;color:#fff;}
+.share-btn-copy{background:var(--card);color:var(--accent);border-color:var(--accent-dim);}
+.share-btn-copy.copied{background:var(--accent);color:#000;}
+
+/* ── Newsletter inline ── */
+.nl-capture{background:linear-gradient(135deg,#0a1628,#061020);border:1px solid rgba(0,245,255,0.2);border-radius:14px;padding:28px;margin:32px 0;position:relative;overflow:hidden;text-align:center;}
+.nl-capture::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent4));}
+.nl-capture-eyebrow{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.nl-capture-title{color:#fff;font-family:'Outfit',sans-serif;font-weight:800;font-size:20px;margin-bottom:6px;}
+.nl-capture-sub{color:var(--text-secondary);font-size:13px;margin-bottom:20px;line-height:1.6;}
+.nl-capture-row{display:flex;gap:8px;max-width:460px;margin:0 auto;flex-wrap:wrap;justify-content:center;}
+.nl-capture-input{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:11px 16px;color:#fff;font-family:'Inter',sans-serif;font-size:13px;outline:none;}
+.nl-capture-input:focus{border-color:var(--accent);}
+.nl-capture-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:11px 22px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;transition:0.2s;}
+.nl-capture-btn:hover{opacity:0.9;transform:translateY(-1px);}
+.nl-capture-trust{font-size:10px;color:var(--text-muted);margin-top:10px;}
+
+/* ── Affiliate / tools strip ── */
+.affiliate-strip{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:20px;}
+.affiliate-strip-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;}
+.aff-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none;}
+.aff-item:last-child{border-bottom:none;padding-bottom:0;}
+.aff-item-icon{font-size:18px;flex-shrink:0;}
+.aff-item-body{flex:1;}
+.aff-item-name{color:#fff;font-size:12px;font-weight:600;line-height:1.2;}
+.aff-item-desc{color:var(--text-muted);font-size:10px;line-height:1.3;}
+.aff-item-badge{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:3px;white-space:nowrap;}
+.aff-badge-free{background:rgba(0,245,255,0.1);color:var(--accent);border:1px solid var(--accent-dim);}
+.aff-badge-trial{background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.2);}
+
+/* ── RSS / subscribe bar ── */
+.rss-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:16px;flex-wrap:wrap;}
+.rss-bar-label{color:var(--text-secondary);font-size:11px;flex:1;}
+.rss-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none;transition:0.2s;}
+.rss-btn-feed{background:rgba(245,158,11,0.1);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);}
+.rss-btn-news{background:rgba(0,245,255,0.1);color:var(--accent);border:1px solid var(--accent-dim);}
+.rss-btn:hover{transform:translateY(-1px);}
+
+/* ── Helpfulness vote ── */
+.helpful-widget{display:flex;align-items:center;gap:12px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin:24px 0;flex-wrap:wrap;}
+.helpful-q{color:var(--text-secondary);font-size:12px;flex:1;}
+.helpful-btn{padding:7px 18px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--border);background:var(--card);color:var(--text-secondary);cursor:pointer;transition:0.2s;}
+.helpful-btn:hover,.helpful-btn.active{background:var(--accent);color:#000;border-color:var(--accent);}
+.helpful-btn.no:hover,.helpful-btn.no.active{background:var(--danger);color:#fff;border-color:var(--danger);}
+
+/* ── Breaking alert banner ── */
+.breaking-alert{display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;margin-bottom:16px;}
+.breaking-pulse{width:8px;height:8px;border-radius:50%;background:#ef4444;animation:pulseBadge 1.2s infinite;flex-shrink:0;}
+.breaking-text{color:var(--text-secondary);font-size:11px;line-height:1.4;flex:1;}
+.breaking-text strong{color:#ef4444;}
+
+
+.share-btn.reddit{background:rgba(255,69,0,0.1);color:#ff4500;border:1px solid rgba(255,69,0,0.25);}
+.share-btn.hn{background:rgba(255,102,0,0.1);color:#ff6600;border:1px solid rgba(255,102,0,0.25);}
+.helpful-widget{display:flex;align-items:center;gap:10px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin:20px 0;flex-wrap:wrap;}
+.helpful-q{color:var(--text-secondary);font-size:12px;flex:1;min-width:160px;}
+.helpful-btn{padding:7px 16px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--border);background:var(--card);color:var(--text-secondary);cursor:pointer;transition:0.2s;}
+.helpful-btn:not(:disabled):hover,.helpful-btn.active{background:var(--accent);color:#000;border-color:var(--accent);}
+.helpful-btn.no:not(:disabled):hover,.helpful-btn.no.active{background:var(--danger);color:#fff;border-color:var(--danger);}
+
+.affiliate-strip{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:20px;}
+.affiliate-strip-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;}
+.aff-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);text-decoration:none;transition:0.2s;}
+.aff-item:last-child{border-bottom:none;padding-bottom:0;}
+.aff-item:hover{opacity:0.85;}
+.aff-item-icon{font-size:18px;flex-shrink:0;}
+.aff-item-body{flex:1;}
+.aff-item-name{color:#fff;font-size:12px;font-weight:600;line-height:1.2;}
+.aff-item-desc{color:var(--text-muted);font-size:10px;line-height:1.3;margin-top:2px;}
+.aff-item-badge{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:3px;white-space:nowrap;}
+.aff-badge-free{background:rgba(0,245,255,0.1);color:var(--accent);border:1px solid var(--accent-dim);}
+.aff-badge-trial{background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.2);}
+.rss-btn-feed{background:rgba(245,158,11,0.1);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);}
+.rss-btn-news{background:rgba(0,245,255,0.08);color:var(--accent);border:1px solid var(--accent-dim);}
 </b:skin>
 </head>
 <body>
@@ -1233,10 +1316,18 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
 
               <!-- Share buttons -->
               <div class='share-row'>
-                <span class='share-label'>Share:</span>
+                <span class='share-label'>Share Report:</span>
                 <button class='share-btn twitter' onclick='shareTwitter()'>𝕏 Twitter</button>
                 <button class='share-btn linkedin' onclick='shareLinkedIn()'>in LinkedIn</button>
+                <button class='share-btn reddit' onclick='shareReddit()'>▲ Reddit</button>
+                <button class='share-btn hn' onclick='shareHN()'>Y HN</button>
                 <button class='share-btn copy' id='copy-link-btn' onclick='copyLink(this)'>🔗 Copy Link</button>
+              </div>
+              <!-- Helpfulness vote -->
+              <div class='helpful-widget'>
+                <span class='helpful-q'>💬 Was this threat intelligence report useful to your SOC?</span>
+                <button class='helpful-btn' onclick='this.textContent=&quot;✓ Thanks!&quot;;this.classList.add(&quot;active&quot;);this.nextElementSibling.disabled=true;this.disabled=true;' type='button'>👍 Yes, very</button>
+                <button class='helpful-btn no' onclick='this.textContent=&quot;✓ Noted&quot;;this.classList.add(&quot;active&quot;);this.previousElementSibling.disabled=true;this.disabled=true;' type='button'>👎 Needs work</button>
               </div>
 
               <!-- Post Tags -->
@@ -1533,6 +1624,42 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
       <a class='sac-btn blue' href='https://tools.cyberdudebivash.com/' rel='noopener' target='_blank'>OPEN TOOLS HUB ↗</a>
     </div>
 
+
+    <!-- RSS + Subscribe -->
+    <div class='rss-bar' style='background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:16px;'>
+      <span style='color:var(--text-secondary);font-size:11px;flex:1;'>📡 Follow for live threat intelligence:</span>
+      <a class='rss-btn rss-btn-feed' href='https://cyberbivash.blogspot.com/feeds/posts/default' rel='noopener' style='display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:5px;font-family:JetBrains Mono,monospace;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none;background:rgba(245,158,11,0.1);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);' target='_blank'>RSS Feed</a>
+      <a class='rss-btn rss-btn-news' href='https://cyberbivash.blogspot.com/feeds/posts/default?alt=json' rel='noopener' style='display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:5px;font-family:JetBrains Mono,monospace;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none;background:rgba(0,245,255,0.08);color:var(--accent);border:1px solid var(--accent-dim);' target='_blank'>JSON Feed</a>
+    </div>
+
+    <!-- Free Security Tools (affiliate/partner links) -->
+    <div class='affiliate-strip'>
+      <div class='affiliate-strip-title'>🔧 Recommended Security Resources</div>
+      <a class='aff-item' href='https://tools.cyberdudebivash.com/' rel='noopener' target='_blank'>
+        <span class='aff-item-icon'>🔧</span>
+        <div class='aff-item-body'>
+          <div class='aff-item-name'>Security Tools Hub</div>
+          <div class='aff-item-desc'>50+ free cyber tools — CVE lookup, hash analyzer, encoder</div>
+        </div>
+        <span class='aff-item-badge aff-badge-free'>FREE</span>
+      </a>
+      <a class='aff-item' href='https://intel.cyberdudebivash.com/api-docs' rel='noopener' target='_blank'>
+        <span class='aff-item-icon'>⎋</span>
+        <div class='aff-item-body'>
+          <div class='aff-item-name'>Threat Intelligence API</div>
+          <div class='aff-item-desc'>CVE feeds, IOC bundles, YARA rules — SIEM-ready</div>
+        </div>
+        <span class='aff-item-badge aff-badge-free'>FREE TIER</span>
+      </a>
+      <a class='aff-item' href='https://intel.cyberdudebivash.com/upgrade.html' rel='noopener' target='_blank'>
+        <span class='aff-item-icon'>▲</span>
+        <div class='aff-item-body'>
+          <div class='aff-item-name'>Enterprise SOC Intelligence</div>
+          <div class='aff-item-desc'>Unlimited API, priority feeds, dedicated support</div>
+        </div>
+        <span class='aff-item-badge aff-badge-trial'>UPGRADE</span>
+      </a>
+    </div>
     <div class='sidebar-module'>
       <div class='module-title'>📊 POPULAR INTEL</div>
       <b:section id='sidebar-intel-recent' showaddelement='yes'>
@@ -2103,6 +2230,13 @@ function closeStickyBar(){
     document.querySelectorAll('img[data-src]').forEach(function(img){obs.observe(img);});
   }
 })();
+
+/* ── Reddit + HN share ── */
+function shareReddit(){var url=encodeURIComponent(window.location.href);var title=encodeURIComponent(document.title);window.open('https://reddit.com/submit?url='+url+'&title='+title,'_blank','width=600,height=500');}
+function shareHN(){var url=encodeURIComponent(window.location.href);var title=encodeURIComponent(document.title);window.open('https://news.ycombinator.com/submitlink?u='+url+'&t='+title,'_blank','width=600,height=500');}
+
+/* ── Canvas roundRect polyfill ── */
+if(!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){if(w<2*r)r=w/2;if(h<2*r)r=h/2;this.beginPath();this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath();return this;};}
 
 /* Smooth anchors */
 document.querySelectorAll('a[href^="#"]').forEach(function(a){
