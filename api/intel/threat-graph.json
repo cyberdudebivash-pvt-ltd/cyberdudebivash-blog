@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-23T23:01:56.129Z",
+  "generated": "2026-06-23T23:20:51.331Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3390,
+    "total_nodes": 3394,
     "actors": 8,
-    "cves": 755,
-    "campaigns": 317,
+    "cves": 756,
+    "campaigns": 318,
     "malware": 0,
-    "iocs": 342,
-    "edges": 1241
+    "iocs": 343,
+    "edges": 1244
   },
   "nodes": {
     "actor:lockbit": {
@@ -64741,6 +64741,84 @@
         "first_seen": "2026-06-23"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-7e0d5cb99cedca05": {
+      "id": "REDDIT_NETSEC-7e0d5cb99cedca05",
+      "type": "Intel",
+      "name": "I compiled a unified LLM-CTF benchmark – 2,639 real data points from NeurIPS 2024 + original multi-agent runs",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 74,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-23",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.kaggle.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:www.kaggle.com": {
+      "id": "ioc:domain:www.kaggle.com",
+      "type": "IOC",
+      "name": "www.kaggle.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-23"
+      },
+      "connections": []
+    },
+    "CVE-2026-54329": {
+      "id": "CVE-2026-54329",
+      "type": "CVE",
+      "name": "Snipe-IT API Vulnerable to Cross-Tenant Accessory Injection",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 47,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "snipe/snipe-it",
+        "published": "2026-06-23",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-48b06ac6": {
+      "id": "campaign:cluster-48b06ac6",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-23",
+        "last_seen": "2026-06-23",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 5 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_NETSEC-7e0d5cb99cedca05",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -75948,6 +76026,33 @@
       "target": "ioc:sha1:403f9c848b05274642f64450696bdcdc242a352a",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-7e0d5cb99cedca05→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-7e0d5cb99cedca05",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-7e0d5cb99cedca05→linked_to→ioc:domain:www.kaggle.com",
+      "source": "REDDIT_NETSEC-7e0d5cb99cedca05",
+      "target": "ioc:domain:www.kaggle.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-48b06ac6→includes→REDDIT_NETSEC-7e0d5cb99cedca05",
+      "source": "campaign:cluster-48b06ac6",
+      "target": "REDDIT_NETSEC-7e0d5cb99cedca05",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-23",
       "sources": []
     }
