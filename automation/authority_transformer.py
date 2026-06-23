@@ -5,6 +5,7 @@ LLM priority: Groq → DeepSeek → OpenRouter → Anthropic → template fallba
 """
 
 import base64
+import html as _html_escape
 import json
 import re
 from datetime import datetime, timezone
@@ -78,7 +79,10 @@ def _generate_svg_thumbnail(title: str, labels: list, cvss: Optional[str] = None
 
     cvss_badge = ""
     if cvss:
-        score = float(cvss)
+        try:
+            score = float(cvss)
+        except (ValueError, TypeError):
+            score = 0.0
         cvss_color = "#ef4444" if score >= 9.0 else "#f59e0b" if score >= 7.0 else "#22c55e"
         cvss_badge = f"""
   <rect x="980" y="20" width="200" height="56" rx="6" fill="{cvss_color}" opacity="0.95"/>
@@ -144,9 +148,10 @@ def _generate_svg_thumbnail(title: str, labels: list, cvss: Optional[str] = None
 </svg>"""
 
     svg_b64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
+    alt_text = _html_escape.escape(title[:80], quote=True)
     return (
         f'<img src="data:image/svg+xml;base64,{svg_b64}" '
-        f'alt="{title[:80]}" '
+        f'alt="{alt_text}" '
         f'width="1200" height="630" '
         f'style="width:100%;max-width:1200px;height:auto;display:block;margin:0 auto 24px;border-radius:8px" '
         f'loading="eager"/>'
@@ -256,7 +261,10 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 
     # Severity determination
     if cvss:
-        score = float(cvss)
+        try:
+            score = float(cvss)
+        except (ValueError, TypeError):
+            score = 0.0
         severity = "CRITICAL" if score >= 9.0 else "HIGH" if score >= 7.0 else "MEDIUM"
         severity_color = "#ef4444" if score >= 9.0 else "#f59e0b" if score >= 7.0 else "#22c55e"
     elif is_ransomware or is_apt or (is_cve and is_patch):
@@ -274,7 +282,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             "Impact → Data Encrypted for Impact (T1486): File system encryption with ransom note delivery",
             "Exfiltration → Exfiltration Over C2 Channel (T1041): Double-extortion data theft before encryption",
         ]
-        sigma_logsource = "windows\n    category: process_creation"
+        sigma_logsource = "product: windows\n    category: process_creation"
         sigma_detection = """detection:
     selection:
         CommandLine|contains:
@@ -284,7 +292,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             - '.onion'
     condition: selection"""
         sigma_title = "Ransomware Pre-Encryption Activity"
-        sigma_tags = "attack.impact\n        - attack.t1486\n        - attack.t1490"
+        sigma_tags = "    - attack.impact\n    - attack.t1486\n    - attack.t1490"
         hunt_queries = [
             "Shadow copy deletion — Windows Security Event ID 4688 with CommandLine containing 'vssadmin'",
             "Lateral movement via SMB — Network flow data showing mass SMB connections from single host",
@@ -311,7 +319,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             "Collection → Data from Local System (T1005): Targeted collection of sensitive files pre-exfiltration",
             "Exfiltration → Exfiltration Over Alternative Protocol (T1048): Data exfil via DNS or HTTPS tunneling",
         ]
-        sigma_logsource = "windows\n    category: process_creation"
+        sigma_logsource = "product: windows\n    category: process_creation"
         sigma_detection = """detection:
     selection_lolbas:
         Image|endswith:
@@ -324,7 +332,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             - 'decode'
     condition: selection_lolbas"""
         sigma_title = "Living-off-the-Land Binary Abuse — APT Staging"
-        sigma_tags = "attack.defense_evasion\n        - attack.t1218\n        - attack.t1027"
+        sigma_tags = "    - attack.defense_evasion\n    - attack.t1218\n    - attack.t1027"
         hunt_queries = [
             "LOLBAS abuse — EDR process telemetry for certutil.exe, mshta.exe, regsvr32.exe with network connections",
             "Scheduled task persistence — Windows Security Event ID 4698 (scheduled task creation) by non-admin accounts",
@@ -348,7 +356,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             "Lateral Movement → Exploitation of Remote Services (T1210): Lateral movement via the same vulnerability class",
             "Persistence → Server Software Component: Web Shell (T1505.003): Web shell installation post-exploitation",
         ]
-        sigma_logsource = "webserver"
+        sigma_logsource = "category: webserver"
         sigma_detection = f"""detection:
     selection:
         c-uri|contains:
@@ -361,7 +369,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             - 500
     condition: selection"""
         sigma_title = f"Web Application Exploitation Attempt — {cve_str}"
-        sigma_tags = "attack.initial_access\n        - attack.t1190"
+        sigma_tags = "    - attack.initial_access\n    - attack.t1190"
         hunt_queries = [
             f"Exploitation attempt — Web application logs for {cve_str} payload signatures in URI/body parameters",
             "Post-exploitation — EDR process tree analysis for web server spawning cmd.exe or powershell.exe",
@@ -384,7 +392,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             "Execution → User Execution (T1204): Victim-initiated execution of malicious content",
             "Defense Evasion → Obfuscated Files or Information (T1027): Payload obfuscation",
         ]
-        sigma_logsource = "windows\n    category: process_creation"
+        sigma_logsource = "product: windows\n    category: process_creation"
         sigma_detection = """detection:
     selection:
         ParentImage|endswith:
@@ -397,7 +405,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             - '\\wscript.exe'
     condition: selection"""
         sigma_title = "Suspicious Office/Mail Client Child Process"
-        sigma_tags = "attack.execution\n        - attack.t1204.002\n        - attack.t1059"
+        sigma_tags = "    - attack.execution\n    - attack.t1204.002\n    - attack.t1059"
         hunt_queries = [
             "Anomalous process spawn — EDR parent-child process analysis for office applications spawning shells",
             "Suspicious network connections — SIEM correlation of endpoint processes making unexpected external connections",
@@ -507,9 +515,9 @@ references:
 author: CYBERDUDEBIVASH® SENTINEL APEX Detection Engineering
 date: {datetime.now(timezone.utc).strftime('%Y/%m/%d')}
 tags:
-    - {sigma_tags}
+{sigma_tags}
 logsource:
-    product: {sigma_logsource}
+    {sigma_logsource}
 {sigma_detection}
 falsepositives:
     - Legitimate administrative activity — verify via change management records
