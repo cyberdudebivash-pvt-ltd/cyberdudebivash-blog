@@ -1088,19 +1088,11 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
             </b:loop>
           </b:if>
 
-          <!-- List view: open grid wrapper -->
-          <b:if cond='not data:view.isSingleItem'>
-            <div class='posts-grid' id='posts-grid'>
-          </b:if>
-
-          <b:loop values='data:posts' var='post'>
-            <b:include data='post' name='postWrapper'/>
-          </b:loop>
-
-          <!-- Close grid wrapper -->
-          <b:if cond='not data:view.isSingleItem'>
-            </div>
-          </b:if>
+          <div class='posts-grid' id='posts-grid'>
+            <b:loop values='data:posts' var='post'>
+              <b:include data='post' name='postWrapper'/>
+            </b:loop>
+          </div>
 
           <b:include name='pagination'/>
         </b:includable>
