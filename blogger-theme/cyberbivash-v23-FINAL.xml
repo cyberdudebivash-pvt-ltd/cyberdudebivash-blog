@@ -334,10 +334,14 @@ main{flex:1;min-width:0;}
 .post-card-featured{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;}
 .post-card-featured .post-card-img-wrap{aspect-ratio:auto;min-height:280px;}
 .post-card-featured .post-card-body{padding:36px;}
+.posts-grid>.single-post{grid-column:1/-1;width:100%;max-width:100%;}
 .post-card-img-wrap{position:relative;overflow:hidden;aspect-ratio:16/9;background:var(--surface);}
 .post-card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease;display:block;}
 .post-card:hover .post-card-img-wrap img{transform:scale(1.04);}
-.post-card-img-placeholder{width:100%;height:100%;background:linear-gradient(135deg,var(--surface),var(--card));display:flex;align-items:center;justify-content:center;font-size:40px;}
+.post-card-img-placeholder{width:100%;height:100%;background:linear-gradient(135deg,#0d1420 0%,#0a1628 40%,#071020 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;}
+.post-card-img-placeholder::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(0,245,255,0.06),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(139,92,246,0.06),transparent 60%);}
+.post-card-img-placeholder-icon{font-size:36px;filter:drop-shadow(0 0 12px rgba(0,245,255,0.4));position:relative;z-index:1;}
+.post-card-img-placeholder-label{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);opacity:0.7;position:relative;z-index:1;}
 .post-card-featured-badge{position:absolute;top:12px;left:12px;background:linear-gradient(135deg,var(--accent3),#e8890d);color:#000;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:4px;z-index:2;}
 .post-card-body{padding:22px;flex:1;display:flex;flex-direction:column;}
 .post-card-labels{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
@@ -771,7 +775,32 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
   h1.post-title,.post-body h2,.post-body h3{color:#000;}
   .post-body{color:#333;}
 }
-]]></b:skin>
+]]>
+/* ── Ecosystem Promo Cards ── */
+.eco-promo-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px;position:relative;}
+.eco-promo-slide{display:none;flex-direction:column;padding:20px;}
+.eco-promo-slide.active{display:flex;}
+.eco-promo-badge{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent-dim);border-radius:3px;padding:3px 8px;margin-bottom:12px;width:fit-content;}
+.eco-promo-icon{font-size:28px;margin-bottom:8px;}
+.eco-promo-title{color:#fff;font-family:'Outfit',sans-serif;font-weight:800;font-size:15px;line-height:1.3;margin-bottom:6px;}
+.eco-promo-desc{color:var(--text-secondary);font-size:11px;line-height:1.6;margin-bottom:14px;}
+.eco-promo-cta{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:8px 16px;border-radius:6px;text-decoration:none;transition:0.2s;}
+.eco-promo-cta:hover{opacity:0.9;transform:translateY(-1px);}
+.eco-promo-dots{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 0;border-top:1px solid var(--border);}
+.eco-promo-dot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:0.2s;}
+.eco-promo-dot.active{background:var(--accent);transform:scale(1.3);}
+.eco-promo-glow{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent4));animation:shimmer 3s infinite;}
+.eco-strip-inline{background:linear-gradient(135deg,var(--surface),var(--card));border:1px solid var(--border);border-radius:14px;padding:24px;margin:32px 0;position:relative;overflow:hidden;}
+.eco-strip-inline::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent4));}
+.eco-strip-title{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;}
+.eco-strip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.eco-strip-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;transition:0.2s;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.eco-strip-item:hover{border-color:var(--accent);transform:translateY(-2px);}
+.eco-strip-item-icon{font-size:20px;}
+.eco-strip-item-name{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);}
+.eco-strip-item-desc{font-size:9px;color:var(--text-muted);line-height:1.4;}
+@media(max-width:600px){.eco-strip-grid{grid-template-columns:repeat(2,1fr);}}
+</b:skin>
 </head>
 <body>
 <div aria-hidden='true' id='reading-progress'/>
@@ -1021,11 +1050,39 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
       </div>
     </section>
     <!-- ADSENSE IN-FEED -->
-    <div class='ad-unit' role='complementary'>
-      <div class='ad-unit-label'>Sponsored</div>
-      <div class='ad-unit-inner'>
-        <ins class='adsbygoogle' data-ad-client='ca-pub-8343951291888650' data-ad-format='auto' data-full-width-responsive='true' data-ad-slot='YOUR_AD_SLOT_ID' style='display:block;'/>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <div class='eco-strip-inline'>
+      <div class='eco-strip-title'>⚡ CYBERDUDEBIVASH® ECOSYSTEM PLATFORMS</div>
+      <div class='eco-strip-grid'>
+        <a class='eco-strip-item' href='https://intel.cyberdudebivash.com/' rel='noopener' target='_blank'>
+          <span class='eco-strip-item-icon'>🛡</span>
+          <span class='eco-strip-item-name'>Sentinel APEX</span>
+          <span class='eco-strip-item-desc'>Live CVE &amp; APT Intel</span>
+        </a>
+        <a class='eco-strip-item' href='https://intel.cyberdudebivash.com/api-docs' rel='noopener' target='_blank'>
+          <span class='eco-strip-item-icon'>⎋</span>
+          <span class='eco-strip-item-name'>Threat API</span>
+          <span class='eco-strip-item-desc'>Free RESTful API</span>
+        </a>
+        <a class='eco-strip-item' href='https://tools.cyberdudebivash.com/' rel='noopener' target='_blank'>
+          <span class='eco-strip-item-icon'>🔧</span>
+          <span class='eco-strip-item-name'>Tools Hub</span>
+          <span class='eco-strip-item-desc'>50+ Security Tools</span>
+        </a>
+        <a class='eco-strip-item' href='https://intel.cyberdudebivash.com/upgrade.html' rel='noopener' target='_blank'>
+          <span class='eco-strip-item-icon'>▲</span>
+          <span class='eco-strip-item-name'>Enterprise</span>
+          <span class='eco-strip-item-desc'>MSSP &amp; SOC Plans</span>
+        </a>
+        <a class='eco-strip-item' href='https://cyberdudebivash.in/' rel='noopener' target='_blank'>
+          <span class='eco-strip-item-icon'>🏢</span>
+          <span class='eco-strip-item-name'>Corporate</span>
+          <span class='eco-strip-item-desc'>Enterprise Portal</span>
+        </a>
+        <a class='eco-strip-item' href='https://blog.cyberdudebivash.in/' rel='noopener' target='_blank'>
+          <span class='eco-strip-item-icon'>📡</span>
+          <span class='eco-strip-item-name'>Intel Blog</span>
+          <span class='eco-strip-item-desc'>Threat Research</span>
+        </a>
       </div>
     </div>
     <!-- ECO STRIP -->
@@ -1219,13 +1276,51 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
               </div>
 
               <!-- In-article AdSense -->
-              <div class='ad-unit' style='margin-top:32px;'>
-                <div class='ad-unit-label'>Sponsored</div>
-                <div class='ad-unit-inner'>
-                  <ins class='adsbygoogle' data-ad-client='ca-pub-8343951291888650' data-ad-format='auto' data-full-width-responsive='true' data-ad-slot='YOUR_AD_SLOT_ID_2' style='display:block;'/>
-                  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-                </div>
-              </div>
+              <div class='eco-promo-card' id='eco-promo-s2'>
+      <div class='eco-promo-glow'/>
+      <div class='eco-promo-slide active'>
+        <span class='eco-promo-badge'>🛡 Platform</span>
+        <div class='eco-promo-icon'>🛡</div>
+        <div class='eco-promo-title'>SENTINEL APEX — Live Threat Intelligence</div>
+        <div class='eco-promo-desc'>AI-powered CVE tracking, APT feeds, Sigma/YARA rules, and autonomous SOC intelligence. Trusted by 4,800+ security professionals.</div>
+        <a class='eco-promo-cta' href='https://intel.cyberdudebivash.com/' rel='noopener' target='_blank'>LAUNCH PLATFORM ↗</a>
+      </div>
+      <div class='eco-promo-slide'>
+        <span class='eco-promo-badge'>⎋ API</span>
+        <div class='eco-promo-icon'>⎋</div>
+        <div class='eco-promo-title'>Threat Intel API — Free Tier Available</div>
+        <div class='eco-promo-desc'>RESTful API delivering CVE, malware, APT, and AI threat data. Integrate intelligence into your SIEM, SOAR, or custom tooling.</div>
+        <a class='eco-promo-cta' href='https://intel.cyberdudebivash.com/api-docs' rel='noopener' target='_blank'>VIEW API DOCS ↗</a>
+      </div>
+      <div class='eco-promo-slide'>
+        <span class='eco-promo-badge'>🔧 Tools</span>
+        <div class='eco-promo-icon'>🔧</div>
+        <div class='eco-promo-title'>Security Tools Hub — 50+ Free Tools</div>
+        <div class='eco-promo-desc'>Hash analyzer, CVE lookup, encoder/decoder, port scanner, IP reputation, YARA generator. Free, browser-based, no login required.</div>
+        <a class='eco-promo-cta' href='https://tools.cyberdudebivash.com/' rel='noopener' target='_blank'>OPEN TOOLS HUB ↗</a>
+      </div>
+      <div class='eco-promo-slide'>
+        <span class='eco-promo-badge'>▲ Enterprise</span>
+        <div class='eco-promo-icon'>▲</div>
+        <div class='eco-promo-title'>Enterprise Upgrade — Unlimited Intelligence</div>
+        <div class='eco-promo-desc'>Unlimited API, dedicated SOC integration, priority threat feeds, white-label and enterprise SLA for MSSPs and Fortune 500 SOCs.</div>
+        <a class='eco-promo-cta' href='https://intel.cyberdudebivash.com/upgrade.html' rel='noopener' target='_blank'>ENTERPRISE PLANS ↗</a>
+      </div>
+      <div class='eco-promo-slide'>
+        <span class='eco-promo-badge'>🏢 Corporate</span>
+        <div class='eco-promo-icon'>🏢</div>
+        <div class='eco-promo-title'>CYBERDUDEBIVASH® Global AI Security Authority</div>
+        <div class='eco-promo-desc'>AI-native cybersecurity research, consulting &amp; intelligence. MITRE ATT&amp;CK, OWASP LLM, Zero Trust, enterprise detection engineering.</div>
+        <a class='eco-promo-cta' href='https://cyberdudebivash.in/' rel='noopener' target='_blank'>VISIT PORTAL ↗</a>
+      </div>
+      <div class='eco-promo-dots'>
+        <span class='eco-promo-dot active' onclick='ecoSlide(&quot;eco-promo-s2&quot;,0)'/>
+        <span class='eco-promo-dot' onclick='ecoSlide(&quot;eco-promo-s2&quot;,1)'/>
+        <span class='eco-promo-dot' onclick='ecoSlide(&quot;eco-promo-s2&quot;,2)'/>
+        <span class='eco-promo-dot' onclick='ecoSlide(&quot;eco-promo-s2&quot;,3)'/>
+        <span class='eco-promo-dot' onclick='ecoSlide(&quot;eco-promo-s2&quot;,4)'/>
+      </div>
+    </div>
             </article>
 
           <b:else/>
@@ -1238,9 +1333,17 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
                   <b:if cond='data:post.isFirstPost and data:blog.url == data:blog.homepageUrl'>
                     <span class='post-card-featured-badge'>⭐ FEATURED INTEL</span>
                   </b:if>
-                  <img alt='' expr:src='data:post.firstImageUrl' loading='lazy'/>
+                  <img alt='' expr:src='data:post.firstImageUrl' loading='lazy' onerror='this.style.display=&quot;none&quot;;this.nextElementSibling.style.display=&quot;flex&quot;;'/>
+                  <div class='post-card-img-placeholder' style='display:none;'>
+                    <span class='post-card-img-placeholder-icon'>🛡</span>
+                    <span class='post-card-img-placeholder-label'>Intel Report</span>
+                  </div>
                 <b:else/>
-                  <div class='post-card-img-placeholder'>🛡</div>
+                  <div class='post-card-img-placeholder'>
+                    <span class='post-card-img-placeholder-icon'>🛡</span>
+                    <b:if cond='data:post.labels'><span class='post-card-img-placeholder-label'><data:post.labels.first.name/></span>
+                    <b:else/><span class='post-card-img-placeholder-label'>Intel Report</span></b:if>
+                  </div>
                 </b:if>
               </a>
               <div class='post-card-body'>
@@ -1421,11 +1524,49 @@ h1.post-title{color:#fff;font-size:clamp(22px,3vw,36px);font-weight:900;margin:0
       </b:section>
     </div>
 
-    <div class='ad-unit'>
-      <div class='ad-unit-label'>Sponsored</div>
-      <div class='ad-unit-inner'>
-        <ins class='adsbygoogle' data-ad-client='ca-pub-8343951291888650' data-ad-format='auto' data-full-width-responsive='true' data-ad-slot='YOUR_AD_SLOT_SIDEBAR' style='display:block;min-height:250px;'/>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <div class='eco-promo-card' id='eco-promo-sb'>
+      <div class='eco-promo-glow'/>
+      <div class='eco-promo-slide active'>
+        <span class='eco-promo-badge'>🛡 Platform</span>
+        <div class='eco-promo-icon'>🛡</div>
+        <div class='eco-promo-title'>SENTINEL APEX — Live Threat Intelligence</div>
+        <div class='eco-promo-desc'>AI-powered CVE tracking, APT feeds, Sigma/YARA rules, and autonomous SOC intelligence. Trusted by 4,800+ security professionals.</div>
+        <a class='eco-promo-cta' href='https://intel.cyberdudebivash.com/' rel='noopener' target='_blank'>LAUNCH PLATFORM ↗</a>
+      </div>
+      <div class='eco-promo-slide'>
+        <span class='eco-promo-badge'>⎋ API</span>
+        <div class='eco-promo-icon'>⎋</div>
+        <div class='eco-promo-title'>Threat Intel API — Free Tier Available</div>
+        <div class='eco-promo-desc'>RESTful API delivering CVE, malware, APT, and AI threat data. Integrate intelligence into your SIEM, SOAR, or custom tooling.</div>
+        <a class='eco-promo-cta' href='https://intel.cyberdudebivash.com/api-docs' rel='noopener' target='_blank'>VIEW API DOCS ↗</a>
+      </div>
+      <div class='eco-promo-slide'>
+        <span class='eco-promo-badge'>🔧 Tools</span>
+        <div class='eco-promo-icon'>🔧</div>
+        <div class='eco-promo-title'>Security Tools Hub — 50+ Free Tools</div>
+        <div class='eco-promo-desc'>Hash analyzer, CVE lookup, encoder/decoder, port scanner, IP reputation, YARA generator. Free, browser-based, no login required.</div>
+        <a class='eco-promo-cta' href='https://tools.cyberdudebivash.com/' rel='noopener' target='_blank'>OPEN TOOLS HUB ↗</a>
+      </div>
+      <div class='eco-promo-slide'>
+        <span class='eco-promo-badge'>▲ Enterprise</span>
+        <div class='eco-promo-icon'>▲</div>
+        <div class='eco-promo-title'>Enterprise Upgrade — Unlimited Intelligence</div>
+        <div class='eco-promo-desc'>Unlimited API, dedicated SOC integration, priority threat feeds, white-label and enterprise SLA for MSSPs and Fortune 500 SOCs.</div>
+        <a class='eco-promo-cta' href='https://intel.cyberdudebivash.com/upgrade.html' rel='noopener' target='_blank'>ENTERPRISE PLANS ↗</a>
+      </div>
+      <div class='eco-promo-slide'>
+        <span class='eco-promo-badge'>🏢 Corporate</span>
+        <div class='eco-promo-icon'>🏢</div>
+        <div class='eco-promo-title'>CYBERDUDEBIVASH® Global AI Security Authority</div>
+        <div class='eco-promo-desc'>AI-native cybersecurity research, consulting &amp; intelligence. MITRE ATT&amp;CK, OWASP LLM, Zero Trust, enterprise detection engineering.</div>
+        <a class='eco-promo-cta' href='https://cyberdudebivash.in/' rel='noopener' target='_blank'>VISIT PORTAL ↗</a>
+      </div>
+      <div class='eco-promo-dots'>
+        <span class='eco-promo-dot active' onclick='ecoSlide(&quot;eco-promo-sb&quot;,0)'/>
+        <span class='eco-promo-dot' onclick='ecoSlide(&quot;eco-promo-sb&quot;,1)'/>
+        <span class='eco-promo-dot' onclick='ecoSlide(&quot;eco-promo-sb&quot;,2)'/>
+        <span class='eco-promo-dot' onclick='ecoSlide(&quot;eco-promo-sb&quot;,3)'/>
+        <span class='eco-promo-dot' onclick='ecoSlide(&quot;eco-promo-sb&quot;,4)'/>
       </div>
     </div>
 
@@ -1947,5 +2088,27 @@ document.querySelectorAll('a[href^="#"]').forEach(function(a){
 //]]>
 </script>
 
+
+<script>
+//<![CDATA[
+function ecoSlide(id,idx){
+  var card=document.getElementById(id);if(!card)return;
+  var slides=card.querySelectorAll('.eco-promo-slide');
+  var dots=card.querySelectorAll('.eco-promo-dot');
+  slides.forEach(function(s,i){s.classList.toggle('active',i===idx);});
+  dots.forEach(function(d,i){d.classList.toggle('active',i===idx);});
+}
+// Auto-rotate all eco promo cards every 5s
+(function(){
+  var cards=document.querySelectorAll('.eco-promo-card');
+  cards.forEach(function(card){
+    var idx=0;
+    var slides=card.querySelectorAll('.eco-promo-slide');
+    if(slides.length<2)return;
+    setInterval(function(){idx=(idx+1)%slides.length;ecoSlide(card.id,idx);},5000);
+  });
+})();
+//]]>
+</script>
 </body>
 </html>
