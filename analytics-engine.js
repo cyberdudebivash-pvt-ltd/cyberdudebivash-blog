@@ -11,7 +11,7 @@
   // § 1. CONFIGURATION
   // ─────────────────────────────────────────────
   var CONFIG = {
-    GA4_ID: 'YOUR_GA4_MEASUREMENT_ID',       // e.g. G-XXXXXXXXXX
+    GA4_ID: 'G-XTGLNMNNC7',                  // blog.cyberdudebivash.in (GA4 property 539407169)
     GADS_ID: 'YOUR_GADS_CONVERSION_ID',      // e.g. AW-XXXXXXXXXX
     GADS_CONVERSIONS: {
       enterprise_form:   'YOUR_CONVERSION_LABEL_1',
