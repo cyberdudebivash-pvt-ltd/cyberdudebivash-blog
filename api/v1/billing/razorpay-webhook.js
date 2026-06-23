@@ -12,8 +12,9 @@
 'use strict';
 const redis     = require('../../_lib/redis');
 const razorpay  = require('../../_lib/razorpay');
+const sec       = require('../../_lib/security');
 const {
-  normalizeEmail, parseHash, now, auditLog, upgradeUserTier,
+  PLANS, normalizeEmail, parseHash, now, auditLog, upgradeUserTier,
   SUBMISSION_TTL_SECONDS,
 } = require('../../_lib/payment-utils');
 
@@ -25,11 +26,12 @@ module.exports = async (req, res) => {
   const sig = req.headers['x-razorpay-signature'];
   if (!sig) return res.status(400).json({ error: 'Missing X-Razorpay-Signature' });
 
+  // Raw body required for signature verification — see security.js readRawBody
   let rawBody;
   try {
-    rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    rawBody = await sec.readRawBody(req);
   } catch (_) {
-    return res.status(400).json({ error: 'Cannot read body' });
+    return res.status(413).json({ error: 'Payload too large or unreadable' });
   }
 
   if (!razorpay.verifyWebhookSignature(rawBody, sig)) {
@@ -63,12 +65,14 @@ module.exports = async (req, res) => {
         if (!order || order.status === 'paid') break;
 
         const email = normalizeEmail(order.email);
+        const tier  = (PLANS[order.planType] || {}).tier || order.planType;
         await redis.setex(dupKey, SUBMISSION_TTL_SECONDS, '1');
         await redis.hmset(`payment:rzp:order:${orderId}`, {
           status: 'paid', paymentId, verifiedAt: now(),
         });
+        await redis.expire(`payment:rzp:order:${orderId}`, SUBMISSION_TTL_SECONDS);
 
-        await upgradeUserTier(email, order.planType, {
+        await upgradeUserTier(email, tier, {
           transactionId: paymentId,
           gateway:       'razorpay_webhook',
           orderId,
@@ -89,3 +93,7 @@ module.exports = async (req, res) => {
     res.status(500).json({ error: 'Webhook handler failed' });
   }
 };
+
+// Disable Vercel's automatic body parsing — we need the exact raw bytes
+// Razorpay signed, not a re-serialization of the parsed object.
+module.exports.config = { api: { bodyParser: false } };

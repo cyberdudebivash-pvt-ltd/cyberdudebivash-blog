@@ -8,6 +8,7 @@
 'use strict';
 const redis  = require('../../_lib/redis');
 const stripe = require('../../_lib/stripe');
+const sec    = require('../../_lib/security');
 const { planToTier } = stripe;
 
 module.exports = async (req, res) => {
@@ -18,12 +19,12 @@ module.exports = async (req, res) => {
   const sig = req.headers['stripe-signature'];
   if (!sig) return res.status(400).json({ error: 'Missing Stripe-Signature' });
 
-  // Get raw body for signature verification
+  // Raw body required for signature verification — see security.js readRawBody
   let rawBody;
   try {
-    rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    rawBody = await sec.readRawBody(req);
   } catch (_) {
-    return res.status(400).json({ error: 'Cannot read body' });
+    return res.status(413).json({ error: 'Payload too large or unreadable' });
   }
 
   // Verify signature
@@ -98,6 +99,10 @@ module.exports = async (req, res) => {
     res.status(500).json({ error: `Webhook handler failed: ${e.message}` });
   }
 };
+
+// Disable Vercel's automatic body parsing — we need the exact raw bytes
+// Stripe signed, not a re-serialization of the parsed object.
+module.exports.config = { api: { bodyParser: false } };
 
 // Upgrade user tier in Redis
 async function upgradeTier(email, newTier, subscriptionId) {

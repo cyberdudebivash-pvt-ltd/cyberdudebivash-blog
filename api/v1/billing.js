@@ -486,6 +486,9 @@ async function handleCreateRazorpayOrder(req, res) {
       ip,
     });
     await redis.expire(`payment:rzp:order:${order.id}`, INTENT_TTL_SECONDS);
+    /* Reconciliation index — lets admin?action=razorpay-orders enumerate
+       orders even after the underlying hash expires or is overwritten. */
+    await redis.zadd('payment:rzp:orders', Date.now(), order.id);
 
     await auditLog('RAZORPAY_ORDER_CREATED', { orderId: order.id, email, planType, amount: plan.amount, ip });
 
@@ -592,12 +595,14 @@ async function handleVerifyRazorpayPayment(req, res) {
   }
 
   try {
+    const tier = (PLANS[planType] || {}).tier || planType;
     await redis.setex(dupKey, SUBMISSION_TTL_SECONDS, '1');
     await redis.hmset(`payment:rzp:order:${orderId}`, {
       status: 'paid', paymentId, verifiedAt: now(),
     });
+    await redis.expire(`payment:rzp:order:${orderId}`, SUBMISSION_TTL_SECONDS);
 
-    const result = await upgradeUserTier(email, planType, {
+    const result = await upgradeUserTier(email, tier, {
       transactionId: paymentId,
       gateway:       'razorpay',
       orderId,
