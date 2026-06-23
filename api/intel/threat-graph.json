@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-23T18:33:57.090Z",
+  "generated": "2026-06-23T19:01:42.160Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3374,
+    "total_nodes": 3376,
     "actors": 8,
     "cves": 751,
     "campaigns": 317,
     "malware": 0,
-    "iocs": 338,
-    "edges": 1235
+    "iocs": 339,
+    "edges": 1237
   },
   "nodes": {
     "actor:lockbit": {
@@ -64446,6 +64446,46 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-ee42cfaecb17ac4f": {
+      "id": "REDDIT_CYBER-ee42cfaecb17ac4f",
+      "type": "Intel",
+      "name": "Scattered Spider Hackers Plead Guilty on Day 1 of Trial",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-23",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:krebsonsecurity.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:krebsonsecurity.com": {
+      "id": "ioc:domain:krebsonsecurity.com",
+      "type": "IOC",
+      "name": "krebsonsecurity.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-23"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -75597,6 +75637,24 @@
       "id": "REDDIT_CYBER-c2e0106cd70e1f9d→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_CYBER-c2e0106cd70e1f9d",
       "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-ee42cfaecb17ac4f→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-ee42cfaecb17ac4f",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-ee42cfaecb17ac4f→linked_to→ioc:domain:krebsonsecurity.com",
+      "source": "REDDIT_CYBER-ee42cfaecb17ac4f",
+      "target": "ioc:domain:krebsonsecurity.com",
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-06-23",
