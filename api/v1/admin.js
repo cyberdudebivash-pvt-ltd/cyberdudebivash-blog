@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
 
   if (!action) {
     return fail(res, 400, 'MISSING_ACTION',
-      'action required. Valid: pending, approve, reject, audit, razorpay-orders. All routes require X-Admin-Key header.');
+      'action required. Valid: pending, approve, reject, audit, razorpay-orders, product-orders. All routes require X-Admin-Key header.');
   }
 
   /* Phase 3: Admin auth gate — timing-safe, X-Admin-Key only */
@@ -63,9 +63,10 @@ module.exports = async (req, res) => {
     case 'reject':           return handleReject(req, res);
     case 'audit':            return handleAudit(req, res);
     case 'razorpay-orders':  return handleRazorpayOrders(req, res);
+    case 'product-orders':   return handleProductOrders(req, res);
     default:
       return fail(res, 400, 'INVALID_ACTION',
-        `Unknown action: "${action}". Valid: pending, approve, reject, audit, razorpay-orders`);
+        `Unknown action: "${action}". Valid: pending, approve, reject, audit, razorpay-orders, product-orders`);
   }
 };
 
@@ -471,5 +472,80 @@ async function handleRazorpayOrders(req, res) {
 
   } catch (e) {
     return fail(res, 500, 'FETCH_FAILED', sec.safeError(e, 'Failed to fetch Razorpay orders. Please retry.'));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GET /api/v1/admin?action=product-orders
+   Fulfillment queue for one-time digital product purchases
+   (Sigma/YARA packs, threat reports, playbooks — see products.html).
+   No automated file delivery exists yet, so every "paid" order here
+   needs the deliverable emailed manually to the buyer.
+   Query: ?limit=50  ?offset=0  ?status=created|paid|all (default: all)
+═══════════════════════════════════════════════════════════════ */
+async function handleProductOrders(req, res) {
+  if (req.method !== 'GET') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'GET required');
+
+  const limit       = Math.min(parseInt(req.query.limit  || '50', 10), 200);
+  const offset       = Math.max(parseInt(req.query.offset || '0',  10), 0);
+  const statusFilter = String(req.query.status || 'all').toLowerCase();
+
+  try {
+    const orderIds = await redis.zrevrange('payment:product:orders', 0, 999) || [];
+    const total    = orderIds.length;
+    const page     = orderIds.slice(offset, offset + limit);
+
+    if (page.length === 0) {
+      return ok(res, {
+        orders: [], total, limit, offset, filter: statusFilter,
+        message: total === 0 ? 'No product orders found.' : `No orders at offset ${offset}. Total: ${total}`,
+      });
+    }
+
+    let results;
+    try {
+      results = await redis.pipeline(page.map(id => ['HGETALL', `payment:product:order:${id}`]));
+    } catch (_) {
+      results = await Promise.all(page.map(id => redis.hgetall(`payment:product:order:${id}`)));
+    }
+
+    let orders = results.map((raw, idx) => {
+      const obj = parseHash(raw);
+      if (!obj) {
+        return {
+          session_id: page[idx], status: 'expired_unpaid',
+          note: 'Checkout session hash expired (24h TTL) without being marked paid — likely an abandoned checkout.',
+        };
+      }
+      return {
+        session_id:  obj.sessionId,
+        email:       obj.email,
+        product_id:  obj.productId,
+        product_name: obj.productName,
+        amount:      parseInt(obj.amount || '0', 10),
+        currency:    obj.currency,
+        status:      obj.status,
+        created_at:  obj.createdAt,
+        paid_at:     obj.paidAt || null,
+        ip:          obj.ip,
+        flag:        obj.status === 'paid' ? 'NEEDS_MANUAL_FULFILLMENT' : null,
+      };
+    });
+
+    if (statusFilter !== 'all') {
+      orders = orders.filter(o => o.status === statusFilter);
+    }
+
+    return ok(res, {
+      orders, total, limit, offset, filter: statusFilter,
+      pagination: {
+        has_more:    offset + limit < total,
+        next_offset: offset + limit < total ? offset + limit : null,
+      },
+      note: 'Orders with status="paid" need the digital deliverable emailed manually to the buyer — no automated file delivery exists yet.',
+    });
+
+  } catch (e) {
+    return fail(res, 500, 'FETCH_FAILED', sec.safeError(e, 'Failed to fetch product orders. Please retry.'));
   }
 }

@@ -29,6 +29,7 @@ const {
   now, parseHash, ok, fail, parseBody, auditLog, upgradeUserTier,
 } = require('../_lib/payment-utils');
 const sec = require('../_lib/security');
+const { getProduct } = require('../_lib/products-catalog');
 
 /* ─── Allowed payment methods ─────────────────────────────────── */
 const VALID_PAYMENT_METHODS = new Set(['UPI', 'BANK', 'NEFT', 'IMPS', 'RTGS', 'PHONEPE', 'GPAY', 'PAYTM', 'OTHER']);
@@ -39,6 +40,7 @@ const FIELDS = {
   'submit-payment':          ['email', 'intent_id', 'utr_number', 'transaction_id', 'payment_method'],
   'create-razorpay-order':   ['email', 'plan_type'],
   'verify-razorpay-payment': ['email', 'plan_type', 'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature'],
+  'create-product-checkout': ['email', 'product_id'],
 };
 
 /* ─── Main Router ─────────────────────────────────────────────── */
@@ -55,7 +57,7 @@ module.exports = async (req, res) => {
 
   const action = String(req.query.action || '').toLowerCase().trim();
 
-  const VALID_ACTIONS = 'create-intent, submit-payment, status, subscribe, create-razorpay-order, verify-razorpay-payment';
+  const VALID_ACTIONS = 'create-intent, submit-payment, status, subscribe, create-razorpay-order, verify-razorpay-payment, create-product-checkout';
 
   if (!action) {
     return fail(res, 400, 'MISSING_ACTION', `action parameter required. Valid: ${VALID_ACTIONS}.`);
@@ -69,6 +71,7 @@ module.exports = async (req, res) => {
     case 'subscribe':                return handleSubscribe(req, res);
     case 'create-razorpay-order':    return handleCreateRazorpayOrder(req, res);
     case 'verify-razorpay-payment':  return handleVerifyRazorpayPayment(req, res);
+    case 'create-product-checkout':  return handleCreateProductCheckout(req, res);
     default:
       return fail(res, 400, 'INVALID_ACTION', `Unknown action: "${action}". Valid: ${VALID_ACTIONS}`);
   }
@@ -626,5 +629,76 @@ async function handleVerifyRazorpayPayment(req, res) {
 
   } catch (e) {
     return fail(res, 500, 'VERIFICATION_FAILED', sec.safeError(e, 'Verification failed. Please contact support with your payment ID.'));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   POST /api/v1/billing?action=create-product-checkout
+   One-time digital product checkout (Stripe Checkout, mode=payment).
+   Used by /products.html "Buy Now" buttons — replaces mailto links.
+   Body: { email, product_id }
+   Fulfillment is manual today: paid orders are recorded in Redis and
+   reviewed via GET /api/v1/admin?action=product-orders.
+═══════════════════════════════════════════════════════════════ */
+async function handleCreateProductCheckout(req, res) {
+  if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
+
+  if (!process.env.STRIPE_SECRET_KEY) {
+    return fail(res, 503, 'BILLING_UNAVAILABLE',
+      'Instant checkout is not configured yet. Contact bivash@cyberdudebivash.com to order this product.');
+  }
+
+  const ip   = sec.getIp(req);
+  const body = await parseBody(req);
+
+  const whitelistErr = sec.assertFieldWhitelist(body, FIELDS['create-product-checkout']);
+  if (whitelistErr) return fail(res, 400, 'INVALID_FIELDS', whitelistErr);
+
+  const email     = normalizeEmail(body.email);
+  const productId = sanitize(String(body.product_id || ''), 64);
+
+  if (!sec.validateEmail(email)) {
+    return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
+  }
+  const product = getProduct(productId);
+  if (!product) {
+    return fail(res, 400, 'INVALID_PRODUCT', `Unknown product_id: "${productId}"`);
+  }
+
+  /* Same daily intent-creation budget as the manual flow (5/day/IP) */
+  if (!(await sec.intentIpRateLimit(req, res))) return;
+
+  try {
+    const base = process.env.NEXT_PUBLIC_BASE_URL || 'https://blog.cyberdudebivash.in';
+    const session = await stripe.createProductCheckoutSession(
+      email, productId, product,
+      `${base}/products.html?checkout=success&product=${encodeURIComponent(productId)}`,
+      `${base}/products.html?checkout=cancelled`
+    );
+
+    await redis.hmset(`payment:product:order:${session.id}`, {
+      sessionId: session.id,
+      email, productId,
+      productName: product.name,
+      amount:    String(product.amount),
+      currency:  product.currency,
+      status:    'created',
+      createdAt: now(),
+      ip,
+    });
+    await redis.expire(`payment:product:order:${session.id}`, INTENT_TTL_SECONDS);
+    await redis.zadd('payment:product:orders', Date.now(), session.id);
+
+    await auditLog('PRODUCT_CHECKOUT_CREATED', { sessionId: session.id, email, productId, amount: product.amount, ip });
+
+    return ok(res, {
+      message: 'Checkout session created.',
+      checkout_url: session.url,
+      session_id:   session.id,
+      product: { product_id: productId, name: product.name, amount: product.amount, currency: product.currency },
+    }, 201);
+
+  } catch (e) {
+    return fail(res, 500, 'CHECKOUT_FAILED', sec.safeError(e, 'Checkout unavailable. Please retry or contact support.'));
   }
 }

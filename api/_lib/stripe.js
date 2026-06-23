@@ -88,6 +88,25 @@ async function createCheckoutSession(email, plan, successUrl, cancelUrl) {
   });
 }
 
+// Create a one-time Checkout Session for a digital product (mode=payment).
+// Uses inline price_data — no pre-created Stripe Price object required,
+// since the product catalog (api/_lib/products-catalog.js) is the source
+// of truth for name/amount rather than the Stripe dashboard.
+async function createProductCheckoutSession(email, productId, product, successUrl, cancelUrl) {
+  return stripeRequest('POST', '/checkout/sessions', {
+    mode:                                       'payment',
+    customer_email:                             email,
+    'line_items[0][price_data][currency]':      product.currency,
+    'line_items[0][price_data][unit_amount]':   String(product.amount),
+    'line_items[0][price_data][product_data][name]': product.name,
+    'line_items[0][quantity]':                  '1',
+    success_url:                                successUrl,
+    cancel_url:                                 cancelUrl,
+    'metadata[product_id]':                     productId,
+    'metadata[kind]':                            'digital_product',
+  });
+}
+
 // Cancel subscription
 async function cancelSubscription(subscriptionId) {
   return stripeRequest('DELETE', `/subscriptions/${subscriptionId}`);
@@ -113,6 +132,7 @@ module.exports = {
   getOrCreateCustomer,
   createSubscription,
   createCheckoutSession,
+  createProductCheckoutSession,
   cancelSubscription,
   getCustomerSubscriptions,
   planToTier,
