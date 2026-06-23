@@ -279,6 +279,50 @@
       display: inline-flex; align-items: center; gap: .4rem;
     }
     .btn-buy-red:hover { transform: scale(1.04); box-shadow: 0 0 20px rgba(255,77,109,0.4); }
+    button.btn-buy, button.btn-buy-gold, button.btn-buy-red, button.btn-primary {
+      border: none; cursor: pointer; font-family: inherit;
+    }
+
+    /* CHECKOUT MODAL */
+    .checkout-overlay {
+      display: none; position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .checkout-overlay.open { display: flex; }
+    .checkout-box {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 16px;
+      padding: 2rem; max-width: 420px; width: 100%;
+    }
+    .checkout-box h3 { color: #fff; font-size: 1.1rem; font-weight: 800; margin-bottom: .5rem; }
+    .checkout-box .ck-price { color: var(--muted); font-size: .85rem; margin-bottom: 1.25rem; }
+    .checkout-box label { display: block; font-size: .8rem; color: var(--muted); margin-bottom: .4rem; }
+    .checkout-box input {
+      width: 100%; padding: .7rem .9rem; border-radius: 8px;
+      border: 1px solid var(--border); background: #0a0e16; color: #fff;
+      font-size: .9rem; margin-bottom: .5rem; font-family: inherit;
+    }
+    .checkout-box input:focus { outline: none; border-color: var(--cyan); }
+    .checkout-box .ck-error { color: var(--red); font-size: .78rem; min-height: 1.2em; margin-bottom: .5rem; }
+    .checkout-box .ck-fallback { color: var(--muted); font-size: .72rem; margin-bottom: 1rem; }
+    .checkout-box .ck-fallback a { color: var(--cyan); text-decoration: none; }
+    .checkout-actions { display: flex; gap: .75rem; }
+    .checkout-actions button {
+      flex: 1; padding: .7rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+    .checkout-cancel { border: 1px solid var(--border); background: transparent; color: var(--muted); }
+    .checkout-submit { border: none; justify-content: center; }
+    .checkout-submit:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* CHECKOUT BANNER (post-redirect success/cancel) */
+    .checkout-banner {
+      max-width: 1400px; margin: 1.5rem auto 0; padding: 0 2rem;
+    }
+    .checkout-banner .cb-inner {
+      border-radius: 12px; padding: 1rem 1.5rem; font-size: .9rem; font-weight: 600;
+    }
+    .checkout-banner.success .cb-inner { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.35); color: #4ade80; }
+    .checkout-banner.cancelled .cb-inner { background: rgba(255,140,66,0.12); border: 1px solid rgba(255,140,66,0.35); color: var(--orange); }
 
     /* BUNDLE SPOTLIGHT */
     .bundle-section {
@@ -427,6 +471,8 @@
 </nav>
 <div class='section-nav-bar' style='background:#060a14;border-top:1px solid #1a2535;padding:6px 20px;font-size:.78em;display:flex;gap:16px;flex-wrap:wrap'><a href="/intel/">Intel Hub</a> | <a href="/breaking/">Breaking</a> | <a href="/malware/">Malware</a> | <a href="/ai-security/">AI Security</a></div>
 
+<div id="checkoutBanner"></div>
+
 <!-- HERO -->
 <section class="hero">
   <div class="hero-badge">⚡ CYBERDUDEBIVASH SENTINEL APEX — Intelligence Store</div>
@@ -484,7 +530,7 @@
           <span class="price-tag">$149</span><span class="price-old">$299</span>
           <span class="price-note">One-time + 12mo updates</span>
         </div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=Sigma Megapack 2026 Order" class="btn-buy-gold">⚡ Buy Now</a>
+        <button class="btn-buy-gold" onclick="buyProduct('sigma-megapack-2026','CYBERDUDEBIVASH SENTINEL APEX Sigma Rule Megapack 2026','$149')">⚡ Buy Now</button>
       </div>
     </div>
 
@@ -512,7 +558,7 @@
           <span class="price-tag">$89</span><span class="price-old">$149</span>
           <span class="price-note">One-time license</span>
         </div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=Ransomware YARA Pack Order" class="btn-buy">⚡ Buy Now</a>
+        <button class="btn-buy" onclick="buyProduct('ransomware-yara-pack-2026','2026 Ransomware YARA Rule Pack','$89')">⚡ Buy Now</button>
       </div>
     </div>
 
@@ -541,7 +587,7 @@
           <span class="price-tag">$199</span>
           <span class="price-note">PDF + PPTX deck</span>
         </div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=Q2 2026 Threat Report Order" class="btn-buy-gold">📥 Get Report</a>
+        <button class="btn-buy-gold" onclick="buyProduct('q2-2026-threat-report','Q2 2026 Threat Landscape Report — Enterprise Edition','$199')">📥 Get Report</button>
       </div>
     </div>
 
@@ -569,7 +615,7 @@
           <span class="price-tag">$79</span><span class="price-old">$129</span>
           <span class="price-note">Lifetime access</span>
         </div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=SOC Playbook Order" class="btn-buy">📥 Buy Now</a>
+        <button class="btn-buy" onclick="buyProduct('soc-playbook-2026','SOC Analyst Master Playbook 2026','$79')">📥 Buy Now</button>
       </div>
     </div>
 
@@ -597,7 +643,7 @@
           <span class="price-tag">$129</span><span class="price-old">$199</span>
           <span class="price-note">For authorized PT only</span>
         </div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=Red Team Kit Order" class="btn-buy-red">🔴 Buy Now</a>
+        <button class="btn-buy-red" onclick="buyProduct('red-team-kit-2026','Enterprise Red Team Operator Kit 2026','$129')">🔴 Buy Now</button>
       </div>
     </div>
 
@@ -625,7 +671,7 @@
           <span class="price-tag">$99</span><span class="price-old">$179</span>
           <span class="price-note">Source code included</span>
         </div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=SOC Automation Bundle Order" class="btn-buy">⚙️ Buy Now</a>
+        <button class="btn-buy" onclick="buyProduct('soc-automation-bundle','SOC Automation Scripts Bundle','$99')">⚙️ Buy Now</button>
       </div>
     </div>
 
@@ -652,7 +698,7 @@
           <span class="price-tag">$49</span>
           <span class="price-note">+ monthly updates $9/mo</span>
         </div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=CVE-2026 Detection Pack Order" class="btn-buy">⚡ Buy Now</a>
+        <button class="btn-buy" onclick="buyProduct('cve-2026-detection-pack','CVE-2026 Critical Exploit Detection Pack','$49')">⚡ Buy Now</button>
       </div>
     </div>
 
@@ -679,7 +725,7 @@
           <span class="price-tag">$149</span>
           <span class="price-note">PDF + CSV IOC exports</span>
         </div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=APT Profile Pack Order" class="btn-buy-gold">📥 Get Profiles</a>
+        <button class="btn-buy-gold" onclick="buyProduct('apt-profile-pack-2026','APT Group Profile Pack — 2026 Edition','$149')">📥 Get Profiles</button>
       </div>
     </div>
 
@@ -707,7 +753,7 @@
           <span class="price-tag">$109</span>
           <span class="price-note">Lifetime updates</span>
         </div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=Ransomware Defense Playbook Order" class="btn-buy">📥 Buy Now</a>
+        <button class="btn-buy" onclick="buyProduct('ransomware-defense-playbook','Ransomware Defense Playbook — Enterprise','$109')">📥 Buy Now</button>
       </div>
     </div>
 
@@ -736,13 +782,13 @@
         <span class="bundle-tag">✅ Private Discord Access</span>
         <span class="bundle-tag">✅ 2 x 1hr Consulting Calls</span>
       </div>
-      <a href="mailto:bivash@cyberdudebivash.com?subject=CYBERDUDEBIVASH SENTINEL APEX Complete Arsenal Bundle" class="btn-primary">⚡ Get Complete Arsenal — $499</a>
+      <button class="btn-primary" onclick="buyProduct('complete-arsenal-bundle','CYBERDUDEBIVASH SENTINEL APEX Complete Arsenal Bundle','$499')">⚡ Get Complete Arsenal — $499</button>
     </div>
     <div class="bundle-price-box">
       <div class="bundle-price-old">$1,241 if bought separately</div>
       <div class="bundle-price">$499</div>
       <div class="bundle-save">💰 Save $742 (60% OFF)</div>
-      <a href="mailto:bivash@cyberdudebivash.com?subject=CYBERDUDEBIVASH SENTINEL APEX Complete Arsenal Bundle" class="btn-buy-gold" style="width:100%;justify-content:center;">⚡ Order Now</a>
+      <button class="btn-buy-gold" style="width:100%;justify-content:center;" onclick="buyProduct('complete-arsenal-bundle','CYBERDUDEBIVASH SENTINEL APEX Complete Arsenal Bundle','$499')">⚡ Order Now</button>
     </div>
   </div>
 
@@ -759,7 +805,7 @@
       </div>
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <div><span style="font-size:1.8rem; font-weight:900; color:var(--cyan);">$149</span> <span style="color:var(--muted); text-decoration:line-through; font-size:.9rem;">$227</span></div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=SOC Starter Bundle Order" class="btn-buy">⚡ Buy Bundle</a>
+        <button class="btn-buy" onclick="buyProduct('soc-starter-bundle','SOC Starter Bundle','$149')">⚡ Buy Bundle</button>
       </div>
     </div>
     <!-- ENTERPRISE DETECTION BUNDLE -->
@@ -774,7 +820,7 @@
       </div>
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <div><span style="font-size:1.8rem; font-weight:900; color:var(--gold);">$249</span> <span style="color:var(--muted); text-decoration:line-through; font-size:.9rem;">$387</span></div>
-        <a href="mailto:bivash@cyberdudebivash.com?subject=Enterprise Detection Bundle Order" class="btn-buy-gold">⚡ Buy Bundle</a>
+        <button class="btn-buy-gold" onclick="buyProduct('enterprise-detection-bundle','Enterprise Detection Bundle','$249')">⚡ Buy Bundle</button>
       </div>
     </div>
   </div>
@@ -909,6 +955,22 @@
   </div>
 </footer>
 
+<!-- CHECKOUT MODAL -->
+<div class="checkout-overlay" id="checkoutModal">
+  <div class="checkout-box">
+    <h3 id="checkoutModalTitle">Checkout</h3>
+    <p class="ck-price" id="checkoutModalPrice"></p>
+    <label for="checkoutEmail">Email address</label>
+    <input id="checkoutEmail" type="email" placeholder="you@company.com" autocomplete="email">
+    <p class="ck-error" id="checkoutError"></p>
+    <p class="ck-fallback">Trouble checking out? Email <a href="mailto:bivash@cyberdudebivash.com">bivash@cyberdudebivash.com</a></p>
+    <div class="checkout-actions">
+      <button class="checkout-cancel" onclick="closeCheckoutModal()">Cancel</button>
+      <button class="btn-buy-gold checkout-submit" id="checkoutSubmitBtn" onclick="submitCheckout()">Continue →</button>
+    </div>
+  </div>
+</div>
+
 <script src="/monetization.js" defer></script>
 <script src="/conversion-engine.js" defer></script>
 <script src="/seo-engine.js" defer></script>
@@ -920,6 +982,75 @@ function filterProducts(cat, btn) {
     card.style.display = (cat === 'all' || card.dataset.cat === cat) ? 'block' : 'none';
   });
 }
+
+/* ── Real checkout (Stripe, one-time digital products) ── */
+let _checkoutProductId = null;
+
+function buyProduct(productId, productName, priceLabel) {
+  _checkoutProductId = productId;
+  document.getElementById('checkoutModalTitle').textContent = productName;
+  document.getElementById('checkoutModalPrice').textContent = priceLabel + ' — secure checkout via Stripe';
+  document.getElementById('checkoutEmail').value = '';
+  document.getElementById('checkoutError').textContent = '';
+  document.getElementById('checkoutModal').classList.add('open');
+  document.getElementById('checkoutEmail').focus();
+}
+
+function closeCheckoutModal() {
+  document.getElementById('checkoutModal').classList.remove('open');
+  _checkoutProductId = null;
+}
+
+document.getElementById('checkoutModal').addEventListener('click', (e) => {
+  if (e.target.id === 'checkoutModal') closeCheckoutModal();
+});
+
+async function submitCheckout() {
+  const email = document.getElementById('checkoutEmail').value.trim();
+  const errEl = document.getElementById('checkoutError');
+  const btn   = document.getElementById('checkoutSubmitBtn');
+
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    errEl.textContent = 'Enter a valid email address.';
+    return;
+  }
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Redirecting…';
+
+  try {
+    const r = await fetch('/api/v1/billing?action=create-product-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, product_id: _checkoutProductId }),
+    });
+    const data = await r.json();
+    if (!r.ok || !data.success) {
+      errEl.textContent = (data.error && data.error.message) || 'Checkout unavailable. Please contact bivash@cyberdudebivash.com.';
+      btn.disabled = false;
+      btn.textContent = 'Continue →';
+      return;
+    }
+    window.location.href = data.checkout_url;
+  } catch (_) {
+    errEl.textContent = 'Network error. Please retry or contact bivash@cyberdudebivash.com.';
+    btn.disabled = false;
+    btn.textContent = 'Continue →';
+  }
+}
+
+/* ── Post-checkout banner (Stripe success_url / cancel_url redirect) ── */
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('checkout');
+  const banner = document.getElementById('checkoutBanner');
+  if (!banner || !status) return;
+  if (status === 'success') {
+    banner.innerHTML = '<section class="checkout-banner success"><div class="cb-inner">✅ Payment received — thank you! Your deliverable will be emailed to you shortly (typically within a few hours).</div></section>';
+  } else if (status === 'cancelled') {
+    banner.innerHTML = '<section class="checkout-banner cancelled"><div class="cb-inner">⚠️ Checkout was cancelled — no charge was made. You can try again anytime.</div></section>';
+  }
+})();
 </script>
 <script src="/ai-monetization-engine.js" defer></script>
 <script src="/analytics-engine.js" defer></script>

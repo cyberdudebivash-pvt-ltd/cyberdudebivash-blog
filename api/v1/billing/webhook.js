@@ -10,6 +10,7 @@ const redis  = require('../../_lib/redis');
 const stripe = require('../../_lib/stripe');
 const sec    = require('../../_lib/security');
 const { planToTier } = stripe;
+const { now, auditLog } = require('../../_lib/payment-utils');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -45,12 +46,27 @@ module.exports = async (req, res) => {
   try {
     switch (event.type) {
 
-      // Checkout completed → upgrade user tier
+      // Checkout completed → upgrade user tier (subscription) or record a
+      // one-time digital product purchase for manual fulfillment.
       case 'checkout.session.completed': {
         const session = event.data.object;
         const email   = session.customer_email || session.customer_details?.email;
-        const plan    = session.metadata?.plan || 'pro';
-        const tier    = planToTier(plan);
+
+        if (session.mode === 'payment' && session.metadata?.kind === 'digital_product') {
+          const productId = session.metadata?.product_id || '';
+          await redis.hmset(`payment:product:order:${session.id}`, {
+            status: 'paid', paymentIntentId: session.payment_intent || '', paidAt: now(),
+          });
+          await redis.expire(`payment:product:order:${session.id}`, 90 * 86400);
+          await auditLog('PRODUCT_PURCHASE_COMPLETED', {
+            sessionId: session.id, email, productId, amountTotal: session.amount_total,
+          });
+          console.log(`[WEBHOOK] Product purchase completed: ${productId} — ${email} — manual fulfillment required`);
+          break;
+        }
+
+        const plan = session.metadata?.plan || 'pro';
+        const tier = planToTier(plan);
         if (email) await upgradeTier(email, tier, session.subscription || session.id);
         break;
       }
