@@ -960,6 +960,9 @@
 
     <!-- ── STEP 2: Payment Details ─────────────── -->
     <div id="step2" style="display:none">
+      <button class="btn-primary" id="btnInstantPay" style="margin-bottom:0.4rem;background:linear-gradient(135deg,#00ffe0,#00b8a3)" onclick="PaymentFlow.payInstant()">⚡ Pay Instantly — Card / UPI / Wallet</button>
+      <p style="font-size:0.78rem;color:var(--muted);text-align:center;margin:0 0 1rem">Instant activation via Razorpay — no waiting for manual review.</p>
+      <p style="font-size:0.78rem;color:var(--muted);text-align:center;margin:0 0 0.85rem">— or pay manually via UPI/Bank Transfer —</p>
       <div class="intent-id-callout">
         <strong>Your Payment Reference (Intent ID)</strong>
         Use this as the payment note/remark when paying.
@@ -1434,8 +1437,89 @@ const PaymentFlow = (() => {
     } catch (_) {}
   }
 
+  /* ── Instant checkout via Razorpay ── */
+  let _rzpScriptPromise = null;
+  function _loadRazorpayScript() {
+    if (window.Razorpay) return Promise.resolve();
+    if (_rzpScriptPromise) return _rzpScriptPromise;
+    _rzpScriptPromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      s.onload  = () => resolve();
+      s.onerror = () => { _rzpScriptPromise = null; reject(new Error('Could not load secure checkout.')); };
+      document.head.appendChild(s);
+    });
+    return _rzpScriptPromise;
+  }
+
+  async function payInstant() {
+    if (!state.email || !state.intentId) {
+      showToast('error', 'Error', 'Please complete Step 1 first.');
+      return;
+    }
+    const btn = document.getElementById('btnInstantPay');
+    setLoading(btn, true, 'Opening secure checkout...');
+    try {
+      await _loadRazorpayScript();
+      const res = await apiFetch(`${API_BASE}/billing?action=create-razorpay-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: state.email, plan_type: state.plan }),
+      });
+      if (!res.ok_flag) {
+        if (res.error?.code === 'RAZORPAY_UNAVAILABLE') {
+          showToast('warning', 'Instant checkout unavailable', 'Please use UPI/Bank Transfer below.');
+          return;
+        }
+        throw new Error(res.error?.message || 'Could not start instant checkout.');
+      }
+      const order = res.order || res.data?.order;
+      if (!order || !order.order_id || !order.key_id) throw new Error('Malformed order response.');
+
+      const rzp = new window.Razorpay({
+        key:      order.key_id,
+        amount:   order.amount,
+        currency: order.currency,
+        name:     'CYBERDUDEBIVASH SENTINEL APEX',
+        description: `${order.plan_label || state.plan} — monthly subscription`,
+        order_id: order.order_id,
+        prefill:  { email: state.email },
+        theme:    { color: '#00ffe0' },
+        handler: async (resp) => {
+          setLoading(btn, true, 'Verifying payment...');
+          try {
+            const verify = await apiFetch(`${API_BASE}/billing?action=verify-razorpay-payment`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: state.email, plan_type: state.plan,
+                razorpay_order_id:   resp.razorpay_order_id,
+                razorpay_payment_id: resp.razorpay_payment_id,
+                razorpay_signature:  resp.razorpay_signature,
+              }),
+            });
+            if (!verify.ok_flag) throw new Error(verify.error?.message || 'Payment verification failed.');
+            try { sessionStorage.removeItem(STORAGE_KEY); } catch (_) {}
+            _showSuccess();
+          } catch (e) {
+            showToast('error', 'Verification Failed', e.message || 'Contact support with your payment ID.');
+          } finally {
+            setLoading(btn, false, '⚡ Pay Instantly — Card / UPI / Wallet');
+          }
+        },
+        modal: {
+          ondismiss: () => { setLoading(btn, false, '⚡ Pay Instantly — Card / UPI / Wallet'); },
+        },
+      });
+      rzp.open();
+    } catch (e) {
+      showToast('error', 'Error', e.message || 'Could not start instant checkout. Try UPI/Bank below.');
+      setLoading(btn, false, '⚡ Pay Instantly — Card / UPI / Wallet');
+    }
+  }
+
   /* ── Public API ── */
-  return { startUpgrade, close, handleEmailSubmit, goToStep, switchTab, submitPayment, manualPoll };
+  return { startUpgrade, close, handleEmailSubmit, goToStep, switchTab, submitPayment, manualPoll, payInstant };
 })();
 
 /* ── API fetch helper ─────────────────────────────────────────────── */

@@ -5,16 +5,19 @@
  *
  * Routing: /api/v1/billing?action={action}
  *
- *  action=create-intent    POST  Generate payment intent UUID, store in Redis 24h
- *  action=submit-payment   POST  Accept UTR with fraud protection + duplicate guard
- *  action=status           GET   User self-service payment status check
- *  action=subscribe        POST  Create Stripe checkout session (when available)
+ *  action=create-intent          POST  Generate payment intent UUID, store in Redis 24h
+ *  action=submit-payment         POST  Accept UTR with fraud protection + duplicate guard
+ *  action=status                 GET   User self-service payment status check
+ *  action=subscribe               POST  Create Stripe checkout session (when available)
+ *  action=create-razorpay-order  POST  Create a Razorpay Order for instant checkout
+ *  action=verify-razorpay-payment POST Verify checkout.js signature, instant tier upgrade
  *
  * Backward-compat: vercel.json rewrites old /api/v1/billing/* paths here.
  */
 'use strict';
-const redis  = require('../_lib/redis');
-const stripe = require('../_lib/stripe');
+const redis     = require('../_lib/redis');
+const stripe    = require('../_lib/stripe');
+const razorpay  = require('../_lib/razorpay');
 const {
   authenticate, apiError, respond, corsHeaders,
 } = require('../_lib/middleware');
@@ -23,7 +26,7 @@ const {
   MIN_UTR_LENGTH, MAX_UTR_LENGTH,
   INTENT_TTL_SECONDS, SUBMISSION_TTL_SECONDS,
   generateIntentId, sanitize, validateEmail, normalizeEmail, emailKey,
-  now, parseHash, ok, fail, parseBody, auditLog,
+  now, parseHash, ok, fail, parseBody, auditLog, upgradeUserTier,
 } = require('../_lib/payment-utils');
 const sec = require('../_lib/security');
 
@@ -32,8 +35,10 @@ const VALID_PAYMENT_METHODS = new Set(['UPI', 'BANK', 'NEFT', 'IMPS', 'RTGS', 'P
 
 /* ─── Allowed fields per action (whitelist) ───────────────────── */
 const FIELDS = {
-  'create-intent':  ['email', 'plan_type'],
-  'submit-payment': ['email', 'intent_id', 'utr_number', 'transaction_id', 'payment_method'],
+  'create-intent':           ['email', 'plan_type'],
+  'submit-payment':          ['email', 'intent_id', 'utr_number', 'transaction_id', 'payment_method'],
+  'create-razorpay-order':   ['email', 'plan_type'],
+  'verify-razorpay-payment': ['email', 'plan_type', 'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature'],
 };
 
 /* ─── Main Router ─────────────────────────────────────────────── */
@@ -50,20 +55,22 @@ module.exports = async (req, res) => {
 
   const action = String(req.query.action || '').toLowerCase().trim();
 
+  const VALID_ACTIONS = 'create-intent, submit-payment, status, subscribe, create-razorpay-order, verify-razorpay-payment';
+
   if (!action) {
-    return fail(res, 400, 'MISSING_ACTION',
-      'action parameter required. Valid: create-intent, submit-payment, status, subscribe.');
+    return fail(res, 400, 'MISSING_ACTION', `action parameter required. Valid: ${VALID_ACTIONS}.`);
   }
 
   /* ─── Route Dispatcher ───────────────────────────────────────── */
   switch (action) {
-    case 'create-intent':   return handleCreateIntent(req, res);
-    case 'submit-payment':  return handleSubmitPayment(req, res);
-    case 'status':          return handlePaymentStatus(req, res);
-    case 'subscribe':       return handleSubscribe(req, res);
+    case 'create-intent':            return handleCreateIntent(req, res);
+    case 'submit-payment':           return handleSubmitPayment(req, res);
+    case 'status':                   return handlePaymentStatus(req, res);
+    case 'subscribe':                return handleSubscribe(req, res);
+    case 'create-razorpay-order':    return handleCreateRazorpayOrder(req, res);
+    case 'verify-razorpay-payment':  return handleVerifyRazorpayPayment(req, res);
     default:
-      return fail(res, 400, 'INVALID_ACTION',
-        `Unknown action: "${action}". Valid: create-intent, submit-payment, status, subscribe`);
+      return fail(res, 400, 'INVALID_ACTION', `Unknown action: "${action}". Valid: ${VALID_ACTIONS}`);
   }
 };
 
@@ -419,5 +426,200 @@ async function handleSubscribe(req, res) {
 
   } catch (e) {
     return fail(res, 500, 'CHECKOUT_FAILED', sec.safeError(e, 'Checkout unavailable. Use manual payment or contact support.'));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   POST /api/v1/billing?action=create-razorpay-order
+   Create a Razorpay Order for instant, automated checkout (UPI/cards/
+   netbanking/wallets via Razorpay's checkout.js). No admin review needed —
+   a valid post-payment signature (action=verify-razorpay-payment) is itself
+   cryptographic proof of payment.
+   Body: { email, plan_type: "starter"|"pro"|"enterprise" }
+═══════════════════════════════════════════════════════════════ */
+const RAZORPAY_ID_RE = /^[a-zA-Z0-9_]{6,64}$/;
+
+async function handleCreateRazorpayOrder(req, res) {
+  if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
+
+  if (!razorpay.configured()) {
+    return fail(res, 503, 'RAZORPAY_UNAVAILABLE',
+      'Instant checkout is not configured yet. Use manual payment: POST /api/v1/billing?action=create-intent — or contact bivash@cyberdudebivash.com');
+  }
+
+  const ip   = sec.getIp(req);
+  const body = await parseBody(req);
+
+  const whitelistErr = sec.assertFieldWhitelist(body, FIELDS['create-razorpay-order']);
+  if (whitelistErr) return fail(res, 400, 'INVALID_FIELDS', whitelistErr);
+
+  const email    = normalizeEmail(body.email);
+  const planType = sanitize(String(body.plan_type || '').toLowerCase(), 20);
+
+  if (!sec.validateEmail(email)) {
+    return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
+  }
+  if (!sec.validatePlan(planType)) {
+    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "starter", "pro" or "enterprise"');
+  }
+
+  /* Same daily intent-creation budget as the manual flow (5/day/IP) */
+  if (!(await sec.intentIpRateLimit(req, res))) return;
+
+  const plan          = PLANS[planType];
+  const amountInPaise = plan.amount * 100; // Razorpay requires the smallest currency unit
+
+  try {
+    const receipt = generateIntentId();
+    const order = await razorpay.createOrder(amountInPaise, plan.currency, receipt, {
+      email, planType, platform: 'CYBERDUDEBIVASH_SENTINEL_APEX',
+    });
+
+    await redis.hmset(`payment:rzp:order:${order.id}`, {
+      orderId:   order.id,
+      email,
+      planType,
+      amount:    String(plan.amount),
+      currency:  plan.currency,
+      status:    'created',
+      createdAt: now(),
+      ip,
+    });
+    await redis.expire(`payment:rzp:order:${order.id}`, INTENT_TTL_SECONDS);
+
+    await auditLog('RAZORPAY_ORDER_CREATED', { orderId: order.id, email, planType, amount: plan.amount, ip });
+
+    return ok(res, {
+      message: 'Razorpay order created. Complete checkout then POST action=verify-razorpay-payment.',
+      order: {
+        order_id: order.id,
+        amount:   amountInPaise,
+        currency: plan.currency,
+        key_id:   razorpay.KEY_ID, // safe to expose — required by checkout.js
+        plan_type: planType,
+        plan_label: plan.label,
+        email,
+      },
+      next_step: {
+        endpoint: 'POST /api/v1/billing?action=verify-razorpay-payment',
+        payload: { email, plan_type: planType, razorpay_order_id: order.id, razorpay_payment_id: '<from checkout.js>', razorpay_signature: '<from checkout.js>' },
+      },
+      support: 'bivash@cyberdudebivash.com',
+    }, 201);
+
+  } catch (e) {
+    return fail(res, 500, 'RAZORPAY_ORDER_FAILED', sec.safeError(e, 'Could not create Razorpay order. Please retry.'));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   POST /api/v1/billing?action=verify-razorpay-payment
+   Verify the checkout.js post-payment signature and instantly upgrade
+   the user's tier — no manual admin review (signature = cryptographic proof).
+   Body: { email, plan_type, razorpay_order_id, razorpay_payment_id, razorpay_signature }
+═══════════════════════════════════════════════════════════════ */
+async function handleVerifyRazorpayPayment(req, res) {
+  if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
+
+  if (!razorpay.configured()) {
+    return fail(res, 503, 'RAZORPAY_UNAVAILABLE', 'Instant checkout is not configured yet.');
+  }
+
+  const ip   = sec.getIp(req);
+  const body = await parseBody(req);
+
+  const whitelistErr = sec.assertFieldWhitelist(body, FIELDS['verify-razorpay-payment']);
+  if (whitelistErr) return fail(res, 400, 'INVALID_FIELDS', whitelistErr);
+
+  const email     = normalizeEmail(body.email);
+  const planType  = sanitize(String(body.plan_type || '').toLowerCase(), 20);
+  const orderId   = sanitize(String(body.razorpay_order_id || ''), 64);
+  const paymentId = sanitize(String(body.razorpay_payment_id || ''), 64);
+  const signature = sanitize(String(body.razorpay_signature || ''), 128);
+
+  if (!sec.validateEmail(email)) {
+    return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
+  }
+  if (!sec.validatePlan(planType)) {
+    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "starter", "pro" or "enterprise"');
+  }
+  if (!RAZORPAY_ID_RE.test(orderId) || !RAZORPAY_ID_RE.test(paymentId)) {
+    return fail(res, 400, 'INVALID_RAZORPAY_ID', 'razorpay_order_id / razorpay_payment_id are malformed.');
+  }
+  if (!/^[a-f0-9]{16,128}$/i.test(signature)) {
+    return fail(res, 400, 'INVALID_SIGNATURE_FORMAT', 'razorpay_signature must be a hex digest.');
+  }
+
+  /* Phase 4: submission-style IP rate limit (3/day/IP) — same budget as manual UTR submission */
+  if (!(await sec.submissionIpRateLimit(req, res))) {
+    await auditLog('RATE_LIMIT_HIT', { ip, email, endpoint: 'verify-razorpay-payment' });
+    return;
+  }
+
+  /* ── Cryptographic proof of payment ───────────────────────────── */
+  if (!razorpay.verifyPaymentSignature(orderId, paymentId, signature)) {
+    await auditLog('RAZORPAY_SIGNATURE_INVALID', { ip, email, orderId, paymentId });
+    return fail(res, 403, 'INVALID_SIGNATURE', 'Payment signature verification failed.');
+  }
+
+  /* ── Replay guard — each payment_id may only upgrade a tier once ─ */
+  const dupKey = `payment:rzp:txn:seen:${paymentId}`;
+  try {
+    const dup = await redis.exists(dupKey);
+    if (dup && parseInt(dup, 10) > 0) {
+      return ok(res, {
+        message: 'Payment already verified and applied.',
+        already_processed: true,
+      });
+    }
+  } catch (_) { /* fall through — order-status check below also guards */ }
+
+  let order;
+  try {
+    order = parseHash(await redis.hgetall(`payment:rzp:order:${orderId}`));
+  } catch (e) {
+    return fail(res, 503, 'SERVICE_UNAVAILABLE', 'Verification service temporarily unavailable. Retry in 30s.');
+  }
+  if (!order) {
+    return fail(res, 404, 'ORDER_NOT_FOUND', 'Razorpay order not found or expired (24h TTL).');
+  }
+  if (order.email !== email || order.planType !== planType) {
+    await auditLog('RAZORPAY_ORDER_MISMATCH', { ip, email, orderId, expectedEmail: order.email, expectedPlan: order.planType });
+    return fail(res, 403, 'ORDER_MISMATCH', 'email/plan_type do not match the original order.');
+  }
+  if (order.status === 'paid') {
+    return ok(res, { message: 'Payment already verified and applied.', already_processed: true });
+  }
+
+  try {
+    await redis.setex(dupKey, SUBMISSION_TTL_SECONDS, '1');
+    await redis.hmset(`payment:rzp:order:${orderId}`, {
+      status: 'paid', paymentId, verifiedAt: now(),
+    });
+
+    const result = await upgradeUserTier(email, planType, {
+      transactionId: paymentId,
+      gateway:       'razorpay',
+      orderId,
+    });
+
+    await auditLog('RAZORPAY_PAYMENT_VERIFIED', {
+      email, planType, orderId, paymentId, amount: order.amount, ip,
+    });
+
+    return ok(res, {
+      message: result.upgraded
+        ? 'Payment verified. Your tier has been upgraded instantly.'
+        : 'Payment verified. Tier will activate automatically once you register with this email.',
+      verification: {
+        order_id: orderId, payment_id: paymentId, plan_type: planType,
+        amount: parseInt(order.amount, 10), currency: order.currency,
+        upgraded: result.upgraded, pending_registration: result.pending || false,
+      },
+      support: 'bivash@cyberdudebivash.com',
+    });
+
+  } catch (e) {
+    return fail(res, 500, 'VERIFICATION_FAILED', sec.safeError(e, 'Verification failed. Please contact support with your payment ID.'));
   }
 }
