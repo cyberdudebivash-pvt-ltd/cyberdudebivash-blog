@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-23T12:01:38.709Z",
+  "generated": "2026-06-23T12:31:47.513Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3343,
+    "total_nodes": 3346,
     "actors": 8,
     "cves": 740,
-    "campaigns": 314,
+    "campaigns": 315,
     "malware": 0,
     "iocs": 338,
-    "edges": 1228
+    "edges": 1229
   },
   "nodes": {
     "actor:lockbit": {
@@ -63858,6 +63858,62 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "SECURITYWEEK-d21b0aa3ef3315fa": {
+      "id": "SECURITYWEEK-d21b0aa3ef3315fa",
+      "type": "Intel",
+      "name": "Algerian Man Extradited to US for Running Cybercrime Marketplaces",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-23",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-bb5e5936bed867e7": {
+      "id": "BLEEPINGCOMPUTER-bb5e5936bed867e7",
+      "type": "Intel",
+      "name": "Webinar: Why email security teams are drowning in alerts",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-23",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-07bd78f0": {
+      "id": "campaign:cluster-07bd78f0",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-23",
+        "last_seen": "2026-06-23",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-d21b0aa3ef3315fa",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -74948,6 +75004,15 @@
       "target": "ioc:sha1:39b424399a11edabd7b1fe971fe74fbc4c021097",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-06-23",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-07bd78f0→includes→SECURITYWEEK-d21b0aa3ef3315fa",
+      "source": "campaign:cluster-07bd78f0",
+      "target": "SECURITYWEEK-d21b0aa3ef3315fa",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-23",
       "sources": []
     }
