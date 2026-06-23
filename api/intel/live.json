@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-23T21:31:46.009Z",
+  "generated": "2026-06-23T22:01:58.458Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1179,
+  "total_published": 1183,
   "s2n_stats": {
     "passed": 82,
-    "suppressed": 11,
+    "suppressed": 10,
     "avg_qs": 0.554
   },
   "items": [
@@ -4171,6 +4171,55 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-48126",
+      "title": "Algernon: Host header path traversal in --domain mode reads files and runs Lua from parent dir",
+      "description": "### Summary When algernon is started with `--domain` (or `--letsencrypt`, which silently turns on `--domain` at `engine/flags.go:372`), the request handler resolves the served directory by joining the configured `--dir` with the value of the client-supplied `Host` header. The join is performed by `f",
+      "cvss": 8.2,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-23",
+      "last_seen": "2026-06-23",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/xyproto/algernon",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-48126",
+        "CVE-2026-48126"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-jc3j-x6pg-4hmv",
+        "https://github.com/xyproto/algernon/security/advisories/GHSA-jc3j-x6pg-4hmv",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-48126",
+        "https://github.com/advisories/GHSA-jc3j-x6pg-4hmv"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-54513",
       "title": "jackson-databind has an array subtype allowlist bypass in BasicPolymorphicTypeValidator (allowIfSubTypeIsArray)",
       "description": "## Summary\n`BasicPolymorphicTypeValidator.Builder.allowIfSubTypeIsArray()` allowlists any array type based only on `clazz.isArray()`, without validating the array's component (element) type against the configured allowlist. A PTV built with `allowIfSubTypeIsArray()` plus an explicit concrete-type al",
@@ -4347,54 +4396,6 @@
         "https://github.com/advisories/GHSA-j4h9-pm27-4rfw",
         "https://github.com/OctoPrint/OctoPrint/security/advisories/GHSA-j4h9-pm27-4rfw",
         "https://github.com/advisories/GHSA-j4h9-pm27-4rfw"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-45048",
-      "title": "OpenAM Authenticated Privilege Escalation via Raw Token Disclosure Session RPC",
-      "description": "## Summary Description An insufficient authorization (CWE-285) and information exposure (CWE-200) issue in OpenAM's session management endpoint allows a low-privileged authenticated user to retrieve active session credentials belonging to other users, including those with higher privileges. This aff",
-      "cvss": 8.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-23",
-      "last_seen": "2026-06-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "org.openidentityplatform.openam:openam-core",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45048",
-        "CVE-2026-45048"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-vvhj-w2jq-263q",
-        "https://github.com/OpenIdentityPlatform/OpenAM/security/advisories/GHSA-vvhj-w2jq-263q",
-        "https://github.com/advisories/GHSA-vvhj-w2jq-263q"
       ],
       "explanation": {
         "quality": [
