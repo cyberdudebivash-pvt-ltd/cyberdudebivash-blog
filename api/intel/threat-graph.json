@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-24T08:43:14.472Z",
+  "generated": "2026-06-24T09:01:49.998Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3408,
+    "total_nodes": 3410,
     "actors": 8,
     "cves": 756,
     "campaigns": 319,
     "malware": 0,
-    "iocs": 346,
-    "edges": 1252
+    "iocs": 347,
+    "edges": 1254
   },
   "nodes": {
     "actor:lockbit": {
@@ -65093,6 +65093,46 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-6e70bfd7fb706c06": {
+      "id": "REDDIT_CYBER-6e70bfd7fb706c06",
+      "type": "Intel",
+      "name": "How One Compromised Reseller Account Let an Attacker Hit Dozens of Websites at Once",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-24",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:tremhost.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:tremhost.com": {
+      "id": "ioc:domain:tremhost.com",
+      "type": "IOC",
+      "name": "tremhost.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-24"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -76399,6 +76439,24 @@
       "target": "REDDIT_CYBER-ea2a2eb639f811d5",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-6e70bfd7fb706c06→linked_to→ioc:domain:tremhost.com",
+      "source": "REDDIT_CYBER-6e70bfd7fb706c06",
+      "target": "ioc:domain:tremhost.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-6e70bfd7fb706c06→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-6e70bfd7fb706c06",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-24",
       "sources": []
     }
