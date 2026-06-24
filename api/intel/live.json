@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-24T17:31:34.470Z",
+  "generated": "2026-06-24T18:01:49.425Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -10,7 +10,7 @@
   "total_published": 1219,
   "s2n_stats": {
     "passed": 80,
-    "suppressed": 10,
+    "suppressed": 11,
     "avg_qs": 0.555
   },
   "items": [
@@ -4257,6 +4257,55 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-48708",
+      "title": "OliveTin has a Concurrent Template Parsing Race Condition which Leads to Cross-Request Command Contamination",
+      "description": "## Summary OliveTin's template engine uses a **single shared `text/template.Template` instance** (`tpl` package-level variable in `service/internal/tpl/templates.go`) across all goroutines. Every action execution calls `tpl.Parse(source)` followed by `t.Execute()` on this shared instance with no syn",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-24",
+      "last_seen": "2026-06-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/OliveTin/OliveTin",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-48708",
+        "CVE-2026-48708"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-7fq5-7wr8-rjwj",
+        "https://github.com/OliveTin/OliveTin/security/advisories/GHSA-7fq5-7wr8-rjwj",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-48708",
+        "https://github.com/OliveTin/OliveTin/commit/d74da9314005954dd49fa20dabf272247bc76519"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-54329",
       "title": "Snipe-IT API Vulnerable to Cross-Tenant Accessory Injection",
       "description": "### Impact\nA cross-tenant data injection vulnerability was identified in the Snipe-IT Accessories API when Full Multiple Companies Support (FMCS) is enabled. A low-privileged authenticated user belonging to one company can create an accessory record under another company by supplying a foreign compa",
@@ -4337,55 +4386,6 @@
         "https://github.com/grokability/snipe-it/security/advisories/GHSA-6f75-x745-xcpr",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-48507",
         "https://github.com/grokability/snipe-it/commit/403f9c848b05274642f64450696bdcdc242a352a"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48126",
-      "title": "Algernon: Host header path traversal in --domain mode reads files and runs Lua from parent dir",
-      "description": "### Summary When algernon is started with `--domain` (or `--letsencrypt`, which silently turns on `--domain` at `engine/flags.go:372`), the request handler resolves the served directory by joining the configured `--dir` with the value of the client-supplied `Host` header. The join is performed by `f",
-      "cvss": 8.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-23",
-      "last_seen": "2026-06-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/xyproto/algernon",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48126",
-        "CVE-2026-48126"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-jc3j-x6pg-4hmv",
-        "https://github.com/xyproto/algernon/security/advisories/GHSA-jc3j-x6pg-4hmv",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-48126",
-        "https://github.com/advisories/GHSA-jc3j-x6pg-4hmv"
       ],
       "explanation": {
         "quality": [
