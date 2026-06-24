@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-24T10:31:28.169Z",
+  "generated": "2026-06-24T11:01:59.691Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3412,
+    "total_nodes": 3420,
     "actors": 8,
     "cves": 756,
-    "campaigns": 319,
+    "campaigns": 320,
     "malware": 0,
-    "iocs": 347,
-    "edges": 1256
+    "iocs": 349,
+    "edges": 1262
   },
   "nodes": {
     "actor:lockbit": {
@@ -65180,6 +65180,166 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "SECURITYWEEK-8cd86630d0940d2e": {
+      "id": "SECURITYWEEK-8cd86630d0940d2e",
+      "type": "Intel",
+      "name": "Exploitable CI/CD Vulnerabilities Expose Millions of Repositories to Hijacking",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-24",
+        "type": "SUPPLY_CHAIN"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-578eae52665ca4da": {
+      "id": "BLEEPINGCOMPUTER-578eae52665ca4da",
+      "type": "Intel",
+      "name": "Stealthy Mistic backdoor linked to ransomware access broker KongTuke",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-24",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-229dca4d5fe053bf": {
+      "id": "REDDIT_CYBER-229dca4d5fe053bf",
+      "type": "Intel",
+      "name": "When defensive code becomes attack surface: 8 year old Samsung kernel UAF affecting Galaxy S9–S25",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-24",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:lucidbitlabs.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:lucidbitlabs.com": {
+      "id": "ioc:domain:lucidbitlabs.com",
+      "type": "IOC",
+      "name": "lucidbitlabs.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-24"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-28438bdcf6543b44": {
+      "id": "REDDIT_CYBER-28438bdcf6543b44",
+      "type": "Intel",
+      "name": "No Side to Take: Political Indifference Inside the 4vps.su Leak",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-24",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:4vps.su",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:4vps.su": {
+      "id": "ioc:domain:4vps.su",
+      "type": "IOC",
+      "name": "4vps.su",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-24"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-cc6ff89f15c45074": {
+      "id": "REDDIT_CYBER-cc6ff89f15c45074",
+      "type": "Intel",
+      "name": "Can a Smart Ring in anyway poise cyber threats?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-24",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-6ad44d72": {
+      "id": "campaign:cluster-6ad44d72",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-06-24",
+        "last_seen": "2026-06-24",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-8cd86630d0940d2e",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -76522,6 +76682,60 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-229dca4d5fe053bf→linked_to→ioc:domain:lucidbitlabs.com",
+      "source": "REDDIT_CYBER-229dca4d5fe053bf",
+      "target": "ioc:domain:lucidbitlabs.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-229dca4d5fe053bf→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-229dca4d5fe053bf",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-28438bdcf6543b44→linked_to→ioc:domain:4vps.su",
+      "source": "REDDIT_CYBER-28438bdcf6543b44",
+      "target": "ioc:domain:4vps.su",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-28438bdcf6543b44→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-28438bdcf6543b44",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-cc6ff89f15c45074→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-cc6ff89f15c45074",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-6ad44d72→includes→SECURITYWEEK-8cd86630d0940d2e",
+      "source": "campaign:cluster-6ad44d72",
+      "target": "SECURITYWEEK-8cd86630d0940d2e",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-24",
       "sources": []
     }
