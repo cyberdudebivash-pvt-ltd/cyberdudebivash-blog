@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-24T18:08:54.282Z",
+  "generated": "2026-06-24T18:31:43.428Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3443,
+    "total_nodes": 3447,
     "actors": 8,
     "cves": 758,
-    "campaigns": 320,
+    "campaigns": 321,
     "malware": 0,
-    "iocs": 351,
-    "edges": 1271
+    "iocs": 352,
+    "edges": 1275
   },
   "nodes": {
     "actor:lockbit": {
@@ -65793,6 +65793,90 @@
         "type": "AI_SECURITY"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-91d6711dbe69afc9": {
+      "id": "REDDIT_NETSEC-91d6711dbe69afc9",
+      "type": "Intel",
+      "name": "Exploiting vulnerabilities in Johnson &amp; Johnson web apps",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-24",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:eaton-works.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:eaton-works.com": {
+      "id": "ioc:domain:eaton-works.com",
+      "type": "IOC",
+      "name": "eaton-works.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-24"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-ddd9a4063ac43d62": {
+      "id": "REDDIT_NETSEC-ddd9a4063ac43d62",
+      "type": "Intel",
+      "name": "TanStack npm compromise: 42 packages published with valid SLSA provenance via OIDC token theft from runner memory",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-24",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-d343427d": {
+      "id": "campaign:cluster-d343427d",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-06-24",
+        "last_seen": "2026-06-24",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 5 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_NETSEC-91d6711dbe69afc9",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -77270,6 +77354,42 @@
       "target": "ioc:sha1:1c36e35b1dace313c25db0e04396d2bced851129",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-91d6711dbe69afc9→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-91d6711dbe69afc9",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-91d6711dbe69afc9→linked_to→ioc:domain:eaton-works.com",
+      "source": "REDDIT_NETSEC-91d6711dbe69afc9",
+      "target": "ioc:domain:eaton-works.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-ddd9a4063ac43d62→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-ddd9a4063ac43d62",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-24",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-d343427d→includes→REDDIT_NETSEC-91d6711dbe69afc9",
+      "source": "campaign:cluster-d343427d",
+      "target": "REDDIT_NETSEC-91d6711dbe69afc9",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-24",
       "sources": []
     }
