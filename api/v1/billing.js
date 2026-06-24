@@ -43,6 +43,9 @@ const FIELDS = {
   'create-product-checkout': ['email', 'product_id'],
 };
 
+/* ─── Apex API base URL ────────────────────────────────────────── */
+const APEX_API_BASE = process.env.APEX_API_BASE || 'https://intel.cyberdudebivash.com';
+
 /* ─── Main Router ─────────────────────────────────────────────── */
 module.exports = async (req, res) => {
   /* Phase 1: global guard — sets security headers, checks method/size */
@@ -424,7 +427,7 @@ async function handleSubscribe(req, res) {
       checkout_url: session.url,
       session_id:   session.id,
       plan,
-      price: { starter: '₹2,499/month', pro: '₹1,499/month', enterprise: 'Custom pricing' }[plan],
+      price: { starter: '₹2,499/month', pro: '₹4,099/month', enterprise: 'Custom pricing' }[plan],
     });
 
   } catch (e) {
@@ -611,6 +614,27 @@ async function handleVerifyRazorpayPayment(req, res) {
       orderId,
     });
 
+    /* ── W4-P0-003: Bridge — provision APEX API key in Cloudflare KV ─ */
+    let apexApiKey = null;
+    try {
+      const apexTier = { starter: 'PRO', pro: 'PRO', enterprise: 'ENTERPRISE' }[planType] || 'PRO';
+      const apexRes  = await fetch(`${APEX_API_BASE}/api/payment/razorpay/verify`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          razorpay_order_id:   orderId,
+          razorpay_payment_id: paymentId,
+          razorpay_signature:  signature,
+          tier:                apexTier,
+          email,
+        }),
+      });
+      if (apexRes.ok) {
+        const apexData = await apexRes.json();
+        apexApiKey = apexData.api_key || null;
+      }
+    } catch (_) { /* non-fatal — APEX key retrievable via support */ }
+
     await auditLog('RAZORPAY_PAYMENT_VERIFIED', {
       email, planType, orderId, paymentId, amount: order.amount, ip,
     });
@@ -624,6 +648,11 @@ async function handleVerifyRazorpayPayment(req, res) {
         amount: parseInt(order.amount, 10), currency: order.currency,
         upgraded: result.upgraded, pending_registration: result.pending || false,
       },
+      ...(apexApiKey ? {
+        apex_api_key: apexApiKey,
+        apex_docs:   'https://intel.cyberdudebivash.com/api/docs',
+        apex_usage:  `curl -H "X-API-Key: ${apexApiKey}" https://intel.cyberdudebivash.com/api/v1/intel/latest`,
+      } : {}),
       support: 'bivash@cyberdudebivash.com',
     });
 
