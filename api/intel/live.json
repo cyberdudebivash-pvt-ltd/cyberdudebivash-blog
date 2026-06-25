@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-25T22:01:36.497Z",
+  "generated": "2026-06-25T22:31:17.855Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -4171,6 +4171,104 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-39829",
+      "title": "golang.org/x/crypto/ssh: Invoking pathological RSA/DSA parameters may cause DoS",
+      "description": "The RSA and DSA public key parsers did not enforce size limits on key parameters. A crafted public key with an excessively large modulus or DSA parameter could cause several minutes of CPU consumption during signature verification. This could be triggered by unauthenticated clients during public key",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-25",
+      "last_seen": "2026-06-25",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "golang.org/x/crypto/ssh",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-39829",
+        "CVE-2026-39829"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-w879-237q-wc7r",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-39829",
+        "https://go.dev/cl/781641",
+        "https://go.dev/cl/781661"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-46597",
+      "title": "golang.org/x/crypto/ssh: Invoking byte arithmetic causes underflow and panic",
+      "description": "An incorrectly placed cast from bytes to int allowed for server-side panic in the AES-GCM packet decoder for well-crafted inputs.",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-25",
+      "last_seen": "2026-06-25",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "golang.org/x/crypto/ssh",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-46597",
+        "CVE-2026-46597"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-q4h4-gmj2-qvw2",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-46597",
+        "https://go.dev/cl/781620",
+        "https://go.dev/issue/79561"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-53461",
       "title": "ImageMagick has out-of-bounds write in ICON decoder due to incorrect loop",
       "description": "An incorrect loop in the ICON decoder can result in an out of bounds heap write resulting in a crash.",
@@ -4300,103 +4398,6 @@
         "https://github.com/ImageMagick/ImageMagick/security/advisories/GHSA-8pj9-6897-74xc",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-49218",
         "https://github.com/dlemstra/Magick.NET/releases/tag/14.14.0"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48702",
-      "title": "Rekor has an OOM Condition due to Unbounded gzip Decompression in Alpine APK Parsing Logic",
-      "description": "## Description The `Package.Unmarshal()` function in `pkg/types/alpine/apk.go` decompresses the signature and control gzip members of an APK file into in-memory buffers without bounding the total decompressed size. The existing `max_apk_metadata_size` check (default 1MB) is only applied to individua",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-25",
-      "last_seen": "2026-06-25",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/sigstore/rekor",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48702",
-        "CVE-2026-48702"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-47q9-m4ww-924m",
-        "https://github.com/sigstore/rekor/security/advisories/GHSA-47q9-m4ww-924m",
-        "https://github.com/advisories/GHSA-47q9-m4ww-924m"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-9291",
-      "title": "amazon-braket-sdk vulnerable to Insecure Deserialization via pickle.loads()",
-      "description": "**Summary**\nAmazon Braket SDK is an open-source Python library for interacting with the Amazon Braket quantum computing service, including managing hybrid quantum jobs and retrieving job results. An issue exists where, under certain circumstances, a remote authenticated user with S3 write access to ",
-      "cvss": 7.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-25",
-      "last_seen": "2026-06-25",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "amazon-braket-sdk",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-9291",
-        "CVE-2026-9291"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-g697-2xrc-gc46",
-        "https://github.com/amazon-braket/amazon-braket-sdk-python/security/advisories/GHSA-g697-2xrc-gc46",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-9291",
-        "https://aws.amazon.com/security/security-bulletins/2026-036-aws"
       ],
       "explanation": {
         "quality": [
