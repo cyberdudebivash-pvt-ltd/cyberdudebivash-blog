@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-25T03:01:57.554Z",
+  "generated": "2026-06-25T03:31:47.012Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3458,
+    "total_nodes": 3459,
     "actors": 8,
     "cves": 758,
     "campaigns": 321,
     "malware": 0,
     "iocs": 354,
-    "edges": 1280
+    "edges": 1284
   },
   "nodes": {
     "actor:lockbit": {
@@ -193,6 +193,11 @@
           "target": "REDDIT_CYBER-02ab28d48507f1c3",
           "relationship": "exploits",
           "confidence": 0.85
+        },
+        {
+          "target": "REDDIT_CYBER-06fc45518ff0905e",
+          "relationship": "exploits",
+          "confidence": 0.85
         }
       ],
       "attributes": {
@@ -298,6 +303,11 @@
         },
         {
           "target": "REDDIT_CYBER-02ab28d48507f1c3",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "REDDIT_CYBER-06fc45518ff0905e",
           "relationship": "exploits",
           "confidence": 0.85
         }
@@ -66090,6 +66100,35 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-06fc45518ff0905e": {
+      "id": "REDDIT_CYBER-06fc45518ff0905e",
+      "type": "Intel",
+      "name": "15 Malicious JetBrains Plugins Stole AI API Keys from 70,000 Developers",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-25",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:haltingproblems.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -77645,6 +77684,42 @@
     {
       "id": "REDDIT_CYBER-587c33a511d5afc2→linked_to→ioc:domain:haltingproblems.com",
       "source": "REDDIT_CYBER-587c33a511d5afc2",
+      "target": "ioc:domain:haltingproblems.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-25",
+      "sources": []
+    },
+    {
+      "id": "actor:apt41→exploits→REDDIT_CYBER-06fc45518ff0905e",
+      "source": "actor:apt41",
+      "target": "REDDIT_CYBER-06fc45518ff0905e",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-06-25",
+      "sources": []
+    },
+    {
+      "id": "actor:cl0p→exploits→REDDIT_CYBER-06fc45518ff0905e",
+      "source": "actor:cl0p",
+      "target": "REDDIT_CYBER-06fc45518ff0905e",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-06-25",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-06fc45518ff0905e→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-06fc45518ff0905e",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-25",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-06fc45518ff0905e→linked_to→ioc:domain:haltingproblems.com",
+      "source": "REDDIT_CYBER-06fc45518ff0905e",
       "target": "ioc:domain:haltingproblems.com",
       "relationship": "linked_to",
       "confidence": 0.75,
