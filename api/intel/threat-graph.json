@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-25T11:31:37.240Z",
+  "generated": "2026-06-25T12:01:56.771Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3477,
+    "total_nodes": 3478,
     "actors": 8,
     "cves": 759,
     "campaigns": 323,
     "malware": 0,
     "iocs": 355,
-    "edges": 1296
+    "edges": 1298
   },
   "nodes": {
     "actor:lockbit": {
@@ -6833,7 +6833,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-05-01"
+        "first_seen": "2026-06-25"
       },
       "connections": []
     },
@@ -66509,6 +66509,35 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_NETSEC-b5d41e7dfbd91b3d": {
+      "id": "REDDIT_NETSEC-b5d41e7dfbd91b3d",
+      "type": "Intel",
+      "name": "CargoWise WebTracker - The keys were in the cargo",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-25",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:slcyber.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -78211,6 +78240,24 @@
       "target": "CVE-2025-67038",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-25",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-b5d41e7dfbd91b3d→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-b5d41e7dfbd91b3d",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-25",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-b5d41e7dfbd91b3d→linked_to→ioc:domain:slcyber.io",
+      "source": "REDDIT_NETSEC-b5d41e7dfbd91b3d",
+      "target": "ioc:domain:slcyber.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-25",
       "sources": []
     }
