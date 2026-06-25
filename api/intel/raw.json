@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-25T18:01:50.495Z",
+  "generated": "2026-06-25T18:31:33.136Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 90,
+  "count": 92,
   "items": [
     {
       "id": "CVE-2023-27351",
@@ -96,6 +96,53 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "GHSA-46a4793d0e380d24",
+      "title": "chi's RealIP Middleware allows IP spoofing via unvalidated X-Forwarded-For header",
+      "description": "### Summary\nrealip middleware in go-chi/chi trusts headers like x-forwarded-for without checking them, so attackers can fake their ip and bypass rate limits or access controls ### Details the vuln is in middleware/realip.go , the realIP() function pulls IPs straight from client headers and replaces ",
+      "cvss": 7.5,
+      "final_ps": 48,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-25",
+      "last_seen": "2026-06-25",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/go-chi/chi/middleware",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-rjr7-jggh-pgcp",
+        "https://github.com/go-chi/chi/security/advisories/GHSA-rjr7-jggh-pgcp",
+        "https://github.com/go-chi/chi/releases/tag/v5.3.0",
+        "https://github.com/advisories/GHSA-rjr7-jggh-pgcp"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -364,6 +411,50 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "BLEEPINGCOMPUTER-5888f2d8af8d6494",
+      "title": "Microsoft quietly extends free Windows 10 ESU support to October 2027",
+      "description": "Microsoft has quietly extended its free Windows 10 Extended Security Updates (ESU) program for consumers by an additional year, allowing enrolled devices to continue receiving security updates until October 12, 2027. [...]",
+      "cvss": 6.5,
+      "final_ps": 41,
+      "quality_score": 0.45,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-06-25",
+      "last_seen": "2026-06-25",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/microsoft/microsoft-quietly-extends-free-windows-10-esu-support-to-october-2027/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.450"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -4092,12 +4183,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-46498",
-      "title": "OpenAM Arbitrary OAuth Token Minting via Push Registration",
+      "id": "GHSA-a858fdecb43a1141",
+      "title": "chi Middleware Vulnerable to Potential IP Spoofing via `X-Forwarded-For` Header in `Request.RemoteAddr` Resolution",
       "description": "",
       "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "final_ps": 20,
+      "quality_score": 0.493,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "github_advisories",
@@ -4110,35 +4201,32 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "maven",
-      "product": "org.openidentityplatform.openam:openam-oauth2",
+      "vendor": "go",
+      "product": "github.com/go-chi/chi/middleware",
       "due_date": null,
-      "cves": [
-        "CVE-2026-46498",
-        "CVE-2026-46498"
-      ],
+      "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-cj8f-2fhf-826r",
-        "https://github.com/OpenIdentityPlatform/OpenAM/security/advisories/GHSA-cj8f-2fhf-826r",
-        "https://github.com/OpenIdentityPlatform/OpenAM/releases/tag/16.1.1",
-        "https://github.com/advisories/GHSA-cj8f-2fhf-826r"
+        "https://github.com/advisories/GHSA-9g5q-2w5x-hmxf",
+        "https://github.com/go-chi/chi/security/advisories/GHSA-9g5q-2w5x-hmxf",
+        "https://github.com/go-chi/chi/releases/tag/v5.3.0",
+        "https://github.com/advisories/GHSA-9g5q-2w5x-hmxf"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.493"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=20 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null,
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     }
   ]
