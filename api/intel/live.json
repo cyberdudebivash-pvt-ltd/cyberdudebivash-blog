@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-25T12:31:49.033Z",
+  "generated": "2026-06-25T13:01:54.744Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,13 +7,55 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1243,
+  "total_published": 1246,
   "s2n_stats": {
-    "passed": 79,
-    "suppressed": 12,
+    "passed": 80,
+    "suppressed": 10,
     "avg_qs": 0.555
   },
   "items": [
+    {
+      "id": "REDDIT_CYBER-3aee39e938a99bce",
+      "title": "Microsoft: 2 ransomware groups hit SharePoint in parallel attacks",
+      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;A Microsoft investigation into a ransomware case found that 2 different attackers operated simultaneously, demonstrating that modern attacks are not always isolated events and require different responses. The activity was linked to on-pre",
+      "cvss": 6.5,
+      "final_ps": 66,
+      "quality_score": 0.525,
+      "threat_level": "HIGH",
+      "type": "RANSOMWARE",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-06-25",
+      "last_seen": "2026-06-25",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 5,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1uf91a5/microsoft_2_ransomware_groups_hit_sharepoint_in/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.80",
+          "ioc_presence=5 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.525"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -2492,7 +2534,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CISA-737d0072e06bb635",
@@ -4343,55 +4387,6 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-48708",
-      "title": "OliveTin has a Concurrent Template Parsing Race Condition which Leads to Cross-Request Command Contamination",
-      "description": "## Summary OliveTin's template engine uses a **single shared `text/template.Template` instance** (`tpl` package-level variable in `service/internal/tpl/templates.go`) across all goroutines. Every action execution calls `tpl.Parse(source)` followed by `t.Execute()` on this shared instance with no syn",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-24",
-      "last_seen": "2026-06-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/OliveTin/OliveTin",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48708",
-        "CVE-2026-48708"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7fq5-7wr8-rjwj",
-        "https://github.com/OliveTin/OliveTin/security/advisories/GHSA-7fq5-7wr8-rjwj",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-48708",
-        "https://github.com/OliveTin/OliveTin/commit/d74da9314005954dd49fa20dabf272247bc76519"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
     }
   ]
 }
