@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-26T22:57:52.271Z",
+  "generated": "2026-06-26T23:01:41.381Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1340,
+  "total_published": 1342,
   "s2n_stats": {
     "passed": 82,
-    "suppressed": 11,
+    "suppressed": 10,
     "avg_qs": 0.554
   },
   "items": [
@@ -4174,6 +4174,55 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-50015",
+      "title": "pnpm Vulnerable to Arbitrary File Write/Delete via Malicious Patch File (Path Traversal)",
+      "description": "## Summary pnpm's patch application pipeline (`@pnpm/patch-package`) performs no path validation on file paths extracted from `.patch` files. An attacker who contributes a malicious patch file via a pull request can write attacker-controlled content to or delete arbitrary files on the filesystem dur",
+      "cvss": 7.3,
+      "final_ps": 24,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-26",
+      "last_seen": "2026-06-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "pnpm",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50015",
+        "CVE-2026-50015"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-rxhj-4m44-96r4",
+        "https://github.com/pnpm/pnpm/security/advisories/GHSA-rxhj-4m44-96r4",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-50015",
+        "https://github.com/advisories/GHSA-rxhj-4m44-96r4"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-50016",
       "title": "pnpm: Transitive dependency alias path traversal allows project path override via symlink replacement",
       "description": "## Summary pnpm allows a transitive dependency alias from registry package metadata to contain path traversal segments. During install, pnpm later uses that alias as a filesystem path when linking dependency nodes. As a result, a registry package can cause `pnpm install - ignore-scripts` to replace ",
@@ -4352,55 +4401,6 @@
         "https://github.com/benoitc/hackney/security/advisories/GHSA-9653-rcfr-5c62",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-47067",
         "https://github.com/benoitc/hackney/commit/31f6f0e27e096ad88743dfded4f030a3ee74972e"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-49287",
-      "title": "Statamic CMS's unsafe method invocation via collection sorting allows data destruction",
-      "description": "### Impact The fix for GHSA-4jjr-vmv7-wh4w was incomplete. It addressed the issue in the query builder, but the same protection was not applied to in-memory collection sorting. Manipulating sort parameters could result in the loss of content and assets. This requires a front-end template that passes",
-      "cvss": 7.4,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-26",
-      "last_seen": "2026-06-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "statamic/cms",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49287",
-        "CVE-2026-49287"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-m92m-r54r-x8r2",
-        "https://github.com/statamic/cms/security/advisories/GHSA-4jjr-vmv7-wh4w",
-        "https://github.com/statamic/cms/security/advisories/GHSA-m92m-r54r-x8r2",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-49287"
       ],
       "explanation": {
         "quality": [
