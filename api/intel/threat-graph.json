@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-26T08:31:35.914Z",
+  "generated": "2026-06-26T09:01:49.516Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3532,
+    "total_nodes": 3535,
     "actors": 8,
     "cves": 776,
     "campaigns": 326,
     "malware": 0,
-    "iocs": 359,
-    "edges": 1323
+    "iocs": 360,
+    "edges": 1325
   },
   "nodes": {
     "actor:lockbit": {
@@ -67617,6 +67617,64 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_NETSEC-d6ef2b4744ad0097": {
+      "id": "REDDIT_NETSEC-d6ef2b4744ad0097",
+      "type": "Intel",
+      "name": "We Scanned 50,000 Skills: The Threat Persists · Tencent Zhuque Lab",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-26",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:matrix.tencent.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:matrix.tencent.com": {
+      "id": "ioc:domain:matrix.tencent.com",
+      "type": "IOC",
+      "name": "matrix.tencent.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-26"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-2cb7a99ffa911281": {
+      "id": "SECURITYWEEK-2cb7a99ffa911281",
+      "type": "Intel",
+      "name": "Russian APT Deploys &#8216;StockStay&#8217; Backdoor Against Ukrainian Targets",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-26",
+        "type": "THREAT_ACTOR"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -79562,6 +79620,24 @@
       "target": "CVE-2026-12569",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-26",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-d6ef2b4744ad0097→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-d6ef2b4744ad0097",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-26",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-d6ef2b4744ad0097→linked_to→ioc:domain:matrix.tencent.com",
+      "source": "REDDIT_NETSEC-d6ef2b4744ad0097",
+      "target": "ioc:domain:matrix.tencent.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-26",
       "sources": []
     }
