@@ -672,40 +672,62 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
         ]
         mssp_block = "MSSPs should issue a client advisory within 2 hours covering detection logic and recommended compensating controls. Validate client SIEM detection coverage against the MITRE techniques identified. Push Sigma rules above to all client SIEM platforms. CYBERDUDEBIVASH® SENTINEL APEX provides automated MSSP intelligence briefing generation with client-specific exposure analysis and pre-built detection rule packages."
 
-    mitre_html = "\n".join(f"<li>{t}</li>" for t in mitre_techniques)
-    hunt_html = "\n".join(f"<li>{q}</li>" for q in hunt_queries)
-    soc_html = "\n".join(f"<li>{a}</li>" for a in soc_actions)
+    mitre_html = "\n".join(
+        f'<div style="margin:6px 0;padding:10px 14px;background:#0a0f1a;border-left:3px solid #a855f7;border-radius:0 4px 4px 0;font-size:13px;color:#c4b5fd;line-height:1.7">{t}</div>'
+        for t in mitre_techniques
+    )
+    hunt_html = "\n".join(
+        (
+            f'<div style="margin:6px 0;padding:10px 14px;background:#001a10;border-left:3px solid #22c55e;border-radius:0 4px 4px 0;font-size:13px;line-height:1.7">'
+            f'<span style="color:#22c55e;font-family:monospace;font-size:11px;font-weight:700">[HUNT-{str(i + 1).zfill(2)}]</span>'
+            f'&nbsp;<span style="color:#cbd5e1">{q}</span></div>'
+        )
+        for i, q in enumerate(hunt_queries)
+    )
+    _soc_badge_colors = {"P0": "#ef4444", "P1": "#f59e0b", "P2": "#3b82f6"}
+    soc_html = "\n".join(
+        (
+            f'<div style="margin:6px 0;padding:10px 14px;background:#050d1a;border:1px solid #1e3a5f55;border-radius:4px;display:flex;gap:10px;align-items:flex-start">'
+            f'<span style="background:{_soc_badge_colors.get(a[:2], "#3b82f6")};color:#fff;padding:3px 7px;border-radius:3px;font-size:10px;font-weight:900;font-family:monospace;white-space:nowrap;flex-shrink:0">{a[:2]}</span>'
+            f'<span style="color:#cbd5e1;font-size:13px;line-height:1.6">{a.split(" — ", 1)[-1] if " — " in a else a}</span>'
+            f'</div>'
+        )
+        for a in soc_actions
+    )
 
     # Enterprise recommendations (phased, threat-specific)
     enterprise_recs = []
-    enterprise_recs.append(f"<strong>Day 1–7 (Immediate):</strong> {soc_actions[0] if soc_actions else 'Conduct asset inventory to identify all affected systems and apply available vendor patch or compensating control'}")
+    enterprise_recs.append(f"<strong style='color:#00d4ff'>Day 1–7 (Immediate):</strong> {soc_actions[0] if soc_actions else 'Conduct asset inventory to identify all affected systems and apply available vendor patch or compensating control'}")
     if is_ransomware:
-        enterprise_recs.append("<strong>Day 8–30 (Short-term):</strong> Validate immutable backup architecture and test restoration procedures under simulated ransomware scenario; implement network micro-segmentation to limit blast radius of future encryption campaigns")
-        enterprise_recs.append("<strong>Day 31–90 (Strategic):</strong> Conduct ransomware tabletop exercise with executive stakeholders; implement identity governance controls (PAM, MFA enforcement on all privileged accounts) to eliminate primary ransomware access vectors")
+        enterprise_recs.append("<strong style='color:#f59e0b'>Day 8–30 (Short-term):</strong> Validate immutable backup architecture and test restoration procedures under simulated ransomware scenario; implement network micro-segmentation to limit blast radius of future encryption campaigns")
+        enterprise_recs.append("<strong style='color:#a855f7'>Day 31–90 (Strategic):</strong> Conduct ransomware tabletop exercise with executive stakeholders; implement identity governance controls (PAM, MFA enforcement on all privileged accounts) to eliminate primary ransomware access vectors")
     elif is_apt:
-        enterprise_recs.append("<strong>Day 8–30 (Short-term):</strong> Deploy behavioral detection rules to SIEM covering LOLBAS abuse, scheduled task anomalies, and LSASS access patterns; implement privileged access workstation (PAW) architecture for all domain administrator activities")
-        enterprise_recs.append("<strong>Day 31–90 (Strategic):</strong> Assess zero-trust network architecture maturity; evaluate threat intelligence program to ensure continuous monitoring of nation-state TTPs relevant to your sector and geographic exposure")
+        enterprise_recs.append("<strong style='color:#f59e0b'>Day 8–30 (Short-term):</strong> Deploy behavioral detection rules to SIEM covering LOLBAS abuse, scheduled task anomalies, and LSASS access patterns; implement privileged access workstation (PAW) architecture for all domain administrator activities")
+        enterprise_recs.append("<strong style='color:#a855f7'>Day 31–90 (Strategic):</strong> Assess zero-trust network architecture maturity; evaluate threat intelligence program to ensure continuous monitoring of nation-state TTPs relevant to your sector and geographic exposure")
     elif is_cve:
-        enterprise_recs.append(f"<strong>Day 8–30 (Short-term):</strong> Conduct full vulnerability assessment of all {category} assets across the environment; implement vulnerability management SLA requiring all CRITICAL CVEs patched within 24 hours of NVD publication")
-        enterprise_recs.append("<strong>Day 31–90 (Strategic):</strong> Integrate CISA KEV tracking with your vulnerability management platform; implement virtual patching capability (WAF rules) as a compensating control bridge between CVE disclosure and patch deployment")
+        enterprise_recs.append(f"<strong style='color:#f59e0b'>Day 8–30 (Short-term):</strong> Conduct full vulnerability assessment of all {category} assets across the environment; implement vulnerability management SLA requiring all CRITICAL CVEs patched within 24 hours of NVD publication")
+        enterprise_recs.append("<strong style='color:#a855f7'>Day 31–90 (Strategic):</strong> Integrate CISA KEV tracking with your vulnerability management platform; implement virtual patching capability (WAF rules) as a compensating control bridge between CVE disclosure and patch deployment")
     elif is_ot:
-        enterprise_recs.append("<strong>Day 8–30 (Short-term):</strong> Engage ICS security specialist to assess current IT/OT network segmentation architecture; implement OT-specific network monitoring (Claroty/Dragos/Nozomi) if not already deployed")
-        enterprise_recs.append("<strong>Day 31–90 (Strategic):</strong> Develop and exercise an OT-specific incident response plan distinct from IT IR playbooks; assess IEC 62443 compliance posture for industrial network security governance")
+        enterprise_recs.append("<strong style='color:#f59e0b'>Day 8–30 (Short-term):</strong> Engage ICS security specialist to assess current IT/OT network segmentation architecture; implement OT-specific network monitoring (Claroty/Dragos/Nozomi) if not already deployed")
+        enterprise_recs.append("<strong style='color:#a855f7'>Day 31–90 (Strategic):</strong> Develop and exercise an OT-specific incident response plan distinct from IT IR playbooks; assess IEC 62443 compliance posture for industrial network security governance")
     elif is_ato:
-        enterprise_recs.append("<strong>Day 8–30 (Short-term):</strong> Implement risk-based authentication scoring across all customer-facing portals; evaluate deployment of behavioral biometrics for high-value account actions (payment changes, address updates)")
-        enterprise_recs.append("<strong>Day 31–90 (Strategic):</strong> Accelerate passwordless authentication migration for high-risk user populations; integrate breach credential monitoring (HaveIBeenPwned Enterprise, SpyCloud) to proactively identify compromised user credentials before ATO")
+        enterprise_recs.append("<strong style='color:#f59e0b'>Day 8–30 (Short-term):</strong> Implement risk-based authentication scoring across all customer-facing portals; evaluate deployment of behavioral biometrics for high-value account actions (payment changes, address updates)")
+        enterprise_recs.append("<strong style='color:#a855f7'>Day 31–90 (Strategic):</strong> Accelerate passwordless authentication migration for high-risk user populations; integrate breach credential monitoring (HaveIBeenPwned Enterprise, SpyCloud) to proactively identify compromised user credentials before ATO")
     elif is_supply_chain:
-        enterprise_recs.append("<strong>Day 8–30 (Short-term):</strong> Deploy software composition analysis (SCA) tooling in all CI/CD pipelines; implement artifact repository with dependency proxying to control which package registry sources are permitted")
-        enterprise_recs.append("<strong>Day 31–90 (Strategic):</strong> Develop software bill of materials (SBOM) capability for all production applications; implement package signing verification in build pipelines aligned with SLSA framework requirements")
+        enterprise_recs.append("<strong style='color:#f59e0b'>Day 8–30 (Short-term):</strong> Deploy software composition analysis (SCA) tooling in all CI/CD pipelines; implement artifact repository with dependency proxying to control which package registry sources are permitted")
+        enterprise_recs.append("<strong style='color:#a855f7'>Day 31–90 (Strategic):</strong> Develop software bill of materials (SBOM) capability for all production applications; implement package signing verification in build pipelines aligned with SLSA framework requirements")
     elif is_extension:
-        enterprise_recs.append("<strong>Day 8–30 (Short-term):</strong> Deploy Chrome Enterprise Browser Management or equivalent; implement extension allowlist policy blocking all unreviewed extensions from installation on managed endpoints")
-        enterprise_recs.append("<strong>Day 31–90 (Strategic):</strong> Evaluate enterprise browser security solution (Island, Talon, or vendor-managed browser) for high-risk user populations accessing sensitive SaaS applications from BYOD devices")
+        enterprise_recs.append("<strong style='color:#f59e0b'>Day 8–30 (Short-term):</strong> Deploy Chrome Enterprise Browser Management or equivalent; implement extension allowlist policy blocking all unreviewed extensions from installation on managed endpoints")
+        enterprise_recs.append("<strong style='color:#a855f7'>Day 31–90 (Strategic):</strong> Evaluate enterprise browser security solution (Island, Talon, or vendor-managed browser) for high-risk user populations accessing sensitive SaaS applications from BYOD devices")
     else:
-        enterprise_recs.append("<strong>Day 8–30 (Short-term):</strong> Validate SIEM detection coverage against all MITRE ATT&CK techniques identified in this report; deploy updated Sigma rules to close identified detection gaps across all managed endpoints")
-        enterprise_recs.append("<strong>Day 31–90 (Strategic):</strong> Conduct tabletop exercise simulating this specific attack scenario with SOC and executive stakeholders; evaluate CYBERDUDEBIVASH® SENTINEL APEX for continuous threat intelligence integration to reduce detection gap windows")
+        enterprise_recs.append("<strong style='color:#f59e0b'>Day 8–30 (Short-term):</strong> Validate SIEM detection coverage against all MITRE ATT&CK techniques identified in this report; deploy updated Sigma rules to close identified detection gaps across all managed endpoints")
+        enterprise_recs.append("<strong style='color:#a855f7'>Day 31–90 (Strategic):</strong> Conduct tabletop exercise simulating this specific attack scenario with SOC and executive stakeholders; evaluate CYBERDUDEBIVASH® SENTINEL APEX for continuous threat intelligence integration to reduce detection gap windows")
     if is_ai:
-        enterprise_recs.insert(0, "<strong>Immediate — AI Security:</strong> Audit all production AI/LLM deployments against OWASP LLM Top 10 and MITRE ATLAS framework; implement input validation and output filtering on all AI pipeline touchpoints before next deployment cycle")
-    ent_html = "\n".join(f"<li>{r}</li>" for r in enterprise_recs)
+        enterprise_recs.insert(0, "<strong style='color:#ef4444'>Immediate — AI Security:</strong> Audit all production AI/LLM deployments against OWASP LLM Top 10 and MITRE ATLAS framework; implement input validation and output filtering on all AI pipeline touchpoints before next deployment cycle")
+    ent_html = "\n".join(
+        f'<div style="margin:6px 0;padding:10px 14px;background:#050d1a;border-left:3px solid #06b6d4;border-radius:0 4px 4px 0;font-size:13px;color:#cbd5e1;line-height:1.7">{r}</div>'
+        for r in enterprise_recs
+    )
 
     # IOC intelligence section — category-specific behavioral indicators
     if is_ransomware:
@@ -813,6 +835,99 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     _ot_para = '<p>Operational technology environments face elevated risk due to the combination of legacy systems with extended patching cycles, limited network segmentation between IT and OT networks, and the operational sensitivity of production disruption that may incentivize ransom payment or prevent proper incident containment.</p>' if is_ot else ''
     _ato_para = '<p>Credential stuffing operations rely on the reuse of username/password pairs from prior data breaches — victims are compromised through no fault of their current security posture. The attack succeeds entirely because of credential reuse across services, making MFA enforcement the single highest-efficacy defensive control available.</p>' if is_ato else ''
 
+    # ── IOC behavioral styled cards ──────────────────────────────────────────
+    _ioc_parts = [p.replace("<li>", "").strip() for p in ioc_behavioral.split("</li>") if p.replace("<li>", "").strip()]
+    ioc_styled = "\n".join(
+        f'<div style="margin:6px 0;padding:10px 14px;background:#120a00;border-left:3px solid #f59e0b;border-radius:0 4px 4px 0;font-size:13px;color:#cbd5e1;line-height:1.7">{item}</div>'
+        for item in _ioc_parts
+    )
+
+    # ── Severity alert banner ────────────────────────────────────────────────
+    _sev_bg = "#1a0000" if severity == "CRITICAL" else "#120a00" if severity == "HIGH" else "#001020"
+    _sev_banner = (
+        f'<div style="margin:0 0 24px;padding:14px 20px;background:{_sev_bg};border:1px solid {severity_color};border-radius:6px">'
+        f'<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">'
+        f'<span style="background:{severity_color};color:#fff;padding:4px 12px;border-radius:4px;font-weight:900;font-size:12px;font-family:monospace;letter-spacing:1.5px">{severity}</span>'
+        f'<span style="color:{severity_color};font-size:13px;font-weight:700;font-family:monospace;letter-spacing:1px">SENTINEL APEX THREAT ADVISORY</span>'
+        f'<span style="color:#475569;font-size:11px;font-family:monospace;margin-left:auto">{datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}</span>'
+        f'</div></div>'
+    )
+
+    # ── Section header helper ────────────────────────────────────────────────
+    def _sh(title: str, color: str = "#00d4ff") -> str:
+        return (
+            f'<div style="margin:32px 0 14px;padding:10px 18px;'
+            f'background:linear-gradient(90deg,#0a1628,#050d1a);'
+            f'border-left:3px solid {color};font-size:11px;font-weight:700;'
+            f'color:{color};letter-spacing:2.5px;text-transform:uppercase;'
+            f'font-family:monospace">&#9658; {title}</div>'
+        )
+
+    # ── Terminal-style Sigma block ───────────────────────────────────────────
+    _sigma_date = datetime.now(timezone.utc).strftime("%Y%m%d")
+    _sigma_date_fmt = datetime.now(timezone.utc).strftime("%Y/%m/%d")
+    _sigma_terminal = (
+        f'<div style="margin:16px 0;border-radius:8px;overflow:hidden;border:1px solid #1e3a5f">'
+        f'<div style="background:#161b22;padding:8px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #0d2137">'
+        f'<span style="width:10px;height:10px;border-radius:50%;background:#ef4444;display:inline-block"></span>'
+        f'<span style="width:10px;height:10px;border-radius:50%;background:#f59e0b;display:inline-block"></span>'
+        f'<span style="width:10px;height:10px;border-radius:50%;background:#22c55e;display:inline-block"></span>'
+        f'<span style="color:#64748b;font-size:11px;font-family:monospace;margin-left:8px">sigma-detection-rule.yml &mdash; SENTINEL APEX Detection Engineering</span>'
+        f'</div>'
+        f'<pre style="margin:0;padding:16px;background:#0a0f0a;color:#22c55e;font-family:\'Courier New\',monospace;font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre-wrap"><code>'
+        f'title: {sigma_title}\n'
+        f'id: cdb-sentinel-apex-{_sigma_date}-001\n'
+        f'status: experimental\n'
+        f'description: &gt;\n'
+        f'  Detects {sigma_title.lower()}.\n'
+        f'  CYBERDUDEBIVASH&#174; SENTINEL APEX Detection Engineering.\n'
+        f'references:\n'
+        f'    - {article.url}\n'
+        f'    - https://blog.cyberdudebivash.in\n'
+        f'    - https://intel.cyberdudebivash.com\n'
+        f'author: CYBERDUDEBIVASH&#174; SENTINEL APEX Detection Engineering\n'
+        f'date: {_sigma_date_fmt}\n'
+        f'tags:\n'
+        f'{sigma_tags}\n'
+        f'logsource:\n'
+        f'    {sigma_logsource}\n'
+        f'{sigma_detection}\n'
+        f'falsepositives:\n'
+        f'    - Legitimate administrative activity\n'
+        f'    - Security testing or red team exercises\n'
+        f'level: high'
+        f'</code></pre></div>'
+    )
+
+    # ── CVE cards ────────────────────────────────────────────────────────────
+    _cve_cards = "\n".join(
+        (
+            f'<div style="margin:6px 0;padding:10px 14px;background:#1a0005;border-left:3px solid #ef4444;border-radius:0 4px 4px 0">'
+            f'<span style="color:#ef4444;font-family:monospace;font-size:11px;font-weight:700">{cve}</span>'
+            f'<span style="color:#94a3b8;font-size:12px;margin-left:10px">{category} &middot; CVSS: {cvss_str} &middot; </span>'
+            f'<a href="https://nvd.nist.gov/vuln/detail/{cve}" target="_blank" rel="noopener" style="color:#60a5fa;font-size:12px;text-decoration:none">NVD &#8599;</a>'
+            f'</div>'
+        )
+        for cve in cves
+    ) if cves else ""
+
+    # ── Styled references ────────────────────────────────────────────────────
+    _ref_style = 'style="margin:4px 0;padding:8px 14px;background:#050d1a;border-radius:4px;font-size:12px"'
+    _ref_arrow = '<span style="color:#334155;font-family:monospace;margin-right:8px">&#8594;</span>'
+    _ref_link = 'style="color:#60a5fa;text-decoration:none"'
+    _refs_items = [
+        f'<div {_ref_style}>{_ref_arrow}<a href="{article.url}" target="_blank" rel="noopener" {_ref_link}>Source Article</a></div>',
+        f'<div {_ref_style}>{_ref_arrow}<a href="https://attack.mitre.org" target="_blank" rel="noopener" {_ref_link}>MITRE ATT&amp;CK Enterprise Matrix</a></div>',
+        f'<div {_ref_style}>{_ref_arrow}<a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener" {_ref_link}>CISA Known Exploited Vulnerabilities Catalog</a></div>',
+    ]
+    if is_ot:
+        _refs_items.append(f'<div {_ref_style}>{_ref_arrow}<a href="https://attack.mitre.org/matrices/ics/" target="_blank" rel="noopener" {_ref_link}>MITRE ATT&amp;CK for ICS</a></div>')
+    if is_ai:
+        _refs_items.append(f'<div {_ref_style}>{_ref_arrow}<a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank" rel="noopener" {_ref_link}>OWASP LLM Top 10</a></div>')
+    for _rc in cves:
+        _refs_items.append(f'<div {_ref_style}>{_ref_arrow}<a href="https://nvd.nist.gov/vuln/detail/{_rc}" target="_blank" rel="noopener" {_ref_link}>NVD &mdash; {_rc}</a></div>')
+    _refs_styled = "\n".join(_refs_items)
+
     # Executive decision matrix
     exec_matrix_rows = ""
     if is_ransomware:
@@ -853,140 +968,190 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     else:
         predictive = "<p><strong>Threat vector persistence (MEDIUM CONFIDENCE):</strong> Based on the attack methodology described, this threat vector is likely to remain active for the next 60-90 days as threat actors exhaust the target population or shift to alternative delivery mechanisms.</p><p><strong>Detection evasion evolution (MEDIUM CONFIDENCE):</strong> Threat actors actively monitor public detection rule releases and typically modify malware signatures within 24-48 hours of public Sigma/YARA rule publication to evade new detections.</p><p><strong>Targeting scope (LOW CONFIDENCE):</strong> Without confirmed attribution or explicit campaign scope disclosure in the source material, targeting scope projection carries significant uncertainty — maintain standard monitoring posture while avoiding over-scoping defensive response.</p>"
 
-    return f"""
-<h3>Executive Summary</h3>
-<p>{article.summary[:350].rstrip('.')}. This represents a <strong>{severity}</strong>-severity threat ({cvss_str} risk profile) requiring immediate evaluation by SOC and vulnerability management teams. {'CISA has added this to the Known Exploited Vulnerabilities catalog, imposing mandatory patching deadlines for U.S. federal agencies.' if is_patch and 'cisa' in text else 'CYBERDUDEBIVASH® SENTINEL APEX has classified this as a priority intelligence item requiring immediate defensive action.'}</p>
+    # ── Style exec matrix + parse predictive (must be after both are assigned) ─
+    _emr = exec_matrix_rows
+    for _mp, _mc in [("P0", "#ef4444"), ("P1", "#f59e0b"), ("P2", "#3b82f6")]:
+        _emr = _emr.replace(
+            f"<td>{_mp}</td>",
+            f'<td style="padding:10px 14px;vertical-align:top;white-space:nowrap"><span style="background:{_mc};color:#fff;padding:3px 8px;border-radius:3px;font-size:10px;font-weight:900;font-family:monospace">{_mp}</span></td>',
+        )
+    _emr = _emr.replace("<td>", '<td style="padding:10px 14px;color:#cbd5e1;font-size:13px;vertical-align:top;line-height:1.5">')
+    _emr = _emr.replace("<tr>", '<tr style="border-bottom:1px solid #0d2137">')
 
-<h3>Verified Facts</h3>
-<ul>
-<li>Threat type: {category} — derived from article classification and content analysis</li>
-{'<li>CVE identifiers: ' + ', '.join(cves) + ' — extracted from article content</li>' if cves else ''}
-{'<li>CVSS score: ' + cvss + ' — extracted from article or vendor advisory</li>' if cvss else ''}
-<li>Severity classification: {severity} — {'based on CVSS score ' + cvss if cvss else 'based on threat category, exploitation status, and operational impact assessment'}</li>
-{'<li>Patch availability confirmed: vendor or CISA advisory references patch or required action</li>' if is_patch else '<li>Patch availability: unconfirmed at time of report generation — monitor vendor advisory channel</li>'}
-</ul>
+    _pred_parts = re.findall(r"<p>(.*?)</p>", predictive, re.DOTALL)
+    _pred_cards = []
+    for _pp in _pred_parts:
+        if "HIGH CONFIDENCE" in _pp:
+            _pc, _pl = "#22c55e", "&#9679; HIGH CONFIDENCE"
+        elif "MEDIUM CONFIDENCE" in _pp:
+            _pc, _pl = "#f59e0b", "&#9679; MEDIUM CONFIDENCE"
+        else:
+            _pc, _pl = "#64748b", "&#9679; LOW CONFIDENCE"
+        _pred_cards.append(
+            f'<div style="margin:8px 0;padding:12px 16px;background:#050d1a;border-left:3px solid {_pc};border-radius:0 4px 4px 0">'
+            f'<div style="color:{_pc};font-size:10px;font-weight:900;font-family:monospace;letter-spacing:1.5px;margin-bottom:6px">{_pl}</div>'
+            f'<div style="color:#94a3b8;font-size:13px;line-height:1.6">{_pp}</div></div>'
+        )
+    _pred_styled = "\n".join(_pred_cards) if _pred_cards else f'<div style="color:#94a3b8;font-size:13px;line-height:1.7">{predictive}</div>'
 
-<h3>Threat Classification</h3>
-<p>Threat type: <strong>{category}</strong>. {'Operational technology and industrial control system targeting with direct production impact risk.' if is_ot else 'Enterprise IT environment threat with potential for data loss, operational disruption, or financial impact.'} {'Exploitation is confirmed active based on CISA KEV inclusion or public exploitation reporting (HIGH CONFIDENCE).' if is_patch else 'Active exploitation status is unconfirmed at time of publication — assess as pre-exploitation risk (MEDIUM CONFIDENCE).'} {'Attribution to specific threat actors has not been confirmed in the source material — analyst assessment and sector context are the basis for any attribution statements in this report (LOW CONFIDENCE).' if not is_ransomware and not is_apt else 'Threat actor category identified based on TTPs and campaign characteristics described in source material.'}</p>
+    return f"""{_sev_banner}
 
-<h3>Threat Severity Assessment</h3>
-<p><strong>Severity: {severity}</strong>{'  |  CVSS ' + cvss if cvss else ''}</p>
-<ul>
-<li><strong>Exploitability:</strong> {'Actively exploited in the wild — CISA KEV inclusion or vendor confirmation (HIGH CONFIDENCE)' if is_patch else 'Technical details sufficient for exploitation — weaponization timeline estimated 24-72 hours post-PoC publication (MEDIUM CONFIDENCE)'}</li>
-<li><strong>Impact:</strong> {'Operational disruption, data encryption, ransom demand, potential double-extortion data leak' if is_ransomware else ('Production system disruption, perishable goods spoilage, supply chain disruption' if is_ot else ('Unauthorized account access, financial fraud, identity theft, regulatory breach' if is_ato else 'Unauthorized access, privilege escalation, potential data exfiltration'))}</li>
-<li><strong>Prevalence:</strong> {_prevalence_text}</li>
-<li><strong>Patch/remediation status:</strong> {'Emergency patch available — deploy immediately' if is_patch else 'Monitor vendor advisory channel; implement compensating controls immediately pending patch availability'}</li>
-</ul>
+{_sh("Executive Summary")}
+<div style="background:#050d1a;border:1px solid #1e3a5f44;border-radius:6px;padding:16px 20px;font-size:14px;color:#cbd5e1;line-height:1.8">
+<p style="margin:0 0 10px">{article.summary[:350].rstrip('.')}. This represents a <strong style="color:{severity_color}">{severity}</strong>-severity threat ({cvss_str} risk profile) requiring immediate evaluation by SOC and vulnerability management teams.</p>
+<p style="margin:0;color:#94a3b8;font-size:13px">{_cisa_sentence}</p>
+</div>
 
-<h3>Business Impact</h3>
-<p>{_business_impact}</p>
-<p>Risk quantification requires correlation of this threat against your specific asset inventory, data classification, and regulatory obligations — standard CVSS scores reflect technical severity, not business impact to your specific environment.</p>
+{_sh("Verified Facts", "#22c55e")}
+<div style="background:#001a10;border:1px solid #22c55e33;border-radius:6px;padding:14px 20px">
+<div style="margin:4px 0;padding:6px 0;border-bottom:1px solid #0d2137;font-size:13px;color:#86efac"><span style="color:#22c55e;font-family:monospace;font-size:11px;font-weight:700;margin-right:10px">TYPE</span>{category} &mdash; derived from article classification and content analysis</div>
+{f'<div style="margin:4px 0;padding:6px 0;border-bottom:1px solid #0d2137;font-size:13px;color:#86efac"><span style="color:#22c55e;font-family:monospace;font-size:11px;font-weight:700;margin-right:10px">CVE</span>{", ".join(cves)} &mdash; extracted from article content</div>' if cves else ''}
+{f'<div style="margin:4px 0;padding:6px 0;border-bottom:1px solid #0d2137;font-size:13px;color:#86efac"><span style="color:#22c55e;font-family:monospace;font-size:11px;font-weight:700;margin-right:10px">CVSS</span>{cvss} &mdash; extracted from article or vendor advisory</div>' if cvss else ''}
+<div style="margin:4px 0;padding:6px 0;border-bottom:1px solid #0d2137;font-size:13px;color:#86efac"><span style="color:#22c55e;font-family:monospace;font-size:11px;font-weight:700;margin-right:10px">SEVERITY</span><span style="color:{severity_color};font-weight:700">{severity}</span> &mdash; {_cvss_severity}</div>
+<div style="margin:4px 0;padding:6px 0;font-size:13px;color:#86efac"><span style="color:#22c55e;font-family:monospace;font-size:11px;font-weight:700;margin-right:10px">PATCH</span>{'Confirmed available &mdash; deploy immediately' if is_patch else 'Unconfirmed at time of report &mdash; monitor vendor advisory'}</div>
+</div>
 
-<h3>Technical Analysis</h3>
-<p>{article.summary[:800]}</p>
-{'<p>Operational technology environments face elevated risk due to the combination of legacy systems with extended patching cycles, limited network segmentation between IT and OT networks, and the operational sensitivity of production disruption that may incentivize ransom payment or prevent proper incident containment.</p>' if is_ot else ''}
-{'<p>Credential stuffing operations rely on the reuse of username/password pairs from prior data breaches — victims are compromised through no fault of their current security posture. The attack succeeds entirely because of credential reuse across services, making MFA enforcement the single highest-efficacy defensive control available.</p>' if is_ato else ''}
+{_sh("Threat Classification & Severity", "#ef4444")}
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+<div style="flex:1;min-width:200px;background:#1a0005;border:1px solid #ef444433;border-radius:6px;padding:14px 16px">
+<div style="color:#ef4444;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:8px">THREAT TYPE</div>
+<div style="color:#fca5a5;font-size:14px;font-weight:700">{category}</div>
+<div style="color:#64748b;font-size:11px;margin-top:4px">{_ot_classification}</div>
+</div>
+<div style="flex:1;min-width:200px;background:#120a00;border:1px solid {severity_color}44;border-radius:6px;padding:14px 16px">
+<div style="color:{severity_color};font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:8px">SEVERITY</div>
+<div style="color:{severity_color};font-size:24px;font-weight:900;font-family:monospace">{severity}{f" &nbsp;CVSS {cvss}" if cvss else ""}</div>
+</div>
+<div style="flex:1;min-width:200px;background:#050d1a;border:1px solid #1e3a5f;border-radius:6px;padding:14px 16px">
+<div style="color:#00d4ff;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:8px">EXPLOIT STATUS</div>
+<div style="color:#cbd5e1;font-size:12px;line-height:1.6">{_exploit_status}</div>
+</div>
+</div>
+<div style="background:#050d1a;border:1px solid #1e3a5f44;border-radius:6px;padding:14px 20px;font-size:13px;color:#94a3b8;line-height:1.7">
+<strong style="color:#cbd5e1">Exploitability:</strong> {_exploit_confidence}<br>
+<strong style="color:#cbd5e1">Impact scope:</strong> {_impact_text}<br>
+<strong style="color:#cbd5e1">Prevalence:</strong> {_prevalence_text}<br>
+<strong style="color:#cbd5e1">Attribution:</strong> {_attribution_note}
+</div>
 
-<h3>CVE Analysis</h3>
-{'<ul>' + chr(10).join(f'<li><strong>{cve}</strong> — {category} vulnerability. CVSS: {cvss_str}. Monitor NVD entry at https://nvd.nist.gov/vuln/detail/{cve} and vendor security advisory for authoritative CVSS vector string, affected version range, and patch availability.</li>' for cve in cves) + '</ul>' if cves else ''}
+{_sh("Business Impact", "#f97316")}
+<div style="background:#120800;border:1px solid #f9731633;border-radius:6px;padding:16px 20px;font-size:13px;color:#fed7aa;line-height:1.8">
+<p style="margin:0 0 10px">{_business_impact}</p>
+<p style="margin:0;color:#78350f;font-size:12px;border-top:1px solid #f9731622;padding-top:10px">Risk quantification requires correlation against your specific asset inventory, data classification, and regulatory obligations. CVSS scores reflect technical severity, not business impact to your environment.</p>
+</div>
 
-<h3>MITRE ATT&CK Mapping</h3>
-<ul>
+{_sh("Technical Analysis")}
+<div style="background:#050d1a;border:1px solid #1e3a5f44;border-radius:6px;padding:16px 20px;font-size:13px;color:#cbd5e1;line-height:1.8">
+<p style="margin:0 0 10px">{article.summary[:800]}</p>
+{_ot_para}
+{_ato_para}
+</div>
+
+{f'{_sh("CVE Analysis", "#ef4444")}<div style="background:#0d0014;border:1px solid #ef444433;border-radius:6px;padding:14px 16px">{_cve_cards}</div>' if cves else ''}
+
+{_sh("MITRE ATT&CK Mapping", "#a855f7")}
+<div style="background:#0d0014;border:1px solid #a855f733;border-radius:6px;padding:14px 16px">
+<div style="color:#7c3aed;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9632; MITRE ATT&amp;CK ENTERPRISE TECHNIQUES</div>
 {mitre_html}
-</ul>
+</div>
 
-<h3>IOC Intelligence</h3>
-<p>No confirmed public IOCs were published in this intelligence item at time of report generation. {'Behavioral IOCs applicable to this threat type for defensive hunting:' if True else ''}</p>
-<ul>
-{ioc_behavioral}
-</ul>
+{_sh("IOC Intelligence", "#f59e0b")}
+<div style="background:#0d0a00;border:1px solid #f59e0b33;border-radius:6px;padding:14px 16px">
+<div style="color:#b45309;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9651; BEHAVIORAL INDICATORS &mdash; NO CONFIRMED PUBLIC IOCs AT REPORT TIME</div>
+{ioc_styled}
+</div>
 
-<h3>Detection Engineering Guidance</h3>
-<p>Primary log sources and telemetry required for detection coverage against this threat:</p>
-<ul>
-{'<li><strong>OT network monitoring:</strong> Industrial protocol analysis (Modbus, S7comm, DNP3) from network tap or span on IT-OT boundary switch — requires OT-aware network monitoring tool (Dragos, Claroty, Nozomi, or Darktrace OT)</li><li><strong>OT endpoint telemetry:</strong> Windows Event Logs from HMI systems and OT engineering workstations — enable audit process creation (4688) with command-line logging and audit account logon events (4624, 4625)</li><li><strong>OT historian/SCADA audit logs:</strong> Configuration change audit trail from SCADA platform for PLC parameter modifications, logic uploads, and setpoint changes outside approved windows</li>' if is_ot else '<li><strong>Windows Security Events:</strong> ID 4688 (process creation with full command-line logging — requires audit policy enforcement), 4698 (scheduled task creation), 4624/4625 (auth success/failure), 4672 (special privileges assigned)</li><li><strong>EDR/XDR Telemetry:</strong> Process tree with parent-child relationships, file system events (create/rename/delete), registry modifications (Sysmon Event ID 13), network connection events</li><li><strong>Network telemetry:</strong> DNS query logs (all query types including TXT/NULL for tunneling detection), proxy/web gateway logs with full URL logging, NetFlow/PCAP from north-south and east-west choke points</li>'}
-{'<li><strong>Web application logs:</strong> Full URI with parameters, HTTP method, response code, response body size, and client IP — required for exploitation attempt detection and post-exploitation web shell activity identification</li>' if is_cve else ''}
-{'<li><strong>Authentication logs:</strong> Web application login events with IP, user agent, geolocation, and result — aggregated across all customer-facing authentication endpoints; requires correlation across sessions to detect distributed low-velocity attacks</li>' if is_ato else ''}
-{_ext_li}
-{'<li><strong>CI/CD pipeline logs:</strong> Package installation events with dependency resolution trace; build job timing anomalies; network connections made during build phase</li>' if is_supply_chain else ''}
-<li><strong>Cloud telemetry:</strong> CloudTrail/Azure Activity Logs/GCP Audit Logs for IAM changes, unusual API calls, resource creation in non-standard regions, and data access patterns</li>
-</ul>
+{_sh("Detection Engineering Guidance", "#06b6d4")}
+<div style="background:#001a1a;border:1px solid #06b6d433;border-radius:6px;padding:14px 16px;font-size:13px;color:#cbd5e1;line-height:1.7">
+<div style="color:#0891b2;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9670; REQUIRED LOG SOURCES &amp; TELEMETRY</div>
+{'<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">OT Network Monitoring:</strong> Industrial protocol analysis (Modbus, S7comm, DNP3) from IT-OT boundary tap &mdash; requires Dragos/Claroty/Nozomi</div><div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">OT Endpoint Telemetry:</strong> Windows Event Logs from HMI &amp; engineering workstations &mdash; enable 4688 process creation with full command-line logging</div><div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">SCADA Audit Logs:</strong> PLC parameter changes, logic uploads, setpoint modifications outside approved change windows</div>' if is_ot else '<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Windows Security Events:</strong> ID 4688 (process creation+cmdline), 4698 (scheduled tasks), 4624/4625 (auth), 4672 (special privileges)</div><div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">EDR/XDR Telemetry:</strong> Process tree, file system events, registry (Sysmon 13), network connections with parent-child relationships</div><div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Network Telemetry:</strong> DNS query logs (all types), proxy/gateway logs with full URL, NetFlow/PCAP from choke points</div>'}
+{'<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Web Application Logs:</strong> Full URI with parameters, HTTP method, response code, body size, client IP &mdash; required for exploitation and post-exploitation web shell detection</div>' if is_cve else ''}
+{'<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Authentication Logs:</strong> Login events with IP, user-agent, geolocation, result &mdash; aggregated across all customer-facing auth endpoints; correlate across sessions for distributed low-velocity detection</div>' if is_ato else ''}
+{f'<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Browser Extension Telemetry:</strong> Chrome/Edge extension inventory from endpoint management; Chrome Enterprise Browser Management audit logs if deployed</div>' if is_extension else ''}
+{'<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">CI/CD Pipeline Logs:</strong> Package install events with dependency trace; build job timing anomalies; network connections during build phase</div>' if is_supply_chain else ''}
+<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Cloud Telemetry:</strong> CloudTrail / Azure Activity Logs / GCP Audit Logs for IAM changes, unusual API calls, non-standard region activity</div>
+</div>
 
-<h3>Sigma Rules</h3>
-<pre><code>title: {sigma_title}
-id: cdb-sentinel-apex-{datetime.now(timezone.utc).strftime('%Y%m%d')}-001
-status: experimental
-description: >
-  Detects {sigma_title.lower()}.
-  CYBERDUDEBIVASH® SENTINEL APEX Detection Engineering — validate against
-  your environment before production deployment; tune false positive thresholds.
-references:
-    - {article.url}
-    - https://blog.cyberdudebivash.in
-    - https://intel.cyberdudebivash.com
-author: CYBERDUDEBIVASH® SENTINEL APEX Detection Engineering
-date: {datetime.now(timezone.utc).strftime('%Y/%m/%d')}
-tags:
-{sigma_tags}
-logsource:
-    {sigma_logsource}
-{sigma_detection}
-falsepositives:
-    - Legitimate administrative activity — correlate with change management records before escalating
-    - Security testing or red team exercises — coordinate with security team schedule
-level: high
-</code></pre>
+{_sh("Sigma Detection Rule", "#22c55e")}
+{_sigma_terminal}
 
-<h3>Threat Hunting Queries</h3>
-<ul>
+{_sh("Threat Hunting Queries", "#22c55e")}
+<div style="background:#001a10;border:1px solid #22c55e33;border-radius:6px;padding:14px 16px">
+<div style="color:#15803d;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9654; SIEM HUNT HYPOTHESES &mdash; VALIDATE AGAINST YOUR ENVIRONMENT</div>
 {hunt_html}
-</ul>
+</div>
 
-<h3>SOC Analyst Playbook</h3>
-<ul>
+{_sh("SOC Analyst Playbook", "#f59e0b")}
+<div style="background:#0d0a00;border:1px solid #f59e0b33;border-radius:6px;padding:14px 16px">
+<div style="color:#b45309;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9650; PRIORITIZED RESPONSE ACTIONS</div>
 {soc_html}
-</ul>
+</div>
 
-<h3>Executive Decision Matrix</h3>
-<table>
-<tr><th>Priority</th><th>Decision Required</th><th>Owner</th><th>Timeline</th></tr>
-{exec_matrix_rows}
+{_sh("Executive Decision Matrix", "#ef4444")}
+<div style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;font-size:13px;background:#050d1a;border-radius:6px;overflow:hidden">
+<tr style="background:#0d2137;border-bottom:2px solid #ef444433">
+<th style="padding:10px 14px;text-align:left;color:#ef4444;font-family:monospace;font-size:10px;letter-spacing:1.5px;white-space:nowrap">PRIORITY</th>
+<th style="padding:10px 14px;text-align:left;color:#ef4444;font-family:monospace;font-size:10px;letter-spacing:1.5px">DECISION REQUIRED</th>
+<th style="padding:10px 14px;text-align:left;color:#ef4444;font-family:monospace;font-size:10px;letter-spacing:1.5px;white-space:nowrap">OWNER</th>
+<th style="padding:10px 14px;text-align:left;color:#ef4444;font-family:monospace;font-size:10px;letter-spacing:1.5px;white-space:nowrap">TIMELINE</th>
+</tr>
+{_emr}
 </table>
+</div>
 
-<h3>Executive Recommendations</h3>
-<ul>
+{_sh("Executive Recommendations", "#06b6d4")}
+<div style="background:#001a1a;border:1px solid #06b6d433;border-radius:6px;padding:14px 16px">
 {ent_html}
-</ul>
+</div>
 
-<h3>Predictive Intelligence</h3>
-{predictive}
+{_sh("Predictive Intelligence", "#3b82f6")}
+<div style="background:#00081a;border:1px solid #3b82f633;border-radius:6px;padding:14px 16px">
+<div style="color:#1d4ed8;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9670; CONFIDENCE-LABELED ANALYST FORECASTS</div>
+{_pred_styled}
+</div>
 
-<h3>MSSP Opportunities</h3>
-<p>{mssp_block}</p>
+{_sh("MSSP Partner Advisory", "#ec4899")}
+<div style="background:#1a001a;border:1px solid #ec489933;border-radius:6px;padding:16px 20px;font-size:13px;color:#f9a8d4;line-height:1.8">
+{mssp_block}
+</div>
 
-<h3>Sentinel APEX Intelligence Correlation</h3>
-<p>CYBERDUDEBIVASH® SENTINEL APEX provides automated detection and correlation for this threat class across the following platform capabilities:</p>
-<ul>
-<li><strong>Live CVE & KEV Tracking:</strong> Real-time NVD, CISA KEV, and vendor advisory monitoring with CVSS-weighted client exposure scoring against live asset inventory</li>
-<li><strong>MITRE ATT&CK Correlation Engine:</strong> Automated technique mapping with detection gap analysis benchmarked against your current SIEM rule coverage and ATT&CK Navigator heatmap</li>
-<li><strong>IOC Intelligence Feed:</strong> Real-time IOC enrichment (IPs, domains, hashes) from 40+ threat intelligence sources including commercial feeds, ISAC sharing, and dark web monitoring</li>
-<li><strong>Sigma & YARA Rule Library:</strong> 2,400+ production-ready detection rules optimized for Splunk, Elastic Security, Microsoft Sentinel, Chronicle, and QRadar — updated within 24 hours of new threat disclosure</li>
-<li><strong>Threat Hunting Workbench:</strong> Pre-built hunt hypotheses with SIEM-native queries for every major threat category, updated against current campaign TTPs</li>
-</ul>
-<p><a href="https://intel.cyberdudebivash.com" target="_blank" rel="noopener">Launch SENTINEL APEX →</a></p>
+{_sh("SENTINEL APEX Intelligence Correlation")}
+<div style="background:#050d1a;border:1px solid #00d4ff22;border-radius:6px;padding:16px 20px">
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+<div style="flex:1;min-width:180px;background:#001220;border:1px solid #00d4ff22;border-radius:6px;padding:12px 14px">
+<div style="color:#00d4ff;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1px;margin-bottom:6px">&#9670; LIVE CVE &amp; KEV</div>
+<div style="color:#94a3b8;font-size:12px">Real-time NVD, CISA KEV, vendor advisory monitoring with CVSS-weighted client exposure scoring</div>
+</div>
+<div style="flex:1;min-width:180px;background:#001220;border:1px solid #00d4ff22;border-radius:6px;padding:12px 14px">
+<div style="color:#00d4ff;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1px;margin-bottom:6px">&#9670; MITRE CORRELATION</div>
+<div style="color:#94a3b8;font-size:12px">Automated technique mapping with detection gap analysis vs. your SIEM coverage and ATT&amp;CK Navigator heatmap</div>
+</div>
+<div style="flex:1;min-width:180px;background:#001220;border:1px solid #00d4ff22;border-radius:6px;padding:12px 14px">
+<div style="color:#00d4ff;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1px;margin-bottom:6px">&#9670; SIGMA &amp; YARA LIBRARY</div>
+<div style="color:#94a3b8;font-size:12px">2,400+ production detection rules for Splunk, Elastic, Sentinel, Chronicle, QRadar &mdash; updated within 24h</div>
+</div>
+<div style="flex:1;min-width:180px;background:#001220;border:1px solid #00d4ff22;border-radius:6px;padding:12px 14px">
+<div style="color:#00d4ff;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1px;margin-bottom:6px">&#9670; IOC INTELLIGENCE FEED</div>
+<div style="color:#94a3b8;font-size:12px">Real-time enrichment from 40+ TI sources &mdash; commercial feeds, ISAC sharing, dark web monitoring</div>
+</div>
+</div>
+<div style="text-align:center;padding-top:10px;border-top:1px solid #1e3a5f33">
+<a href="https://intel.cyberdudebivash.com" target="_blank" rel="noopener" style="display:inline-block;background:linear-gradient(90deg,#0284c7,#00d4ff);color:#fff;padding:10px 24px;border-radius:6px;font-weight:700;font-size:13px;text-decoration:none;letter-spacing:0.5px">&#9658; Launch SENTINEL APEX</a>
+</div>
+</div>
+
 {ai_section}
-<h3>Long-Term Strategic Risk</h3>
-<p>{long_term_risk}</p>
 
-<h3>References</h3>
-<ul>
-<li>Source Article — <a href="{article.url}" target="_blank" rel="noopener">{article.url}</a></li>
-<li>MITRE ATT&amp;CK Enterprise Matrix — <a href="https://attack.mitre.org" target="_blank" rel="noopener">https://attack.mitre.org</a></li>
-{_ics_ref}
-<li>CISA Known Exploited Vulnerabilities Catalog — <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">https://www.cisa.gov/known-exploited-vulnerabilities-catalog</a></li>
-{_nvd_refs}
-{_ai_ref}
-</ul>
+{_sh("Long-Term Strategic Risk", "#64748b")}
+<div style="background:#050d1a;border:1px solid #33415566;border-radius:6px;padding:16px 20px;font-size:13px;color:#94a3b8;line-height:1.8">
+{long_term_risk}
+</div>
+
+{_sh("References", "#475569")}
+<div style="background:#030912;border:1px solid #1e3a5f33;border-radius:6px;padding:14px 16px">
+{_refs_styled}
+</div>
 """.strip()
 
 
