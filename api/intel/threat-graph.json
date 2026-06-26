@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-26T08:01:50.833Z",
+  "generated": "2026-06-26T08:31:35.914Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3528,
+    "total_nodes": 3532,
     "actors": 8,
-    "cves": 775,
-    "campaigns": 325,
+    "cves": 776,
+    "campaigns": 326,
     "malware": 0,
-    "iocs": 358,
-    "edges": 1321
+    "iocs": 359,
+    "edges": 1323
   },
   "nodes": {
     "actor:lockbit": {
@@ -67544,6 +67544,79 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-12569": {
+      "id": "CVE-2026-12569",
+      "type": "CVE",
+      "name": "First-Ever Exploitation of PTC Windchill Vulnerability Discovered in the Wild",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "CRITICAL",
+        "priority_score": 90,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-26",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-527d990b4a1712ac": {
+      "id": "REDDIT_CYBER-527d990b4a1712ac",
+      "type": "Intel",
+      "name": "Chrome Ad Blocker with 10M+ Installs Found with Dormant Script Injection Capability",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-26",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:b94f953dbbfb6f04c3fca8b308954a41604b8813",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:b94f953dbbfb6f04c3fca8b308954a41604b8813": {
+      "id": "ioc:sha1:b94f953dbbfb6f04c3fca8b308954a41604b8813",
+      "type": "IOC",
+      "name": "b94f953dbbfb6f04c3fca8b308954a41604b8813",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-26"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-12569": {
+      "id": "campaign:cve-2026-12569",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "CRITICAL",
+        "item_count": 1,
+        "first_seen": "2026-06-26",
+        "last_seen": "2026-06-26",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-12569 | 1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-12569",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -79471,6 +79544,24 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-26",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-527d990b4a1712ac→linked_to→ioc:sha1:b94f953dbbfb6f04c3fca8b308954a41604b8813",
+      "source": "REDDIT_CYBER-527d990b4a1712ac",
+      "target": "ioc:sha1:b94f953dbbfb6f04c3fca8b308954a41604b8813",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-06-26",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-12569→includes→CVE-2026-12569",
+      "source": "campaign:cve-2026-12569",
+      "target": "CVE-2026-12569",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-26",
       "sources": []
     }
