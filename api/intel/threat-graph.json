@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-26T16:31:24.469Z",
+  "generated": "2026-06-26T16:52:43.762Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3554,
+    "total_nodes": 3557,
     "actors": 8,
-    "cves": 776,
+    "cves": 779,
     "campaigns": 328,
     "malware": 0,
     "iocs": 361,
-    "edges": 1336
+    "edges": 1337
   },
   "nodes": {
     "actor:lockbit": {
@@ -6383,7 +6383,7 @@
       "attributes": {
         "ioc_type": "ipv4",
         "confidence": 0.88,
-        "first_seen": "2026-06-22"
+        "first_seen": "2026-06-26"
       },
       "connections": []
     },
@@ -68065,6 +68065,66 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-44025": {
+      "id": "CVE-2026-44025",
+      "type": "CVE",
+      "name": "Fluentd is Vulnerable to Exposure of Sensitive Information via Monitor Agent API",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "rubygems",
+        "product": "fluentd",
+        "published": "2026-06-26",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-44160": {
+      "id": "CVE-2026-44160",
+      "type": "CVE",
+      "name": "Fluentd is Vulnerable to Denial of Service (DoS) via Gzip Decompression Bomb in `in_http` and `in_forward`",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "rubygems",
+        "product": "fluentd",
+        "published": "2026-06-26",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-44161": {
+      "id": "CVE-2026-44161",
+      "type": "CVE",
+      "name": "Fluentd is Vulnerable to Server-Side Request Forgery (SSRF) via Placeholder Expansion in `out_http`",
+      "attributes": {
+        "cvss": 7.2,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "rubygems",
+        "product": "fluentd",
+        "published": "2026-06-26",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:169.254.169.254",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        }
+      ]
     }
   },
   "edges": [
@@ -80127,6 +80187,15 @@
       "target": "REDDIT_CYBER-a66dac97448dea90",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-26",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-44161→linked_to→ioc:ipv4:169.254.169.254",
+      "source": "CVE-2026-44161",
+      "target": "ioc:ipv4:169.254.169.254",
+      "relationship": "linked_to",
+      "confidence": 0.88,
       "first_seen": "2026-06-26",
       "sources": []
     }
