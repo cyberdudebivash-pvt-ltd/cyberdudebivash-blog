@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-26T20:01:36.340Z",
+  "generated": "2026-06-26T20:26:49.081Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3575,
+    "total_nodes": 3577,
     "actors": 8,
     "cves": 783,
     "campaigns": 331,
     "malware": 0,
-    "iocs": 363,
-    "edges": 1345
+    "iocs": 364,
+    "edges": 1346
   },
   "nodes": {
     "actor:lockbit": {
@@ -68470,6 +68470,41 @@
           "confidence": 1
         }
       ]
+    },
+    "GHSA-025b2ee45c426c86": {
+      "id": "GHSA-025b2ee45c426c86",
+      "type": "Intel",
+      "name": "Hysteria: http large header with sniff cause server DoS",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/apernet/hysteria",
+        "published": "2026-06-26",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:192.0.2.1",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        }
+      ]
+    },
+    "ioc:ipv4:192.0.2.1": {
+      "id": "ioc:ipv4:192.0.2.1",
+      "type": "IOC",
+      "name": "192.0.2.1",
+      "attributes": {
+        "ioc_type": "ipv4",
+        "confidence": 0.88,
+        "first_seen": "2026-06-26"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -80613,6 +80648,15 @@
       "target": "BLEEPINGCOMPUTER-2e7eb46ed2e20eba",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-26",
+      "sources": []
+    },
+    {
+      "id": "GHSA-025b2ee45c426c86→linked_to→ioc:ipv4:192.0.2.1",
+      "source": "GHSA-025b2ee45c426c86",
+      "target": "ioc:ipv4:192.0.2.1",
+      "relationship": "linked_to",
+      "confidence": 0.88,
       "first_seen": "2026-06-26",
       "sources": []
     }
