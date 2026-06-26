@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-26T22:31:23.965Z",
+  "generated": "2026-06-26T22:57:52.271Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 95,
+  "count": 93,
   "items": [
     {
       "id": "CVE-2023-27351",
@@ -99,9 +99,9 @@
       "iocs": []
     },
     {
-      "id": "GHSA-30a03556e7a7a0eb",
-      "title": "Blnk has an API key authorization bypass in owner and scope enforcement",
-      "description": "Blnk API key endpoints had an authorization issue that allowed non-master API keys to perform key-management actions outside their intended authorization boundary. In affected versions, API key operations trusted caller-controlled request values for owner and scope decisions. As a result, a non-mast",
+      "id": "GHSA-3a481d699b7534ce",
+      "title": "ex_aws_sns: Trusted-attacker `SigningCertURL` permits complete SNS signature bypass",
+      "description": "### Summary `ExAws.SNS.verify_message/1` fetches the signing certificate from the `SigningCertURL` field of the incoming SNS message without validating that the URL uses HTTPS or that its host is an AWS-owned SNS certificate domain. An unauthenticated attacker who can POST to any endpoint that calls",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -117,61 +117,16 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/blnkfinance/blnk",
+      "vendor": "erlang",
+      "product": "ex_aws_sns",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-wcr3-9x4c-f5gj",
-        "https://github.com/blnkfinance/blnk/security/advisories/GHSA-wcr3-9x4c-f5gj",
-        "https://github.com/advisories/GHSA-wcr3-9x4c-f5gj"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-d24130b8a6cd0d6b",
-      "title": "SolidInvoice: IDOR in LiveComponent allows same-company cross-user access to API tokens and notification transport setti",
-      "description": "## Summary Four authorization bypass vulnerabilities in Symfony LiveComponent actions allow any authenticated user within a company to access, modify, or delete other users' API tokens and notification transport settings. The root cause is that LiveComponent actions accept entity IDs without verifyi",
-      "cvss": 7.5,
-      "final_ps": 48,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-26",
-      "last_seen": "2026-06-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "solidinvoice/solidinvoice",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7vfx-4246-jcfh",
-        "https://github.com/SolidInvoice/SolidInvoice/security/advisories/GHSA-7vfx-4246-jcfh",
-        "https://github.com/advisories/GHSA-7vfx-4246-jcfh"
+        "https://github.com/advisories/GHSA-8jgf-23q5-x7xx",
+        "https://github.com/benoitc/hackney/security/advisories/GHSA-jq4m-q6p2-8gwc",
+        "https://github.com/ex-aws/ex_aws_sns/security/advisories/GHSA-8jgf-23q5-x7xx",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-47074"
       ],
       "explanation": {
         "quality": [
@@ -456,50 +411,6 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "BLEEPINGCOMPUTER-922139f56e6adc7a",
-      "title": "FBI: Russian hackers now target Signal backup recovery keys",
-      "description": "The FBI and CISA are warning that a phishing campaign targeting Signal users tied to Russian intelligence services has evolved to steal Signal Backup Recovery Keys, allowing attackers to access victims' historical messages. [...]",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.45,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "bleepingcomputer",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "bleepingcomputer"
-      ],
-      "first_seen": "2026-06-26",
-      "last_seen": "2026-06-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "BleepingComputer",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/security/fbi-russian-hackers-now-target-signal-backup-recovery-keys/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -4135,6 +4046,56 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-50016",
+      "title": "pnpm: Transitive dependency alias path traversal allows project path override via symlink replacement",
+      "description": "",
+      "cvss": 8.8,
+      "final_ps": 24,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-26",
+      "last_seen": "2026-06-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "pnpm",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50016",
+        "CVE-2026-50016"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-hwx4-2j3j-g496",
+        "https://github.com/pnpm/pnpm/security/advisories/GHSA-hwx4-2j3j-g496",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-50016",
+        "https://github.com/advisories/GHSA-hwx4-2j3j-g496"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-49286",
       "title": "PhpWeasyPrint vulnerable to PHAR deserialization via output filename (CVE-2023-28115 case-insensitive bypass)",
       "description": "",
@@ -4316,56 +4277,6 @@
         "https://github.com/statamic/cms/security/advisories/GHSA-4jjr-vmv7-wh4w",
         "https://github.com/statamic/cms/security/advisories/GHSA-m92m-r54r-x8r2",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-49287"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-49357",
-      "title": "Streamable HTTP mode exposes LINE Desktop read/send tools without MCP authentication",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-26",
-      "last_seen": "2026-06-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "line-desktop-mcp",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49357",
-        "CVE-2026-49357"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4hf8-5mjm-rfgq",
-        "https://github.com/dtwang/line-desktop-mcp/security/advisories/GHSA-4hf8-5mjm-rfgq",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-49357",
-        "https://github.com/dtwang/line-desktop-mcp/commit/680617894981ea93f8f6ceb51ecde7519754d501"
       ],
       "explanation": {
         "quality": [
