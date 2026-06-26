@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-26T21:31:32.253Z",
+  "generated": "2026-06-26T21:49:25.568Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1324,
+  "total_published": 1327,
   "s2n_stats": {
     "passed": 82,
-    "suppressed": 11,
+    "suppressed": 10,
     "avg_qs": 0.554
   },
   "items": [
@@ -4174,6 +4174,55 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-49260",
+      "title": "php-weasyprint: shell command injection via configurable WeasyPrint binary path due to inverted is_executable() guard (m",
+      "description": "### Summary `pontedilana/php-weasyprint` builds the shell command for WeasyPrint by passing the binary path through `escapeshellarg()` first and then checking the *quoted* result with `is_executable()`. On POSIX `escapeshellarg('/usr/local/bin/weasyprint')` returns `'/usr/local/bin/weasyprint'` with",
+      "cvss": 8.2,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-26",
+      "last_seen": "2026-06-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "pontedilana/php-weasyprint",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49260",
+        "CVE-2026-49260"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-f5gc-qxf8-mh9g",
+        "https://github.com/KnpLabs/snappy/security/advisories/GHSA-vpr4-p6fq-85jc",
+        "https://github.com/pontedilana/php-weasyprint/security/advisories/GHSA-f5gc-qxf8-mh9g",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49260"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-49258",
       "title": "Nebula Mesh: Web UI lacks ownership checks, enabling cross-operator access to hosts and networks (read, block, delete)",
       "description": "## Summary The web UI (`/ui/*`) does not apply the per-operator CA scoping the JSON API received for GHSA-598g-h2vc-h5vg. Any authenticated non-admin operator (for example, one created via self-registration or OIDC) can access resources belonging to other operators. ## Impact A non-admin operator ca",
@@ -4350,54 +4399,6 @@
         "https://github.com/advisories/GHSA-5w7q-77mv-v69f",
         "https://github.com/miguelgrinberg/python-socketio/security/advisories/GHSA-5w7q-77mv-v69f",
         "https://github.com/advisories/GHSA-5w7q-77mv-v69f"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48802",
-      "title": "python-engineio has unbound thread allocation that can cause denial of service",
-      "description": "### Impact\nAn attacker can cause the creation of unnecessary background threads in the python-engineio server by exploiting the heartbeat mechanism, which launches a thread when a new connection is received, and when the client sends a PONG packet. Note: this issue primarily affects synchronous serv",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-26",
-      "last_seen": "2026-06-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "python-engineio",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48802",
-        "CVE-2026-48802"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-cgwc-pv48-fhj5",
-        "https://github.com/miguelgrinberg/python-engineio/security/advisories/GHSA-cgwc-pv48-fhj5",
-        "https://github.com/advisories/GHSA-cgwc-pv48-fhj5"
       ],
       "explanation": {
         "quality": [
