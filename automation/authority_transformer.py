@@ -167,7 +167,7 @@ def _build_analyst_prompt(article: DiscoveredArticle) -> str:
 
 ARTICLE TITLE: {article.title}
 ARTICLE URL: {article.url}
-ARTICLE CONTENT:
+ARTICLE CONTENT (up to 5000 characters):
 {(article.full_content or article.summary)[:5000]}
 LABELS/CATEGORY: {', '.join(article.labels)}
 
@@ -270,7 +270,8 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     is_apt = "apt" in text or "nation-state" in text or "nation state" in text or "state-sponsored" in text or "volt typhoon" in text or "lazarus" in text or "apt28" in text
     is_cve = bool(cves) or "vulnerability" in text or "cve" in text
     is_patch = "patch" in text or "update" in text or "cisa" in text or "kev" in text
-    is_ot = "ot " in text or "ics" in text or "scada" in text or "plc" in text or "operational technology" in text or "industrial control" in text or "critical infrastructure" in text or "food" in text or "energy sector" in text or "water" in text or "manufacturing" in text
+    # "critical infrastructure" deliberately excluded — too broad, triggers on APT/ransomware reports
+    is_ot = "ot " in text or "ics" in text or "scada" in text or "plc" in text or "operational technology" in text or "industrial control" in text or "hmi" in text or "historian" in text or "modbus" in text or "dnp3" in text or "ethernet/ip" in text or "s7comm" in text or "food processing" in text or "water treatment" in text or "energy sector" in text or "oil and gas" in text or "power grid" in text or "manufacturing plant" in text
     is_supply_chain = "supply chain" in text or "software supply" in text or "dependency" in text or "npm" in text or "pypi" in text or "open source" in text or "package" in text
     is_ato = "credential stuffing" in text or "account takeover" in text or "ato " in text or "combo list" in text or "brute force" in text or "password spray" in text
     is_extension = "browser extension" in text or "chrome extension" in text or "firefox addon" in text or "web store" in text or "extension id" in text
@@ -290,8 +291,8 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     else:
         severity, severity_color = "MEDIUM", "#3b82f6"
 
-    # MITRE ATT&CK mapping — category-specific
-    if is_ot:
+    # MITRE ATT&CK mapping — priority: ransomware → APT → CVE → OT → ATO → extension → supply chain → general
+    if is_ot and not is_ransomware and not is_apt and not is_cve:
         mitre_techniques = [
             "Initial Access → Exploit Public-Facing Application (T1190) / Drive-By Compromise (T0817 ICS): Remote exploitation of internet-exposed OT management interfaces",
             "Lateral Movement → Remote Services (T0866 ICS): Adversary pivoted from IT network to OT/ICS environment via unprotected IT-OT boundary",
@@ -336,6 +337,153 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             "P2 — Notify production operations leadership and prepare for potential emergency shutdown procedure if compromise is confirmed",
         ]
         mssp_block = "MSSPs serving manufacturing, energy, food/beverage, water/wastewater, or critical infrastructure clients must immediately assess IT/OT boundary controls and activate OT-specific threat hunting. Issue emergency advisory to all OT-connected clients with guidance on IT-OT network segmentation verification. CYBERDUDEBIVASH® SENTINEL APEX ICS threat intelligence provides MITRE ATT&CK for ICS technique mapping, OT-specific Sigma rules, and sector-specific incident analysis."
+
+    elif is_ransomware:
+        mitre_techniques = [
+            "Initial Access → Phishing: Spearphishing Attachment (T1566.001) / Exploit Public-Facing Application (T1190): Primary entry via malicious email attachments or exploitation of internet-exposed VPN/RDP services",
+            "Execution → Command and Scripting Interpreter: PowerShell (T1059.001): Encoded PowerShell commands deploy ransomware loader and facilitate lateral movement while evading command-line logging",
+            "Defense Evasion → Indicator Removal: File Deletion (T1070.004) / Obfuscated Files (T1027): Anti-forensic cleanup of logs and obfuscated payloads to impede incident response and forensic analysis",
+            "Discovery → Network Share Discovery (T1135) / Domain Trust Discovery (T1482): Enumeration of network shares and domain trusts to maximize encryption blast radius across connected systems",
+            "Lateral Movement → Remote Services: SMB/Windows Admin Shares (T1021.002): Propagation across network using compromised domain credentials via SMB administrative shares",
+            "Impact → Data Encrypted for Impact (T1486) / Inhibit System Recovery (T1490): File system encryption following shadow copy deletion to prevent recovery without ransom payment",
+            "Exfiltration → Exfiltration Over C2 Channel (T1041): Double-extortion data staging and exfiltration before encryption — victim data posted to leak site if ransom unpaid",
+        ]
+        sigma_logsource = "product: windows\n    category: process_creation"
+        sigma_detection = """detection:
+    shadow_deletion:
+        Image|endswith:
+            - '\\vssadmin.exe'
+            - '\\wmic.exe'
+            - '\\wbadmin.exe'
+            - '\\bcdedit.exe'
+        CommandLine|contains:
+            - 'delete shadows'
+            - 'delete catalog'
+            - 'recoveryenabled No'
+            - 'shadowcopy delete'
+    ransom_ps_staging:
+        Image|endswith: '\\powershell.exe'
+        CommandLine|contains:
+            - 'EncodedCommand'
+            - 'FromBase64String'
+            - 'IEX'
+            - 'DownloadString'
+    condition: shadow_deletion or ransom_ps_staging"""
+        sigma_title = "Ransomware Pre-Encryption Activity — Shadow Deletion and PowerShell Staging"
+        sigma_tags = "    - attack.impact\n    - attack.t1486\n    - attack.t1490\n    - attack.t1059.001"
+        hunt_queries = [
+            "Shadow copy deletion — Windows Security Event ID 4688 with CommandLine containing 'vssadmin delete shadows', 'wmic shadowcopy delete', or 'bcdedit /set recoveryenabled'",
+            "SMB lateral propagation — Network flow analysis for a single endpoint establishing SMB connections (port 445) to >20 unique internal hosts within a 5-minute window",
+            "Mass file extension change — EDR file system telemetry for >100 file rename/modify events per minute from a single process writing to unknown extensions",
+            "Ransomware C2 beacon — DNS query logs for newly registered domains, high-entropy DGA-pattern names, or .onion proxy resolvers from workstation processes",
+            "Privileged credential abuse — Windows Security Event ID 4624 (Type 3 network logon) using domain admin accounts originating from non-admin workstations during off-hours",
+        ]
+        soc_actions = [
+            "P0 — If active encryption detected: immediately isolate affected hosts via VLAN quarantine or firewall ACL block; do NOT power off — preserve volatile memory for forensic imaging",
+            "P0 — Identify patient-zero: use EDR lateral movement timeline to find earliest infected host; block all associated C2 indicators at perimeter firewall and DNS resolver",
+            "P0 — Verify immutable backup integrity: confirm backups are accessible, unaffected by encryption, and that restoration has been tested within the past 90 days",
+            "P1 — Enumerate SMB exposure: identify all hosts with open administrative shares (C$, ADMIN$) reachable from infected network segment; apply emergency micro-segmentation",
+            "P1 — Activate IR retainer: engage incident response partner; begin forensic preservation (memory images, disk images) of confirmed and suspected affected systems",
+            "P2 — Notify legal, compliance, and executive leadership; prepare for mandatory regulatory breach notification (GDPR: 72 hours, HIPAA: 60 days, state breach laws vary) if personal data affected",
+        ]
+        mssp_block = "MSSPs must immediately activate ransomware response protocols for all clients in high-risk sectors — healthcare, financial services, manufacturing, government, and critical infrastructure face the highest ransom payment rates and regulatory exposure. Push Sigma detection rules covering T1486, T1490, and T1021.002 to all client SIEMs within 1 hour of this advisory. Issue emergency client communication with host isolation procedures and backup verification checklist. CYBERDUDEBIVASH® SENTINEL APEX ransomware intelligence provides real-time C2 infrastructure feeds, RaaS affiliate TTP tracking, and sector-specific incident response playbooks."
+
+    elif is_apt:
+        mitre_techniques = [
+            "Reconnaissance → Active Scanning (T1595) / Gather Victim Network Information (T1590): Systematic infrastructure mapping and open-source intelligence collection on target organization prior to active exploitation",
+            "Initial Access → Exploit Public-Facing Application (T1190) / Trusted Relationship (T1199): Exploitation of internet-exposed services or compromise of trusted third-party vendors with privileged network access",
+            "Persistence → Create or Modify System Process: Windows Service (T1543.003) / Scheduled Task (T1053.005): Long-term persistence via registered services or scheduled tasks executing under legitimate account context",
+            "Defense Evasion → Masquerading: Rename System Utilities (T1036.003) / Signed Binary Proxy Execution (T1218): LOLBAS abuse and process name masquerading to blend malicious execution with legitimate OS operations",
+            "Collection → Data from Local System (T1005) / Email Collection (T1114.001): Targeted collection of intellectual property, credentials, email archives, and strategic documents matching threat actor's collection objectives",
+            "Exfiltration → Exfiltration Over Alternative Protocol (T1048) / Scheduled Transfer (T1029): Low-volume exfiltration via DNS tunneling, HTTPS to cloud storage, or time-delayed transfers to avoid volume-based detection",
+        ]
+        sigma_logsource = "product: windows\n    category: process_creation"
+        sigma_detection = """detection:
+    lolbas_net:
+        Image|endswith:
+            - '\\certutil.exe'
+            - '\\mshta.exe'
+            - '\\regsvr32.exe'
+            - '\\bitsadmin.exe'
+        CommandLine|contains:
+            - 'http'
+            - 'urlcache'
+            - 'decode'
+            - '/transfer'
+    schtask_non_admin:
+        Image|endswith: '\\schtasks.exe'
+        CommandLine|contains:
+            - '/create'
+        User|not|contains:
+            - 'SYSTEM'
+            - 'Administrator'
+    condition: lolbas_net or schtask_non_admin"""
+        sigma_title = "APT Indicators — LOLBAS Network Access and Non-Admin Scheduled Task Creation"
+        sigma_tags = "    - attack.defense_evasion\n    - attack.t1218\n    - attack.t1053.005\n    - attack.t1027"
+        hunt_queries = [
+            "LOLBAS with outbound network connections — EDR process telemetry for certutil.exe, mshta.exe, regsvr32.exe, bitsadmin.exe with DestinationIP not in internal RFC1918 ranges",
+            "Non-admin scheduled task creation — Windows Security Event ID 4698 (scheduled task created) attributed to non-SYSTEM, non-administrator user accounts or unusual parent process",
+            "DNS tunneling — DNS query logs for TXT/NULL record type queries and subdomain strings exceeding 30 characters in entropy from workstation processes",
+            "Unexpected service registration — Windows System Event ID 7045 (new service installed) outside documented change management windows or from non-administrative accounts",
+            "LSASS memory access — EDR telemetry for processes other than SYSTEM/antivirus/EDR opening lsass.exe with PROCESS_VM_READ (0x0010) access rights",
+        ]
+        soc_actions = [
+            "P0 — Initiate active threat hunt across all EDR-enrolled endpoints for campaign IOCs — expand search window to 90 days minimum to account for typical APT dwell time (average 197 days at discovery)",
+            "P0 — Implement firewall and DNS block rules for all infrastructure associated with this threat actor; review egress filtering for anomalous HTTPS traffic to unusual geographic regions",
+            "P1 — Conduct privileged account audit: enumerate all domain admin, service account, and local administrator account creations or modifications in the past 90 days versus change management records",
+            "P1 — Analyze east-west traffic for C2 beacon patterns: regular connection intervals, HTTPS to cloud storage providers in unexpected regions, high-volume DNS TXT queries from specific hosts",
+            "P2 — Targeted forensic review of externally-facing systems (VPN concentrators, web applications, email gateways) for initial access artifacts and webshell presence",
+            "P2 — Brief CISO and general counsel on nation-state attribution context and assess obligations for regulatory or government notification applicable to your sector (CISA reporting, sector-specific ISACs)",
+        ]
+        mssp_block = "MSSPs must distribute an emergency client advisory covering this APT campaign's confirmed TTPs within 2 hours. Activate threat hunting teams on high-value client environments — prioritize financial services, defense contractors, critical infrastructure operators, government agencies, and technology sector clients matching the threat actor's known targeting profile. CYBERDUDEBIVASH® SENTINEL APEX APT intelligence provides real-time campaign tracking, infrastructure pivot analysis, and multi-client exposure correlation."
+
+    elif is_cve:
+        mitre_techniques = [
+            f"Initial Access → Exploit Public-Facing Application (T1190): {cve_str} exploitation targeting internet-exposed instances to achieve unauthenticated or pre-auth remote access",
+            "Privilege Escalation → Exploitation for Privilege Escalation (T1068): Post-exploitation local privilege escalation to SYSTEM/root from initial low-privileged access context",
+            "Lateral Movement → Exploitation of Remote Services (T1210): Internal lateral movement using the same vulnerability class against adjacent systems sharing the vulnerable component",
+            "Persistence → Server Software Component: Web Shell (T1505.003): Installation of web shell or backdoor on compromised host for persistent re-entry without re-exploitation",
+            "Defense Evasion → Indicator Removal (T1070): Log clearing and evidence destruction to impede forensic investigation and delay detection of initial access",
+        ]
+        sigma_logsource = "category: webserver"
+        sigma_detection = f"""detection:
+    exploit_uri:
+        c-uri|contains:
+            - '../'
+            - '%2e%2e'
+            - 'cmd.exe'
+            - '/etc/passwd'
+            - ';id;'
+            - '|whoami'
+        sc-status:
+            - 200
+            - 500
+    webshell_access:
+        c-uri|endswith:
+            - '.php'
+            - '.aspx'
+            - '.jsp'
+        cs-method: 'POST'
+        sc-bytes|gt: 0
+    condition: exploit_uri or webshell_access"""
+        sigma_title = f"Web Application Exploitation — {cve_str} Payload and Web Shell Activity"
+        sigma_tags = "    - attack.initial_access\n    - attack.t1190\n    - attack.t1505.003"
+        hunt_queries = [
+            f"Exploitation payload patterns — Web access logs for {cve_str}-specific payload signatures in URI parameters, POST body, or HTTP headers (consult vendor advisory for exact patterns)",
+            "Web server spawning shells — EDR process tree for web server process (httpd, nginx, IIS w3wp.exe, Tomcat) spawning cmd.exe, powershell.exe, bash, or sh as child processes",
+            "Web shell presence — File integrity monitoring for new .php/.aspx/.jsp/.war files created in web root directories outside of scheduled deployment windows",
+            "Post-exploitation lateral movement — SIEM correlation for outbound connections originating from DMZ/web server hosts to internal RFC1918 ranges on management protocols (WMI/445/3389/22)",
+            f"Exploitation attempt timeline — WAF and IDS/IPS logs for 30-day retroactive search for {cve_str} payload patterns to identify pre-patch exploitation activity",
+        ]
+        soc_actions = [
+            f"P0 — Apply vendor patch for {cve_str} immediately on all affected instances; if patch unavailable within 4 hours, implement WAF virtual patching rule and restrict access to authenticated users only",
+            "P0 — Retroactive search: query SIEM, WAF, and web logs for the past 30 days for exploitation payload patterns — assume potential pre-patch exploitation and treat as active incident until ruled out",
+            "P1 — Hunt for post-exploitation artifacts: web shells in web root directories, anomalous child processes from web server, new service registrations or scheduled tasks created by web server process account",
+            "P1 — Block exploitation payload patterns at WAF and IPS/IDS layers; update all detection platform signatures with vendor-provided indicators",
+            "P2 — Conduct full vulnerability scan of adjacent systems sharing the vulnerable component; prioritize internet-facing assets for immediate patching",
+            "P2 — If exploitation confirmed: engage IR team, preserve forensic evidence, and assess regulatory breach notification obligations based on data exposed on compromised systems",
+        ]
+        mssp_block = f"MSSPs must immediately assess all client attack surfaces for {cve_str} exposure using asset inventory cross-reference. Issue P1 priority advisory to all clients in healthcare, financial services, technology, and government sectors — sectors with the highest concentration of internet-facing vulnerable applications. Provide WAF virtual patching rules for clients unable to patch immediately. CYBERDUDEBIVASH® SENTINEL APEX KEV integration provides real-time CISA KEV tracking with automated client exposure scoring against asset inventories."
 
     elif is_ato:
         mitre_techniques = [
@@ -429,7 +577,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             "P2 — Review proxy logs for network activity from browser processes to suspicious destinations during the extension's installed period",
             "P2 — Audit all enterprise extensions against an approved allowlist; block installation of extensions not on the allowlist via Browser Management policy",
         ]
-        mssp_block = "MSSPs should immediately push browser extension inventory queries to all client endpoints. For clients without Chrome Enterprise Browser Management or equivalent policy, issue emergency advisory recommending deployment. CYBERDUDEBIVASH® SENTINEL APEX browser extension threat intelligence provides malicious extension ID feeds, permission-abuse pattern detection, and enterprise browser hardening guidance."
+        mssp_block = "MSSPs should immediately push browser extension inventory queries to all client endpoints — prioritizing financial services, healthcare, legal, and technology sector clients where browser access to sensitive SaaS portals (banking portals, EHR systems, legal management systems) creates the highest credential theft risk. For clients without Chrome Enterprise Browser Management or equivalent policy control, issue emergency advisory requiring immediate deployment. CYBERDUDEBIVASH® SENTINEL APEX browser extension threat intelligence provides malicious extension ID feeds, permission-abuse pattern detection, and enterprise browser hardening guidance."
 
     elif is_supply_chain:
         mitre_techniques = [
@@ -477,153 +625,6 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             "P2 — Review artifact repository (Artifactory/Nexus) proxying policies to enforce allowlisting of trusted package registries",
         ]
         mssp_block = "MSSPs should immediately scan client CI/CD environments and developer workstations for the affected package version. Issue advisory to all clients in software development, fintech, and technology sectors — highest exposure to supply chain attacks. CYBERDUDEBIVASH® SENTINEL APEX supply chain intelligence provides real-time malicious package feeds, CI/CD pipeline detection rules, and software composition analysis integration guidance."
-
-    elif is_ransomware:
-        mitre_techniques = [
-            "Initial Access → Phishing: Spearphishing Attachment (T1566.001) / Exploit Public-Facing Application (T1190): Primary entry via malicious email attachments or exploitation of internet-exposed VPN/RDP services",
-            "Execution → Command and Scripting Interpreter: PowerShell (T1059.001): Encoded PowerShell commands deploy ransomware loader and facilitate lateral movement while evading command-line logging",
-            "Defense Evasion → Indicator Removal: File Deletion (T1070.004) / Obfuscated Files (T1027): Anti-forensic cleanup of logs and obfuscated payloads to impede incident response and forensic analysis",
-            "Discovery → Network Share Discovery (T1135) / Domain Trust Discovery (T1482): Enumeration of network shares and domain trusts to maximize encryption blast radius across connected systems",
-            "Lateral Movement → Remote Services: SMB/Windows Admin Shares (T1021.002): Propagation across network using compromised domain credentials via SMB administrative shares",
-            "Impact → Data Encrypted for Impact (T1486) / Inhibit System Recovery (T1490): File system encryption following shadow copy deletion to prevent recovery without ransom payment",
-            "Exfiltration → Exfiltration Over C2 Channel (T1041): Double-extortion data staging and exfiltration before encryption — victim data posted to leak site if ransom unpaid",
-        ]
-        sigma_logsource = "product: windows\n    category: process_creation"
-        sigma_detection = """detection:
-    shadow_deletion:
-        Image|endswith:
-            - '\\vssadmin.exe'
-            - '\\wmic.exe'
-            - '\\wbadmin.exe'
-            - '\\bcdedit.exe'
-        CommandLine|contains:
-            - 'delete shadows'
-            - 'delete catalog'
-            - 'recoveryenabled No'
-            - 'shadowcopy delete'
-    ransom_ps_staging:
-        Image|endswith: '\\powershell.exe'
-        CommandLine|contains:
-            - 'EncodedCommand'
-            - 'FromBase64String'
-            - 'IEX'
-            - 'DownloadString'
-    condition: shadow_deletion or ransom_ps_staging"""
-        sigma_title = "Ransomware Pre-Encryption Activity — Shadow Deletion and PowerShell Staging"
-        sigma_tags = "    - attack.impact\n    - attack.t1486\n    - attack.t1490\n    - attack.t1059.001"
-        hunt_queries = [
-            "Shadow copy deletion — Windows Security Event ID 4688 with CommandLine containing 'vssadmin delete shadows', 'wmic shadowcopy delete', or 'bcdedit /set recoveryenabled'",
-            "SMB lateral propagation — Network flow analysis for a single endpoint establishing SMB connections (port 445) to >20 unique internal hosts within a 5-minute window",
-            "Mass file extension change — EDR file system telemetry for >100 file rename/modify events per minute from a single process writing to unknown extensions",
-            "Ransomware C2 beacon — DNS query logs for newly registered domains, high-entropy DGA-pattern names, or .onion proxy resolvers from workstation processes",
-            "Privileged credential abuse — Windows Security Event ID 4624 (Type 3 network logon) using domain admin accounts originating from non-admin workstations during off-hours",
-        ]
-        soc_actions = [
-            "P0 — If active encryption detected: immediately isolate affected hosts via VLAN quarantine or firewall ACL block; do NOT power off — preserve volatile memory for forensic imaging",
-            "P0 — Identify patient-zero: use EDR lateral movement timeline to find earliest infected host; block all associated C2 indicators at perimeter firewall and DNS resolver",
-            "P0 — Verify immutable backup integrity: confirm backups are accessible, unaffected by encryption, and that restoration has been tested within the past 90 days",
-            "P1 — Enumerate SMB exposure: identify all hosts with open administrative shares (C$, ADMIN$) reachable from infected network segment; apply emergency micro-segmentation",
-            "P1 — Activate IR retainer: engage incident response partner; begin forensic preservation (memory images, disk images) of confirmed and suspected affected systems",
-            "P2 — Notify legal, compliance, and executive leadership; prepare for mandatory regulatory breach notification (GDPR: 72 hours, HIPAA: 60 days, state breach laws vary) if personal data affected",
-        ]
-        mssp_block = "MSSPs must immediately activate ransomware response protocols for all clients in the affected sector. Push Sigma detection rules covering T1486, T1490, and T1021.002 to all client SIEMs within 1 hour of this advisory. Issue emergency client communication with host isolation procedures and backup verification checklist. CYBERDUDEBIVASH® SENTINEL APEX ransomware intelligence provides real-time C2 infrastructure feeds, RaaS affiliate TTP tracking, and sector-specific incident response playbooks."
-
-    elif is_apt:
-        mitre_techniques = [
-            "Reconnaissance → Active Scanning (T1595) / Gather Victim Network Information (T1590): Systematic infrastructure mapping and open-source intelligence collection on target organization prior to active exploitation",
-            "Initial Access → Exploit Public-Facing Application (T1190) / Trusted Relationship (T1199): Exploitation of internet-exposed services or compromise of trusted third-party vendors with privileged network access",
-            "Persistence → Create or Modify System Process: Windows Service (T1543.003) / Scheduled Task (T1053.005): Long-term persistence via registered services or scheduled tasks executing under legitimate account context",
-            "Defense Evasion → Masquerading: Rename System Utilities (T1036.003) / Signed Binary Proxy Execution (T1218): LOLBAS abuse and process name masquerading to blend malicious execution with legitimate OS operations",
-            "Collection → Data from Local System (T1005) / Email Collection (T1114.001): Targeted collection of intellectual property, credentials, email archives, and strategic documents matching threat actor's collection objectives",
-            "Exfiltration → Exfiltration Over Alternative Protocol (T1048) / Scheduled Transfer (T1029): Low-volume exfiltration via DNS tunneling, HTTPS to cloud storage, or time-delayed transfers to avoid volume-based detection",
-        ]
-        sigma_logsource = "product: windows\n    category: process_creation"
-        sigma_detection = """detection:
-    lolbas_net:
-        Image|endswith:
-            - '\\certutil.exe'
-            - '\\mshta.exe'
-            - '\\regsvr32.exe'
-            - '\\bitsadmin.exe'
-        CommandLine|contains:
-            - 'http'
-            - 'urlcache'
-            - 'decode'
-            - '/transfer'
-    schtask_non_admin:
-        Image|endswith: '\\schtasks.exe'
-        CommandLine|contains:
-            - '/create'
-        User|not|contains:
-            - 'SYSTEM'
-            - 'Administrator'
-    condition: lolbas_net or schtask_non_admin"""
-        sigma_title = "APT Indicators — LOLBAS Network Access and Non-Admin Scheduled Task Creation"
-        sigma_tags = "    - attack.defense_evasion\n    - attack.t1218\n    - attack.t1053.005\n    - attack.t1027"
-        hunt_queries = [
-            "LOLBAS with outbound network connections — EDR process telemetry for certutil.exe, mshta.exe, regsvr32.exe, bitsadmin.exe with DestinationIP not in internal RFC1918 ranges",
-            "Non-admin scheduled task creation — Windows Security Event ID 4698 (scheduled task created) attributed to non-SYSTEM, non-administrator user accounts or unusual parent process",
-            "DNS tunneling — DNS query logs for TXT/NULL record type queries and subdomain strings exceeding 30 characters in entropy from workstation processes",
-            "Unexpected service registration — Windows System Event ID 7045 (new service installed) outside documented change management windows or from non-administrative accounts",
-            "LSASS memory access — EDR telemetry for processes other than SYSTEM/antivirus/EDR opening lsass.exe with PROCESS_VM_READ (0x0010) access rights",
-        ]
-        soc_actions = [
-            "P0 — Initiate active threat hunt across all EDR-enrolled endpoints for campaign IOCs — expand search window to 90 days minimum to account for typical APT dwell time (average 197 days at discovery)",
-            "P0 — Implement firewall and DNS block rules for all infrastructure associated with this threat actor; review egress filtering for anomalous HTTPS traffic to unusual geographic regions",
-            "P1 — Conduct privileged account audit: enumerate all domain admin, service account, and local administrator account creations or modifications in the past 90 days versus change management records",
-            "P1 — Analyze east-west traffic for C2 beacon patterns: regular connection intervals, HTTPS to cloud storage providers in unexpected regions, high-volume DNS TXT queries from specific hosts",
-            "P2 — Targeted forensic review of externally-facing systems (VPN concentrators, web applications, email gateways) for initial access artifacts and webshell presence",
-            "P2 — Brief CISO and general counsel on nation-state attribution context and assess obligations for regulatory or government notification applicable to your sector (CISA reporting, sector-specific ISACs)",
-        ]
-        mssp_block = "MSSPs must distribute an emergency client advisory covering this APT campaign's confirmed TTPs within 2 hours. Activate threat hunting teams on high-value client environments — prioritize financial services, defense, critical infrastructure, and government clients matching the threat actor's known targeting profile. CYBERDUDEBIVASH® SENTINEL APEX APT intelligence provides real-time campaign tracking, infrastructure pivot analysis, and multi-client exposure correlation."
-
-    elif is_cve:
-        mitre_techniques = [
-            f"Initial Access → Exploit Public-Facing Application (T1190): {cve_str} exploitation targeting internet-exposed instances to achieve unauthenticated or pre-auth remote access",
-            "Privilege Escalation → Exploitation for Privilege Escalation (T1068): Post-exploitation local privilege escalation to SYSTEM/root from initial low-privileged access context",
-            "Lateral Movement → Exploitation of Remote Services (T1210): Internal lateral movement using the same vulnerability class against adjacent systems sharing the vulnerable component",
-            "Persistence → Server Software Component: Web Shell (T1505.003): Installation of web shell or backdoor on compromised host for persistent re-entry without re-exploitation",
-            "Defense Evasion → Indicator Removal (T1070): Log clearing and evidence destruction to impede forensic investigation and delay detection of initial access",
-        ]
-        sigma_logsource = "category: webserver"
-        sigma_detection = f"""detection:
-    exploit_uri:
-        c-uri|contains:
-            - '../'
-            - '%2e%2e'
-            - 'cmd.exe'
-            - '/etc/passwd'
-            - ';id;'
-            - '|whoami'
-        sc-status:
-            - 200
-            - 500
-    webshell_access:
-        c-uri|endswith:
-            - '.php'
-            - '.aspx'
-            - '.jsp'
-        cs-method: 'POST'
-        sc-bytes|gt: 0
-    condition: exploit_uri or webshell_access"""
-        sigma_title = f"Web Application Exploitation — {cve_str} Payload and Web Shell Activity"
-        sigma_tags = "    - attack.initial_access\n    - attack.t1190\n    - attack.t1505.003"
-        hunt_queries = [
-            f"Exploitation payload patterns — Web access logs for {cve_str}-specific payload signatures in URI parameters, POST body, or HTTP headers (consult vendor advisory for exact patterns)",
-            "Web server spawning shells — EDR process tree for web server process (httpd, nginx, IIS w3wp.exe, Tomcat) spawning cmd.exe, powershell.exe, bash, or sh as child processes",
-            "Web shell presence — File integrity monitoring for new .php/.aspx/.jsp/.war files created in web root directories outside of scheduled deployment windows",
-            "Post-exploitation lateral movement — SIEM correlation for outbound connections originating from DMZ/web server hosts to internal RFC1918 ranges on management protocols (WMI/445/3389/22)",
-            f"Exploitation attempt timeline — WAF and IDS/IPS logs for 30-day retroactive search for {cve_str} payload patterns to identify pre-patch exploitation activity",
-        ]
-        soc_actions = [
-            f"P0 — Apply vendor patch for {cve_str} immediately on all affected instances; if patch unavailable within 4 hours, implement WAF virtual patching rule and restrict access to authenticated users only",
-            "P0 — Retroactive search: query SIEM, WAF, and web logs for the past 30 days for exploitation payload patterns — assume potential pre-patch exploitation and treat as active incident until ruled out",
-            "P1 — Hunt for post-exploitation artifacts: web shells in web root directories, anomalous child processes from web server, new service registrations or scheduled tasks created by web server process account",
-            "P1 — Block exploitation payload patterns at WAF and IPS/IDS layers; update all detection platform signatures with vendor-provided indicators",
-            "P2 — Conduct full vulnerability scan of adjacent systems sharing the vulnerable component; prioritize internet-facing assets for immediate patching",
-            "P2 — If exploitation confirmed: engage IR team, preserve forensic evidence, and assess regulatory breach notification obligations based on data exposed on compromised systems",
-        ]
-        mssp_block = f"MSSPs must immediately assess all client attack surfaces for {cve_str} exposure using asset inventory cross-reference. Issue P1 priority advisory to all clients with affected technology and provide WAF virtual patching rules for clients unable to patch immediately. CYBERDUDEBIVASH® SENTINEL APEX KEV integration provides real-time CISA KEV tracking with automated client exposure scoring against asset inventories."
 
     else:
         mitre_techniques = [
@@ -726,11 +727,11 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 <li><strong>Remote access behavioral IOC:</strong> VPN or jump server sessions from IT administrators connecting to OT IP ranges during non-business hours or from unusual source geography</li>
 <li><strong>OT network scanning behavioral IOC:</strong> Port scans targeting OT IP ranges originating from IT network — detected via IDS/IPS or network flow analysis on IT-OT boundary firewall</li>"""
     elif is_ato:
-        ioc_behavioral = """<li><strong>Authentication velocity IOC:</strong> >20 authentication attempts per minute from a single IP against login endpoints — distributed per-IP below threshold but >500 total attempts in 10-minute window</li>
-<li><strong>Proxy network IOC:</strong> Residential proxy ASN ranges authenticating at high volume — Luminati/Bright Data (AS58695), Oxylabs, SmartProxy networks are primary ATO infrastructure providers</li>
-<li><strong>Account behavior IOC:</strong> Successful login followed within 30 minutes by password change, email address update, or payment method access from previously unused geographic region</li>
-<li><strong>Session IOC:</strong> Multiple concurrent sessions for same account from distinct geographic regions or device fingerprints not matching account history</li>
-<li><strong>Enumeration IOC:</strong> High volume of 'account not found' (username enumeration) errors preceding a spike in successful authentications — indicates combo list validation phase</li>"""
+        ioc_behavioral = """<li><strong>Authentication velocity behavioral IOC:</strong> >20 authentication attempts per minute from a single IP against login endpoints — distributed per-IP below threshold but >500 total attempts in 10-minute window indicates distributed credential stuffing</li>
+<li><strong>Proxy network behavioral IOC:</strong> Residential proxy ASN ranges authenticating at high volume — Luminati/Bright Data (AS58695), Oxylabs, SmartProxy networks are primary ATO infrastructure providers for bypassing IP rate limiting</li>
+<li><strong>Account behavior behavioral IOC:</strong> Successful login followed within 30 minutes by password change, email address update, or payment method access from previously unused geographic region</li>
+<li><strong>Session behavioral IOC:</strong> Multiple concurrent sessions for same account from distinct geographic regions or device fingerprints not matching account history — impossible travel scenario</li>
+<li><strong>Enumeration behavioral IOC:</strong> High volume of 'account not found' (username enumeration) errors preceding a spike in successful authentications — indicates combo list validation phase before full stuffing wave</li>"""
     elif is_extension:
         ioc_behavioral = """<li><strong>Extension ID IOC:</strong> Presence of the specific extension ID in Chrome/Edge extension registry keys on managed endpoints — confirmed via registry scan or management platform query</li>
 <li><strong>Network behavioral IOC:</strong> Browser process (chrome.exe/msedge.exe) establishing connections to recently registered domains or suspicious TLDs (.tk/.ml/.ga/.cf/.gq/.xyz) on port 443</li>
@@ -802,7 +803,13 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     _ot_classification = 'Operational technology and industrial control system targeting with direct production impact risk.' if is_ot else 'Enterprise IT environment threat with potential for data loss, operational disruption, or financial impact.'
     _exploit_status = 'Exploitation is confirmed active based on CISA KEV inclusion or public exploitation reporting (HIGH CONFIDENCE).' if is_patch else 'Active exploitation status is unconfirmed at time of publication — assess as pre-exploitation risk (MEDIUM CONFIDENCE).'
     _attribution_note = 'Threat actor category identified based on TTPs and campaign characteristics described in source material.' if (is_ransomware or is_apt) else 'Attribution to specific threat actors has not been confirmed in the source material — analyst assessment and sector context are the basis for any attribution statements in this report (LOW CONFIDENCE).'
-    _business_impact = 'Ransomware encryption of production systems carries average recovery costs exceeding $1.85M (Sophos State of Ransomware 2024) excluding reputational damage and regulatory penalty exposure. GDPR Article 33 requires breach notification within 72 hours; NIS2 Directive extends mandatory reporting to a broader set of critical sectors.' if is_ransomware else ('OT disruption to food production carries food safety, supply chain continuity, and regulatory compliance risk. FDA, USDA, and EU food safety regulations impose mandatory incident notification obligations for breaches affecting food safety systems.' if is_ot else ('Credential stuffing ATO incidents trigger GDPR, CCPA, and state breach notification obligations if personal data is accessed. PCI-DSS 4.0 Section 8 requires multi-factor authentication for all account access — organizations not meeting this control face compliance liability.' if is_ato else f'Organizations with unpatched exposure to {cve_str} face unauthorized access, data exfiltration, and regulatory enforcement under GDPR (up to 4% global annual revenue), NIS2, DORA, or SOC 2 audit findings.'))
+    _business_impact = (
+        'Ransomware encryption of production systems carries average recovery costs exceeding $1.85M (Sophos State of Ransomware 2024) excluding reputational damage and regulatory penalty exposure. GDPR Article 33 requires breach notification within 72 hours; NIS2 Directive extends mandatory reporting to a broader set of critical sectors.' if is_ransomware else
+        'Nation-state APT intrusions carry costs averaging $4.4M per breach (IBM Cost of a Data Breach Report) in addition to strategic IP loss, regulatory penalties under GDPR (up to 4% global annual revenue), NIS2, DORA, and sector-specific regulations. Government notification obligations under CISA binding operational directives and sector ISAC frameworks may apply depending on sector classification.' if is_apt else
+        'OT disruption to industrial production carries operational downtime costs averaging $500K per hour in manufacturing sectors, food safety liability, supply chain continuity failure, and mandatory CISA ICS-CERT and sector regulator notification obligations. FDA, USDA, and EU NIS2 critical infrastructure requirements impose specific incident reporting timelines.' if is_ot else
+        'Credential stuffing ATO incidents carry average costs of $290K per incident (Ponemon Institute) including fraud remediation, breach notification, and regulatory fines. GDPR Article 83 fines up to €20M or 4% of global annual revenue apply if personal data is accessed. PCI-DSS 4.0 Section 8 requires MFA for all account access — non-compliance creates direct audit liability.' if is_ato else
+        f'Organizations with unpatched exposure to {cve_str} face unauthorized access, data exfiltration, and regulatory enforcement under GDPR (up to 4% global annual revenue), NIS2, DORA, or SOC 2 audit findings.'
+    )
     _ot_para = '<p>Operational technology environments face elevated risk due to the combination of legacy systems with extended patching cycles, limited network segmentation between IT and OT networks, and the operational sensitivity of production disruption that may incentivize ransom payment or prevent proper incident containment.</p>' if is_ot else ''
     _ato_para = '<p>Credential stuffing operations rely on the reuse of username/password pairs from prior data breaches — victims are compromised through no fault of their current security posture. The attack succeeds entirely because of credential reuse across services, making MFA enforcement the single highest-efficacy defensive control available.</p>' if is_ato else ''
 
@@ -872,7 +879,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 </ul>
 
 <h3>Business Impact</h3>
-<p>{'Ransomware encryption of production systems carries average recovery costs exceeding $1.85M (Sophos State of Ransomware 2024) excluding reputational damage and regulatory penalty exposure. GDPR Article 33 requires breach notification within 72 hours; NIS2 Directive extends mandatory reporting to a broader set of critical sectors.' if is_ransomware else ('OT disruption to food production carries food safety, supply chain continuity, and regulatory compliance risk. FDA, USDA, and EU food safety regulations impose mandatory incident notification obligations for breaches affecting food safety systems.' if is_ot else ('Credential stuffing ATO incidents trigger GDPR, CCPA, and state breach notification obligations if personal data is accessed. PCI-DSS 4.0 Section 8 requires multi-factor authentication for all account access — organizations not meeting this control face compliance liability.' if is_ato else f'Organizations with unpatched exposure to {cve_str} face unauthorized access, data exfiltration, and regulatory enforcement under GDPR (up to 4% global annual revenue), NIS2, DORA, or SOC 2 audit findings.'))}</p>
+<p>{_business_impact}</p>
 <p>Risk quantification requires correlation of this threat against your specific asset inventory, data classification, and regulatory obligations — standard CVSS scores reflect technical severity, not business impact to your specific environment.</p>
 
 <h3>Technical Analysis</h3>
