@@ -167,7 +167,7 @@ def _build_analyst_prompt(article: DiscoveredArticle) -> str:
 
 ARTICLE TITLE: {article.title}
 ARTICLE URL: {article.url}
-ARTICLE CONTENT:
+ARTICLE CONTENT (up to 5000 characters):
 {(article.full_content or article.summary)[:5000]}
 LABELS/CATEGORY: {', '.join(article.labels)}
 
@@ -879,7 +879,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 </ul>
 
 <h3>Business Impact</h3>
-<p>{'Ransomware encryption of production systems carries average recovery costs exceeding $1.85M (Sophos State of Ransomware 2024) excluding reputational damage and regulatory penalty exposure. GDPR Article 33 requires breach notification within 72 hours; NIS2 Directive extends mandatory reporting to a broader set of critical sectors.' if is_ransomware else ('OT disruption to food production carries food safety, supply chain continuity, and regulatory compliance risk. FDA, USDA, and EU food safety regulations impose mandatory incident notification obligations for breaches affecting food safety systems.' if is_ot else ('Credential stuffing ATO incidents trigger GDPR, CCPA, and state breach notification obligations if personal data is accessed. PCI-DSS 4.0 Section 8 requires multi-factor authentication for all account access — organizations not meeting this control face compliance liability.' if is_ato else f'Organizations with unpatched exposure to {cve_str} face unauthorized access, data exfiltration, and regulatory enforcement under GDPR (up to 4% global annual revenue), NIS2, DORA, or SOC 2 audit findings.'))}</p>
+<p>{_business_impact}</p>
 <p>Risk quantification requires correlation of this threat against your specific asset inventory, data classification, and regulatory obligations — standard CVSS scores reflect technical severity, not business impact to your specific environment.</p>
 
 <h3>Technical Analysis</h3>
