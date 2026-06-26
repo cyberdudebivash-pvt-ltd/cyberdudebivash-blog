@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-26T12:31:28.673Z",
+  "generated": "2026-06-26T13:01:33.986Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3542,
+    "total_nodes": 3546,
     "actors": 8,
     "cves": 776,
-    "campaigns": 326,
+    "campaigns": 327,
     "malware": 0,
     "iocs": 360,
-    "edges": 1332
+    "edges": 1333
   },
   "nodes": {
     "actor:lockbit": {
@@ -67840,6 +67840,80 @@
           "confidence": 0.75
         }
       ]
+    },
+    "SECURITYWEEK-ce0ec9f473c9abf6": {
+      "id": "SECURITYWEEK-ce0ec9f473c9abf6",
+      "type": "Intel",
+      "name": "Nebulock Raises $25 Million for AI-Native Contextual Security",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-26",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": []
+    },
+    "SENTINELONE-a26f8e390f02b2d0": {
+      "id": "SENTINELONE-a26f8e390f02b2d0",
+      "type": "Intel",
+      "name": "The Good, the Bad and the Ugly in Cybersecurity – Week 26",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "sentinelone",
+        "product": "Threat Intelligence",
+        "published": "2026-06-26",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "DARKREADING-8de524931ed52a95": {
+      "id": "DARKREADING-8de524931ed52a95",
+      "type": "Intel",
+      "name": "Thanks for Crushing the Submissions Inbox. We're Trying to Keep Up",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-06-26",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-c3ddb464": {
+      "id": "campaign:cluster-c3ddb464",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-26",
+        "last_seen": "2026-06-26",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-ce0ec9f473c9abf6",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -79866,6 +79940,15 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-26",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-c3ddb464→includes→SECURITYWEEK-ce0ec9f473c9abf6",
+      "source": "campaign:cluster-c3ddb464",
+      "target": "SECURITYWEEK-ce0ec9f473c9abf6",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-26",
       "sources": []
     }
