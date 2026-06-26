@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-26T22:01:37.609Z",
+  "generated": "2026-06-26T22:31:23.965Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1328,
+  "total_published": 1333,
   "s2n_stats": {
     "passed": 82,
-    "suppressed": 10,
+    "suppressed": 13,
     "avg_qs": 0.554
   },
   "items": [
@@ -4174,6 +4174,202 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-49286",
+      "title": "PhpWeasyPrint vulnerable to PHAR deserialization via output filename (CVE-2023-28115 case-insensitive bypass)",
+      "description": "### Summary `pontedilana/php-weasyprint` guarded the output filename against the `phar://` stream wrapper with a case-sensitive blacklist: ```php\nif (0 === \\strpos($filename, 'phar://')) { throw new \\InvalidArgumentException('The output file cannot be a phar archive.');\n}\n``` PHP stream wrappers are",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-26",
+      "last_seen": "2026-06-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "pontedilana/php-weasyprint",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49286",
+        "CVE-2026-49286"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-2fmj-p74r-3wjm",
+        "https://github.com/KnpLabs/snappy/security/advisories/GHSA-92rv-4j2h-8mjj",
+        "https://github.com/pontedilana/php-weasyprint/security/advisories/GHSA-2fmj-p74r-3wjm",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49286"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-49293",
+      "title": "js-toml vulnerable to CPU exhaustion via O(n^2) BigInt construction on radix-prefixed integer literals",
+      "description": "## Summary `js-toml` versions up to and including **1.1.0** parse hexadecimal / octal / binary integer literals via a hand-written `parseBigInt` loop that multiplies a `BigInt` accumulator by the radix once per input digit. Each iteration performs a `BigInt * BigInt` operation on an accumulator that",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-26",
+      "last_seen": "2026-06-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "js-toml",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49293",
+        "CVE-2026-49293"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-wp3c-266w-4qfq",
+        "https://github.com/sunnyadn/js-toml/security/advisories/GHSA-wp3c-266w-4qfq",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49293",
+        "https://github.com/sunnyadn/js-toml/commit/1abcb31dc7b1fa88e4c848a8d108891cfbb96fa2"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47067",
+      "title": "Hackney vulnerable to atom-table exhaustion via unrecognized URL schemes",
+      "description": "### Summary [CVE-2026-47067](https://nvd.nist.gov/vuln/detail/CVE-2026-47067) is an atom table exhaustion vulnerability (CWE-770) in hackney's URL parser (`src/hackney_url.erl`). `hackney_url:parse_url/1` converts every URL scheme it encounters into a BEAM atom via `binary_to_atom/2`. Because BEAM a",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-26",
+      "last_seen": "2026-06-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "erlang",
+      "product": "hackney",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47067",
+        "CVE-2026-47067"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-9653-rcfr-5c62",
+        "https://github.com/benoitc/hackney/security/advisories/GHSA-9653-rcfr-5c62",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-47067",
+        "https://github.com/benoitc/hackney/commit/31f6f0e27e096ad88743dfded4f030a3ee74972e"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-49287",
+      "title": "Statamic CMS's unsafe method invocation via collection sorting allows data destruction",
+      "description": "### Impact The fix for GHSA-4jjr-vmv7-wh4w was incomplete. It addressed the issue in the query builder, but the same protection was not applied to in-memory collection sorting. Manipulating sort parameters could result in the loss of content and assets. This requires a front-end template that passes",
+      "cvss": 7.4,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-26",
+      "last_seen": "2026-06-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "statamic/cms",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49287",
+        "CVE-2026-49287"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-m92m-r54r-x8r2",
+        "https://github.com/statamic/cms/security/advisories/GHSA-4jjr-vmv7-wh4w",
+        "https://github.com/statamic/cms/security/advisories/GHSA-m92m-r54r-x8r2",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49287"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-49357",
       "title": "Streamable HTTP mode exposes LINE Desktop read/send tools without MCP authentication",
       "description": "# Streamable HTTP mode exposes LINE Desktop read/send tools without MCP authentication ## Summary `line-desktop-mcp` supports a `--http-mode` Streamable HTTP transport for use with clients such as n8n. In this mode the server binds to `0.0.0.0` and exposes the MCP `/mcp` endpoint without an MCP-laye",
@@ -4205,202 +4401,6 @@
         "https://github.com/dtwang/line-desktop-mcp/security/advisories/GHSA-4hf8-5mjm-rfgq",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-49357",
         "https://github.com/dtwang/line-desktop-mcp/commit/680617894981ea93f8f6ceb51ecde7519754d501"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47073",
-      "title": "Hackney has unbounded buffer accumulation in WebSocket",
-      "description": "### Summary The WebSocket client in `src/hackney_ws.erl` imposes no upper bound on memory consumption across three distinct code paths. In each case, an attacker-controlled WebSocket server can exhaust the connecting process's memory without any authentication or special client configuration. ### De",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-26",
-      "last_seen": "2026-06-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "erlang",
-      "product": "hackney",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47073",
-        "CVE-2026-47073"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-q8jg-fgj4-fphf",
-        "https://github.com/benoitc/hackney/security/advisories/GHSA-q8jg-fgj4-fphf",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-47073",
-        "https://github.com/benoitc/hackney/commit/ce0109e2970ace6e20ff29bae9d05c3ac22ec6dc"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47074",
-      "title": "Hackney: Per-chunk timeout with unbounded body accumulation enables slow-drip OOM",
-      "description": "### Summary `hackney_h3:await_response_loop/6` in `src/hackney_h3.erl` accumulates the HTTP/3 response body in memory without any size cap. The `after Timeout` clause is a per-message inactivity timer, not a wall-clock deadline: every received `stream_data` chunk, housekeeping `select` message, or `",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-26",
-      "last_seen": "2026-06-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "erlang",
-      "product": "hackney",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47074",
-        "CVE-2026-47074"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-jq4m-q6p2-8gwc",
-        "https://github.com/benoitc/hackney/security/advisories/GHSA-jq4m-q6p2-8gwc",
-        "https://github.com/ex-aws/ex_aws_sns/security/advisories/GHSA-8jgf-23q5-x7xx",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-47074"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47071",
-      "title": "Hackney: `ssl:connect/2` post-handshake upgrade has no timeout",
-      "description": "### Summary The SOCKS5 transport in `src/hackney_socks5.erl` correctly applies the caller-supplied timeout to the SOCKS5 negotiation phase, but then upgrades the tunnel to TLS using `ssl:connect/2` (the two-argument form), which defaults to `infinity`. The `Timeout` value is in scope at that call si",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-26",
-      "last_seen": "2026-06-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "erlang",
-      "product": "hackney",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47071",
-        "CVE-2026-47071"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-gp9c-pm5m-5cxr",
-        "https://github.com/benoitc/hackney/security/advisories/GHSA-gp9c-pm5m-5cxr",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-47071",
-        "https://github.com/benoitc/hackney/commit/5ccdab725c561a6f03d05a51f2d0664f98236dae"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47066",
-      "title": "Hackney has an infinite loop on non-token byte at start of an Alt-Svc entry",
-      "description": "### Summary [CVE-2026-47066](https://nvd.nist.gov/vuln/detail/CVE-2026-47066) is an infinite loop (CWE-835) in hackney's Alt-Svc response header parser (`src/hackney_altsvc.erl`). When an HTTP server returns an `Alt-Svc` header whose value begins with a non-token byte (e.g. `!`, `@`, `=`, `;`), the ",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-26",
-      "last_seen": "2026-06-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "erlang",
-      "product": "hackney",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47066",
-        "CVE-2026-47066"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-6cp8-v795-jr2j",
-        "https://github.com/benoitc/hackney/security/advisories/GHSA-6cp8-v795-jr2j",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-47066",
-        "https://github.com/benoitc/hackney/commit/e548aba1f97ffa3f4750da7b772998fb78c01894"
       ],
       "explanation": {
         "quality": [
