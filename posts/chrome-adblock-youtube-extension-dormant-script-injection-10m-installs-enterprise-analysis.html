@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XTGLNMNNC7',{page_title:document.title,page_location:window.location.href});</script>
+<meta name="description" content="Island security researchers discover dormant arbitrary JavaScript execution capability in Chrome's Adblock for YouTube extension — 10M+ installs, Featured badge. Enterprise risk analysis, detection engineering, and remediation guidance.">
+<meta property="og:title" content="Chrome Adblock for YouTube Extension (10M+ Installs) Contains Dormant Script Injection — Enterprise Threat Analysis | CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://blog.cyberdudebivash.in/posts/chrome-adblock-youtube-extension-dormant-script-injection-10m-installs-enterprise-analysis.html">
+<meta property="og:description" content="Island security researchers discover a dormant arbitrary JavaScript execution capability in the Chrome 'Adblock for YouTube' extension (ID: cmedhionkhpnakcndndgjdbohmhepckk), with 10M+ installs and a Chrome Web Store Featured badge. Enterprise endpoint risk analysis and SOC response.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://blog.cyberdudebivash.in/posts/chrome-adblock-youtube-extension-dormant-script-injection-10m-installs-enterprise-analysis.html">
+<link rel="alternate" type="application/rss+xml" title="CYBERDUDEBIVASH SENTINEL APEX" href="https://blog.cyberdudebivash.in/rss.xml">
+<title>Chrome Adblock for YouTube (10M+ Installs): Dormant Script Injection Capability — Enterprise Analysis | CYBERDUDEBIVASH SENTINEL APEX</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Chrome Adblock for YouTube (10M+ Installs) Contains Dormant Script Injection Capability","description":"Island security researchers uncover a dormant arbitrary JavaScript execution capability in the Chrome Adblock for YouTube extension (ID: cmedhionkhpnakcndndgjdbohmhepckk). Enterprise endpoint risk analysis, browser extension governance, and SOC response.","datePublished":"2026-06-26","dateModified":"2026-06-26","author":{"@type":"Organization","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"https://blog.cyberdudebivash.in"},"publisher":{"@type":"Organization","name":"CYBERDUDEBIVASH"},"keywords":"Chrome extension malware, Adblock for YouTube, browser extension security, cmedhionkhpnakcndndgjdbohmhepckk, script injection, MITRE T1176, enterprise browser security"}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-yellow:#ffe000;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--apex-font);background:var(--apex-bg);color:var(--apex-text);min-height:100vh;overflow-x:hidden;line-height:1.7}
+.ticker{position:relative;z-index:100;background:linear-gradient(90deg,#7c2d12,#92400e,#7c2d12);padding:8px 0;overflow:hidden}
+.ticker-inner{display:flex;animation:tick 60s linear infinite;white-space:nowrap}.ticker-item{color:#fff;font-size:12px;font-weight:700;letter-spacing:.05em;padding:0 40px}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+nav{position:sticky;top:0;z-index:9999;background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}.nlogo{font-size:18px;font-weight:900;color:var(--apex-cyan)}.ntag{font-size:10px;color:var(--apex-muted);letter-spacing:.1em;text-transform:uppercase}
+.nlinks{display:flex;align-items:center;gap:6px}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px;transition:.2s}.nlinks a:hover{color:var(--apex-text);background:var(--apex-surface)}
+.ncta{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000!important;font-weight:700!important;border-radius:6px!important}
+main{position:relative;z-index:10;max-width:1200px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:1fr 320px;gap:40px}
+@media(max-width:900px){main{grid-template-columns:1fr;padding:24px 16px}}
+.meta-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px}
+.badge{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.bdg-red{background:#ff3b3b22;color:#ff3b3b;border:1px solid #ff3b3b44}.bdg-orange{background:#ff8c0022;color:#ff8c00;border:1px solid #ff8c0044}
+.bdg-cyan{background:#0099ff22;color:#0099ff;border:1px solid #0099ff44}.bdg-purple{background:#a855f722;color:#a855f7;border:1px solid #a855f744}
+.rep-date{color:var(--apex-muted);font-size:13px;margin-left:auto}
+h1.rh1{font-size:clamp(20px,3.5vw,34px);font-weight:900;line-height:1.2;color:#fff;margin-bottom:16px}
+.rsubtitle{font-size:15px;color:var(--apex-muted);margin-bottom:28px;line-height:1.65;border-left:3px solid var(--apex-orange);padding-left:16px}
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin-bottom:32px}
+.stat{background:var(--apex-card);border:1px solid var(--apex-border);border-radius:10px;padding:14px;text-align:center}
+.stat .sv{font-size:20px;font-weight:900;color:var(--apex-cyan);font-family:var(--mono)}.stat.red .sv{color:var(--apex-red)}.stat.orange .sv{color:var(--apex-orange)}.stat.green .sv{color:var(--apex-green)}.stat.yellow .sv{color:var(--apex-yellow)}.stat .sl{font-size:10px;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+.exec-box{background:linear-gradient(135deg,#0a1220,#111827);border:1px solid rgba(0,255,224,.15);border-left:4px solid var(--apex-cyan);border-radius:12px;padding:20px 24px;margin-bottom:24px}
+.exec-box .ex-label{font-size:10px;font-weight:800;color:var(--apex-cyan);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px}
+.exec-box p{font-size:14px;color:#c9d1d9;line-height:1.75}
+.alert{padding:16px 20px;border-radius:10px;margin:20px 0;display:flex;gap:14px;align-items:flex-start}
+.alert-crit{background:#ff3b3b10;border:1px solid #ff3b3b44;border-left:4px solid var(--apex-red)}.alert-warn{background:#ff8c0010;border:1px solid #ff8c0044;border-left:4px solid var(--apex-orange)}.alert-info{background:#00ffe010;border:1px solid #00ffe044;border-left:4px solid var(--apex-cyan)}
+.aico{font-size:22px;flex-shrink:0}.abody .atitle{font-weight:800;font-size:14px;margin-bottom:4px}.alert-crit .atitle{color:var(--apex-red)}.alert-warn .atitle{color:var(--apex-orange)}.alert-info .atitle{color:var(--apex-cyan)}.abody p{font-size:14px;color:var(--apex-muted);line-height:1.6}
+h2.sh{font-size:19px;font-weight:800;color:#fff;margin:36px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--apex-border)}h2.sh span{color:var(--apex-cyan)}
+p.bp{font-size:15px;color:#c9d1d9;line-height:1.8;margin-bottom:14px}
+.code-block{background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;padding:16px 20px;font-family:var(--mono);font-size:12px;color:#a6e22e;overflow-x:auto;margin:16px 0;position:relative;white-space:pre;max-height:440px;overflow-y:auto;line-height:1.6}
+.code-lbl{position:absolute;top:8px;right:12px;font-size:10px;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.1em;background:var(--apex-surface);padding:2px 6px;border-radius:4px}
+.tbl{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}.tbl th{background:#1a2234;color:var(--apex-cyan);font-weight:700;padding:10px 14px;text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--apex-border)}.tbl td{padding:10px 14px;border:1px solid var(--apex-border);color:var(--apex-text);vertical-align:top}
+.impact-list{list-style:none;padding:0;margin:12px 0}.impact-item{padding:10px 14px;border-left:3px solid var(--apex-orange);background:#ff8c0008;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:14px;color:var(--apex-text);line-height:1.6}
+.ioc-box{background:#0a1220;border:1px solid var(--apex-border);border-radius:8px;padding:16px 20px;font-family:var(--mono);font-size:13px;color:var(--apex-cyan);margin:12px 0}
+.ioc-label{font-size:10px;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.ecta{background:linear-gradient(135deg,#0a1428,#111827);border:1px solid #00ffe022;border-radius:16px;padding:28px;margin:40px 0;text-align:center}
+.ecta h3{font-size:20px;font-weight:900;color:#fff;margin-bottom:8px}.ecta .ep{color:var(--apex-muted);margin-bottom:20px;font-size:14px}
+.cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}@media(max-width:600px){.cta-grid{grid-template-columns:1fr}}
+.btn-p{padding:12px 20px;background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000;font-weight:800;font-size:13px;border-radius:8px;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px}
+.btn-s{padding:12px 20px;background:transparent;border:2px solid var(--apex-cyan);color:var(--apex-cyan);font-weight:700;font-size:13px;border-radius:8px;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px}
+.btn-e{padding:12px 20px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7;font-weight:700;font-size:13px;border-radius:8px;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px}
+.sidebar{display:flex;flex-direction:column;gap:20px}.sw{background:var(--apex-card);border:1px solid var(--apex-border);border-radius:12px;padding:20px}
+.wt{font-size:12px;font-weight:700;color:var(--apex-cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--apex-border)}
+.vbox{background:#ff8c0010;border:2px solid var(--apex-orange);border-radius:12px;padding:20px}
+.vscore{font-size:44px;font-weight:900;color:var(--apex-orange);font-family:var(--mono);text-align:center}.vlabel{font-size:11px;color:var(--apex-muted);text-align:center;text-transform:uppercase;letter-spacing:.1em}
+.threat-badge{display:block;text-align:center;padding:6px;background:#ff8c0033;color:var(--apex-orange);font-weight:900;font-size:13px;border-radius:6px;margin:8px 0;letter-spacing:.08em}
+.vrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--apex-border);font-size:13px}.vrow:last-child{border-bottom:none}.vk{color:var(--apex-muted)}.vv{color:var(--apex-text);font-weight:600}
+.alist{list-style:none;padding:0}.action-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--apex-orange);color:#fff;font-size:10px;font-weight:900;margin-right:10px;flex-shrink:0}
+.action-item{display:flex;align-items:flex-start;padding:10px 14px;border-bottom:1px solid var(--apex-border);font-size:13px;color:var(--apex-text);line-height:1.6}.action-item:last-child{border-bottom:none}
+.intel-sig{margin-top:48px;padding:24px;background:rgba(0,255,224,.03);border:1px solid rgba(0,255,224,.1);border-radius:12px;text-align:center}
+.isb{font-size:14px;font-weight:900;color:var(--apex-cyan);letter-spacing:.1em;text-transform:uppercase}.iss{font-size:12px;color:var(--apex-muted);margin-top:6px;line-height:1.5}
+footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);padding:32px 24px;text-align:center}footer p{font-size:13px;color:var(--apex-muted);line-height:1.8}footer a{color:var(--apex-cyan);text-decoration:none}
+@media(max-width:767px){nav{padding:0 14px}.nlinks a:not(.ncta){display:none}.ntag{display:none}}
+</style>
+</head>
+<body>
+<div class="ticker"><div class="ticker-inner">
+  <span class="ticker-item">⚠ BROWSER THREAT — Chrome "Adblock for YouTube" (10M+ Installs) Contains Dormant Script Injection — Island Security Research</span>
+  <span class="ticker-item">🎯 Extension ID: cmedhionkhpnakcndndgjdbohmhepckk — Remove from Enterprise Endpoints Immediately</span>
+  <span class="ticker-item">🛡 CYBERDUDEBIVASH® SENTINEL APEX — Browser Extension Threat Analysis — June 26, 2026</span>
+  <span class="ticker-item">⚠ BROWSER THREAT — Chrome "Adblock for YouTube" (10M+ Installs) Contains Dormant Script Injection — Island Security Research</span>
+  <span class="ticker-item">🎯 Extension ID: cmedhionkhpnakcndndgjdbohmhepckk — Remove from Enterprise Endpoints Immediately</span>
+</div></div>
+<nav>
+  <a href="/" class="nbrand"><div><div class="nlogo">CYBERDUDED<span style="color:#fff">BIVASH</span></div><div class="ntag">SENTINEL APEX — Global Threat Intelligence</div></div></a>
+  <div class="nlinks"><a href="/">Reports</a><a href="/intelligence.html">Intel Hub</a><a href="/products.html">Detection Packs</a><a href="/contact.html">Enterprise</a><a href="/pricing.html" class="ncta">⚡ SOC Pro</a></div>
+</nav>
+<main>
+  <article>
+    <div class="meta-bar">
+      <span class="badge bdg-orange">BROWSER EXTENSION</span>
+      <span class="badge bdg-red">DORMANT BACKDOOR</span>
+      <span class="badge bdg-purple">10M+ INSTALLS</span>
+      <span class="badge bdg-cyan">ISLAND SECURITY</span>
+      <span class="rep-date">Published: June 26, 2026</span>
+    </div>
+    <h1 class="rh1">Chrome "Adblock for YouTube" Extension (10M+ Installs) Contains Dormant Script Injection Capability</h1>
+    <p class="rsubtitle">Security researchers at Island have discovered that the Chrome Web Store extension "Adblock for YouTube" (Extension ID: <code style="color:var(--apex-cyan)">cmedhionkhpnakcndndgjdbohmhepckk</code>) — carrying a Featured badge and 10 million+ installs — contains a dormant capability to execute arbitrary JavaScript code. The backdoor has not been publicly confirmed as actively exploited, but its presence represents a significant enterprise endpoint risk at scale.</p>
+
+    <div class="stats-bar">
+      <div class="stat orange"><div class="sv">10M+</div><div class="sl">Affected Installs</div></div>
+      <div class="stat red"><div class="sv">DORMANT</div><div class="sl">Backdoor Status</div></div>
+      <div class="stat"><div class="sv" style="color:var(--apex-purple)">YES</div><div class="sl">Featured Badge</div></div>
+      <div class="stat"><div class="sv" style="color:var(--apex-yellow)">MEDIUM</div><div class="sl">Risk Level</div></div>
+      <div class="stat"><div class="sv" style="color:var(--apex-cyan)">JS</div><div class="sl">Injection Type</div></div>
+      <div class="stat green"><div class="sv">REMOVE</div><div class="sl">Action Required</div></div>
+    </div>
+
+    <div class="alert alert-warn">
+      <span class="aico">⚠️</span>
+      <div class="abody">
+        <div class="atitle">ENTERPRISE ENDPOINT ACTION REQUIRED — Identify and Remove Extension</div>
+        <p>Enterprises should immediately identify all endpoints with Extension ID <code>cmedhionkhpnakcndndgjdbohmhepckk</code> installed and initiate removal. The dormant status means exploitation has not been confirmed at time of publication — but the capability exists and could be activated by an update. Chrome Web Store extensions receive automatic updates without user consent, making the activation of dormant backdoor functionality a persistent risk until the extension is removed.</p>
+      </div>
+    </div>
+
+    <h2 class="sh"><span>📋</span> Executive Intelligence Summary</h2>
+    <div class="exec-box">
+      <div class="ex-label">⚡ CYBERDUDEBIVASH® SENTINEL APEX — Threat Assessment</div>
+      <p>Island, an enterprise browser security company, disclosed research identifying an arbitrary JavaScript execution capability within the "Adblock for YouTube" Chrome extension (ID: <code style="color:var(--apex-cyan)">cmedhionkhpnakcndndgjdbohmhepckk</code>). The extension, which holds a Featured badge from Google on the Chrome Web Store, has accumulated over 10 million installations. The capability discovered is described as dormant — meaning the mechanism to inject arbitrary JavaScript exists within the extension's code, but has not been observed executing a malicious payload at the time of disclosure.</p>
+      <p style="margin-top:10px">This threat profile is consistent with what security researchers term a "sleeping backdoor" or "logic bomb" delivery mechanism: the extension author either (a) intentionally embedded the capability for future exploitation, (b) inherited the capability through a malicious dependency or library, or (c) had their developer account compromised, enabling a subsequent attacker to inject malicious functionality via a future extension update.</p>
+      <p style="margin-top:10px"><strong style="color:#fff">The critical enterprise risk is the update mechanism.</strong> Chrome extensions update automatically and silently without user consent. An extension carrying a dormant backdoor today could deliver active malicious functionality in the next update — affecting all 10 million+ installed instances simultaneously, including corporate endpoints across an unknown number of enterprises.</p>
+    </div>
+
+    <h2 class="sh"><span>🔬</span> Technical Analysis</h2>
+    <p class="bp"><strong style="color:#fff">Identified Artifact</strong></p>
+    <div class="ioc-box">
+      <div class="ioc-label">Confirmed Extension Indicator</div>
+      Extension Name: Adblock for YouTube<br>
+      Extension ID: cmedhionkhpnakcndndgjdbohmhepckk<br>
+      Install Count: 10,000,000+ (Chrome Web Store)<br>
+      Badge: Chrome Web Store Featured<br>
+      Capability: Dormant arbitrary JavaScript execution<br>
+      Researcher: Island (enterprise browser security)<br>
+      Status at Disclosure: Dormant — not confirmed actively exploiting
+    </div>
+
+    <p class="bp"><strong style="color:#fff">Why "Dormant" Matters</strong></p>
+    <p class="bp">A dormant backdoor in a browser extension is strategically more dangerous than an immediately active one in several ways:</p>
+    <ul class="impact-list">
+      <li class="impact-item"><strong>Silent Waiting Period:</strong> The extension passes initial review with benign-appearing functionality and accumulates users. The malicious capability is embedded but not invoked, avoiding behavioral detection during the growth phase.</li>
+      <li class="impact-item"><strong>Update-Based Activation:</strong> Chrome extensions receive automatic, user-silent updates. The attacker can activate the dormant capability at a moment of their choosing by pushing an extension update — simultaneously weaponizing 10M+ installs.</li>
+      <li class="impact-item"><strong>Trust Establishment:</strong> A Featured badge and 10M+ installs creates a false sense of legitimacy. Users and IT teams are less likely to scrutinize or block extensions with high install counts and official Chrome Web Store endorsement.</li>
+      <li class="impact-item"><strong>Detection Evasion:</strong> Dormant malicious code that never executes during sandbox analysis or initial security review evades signature-based and behavioral detection tools that require active execution to generate alerts.</li>
+    </ul>
+
+    <p class="bp"><strong style="color:#fff">Technical Capability — Arbitrary JavaScript Execution</strong></p>
+    <p class="bp">Browser extensions with the capability to execute arbitrary JavaScript across web pages can achieve a significant range of malicious outcomes, including:</p>
+    <ul class="impact-list">
+      <li class="impact-item"><strong>Credential Theft:</strong> Injecting keyloggers or form-grabbers into any web page visited by the user — capturing usernames, passwords, MFA codes, and session tokens before they are transmitted.</li>
+      <li class="impact-item"><strong>Session Hijacking:</strong> Accessing browser cookies and session storage through the extension's browser API access, exfiltrating active session tokens for corporate SaaS applications (Microsoft 365, Google Workspace, Salesforce, etc.).</li>
+      <li class="impact-item"><strong>Data Exfiltration:</strong> Reading page content across all websites the user visits, including corporate intranet portals, internal ticketing systems, and any web-based application.</li>
+      <li class="impact-item"><strong>Lateral Movement Enablement:</strong> Capturing VPN credentials, SSH keys stored in web interfaces, or internal application authentication tokens to enable deeper network access.</li>
+      <li class="impact-item"><strong>Cryptocurrency Theft:</strong> Injecting scripts targeting crypto wallet web interfaces and exchanges — a common motivation for browser extension malware.</li>
+      <li class="impact-item"><strong>Supply Chain Attack:</strong> Modifying web content to inject malicious code into web-based IDE sessions, CI/CD web interfaces, or code review platforms used by developers.</li>
+    </ul>
+
+    <h2 class="sh"><span>📊</span> Threat Severity Assessment</h2>
+    <table class="tbl">
+      <thead><tr><th>Dimension</th><th>Assessment</th></tr></thead>
+      <tbody>
+        <tr><td>Threat Type</td><td>Dormant browser extension backdoor</td></tr>
+        <tr><td>Current Status</td><td style="color:var(--apex-yellow);font-weight:700">DORMANT — Not confirmed actively exploiting at disclosure</td></tr>
+        <tr><td>Exposure Scale</td><td style="color:var(--apex-red);font-weight:700">10,000,000+ Chrome installs globally</td></tr>
+        <tr><td>Extension ID</td><td style="font-family:var(--mono);color:var(--apex-cyan)">cmedhionkhpnakcndndgjdbohmhepckk</td></tr>
+        <tr><td>Discovery Source</td><td>Island (enterprise browser security company)</td></tr>
+        <tr><td>Enterprise Risk</td><td style="color:var(--apex-orange);font-weight:700">HIGH — BYOD and unmanaged endpoints particularly vulnerable</td></tr>
+        <tr><td>Activation Risk</td><td>HIGH — Can be activated via silent extension update at any time</td></tr>
+        <tr><td>CVE Assignment</td><td>Not applicable — this is a malicious design, not a software vulnerability</td></tr>
+        <tr><td>Google Web Store Response</td><td>Not publicly confirmed at time of publication</td></tr>
+        <tr><td>User Consent Required</td><td>NO — Extension updates occur silently without notification</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="sh"><span>🎯</span> MITRE ATT&CK Mapping</h2>
+    <table class="tbl">
+      <thead><tr><th>Tactic</th><th>Technique ID</th><th>Technique Name</th><th>Relevance</th></tr></thead>
+      <tbody>
+        <tr><td>Persistence</td><td style="color:var(--apex-orange);font-family:var(--mono)">T1176</td><td>Browser Extensions</td><td>Malicious extension as persistent execution mechanism</td></tr>
+        <tr><td>Execution</td><td style="color:var(--apex-orange);font-family:var(--mono)">T1059.007</td><td>Command and Script Interpreter: JavaScript</td><td>Arbitrary JavaScript injection into browser context</td></tr>
+        <tr><td>Credential Access</td><td style="color:var(--apex-orange);font-family:var(--mono)">T1056.003</td><td>Input Capture: Web Portal Capture</td><td>Credential theft via form-grabbing on visited pages</td></tr>
+        <tr><td>Credential Access</td><td style="color:var(--apex-orange);font-family:var(--mono)">T1539</td><td>Steal Web Session Cookie</td><td>Session token theft from browser cookie store</td></tr>
+        <tr><td>Collection</td><td style="color:var(--apex-orange);font-family:var(--mono)">T1185</td><td>Browser Session Hijacking</td><td>Man-in-the-browser data collection across sessions</td></tr>
+        <tr><td>Defense Evasion</td><td style="color:var(--apex-orange);font-family:var(--mono)">T1027.010</td><td>Command Obfuscation: Encrypt/Encode File or Information</td><td>Dormant payload may use encoded execution to evade analysis</td></tr>
+        <tr><td>Initial Access</td><td style="color:var(--apex-orange);font-family:var(--mono)">T1195.002</td><td>Supply Chain: Software Supply Chain</td><td>Malicious extension as supply chain attack vector</td></tr>
+        <tr><td>Exfiltration</td><td style="color:var(--apex-orange);font-family:var(--mono)">T1041</td><td>Exfiltration Over C2 Channel</td><td>Data exfiltration to attacker-controlled endpoint via extension</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="sh"><span>🏭</span> Enterprise Exposure Analysis</h2>
+    <p class="bp">The threat posed by this extension is amplified by the nature of modern enterprise environments:</p>
+    <ul class="impact-list">
+      <li class="impact-item"><strong>BYOD Environments:</strong> Employees using personal devices for work are outside the scope of most enterprise extension management policies. These devices represent the highest-risk attack surface as they typically lack MDM-enforced extension control.</li>
+      <li class="impact-item"><strong>Chrome Browser Ubiquity:</strong> Chrome holds approximately 65%+ of global browser market share. In enterprise environments, Chrome is frequently the default browser, meaning this extension's reach into corporate endpoint fleets is significant.</li>
+      <li class="impact-item"><strong>SaaS Application Risk:</strong> Enterprise reliance on web-based SaaS (Microsoft 365, Google Workspace, Salesforce, ServiceNow, Workday) means that a credential-stealing extension running on employee browsers represents direct access risk to an organization's most critical business applications.</li>
+      <li class="impact-item"><strong>Developer Workstation Risk:</strong> Developers who have this extension installed and access source code repositories, CI/CD interfaces, or cloud management consoles via browser are high-value targets — a compromised session could yield code injection or cloud infrastructure access.</li>
+      <li class="impact-item"><strong>Financial Services Compliance:</strong> Organizations subject to PCI-DSS, SOC 2, or FCA regulations face compliance obligations when a browser extension with known malicious capability is present on endpoints that access regulated systems or cardholder data environments.</li>
+    </ul>
+
+    <h2 class="sh"><span>🛡</span> Detection Engineering</h2>
+    <p class="bp">The following detection approaches enable identification of this extension across enterprise environments:</p>
+
+    <div class="code-block"><span class="code-lbl">APPROACH 1 — Identify Extension via Windows Registry</span>
+# PowerShell — Find extension on Windows endpoints
+# Chrome extensions installed per-user appear in registry
+
+$ExtensionID = "cmedhionkhpnakcndndgjdbohmhepckk"
+$RegistryPaths = @(
+    "HKLM:\SOFTWARE\Google\Chrome\Extensions",
+    "HKCU:\SOFTWARE\Google\Chrome\Extensions",
+    "HKLM:\SOFTWARE\Policies\Google\Chrome\ExtensionInstallForcelist"
+)
+
+foreach ($path in $RegistryPaths) {
+    if (Test-Path "$path\$ExtensionID") {
+        Write-Warning "SENTINEL APEX ALERT: Malicious extension detected: $ExtensionID at $path"
+        Get-ItemProperty "$path\$ExtensionID"
+    }
+}
+
+# Also scan user profile directories
+$ChromeExtPath = "$env:LOCALAPPDATA\Google\Chrome\User Data\*\Extensions\$ExtensionID"
+$found = Get-Item $ChromeExtPath -ErrorAction SilentlyContinue
+if ($found) {
+    Write-Warning "SENTINEL APEX ALERT: Extension found at $($found.FullName)"
+}</div>
+
+    <div class="code-block"><span class="code-lbl">APPROACH 2 — Linux / macOS Detection</span>
+#!/bin/bash
+# SENTINEL APEX — Detect malicious Chrome extension on Linux/macOS
+
+EXTENSION_ID="cmedhionkhpnakcndndgjdbohmhepckk"
+
+# Linux Chrome extension paths
+LINUX_PATHS=(
+    "$HOME/.config/google-chrome/Default/Extensions"
+    "$HOME/.config/chromium/Default/Extensions"
+    "$HOME/.config/google-chrome/*/Extensions"
+)
+
+# macOS Chrome extension paths
+MACOS_PATHS=(
+    "$HOME/Library/Application Support/Google/Chrome/Default/Extensions"
+    "$HOME/Library/Application Support/Google/Chrome/*/Extensions"
+)
+
+for path in "${LINUX_PATHS[@]}" "${MACOS_PATHS[@]}"; do
+    if [ -d "$path/$EXTENSION_ID" ]; then
+        echo "SENTINEL APEX ALERT: Extension $EXTENSION_ID found at: $path/$EXTENSION_ID"
+        ls -la "$path/$EXTENSION_ID/"
+    fi
+done</div>
+
+    <div class="code-block"><span class="code-lbl">SIGMA — Suspicious Chrome Extension Network Beacon</span>
+title: Chrome Extension Network Beacon to Suspicious Destination
+id: cdb-chrome-ext-beacon-001
+status: experimental
+description: >
+  Detects Chrome browser making outbound network connections
+  consistent with browser extension data exfiltration patterns.
+  Should be correlated with extension inventory detection.
+author: CYBERDUDEBIVASH® SENTINEL APEX Detection Engineering
+date: 2026/06/26
+tags:
+  - attack.persistence
+  - attack.t1176
+  - attack.credential_access
+  - attack.t1539
+  - attack.exfiltration
+  - attack.t1041
+logsource:
+  category: proxy
+  product: web_proxy
+detection:
+  selection:
+    ProcessName|contains:
+      - 'chrome'
+      - 'chromium'
+    Initiated: 'true'
+    Destination|contains:
+      - '.xyz'
+      - '.top'
+      - '.click'
+      - '.shop'
+  filter_known_google:
+    Destination|endswith:
+      - '.google.com'
+      - '.googleapis.com'
+      - '.gstatic.com'
+      - '.youtube.com'
+      - '.googlevideo.com'
+  condition: selection and not filter_known_google
+falsepositives:
+  - Legitimate browser extensions using non-Google CDNs
+  - User-approved analytics from installed extensions
+level: medium
+fields:
+  - Destination
+  - ProcessName
+  - User
+  - BytesSent
+  - BytesReceived</div>
+
+    <div class="code-block"><span class="code-lbl">SIGMA — Enterprise Chrome Extension Policy Violation</span>
+title: Blocked Chrome Extension ID Detected in Endpoint Logs
+id: cdb-chrome-ext-block-001
+status: stable
+description: >
+  Detects the presence of the known malicious "Adblock for YouTube"
+  extension (cmedhionkhpnakcndndgjdbohmhepckk) in Chrome enterprise
+  reporting logs. Requires Chrome Browser Cloud Management or
+  equivalent endpoint management tool.
+author: CYBERDUDEBIVASH® SENTINEL APEX Detection Engineering
+date: 2026/06/26
+tags:
+  - attack.persistence
+  - attack.t1176
+logsource:
+  product: google_chrome
+  service: chrome_management
+detection:
+  selection:
+    ExtensionID: 'cmedhionkhpnakcndndgjdbohmhepckk'
+  condition: selection
+falsepositives:
+  - None — this specific extension ID should not appear in enterprise environments
+level: high
+fields:
+  - ExtensionID
+  - ExtensionName
+  - DeviceID
+  - UserEmail
+  - InstallTimestamp</div>
+
+    <h2 class="sh"><span>📋</span> SOC Response Playbook</h2>
+    <ul class="alist">
+      <li class="action-item"><span class="action-num">1</span><strong>IMMEDIATE IDENTIFICATION:</strong> Query your endpoint management platform (Jamf, Intune, SCCM, Chrome Browser Cloud Management) for Extension ID <code style="color:var(--apex-cyan)">cmedhionkhpnakcndndgjdbohmhepckk</code> across all managed devices. Identify affected users and devices.</li>
+      <li class="action-item"><span class="action-num">2</span><strong>BLOCKLIST DEPLOYMENT:</strong> Add Extension ID <code style="color:var(--apex-cyan)">cmedhionkhpnakcndndgjdbohmhepckk</code> to Chrome Enterprise ExtensionInstallBlocklist Group Policy / Intune Chrome policy. This prevents re-installation and may forcibly remove on policy refresh.</li>
+      <li class="action-item"><span class="action-num">3</span><strong>USER COMMUNICATION:</strong> Notify affected employees to manually remove the extension: <em>Chrome → Settings → Extensions → Remove "Adblock for YouTube" (ID: cmedhionkhpnakcndndgjdbohmhepckk)</em>. Provide clear instructions differentiating this extension from legitimate ad blockers.</li>
+      <li class="action-item"><span class="action-num">4</span><strong>SESSION INVALIDATION:</strong> For users with the extension installed, initiate password resets and session token revocation for critical SaaS applications (Microsoft 365, Google Workspace, GitHub, corporate VPN). Treat affected accounts as potentially compromised pending investigation.</li>
+      <li class="action-item"><span class="action-num">5</span><strong>LOG REVIEW:</strong> For the period the extension was installed, review proxy/DLP logs for outbound connections from Chrome to unexpected domains. Flag any unusual data transfer volumes or connections to low-reputation destinations.</li>
+      <li class="action-item"><span class="action-num">6</span><strong>BYOD SCOPE:</strong> Issue guidance to employees using personal devices for corporate access. Provide self-service removal instructions and enforce re-authentication after removal to ensure session tokens are fresh.</li>
+      <li class="action-item"><span class="action-num">7</span><strong>POLICY REVIEW:</strong> Use this event as a catalyst to implement or strengthen Chrome extension allowlisting policy. Consider moving to an allowlist model (only approved extensions permitted) rather than blocklist model across managed enterprise devices.</li>
+      <li class="action-item"><span class="action-num">8</span><strong>ONGOING MONITORING:</strong> Subscribe to browser extension security intelligence feeds. Monitor Island, SquareX, and SENTINEL APEX for subsequent extension threat disclosures.</li>
+    </ul>
+
+    <h2 class="sh"><span>📈</span> Predictive Intelligence & Strategic Context</h2>
+    <p class="bp">This event is part of a significant and growing threat pattern: <strong style="color:#fff">browser extensions as enterprise attack vectors</strong>. Key contextual points:</p>
+    <ul class="impact-list">
+      <li class="impact-item">Browser extension malware has grown substantially as endpoint protection has improved. Traditional malware delivery via executable files is increasingly detected — browser extensions operate in a trusted context with broad permissions and relatively low scrutiny.</li>
+      <li class="impact-item">The Chrome Web Store's Featured badge provides false assurance of security review rigor. Google's review process does not guarantee the absence of backdoor capabilities, particularly dormant ones that do not execute during analysis.</li>
+      <li class="impact-item">Browser extensions with 10M+ installs represent one of the largest attack surfaces available to threat actors. A single malicious or compromised extension represents immediate, simultaneous access to millions of endpoints.</li>
+      <li class="impact-item">Enterprise browser security is an emerging security discipline. Companies like Island and SquareX are developing enterprise-grade browser solutions specifically addressing this gap. Security leaders should evaluate enterprise browser adoption as a structural control for this threat class.</li>
+    </ul>
+
+    <div class="ecta">
+      <h3>Browser Extension Threat Intelligence — SENTINEL APEX</h3>
+      <p class="ep">Get real-time browser extension threat alerts, extension blocklists, and enterprise browser security guidance from SENTINEL APEX.</p>
+      <div class="cta-grid">
+        <a href="/products.html" class="btn-p">🛡 Detection Pack</a>
+        <a href="/api.html" class="btn-s">⎋ IOC API</a>
+        <a href="/contact.html" class="btn-e">🏢 Enterprise Advisory</a>
+        <a href="/pricing.html" class="btn-s">⚡ SOC Pro</a>
+      </div>
+    </div>
+
+    <h2 class="sh"><span>📎</span> References</h2>
+    <ul style="list-style:none;padding:0;margin:0">
+      <li style="padding:8px 0;border-bottom:1px solid var(--apex-border)">Island Security Research — "Analysis of Adblock for YouTube Chrome Extension" — June 2026</li>
+      <li style="padding:8px 0;border-bottom:1px solid var(--apex-border)"><a href="https://chromewebstore.google.com/" target="_blank" rel="noopener" style="color:var(--apex-cyan)">Google Chrome Web Store — Extension ID: cmedhionkhpnakcndndgjdbohmhepckk</a></li>
+      <li style="padding:8px 0"><a href="https://attack.mitre.org/techniques/T1176/" target="_blank" rel="noopener" style="color:var(--apex-cyan)">MITRE ATT&CK T1176 — Browser Extensions</a></li>
+    </ul>
+
+    <div style="background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(0,153,255,0.06));border:1px solid rgba(139,92,246,0.3);border-radius:14px;padding:1.75rem;margin:2.5rem 0;text-align:center">
+      <div style="font-size:10px;color:#8b5cf6;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.6rem">SENTINEL INTEL BRIEF — FREE</div>
+      <h3 style="font-size:1.15rem;font-weight:800;color:#fff;margin:.4rem 0">Browser Extension Threat Alerts — Free Intelligence Feed</h3>
+      <p style="font-size:.85rem;color:#94a3b8;margin:.5rem 0 1rem;line-height:1.6">Join 4,800+ enterprise security professionals. Get extension threat alerts, IOC feeds &amp; detection rules delivered daily.</p>
+      <form action="https://app.beehiiv.com/subscribe" method="POST" target="_blank" style="display:flex;gap:.5rem;justify-content:center;max-width:420px;margin:0 auto 1rem">
+        <input type="email" name="email" placeholder="soc@yourcompany.com" required style="flex:1;padding:.65rem 1rem;border-radius:8px;background:#0a0f1a;border:1px solid rgba(255,255,255,.15);color:#fff;font-size:.9rem;min-width:0">
+        <button type="submit" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;padding:.65rem 1.25rem;border-radius:8px;border:none;font-weight:800;font-size:.85rem;cursor:pointer;white-space:nowrap">Subscribe Free →</button>
+      </form>
+    </div>
+
+    <div class="intel-sig">
+      <div class="isb">CYBERDUDEBIVASH® SENTINEL APEX</div>
+      <div class="iss">Browser Security Intelligence · Extension Threat Analysis · Enterprise Endpoint Defense<br>Extension ID is a verified public indicator. No IOCs fabricated. Dormant status confirmed at time of publication.</div>
+    </div>
+  </article>
+
+  <aside class="sidebar">
+    <div class="sw vbox">
+      <div class="vscore">10M+</div>
+      <div class="vlabel">Affected Installs</div>
+      <span class="threat-badge">⚠ DORMANT BACKDOOR</span>
+      <div class="vrow"><span class="vk">Extension ID</span><span class="vv" style="color:var(--apex-orange);font-size:10px;font-family:var(--mono)">cmedhion...</span></div>
+      <div class="vrow"><span class="vk">Capability</span><span class="vv">Arbitrary JS</span></div>
+      <div class="vrow"><span class="vk">Status</span><span class="vv" style="color:var(--apex-yellow)">Dormant</span></div>
+      <div class="vrow"><span class="vk">Featured Badge</span><span class="vv" style="color:var(--apex-red)">YES</span></div>
+      <div class="vrow"><span class="vk">Researcher</span><span class="vv">Island</span></div>
+    </div>
+
+    <div class="sw">
+      <div class="wt">🚨 Immediate SOC Actions</div>
+      <ul class="alist">
+        <li class="action-item"><span class="action-num">1</span>Query endpoints for extension ID</li>
+        <li class="action-item"><span class="action-num">2</span>Add to Chrome Enterprise blocklist</li>
+        <li class="action-item"><span class="action-num">3</span>Notify affected users — remove manually</li>
+        <li class="action-item"><span class="action-num">4</span>Rotate SaaS credentials for affected users</li>
+        <li class="action-item"><span class="action-num">5</span>Review proxy logs for C2 beacons</li>
+        <li class="action-item"><span class="action-num">6</span>Implement extension allowlisting policy</li>
+      </ul>
+    </div>
+
+    <div class="sw">
+      <div class="wt">🎯 MITRE ATT&CK</div>
+      <div class="vrow"><span class="vk">T1176</span><span class="vv" style="color:var(--apex-orange)">Browser Extensions</span></div>
+      <div class="vrow"><span class="vk">T1059.007</span><span class="vv" style="color:var(--apex-orange)">JavaScript</span></div>
+      <div class="vrow"><span class="vk">T1539</span><span class="vv" style="color:var(--apex-orange)">Steal Cookie</span></div>
+      <div class="vrow"><span class="vk">T1185</span><span class="vv" style="color:var(--apex-orange)">Session Hijack</span></div>
+      <div class="vrow"><span class="vk">T1195.002</span><span class="vv" style="color:var(--apex-orange)">Supply Chain</span></div>
+    </div>
+
+    <div class="sw">
+      <div class="wt">🛡 SENTINEL APEX</div>
+      <a href="/products.html" class="btn-p" style="margin-bottom:8px">⬇ Get Detection Pack</a>
+      <a href="/api.html" class="btn-s" style="margin-bottom:8px">⎋ IOC API</a>
+      <a href="/contact.html" class="btn-e">🏢 Enterprise Advisory</a>
+    </div>
+  </aside>
+</main>
+<footer>
+  <p>© 2026 CyberDudeBivash Pvt. Ltd. · <strong>CYBERDUDEBIVASH® SENTINEL APEX</strong> · Jajpur Road, Odisha 755019<br>
+  <a href="/">Blog Hub</a> · <a href="https://intel.cyberdudebivash.com">Sentinel APEX</a> · <a href="/api.html">Threat API</a> · <a href="/contact.html">Enterprise</a><br>
+  Extension ID is a verified public indicator. Analysis based on Island security research disclosure.</p>
+</footer>
+</body>
+</html>
