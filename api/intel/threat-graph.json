@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-27T20:44:23.571Z",
+  "generated": "2026-06-27T21:01:50.627Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3650,
+    "total_nodes": 3653,
     "actors": 8,
     "cves": 809,
-    "campaigns": 335,
+    "campaigns": 336,
     "malware": 0,
     "iocs": 372,
-    "edges": 1386
+    "edges": 1390
   },
   "nodes": {
     "actor:lockbit": {
@@ -44573,7 +44573,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-17"
+        "first_seen": "2026-06-27"
       },
       "connections": []
     },
@@ -69979,6 +69979,79 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_CYBER-3c2808d7c74a7e6c": {
+      "id": "REDDIT_CYBER-3c2808d7c74a7e6c",
+      "type": "Intel",
+      "name": "0DIN: Clean GitHub Repos Can Trick AI Agents Into Reverse Shells",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 73,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-27",
+        "type": "ZERO_DAY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.bleepingcomputer.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-49262b998fd19481": {
+      "id": "REDDIT_CYBER-49262b998fd19481",
+      "type": "Intel",
+      "name": "Ai Agents",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-27",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-aaf65a94": {
+      "id": "campaign:cluster-aaf65a94",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-27",
+        "last_seen": "2026-06-27",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 5 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-3c2808d7c74a7e6c",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -82491,6 +82564,42 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-3c2808d7c74a7e6c→linked_to→ioc:domain:www.bleepingcomputer.com",
+      "source": "REDDIT_CYBER-3c2808d7c74a7e6c",
+      "target": "ioc:domain:www.bleepingcomputer.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-3c2808d7c74a7e6c→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-3c2808d7c74a7e6c",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-49262b998fd19481→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-49262b998fd19481",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-aaf65a94→includes→REDDIT_CYBER-3c2808d7c74a7e6c",
+      "source": "campaign:cluster-aaf65a94",
+      "target": "REDDIT_CYBER-3c2808d7c74a7e6c",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-27",
       "sources": []
     }
