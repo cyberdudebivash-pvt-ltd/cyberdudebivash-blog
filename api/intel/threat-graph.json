@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-27T08:31:29.747Z",
+  "generated": "2026-06-27T09:01:32.761Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3625,
+    "total_nodes": 3628,
     "actors": 8,
     "cves": 809,
-    "campaigns": 332,
+    "campaigns": 333,
     "malware": 0,
     "iocs": 368,
-    "edges": 1364
+    "edges": 1367
   },
   "nodes": {
     "actor:lockbit": {
@@ -13924,7 +13924,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-26"
+        "first_seen": "2026-06-27"
       },
       "connections": []
     },
@@ -69440,6 +69440,74 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_CYBER-9d9e4e67981e8928": {
+      "id": "REDDIT_CYBER-9d9e4e67981e8928",
+      "type": "Intel",
+      "name": "seeking advice",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 62,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-27",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-b078049daf0712b7": {
+      "id": "REDDIT_CYBER-b078049daf0712b7",
+      "type": "Intel",
+      "name": "Feedback on my idea",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-27",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:medium.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-5453a5e9": {
+      "id": "campaign:cluster-5453a5e9",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-06-27",
+        "last_seen": "2026-06-27",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 4 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-9d9e4e67981e8928",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -81754,6 +81822,33 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-9d9e4e67981e8928→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-9d9e4e67981e8928",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-b078049daf0712b7→linked_to→ioc:domain:medium.com",
+      "source": "REDDIT_CYBER-b078049daf0712b7",
+      "target": "ioc:domain:medium.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-5453a5e9→includes→REDDIT_CYBER-9d9e4e67981e8928",
+      "source": "campaign:cluster-5453a5e9",
+      "target": "REDDIT_CYBER-9d9e4e67981e8928",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-27",
       "sources": []
     }
