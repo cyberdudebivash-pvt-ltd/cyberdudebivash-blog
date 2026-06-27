@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-27T10:01:52.689Z",
+  "generated": "2026-06-27T10:31:38.825Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3628,
+    "total_nodes": 3630,
     "actors": 8,
     "cves": 809,
     "campaigns": 333,
     "malware": 0,
-    "iocs": 368,
-    "edges": 1367
+    "iocs": 369,
+    "edges": 1369
   },
   "nodes": {
     "actor:lockbit": {
@@ -69508,6 +69508,46 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-c4e660d993c2aa21": {
+      "id": "REDDIT_CYBER-c4e660d993c2aa21",
+      "type": "Intel",
+      "name": "Why Your AI Alert Tool Works Great Until It Doesn't",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 47,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-27",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.crogl.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:www.crogl.com": {
+      "id": "ioc:domain:www.crogl.com",
+      "type": "IOC",
+      "name": "www.crogl.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-27"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -81849,6 +81889,24 @@
       "target": "REDDIT_CYBER-9d9e4e67981e8928",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-c4e660d993c2aa21→linked_to→ioc:domain:www.crogl.com",
+      "source": "REDDIT_CYBER-c4e660d993c2aa21",
+      "target": "ioc:domain:www.crogl.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-c4e660d993c2aa21→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-c4e660d993c2aa21",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-27",
       "sources": []
     }
