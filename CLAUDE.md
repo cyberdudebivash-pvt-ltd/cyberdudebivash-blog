@@ -810,5 +810,77 @@ Speed is ALWAYS last. Production integrity is ALWAYS first.
 
 ---
 
+# ════════════════════════════════════════════════════
+# SURGICAL CHANGE GOVERNANCE — MANDATORY CONSTRAINT
+# ════════════════════════════════════════════════════
+
+## ZERO UNNECESSARY MODIFICATION PRINCIPLE
+
+**This is a non-negotiable, always-active constraint that applies to every task, every session, every implementation.**
+
+> **Never modify any existing production code, configuration, or repository structure unless it is explicitly required for the current task.**
+
+Before changing any existing component, Claude MUST:
+
+1. **Analyze dependencies** — identify every module, API, workflow, and consumer that depends on the target component
+2. **Identify downstream impacts** — map the full blast radius of the proposed change across the ecosystem
+3. **Preserve backward compatibility** — maintain existing APIs, interfaces, contracts, and behaviors wherever feasible
+4. **Explain breaking changes** — if a breaking change cannot be avoided, document it explicitly: what breaks, why it is necessary, what the migration path is, and what consumers are affected
+5. **Scope the change surgically** — modify only the minimum required surface area; do not refactor, restructure, rename, or clean up surrounding code unless the task explicitly requires it
+
+### MANDATORY PRE-MODIFICATION CHECKLIST
+
+Before touching any existing file, answer all of the following:
+
+| Question | Required Answer |
+|---|---|
+| Is this modification required for the current task? | YES — or do not modify |
+| Have all dependents been identified? | YES — list them |
+| Does this break any existing API, contract, or interface? | NO — or justify and document |
+| Is backward compatibility preserved? | YES — or explain why impossible |
+| Is the change scope minimal (surgical)? | YES — no opportunistic refactoring |
+| Are downstream consumers protected? | YES — or migration documented |
+
+### PROHIBITED WITHOUT EXPLICIT JUSTIFICATION
+
+NEVER do the following unless the task explicitly requires it:
+
+- Rename functions, classes, variables, or files used by other modules
+- Restructure directory layouts or import paths
+- Remove or deprecate existing exported symbols
+- Change existing API signatures, response shapes, or route paths
+- Alter authentication or authorization logic in existing flows
+- Modify database schemas, KV key structures, or R2 bucket layouts
+- Change CI/CD pipeline steps that currently pass
+- Upgrade dependencies unless the task is explicitly a dependency upgrade
+- Refactor working code for style or cleanliness while implementing a feature
+- Add, remove, or reorder existing middleware or handler chains
+
+### WHEN BREAKING CHANGES ARE UNAVOIDABLE
+
+If a breaking change is architecturally necessary:
+
+1. **STOP** — do not proceed silently
+2. **DOCUMENT** — write a clear statement of what breaks and why
+3. **JUSTIFY** — explain why no backward-compatible path exists
+4. **PLAN** — provide a concrete migration path for affected consumers
+5. **CONFIRM** — surface the decision explicitly before implementing
+
+### ECOSYSTEM PROTECTION RATIONALE
+
+The CYBERDUDEBIVASH® SENTINEL APEX ecosystem is a multi-layer, additive-architecture platform (P16–P33+). Each layer imports from lower layers. A modification to any shared engine, exported symbol, or API contract can silently break N downstream consumers across the full P-layer chain.
+
+This constraint exists to:
+- Prevent accidental regressions as the ecosystem grows
+- Maintain the additive-only architecture guarantee
+- Protect P-layer certification chains from invalidation
+- Preserve the zero-regression production standard
+- Allow necessary architectural evolution only when explicitly justified
+
+**The rule is simple: if the task does not require touching it, do not touch it.**
+
+---
+
 *CYBERDUDEBIVASH® SENTINEL APEX — AI-Governed Enterprise Cybersecurity Production Operating System*
 *Governance Constitution v2.0 — Evolution Layer II Active*
+*Surgical Change Governance Amendment — Active*
