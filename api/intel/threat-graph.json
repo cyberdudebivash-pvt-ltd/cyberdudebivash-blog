@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-27T02:01:38.858Z",
+  "generated": "2026-06-27T02:31:24.732Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3619,
+    "total_nodes": 3623,
     "actors": 8,
     "cves": 809,
-    "campaigns": 331,
+    "campaigns": 332,
     "malware": 0,
     "iocs": 368,
-    "edges": 1355
+    "edges": 1362
   },
   "nodes": {
     "actor:lockbit": {
@@ -6573,7 +6573,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-26"
+        "first_seen": "2026-06-27"
       },
       "connections": []
     },
@@ -66079,7 +66079,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-26"
+        "first_seen": "2026-06-27"
       },
       "connections": []
     },
@@ -69285,6 +69285,113 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-1be1c766e4d0ccb0": {
+      "id": "REDDIT_CYBER-1be1c766e4d0ccb0",
+      "type": "Intel",
+      "name": "Microsoft-tracked npm dependency-confusion campaign profiled developer environments",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-27",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:haltingproblems.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-5bd3413756c06d1f": {
+      "id": "REDDIT_CYBER-5bd3413756c06d1f",
+      "type": "Intel",
+      "name": "pnpm Package-Manager Supply-Chain Advisory Batch",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-27",
+        "type": "SUPPLY_CHAIN"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:haltingproblems.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-e58c3e3fefe88b3f": {
+      "id": "REDDIT_CYBER-e58c3e3fefe88b3f",
+      "type": "Intel",
+      "name": "Is my study method enough? (Testing late July, skipped Anki)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-27",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-be519dc0": {
+      "id": "campaign:cluster-be519dc0",
+      "type": "Campaign",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 2,
+        "first_seen": "2026-06-27",
+        "last_seen": "2026-06-27",
+        "confidence": 0.84,
+        "reasoning": "2 intel item(s) clustered with composite confidence 0.840 | 7 shared IOC(s) across items | Item REDDIT_CYBER-5bd3413756c06d1f joined cluster (score: 0.657): 2 shared IOC(s) (Jaccard: 1.000)"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-1be1c766e4d0ccb0",
+          "relationship": "includes",
+          "confidence": 1
+        },
+        {
+          "target": "REDDIT_CYBER-5bd3413756c06d1f",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -81518,6 +81625,69 @@
       "target": "ioc:sha1:6dd71e6a3c966867ef8c900d359a7df75789f410",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-1be1c766e4d0ccb0→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-1be1c766e4d0ccb0",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-1be1c766e4d0ccb0→linked_to→ioc:domain:haltingproblems.com",
+      "source": "REDDIT_CYBER-1be1c766e4d0ccb0",
+      "target": "ioc:domain:haltingproblems.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-5bd3413756c06d1f→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-5bd3413756c06d1f",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-5bd3413756c06d1f→linked_to→ioc:domain:haltingproblems.com",
+      "source": "REDDIT_CYBER-5bd3413756c06d1f",
+      "target": "ioc:domain:haltingproblems.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-e58c3e3fefe88b3f→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-e58c3e3fefe88b3f",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-be519dc0→includes→REDDIT_CYBER-1be1c766e4d0ccb0",
+      "source": "campaign:cluster-be519dc0",
+      "target": "REDDIT_CYBER-1be1c766e4d0ccb0",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-27",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-be519dc0→includes→REDDIT_CYBER-5bd3413756c06d1f",
+      "source": "campaign:cluster-be519dc0",
+      "target": "REDDIT_CYBER-5bd3413756c06d1f",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-27",
       "sources": []
     }
