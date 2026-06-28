@@ -5,6 +5,227 @@
 ---
 
 # ════════════════════════════════════════════════════
+# SECTION 0 — ENGINEERING DECISION ORDER
+# HIGHEST AUTHORITY IN THIS REPOSITORY
+# ════════════════════════════════════════════════════
+
+Every engineering decision MUST follow this priority order. When principles conflict, the higher level always wins. No implementation may advance a lower-level objective at the cost of a higher-level one.
+
+```
+LEVEL 1 → CORRECTNESS
+          The implementation must be technically correct.
+          A fast, backward-compatible, minimal-change incorrect solution is worthless.
+          ↓
+LEVEL 2 → PRODUCTION STABILITY
+          Never reduce production stability.
+          A new feature that breaks existing behaviour is a regression, not a release.
+          ↓
+LEVEL 3 → BACKWARD COMPATIBILITY
+          Existing behaviour must continue to work.
+          Consumers of existing interfaces are always protected.
+          ↓
+LEVEL 4 → REUSE
+          Reuse existing components before creating new ones.
+          Extending an existing component is always preferred over parallel implementation.
+          ↓
+LEVEL 5 → MINIMAL CHANGE SURFACE
+          Modify the smallest amount of production code possible.
+          Every line changed is a line that could introduce a regression.
+          ↓
+LEVEL 6 → PERFORMANCE
+          Avoid unnecessary computational cost.
+          New capabilities must not degrade Core Web Vitals or Lighthouse scores.
+          ↓
+LEVEL 7 → COMMERCIAL VALUE
+          Deliver measurable revenue, acquisition, or trust value.
+          Implementations that cannot articulate commercial value are deprioritized.
+          ↓
+LEVEL 8 → DEVELOPER EXPERIENCE
+          Improve maintainability where it does not conflict with Levels 1–7.
+          Cleanliness for its own sake is never a justification for change.
+```
+
+---
+
+# ════════════════════════════════════════════════════
+# PROOF BEFORE CHANGE — MANDATORY EVIDENCE TABLE
+# ════════════════════════════════════════════════════
+
+**Every implementation MUST begin by completing this table before writing a single line of code.**
+
+If any row cannot be completed with documented evidence, the implementation does not begin.
+
+| Field | Required Entry |
+|---|---|
+| **Objective** | What specific outcome does this implementation achieve? |
+| **Affected Files** | Exhaustive list of every file that will be modified |
+| **Existing Component Reused** | Which existing components, hooks, or utilities are called (not re-implemented) |
+| **Evidence Modification Is Required** | Explicit requirement, defect ID, or constraint that mandates the change |
+| **Risk Classification** | LOW / MEDIUM / HIGH — based on blast radius and consumer count |
+| **Expected Regression Risk** | Which existing capabilities could be affected and why |
+| **Rollback Plan** | Concrete steps to restore prior state if the change must be reverted |
+
+**This table is not optional.** An implementation without it violates the Engineering Constitution.
+
+---
+
+# ════════════════════════════════════════════════════
+# PRODUCTION BLAST RADIUS — MANDATORY ASSESSMENT
+# ════════════════════════════════════════════════════
+
+Before changing any existing component, document the expected blast radius:
+
+| Dimension | Assessment Required |
+|---|---|
+| **Files** | List every file that changes |
+| **Imports / Consumers** | List every module that imports the changed component |
+| **Page Routes** | List every route affected |
+| **API Routes** | List every API endpoint whose response shape may change |
+| **CI Workflows** | List every GitHub Actions step that runs the changed code |
+| **SEO Impact** | Identify any metadata, schema, or sitemap that could regress |
+| **Lighthouse Impact** | Identify any performance, accessibility, or CWV impact |
+| **Monetization Impact** | Identify any conversion funnel, CTA, or revenue flow affected |
+| **Build Output** | Identify any bundle size, chunk, or asset change |
+| **Expected Risk** | LOW / MEDIUM / HIGH based on the above |
+
+**If the blast radius assessment produces a HIGH risk classification, the implementation must be re-scoped to reduce surface area before proceeding.**
+
+---
+
+# ════════════════════════════════════════════════════
+# ARCHITECTURE PRESERVATION RULE
+# ════════════════════════════════════════════════════
+
+**Architecture is a production asset. It is not a variable.**
+
+Adding a new page or component is a feature. Changing the routing structure, data layer, or rendering model is an architectural event. These require different levels of evidence.
+
+**Feature changes** require: Proof Before Change table + blast radius assessment.
+
+**Architectural changes** require all of the above, PLUS:
+
+| Required Documentation | Description |
+|---|---|
+| **Current Architecture** | Description of the existing design and its constraints |
+| **Proposed Architecture** | Description of what will change and why |
+| **Reason** | Why the current architecture is insufficient for the stated objective |
+| **Expected Benefits** | Measurable outcomes the new architecture enables |
+| **Compatibility Assessment** | Which pages, routes, and consumers are affected |
+| **Migration Plan** | Step-by-step path for affected consumers |
+| **Rollback Plan** | How to restore the current architecture if the change fails |
+
+**Architectural modifications require substantially stronger evidence than feature additions.**
+
+When in doubt: add, don't replace.
+
+---
+
+# ════════════════════════════════════════════════════
+# DEPRECATION INSTEAD OF DELETION POLICY
+# ════════════════════════════════════════════════════
+
+**Do not remove production capabilities. Deprecate them.**
+
+**Deprecation protocol:**
+
+1. **Mark deprecated** — add a deprecation notice in code comments and documentation
+2. **Document replacement** — specify exactly what replaces the deprecated capability
+3. **Maintain compatibility** — keep the deprecated interface working during the migration period
+4. **Set a migration deadline** — document when removal will occur (next major version or explicit milestone)
+5. **Remove only after** — confirmed migration of all known consumers AND documented migration period elapsed
+
+**This policy applies to:**
+- Exported components and hooks
+- Page routes and API routes
+- Configuration keys and environment variables
+- CI workflow steps that currently pass
+- SEO-relevant URL patterns and canonical paths
+- Newsletter and conversion flow touchpoints
+
+**Silent removal is prohibited.**
+
+---
+
+# ════════════════════════════════════════════════════
+# REUSE REPORT — MANDATORY IMPLEMENTATION CONCLUSION
+# ════════════════════════════════════════════════════
+
+**Every implementation must conclude with a Reuse Report** that makes architectural discipline visible and auditable.
+
+| Metric | Result |
+|---|---|
+| Existing components reused (extended, not replaced) | — |
+| Existing API routes extended (not duplicated) | — |
+| Existing pages extended (not replaced) | — |
+| New components introduced (justified by gap analysis) | — |
+| Duplicate components introduced | MUST BE 0 |
+| Duplicate routes introduced | MUST BE 0 |
+| Backward compatibility preserved | PASS / FAIL |
+| Lighthouse scores maintained or improved | PASS / FAIL |
+| Build passing with zero errors | PASS / FAIL |
+
+**A Reuse Report with Duplicate components > 0 or Duplicate routes > 0 indicates an architectural violation that must be corrected before the implementation is considered complete.**
+
+---
+
+# ════════════════════════════════════════════════════
+# ENGINEERING CONSTITUTION COMPLIANCE CHECKLIST
+# ════════════════════════════════════════════════════
+
+**Every implementation must actively verify compliance with all ten principles before marking work complete.**
+
+This is not a retrospective checklist — it is a gate. If any item cannot be checked, the implementation is incomplete.
+
+```
+Engineering Constitution Compliance
+
+  □ Principle 1 — Zero Unnecessary Modification
+      Evidence table completed. Modification justified with documented evidence.
+
+  □ Principle 2 — Additive First Architecture
+      New capability extends existing components. No existing logic re-implemented.
+
+  □ Principle 3 — Single Source of Truth
+      No duplicate implementations introduced. Canonical source identified and used.
+
+  □ Principle 4 — Reuse Before Build
+      Existing components searched before building. Reuse report completed.
+
+  □ Principle 5 — Backward Compatibility
+      All existing page routes, API routes, and exported interfaces preserved.
+
+  □ Principle 6 — Production Stability First
+      Build passing. No hydration failures. No broken routes. No console errors.
+
+  □ Principle 7 — Observable Everything
+      Analytics events wired. Error boundaries present. Performance instrumented.
+
+  □ Principle 8 — Commercial Readiness
+      Revenue or acquisition value articulated. CTAs functional. Conversion flows tested.
+
+  □ Principle 9 — Security First
+      Zero hardcoded secrets. CSP headers maintained. Input validation at boundaries.
+
+  □ Principle 10 — Performance Before Features
+      Lighthouse ≥ 90. LCP < 2.5s. CLS < 0.1. INP < 200ms. Bundle size not regressed.
+
+  □ Section 0 — Engineering Decision Order followed (Levels 1–8)
+  □ Proof Before Change table completed before first line of code
+  □ Production Blast Radius assessed and documented
+  □ Architecture Preservation Rule satisfied (or architectural event documented)
+  □ Deprecation Instead of Deletion policy applied where applicable
+  □ Reuse Report completed at implementation conclusion
+  □ SEO validated: metadata, schema, OG, sitemap
+  □ Mobile responsiveness verified across breakpoints
+  □ Build: zero TypeScript errors, zero ESLint warnings
+  □ Monetization flows tested end-to-end
+```
+
+All boxes must be checkable. Any unchecked box is a blocker.
+
+---
+
+# ════════════════════════════════════════════════════
 # CORE ENGINEERING PRINCIPLES — GOVERNING CONSTITUTION
 # ════════════════════════════════════════════════════
 
@@ -1030,5 +1251,12 @@ This constraint exists to:
 ---
 
 *CYBERDUDEBIVASH® SENTINEL APEX — AI-Governed Enterprise Cybersecurity Production Operating System*
-*Governance Constitution v2.0 — Evolution Layer II Active*
-*Surgical Change Governance Amendment — Active*
+*Governance Constitution v3.0 — Evolution Layer II Active*
+*Section 0 Engineering Decision Order — Active*
+*10-Principle Engineering Constitution — Active*
+*Proof Before Change Requirement — Active*
+*Production Blast Radius Assessment — Active*
+*Architecture Preservation Rule — Active*
+*Deprecation Instead of Deletion Policy — Active*
+*Reuse Report Requirement — Active*
+*Self-Enforcing Compliance Checklist — Active*
