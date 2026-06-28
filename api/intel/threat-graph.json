@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-28T13:00:58.354Z",
+  "generated": "2026-06-28T13:31:43.264Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3678,
+    "total_nodes": 3681,
     "actors": 8,
     "cves": 809,
     "campaigns": 337,
     "malware": 0,
-    "iocs": 377,
-    "edges": 1412
+    "iocs": 378,
+    "edges": 1415
   },
   "nodes": {
     "actor:lockbit": {
@@ -46705,7 +46705,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-27"
+        "first_seen": "2026-06-28"
       },
       "connections": []
     },
@@ -70592,6 +70592,70 @@
         "first_seen": "2026-06-28"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-b5a8feaacf95c521": {
+      "id": "REDDIT_CYBER-b5a8feaacf95c521",
+      "type": "Intel",
+      "name": "2 Linux kernel flaw PoCs published, enabling local privilege escalation",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-28",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:9b3be0a363ca4f6bae47801bab4bf6b01bf04196",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:9b3be0a363ca4f6bae47801bab4bf6b01bf04196": {
+      "id": "ioc:sha1:9b3be0a363ca4f6bae47801bab4bf6b01bf04196",
+      "type": "IOC",
+      "name": "9b3be0a363ca4f6bae47801bab4bf6b01bf04196",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-28"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-a0fb14ce5a584053": {
+      "id": "REDDIT_CYBER-a0fb14ce5a584053",
+      "type": "Intel",
+      "name": "Amazon Q flaw let booby-trapped Git repos execute code, swipe cloud creds",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-28",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.theregister.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -83336,6 +83400,33 @@
       "id": "REDDIT_NETSEC-a5b17a89c05f274a→linked_to→ioc:domain:projectblack.io",
       "source": "REDDIT_NETSEC-a5b17a89c05f274a",
       "target": "ioc:domain:projectblack.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-28",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-b5a8feaacf95c521→linked_to→ioc:sha1:9b3be0a363ca4f6bae47801bab4bf6b01bf04196",
+      "source": "REDDIT_CYBER-b5a8feaacf95c521",
+      "target": "ioc:sha1:9b3be0a363ca4f6bae47801bab4bf6b01bf04196",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-06-28",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-a0fb14ce5a584053→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-a0fb14ce5a584053",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-28",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-a0fb14ce5a584053→linked_to→ioc:domain:www.theregister.com",
+      "source": "REDDIT_CYBER-a0fb14ce5a584053",
+      "target": "ioc:domain:www.theregister.com",
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-06-28",
