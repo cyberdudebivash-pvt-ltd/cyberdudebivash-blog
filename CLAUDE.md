@@ -4,6 +4,152 @@
 
 ---
 
+# ════════════════════════════════════════════════════
+# CORE ENGINEERING PRINCIPLES — GOVERNING CONSTITUTION
+# ════════════════════════════════════════════════════
+
+These ten principles govern every implementation decision, every session, every artifact produced across the CYBERDUDEBIVASH® SENTINEL APEX ecosystem. They are not guidelines — they are constraints. Deviation requires explicit documented justification.
+
+---
+
+## Principle 1 — Zero Unnecessary Modification
+
+> **Every implementation must minimize change surface area while maximizing capability. Existing production logic is preserved unless there is documented evidence that modification is required to achieve the requested outcome or to correct a verified defect.**
+
+This is an evidence-based directive, not a prohibition. Modifications are permitted — but only when the evidence trail is explicit: what change, why it is required, what it touches, and what backward-compatibility risk it introduces.
+
+---
+
+## Principle 2 — Additive First Architecture
+
+New capabilities are implemented as additions on top of existing layers, never as replacements of them. The blog platform layers on top of the Sentinel APEX CTI platform — it acquires customers, generates leads, and builds authority, but never duplicates the intelligence infrastructure itself.
+
+**Corollary:** If a task can be accomplished by extending an existing component and composing its output, that path is mandatory. Building a parallel implementation of existing logic is a defect, not a feature.
+
+---
+
+## Principle 3 — Single Source of Truth
+
+Every capability, score, decision, and classification has exactly one authoritative implementation in the platform. That implementation is the canonical source. All consumers reference it — they do not replicate it.
+
+**Corollary:** If two components produce the same output through different code paths, one of them is wrong. Identify the canonical source and eliminate the duplicate.
+
+---
+
+## Principle 4 — Reuse Before Build
+
+Before implementing any new logic, Claude MUST search the existing codebase for an equivalent or composable capability. If one exists, it must be called. If a 90% match exists, it must be extended. Only if no match exists may new logic be built from scratch — and that decision must be documented.
+
+**Reuse priority order:**
+1. Call the existing component unchanged
+2. Call the existing component and extend its output
+3. Compose two or more existing components
+4. Build new logic that imports and delegates to existing components
+5. Build new logic from scratch (requires explicit justification)
+
+---
+
+## Principle 5 — Backward Compatibility
+
+No change to an existing exported function, API route, response schema, page route, or configuration key is permitted without a documented migration path. Consumers of existing interfaces are always protected. Deprecation requires a transition period — silent removal is prohibited.
+
+**Signals that backward compatibility is at risk:**
+- Renaming an exported component or function
+- Changing the shape of an API response
+- Removing a page route or changing its path
+- Altering authentication or authorization behavior
+- Modifying a CI workflow step that currently passes
+
+---
+
+## Principle 6 — Production Stability First
+
+The current production state is the baseline. Every change is evaluated against its risk to that baseline. Features that increase capability at the cost of stability are rejected until stability is restored. No deployment proceeds with known blockers.
+
+**Production stability checklist (always active):**
+- Build passes with zero errors
+- No hydration failures
+- No broken routes or imports
+- No console errors in production
+- No regression in Lighthouse scores
+- No broken monetization flows
+
+---
+
+## Principle 7 — Observable Everything
+
+Every new capability must be observable. Observable means: it produces structured output that can be queried, monitored, and reported on. Analytics events, error boundaries, logging, and performance monitoring are the mechanisms.
+
+**Minimum observability requirements for any new component:**
+- Error boundaries with structured error reporting
+- Performance instrumentation on critical render paths
+- Analytics events on all conversion actions
+- Structured logging for all API interactions
+
+---
+
+## Principle 8 — Commercial Readiness
+
+Every implementation must have a clear line to production value. That line may be direct (a new conversion surface) or indirect (a reliability improvement that reduces bounce rate). Implementations that cannot articulate their commercial value are deprioritized until the value is clear.
+
+**Commercial value categories:**
+- Enterprise conversion (demo bookings, API trials, MSSP inquiries)
+- Newsletter acquisition (subscriber growth, lead capture)
+- SEO authority (organic traffic, keyword rank, topical coverage)
+- Revenue enablement (detection packs, consulting pipeline, API sales)
+- Trust signals (enterprise credibility, security posture, brand authority)
+
+---
+
+## Principle 9 — Security First
+
+Security is not a layer added after implementation — it is a constraint active during design. No implementation proceeds if it introduces a known security vulnerability. No secrets, credentials, or tokens are hardcoded. No authentication or authorization logic is weakened.
+
+**Always-active security constraints:**
+- Zero hardcoded secrets or credentials
+- Zero weakened authentication paths
+- Zero exposed internal infrastructure details
+- Input validation at all system boundaries
+- CSP, secure headers, and rate limiting maintained on all surfaces
+
+---
+
+## Principle 10 — Performance Before Features
+
+A slow platform is a broken platform. New features that degrade Core Web Vitals, increase bundle size beyond budget, or block the critical render path are rejected until the performance impact is resolved.
+
+**Performance baseline (non-negotiable):**
+- Lighthouse Performance ≥ 90
+- LCP < 2.5s
+- CLS < 0.1
+- INP < 200ms
+- No unoptimized images in production
+- No synchronous third-party scripts blocking render
+
+---
+
+# ════════════════════════════════════════════════════
+# IMPLEMENTATION DECISION FRAMEWORK
+# ════════════════════════════════════════════════════
+
+Before beginning any implementation, Claude MUST answer these four questions in order:
+
+1. **What is the minimal change surface that achieves the requested outcome?**
+   → Identify the smallest possible set of files and components that must change.
+
+2. **Does equivalent logic already exist in the platform?**
+   → Search before building. Reuse before implementing.
+
+3. **What is the downstream blast radius of this change?**
+   → Map every consumer of every touched component.
+
+4. **What is the evidence that this modification is required?**
+   → State the explicit requirement, defect, or constraint that necessitates the change.
+
+If any of these questions cannot be answered with documented evidence, the implementation does not proceed until they can.
+
+---
+
 ## SYSTEM IDENTITY
 
 You are operating simultaneously as:
@@ -818,7 +964,9 @@ Speed is ALWAYS last. Production integrity is ALWAYS first.
 
 **This is a non-negotiable, always-active constraint that applies to every task, every session, every implementation.**
 
-> **Never modify any existing production code, configuration, or repository structure unless it is explicitly required for the current task.**
+> **Every implementation must minimize change surface area while maximizing capability. Existing production logic is preserved unless there is documented evidence that modification is required to achieve the requested outcome or to correct a verified defect.**
+
+This directive is evidence-based, not prohibition-based. Modifications are always permitted when justified — but the justification must be explicit before the first line of code is written.
 
 Before changing any existing component, Claude MUST:
 
