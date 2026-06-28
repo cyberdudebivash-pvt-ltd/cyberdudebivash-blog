@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-28T12:31:39.072Z",
+  "generated": "2026-06-28T13:00:58.354Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3676,
+    "total_nodes": 3678,
     "actors": 8,
     "cves": 809,
     "campaigns": 337,
     "malware": 0,
-    "iocs": 376,
-    "edges": 1410
+    "iocs": 377,
+    "edges": 1412
   },
   "nodes": {
     "actor:lockbit": {
@@ -70552,6 +70552,46 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_NETSEC-a5b17a89c05f274a": {
+      "id": "REDDIT_NETSEC-a5b17a89c05f274a",
+      "type": "Intel",
+      "name": "I tried a Local AI model (Qwen 3.6 27b) for security research and it works surprisingly well.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-28",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:projectblack.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:projectblack.io": {
+      "id": "ioc:domain:projectblack.io",
+      "type": "IOC",
+      "name": "projectblack.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-28"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -83280,6 +83320,24 @@
       "target": "REDDIT_CYBER-7cbd76391685efed",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-28",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-a5b17a89c05f274a→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-a5b17a89c05f274a",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-28",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-a5b17a89c05f274a→linked_to→ioc:domain:projectblack.io",
+      "source": "REDDIT_NETSEC-a5b17a89c05f274a",
+      "target": "ioc:domain:projectblack.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-28",
       "sources": []
     }
