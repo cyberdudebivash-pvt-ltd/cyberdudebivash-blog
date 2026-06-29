@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-29T13:31:35.541Z",
+  "generated": "2026-06-29T14:01:43.747Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3735,
+    "total_nodes": 3740,
     "actors": 8,
-    "cves": 809,
-    "campaigns": 340,
+    "cves": 810,
+    "campaigns": 341,
     "malware": 0,
-    "iocs": 385,
-    "edges": 1455
+    "iocs": 386,
+    "edges": 1459
   },
   "nodes": {
     "actor:lockbit": {
@@ -867,6 +867,11 @@
         {
           "target": "campaign:cluster-b7f8f36e",
           "relationship": "executes",
+          "confidence": 0.85
+        },
+        {
+          "target": "SECURITYWEEK-920edbf2fd21e414",
+          "relationship": "exploits",
           "confidence": 0.85
         }
       ],
@@ -71804,6 +71809,102 @@
           "confidence": 0.75
         }
       ]
+    },
+    "CVE-2026-46817": {
+      "id": "CVE-2026-46817",
+      "type": "CVE",
+      "name": "Hackers now exploit critical Oracle E-Business flaw in attacks",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-21f17bdf65daf250": {
+      "id": "REDDIT_CYBER-21f17bdf65daf250",
+      "type": "Intel",
+      "name": "Cybersecurity Jobs/Internships/Bounty Hunting",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.linkedin.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:www.linkedin.com": {
+      "id": "ioc:domain:www.linkedin.com",
+      "type": "IOC",
+      "name": "www.linkedin.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-29"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-920edbf2fd21e414": {
+      "id": "SECURITYWEEK-920edbf2fd21e414",
+      "type": "Intel",
+      "name": "Insurance Regulators Group NAIC Hit in Oracle PeopleSoft Hack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-46817": {
+      "id": "campaign:cve-2026-46817",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-29",
+        "last_seen": "2026-06-29",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-46817 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-46817",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -84937,6 +85038,42 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-21f17bdf65daf250→linked_to→ioc:domain:www.linkedin.com",
+      "source": "REDDIT_CYBER-21f17bdf65daf250",
+      "target": "ioc:domain:www.linkedin.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-21f17bdf65daf250→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-21f17bdf65daf250",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→SECURITYWEEK-920edbf2fd21e414",
+      "source": "actor:shinyhunters",
+      "target": "SECURITYWEEK-920edbf2fd21e414",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-46817→includes→CVE-2026-46817",
+      "source": "campaign:cve-2026-46817",
+      "target": "CVE-2026-46817",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-29",
       "sources": []
     }
