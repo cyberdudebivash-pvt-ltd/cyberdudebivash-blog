@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-29T20:31:32.017Z",
+  "generated": "2026-06-29T21:01:36.578Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3764,
+    "total_nodes": 3773,
     "actors": 8,
     "cves": 813,
-    "campaigns": 343,
+    "campaigns": 345,
     "malware": 0,
-    "iocs": 388,
-    "edges": 1471
+    "iocs": 391,
+    "edges": 1480
   },
   "nodes": {
     "actor:lockbit": {
@@ -881,6 +881,16 @@
         },
         {
           "target": "campaign:cluster-29333b35",
+          "relationship": "executes",
+          "confidence": 0.85
+        },
+        {
+          "target": "BLEEPINGCOMPUTER-8ee8a48884494365",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "campaign:cluster-9a972db5",
           "relationship": "executes",
           "confidence": 0.85
         }
@@ -72384,6 +72394,179 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-ba410b1aaa0dc688": {
+      "id": "REDDIT_CYBER-ba410b1aaa0dc688",
+      "type": "Intel",
+      "name": "Fileless macOS malware triggered by `npm`/`node`, survives clean reinstalls, evades Malwarebytes, blocked by DTrace/gcore (SIP). Need help identifying it.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 69,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:166.88.134.62",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        },
+        {
+          "target": "ioc:ipv4:23.27.13.43",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        },
+        {
+          "target": "ioc:domain:nodejs.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:ipv4:166.88.134.62": {
+      "id": "ioc:ipv4:166.88.134.62",
+      "type": "IOC",
+      "name": "166.88.134.62",
+      "attributes": {
+        "ioc_type": "ipv4",
+        "confidence": 0.88,
+        "first_seen": "2026-06-29"
+      },
+      "connections": []
+    },
+    "ioc:ipv4:23.27.13.43": {
+      "id": "ioc:ipv4:23.27.13.43",
+      "type": "IOC",
+      "name": "23.27.13.43",
+      "attributes": {
+        "ioc_type": "ipv4",
+        "confidence": 0.88,
+        "first_seen": "2026-06-29"
+      },
+      "connections": []
+    },
+    "ioc:domain:nodejs.org": {
+      "id": "ioc:domain:nodejs.org",
+      "type": "IOC",
+      "name": "nodejs.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-29"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-8ee8a48884494365": {
+      "id": "BLEEPINGCOMPUTER-8ee8a48884494365",
+      "type": "Intel",
+      "name": "Nissan discloses employee data breach linked to Oracle zero-day attacks",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-2b162b80cca5a8d5": {
+      "id": "REDDIT_CYBER-2b162b80cca5a8d5",
+      "type": "Intel",
+      "name": "SOC or GRC for a newbie 🙏🏼",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-ae1f6407b179516f": {
+      "id": "REDDIT_CYBER-ae1f6407b179516f",
+      "type": "Intel",
+      "name": "Crowdstrike Reporting Tool way too old - any other good ones?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-a96af714": {
+      "id": "campaign:cluster-a96af714",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-29",
+        "last_seen": "2026-06-29",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 6 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-ba410b1aaa0dc688",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-9a972db5": {
+      "id": "campaign:cluster-9a972db5",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-29",
+        "last_seen": "2026-06-29",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-8ee8a48884494365",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -85659,6 +85842,87 @@
       "id": "campaign:cluster-29333b35→includes→BLEEPINGCOMPUTER-91c34bfad569a391",
       "source": "campaign:cluster-29333b35",
       "target": "BLEEPINGCOMPUTER-91c34bfad569a391",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-ba410b1aaa0dc688→linked_to→ioc:ipv4:166.88.134.62",
+      "source": "REDDIT_CYBER-ba410b1aaa0dc688",
+      "target": "ioc:ipv4:166.88.134.62",
+      "relationship": "linked_to",
+      "confidence": 0.88,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-ba410b1aaa0dc688→linked_to→ioc:ipv4:23.27.13.43",
+      "source": "REDDIT_CYBER-ba410b1aaa0dc688",
+      "target": "ioc:ipv4:23.27.13.43",
+      "relationship": "linked_to",
+      "confidence": 0.88,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-ba410b1aaa0dc688→linked_to→ioc:domain:nodejs.org",
+      "source": "REDDIT_CYBER-ba410b1aaa0dc688",
+      "target": "ioc:domain:nodejs.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→BLEEPINGCOMPUTER-8ee8a48884494365",
+      "source": "actor:shinyhunters",
+      "target": "BLEEPINGCOMPUTER-8ee8a48884494365",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-2b162b80cca5a8d5→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-2b162b80cca5a8d5",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-ae1f6407b179516f→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-ae1f6407b179516f",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-a96af714→includes→REDDIT_CYBER-ba410b1aaa0dc688",
+      "source": "campaign:cluster-a96af714",
+      "target": "REDDIT_CYBER-ba410b1aaa0dc688",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→executes→campaign:cluster-9a972db5",
+      "source": "actor:shinyhunters",
+      "target": "campaign:cluster-9a972db5",
+      "relationship": "executes",
+      "confidence": 0.85,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-9a972db5→includes→BLEEPINGCOMPUTER-8ee8a48884494365",
+      "source": "campaign:cluster-9a972db5",
+      "target": "BLEEPINGCOMPUTER-8ee8a48884494365",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-06-29",
