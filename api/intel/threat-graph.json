@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-29T20:24:50.613Z",
+  "generated": "2026-06-29T20:31:32.017Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3762,
+    "total_nodes": 3764,
     "actors": 8,
     "cves": 813,
-    "campaigns": 342,
+    "campaigns": 343,
     "malware": 0,
     "iocs": 388,
-    "edges": 1468
+    "edges": 1471
   },
   "nodes": {
     "actor:lockbit": {
@@ -872,6 +872,16 @@
         {
           "target": "SECURITYWEEK-920edbf2fd21e414",
           "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "BLEEPINGCOMPUTER-91c34bfad569a391",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "campaign:cluster-29333b35",
+          "relationship": "executes",
           "confidence": 0.85
         }
       ],
@@ -72336,6 +72346,44 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-91c34bfad569a391": {
+      "id": "BLEEPINGCOMPUTER-91c34bfad569a391",
+      "type": "Intel",
+      "name": "NAIC says public data stolen in ShinyHunters' PeopleSoft breach",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-29333b35": {
+      "id": "campaign:cluster-29333b35",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-29",
+        "last_seen": "2026-06-29",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-91c34bfad569a391",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -85586,6 +85634,33 @@
       "target": "ioc:domain:labs.watchtowr.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→BLEEPINGCOMPUTER-91c34bfad569a391",
+      "source": "actor:shinyhunters",
+      "target": "BLEEPINGCOMPUTER-91c34bfad569a391",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→executes→campaign:cluster-29333b35",
+      "source": "actor:shinyhunters",
+      "target": "campaign:cluster-29333b35",
+      "relationship": "executes",
+      "confidence": 0.85,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-29333b35→includes→BLEEPINGCOMPUTER-91c34bfad569a391",
+      "source": "campaign:cluster-29333b35",
+      "target": "BLEEPINGCOMPUTER-91c34bfad569a391",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-29",
       "sources": []
     }
