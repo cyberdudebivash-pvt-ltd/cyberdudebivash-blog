@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-29T02:31:40.499Z",
+  "generated": "2026-06-29T03:01:53.351Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3702,
+    "total_nodes": 3705,
     "actors": 8,
     "cves": 809,
-    "campaigns": 337,
+    "campaigns": 338,
     "malware": 0,
     "iocs": 382,
-    "edges": 1430
+    "edges": 1434
   },
   "nodes": {
     "actor:lockbit": {
@@ -71096,6 +71096,79 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-c12687ab6cc7d799": {
+      "id": "REDDIT_CYBER-c12687ab6cc7d799",
+      "type": "Intel",
+      "name": "Google vs iCloud",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-8dc713b05f7f3a09": {
+      "id": "REDDIT_CYBER-8dc713b05f7f3a09",
+      "type": "Intel",
+      "name": "Thoughts on Palantir group chat leak?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-7b612660": {
+      "id": "campaign:cluster-7b612660",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "LOW",
+        "item_count": 2,
+        "first_seen": "2026-06-29",
+        "last_seen": "2026-06-29",
+        "confidence": 0.83,
+        "reasoning": "2 intel item(s) clustered with composite confidence 0.830 | 6 shared IOC(s) across items | Item REDDIT_CYBER-8dc713b05f7f3a09 joined cluster (score: 0.621): 1 shared IOC(s) (Jaccard: 1.000)"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-c12687ab6cc7d799",
+          "relationship": "includes",
+          "confidence": 1
+        },
+        {
+          "target": "REDDIT_CYBER-8dc713b05f7f3a09",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -84004,6 +84077,42 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-c12687ab6cc7d799→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-c12687ab6cc7d799",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-8dc713b05f7f3a09→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-8dc713b05f7f3a09",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-7b612660→includes→REDDIT_CYBER-c12687ab6cc7d799",
+      "source": "campaign:cluster-7b612660",
+      "target": "REDDIT_CYBER-c12687ab6cc7d799",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-7b612660→includes→REDDIT_CYBER-8dc713b05f7f3a09",
+      "source": "campaign:cluster-7b612660",
+      "target": "REDDIT_CYBER-8dc713b05f7f3a09",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-29",
       "sources": []
     }
