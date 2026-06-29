@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-29T17:01:39.298Z",
+  "generated": "2026-06-29T17:31:28.357Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3751,
+    "total_nodes": 3756,
     "actors": 8,
     "cves": 810,
     "campaigns": 342,
     "malware": 0,
-    "iocs": 387,
-    "edges": 1463
+    "iocs": 388,
+    "edges": 1466
   },
   "nodes": {
     "actor:lockbit": {
@@ -72116,6 +72116,107 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-0d7b8e55d5b27634": {
+      "id": "REDDIT_CYBER-0d7b8e55d5b27634",
+      "type": "Intel",
+      "name": "Akrites: The Latest Attempt to Protect Open-Source From AI Attacks Has Arrived",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "SUPPLY_CHAIN"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:63a34de72c5b8564eba03a3d21cd3634cfca6886",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:63a34de72c5b8564eba03a3d21cd3634cfca6886": {
+      "id": "ioc:sha1:63a34de72c5b8564eba03a3d21cd3634cfca6886",
+      "type": "IOC",
+      "name": "63a34de72c5b8564eba03a3d21cd3634cfca6886",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-29"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-055559e1d20cd188": {
+      "id": "REDDIT_CYBER-055559e1d20cd188",
+      "type": "Intel",
+      "name": "Microsegmentation in the cloud",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-e54a236b2c31468a": {
+      "id": "REDDIT_CYBER-e54a236b2c31468a",
+      "type": "Intel",
+      "name": "Our sales force data was accessed through a compromised OAUTH integration and we only found out by accident.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-e26ed1e4df322988": {
+      "id": "BLEEPINGCOMPUTER-e26ed1e4df322988",
+      "type": "Intel",
+      "name": "Microsoft extends Windows Server 2022 hotpatching until October 2027",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -85321,6 +85422,33 @@
       "target": "REDDIT_CYBER-60787be808341346",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-0d7b8e55d5b27634→linked_to→ioc:sha1:63a34de72c5b8564eba03a3d21cd3634cfca6886",
+      "source": "REDDIT_CYBER-0d7b8e55d5b27634",
+      "target": "ioc:sha1:63a34de72c5b8564eba03a3d21cd3634cfca6886",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-055559e1d20cd188→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-055559e1d20cd188",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-e54a236b2c31468a→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-e54a236b2c31468a",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-29",
       "sources": []
     }
