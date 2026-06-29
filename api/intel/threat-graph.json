@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-29T10:01:38.996Z",
+  "generated": "2026-06-29T10:31:27.186Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3713,
+    "total_nodes": 3720,
     "actors": 8,
     "cves": 809,
-    "campaigns": 338,
+    "campaigns": 339,
     "malware": 0,
-    "iocs": 383,
-    "edges": 1440
+    "iocs": 384,
+    "edges": 1445
   },
   "nodes": {
     "actor:lockbit": {
@@ -71341,6 +71341,151 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-3a1ab5e7c147ac7b": {
+      "id": "REDDIT_CYBER-3a1ab5e7c147ac7b",
+      "type": "Intel",
+      "name": "What are you all following for the latest cybersecurity news and updates right now?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 71,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "ZERO_DAY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-30fe48a71f103f4b": {
+      "id": "REDDIT_CYBER-30fe48a71f103f4b",
+      "type": "Intel",
+      "name": "GitHub - xalgord/xalgorix: Xalgorix - Autonomous AI Pentesting Agents",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:0551849520dea89c4f38f3503284560d072955c5",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:0551849520dea89c4f38f3503284560d072955c5": {
+      "id": "ioc:sha1:0551849520dea89c4f38f3503284560d072955c5",
+      "type": "IOC",
+      "name": "0551849520dea89c4f38f3503284560d072955c5",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-29"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-8154c1ad71d51668": {
+      "id": "REDDIT_CYBER-8154c1ad71d51668",
+      "type": "Intel",
+      "name": "Free M365 SoC Tool just shipped for you",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-b1c0d7055c9dbffc": {
+      "id": "REDDIT_CYBER-b1c0d7055c9dbffc",
+      "type": "Intel",
+      "name": "Advise please!",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "SECURITYWEEK-c3e434f5627a990e": {
+      "id": "SECURITYWEEK-c3e434f5627a990e",
+      "type": "Intel",
+      "name": "OpenAI and Anthropic Limit New AI Models to Trump-Approved Customers During Cybersecurity Review",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-f79cfb31": {
+      "id": "campaign:cluster-f79cfb31",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-29",
+        "last_seen": "2026-06-29",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 3 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-3a1ab5e7c147ac7b",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -84339,6 +84484,51 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-3a1ab5e7c147ac7b→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-3a1ab5e7c147ac7b",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-30fe48a71f103f4b→linked_to→ioc:sha1:0551849520dea89c4f38f3503284560d072955c5",
+      "source": "REDDIT_CYBER-30fe48a71f103f4b",
+      "target": "ioc:sha1:0551849520dea89c4f38f3503284560d072955c5",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-8154c1ad71d51668→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-8154c1ad71d51668",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-b1c0d7055c9dbffc→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-b1c0d7055c9dbffc",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-f79cfb31→includes→REDDIT_CYBER-3a1ab5e7c147ac7b",
+      "source": "campaign:cluster-f79cfb31",
+      "target": "REDDIT_CYBER-3a1ab5e7c147ac7b",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-29",
       "sources": []
     }
