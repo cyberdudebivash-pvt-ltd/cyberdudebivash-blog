@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-29T16:01:40.977Z",
+  "generated": "2026-06-29T16:09:33.614Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3746,
+    "total_nodes": 3750,
     "actors": 8,
     "cves": 810,
-    "campaigns": 341,
+    "campaigns": 342,
     "malware": 0,
-    "iocs": 386,
-    "edges": 1460
+    "iocs": 387,
+    "edges": 1463
   },
   "nodes": {
     "actor:lockbit": {
@@ -72019,6 +72019,85 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-60787be808341346": {
+      "id": "REDDIT_CYBER-60787be808341346",
+      "type": "Intel",
+      "name": "Need to find a fork of exploitarium github",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-17d5c45a4ca8978e": {
+      "id": "REDDIT_CYBER-17d5c45a4ca8978e",
+      "type": "Intel",
+      "name": "Mustang Panda targets India's government and energy sectors with ZOHOMURK and MINIRECON",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-29",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:a0859341fa41ec9b2b2aed6e2d24bccbfafc633d",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:a0859341fa41ec9b2b2aed6e2d24bccbfafc633d": {
+      "id": "ioc:sha1:a0859341fa41ec9b2b2aed6e2d24bccbfafc633d",
+      "type": "IOC",
+      "name": "a0859341fa41ec9b2b2aed6e2d24bccbfafc633d",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-29"
+      },
+      "connections": []
+    },
+    "campaign:cluster-8dd92f11": {
+      "id": "campaign:cluster-8dd92f11",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-06-29",
+        "last_seen": "2026-06-29",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 3 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-60787be808341346",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -85197,6 +85276,33 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-60787be808341346→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-60787be808341346",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-17d5c45a4ca8978e→linked_to→ioc:sha1:a0859341fa41ec9b2b2aed6e2d24bccbfafc633d",
+      "source": "REDDIT_CYBER-17d5c45a4ca8978e",
+      "target": "ioc:sha1:a0859341fa41ec9b2b2aed6e2d24bccbfafc633d",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-06-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-8dd92f11→includes→REDDIT_CYBER-60787be808341346",
+      "source": "campaign:cluster-8dd92f11",
+      "target": "REDDIT_CYBER-60787be808341346",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-29",
       "sources": []
     }
