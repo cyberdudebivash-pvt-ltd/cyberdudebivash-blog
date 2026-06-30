@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-30T15:02:29.991Z",
+  "generated": "2026-06-30T15:31:33.683Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3823,
+    "total_nodes": 3825,
     "actors": 8,
     "cves": 816,
     "campaigns": 349,
     "malware": 0,
-    "iocs": 397,
-    "edges": 1508
+    "iocs": 398,
+    "edges": 1510
   },
   "nodes": {
     "actor:lockbit": {
@@ -73573,6 +73573,46 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_NETSEC-1f22a636755c39b9": {
+      "id": "REDDIT_NETSEC-1f22a636755c39b9",
+      "type": "Intel",
+      "name": "DHIS2 (used across 80+ countries) ships with hardcoded default admin credentials and no forced password change.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:scrutora.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:scrutora.com": {
+      "id": "ioc:domain:scrutora.com",
+      "type": "IOC",
+      "name": "scrutora.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-30"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -87181,6 +87221,24 @@
       "id": "REDDIT_CYBER-f557e4a2b81678d9→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_CYBER-f557e4a2b81678d9",
       "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-1f22a636755c39b9→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-1f22a636755c39b9",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-1f22a636755c39b9→linked_to→ioc:domain:scrutora.com",
+      "source": "REDDIT_NETSEC-1f22a636755c39b9",
+      "target": "ioc:domain:scrutora.com",
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-06-30",
