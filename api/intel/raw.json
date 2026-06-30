@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-30T18:06:55.697Z",
+  "generated": "2026-06-30T18:31:31.641Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 87,
+  "count": 94,
   "items": [
     {
       "id": "CVE-2023-27351",
@@ -99,113 +99,97 @@
       "iocs": []
     },
     {
-      "id": "REDDIT_CYBER-ed84da6cd9a267cc",
-      "title": "Tantalus -- Prompt Injection Arena",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Hi all, I&amp;#39;d like to share what I&amp;#39;ve been working on this year: 1. &lt;a href=&quot;https://tantalus.io/&quot;&gt;Tantalus&lt;/a&gt; - A unique prompt injection arena where you try to get an agent to exfiltrate data from a ",
-      "cvss": 6.5,
+      "id": "GHSA-917854bb062c62cf",
+      "title": "Fission: MessageQueueTrigger scaler manager materializes Secret values into Deployment envvars and accepts arbitrary use",
+      "description": "### Summary The Fission MessageQueueTrigger (MQT) scaler controller exposed two privilege-escalation primitives to any subject able to create MQTs in a namespace. ### Details **1. Secret materialization.** `getEnvVarlist` in `pkg/mqtrigger/scalermanager.go` read the Secret named in `Spec.Secret` usi",
+      "cvss": 8.1,
       "final_ps": 49,
-      "quality_score": 0.525,
+      "quality_score": 0.548,
       "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "reddit_cyber",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_cyber"
+        "github_advisories"
       ],
       "first_seen": "2026-06-30",
       "last_seen": "2026-06-30",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
+      "vendor": "go",
+      "product": "github.com/fission/fission",
       "due_date": null,
       "cves": [],
-      "ioc_count": 9,
+      "ioc_count": 0,
       "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1ujvxp8/tantalus_prompt_injection_arena/"
+        "https://github.com/advisories/GHSA-7m8x-qg2j-4m3v",
+        "https://github.com/fission/fission/security/advisories/GHSA-7m8x-qg2j-4m3v",
+        "https://github.com/fission/fission/pull/3367",
+        "https://github.com/fission/fission/commit/94bf5792396989fdd71961e8701833c8110da889"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "ioc_presence=9 IOCs",
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
           "recency=0d (score=1.00)",
-          "QS=0.525"
+          "QS=0.547"
         ],
         "priority": [
           "base_ps=49 (no boosts)"
         ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
       "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "url",
-          "value": "https://tantalus.io/&quot;&gt;Tantalus&lt;/a&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-30",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://doi.org/10.17605/OSF.IO/S9GU6&quot;&gt;my",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-30",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/quasarzero0000&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-30",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1ujvxp8/tantalus_prompt_injection_arena/&quot;&gt;[l",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-30",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1ujvxp8/tantalus_prompt_injection_arena/&quot;&gt;[c",
-          "confidence_score": 0.82,
-          "first_seen": "2026-06-30",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "tantalus.io",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-30",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "doi.org",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-30",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "osf.io",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-30",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-06-30",
-          "source_count": 1
-        }
-      ]
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-808710085de36134",
+      "title": "Kahi has privilege-drop and socket/log permission issues",
+      "description": "Kahi releases up to and including v0.1.0-alpha.8 contain three privilege/permission issues, all fixed in v0.1.0-alpha.9. They were identified in a full-codebase security review on 2026-05-26. ## Affected versions\nAll releases <= v0.1.0-alpha.8. ## Patched version\nv0.1.0-alpha.9. ## Details ### 1. Pe",
+      "cvss": 7.5,
+      "final_ps": 48,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-30",
+      "last_seen": "2026-06-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/kahiteam/kahi",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-55f6-4pr5-c7m5",
+        "https://github.com/kahiteam/kahi/security/advisories/GHSA-55f6-4pr5-c7m5",
+        "https://github.com/advisories/GHSA-55f6-4pr5-c7m5"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
     },
     {
       "id": "EXPLOITDB-13fc423caf742505",
@@ -390,14 +374,14 @@
       "iocs": []
     },
     {
-      "id": "REDDIT_CYBER-9f48df987d96e9af",
-      "title": "Detection Engineering Certs/Courses?",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Hi, I&amp;#39;m currently a SIEM detection engineer working with Google SecOps SIEM. I&amp;#39;m looking for certifications to round out my knowledge, particularly around how to identify which use cases I should be building myself based o",
+      "id": "REDDIT_CYBER-7c48dc98dba28973",
+      "title": "virus from opening a link that didn't load possible? what are the ways to know if a link is secure or not?",
+      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Might sound like a dumb question but I asked a question on reddit and someone sent me a link to a vet&amp;#39;s LinkedIn and when I tried opening it it wouldn&amp;#39;t load i did look up the person from their name and it&amp;#39;s an act",
       "cvss": 6.5,
       "final_ps": 43,
       "quality_score": 0.465,
       "threat_level": "LOW",
-      "type": "DETECTION_ENGINEERING",
+      "type": "MALWARE_REPORT",
       "source": "reddit_cyber",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -414,7 +398,7 @@
       "cves": [],
       "ioc_count": 3,
       "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1ujwf91/detection_engineering_certscourses/"
+        "https://www.reddit.com/r/cybersecurity/comments/1ujxecn/virus_from_opening_a_link_that_didnt_load/"
       ],
       "explanation": {
         "quality": [
@@ -435,14 +419,14 @@
       "iocs": [
         {
           "type": "url",
-          "value": "https://www.reddit.com/user/Longjumping-Nose1715&quot;&gt;",
+          "value": "https://www.reddit.com/user/nicknelson25&quot;&gt;",
           "confidence_score": 0.82,
           "first_seen": "2026-06-30",
           "source_count": 1
         },
         {
           "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1ujwf91/detection_engineering_certscourses/&quot;&gt",
+          "value": "https://www.reddit.com/r/cybersecurity/comments/1ujxecn/virus_from_opening_a_link_that_didnt_load/&q",
           "confidence_score": 0.82,
           "first_seen": "2026-06-30",
           "source_count": 1
@@ -500,6 +484,52 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_CYBER-6757d76e18da3c9b",
+      "title": "ssh-keysign-pwn: Linux LPE allows unprivileged users to read root-owned files. PoC with SSH server privkey",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 42,
+      "quality_score": 0.38,
+      "threat_level": "LOW",
+      "type": "ZERO_DAY",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-05-15",
+      "last_seen": "2026-05-15",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1tdpq0a/sshkeysignpwn_linux_lpe_allows_unprivileged_users/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+12 PoC_available",
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -2403,6 +2433,51 @@
       "iocs": []
     },
     {
+      "id": "REDDIT_CYBER-634e03182dd384cb",
+      "title": "CISA: Windows BlueHammer flaw now exploited by ransomware gangs",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 33,
+      "quality_score": 0.38,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-06-30",
+      "last_seen": "2026-06-30",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1ujkotd/cisa_windows_bluehammer_flaw_now_exploited_by/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "DARKREADING-357db3c091c4a374",
       "title": "Unpatched 'PhantomRPC' Flaw in Windows Enables Privilege Escalation",
       "description": "",
@@ -4039,43 +4114,247 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-48558",
-      "title": "SimpleHelp vulnerability exploited to deliver mighty Djinn Stealer (CVE-2026-48558)",
+      "id": "CVE-2026-49473",
+      "title": "@cedar-policy/authorization-for-expressjs has an authorization bypass via query string manipulation",
       "description": "",
-      "cvss": 8,
-      "final_ps": 26,
-      "quality_score": 0.45,
+      "cvss": 8.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
       "threat_level": "LOW",
-      "type": "MALWARE_REPORT",
-      "source": "reddit_cyber",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_cyber"
+        "github_advisories"
       ],
       "first_seen": "2026-06-30",
       "last_seen": "2026-06-30",
-      "exploited": true,
+      "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
+      "vendor": "npm",
+      "product": "@cedar-policy/authorization-for-expressjs",
       "due_date": null,
       "cves": [
-        "CVE-2026-48558"
+        "CVE-2026-49473",
+        "CVE-2026-49473"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1ujn47m/simplehelp_vulnerability_exploited_to_deliver/"
+        "https://github.com/advisories/GHSA-g4w6-vmgf-xqvx",
+        "https://github.com/cedar-policy/authorization-for-expressjs/security/advisories/GHSA-g4w6-vmgf-xqvx",
+        "https://github.com/cedar-policy/authorization-for-expressjs/releases/tag/v0.3.0",
+        "https://github.com/advisories/GHSA-g4w6-vmgf-xqvx"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_cyber)",
+          "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.450"
+          "QS=0.523"
         ],
         "priority": [
-          "+8 exploited_in_wild"
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-49821",
+      "title": "Fission: Cross-namespace Environment reference in Package allows build-time command execution and SA token exfiltration",
+      "description": "",
+      "cvss": 7.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-30",
+      "last_seen": "2026-06-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/fission/fission",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49821",
+        "CVE-2026-49821"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-vjhc-cf4p-72q4",
+        "https://github.com/fission/fission/security/advisories/GHSA-vjhc-cf4p-72q4",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49821",
+        "https://github.com/fission/fission/pull/3379"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-49824",
+      "title": "Fission: Cross-namespace Environment reference via unvalidated EnvironmentRef in Function admission webhook",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-30",
+      "last_seen": "2026-06-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/fission/fission",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49824",
+        "CVE-2026-49824"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-cvw6-gfvv-953q",
+        "https://github.com/fission/fission/security/advisories/GHSA-cvw6-gfvv-953q",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49824",
+        "https://github.com/fission/fission/pull/3389"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-49823",
+      "title": "Fission: Cross-namespace Package read via unvalidated PackageRef in Function admission webhook",
+      "description": "",
+      "cvss": 7.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-30",
+      "last_seen": "2026-06-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/fission/fission",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49823",
+        "CVE-2026-49823"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-3r8v-2xmj-5c39",
+        "https://github.com/fission/fission/security/advisories/GHSA-3r8v-2xmj-5c39",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49823",
+        "https://github.com/fission/fission/pull/3389"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-49822",
+      "title": "Fission: Cross-namespace event leakage via KubernetesWatchTrigger allows persistent tenant surveillance",
+      "description": "",
+      "cvss": 7.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-06-30",
+      "last_seen": "2026-06-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/fission/fission",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49822",
+        "CVE-2026-49822"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-gc3j-79f2-7vvw",
+        "https://github.com/fission/fission/security/advisories/GHSA-gc3j-79f2-7vvw",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49822",
+        "https://github.com/fission/fission/pull/3379"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
         ],
         "suppression": null,
         "merge": null
