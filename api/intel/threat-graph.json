@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-30T14:31:33.435Z",
+  "generated": "2026-06-30T15:02:29.991Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3820,
+    "total_nodes": 3823,
     "actors": 8,
     "cves": 816,
     "campaigns": 349,
     "malware": 0,
-    "iocs": 396,
-    "edges": 1506
+    "iocs": 397,
+    "edges": 1508
   },
   "nodes": {
     "actor:lockbit": {
@@ -73514,6 +73514,65 @@
         "type": "AI_SECURITY"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-bbaca76700c7bb71": {
+      "id": "REDDIT_CYBER-bbaca76700c7bb71",
+      "type": "Intel",
+      "name": "Huntress Ex-Employee Responds to Huntress CEO Blog",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:d2cbb70867de082e9dc235b72d969361e30355c9",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:d2cbb70867de082e9dc235b72d969361e30355c9": {
+      "id": "ioc:sha1:d2cbb70867de082e9dc235b72d969361e30355c9",
+      "type": "IOC",
+      "name": "d2cbb70867de082e9dc235b72d969361e30355c9",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-30"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-f557e4a2b81678d9": {
+      "id": "REDDIT_CYBER-f557e4a2b81678d9",
+      "type": "Intel",
+      "name": "UK data breach on April 30th, only just contacted by them???? It's been 2 months! What's the best course of action for someone whose had their data stolen apart from password changes etc?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "DATA_BREACH"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -87106,6 +87165,24 @@
       "target": "REDDIT_CYBER-7045d1a7e4cc8c5e",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-bbaca76700c7bb71→linked_to→ioc:sha1:d2cbb70867de082e9dc235b72d969361e30355c9",
+      "source": "REDDIT_CYBER-bbaca76700c7bb71",
+      "target": "ioc:sha1:d2cbb70867de082e9dc235b72d969361e30355c9",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-f557e4a2b81678d9→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-f557e4a2b81678d9",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-30",
       "sources": []
     }
