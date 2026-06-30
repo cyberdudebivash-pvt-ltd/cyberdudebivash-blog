@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-30T10:02:04.113Z",
+  "generated": "2026-06-30T10:31:38.588Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3800,
+    "total_nodes": 3802,
     "actors": 8,
     "cves": 815,
     "campaigns": 347,
     "malware": 0,
-    "iocs": 394,
-    "edges": 1492
+    "iocs": 395,
+    "edges": 1494
   },
   "nodes": {
     "actor:lockbit": {
@@ -73096,6 +73096,46 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_NETSEC-5686bfdb6649e6e5": {
+      "id": "REDDIT_NETSEC-5686bfdb6649e6e5",
+      "type": "Intel",
+      "name": "Auditing OpenReception: 16 CVEs in an end-to-end encrypted appointment booking platform (unauthenticated admin creation, account takeover, E2E bypass)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:moltenbit.net",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:moltenbit.net": {
+      "id": "ioc:domain:moltenbit.net",
+      "type": "IOC",
+      "name": "moltenbit.net",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-06-30"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -86562,6 +86602,24 @@
       "target": "REDDIT_CYBER-634e03182dd384cb",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-5686bfdb6649e6e5→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-5686bfdb6649e6e5",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-5686bfdb6649e6e5→linked_to→ioc:domain:moltenbit.net",
+      "source": "REDDIT_NETSEC-5686bfdb6649e6e5",
+      "target": "ioc:domain:moltenbit.net",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-06-30",
       "sources": []
     }
