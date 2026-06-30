@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-30T09:31:46.666Z",
+  "generated": "2026-06-30T10:02:04.113Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3793,
+    "total_nodes": 3800,
     "actors": 8,
     "cves": 815,
-    "campaigns": 346,
+    "campaigns": 347,
     "malware": 0,
-    "iocs": 393,
-    "edges": 1489
+    "iocs": 394,
+    "edges": 1492
   },
   "nodes": {
     "actor:lockbit": {
@@ -72963,6 +72963,139 @@
         "type": "DATA_BREACH"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-634e03182dd384cb": {
+      "id": "REDDIT_CYBER-634e03182dd384cb",
+      "type": "Intel",
+      "name": "CISA: Windows BlueHammer flaw now exploited by ransomware gangs",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 78,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "RANSOMWARE"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:1fa3a9c3767890935615ed777eb9ee697a855806",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:1fa3a9c3767890935615ed777eb9ee697a855806": {
+      "id": "ioc:sha1:1fa3a9c3767890935615ed777eb9ee697a855806",
+      "type": "IOC",
+      "name": "1fa3a9c3767890935615ed777eb9ee697a855806",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-30"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-fb742c3c31c4425e": {
+      "id": "BLEEPINGCOMPUTER-fb742c3c31c4425e",
+      "type": "Intel",
+      "name": "Blackfield ransomware asks Nidec Corporation for $2 million ransom",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-a68ae92975874be1": {
+      "id": "REDDIT_CYBER-a68ae92975874be1",
+      "type": "Intel",
+      "name": "3rd Party Integrations Concerns",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-01509c6c3f944f6d": {
+      "id": "BLEEPINGCOMPUTER-01509c6c3f944f6d",
+      "type": "Intel",
+      "name": "Kali Linux 2026.2 released with 9 new tools, NetHunter updates",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-e18f60a9433f632d": {
+      "id": "SECURITYWEEK-e18f60a9433f632d",
+      "type": "Intel",
+      "name": "The AI Token Costs That Can Break Cybersecurity",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-0d2ed5e5": {
+      "id": "campaign:cluster-0d2ed5e5",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-30",
+        "last_seen": "2026-06-30",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 7 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-634e03182dd384cb",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -86400,6 +86533,33 @@
       "id": "campaign:cluster-50bca649→includes→BLEEPINGCOMPUTER-1a56d49e55cd1324",
       "source": "campaign:cluster-50bca649",
       "target": "BLEEPINGCOMPUTER-1a56d49e55cd1324",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-634e03182dd384cb→linked_to→ioc:sha1:1fa3a9c3767890935615ed777eb9ee697a855806",
+      "source": "REDDIT_CYBER-634e03182dd384cb",
+      "target": "ioc:sha1:1fa3a9c3767890935615ed777eb9ee697a855806",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-a68ae92975874be1→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-a68ae92975874be1",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-0d2ed5e5→includes→REDDIT_CYBER-634e03182dd384cb",
+      "source": "campaign:cluster-0d2ed5e5",
+      "target": "REDDIT_CYBER-634e03182dd384cb",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-06-30",
