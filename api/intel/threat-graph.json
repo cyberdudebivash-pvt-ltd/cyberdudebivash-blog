@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-30T17:01:43.597Z",
+  "generated": "2026-06-30T17:31:34.996Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3830,
+    "total_nodes": 3835,
     "actors": 8,
     "cves": 818,
-    "campaigns": 349,
+    "campaigns": 351,
     "malware": 0,
     "iocs": 399,
-    "edges": 1511
+    "edges": 1517
   },
   "nodes": {
     "actor:lockbit": {
@@ -73702,6 +73702,123 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-26d1ed9de4e333dd": {
+      "id": "REDDIT_CYBER-26d1ed9de4e333dd",
+      "type": "Intel",
+      "name": "How should cloud/security teams prepare for a post-Mythos day?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 71,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "ZERO_DAY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-32e4f997e18839b5": {
+      "id": "REDDIT_CYBER-32e4f997e18839b5",
+      "type": "Intel",
+      "name": "is still worth it ? ?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-640d253469411aca": {
+      "id": "REDDIT_CYBER-640d253469411aca",
+      "type": "Intel",
+      "name": "Has anyone used Bitdefender’s MDR/XDR service?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-d28d306f": {
+      "id": "campaign:cluster-d28d306f",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-30",
+        "last_seen": "2026-06-30",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 3 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-26d1ed9de4e333dd",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-460e5d37": {
+      "id": "campaign:cluster-460e5d37",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "LOW",
+        "item_count": 2,
+        "first_seen": "2026-06-30",
+        "last_seen": "2026-06-30",
+        "confidence": 0.83,
+        "reasoning": "2 intel item(s) clustered with composite confidence 0.830 | 6 shared IOC(s) across items | Item REDDIT_CYBER-640d253469411aca joined cluster (score: 0.607): 1 shared IOC(s) (Jaccard: 1.000)"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-32e4f997e18839b5",
+          "relationship": "includes",
+          "confidence": 1
+        },
+        {
+          "target": "REDDIT_CYBER-640d253469411aca",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -87339,6 +87456,60 @@
       "target": "ioc:domain:openapi.net",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-26d1ed9de4e333dd→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-26d1ed9de4e333dd",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-32e4f997e18839b5→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-32e4f997e18839b5",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-640d253469411aca→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-640d253469411aca",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-d28d306f→includes→REDDIT_CYBER-26d1ed9de4e333dd",
+      "source": "campaign:cluster-d28d306f",
+      "target": "REDDIT_CYBER-26d1ed9de4e333dd",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-460e5d37→includes→REDDIT_CYBER-32e4f997e18839b5",
+      "source": "campaign:cluster-460e5d37",
+      "target": "REDDIT_CYBER-32e4f997e18839b5",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-460e5d37→includes→REDDIT_CYBER-640d253469411aca",
+      "source": "campaign:cluster-460e5d37",
+      "target": "REDDIT_CYBER-640d253469411aca",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-30",
       "sources": []
     }
