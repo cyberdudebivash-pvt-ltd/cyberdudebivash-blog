@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-30T08:31:31.891Z",
+  "generated": "2026-06-30T09:01:59.558Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3788,
+    "total_nodes": 3792,
     "actors": 8,
     "cves": 815,
-    "campaigns": 345,
+    "campaigns": 346,
     "malware": 0,
     "iocs": 393,
-    "edges": 1487
+    "edges": 1489
   },
   "nodes": {
     "actor:lockbit": {
@@ -72865,6 +72865,86 @@
           "confidence": 0.75
         }
       ]
+    },
+    "BLEEPINGCOMPUTER-1a56d49e55cd1324": {
+      "id": "BLEEPINGCOMPUTER-1a56d49e55cd1324",
+      "type": "Intel",
+      "name": "CISA: Windows BlueHammer flaw now exploited by ransomware gangs",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 83,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-4fb647d2ee286e4d": {
+      "id": "SECURITYWEEK-4fb647d2ee286e4d",
+      "type": "Intel",
+      "name": "Critical SimpleHelp Vulnerability Exploited for Malware Delivery",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-55ca61b9af13b9d2": {
+      "id": "REDDIT_CYBER-55ca61b9af13b9d2",
+      "type": "Intel",
+      "name": "Publicly exposed servers opinion",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-50bca649": {
+      "id": "campaign:cluster-50bca649",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-30",
+        "last_seen": "2026-06-30",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-1a56d49e55cd1324",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -86286,6 +86366,24 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-55ca61b9af13b9d2→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-55ca61b9af13b9d2",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-50bca649→includes→BLEEPINGCOMPUTER-1a56d49e55cd1324",
+      "source": "campaign:cluster-50bca649",
+      "target": "BLEEPINGCOMPUTER-1a56d49e55cd1324",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-30",
       "sources": []
     }
