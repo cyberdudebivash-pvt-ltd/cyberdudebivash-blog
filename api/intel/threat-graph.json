@@ -1,15 +1,15 @@
 {
-  "generated": "2026-06-30T13:01:56.173Z",
+  "generated": "2026-06-30T13:20:07.168Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3812,
+    "total_nodes": 3819,
     "actors": 8,
-    "cves": 815,
-    "campaigns": 347,
+    "cves": 816,
+    "campaigns": 349,
     "malware": 0,
-    "iocs": 395,
-    "edges": 1497
+    "iocs": 396,
+    "edges": 1506
   },
   "nodes": {
     "actor:lockbit": {
@@ -45565,7 +45565,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-22"
+        "first_seen": "2026-06-30"
       },
       "connections": []
     },
@@ -58950,7 +58950,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-26"
+        "first_seen": "2026-06-30"
       },
       "connections": []
     },
@@ -71833,20 +71833,31 @@
     "CVE-2026-46817": {
       "id": "CVE-2026-46817",
       "type": "CVE",
-      "name": "Oracle E-Business Suite Flaw CVE-2026-46817 Actively Exploited in the Wild",
+      "name": "Attackers actively exploit the Oracle E-Business Suite flaw CVE-2026-46817",
       "attributes": {
         "cvss": 8,
         "threat_level": "HIGH",
-        "priority_score": 65,
+        "priority_score": 70,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "The Hacker News",
+        "vendor": "reddit_cyber",
         "product": "Threat Intelligence",
         "published": "2026-06-30",
-        "type": "CVE_REPORT"
+        "type": "AI_SECURITY"
       },
-      "connections": []
+      "connections": [
+        {
+          "target": "ioc:domain:securityaffairs.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     },
     "REDDIT_CYBER-21f17bdf65daf250": {
       "id": "REDDIT_CYBER-21f17bdf65daf250",
@@ -71909,14 +71920,14 @@
     "campaign:cve-2026-46817": {
       "id": "campaign:cve-2026-46817",
       "type": "Campaign",
-      "name": "The Threat Exploitation Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
       "attributes": {
         "severity": "HIGH",
         "item_count": 1,
         "first_seen": "2026-06-30",
         "last_seen": "2026-06-30",
         "confidence": 0.9,
-        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-46817 | 1 item(s) confirmed exploited in the wild"
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-46817 | 5 shared IOC(s) across items"
       },
       "connections": [
         {
@@ -73333,6 +73344,158 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-48558": {
+      "id": "CVE-2026-48558",
+      "type": "CVE",
+      "name": "SimpleHelp vulnerability exploited to deliver mighty Djinn Stealer (CVE-2026-48558)",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 80,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.helpnetsecurity.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-7045d1a7e4cc8c5e": {
+      "id": "REDDIT_CYBER-7045d1a7e4cc8c5e",
+      "type": "Intel",
+      "name": "Security+ SY0-701 study resource – PBQ scenarios included (most study packs skip these) [OC]",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-c8a193a8742f7996": {
+      "id": "REDDIT_CYBER-c8a193a8742f7996",
+      "type": "Intel",
+      "name": "Quebec water treatment plant attack gains access to control pumps and chlorine dosing",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:3407d8ab962d04053070a26a171a5e8a247de506",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:3407d8ab962d04053070a26a171a5e8a247de506": {
+      "id": "ioc:sha1:3407d8ab962d04053070a26a171a5e8a247de506",
+      "type": "IOC",
+      "name": "3407d8ab962d04053070a26a171a5e8a247de506",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-06-30"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-3ccf1d83915157a5": {
+      "id": "REDDIT_CYBER-3ccf1d83915157a5",
+      "type": "Intel",
+      "name": "For Retrieval-Augmented Generation (RAG) systems, when should influencing retrieved content be considered “data poisoning”?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-06-30",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cve-2026-48558": {
+      "id": "campaign:cve-2026-48558",
+      "type": "Campaign",
+      "name": "SimpleHelp Privilege Escalation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-06-30",
+        "last_seen": "2026-06-30",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-48558 | 5 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-48558",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-b4faa796": {
+      "id": "campaign:cluster-b4faa796",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-06-30",
+        "last_seen": "2026-06-30",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 3 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-7045d1a7e4cc8c5e",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -86844,6 +87007,87 @@
       "target": "ioc:domain:amibeingpwned.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-48558→linked_to→ioc:domain:www.helpnetsecurity.com",
+      "source": "CVE-2026-48558",
+      "target": "ioc:domain:www.helpnetsecurity.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-48558→linked_to→ioc:domain:www.reddit.com",
+      "source": "CVE-2026-48558",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-46817→linked_to→ioc:domain:securityaffairs.com",
+      "source": "CVE-2026-46817",
+      "target": "ioc:domain:securityaffairs.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-46817→linked_to→ioc:domain:www.reddit.com",
+      "source": "CVE-2026-46817",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-7045d1a7e4cc8c5e→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-7045d1a7e4cc8c5e",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-c8a193a8742f7996→linked_to→ioc:sha1:3407d8ab962d04053070a26a171a5e8a247de506",
+      "source": "REDDIT_CYBER-c8a193a8742f7996",
+      "target": "ioc:sha1:3407d8ab962d04053070a26a171a5e8a247de506",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-3ccf1d83915157a5→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-3ccf1d83915157a5",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-48558→includes→CVE-2026-48558",
+      "source": "campaign:cve-2026-48558",
+      "target": "CVE-2026-48558",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-06-30",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-b4faa796→includes→REDDIT_CYBER-7045d1a7e4cc8c5e",
+      "source": "campaign:cluster-b4faa796",
+      "target": "REDDIT_CYBER-7045d1a7e4cc8c5e",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-06-30",
       "sources": []
     }
