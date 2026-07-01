@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-01T19:31:37.752Z",
+  "generated": "2026-07-01T20:01:56.930Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,8 +9,8 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 1564,
   "s2n_stats": {
-    "passed": 87,
-    "suppressed": 9,
+    "passed": 88,
+    "suppressed": 11,
     "avg_qs": 0.551
   },
   "items": [
@@ -4003,6 +4003,54 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-48815",
+      "title": "sigstore's `certificateOIDs` verification constraints are silently dropped and never enforced",
+      "description": "### Summary The documented `certificateOIDs` option in `sigstore.verify()` is accepted by the public API but discarded before verification, so required certificate extension OIDs are never checked. ### Details The public verify options include `certificateOIDs` and the documentation says those OID/v",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-01",
+      "last_seen": "2026-07-01",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "sigstore",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-48815",
+        "CVE-2026-48815"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-52v5-jr5w-gjxr",
+        "https://github.com/sigstore/sigstore-js/security/advisories/GHSA-52v5-jr5w-gjxr",
+        "https://github.com/advisories/GHSA-52v5-jr5w-gjxr"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-49987",
       "title": "repomix Vulnerable to Command Injection (RCE) via `--remote-branch` Argument Injection",
       "description": "### Vulnerability Metadata | Field | Detail |\n| --- | --- |\n| **Affected Component** | `src/core/git/gitCommand.ts` (`execGitShallowClone`) |\n| **Impact** | Arbitrary Command Execution / Security Control Bypass | ### Summary The `--remote-branch` CLI option in `repomix` is vulnerable to argument inj",
@@ -4390,49 +4438,6 @@
       },
       "suppressed": false,
       "suppression_reason": null
-    },
-    {
-      "id": "REDDIT_CYBER-9ad6ce7901253d60",
-      "title": "Threat intelligence CVEs, MITRE ATT&amp;CK, CISA KEV, and 47 security tools.",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;&lt;em&gt;After using expensive TI platforms at work, I wanted something free and open for the whole security community. ThreatScope360 pulls live data from NVD, AlienVault OTX, CISA KEV, and MITRE&amp;#39;s TAXII API.&lt;/em&gt;&lt;/p&gt",
-      "cvss": 6.5,
-      "final_ps": 13,
-      "quality_score": 0.32,
-      "threat_level": "HIGH",
-      "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-01",
-      "last_seen": "2026-07-01",
-      "exploited": false,
-      "cisa_kev": true,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 5,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1uktqmp/threat_intelligence_cves_mitre_attck_cisa_kev_and/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.320"
-        ],
-        "priority": [
-          "base_ps=13 (no boosts)"
-        ],
-        "suppression": "Quality score below minimum threshold (QS < 0.35)",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Quality score below minimum threshold (QS < 0.35)"
     }
   ]
 }
