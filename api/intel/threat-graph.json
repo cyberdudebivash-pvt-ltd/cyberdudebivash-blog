@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-01T15:31:34.879Z",
+  "generated": "2026-07-01T16:02:02.317Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3914,
+    "total_nodes": 3917,
     "actors": 8,
     "cves": 829,
     "campaigns": 356,
     "malware": 0,
-    "iocs": 411,
-    "edges": 1558
+    "iocs": 412,
+    "edges": 1560
   },
   "nodes": {
     "actor:lockbit": {
@@ -75377,6 +75377,65 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-353da6e64a64c7cd": {
+      "id": "REDDIT_CYBER-353da6e64a64c7cd",
+      "type": "Intel",
+      "name": "Have I Been Pwned? Detecting Entra ID Persistence",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-01",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:11bc3ae6bb40780fb6373cd4f2868da3501b5401",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:11bc3ae6bb40780fb6373cd4f2868da3501b5401": {
+      "id": "ioc:sha1:11bc3ae6bb40780fb6373cd4f2868da3501b5401",
+      "type": "IOC",
+      "name": "11bc3ae6bb40780fb6373cd4f2868da3501b5401",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-01"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-292895afe2b4f330": {
+      "id": "REDDIT_CYBER-292895afe2b4f330",
+      "type": "Intel",
+      "name": "does anyone actually use antivirus on their laptops",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-01",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -89437,6 +89496,24 @@
       "target": "REDDIT_CYBER-5a19302cf0d73599",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-353da6e64a64c7cd→linked_to→ioc:sha1:11bc3ae6bb40780fb6373cd4f2868da3501b5401",
+      "source": "REDDIT_CYBER-353da6e64a64c7cd",
+      "target": "ioc:sha1:11bc3ae6bb40780fb6373cd4f2868da3501b5401",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-292895afe2b4f330→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-292895afe2b4f330",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-01",
       "sources": []
     }
