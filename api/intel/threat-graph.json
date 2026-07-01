@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-01T16:02:02.317Z",
+  "generated": "2026-07-01T16:31:36.785Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3917,
+    "total_nodes": 3919,
     "actors": 8,
-    "cves": 829,
-    "campaigns": 356,
+    "cves": 830,
+    "campaigns": 357,
     "malware": 0,
     "iocs": 412,
-    "edges": 1560
+    "edges": 1562
   },
   "nodes": {
     "actor:lockbit": {
@@ -75436,6 +75436,50 @@
           "confidence": 0.75
         }
       ]
+    },
+    "CVE-2026-50548": {
+      "id": "CVE-2026-50548",
+      "type": "CVE",
+      "name": "Zero-Click Prompt Injection to RCE in Cursor IDE: DuneSlide",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 74,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-01",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cve-2026-50548": {
+      "id": "campaign:cve-2026-50548",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-01",
+        "last_seen": "2026-07-01",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 2 related CVEs: CVE-2026-50548, CVE-2026-50549 | 6 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-50548",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -89514,6 +89558,24 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-50548→linked_to→ioc:domain:www.reddit.com",
+      "source": "CVE-2026-50548",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-50548→includes→CVE-2026-50548",
+      "source": "campaign:cve-2026-50548",
+      "target": "CVE-2026-50548",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-01",
       "sources": []
     }
