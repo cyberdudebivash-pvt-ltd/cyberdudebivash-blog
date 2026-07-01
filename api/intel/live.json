@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-01T22:01:54.413Z",
+  "generated": "2026-07-01T22:24:10.094Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1578,
+  "total_published": 1583,
   "s2n_stats": {
     "passed": 88,
-    "suppressed": 10,
+    "suppressed": 9,
     "avg_qs": 0.551
   },
   "items": [
@@ -4003,6 +4003,54 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-50143",
+      "title": "Apify Model Context Protocol (MCP) server: Actor MCP path authority injection leaks Apify token",
+      "description": "## Actor MCP path authority injection leaks Apify token ### Summary `@apify/actors-mcp-server` version `0.10.7` builds Actor standby URLs by directly concatenating a trusted base URL with an attacker-controlled `webServerMcpPath` value taken from an Actor definition returned by the Apify API. An att",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-01",
+      "last_seen": "2026-07-01",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@apify/actors-mcp-server",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50143",
+        "CVE-2026-50143"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-6gr2-qh89-hxwm",
+        "https://github.com/apify/apify-mcp-server/security/advisories/GHSA-6gr2-qh89-hxwm",
+        "https://github.com/advisories/GHSA-6gr2-qh89-hxwm"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-50151",
       "title": "oras-go blob upload vulnerable to credential forwarding via unvalidated Location header",
       "description": "## Summary oras-go follows a registry-controlled `Location` header during the monolithic blob upload flow and reuses the `Authorization` header from the initial `POST` request for the subsequent `PUT` request. If a malicious registry returns a cross-host `Location`, oras-go can send the caller's cre",
@@ -4373,54 +4421,6 @@
         "https://github.com/advisories/GHSA-jmf4-m7j9-g72r",
         "https://github.com/rancher/fleet/security/advisories/GHSA-jmf4-m7j9-g72r",
         "https://github.com/advisories/GHSA-jmf4-m7j9-g72r"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-49998",
-      "title": "Centrifugo's dynamic JWKS key cache keyed only by `kid` allows cross-issuer JWT authentication bypass",
-      "description": "#### Summary Centrifugo's dynamic JWKS endpoint feature can verify a JWT for one allowed issuer using a public key cached from another allowed issuer. The JWKS cache and `singleflight` lookup are keyed only by the JWT header `kid`, not by the resolved JWKS endpoint, issuer, audience, or other trust-",
-      "cvss": 8.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-01",
-      "last_seen": "2026-07-01",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/centrifugal/centrifugo/v6",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49998",
-        "CVE-2026-49998"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-g6vg-wj8f-48cj",
-        "https://github.com/centrifugal/centrifugo/security/advisories/GHSA-g6vg-wj8f-48cj",
-        "https://github.com/advisories/GHSA-g6vg-wj8f-48cj"
       ],
       "explanation": {
         "quality": [
