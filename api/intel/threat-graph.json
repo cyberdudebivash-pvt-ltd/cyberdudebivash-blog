@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-01T18:31:40.760Z",
+  "generated": "2026-07-01T19:01:51.929Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3937,
+    "total_nodes": 3945,
     "actors": 8,
-    "cves": 842,
-    "campaigns": 357,
+    "cves": 845,
+    "campaigns": 358,
     "malware": 0,
-    "iocs": 412,
-    "edges": 1564
+    "iocs": 413,
+    "edges": 1568
   },
   "nodes": {
     "actor:lockbit": {
@@ -75816,6 +75816,162 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-9ad6ce7901253d60": {
+      "id": "REDDIT_CYBER-9ad6ce7901253d60",
+      "type": "Intel",
+      "name": "Threat intelligence CVEs, MITRE ATT&amp;CK, CISA KEV, and 47 security tools.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": false,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-01",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:threatscope360.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:threatscope360.com": {
+      "id": "ioc:domain:threatscope360.com",
+      "type": "IOC",
+      "name": "threatscope360.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-01"
+      },
+      "connections": []
+    },
+    "CVE-2026-49987": {
+      "id": "CVE-2026-49987",
+      "type": "CVE",
+      "name": "repomix Vulnerable to Command Injection (RCE) via `--remote-branch` Argument Injection",
+      "attributes": {
+        "cvss": 8.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "repomix",
+        "published": "2026-07-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-49981": {
+      "id": "CVE-2026-49981",
+      "type": "CVE",
+      "name": "Twig: Sandbox filter, tag and function allow-list bypass when sandbox state changes between renders for a cached `Template`",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "twig/twig",
+        "published": "2026-07-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-49986": {
+      "id": "CVE-2026-49986",
+      "type": "CVE",
+      "name": "Cortex has Untrusted Project Bootstrap Code Execution via `CLAUDE_PROJECT_DIR`",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "neuro-cortex-memory",
+        "published": "2026-07-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-f9c246640a7f38f2": {
+      "id": "GHSA-f9c246640a7f38f2",
+      "type": "Intel",
+      "name": "pay-rails/pay: non-constant-time HMAC comparison in Paddle Billing webhook signature verifier",
+      "attributes": {
+        "cvss": 7.4,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "rubygems",
+        "product": "pay",
+        "published": "2026-07-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-de9fbb4314a35e69": {
+      "id": "REDDIT_CYBER-de9fbb4314a35e69",
+      "type": "Intel",
+      "name": "Ot security job market",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-01",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-6ab6ea6d": {
+      "id": "campaign:cluster-6ab6ea6d",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-01",
+        "last_seen": "2026-07-01",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 5 shared IOC(s) across items | 1 item(s) on CISA Known Exploited Vulnerabilities list"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-9ad6ce7901253d60",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -89930,6 +90086,42 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-9ad6ce7901253d60→linked_to→ioc:domain:threatscope360.com",
+      "source": "REDDIT_CYBER-9ad6ce7901253d60",
+      "target": "ioc:domain:threatscope360.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-9ad6ce7901253d60→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-9ad6ce7901253d60",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-de9fbb4314a35e69→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-de9fbb4314a35e69",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-6ab6ea6d→includes→REDDIT_CYBER-9ad6ce7901253d60",
+      "source": "campaign:cluster-6ab6ea6d",
+      "target": "REDDIT_CYBER-9ad6ce7901253d60",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-01",
       "sources": []
     }
