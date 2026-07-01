@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-01T20:01:56.930Z",
+  "generated": "2026-07-01T20:31:41.391Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,91 +8,45 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 99,
+  "count": 100,
   "items": [
     {
-      "id": "THEHACKERNEWS-ea36e4db98f1fe54",
-      "title": "Unpatched Argo CD Repo-Server Flaw Could Let Attackers Take Over Kubernetes Clusters",
-      "description": "Argo CD, a widely used tool for deploying software to Kubernetes, has an unpatched flaw in its repo-server component that lets an unauthenticated attacker run code, provided they can reach the component's internal network port. Synacktiv, which found the bug, says it can lead to a full cluster takeo",
+      "id": "BLEEPINGCOMPUTER-103946c5beb0407e",
+      "title": "ChocoPoc malware delivered via trojanized exploits on GitHub",
+      "description": "Multiple weaponized proof-of-concept (PoC) exploits on GitHub delivered a Python-based remote access trojan (RAT) called ChocoPoC that can execute commands and steal sensitive data. [...]",
       "cvss": 6.5,
-      "final_ps": 52,
-      "quality_score": 0.408,
-      "threat_level": "MEDIUM",
-      "type": "CLOUD_SECURITY",
-      "source": "thehackernews",
+      "final_ps": 75,
+      "quality_score": 0.51,
+      "threat_level": "HIGH",
+      "type": "MALWARE_REPORT",
+      "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
-        "thehackernews"
+        "bleepingcomputer"
       ],
       "first_seen": "2026-07-01",
       "last_seen": "2026-07-01",
-      "exploited": false,
+      "exploited": true,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "The Hacker News",
+      "vendor": "BleepingComputer",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://thehackernews.com/2026/07/unpatched-argo-cd-repo-server-flaw.html"
+        "https://www.bleepingcomputer.com/news/security/chocopoc-malware-delivered-via-trojanized-exploits-on-github/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.55 (thehackernews)",
+          "source_weight=0.72 (bleepingcomputer)",
           "data_confidence=0.80",
           "recency=0d (score=1.00)",
-          "QS=0.408"
+          "QS=0.510"
         ],
         "priority": [
-          "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-683c8a26ad51033e",
-      "title": "SurrealDB: HTTP /rpc `sessions` method leaks attached session UUIDs, enabling full session hijack by anonymous callers",
-      "description": "The HTTP `/rpc` `sessions` method returned every attached session UUID without authentication, and the `/rpc` handler accepted an arbitrary `session` field with no ownership check. An anonymous caller could enumerate UUIDs and impersonate any authenticated session. \"Attached\" means sessions register",
-      "cvss": 8.8,
-      "final_ps": 51,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-01",
-      "last_seen": "2026-07-01",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "surrealdb",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-5qfp-32cf-69jh",
-        "https://github.com/surrealdb/surrealdb/security/advisories/GHSA-5qfp-32cf-69jh",
-        "https://github.com/surrealdb/surrealdb/commit/fd800fc7c55afcdc97057d18cf7cb7f83557e702",
-        "https://github.com/advisories/GHSA-5qfp-32cf-69jh"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=51 (no boosts)"
+          "+12 PoC_available",
+          "+8 exploited_in_wild"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -187,6 +141,100 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "GHSA-29f3c1318e42594e",
+      "title": "SurrealDB: HTTP RPC Session Race Condition Allows Privilege Escalation",
+      "description": "The HTTP `/rpc` endpoint has a time-of-check/time-of-use (TOCTOU) race condition on internal session state. When authenticated and unauthenticated requests are processed concurrently, the unauthenticated request can inherit the authenticated user's session and privileges. The `/rpc` endpoint is the ",
+      "cvss": 8.1,
+      "final_ps": 49,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-01",
+      "last_seen": "2026-07-01",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "surrealdb",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4vgr-h27g-cf9p",
+        "https://github.com/surrealdb/surrealdb/security/advisories/GHSA-4vgr-h27g-cf9p",
+        "https://github.com/surrealdb/surrealdb/commit/2f53e6e86d1b87e38300e714cfd7aede1abe4c3d",
+        "https://github.com/surrealdb/surrealdb/commit/fd800fc7c55afcdc97057d18cf7cb7f83557e702"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=49 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-dea74cc4e6a2b944",
+      "title": "SurrealDB has unauthenticated remote DoS via malformed RPC `use` call",
+      "description": "A single unauthenticated WebSocket message to `/rpc` crashed the SurrealDB server. Sending `use { db: \"x\" }` without first selecting a namespace hit `.expect(\"namespace should be set\")` in the `use` handler; because `surrealdb-core` is built with `panic = 'abort'`, the panic terminated the process. ",
+      "cvss": 7.5,
+      "final_ps": 48,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-01",
+      "last_seen": "2026-07-01",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "surrealdb",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-wjjj-24cx-f28g",
+        "https://github.com/surrealdb/surrealdb/security/advisories/GHSA-wjjj-24cx-f28g",
+        "https://github.com/surrealdb/surrealdb/commit/1537ec4fbd789c61a5b43b648a854577dbe31a34",
+        "https://github.com/advisories/GHSA-wjjj-24cx-f28g"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -372,147 +420,6 @@
       "iocs": []
     },
     {
-      "id": "REDDIT_CYBER-06c606f9688d5159",
-      "title": "Claude Code -&gt; WriteFile -&gt; Semgrep -&gt; Classifier (to prevent security bug)",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Hi all, &lt;/p&gt; &lt;p&gt;not sure this is the right approach, but I&amp;#39;ve been testing it in my coding agent. Every time it writes a file, the hook runs Semgrep against it to catch &lt;strong&gt;unsanitized user input&lt;/strong&g",
-      "cvss": 6.5,
-      "final_ps": 45,
-      "quality_score": 0.495,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-01",
-      "last_seen": "2026-07-01",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 4,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1ukvvl1/claude_code_writefile_semgrep_classifier_to/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "ioc_presence=4 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.495"
-        ],
-        "priority": [
-          "base_ps=45 (no boosts)"
-        ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "url",
-          "value": "https://github.com/theMiddleBlue/vibegate&quot;&gt;https://github.com/theMiddleBlue/vibegate&lt;/a&g",
-          "confidence_score": 0.82,
-          "first_seen": "2026-07-01",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/theMiddleBlue&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-07-01",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1ukvvl1/claude_code_writefile_semgrep_classifier_to/",
-          "confidence_score": 0.82,
-          "first_seen": "2026-07-01",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-07-01",
-          "source_count": 1
-        }
-      ]
-    },
-    {
-      "id": "REDDIT_CYBER-22d72835d6089b21",
-      "title": "User went to China and managed to download Application.",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;I had someone from the company take a device to China for work and downloaded VLC player. &lt;/p&gt; &lt;p&gt;My first thought is to immediately reimage. Is there anything else I should do?&lt;/p&gt; &lt;/div&gt;&lt;!-- SC_ON --&gt; &amp;",
-      "cvss": 6.5,
-      "final_ps": 43,
-      "quality_score": 0.465,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-01",
-      "last_seen": "2026-07-01",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 3,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1ukvt9k/user_went_to_china_and_managed_to_download/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "ioc_presence=3 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.465"
-        ],
-        "priority": [
-          "base_ps=43 (no boosts)"
-        ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/user/Equal_Ice2513&quot;&gt;",
-          "confidence_score": 0.82,
-          "first_seen": "2026-07-01",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://www.reddit.com/r/cybersecurity/comments/1ukvt9k/user_went_to_china_and_managed_to_download/&",
-          "confidence_score": 0.82,
-          "first_seen": "2026-07-01",
-          "source_count": 1
-        },
-        {
-          "type": "domain",
-          "value": "www.reddit.com",
-          "confidence_score": 0.75,
-          "first_seen": "2026-07-01",
-          "source_count": 1
-        }
-      ]
-    },
-    {
       "id": "CVE-2026-32202",
       "title": "CVE-2026-32202: Microsoft Windows Protection Mechanism Failure Vulnerability — CISA KEV Active Exploitation",
       "description": "",
@@ -556,6 +463,52 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_CYBER-6757d76e18da3c9b",
+      "title": "ssh-keysign-pwn: Linux LPE allows unprivileged users to read root-owned files. PoC with SSH server privkey",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 42,
+      "quality_score": 0.38,
+      "threat_level": "LOW",
+      "type": "ZERO_DAY",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-05-15",
+      "last_seen": "2026-05-15",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1tdpq0a/sshkeysignpwn_linux_lpe_allows_unprivileged_users/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+12 PoC_available",
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -2506,6 +2459,51 @@
       "iocs": []
     },
     {
+      "id": "REDDIT_CYBER-634e03182dd384cb",
+      "title": "CISA: Windows BlueHammer flaw now exploited by ransomware gangs",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 33,
+      "quality_score": 0.38,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-06-30",
+      "last_seen": "2026-06-30",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1ujkotd/cisa_windows_bluehammer_flaw_now_exploited_by/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "DARKREADING-357db3c091c4a374",
       "title": "Unpatched 'PhantomRPC' Flaw in Windows Enables Privilege Escalation",
       "description": "",
@@ -4191,6 +4189,55 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-49998",
+      "title": "Centrifugo's dynamic JWKS key cache keyed only by `kid` allows cross-issuer JWT authentication bypass",
+      "description": "",
+      "cvss": 8.2,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-01",
+      "last_seen": "2026-07-01",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/centrifugal/centrifugo/v6",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49998",
+        "CVE-2026-49998"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-g6vg-wj8f-48cj",
+        "https://github.com/centrifugal/centrifugo/security/advisories/GHSA-g6vg-wj8f-48cj",
+        "https://github.com/advisories/GHSA-g6vg-wj8f-48cj"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-48815",
       "title": "sigstore's `certificateOIDs` verification constraints are silently dropped and never enforced",
       "description": "",
@@ -4537,12 +4584,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2022-46294",
-      "title": "Open Babel has out-of-bounds write in MOPAC IN translationVectors[] (Tv atom)",
+      "id": "GHSA-e796fe5982e5555a",
+      "title": "SurrealDB has Denial of Service in JSON parser due to nested objects",
       "description": "",
-      "cvss": 7.8,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "cvss": 7.5,
+      "final_ps": 20,
+      "quality_score": 0.493,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "github_advisories",
@@ -4555,85 +4602,32 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "pip",
-      "product": "openbabel",
+      "vendor": "rust",
+      "product": "surrealdb",
       "due_date": null,
-      "cves": [
-        "CVE-2022-46294",
-        "CVE-2022-46294"
-      ],
+      "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-mjmg-352j-f456",
-        "https://github.com/openbabel/openbabel/security/advisories/GHSA-mjmg-352j-f456",
-        "https://nvd.nist.gov/vuln/detail/CVE-2022-46294",
-        "https://github.com/openbabel/openbabel/commit/40e852138f21d586b7ccdce6329e7b23a87168bb"
+        "https://github.com/advisories/GHSA-q729-696q-g9pq",
+        "https://github.com/surrealdb/surrealdb/security/advisories/GHSA-q729-696q-g9pq",
+        "https://github.com/surrealdb/surrealdb/commit/1bd9826f477f4089134460dc5574b6f4e6916973",
+        "https://github.com/advisories/GHSA-q729-696q-g9pq"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.493"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=20 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2022-46293",
-      "title": "Open Babel has out-of-bounds write in MOPAC translationVectors[] (FINAL POINT)",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-01",
-      "last_seen": "2026-07-01",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "openbabel",
-      "due_date": null,
-      "cves": [
-        "CVE-2022-46293",
-        "CVE-2022-46293"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7h6r-6p76-68c9",
-        "https://github.com/openbabel/openbabel/security/advisories/GHSA-7h6r-6p76-68c9",
-        "https://nvd.nist.gov/vuln/detail/CVE-2022-46293",
-        "https://github.com/openbabel/openbabel/commit/40e852138f21d586b7ccdce6329e7b23a87168bb"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-01T20:01:56.930Z",
+  "generated": "2026-07-01T20:31:41.391Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1564,
+  "total_published": 1568,
   "s2n_stats": {
-    "passed": 88,
-    "suppressed": 11,
+    "passed": 87,
+    "suppressed": 13,
     "avg_qs": 0.551
   },
   "items": [
@@ -4003,6 +4003,54 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-49998",
+      "title": "Centrifugo's dynamic JWKS key cache keyed only by `kid` allows cross-issuer JWT authentication bypass",
+      "description": "#### Summary Centrifugo's dynamic JWKS endpoint feature can verify a JWT for one allowed issuer using a public key cached from another allowed issuer. The JWKS cache and `singleflight` lookup are keyed only by the JWT header `kid`, not by the resolved JWKS endpoint, issuer, audience, or other trust-",
+      "cvss": 8.2,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-01",
+      "last_seen": "2026-07-01",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/centrifugal/centrifugo/v6",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49998",
+        "CVE-2026-49998"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-g6vg-wj8f-48cj",
+        "https://github.com/centrifugal/centrifugo/security/advisories/GHSA-g6vg-wj8f-48cj",
+        "https://github.com/advisories/GHSA-g6vg-wj8f-48cj"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-48815",
       "title": "sigstore's `certificateOIDs` verification constraints are silently dropped and never enforced",
       "description": "### Summary The documented `certificateOIDs` option in `sigstore.verify()` is accepted by the public API but discarded before verification, so required certificate extension OIDs are never checked. ### Details The public verify options include `certificateOIDs` and the documentation says those OID/v",
@@ -4342,12 +4390,12 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2022-46294",
-      "title": "Open Babel has out-of-bounds write in MOPAC IN translationVectors[] (Tv atom)",
-      "description": "### Summary A memory-safety vulnerability in Open Babel's MOPAC input parser\nallowed an out-of-bounds write into the `translationVectors[]` array\nwhen reading Tv (translation-vector) atoms from a crafted input\nfile. ### Details The MOPAC IN reader stored Tv-atom translation vectors into a\nfixed-size",
-      "cvss": 7.8,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "id": "GHSA-e796fe5982e5555a",
+      "title": "SurrealDB has Denial of Service in JSON parser due to nested objects",
+      "description": "The SurrealDB value and JSON parser did not enforce the configured recursion depth limit when parsing nested `{`, `[`, or `(` tokens. The expression parser already enforced the limit for these tokens; the value/JSON parser omitted it. An unauthenticated attacker could send a deeply nested JSON paylo",
+      "cvss": 7.5,
+      "final_ps": 20,
+      "quality_score": 0.493,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "github_advisories",
@@ -4360,84 +4408,32 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "pip",
-      "product": "openbabel",
+      "vendor": "rust",
+      "product": "surrealdb",
       "due_date": null,
-      "cves": [
-        "CVE-2022-46294",
-        "CVE-2022-46294"
-      ],
-      "ioc_count": 0,
+      "cves": [],
+      "ioc_count": 1,
       "refs": [
-        "https://github.com/advisories/GHSA-mjmg-352j-f456",
-        "https://github.com/openbabel/openbabel/security/advisories/GHSA-mjmg-352j-f456",
-        "https://nvd.nist.gov/vuln/detail/CVE-2022-46294",
-        "https://github.com/openbabel/openbabel/commit/40e852138f21d586b7ccdce6329e7b23a87168bb"
+        "https://github.com/advisories/GHSA-q729-696q-g9pq",
+        "https://github.com/surrealdb/surrealdb/security/advisories/GHSA-q729-696q-g9pq",
+        "https://github.com/surrealdb/surrealdb/commit/1bd9826f477f4089134460dc5574b6f4e6916973",
+        "https://github.com/advisories/GHSA-q729-696q-g9pq"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.493"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=20 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2022-46293",
-      "title": "Open Babel has out-of-bounds write in MOPAC translationVectors[] (FINAL POINT)",
-      "description": "### Summary A memory-safety vulnerability in Open Babel's MOPAC output parser\nallowed an out-of-bounds write into the `translationVectors[]` array\nwhen reading the \"FINAL POINT\" block of a crafted input file. ### Details The MOPAC output reader stored translation vectors from the FINAL\nPOINT block i",
-      "cvss": 7.8,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-01",
-      "last_seen": "2026-07-01",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "openbabel",
-      "due_date": null,
-      "cves": [
-        "CVE-2022-46293",
-        "CVE-2022-46293"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7h6r-6p76-68c9",
-        "https://github.com/openbabel/openbabel/security/advisories/GHSA-7h6r-6p76-68c9",
-        "https://nvd.nist.gov/vuln/detail/CVE-2022-46293",
-        "https://github.com/openbabel/openbabel/commit/40e852138f21d586b7ccdce6329e7b23a87168bb"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     }
   ]
 }
