@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-01T13:31:38.099Z",
+  "generated": "2026-07-01T14:01:52.130Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3903,
+    "total_nodes": 3907,
     "actors": 8,
-    "cves": 828,
+    "cves": 829,
     "campaigns": 355,
     "malware": 0,
-    "iocs": 408,
-    "edges": 1546
+    "iocs": 409,
+    "edges": 1550
   },
   "nodes": {
     "actor:lockbit": {
@@ -75136,6 +75136,94 @@
           "confidence": 0.75
         }
       ]
+    },
+    "CVE-2026-53657": {
+      "id": "CVE-2026-53657",
+      "type": "CVE",
+      "name": "Privilege escalation to root in Lima QEMU guests via a world-writable agent socket (CVE-2026-53657)",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_NETSEC-0ac86b38b6dbc527": {
+      "id": "REDDIT_NETSEC-0ac86b38b6dbc527",
+      "type": "Intel",
+      "name": "Symfony YAML Security Audit - Shielder",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-01",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.shielder.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:www.shielder.com": {
+      "id": "ioc:domain:www.shielder.com",
+      "type": "IOC",
+      "name": "www.shielder.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-01"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-fd04259effb04d89": {
+      "id": "REDDIT_NETSEC-fd04259effb04d89",
+      "type": "Intel",
+      "name": "r/netsec monthly discussion &amp; tool thread",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-01",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -89085,6 +89173,42 @@
     {
       "id": "REDDIT_CYBER-8f6d517eea0bfe12→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_CYBER-8f6d517eea0bfe12",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53657→linked_to→ioc:domain:www.reddit.com",
+      "source": "CVE-2026-53657",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-0ac86b38b6dbc527→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-0ac86b38b6dbc527",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-0ac86b38b6dbc527→linked_to→ioc:domain:www.shielder.com",
+      "source": "REDDIT_NETSEC-0ac86b38b6dbc527",
+      "target": "ioc:domain:www.shielder.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-fd04259effb04d89→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-fd04259effb04d89",
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
