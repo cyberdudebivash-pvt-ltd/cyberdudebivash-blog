@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-02T17:31:33.372Z",
+  "generated": "2026-07-02T18:01:58.145Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1636,
+  "total_published": 1644,
   "s2n_stats": {
-    "passed": 84,
-    "suppressed": 13,
+    "passed": 85,
+    "suppressed": 9,
     "avg_qs": 0.552
   },
   "items": [
@@ -4226,56 +4226,13 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
-      "id": "REDDIT_CYBER-65e008c9bf6c9a80",
-      "title": "Canada’s electronic spy agency conducted cyberattacks on fentanyl brokers &amp; ransomware gangs, and countered China cy",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1ul4ki1/canadas_electronic_spy_agency_conducted/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/fLW9gQqzDcWTvNy5g-J-YHpGZUrIgHnfGZMbjBgzql8.jpeg?width=640&amp;amp;crop=smart&amp;amp;auto",
-      "cvss": 6.5,
-      "final_ps": 23,
-      "quality_score": 0.32,
+      "id": "CVE-2026-52854",
+      "title": "mediawiki/maps has stored XSS through the overlays parameter in the display_map parser function",
+      "description": "### Summary\nStored XSS through wikitext can be performed by inserting malicious HTML into the `overlays` parameter of the `display_map` parser function when using the leaflet service. ### Details\nThe maps extension doesn't escape overlay names before passing them to leaflet.\nLeaflet then inserts the",
+      "cvss": 8.6,
+      "final_ps": 21,
+      "quality_score": 0.523,
       "threat_level": "HIGH",
-      "type": "RANSOMWARE",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-02",
-      "last_seen": "2026-07-02",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1ul4ki1/canadas_electronic_spy_agency_conducted/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.320"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed"
-        ],
-        "suppression": "Quality score below minimum threshold (QS < 0.35)",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Quality score below minimum threshold (QS < 0.35)"
-    },
-    {
-      "id": "CVE-2026-53811",
-      "title": "OpenClaw: Matrix allowFrom could bind to mutable display names",
-      "description": "### Summary Matrix allowFrom could bind to mutable display names. In affected versions, a Matrix account able to change display name metadata could match a policy entry through mutable display metadata. This advisory is scoped to the named feature and configuration. It does not change OpenClaw's tru",
-      "cvss": 8.8,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "github_advisories",
       "sources_confirmed": 1,
@@ -4287,19 +4244,18 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "npm",
-      "product": "openclaw",
+      "vendor": "composer",
+      "product": "mediawiki/maps",
       "due_date": null,
       "cves": [
-        "CVE-2026-53811",
-        "CVE-2026-53811"
+        "CVE-2026-52854",
+        "CVE-2026-52854"
       ],
-      "ioc_count": 0,
+      "ioc_count": 2,
       "refs": [
-        "https://github.com/advisories/GHSA-7hxm-f538-3xp6",
-        "https://github.com/openclaw/openclaw/security/advisories/GHSA-7hxm-f538-3xp6",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-53811",
-        "https://www.vulncheck.com/advisories/openclaw-privilege-escalation-via-mutable-display-names-in-matrix-allowfrom"
+        "https://github.com/advisories/GHSA-4h7g-5542-v3fc",
+        "https://github.com/ProfessionalWiki/Maps/security/advisories/GHSA-4h7g-5542-v3fc",
+        "https://github.com/advisories/GHSA-4h7g-5542-v3fc"
       ],
       "explanation": {
         "quality": [
@@ -4318,10 +4274,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-53806",
-      "title": "OpenClaw: Combined POSIX shell options could confuse exec revalidation",
-      "description": "### Summary Combined POSIX shell options could confuse exec revalidation. In affected versions, a command request using combined shell flags could parse approval-time and execution-time shell options differently. This advisory is scoped to the named feature and configuration. It does not change Open",
-      "cvss": 8.8,
+      "id": "CVE-2026-50180",
+      "title": "Langroid: SQLChatAgent _validate_query blocklist misses pg_read_file family enabling arbitrary file read",
+      "description": "### Summary `SQLChatAgent` in `langroid` ships a `_validate_query` defense-in-depth layer\nwhose `_DANGEROUS_SQL_PATTERNS` regex blocklist enumerates dangerous SQL\nprimitives by specific function name. The list misses the canonical\nPostgreSQL filesystem-disclosure family `pg_read_file()`, `pg_stat_fi",
+      "cvss": 7.5,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4336,19 +4292,19 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "npm",
-      "product": "openclaw",
+      "vendor": "pip",
+      "product": "langroid",
       "due_date": null,
       "cves": [
-        "CVE-2026-53806",
-        "CVE-2026-53806"
+        "CVE-2026-50180",
+        "CVE-2026-50180"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-vxx3-6hc9-7cc3",
-        "https://github.com/openclaw/openclaw/security/advisories/GHSA-vxx3-6hc9-7cc3",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-53806",
-        "https://www.vulncheck.com/advisories/openclaw-shell-option-parsing-bypass-in-exec-revalidation"
+        "https://github.com/advisories/GHSA-pmch-g965-grmr",
+        "https://github.com/langroid/langroid/security/advisories/GHSA-pmch-g965-grmr",
+        "https://github.com/langroid/langroid/commit/00b7dd7b79c5d03c94be284cf3459d98195ebfba",
+        "https://github.com/advisories/GHSA-pmch-g965-grmr"
       ],
       "explanation": {
         "quality": [
@@ -4367,10 +4323,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-53816",
-      "title": "OpenClaw: Paired nodes could forge exec lifecycle events without system.run provenance",
-      "description": "### Summary OpenClaw nodes send lifecycle events back to the gateway. In affected releases, a paired node could send an exec lifecycle event that was accepted without enough provenance tying it to an authorized `system.run` request. This issue affects the node event boundary. It does not allow an un",
-      "cvss": 7.2,
+      "id": "CVE-2026-50181",
+      "title": "Langroid: Path traversal in the file tools allows read/write outside configured current directory",
+      "description": "### Summary Langroid's `ReadFileTool` and `WriteFileTool` appear to treat `curr_dir` as the intended working-directory boundary for file operations. However, the tools only change the process working directory to `curr_dir` and then operate on the user-supplied `file_path` without resolving and enfo",
+      "cvss": 7.1,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4385,19 +4341,68 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "npm",
-      "product": "openclaw",
+      "vendor": "pip",
+      "product": "langroid",
       "due_date": null,
       "cves": [
-        "CVE-2026-53816",
-        "CVE-2026-53816"
+        "CVE-2026-50181",
+        "CVE-2026-50181"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-3c6j-hq33-3jv4",
-        "https://github.com/openclaw/openclaw/security/advisories/GHSA-3c6j-hq33-3jv4",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-53816",
-        "https://www.vulncheck.com/advisories/openclaw-exec-lifecycle-event-forgery-via-paired-node"
+        "https://github.com/advisories/GHSA-fg23-3346-88f5",
+        "https://github.com/langroid/langroid/security/advisories/GHSA-fg23-3346-88f5",
+        "https://github.com/langroid/langroid/commit/56e2756ecab70a70a7e6edbee2f2187b8484683e",
+        "https://github.com/advisories/GHSA-fg23-3346-88f5"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-52726",
+      "title": "Dulwich's submodule path traversal in porcelain.submodule_update / porcelain.clone(recurse_submodules=True) yields RCE v",
+      "description": "### Summary `dulwich.porcelain.submodule_update`, and by extension `porcelain.clone(..., recurse_submodules=True)`, materializes attacker-controlled submodule paths from a crafted upstream repository without path validation. A malicious `.gitmodules` plus a matching tree gitlink whose `path` is `.gi",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-02",
+      "last_seen": "2026-07-02",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "dulwich",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52726",
+        "CVE-2026-52726"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-gfhv-vqv2-4544",
+        "https://github.com/jelmer/dulwich/security/advisories/GHSA-gfhv-vqv2-4544",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-52726",
+        "https://github.com/jelmer/dulwich/releases/tag/dulwich-1.2.5"
       ],
       "explanation": {
         "quality": [
