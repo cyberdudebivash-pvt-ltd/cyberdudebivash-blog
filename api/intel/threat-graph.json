@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-02T00:01:47.685Z",
+  "generated": "2026-07-02T00:31:47.076Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3969,
+    "total_nodes": 3972,
     "actors": 8,
     "cves": 856,
     "campaigns": 358,
     "malware": 0,
-    "iocs": 415,
-    "edges": 1572
+    "iocs": 416,
+    "edges": 1574
   },
   "nodes": {
     "actor:lockbit": {
@@ -6598,7 +6598,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-07-01"
+        "first_seen": "2026-07-02"
       },
       "connections": []
     },
@@ -76414,6 +76414,65 @@
         "first_seen": "2026-07-01"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-2ff769d99b6552e6": {
+      "id": "REDDIT_CYBER-2ff769d99b6552e6",
+      "type": "Intel",
+      "name": "DHS Breached",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-02",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.nextgov.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:www.nextgov.com": {
+      "id": "ioc:domain:www.nextgov.com",
+      "type": "IOC",
+      "name": "www.nextgov.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-02"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-1e153e5453e0522b": {
+      "id": "REDDIT_CYBER-1e153e5453e0522b",
+      "type": "Intel",
+      "name": "Has anyone here joined the nuKudo cybersecurity program?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-01",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -90601,6 +90660,24 @@
       "relationship": "linked_to",
       "confidence": 0.9,
       "first_seen": "2026-07-01",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-2ff769d99b6552e6→linked_to→ioc:domain:www.nextgov.com",
+      "source": "REDDIT_CYBER-2ff769d99b6552e6",
+      "target": "ioc:domain:www.nextgov.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-02",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-1e153e5453e0522b→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-1e153e5453e0522b",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-02",
       "sources": []
     }
   ]
