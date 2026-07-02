@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-02T20:31:48.472Z",
+  "generated": "2026-07-02T21:01:46.351Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1677,
+  "total_published": 1687,
   "s2n_stats": {
     "passed": 88,
-    "suppressed": 10,
+    "suppressed": 9,
     "avg_qs": 0.551
   },
   "items": [
@@ -4001,6 +4001,249 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-52834",
+      "title": "jxl-grid on 32-bit platforms has an out-of-bounds writes due to integer overflow",
+      "description": "### Summary On 32-bit platforms, decoding a crafted image may lead to out-of-bounds writes due to integer overflow in length calculation. ### Details & PoC The test listed below fail under miri with command `cargo +nightly miri test --release -p jxl-grid` Or you can use Address Sanitizer, which igno",
+      "cvss": 7.3,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-02",
+      "last_seen": "2026-07-02",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "jxl-grid",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52834",
+        "CVE-2026-52834"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-5pmv-rx8r-wmv5",
+        "https://github.com/tirr-c/jxl-oxide/security/advisories/GHSA-5pmv-rx8r-wmv5",
+        "https://rustsec.org/advisories/RUSTSEC-2026-0151.html",
+        "https://github.com/advisories/GHSA-5pmv-rx8r-wmv5"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-46599",
+      "title": "golang.org/x/image/tiff has excessive resource consumption in PackBits decompression",
+      "description": "The TIFF decoder does not place a limit on the size of PackBits-compressed data. A maliciously-crafted image can exploit this to cause a small image (both in terms of pixel width/height and encoded size) to make the decoder decode large amounts of compressed data.",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-02",
+      "last_seen": "2026-07-02",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "golang.org/x/image",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-46599",
+        "CVE-2026-46599"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-q675-qj96-32m9",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-46599",
+        "https://go.dev/cl/759960",
+        "https://go.dev/issue/79577"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-52792",
+      "title": "Algernon vulnerable to server-side script source disclosure on Windows via NTFS filename",
+      "description": "### Summary Algernon selects its file handler from `filepath.Ext()` (engine/handlers.go:134), which does not treat the NTFS-equivalent names `x.lua::$DATA`, `x.lua.`, or `x.lua ` as `.lua`. On Windows, an unauthenticated client appends one of these suffixes to any server-side script on a public path",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-02",
+      "last_seen": "2026-07-02",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/xyproto/algernon",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52792",
+        "CVE-2026-52792"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-mm6c-5j6x-hq8m",
+        "https://github.com/xyproto/algernon/security/advisories/GHSA-mm6c-5j6x-hq8m",
+        "https://github.com/advisories/GHSA-mm6c-5j6x-hq8m"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-2092",
+      "title": "Keycloak: Unauthorized access via improper validation of encrypted SAML assertions",
+      "description": "Keycloak's SAML broker endpoint does not properly validate encrypted assertions when the overall SAML response is not signed. An attacker with a valid signed SAML assertion can exploit this by crafting a malicious SAML response, injecting an encrypted assertion for an arbitrary principal, leading to",
+      "cvss": 7.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-02",
+      "last_seen": "2026-07-02",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "org.keycloak:keycloak-services",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-2092",
+        "CVE-2026-2092"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-794g-x443-36f7",
+        "https://github.com/keycloak/keycloak/security/advisories/GHSA-794g-x443-36f7",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-2092",
+        "https://github.com/keycloak/keycloak/pull/46929"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-49284",
+      "title": "SimpleSAMLphp SP accepts a response from an unexpected IdP when unsigned `Response/InResponseTo` is combined with a sign",
+      "description": "## Summary SimpleSAMLphp's SAML SP ACS path does not enforce the IdP selected for an SP-initiated login. If a saved SP state contains `ExpectedIssuer = IdP A`, but the ACS receives a valid response from `IdP B`, the code logs a warning and continues processing instead of rejecting the response. That",
+      "cvss": 7.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-02",
+      "last_seen": "2026-07-02",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "simplesamlphp/simplesamlphp",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49284",
+        "CVE-2026-49284"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-q8r6-xj3f-wrrm",
+        "https://github.com/simplesamlphp/simplesamlphp/security/advisories/GHSA-q8r6-xj3f-wrrm",
+        "https://github.com/advisories/GHSA-q8r6-xj3f-wrrm"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-52817",
       "title": "Linuxfabrik Monitoring Plugins: Sudoers may be able to obtain privilege escalation via /usr/bin/apt-get arguments",
       "description": "### Summary\nIn the [Debian.sudoers](https://github.com/Linuxfabrik/monitoring-plugins/blob/main/assets/sudoers/Debian.sudoers) file, `apt-get` is allowed for the nagios user. The full command including the arguments are not enforced and can therefore be choosen arbitrarily. This allows to easily get",
@@ -4177,249 +4420,6 @@
         "https://github.com/SteeltoeOSS/security-advisories/security/advisories/GHSA-58f6-6rj2-3v8r",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-50194",
         "https://github.com/SteeltoeOSS/Steeltoe/commit/4cbc352fe89ac2e6c609554e435ab28996fec5e9"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-50200",
-      "title": "Steeltoe's env sanitizer misses connection strings — leaks embedded DB passwords",
-      "description": "### Summary The `Sanitizer` component in the Environment actuator redacts configuration values by matching the configuration key name against a suffix list. The default list (`password`, `secret`, `key`, `token`, `.*credentials.*`, `vcap_services`) does not cover the standard .NET pattern `Connectio",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-02",
-      "last_seen": "2026-07-02",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "nuget",
-      "product": "Steeltoe.Management.Endpoint",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-50200",
-        "CVE-2026-50200"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-q62h-354g-5r85",
-        "https://github.com/SteeltoeOSS/security-advisories/security/advisories/GHSA-q62h-354g-5r85",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-50200",
-        "https://github.com/SteeltoeOSS/Steeltoe/commit/bef9f14b710232fca3fbe87e48fdd1b9e6b60d43"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-50196",
-      "title": "Steeltoe.Discovery.Eureka: Unrecognized DataCenterInfo.Name poisons entire registry fetch",
-      "description": "### Summary `DataCenterInfo.FromJson` throws `ArgumentException` for any `name` value other than `\"MyOwn\"` or `\"Amazon\"`, despite the Java Eureka specification defining a third valid value: `\"Netflix\"`. The exception propagates through the entire registry deserialization chain and is swallowed by th",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-02",
-      "last_seen": "2026-07-02",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "nuget",
-      "product": "Steeltoe.Discovery.Eureka",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-50196",
-        "CVE-2026-50196"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-j8ph-6fxj-g533",
-        "https://github.com/SteeltoeOSS/security-advisories/security/advisories/GHSA-j8ph-6fxj-g533",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-50196",
-        "https://github.com/SteeltoeOSS/Steeltoe/commit/b8ed8557bb595863e4f340051d16b26ba40a75f4"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-49289",
-      "title": "SimpleSAMLphp has Possible DoS via XPath Transform",
-      "description": "## Summary This library turned out to be vulnerable to Denial-of-Service attacks using XPath transforms. A mitigation has been put in place to restrict the number of transforms and to restrict transforms to only the transform-algorithms mentioned in the SAML 2.0 Core Specifications (and specifically",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-02",
-      "last_seen": "2026-07-02",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "simplesamlphp/saml2",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49289",
-        "CVE-2026-49289"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-5cjr-mxj5-wmrx",
-        "https://github.com/simplesamlphp/saml2/security/advisories/GHSA-5cjr-mxj5-wmrx",
-        "https://github.com/advisories/GHSA-5cjr-mxj5-wmrx"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-52829",
-      "title": "Zebra Address Book Aborted by IPv4-Mapped Mempool Misbehavior Update",
-      "description": "### Am I affected You are affected if: 1. You run `zebrad` up to and including `v4.4.1`.\n2. Your node listens on the default `[::]` address on a Linux host (the standard deployment configuration — `net.ipv6.bindv6only=0` is the default on all common Linux distributions).\n3. Your node is synced near ",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-02",
-      "last_seen": "2026-07-02",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "zebra-network",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-52829",
-        "CVE-2026-52829"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-63wg-wjjj-7cp8",
-        "https://github.com/ZcashFoundation/zebra/security/advisories/GHSA-63wg-wjjj-7cp8",
-        "https://github.com/advisories/GHSA-63wg-wjjj-7cp8"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-50282",
-      "title": "Craft CMS Vulnerable to Unauthorized Deletion of Destination Folders During Forced Moves",
-      "description": "We have identified an authorization issue in Craft CMS where a forced folder move can delete a conflicting destination folder without destination delete permission. ### Description Craft CMS’s `craft\\\\controllers\\\\AssetsController::actionMoveFolder()` supports moving an asset folder into a destinati",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-02",
-      "last_seen": "2026-07-02",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "craftcms/cms",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-50282",
-        "CVE-2026-50282"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-3w32-23wj-rxg3",
-        "https://github.com/craftcms/cms/security/advisories/GHSA-3w32-23wj-rxg3",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-50282",
-        "https://github.com/craftcms/cms/commit/2c2579c7f1030872423f268d0c8b48377101961d"
       ],
       "explanation": {
         "quality": [
