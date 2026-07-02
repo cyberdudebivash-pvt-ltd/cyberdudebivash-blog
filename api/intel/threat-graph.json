@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-02T11:31:55.322Z",
+  "generated": "2026-07-02T11:58:23.782Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 3999,
+    "total_nodes": 4003,
     "actors": 8,
     "cves": 856,
-    "campaigns": 360,
+    "campaigns": 361,
     "malware": 0,
     "iocs": 419,
-    "edges": 1591
+    "edges": 1594
   },
   "nodes": {
     "actor:lockbit": {
@@ -77031,6 +77031,92 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-0d18073e27e6024e": {
+      "id": "REDDIT_CYBER-0d18073e27e6024e",
+      "type": "Intel",
+      "name": "Hiring in cybersecurity",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 69,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-02",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-cacfd6984d090096": {
+      "id": "BLEEPINGCOMPUTER-cacfd6984d090096",
+      "type": "Intel",
+      "name": "Cisco finally confirms attackers exploiting Unified CM flaw",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-02",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-273bb6434e33ff15": {
+      "id": "REDDIT_CYBER-273bb6434e33ff15",
+      "type": "Intel",
+      "name": "AI security trainings/certifications",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-02",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-647a4258": {
+      "id": "campaign:cluster-647a4258",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-02",
+        "last_seen": "2026-07-02",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 4 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-0d18073e27e6024e",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -91386,6 +91472,33 @@
       "id": "campaign:cluster-2eca2f3d→includes→REDDIT_CYBER-8ad2ff56240f53db",
       "source": "campaign:cluster-2eca2f3d",
       "target": "REDDIT_CYBER-8ad2ff56240f53db",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-02",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-0d18073e27e6024e→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-0d18073e27e6024e",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-02",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-273bb6434e33ff15→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-273bb6434e33ff15",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-02",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-647a4258→includes→REDDIT_CYBER-0d18073e27e6024e",
+      "source": "campaign:cluster-647a4258",
+      "target": "REDDIT_CYBER-0d18073e27e6024e",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-02",
