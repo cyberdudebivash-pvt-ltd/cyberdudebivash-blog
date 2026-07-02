@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-02T15:31:51.608Z",
+  "generated": "2026-07-02T16:01:54.034Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1607,
+  "total_published": 1611,
   "s2n_stats": {
-    "passed": 85,
-    "suppressed": 11,
-    "avg_qs": 0.552
+    "passed": 84,
+    "suppressed": 12,
+    "avg_qs": 0.553
   },
   "items": [
     {
@@ -2144,7 +2144,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2583,9 +2585,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-ffe7381d9d8728c3",
@@ -4177,6 +4177,55 @@
       "suppression_reason": "Quality score below minimum threshold (QS < 0.35)"
     },
     {
+      "id": "CVE-2026-53810",
+      "title": "OpenClaw's marketplace runtime extension metadata could point at unscanned payloads",
+      "description": "### Summary Marketplace runtime extension metadata could point at unscanned payloads. In affected versions, a package selected for installation by a trusted operator could redirect runtime loading toward hidden package content that was not scanned as expected. This advisory is scoped to the named fe",
+      "cvss": 8.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-02",
+      "last_seen": "2026-07-02",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "openclaw",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53810",
+        "CVE-2026-53810"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-v6r2-jh58-xx6w",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-v6r2-jh58-xx6w",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53810",
+        "https://www.vulncheck.com/advisories/openclaw-arbitrary-code-execution-via-unscanned-marketplace-runtime-extension-metadata"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-50143",
       "title": "Apify Model Context Protocol (MCP) server: Actor MCP path authority injection leaks Apify token",
       "description": "## Actor MCP path authority injection leaks Apify token ### Summary `@apify/actors-mcp-server` version `0.10.7` builds Actor standby URLs by directly concatenating a trusted base URL with an attacker-controlled `webServerMcpPath` value taken from an Actor definition returned by the Apify API. An att",
@@ -4322,95 +4371,47 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-50163",
-      "title": "`oras-go` tar extraction: Hardlink entry with relative Linkname escapes extract dir via process CWD resolution",
-      "description": "### Root cause The tar-extraction helper `ensureLinkPath` at [`content/file/utils.go:262-275`](https://github.com/oras-project/oras-go/blob/main/content/file/utils.go#L262-L275) validates that a hardlink's target resolves inside the extract base, but then returns the original unresolved `target` str",
-      "cvss": 7.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
+      "id": "CVE-2026-53815",
+      "title": "OpenClaw: Message read actions could skip channel allowlist checks",
+      "description": "### Summary Message read actions could skip channel allowlist checks. In affected versions, a lower-trust caller with access to the affected message read action could request messages without the same channel allowlist check used by normal delivery. This advisory is scoped to the named feature and c",
+      "cvss": 6.5,
+      "final_ps": 19,
+      "quality_score": 0.483,
+      "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
         "github_advisories"
       ],
-      "first_seen": "2026-07-01",
-      "last_seen": "2026-07-01",
+      "first_seen": "2026-07-02",
+      "last_seen": "2026-07-02",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "go",
-      "product": "oras.land/oras-go/v2",
+      "vendor": "npm",
+      "product": "openclaw",
       "due_date": null,
       "cves": [
-        "CVE-2026-50163",
-        "CVE-2026-50163"
-      ],
-      "ioc_count": 1,
-      "refs": [
-        "https://github.com/advisories/GHSA-fxhp-mv3v-67qp",
-        "https://github.com/oras-project/oras-go/security/advisories/GHSA-fxhp-mv3v-67qp",
-        "https://github.com/oras-project/oras-go/commit/b11f777f8d405c5023c4b307cfdc5068dfc3d406",
-        "https://github.com/advisories/GHSA-fxhp-mv3v-67qp"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53712",
-      "title": "OnGres SCRAM silent channel-binding authentication downgrade via unsupported certificate algorithms",
-      "description": "## Summary A flaw in `com.ongres.scram:scram-client` allows an attacker capable of performing a TLS man-in-the-middle (MITM) attack to silently downgrade a connection from `SCRAM-SHA-256-PLUS` (with channel binding) to standard `SCRAM-SHA-256` (without channel binding), bypassing strict client-side ",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-01",
-      "last_seen": "2026-07-01",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "com.ongres.scram:scram-client",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53712",
-        "CVE-2026-53712"
+        "CVE-2026-53815",
+        "CVE-2026-53815"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-p9jg-fcr6-3mhf",
-        "https://github.com/ongres/scram/security/advisories/GHSA-p9jg-fcr6-3mhf",
-        "https://github.com/advisories/GHSA-p9jg-fcr6-3mhf"
+        "https://github.com/advisories/GHSA-q7q8-3mgw-q67r",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-q7q8-3mgw-q67r",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53815",
+        "https://www.vulncheck.com/advisories/openclaw-channel-allowlist-bypass-in-message-read-actions"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
+          "data_confidence=0.55",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.483"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=19 (no boosts)"
         ],
         "suppression": null,
         "merge": null
