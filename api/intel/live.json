@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-02T16:01:54.034Z",
+  "generated": "2026-07-02T16:19:46.259Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1611,
+  "total_published": 1618,
   "s2n_stats": {
-    "passed": 84,
-    "suppressed": 12,
-    "avg_qs": 0.553
+    "passed": 85,
+    "suppressed": 15,
+    "avg_qs": 0.552
   },
   "items": [
     {
@@ -2144,9 +2144,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2585,7 +2583,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CISA-ffe7381d9d8728c3",
@@ -4177,6 +4177,104 @@
       "suppression_reason": "Quality score below minimum threshold (QS < 0.35)"
     },
     {
+      "id": "CVE-2026-53814",
+      "title": "OpenClaw: Hook-triggered CLI runs could receive owner MCP tool authority",
+      "description": "### Summary OpenClaw hook ingress can start automated agent runs using a configured hook token. In affected releases, a hook-triggered run could select a bundled CLI backend that received owner-scoped MCP loopback authority instead of a scope appropriate for hook ingress. This issue affects the boun",
+      "cvss": 8.4,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-02",
+      "last_seen": "2026-07-02",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "openclaw",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53814",
+        "CVE-2026-53814"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-6fvr-66p3-3qj4",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-6fvr-66p3-3qj4",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53814",
+        "https://www.vulncheck.com/advisories/openclaw-privilege-escalation-via-hook-triggered-cli-mcp-tool-authority"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53817",
+      "title": "OpenClaw: Control UI locality spoofing could mint a durable admin device token",
+      "description": "### Summary In affected LAN/shared-token Control UI deployments, a caller could spoof locality information used during Control UI pairing and obtain a durable admin-capable device token. This issue is limited to deployments where the caller already has the network/authentication foothold needed to r",
+      "cvss": 8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-02",
+      "last_seen": "2026-07-02",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "openclaw",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53817",
+        "CVE-2026-53817"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-chr9-m4q2-76hw",
+        "https://github.com/openclaw/openclaw/security/advisories/GHSA-chr9-m4q2-76hw",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53817",
+        "https://www.vulncheck.com/advisories/openclaw-control-ui-locality-spoofing-in-device-pairing"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-53810",
       "title": "OpenClaw's marketplace runtime extension metadata could point at unscanned payloads",
       "description": "### Summary Marketplace runtime extension metadata could point at unscanned payloads. In affected versions, a package selected for installation by a trusted operator could redirect runtime loading toward hidden package content that was not scanned as expected. This advisory is scoped to the named fe",
@@ -4315,103 +4413,6 @@
         ],
         "priority": [
           "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-50138",
-      "title": "goshs: WebDAV listener ignores --read-only, --upload-only, and --no-delete mode flags",
-      "description": "# WebDAV listener ignores `--read-only`, `--upload-only`, and `--no-delete` mode flags **Ecosystem:** Go\n**Package:** `goshs.de/goshs/v2` (`github.com/patrickhener/goshs`)\n**Affected:** ` /tmp/r/x.txt\ngoshs -p 18000 -wp 18001 -w -ro -d /tmp/r -b admin:pw & curl -u admin:pw -X PUT http://localhost:18",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-01",
-      "last_seen": "2026-07-01",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "goshs.de/goshs/v2",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-50138",
-        "CVE-2026-50138"
-      ],
-      "ioc_count": 4,
-      "refs": [
-        "https://github.com/advisories/GHSA-3whc-qvhv-xqjp",
-        "https://github.com/patrickhener/goshs/security/advisories/GHSA-3whc-qvhv-xqjp",
-        "https://github.com/advisories/GHSA-3whc-qvhv-xqjp"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53815",
-      "title": "OpenClaw: Message read actions could skip channel allowlist checks",
-      "description": "### Summary Message read actions could skip channel allowlist checks. In affected versions, a lower-trust caller with access to the affected message read action could request messages without the same channel allowlist check used by normal delivery. This advisory is scoped to the named feature and c",
-      "cvss": 6.5,
-      "final_ps": 19,
-      "quality_score": 0.483,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-02",
-      "last_seen": "2026-07-02",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "openclaw",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53815",
-        "CVE-2026-53815"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-q7q8-3mgw-q67r",
-        "https://github.com/openclaw/openclaw/security/advisories/GHSA-q7q8-3mgw-q67r",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-53815",
-        "https://www.vulncheck.com/advisories/openclaw-channel-allowlist-bypass-in-message-read-actions"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.483"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
         ],
         "suppression": null,
         "merge": null
