@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-02T16:19:46.228Z",
+  "generated": "2026-07-02T16:31:54.663Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4028,
+    "total_nodes": 4031,
     "actors": 8,
     "cves": 860,
     "campaigns": 361,
     "malware": 0,
-    "iocs": 421,
-    "edges": 1601
+    "iocs": 422,
+    "edges": 1603
   },
   "nodes": {
     "actor:lockbit": {
@@ -77593,6 +77593,64 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "GHSA-0aea4ad28fd59421": {
+      "id": "GHSA-0aea4ad28fd59421",
+      "type": "Intel",
+      "name": "OpenClaw: Node pairing reconnection could confuse approval scope state",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "openclaw",
+        "published": "2026-07-02",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-1214122469e734ef": {
+      "id": "REDDIT_NETSEC-1214122469e734ef",
+      "type": "Intel",
+      "name": "FIFA was saved this time",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-02",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:bobdahacker.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:bobdahacker.com": {
+      "id": "ioc:domain:bobdahacker.com",
+      "type": "IOC",
+      "name": "bobdahacker.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-02"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -92038,6 +92096,24 @@
       "id": "REDDIT_CYBER-78c10ce42722d96e→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_CYBER-78c10ce42722d96e",
       "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-02",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-1214122469e734ef→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-1214122469e734ef",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-02",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-1214122469e734ef→linked_to→ioc:domain:bobdahacker.com",
+      "source": "REDDIT_NETSEC-1214122469e734ef",
+      "target": "ioc:domain:bobdahacker.com",
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-07-02",
