@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-02T15:01:48.066Z",
+  "generated": "2026-07-02T15:31:51.577Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4007,
+    "total_nodes": 4012,
     "actors": 8,
     "cves": 856,
     "campaigns": 361,
     "malware": 0,
-    "iocs": 419,
-    "edges": 1594
+    "iocs": 420,
+    "edges": 1597
   },
   "nodes": {
     "actor:lockbit": {
@@ -29101,7 +29101,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-28"
+        "first_seen": "2026-07-02"
       },
       "connections": []
     },
@@ -77189,6 +77189,106 @@
         "type": "SOCIAL_ENGINEERING"
       },
       "connections": []
+    },
+    "SECURITYWEEK-63401fdaef165054": {
+      "id": "SECURITYWEEK-63401fdaef165054",
+      "type": "Intel",
+      "name": "New CitrixBleed Vulnerability Exploited Immediately After Public Disclosure",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-02",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-56c950eb64300374": {
+      "id": "REDDIT_CYBER-56c950eb64300374",
+      "type": "Intel",
+      "name": "The Solidity Extension That Stole from the Clipboard: Inside the ethdevtools Crypto Swap",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-02",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:3525dc5200d971f04f264522ed9b4ba897e66105",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:3525dc5200d971f04f264522ed9b4ba897e66105": {
+      "id": "ioc:sha1:3525dc5200d971f04f264522ed9b4ba897e66105",
+      "type": "IOC",
+      "name": "3525dc5200d971f04f264522ed9b4ba897e66105",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-02"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-7da7a812cf8415c3": {
+      "id": "REDDIT_CYBER-7da7a812cf8415c3",
+      "type": "Intel",
+      "name": "When Too Much Security Data Became the Risk",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-02",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.darkreading.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-9149e58485c69346": {
+      "id": "BLEEPINGCOMPUTER-9149e58485c69346",
+      "type": "Intel",
+      "name": "Google loses final appeal to overturn €4.1 billion EU fine",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-02",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -91573,6 +91673,33 @@
       "target": "REDDIT_CYBER-0d18073e27e6024e",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-02",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-56c950eb64300374→linked_to→ioc:sha1:3525dc5200d971f04f264522ed9b4ba897e66105",
+      "source": "REDDIT_CYBER-56c950eb64300374",
+      "target": "ioc:sha1:3525dc5200d971f04f264522ed9b4ba897e66105",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-02",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-7da7a812cf8415c3→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-7da7a812cf8415c3",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-02",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-7da7a812cf8415c3→linked_to→ioc:domain:www.darkreading.com",
+      "source": "REDDIT_CYBER-7da7a812cf8415c3",
+      "target": "ioc:domain:www.darkreading.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-02",
       "sources": []
     }
