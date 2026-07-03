@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-03T15:01:52.360Z",
+  "generated": "2026-07-03T15:26:10.342Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4151,
+    "total_nodes": 4153,
     "actors": 8,
     "cves": 899,
-    "campaigns": 369,
+    "campaigns": 370,
     "malware": 0,
     "iocs": 435,
-    "edges": 1651
+    "edges": 1652
   },
   "nodes": {
     "actor:lockbit": {
@@ -79972,6 +79972,44 @@
         "type": "SOCIAL_ENGINEERING"
       },
       "connections": []
+    },
+    "SECURITYWEEK-474f7d0eaa784418": {
+      "id": "SECURITYWEEK-474f7d0eaa784418",
+      "type": "Intel",
+      "name": "In Other News: Canadian Hacker Jailed, Open Source Zero-Days, Two Sentenced for ATM Jackpotting",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 74,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-03",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-d84cb74b": {
+      "id": "campaign:cluster-d84cb74b",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-03",
+        "last_seen": "2026-07-03",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-474f7d0eaa784418",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -94869,6 +94907,15 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-03",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-d84cb74b→includes→SECURITYWEEK-474f7d0eaa784418",
+      "source": "campaign:cluster-d84cb74b",
+      "target": "SECURITYWEEK-474f7d0eaa784418",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-03",
       "sources": []
     }
