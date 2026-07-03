@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-03T17:31:40.126Z",
+  "generated": "2026-07-03T18:01:46.087Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4156,
+    "total_nodes": 4159,
     "actors": 8,
     "cves": 899,
-    "campaigns": 370,
+    "campaigns": 371,
     "malware": 0,
     "iocs": 435,
-    "edges": 1655
+    "edges": 1657
   },
   "nodes": {
     "actor:lockbit": {
@@ -80081,6 +80081,68 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_CYBER-7a0fceffdac815ab": {
+      "id": "REDDIT_CYBER-7a0fceffdac815ab",
+      "type": "Intel",
+      "name": "Please save my mental health.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 62,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-03",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-4290d6efe58468c0": {
+      "id": "BLEEPINGCOMPUTER-4290d6efe58468c0",
+      "type": "Intel",
+      "name": "NetNut proxy network disrupted, 2 million infected devices cut off",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-03",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-daebd0ee": {
+      "id": "campaign:cluster-daebd0ee",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-03",
+        "last_seen": "2026-07-03",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 4 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-7a0fceffdac815ab",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -95014,6 +95076,24 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-03",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-7a0fceffdac815ab→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-7a0fceffdac815ab",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-03",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-daebd0ee→includes→REDDIT_CYBER-7a0fceffdac815ab",
+      "source": "campaign:cluster-daebd0ee",
+      "target": "REDDIT_CYBER-7a0fceffdac815ab",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-03",
       "sources": []
     }
