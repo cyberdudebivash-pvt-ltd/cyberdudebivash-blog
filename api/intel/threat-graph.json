@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-03T10:31:37.869Z",
+  "generated": "2026-07-03T11:01:44.884Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4141,
+    "total_nodes": 4143,
     "actors": 8,
     "cves": 899,
-    "campaigns": 368,
+    "campaigns": 369,
     "malware": 0,
     "iocs": 435,
-    "edges": 1646
+    "edges": 1647
   },
   "nodes": {
     "actor:lockbit": {
@@ -79766,6 +79766,44 @@
         "type": "DATA_BREACH"
       },
       "connections": []
+    },
+    "SECURITYWEEK-d31e87af3d553e53": {
+      "id": "SECURITYWEEK-d31e87af3d553e53",
+      "type": "Intel",
+      "name": "Agentic AI Used to Conduct Ransomware Attack via Langflow",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 77,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-03",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "campaign:cluster-086e6c42": {
+      "id": "campaign:cluster-086e6c42",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-03",
+        "last_seen": "2026-07-03",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-d31e87af3d553e53",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -94618,6 +94656,15 @@
       "target": "SECURITYWEEK-1896216a07fccf57",
       "relationship": "exploits",
       "confidence": 0.85,
+      "first_seen": "2026-07-03",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-086e6c42→includes→SECURITYWEEK-d31e87af3d553e53",
+      "source": "campaign:cluster-086e6c42",
+      "target": "SECURITYWEEK-d31e87af3d553e53",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-03",
       "sources": []
     }
