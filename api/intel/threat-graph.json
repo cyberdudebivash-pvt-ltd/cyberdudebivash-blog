@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-03T09:31:41.957Z",
+  "generated": "2026-07-03T10:01:47.671Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4140,
+    "total_nodes": 4141,
     "actors": 8,
     "cves": 899,
     "campaigns": 368,
     "malware": 0,
     "iocs": 435,
-    "edges": 1645
+    "edges": 1646
   },
   "nodes": {
     "actor:lockbit": {
@@ -892,6 +892,11 @@
         {
           "target": "campaign:cluster-9a972db5",
           "relationship": "executes",
+          "confidence": 0.85
+        },
+        {
+          "target": "SECURITYWEEK-1896216a07fccf57",
+          "relationship": "exploits",
           "confidence": 0.85
         }
       ],
@@ -79743,6 +79748,24 @@
         "first_seen": "2026-07-03"
       },
       "connections": []
+    },
+    "SECURITYWEEK-1896216a07fccf57": {
+      "id": "SECURITYWEEK-1896216a07fccf57",
+      "type": "Intel",
+      "name": "Medtronic Data Breach Impacts 3.8 Million People",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-03",
+        "type": "DATA_BREACH"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -94586,6 +94609,15 @@
       "target": "ioc:sha1:07abfdef894e2b99d6a18e071b94aae61911d07f",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-07-03",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→SECURITYWEEK-1896216a07fccf57",
+      "source": "actor:shinyhunters",
+      "target": "SECURITYWEEK-1896216a07fccf57",
+      "relationship": "exploits",
+      "confidence": 0.85,
       "first_seen": "2026-07-03",
       "sources": []
     }
