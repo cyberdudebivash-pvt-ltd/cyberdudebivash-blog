@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-03T04:01:54.664Z",
+  "generated": "2026-07-03T04:31:30.646Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4128,
+    "total_nodes": 4131,
     "actors": 8,
     "cves": 899,
-    "campaigns": 367,
+    "campaigns": 368,
     "malware": 0,
     "iocs": 433,
-    "edges": 1639
+    "edges": 1642
   },
   "nodes": {
     "actor:lockbit": {
@@ -37423,7 +37423,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-23"
+        "first_seen": "2026-07-03"
       },
       "connections": []
     },
@@ -79509,6 +79509,74 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_CYBER-bfb0e114d2507704": {
+      "id": "REDDIT_CYBER-bfb0e114d2507704",
+      "type": "Intel",
+      "name": "What web/appsec lab would you want to see built?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-03",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-9b0c349ae87feac2": {
+      "id": "REDDIT_CYBER-9b0c349ae87feac2",
+      "type": "Intel",
+      "name": "Learning DevSecOps - Week 1",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-03",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.youtube.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-14d148e2": {
+      "id": "campaign:cluster-14d148e2",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-03",
+        "last_seen": "2026-07-03",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 3 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-bfb0e114d2507704",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -94298,6 +94366,33 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-03",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-bfb0e114d2507704→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-bfb0e114d2507704",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-03",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-9b0c349ae87feac2→linked_to→ioc:domain:www.youtube.com",
+      "source": "REDDIT_CYBER-9b0c349ae87feac2",
+      "target": "ioc:domain:www.youtube.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-03",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-14d148e2→includes→REDDIT_CYBER-bfb0e114d2507704",
+      "source": "campaign:cluster-14d148e2",
+      "target": "REDDIT_CYBER-bfb0e114d2507704",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-03",
       "sources": []
     }
