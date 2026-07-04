@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from .detection_builder import DetectionArtifacts, build_all
 from .enrichment import Enricher
 from .ioc_extractor import defang
 from .knowledge_graph import KnowledgeGraph
@@ -27,6 +28,8 @@ class PipelineResult:
     enrichments: list[CVEEnrichment] = field(default_factory=list)
     prior_context: list[str] = field(default_factory=list)
     sigma_rules: list[str] = field(default_factory=list)
+    detections: list[DetectionArtifacts] = field(default_factory=list)
+    suricata_rules: list[str] = field(default_factory=list)
     draft_markdown: str = ""
     gate: GateResult = field(default_factory=GateResult)
 
@@ -49,6 +52,10 @@ def run(
 
     references = [source.source_url] if source.source_url else []
     result.sigma_rules = build_rules(doc.techniques, references=references)
+    iocs = [i for i in doc.iocs if i.type.value != "cve"]
+    result.detections, result.suricata_rules = build_all(
+        doc.techniques, iocs=iocs, references=references
+    )
     result.draft_markdown = render_draft(result, source)
     return result
 
@@ -119,9 +126,27 @@ def render_draft(result: PipelineResult, source: SourceDocument) -> str:
             "- No confirmed public IOCs in source material at report time.",
         ]
 
-    if result.sigma_rules:
+    if result.detections:
+        lines += ["", "## Detection Engineering (multi-platform)", ""]
+        for art in result.detections:
+            lines += [f"### {art.technique_id} — {art.title}", ""]
+            fmt_lang = {"sigma": "yaml", "kql": "kql",
+                        "splunk": "spl", "osquery": "sql"}
+            fmt_label = {"sigma": "Sigma (SIEM-agnostic)",
+                         "kql": "Microsoft Defender / Sentinel (KQL)",
+                         "splunk": "Splunk (SPL)", "osquery": "OSQuery"}
+            for fmt, body in art.formats().items():
+                lines += [f"**{fmt_label[fmt]}**", "",
+                          f"```{fmt_lang[fmt]}", body.rstrip(), "```", ""]
+    elif result.sigma_rules:
         lines += ["", "## Detection Rules (Sigma)", ""]
         for rule in result.sigma_rules:
             lines += ["```yaml", rule.rstrip(), "```", ""]
+
+    if result.suricata_rules:
+        lines += ["", "## Network Detection (Suricata)", "",
+                  "```suricata"]
+        lines += [r for r in result.suricata_rules]
+        lines += ["```", ""]
 
     return "\n".join(lines).rstrip() + "\n"

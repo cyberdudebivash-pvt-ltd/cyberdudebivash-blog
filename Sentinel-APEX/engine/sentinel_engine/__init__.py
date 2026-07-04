@@ -8,7 +8,9 @@ Single-responsibility, independently testable modules:
 - ``entities``         curated-lexicon entity extraction
 - ``enrichment``       NVD / EPSS / CISA KEV lookups (never fabricates)
 - ``knowledge_graph``  persistent cross-report intelligence graph
-- ``sigma_builder``    validated, evidence-driven Sigma rules
+- ``detection_specs``  normalized per-technique detection registry
+- ``detection_builder``compiles specs to Sigma/KQL/Splunk/OSQuery + Suricata
+- ``sigma_builder``    evidence-threaded Sigma (thin layer over the registry)
 - ``quality``          executable publication quality gates
 - ``report_parser``    parses published reports for auditing
 - ``pipeline``         orchestrates source -> gated draft

@@ -25,15 +25,22 @@ def test_pipeline_end_to_end_offline():
     assert "CVE-2024-4577" in md
     assert "LockBit" in md
     assert "T1059.001" in md
-    # IOCs are defanged in the draft
-    assert "45[.]61[.]136[.]39" in md
-    assert "45.61.136.39" not in md
+    # IOCs are defanged in the IOC Intelligence listing
+    ioc_section = md.split("## IOC Intelligence", 1)[1].split("##", 1)[0]
+    assert "45[.]61[.]136[.]39" in ioc_section
+    assert "45.61.136.39" not in ioc_section
     # offline enrichment is honest, not fabricated
     assert "scores intentionally omitted" in md
     # scraper noise never reaches the draft
     assert "submitted by" not in md
     # detection rules derived from evidence
     assert "Shadow Copy Deletion" in md
+    # multi-platform detection engineering present
+    assert "Microsoft Defender / Sentinel (KQL)" in md
+    assert "DeviceProcessEvents" in md
+    # Suricata network rules built from the network IOCs (live values)
+    assert "## Network Detection (Suricata)" in md
+    assert "45.61.136.39" in md  # live IOC required for the rule to match
     # graph learned from the report
     assert kg.stats()["entities"] > 0
 

@@ -19,7 +19,10 @@ raw source ──▶ normalizer ──▶ evidence layer (NormalizedDoc)
                        │                │
                        └───────┬────────┘
                                ▼
-                         sigma_builder
+                   detection_specs (one canonical spec / technique)
+                               ▼
+                   detection_builder ──▶ Sigma · KQL · Splunk · OSQuery
+                               │          + Suricata (from network IOCs)
                                ▼
                         draft (markdown)
                                ▼
@@ -51,11 +54,38 @@ raw source ──▶ normalizer ──▶ evidence layer (NormalizedDoc)
 | `entities.py` | Curated-lexicon actor/malware/tool/vendor extraction |
 | `enrichment.py` | NVD (CVSS), FIRST (EPSS), CISA (KEV) — injectable fetchers |
 | `knowledge_graph.py` | JSON-backed cross-report entity/relationship memory |
-| `sigma_builder.py` | Validated, evidence-driven Sigma rules (no generic fallbacks) |
+| `detection_specs.py` | One normalized detection spec per technique (source of truth) |
+| `detection_builder.py` | Compiles specs → Sigma/KQL/Splunk/OSQuery + Suricata; self-validates |
+| `sigma_builder.py` | Evidence-threaded Sigma (thin layer over the registry) |
 | `report_parser.py` | Parses published SENTINEL APEX reports for auditing |
 | `quality.py` | Executable per-report + corpus-level publication gates |
 | `pipeline.py` | Orchestrator: source → gated draft |
-| `cli.py` | `normalize` / `gate` / `run` / `enrich` commands |
+| `cli.py` | `normalize` / `gate` / `run` / `enrich` / `detect` commands |
+
+## Detection Engine (Phase 3)
+
+Every technique has exactly **one** canonical detection spec in
+`detection_specs.REGISTRY`, expressed in a platform-neutral field vocabulary.
+`detection_builder` compiles that single spec into every SIEM/EDR format the
+spec's data model can support:
+
+| Technique | Sigma | KQL | Splunk | OSQuery | Data source |
+|---|:-:|:-:|:-:|:-:|---|
+| T1059.001 Encoded PowerShell | ✓ | ✓ | ✓ | ✓ | process_creation |
+| T1204.002 Office → interpreter | ✓ | ✓ | ✓ | ✓ | process_creation |
+| T1490 Shadow copy deletion | ✓ | ✓ | ✓ | ✓ | process_creation |
+| T1547.001 Run-key persistence | ✓ | ✓ | ✓ | ✓ | registry_set |
+| T1218.005 mshta remote script | ✓ | ✓ | ✓ | ✓ | process_creation |
+| T1003.001 LSASS access | ✓ | ✓ | ✓ | — | process_access |
+
+A format is emitted **only** where the data model can express it (LSASS
+handle access has no OSQuery table, so no OSQuery is produced — never a
+fabricated one). Network IOCs compile separately to **Suricata** rules
+(DNS/IP/HTTP), which use live IOC values because a network rule must match
+real traffic. Every generated artifact is run through a format-specific
+validator before it is returned — the builder cannot emit a syntactically
+broken rule. This is the structural fix for the Phase 2 finding that one
+generic Sigma rule was pasted into 6+ unrelated reports.
 
 ## Usage
 

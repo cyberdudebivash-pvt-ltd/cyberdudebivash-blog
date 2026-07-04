@@ -17,6 +17,10 @@ Usage (from Sentinel-APEX/engine/):
 
   python3 cli.py enrich <CVE-ID>
       Live NVD/EPSS/KEV enrichment for one CVE (network required).
+
+  python3 cli.py detect <source.txt> [--url URL]
+      Compile multi-platform detections (Sigma/KQL/Splunk/OSQuery + Suricata)
+      from a raw source's evidence. Prints each format.
 """
 
 from __future__ import annotations
@@ -30,7 +34,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sentinel_engine import pipeline, quality, report_parser  # noqa: E402
+from sentinel_engine.detection_builder import build_all  # noqa: E402
 from sentinel_engine.enrichment import Enricher  # noqa: E402
+from sentinel_engine.ioc_extractor import IOCType  # noqa: E402
 from sentinel_engine.knowledge_graph import KnowledgeGraph  # noqa: E402
 from sentinel_engine.models import SourceDocument  # noqa: E402
 from sentinel_engine.normalizer import normalize  # noqa: E402
@@ -87,6 +93,26 @@ def cmd_enrich(args: argparse.Namespace) -> int:
     return 0 if record.status == "enriched" else 1
 
 
+def cmd_detect(args: argparse.Namespace) -> int:
+    text = Path(args.source).read_text(errors="replace")
+    doc = normalize(SourceDocument(raw_text=text, source_url=args.url or ""))
+    iocs = [i for i in doc.iocs if i.type != IOCType.CVE]
+    refs = [args.url] if args.url else []
+    artifacts, suricata = build_all(doc.techniques, iocs=iocs, references=refs)
+    if not artifacts and not suricata:
+        print("No detections: source yielded no mapped techniques or network IOCs.")
+        return 0
+    for art in artifacts:
+        print(f"\n===== {art.technique_id} — {art.title} =====")
+        for fmt, body in art.formats().items():
+            print(f"\n--- {fmt} ---\n{body}")
+    if suricata:
+        print("\n===== Suricata (network) =====")
+        for rule in suricata:
+            print(rule)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -111,6 +137,11 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("enrich", help="live CVE enrichment (NVD/EPSS/KEV)")
     p.add_argument("cve_id")
     p.set_defaults(func=cmd_enrich)
+
+    p = sub.add_parser("detect", help="compile multi-platform detections")
+    p.add_argument("source")
+    p.add_argument("--url", default="")
+    p.set_defaults(func=cmd_detect)
 
     args = parser.parse_args(argv)
     return args.func(args)
