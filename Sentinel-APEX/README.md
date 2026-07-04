@@ -16,7 +16,11 @@ It operates under the governance defined in the repository-root `CLAUDE.md`
 Sentinel-APEX/
 ├── engine/             Intelligence Engine (Phase 2) — tested Python package:
 │                       normalization, IOC/ATT&CK extraction, NVD/EPSS/KEV
-│                       enrichment, knowledge graph, executable quality gates
+│                       enrichment, knowledge graph, executable quality gates,
+│                       multi-platform Detection Engine (Phase 3)
+├── engine-node/        Node port of the Detection Engine, wired into the live
+│                       generator (fetch-live-intel.js) to emit Sigma/KQL/
+│                       Splunk/OSQuery + Suricata in every report
 ├── prompts/            System + task prompts (load master first)
 │   ├── master-prompt.md    Core identity, structure, confidence framework
 │   ├── report-prompt.md    General intelligence report task prompt

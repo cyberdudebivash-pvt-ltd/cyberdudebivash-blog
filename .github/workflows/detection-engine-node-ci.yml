@@ -1,0 +1,37 @@
+name: "🧠 SENTINEL APEX — Detection Engine (Node) CI"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Sentinel-APEX/engine-node/**'
+      - 'fetch-live-intel.js'
+      - '.github/workflows/detection-engine-node-ci.yml'
+  pull_request:
+    paths:
+      - 'Sentinel-APEX/engine-node/**'
+      - 'fetch-live-intel.js'
+      - '.github/workflows/detection-engine-node-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  node-detection-tests:
+    name: "Node Detection Engine + Generator Wiring"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "📥 Checkout"
+        uses: actions/checkout@v4
+
+      - name: "🟢 Set up Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "🔬 Syntax-check the live generator"
+        run: node -c fetch-live-intel.js
+
+      - name: "🧪 Run detection engine + wiring tests"
+        working-directory: Sentinel-APEX/engine-node
+        run: node --test
