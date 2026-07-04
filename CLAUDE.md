@@ -4,6 +4,373 @@
 
 ---
 
+# ════════════════════════════════════════════════════
+# SECTION 0 — ENGINEERING DECISION ORDER
+# HIGHEST AUTHORITY IN THIS REPOSITORY
+# ════════════════════════════════════════════════════
+
+Every engineering decision MUST follow this priority order. When principles conflict, the higher level always wins. No implementation may advance a lower-level objective at the cost of a higher-level one.
+
+```
+LEVEL 1 → CORRECTNESS
+          The implementation must be technically correct.
+          A fast, backward-compatible, minimal-change incorrect solution is worthless.
+          ↓
+LEVEL 2 → PRODUCTION STABILITY
+          Never reduce production stability.
+          A new feature that breaks existing behaviour is a regression, not a release.
+          ↓
+LEVEL 3 → BACKWARD COMPATIBILITY
+          Existing behaviour must continue to work.
+          Consumers of existing interfaces are always protected.
+          ↓
+LEVEL 4 → REUSE
+          Reuse existing components before creating new ones.
+          Extending an existing component is always preferred over parallel implementation.
+          ↓
+LEVEL 5 → MINIMAL CHANGE SURFACE
+          Modify the smallest amount of production code possible.
+          Every line changed is a line that could introduce a regression.
+          ↓
+LEVEL 6 → PERFORMANCE
+          Avoid unnecessary computational cost.
+          New capabilities must not degrade Core Web Vitals or Lighthouse scores.
+          ↓
+LEVEL 7 → COMMERCIAL VALUE
+          Deliver measurable revenue, acquisition, or trust value.
+          Implementations that cannot articulate commercial value are deprioritized.
+          ↓
+LEVEL 8 → DEVELOPER EXPERIENCE
+          Improve maintainability where it does not conflict with Levels 1–7.
+          Cleanliness for its own sake is never a justification for change.
+```
+
+---
+
+# ════════════════════════════════════════════════════
+# PROOF BEFORE CHANGE — MANDATORY EVIDENCE TABLE
+# ════════════════════════════════════════════════════
+
+**Every implementation MUST begin by completing this table before writing a single line of code.**
+
+If any row cannot be completed with documented evidence, the implementation does not begin.
+
+| Field | Required Entry |
+|---|---|
+| **Objective** | What specific outcome does this implementation achieve? |
+| **Affected Files** | Exhaustive list of every file that will be modified |
+| **Existing Component Reused** | Which existing components, hooks, or utilities are called (not re-implemented) |
+| **Evidence Modification Is Required** | Explicit requirement, defect ID, or constraint that mandates the change |
+| **Risk Classification** | LOW / MEDIUM / HIGH — based on blast radius and consumer count |
+| **Expected Regression Risk** | Which existing capabilities could be affected and why |
+| **Rollback Plan** | Concrete steps to restore prior state if the change must be reverted |
+
+**This table is not optional.** An implementation without it violates the Engineering Constitution.
+
+---
+
+# ════════════════════════════════════════════════════
+# PRODUCTION BLAST RADIUS — MANDATORY ASSESSMENT
+# ════════════════════════════════════════════════════
+
+Before changing any existing component, document the expected blast radius:
+
+| Dimension | Assessment Required |
+|---|---|
+| **Files** | List every file that changes |
+| **Imports / Consumers** | List every module that imports the changed component |
+| **Page Routes** | List every route affected |
+| **API Routes** | List every API endpoint whose response shape may change |
+| **CI Workflows** | List every GitHub Actions step that runs the changed code |
+| **SEO Impact** | Identify any metadata, schema, or sitemap that could regress |
+| **Lighthouse Impact** | Identify any performance, accessibility, or CWV impact |
+| **Monetization Impact** | Identify any conversion funnel, CTA, or revenue flow affected |
+| **Build Output** | Identify any bundle size, chunk, or asset change |
+| **Expected Risk** | LOW / MEDIUM / HIGH based on the above |
+
+**If the blast radius assessment produces a HIGH risk classification, the implementation must be re-scoped to reduce surface area before proceeding.**
+
+---
+
+# ════════════════════════════════════════════════════
+# ARCHITECTURE PRESERVATION RULE
+# ════════════════════════════════════════════════════
+
+**Architecture is a production asset. It is not a variable.**
+
+Adding a new page or component is a feature. Changing the routing structure, data layer, or rendering model is an architectural event. These require different levels of evidence.
+
+**Feature changes** require: Proof Before Change table + blast radius assessment.
+
+**Architectural changes** require all of the above, PLUS:
+
+| Required Documentation | Description |
+|---|---|
+| **Current Architecture** | Description of the existing design and its constraints |
+| **Proposed Architecture** | Description of what will change and why |
+| **Reason** | Why the current architecture is insufficient for the stated objective |
+| **Expected Benefits** | Measurable outcomes the new architecture enables |
+| **Compatibility Assessment** | Which pages, routes, and consumers are affected |
+| **Migration Plan** | Step-by-step path for affected consumers |
+| **Rollback Plan** | How to restore the current architecture if the change fails |
+
+**Architectural modifications require substantially stronger evidence than feature additions.**
+
+When in doubt: add, don't replace.
+
+---
+
+# ════════════════════════════════════════════════════
+# DEPRECATION INSTEAD OF DELETION POLICY
+# ════════════════════════════════════════════════════
+
+**Do not remove production capabilities. Deprecate them.**
+
+**Deprecation protocol:**
+
+1. **Mark deprecated** — add a deprecation notice in code comments and documentation
+2. **Document replacement** — specify exactly what replaces the deprecated capability
+3. **Maintain compatibility** — keep the deprecated interface working during the migration period
+4. **Set a migration deadline** — document when removal will occur (next major version or explicit milestone)
+5. **Remove only after** — confirmed migration of all known consumers AND documented migration period elapsed
+
+**This policy applies to:**
+- Exported components and hooks
+- Page routes and API routes
+- Configuration keys and environment variables
+- CI workflow steps that currently pass
+- SEO-relevant URL patterns and canonical paths
+- Newsletter and conversion flow touchpoints
+
+**Silent removal is prohibited.**
+
+---
+
+# ════════════════════════════════════════════════════
+# REUSE REPORT — MANDATORY IMPLEMENTATION CONCLUSION
+# ════════════════════════════════════════════════════
+
+**Every implementation must conclude with a Reuse Report** that makes architectural discipline visible and auditable.
+
+| Metric | Result |
+|---|---|
+| Existing components reused (extended, not replaced) | — |
+| Existing API routes extended (not duplicated) | — |
+| Existing pages extended (not replaced) | — |
+| New components introduced (justified by gap analysis) | — |
+| Duplicate components introduced | MUST BE 0 |
+| Duplicate routes introduced | MUST BE 0 |
+| Backward compatibility preserved | PASS / FAIL |
+| Lighthouse scores maintained or improved | PASS / FAIL |
+| Build passing with zero errors | PASS / FAIL |
+
+**A Reuse Report with Duplicate components > 0 or Duplicate routes > 0 indicates an architectural violation that must be corrected before the implementation is considered complete.**
+
+---
+
+# ════════════════════════════════════════════════════
+# ENGINEERING CONSTITUTION COMPLIANCE CHECKLIST
+# ════════════════════════════════════════════════════
+
+**Every implementation must actively verify compliance with all ten principles before marking work complete.**
+
+This is not a retrospective checklist — it is a gate. If any item cannot be checked, the implementation is incomplete.
+
+```
+Engineering Constitution Compliance
+
+  □ Principle 1 — Zero Unnecessary Modification
+      Evidence table completed. Modification justified with documented evidence.
+
+  □ Principle 2 — Additive First Architecture
+      New capability extends existing components. No existing logic re-implemented.
+
+  □ Principle 3 — Single Source of Truth
+      No duplicate implementations introduced. Canonical source identified and used.
+
+  □ Principle 4 — Reuse Before Build
+      Existing components searched before building. Reuse report completed.
+
+  □ Principle 5 — Backward Compatibility
+      All existing page routes, API routes, and exported interfaces preserved.
+
+  □ Principle 6 — Production Stability First
+      Build passing. No hydration failures. No broken routes. No console errors.
+
+  □ Principle 7 — Observable Everything
+      Analytics events wired. Error boundaries present. Performance instrumented.
+
+  □ Principle 8 — Commercial Readiness
+      Revenue or acquisition value articulated. CTAs functional. Conversion flows tested.
+
+  □ Principle 9 — Security First
+      Zero hardcoded secrets. CSP headers maintained. Input validation at boundaries.
+
+  □ Principle 10 — Performance Before Features
+      Lighthouse ≥ 90. LCP < 2.5s. CLS < 0.1. INP < 200ms. Bundle size not regressed.
+
+  □ Section 0 — Engineering Decision Order followed (Levels 1–8)
+  □ Proof Before Change table completed before first line of code
+  □ Production Blast Radius assessed and documented
+  □ Architecture Preservation Rule satisfied (or architectural event documented)
+  □ Deprecation Instead of Deletion policy applied where applicable
+  □ Reuse Report completed at implementation conclusion
+  □ SEO validated: metadata, schema, OG, sitemap
+  □ Mobile responsiveness verified across breakpoints
+  □ Build: zero TypeScript errors, zero ESLint warnings
+  □ Monetization flows tested end-to-end
+```
+
+All boxes must be checkable. Any unchecked box is a blocker.
+
+---
+
+# ════════════════════════════════════════════════════
+# CORE ENGINEERING PRINCIPLES — GOVERNING CONSTITUTION
+# ════════════════════════════════════════════════════
+
+These ten principles govern every implementation decision, every session, every artifact produced across the CYBERDUDEBIVASH® SENTINEL APEX ecosystem. They are not guidelines — they are constraints. Deviation requires explicit documented justification.
+
+---
+
+## Principle 1 — Zero Unnecessary Modification
+
+> **Every implementation must minimize change surface area while maximizing capability. Existing production logic is preserved unless there is documented evidence that modification is required to achieve the requested outcome or to correct a verified defect.**
+
+This is an evidence-based directive, not a prohibition. Modifications are permitted — but only when the evidence trail is explicit: what change, why it is required, what it touches, and what backward-compatibility risk it introduces.
+
+---
+
+## Principle 2 — Additive First Architecture
+
+New capabilities are implemented as additions on top of existing layers, never as replacements of them. The blog platform layers on top of the Sentinel APEX CTI platform — it acquires customers, generates leads, and builds authority, but never duplicates the intelligence infrastructure itself.
+
+**Corollary:** If a task can be accomplished by extending an existing component and composing its output, that path is mandatory. Building a parallel implementation of existing logic is a defect, not a feature.
+
+---
+
+## Principle 3 — Single Source of Truth
+
+Every capability, score, decision, and classification has exactly one authoritative implementation in the platform. That implementation is the canonical source. All consumers reference it — they do not replicate it.
+
+**Corollary:** If two components produce the same output through different code paths, one of them is wrong. Identify the canonical source and eliminate the duplicate.
+
+---
+
+## Principle 4 — Reuse Before Build
+
+Before implementing any new logic, Claude MUST search the existing codebase for an equivalent or composable capability. If one exists, it must be called. If a 90% match exists, it must be extended. Only if no match exists may new logic be built from scratch — and that decision must be documented.
+
+**Reuse priority order:**
+1. Call the existing component unchanged
+2. Call the existing component and extend its output
+3. Compose two or more existing components
+4. Build new logic that imports and delegates to existing components
+5. Build new logic from scratch (requires explicit justification)
+
+---
+
+## Principle 5 — Backward Compatibility
+
+No change to an existing exported function, API route, response schema, page route, or configuration key is permitted without a documented migration path. Consumers of existing interfaces are always protected. Deprecation requires a transition period — silent removal is prohibited.
+
+**Signals that backward compatibility is at risk:**
+- Renaming an exported component or function
+- Changing the shape of an API response
+- Removing a page route or changing its path
+- Altering authentication or authorization behavior
+- Modifying a CI workflow step that currently passes
+
+---
+
+## Principle 6 — Production Stability First
+
+The current production state is the baseline. Every change is evaluated against its risk to that baseline. Features that increase capability at the cost of stability are rejected until stability is restored. No deployment proceeds with known blockers.
+
+**Production stability checklist (always active):**
+- Build passes with zero errors
+- No hydration failures
+- No broken routes or imports
+- No console errors in production
+- No regression in Lighthouse scores
+- No broken monetization flows
+
+---
+
+## Principle 7 — Observable Everything
+
+Every new capability must be observable. Observable means: it produces structured output that can be queried, monitored, and reported on. Analytics events, error boundaries, logging, and performance monitoring are the mechanisms.
+
+**Minimum observability requirements for any new component:**
+- Error boundaries with structured error reporting
+- Performance instrumentation on critical render paths
+- Analytics events on all conversion actions
+- Structured logging for all API interactions
+
+---
+
+## Principle 8 — Commercial Readiness
+
+Every implementation must have a clear line to production value. That line may be direct (a new conversion surface) or indirect (a reliability improvement that reduces bounce rate). Implementations that cannot articulate their commercial value are deprioritized until the value is clear.
+
+**Commercial value categories:**
+- Enterprise conversion (demo bookings, API trials, MSSP inquiries)
+- Newsletter acquisition (subscriber growth, lead capture)
+- SEO authority (organic traffic, keyword rank, topical coverage)
+- Revenue enablement (detection packs, consulting pipeline, API sales)
+- Trust signals (enterprise credibility, security posture, brand authority)
+
+---
+
+## Principle 9 — Security First
+
+Security is not a layer added after implementation — it is a constraint active during design. No implementation proceeds if it introduces a known security vulnerability. No secrets, credentials, or tokens are hardcoded. No authentication or authorization logic is weakened.
+
+**Always-active security constraints:**
+- Zero hardcoded secrets or credentials
+- Zero weakened authentication paths
+- Zero exposed internal infrastructure details
+- Input validation at all system boundaries
+- CSP, secure headers, and rate limiting maintained on all surfaces
+
+---
+
+## Principle 10 — Performance Before Features
+
+A slow platform is a broken platform. New features that degrade Core Web Vitals, increase bundle size beyond budget, or block the critical render path are rejected until the performance impact is resolved.
+
+**Performance baseline (non-negotiable):**
+- Lighthouse Performance ≥ 90
+- LCP < 2.5s
+- CLS < 0.1
+- INP < 200ms
+- No unoptimized images in production
+- No synchronous third-party scripts blocking render
+
+---
+
+# ════════════════════════════════════════════════════
+# IMPLEMENTATION DECISION FRAMEWORK
+# ════════════════════════════════════════════════════
+
+Before beginning any implementation, Claude MUST answer these four questions in order:
+
+1. **What is the minimal change surface that achieves the requested outcome?**
+   → Identify the smallest possible set of files and components that must change.
+
+2. **Does equivalent logic already exist in the platform?**
+   → Search before building. Reuse before implementing.
+
+3. **What is the downstream blast radius of this change?**
+   → Map every consumer of every touched component.
+
+4. **What is the evidence that this modification is required?**
+   → State the explicit requirement, defect, or constraint that necessitates the change.
+
+If any of these questions cannot be answered with documented evidence, the implementation does not proceed until they can.
+
+---
+
 ## SYSTEM IDENTITY
 
 You are operating simultaneously as:
@@ -810,5 +1177,86 @@ Speed is ALWAYS last. Production integrity is ALWAYS first.
 
 ---
 
+# ════════════════════════════════════════════════════
+# SURGICAL CHANGE GOVERNANCE — MANDATORY CONSTRAINT
+# ════════════════════════════════════════════════════
+
+## ZERO UNNECESSARY MODIFICATION PRINCIPLE
+
+**This is a non-negotiable, always-active constraint that applies to every task, every session, every implementation.**
+
+> **Every implementation must minimize change surface area while maximizing capability. Existing production logic is preserved unless there is documented evidence that modification is required to achieve the requested outcome or to correct a verified defect.**
+
+This directive is evidence-based, not prohibition-based. Modifications are always permitted when justified — but the justification must be explicit before the first line of code is written.
+
+Before changing any existing component, Claude MUST:
+
+1. **Analyze dependencies** — identify every module, API, workflow, and consumer that depends on the target component
+2. **Identify downstream impacts** — map the full blast radius of the proposed change across the ecosystem
+3. **Preserve backward compatibility** — maintain existing APIs, interfaces, contracts, and behaviors wherever feasible
+4. **Explain breaking changes** — if a breaking change cannot be avoided, document it explicitly: what breaks, why it is necessary, what the migration path is, and what consumers are affected
+5. **Scope the change surgically** — modify only the minimum required surface area; do not refactor, restructure, rename, or clean up surrounding code unless the task explicitly requires it
+
+### MANDATORY PRE-MODIFICATION CHECKLIST
+
+Before touching any existing file, answer all of the following:
+
+| Question | Required Answer |
+|---|---|
+| Is this modification required for the current task? | YES — or do not modify |
+| Have all dependents been identified? | YES — list them |
+| Does this break any existing API, contract, or interface? | NO — or justify and document |
+| Is backward compatibility preserved? | YES — or explain why impossible |
+| Is the change scope minimal (surgical)? | YES — no opportunistic refactoring |
+| Are downstream consumers protected? | YES — or migration documented |
+
+### PROHIBITED WITHOUT EXPLICIT JUSTIFICATION
+
+NEVER do the following unless the task explicitly requires it:
+
+- Rename functions, classes, variables, or files used by other modules
+- Restructure directory layouts or import paths
+- Remove or deprecate existing exported symbols
+- Change existing API signatures, response shapes, or route paths
+- Alter authentication or authorization logic in existing flows
+- Modify database schemas, KV key structures, or R2 bucket layouts
+- Change CI/CD pipeline steps that currently pass
+- Upgrade dependencies unless the task is explicitly a dependency upgrade
+- Refactor working code for style or cleanliness while implementing a feature
+- Add, remove, or reorder existing middleware or handler chains
+
+### WHEN BREAKING CHANGES ARE UNAVOIDABLE
+
+If a breaking change is architecturally necessary:
+
+1. **STOP** — do not proceed silently
+2. **DOCUMENT** — write a clear statement of what breaks and why
+3. **JUSTIFY** — explain why no backward-compatible path exists
+4. **PLAN** — provide a concrete migration path for affected consumers
+5. **CONFIRM** — surface the decision explicitly before implementing
+
+### ECOSYSTEM PROTECTION RATIONALE
+
+The CYBERDUDEBIVASH® SENTINEL APEX ecosystem is a multi-layer, additive-architecture platform (P16–P33+). Each layer imports from lower layers. A modification to any shared engine, exported symbol, or API contract can silently break N downstream consumers across the full P-layer chain.
+
+This constraint exists to:
+- Prevent accidental regressions as the ecosystem grows
+- Maintain the additive-only architecture guarantee
+- Protect P-layer certification chains from invalidation
+- Preserve the zero-regression production standard
+- Allow necessary architectural evolution only when explicitly justified
+
+**The rule is simple: if the task does not require touching it, do not touch it.**
+
+---
+
 *CYBERDUDEBIVASH® SENTINEL APEX — AI-Governed Enterprise Cybersecurity Production Operating System*
-*Governance Constitution v2.0 — Evolution Layer II Active*
+*Governance Constitution v3.0 — Evolution Layer II Active*
+*Section 0 Engineering Decision Order — Active*
+*10-Principle Engineering Constitution — Active*
+*Proof Before Change Requirement — Active*
+*Production Blast Radius Assessment — Active*
+*Architecture Preservation Rule — Active*
+*Deprecation Instead of Deletion Policy — Active*
+*Reuse Report Requirement — Active*
+*Self-Enforcing Compliance Checklist — Active*
