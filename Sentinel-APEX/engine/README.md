@@ -1,0 +1,114 @@
+# Sentinel APEX Intelligence Engine
+
+Phase 2 of the Intelligence Factory roadmap: the executable core that turns
+the Phase 1 scaffold (prompts, templates, checklists) into a **tested,
+deterministic intelligence-production system**. Zero external dependencies
+beyond `pyyaml` — runs offline and inside CI.
+
+```
+raw source ──▶ normalizer ──▶ evidence layer (NormalizedDoc)
+                                │
+              ┌─────────────────┼──────────────────┐
+              ▼                 ▼                  ▼
+        ioc_extractor     attack_mapper        entities
+              │                 │                  │
+              └────────┬────────┴───────┬──────────┘
+                       ▼                ▼
+                  enrichment      knowledge_graph
+               (NVD/EPSS/KEV)   (cross-report memory)
+                       │                │
+                       └───────┬────────┘
+                               ▼
+                         sigma_builder
+                               ▼
+                        draft (markdown)
+                               ▼
+                       quality gates ──▶ publish-eligible / BLOCKED
+```
+
+## Design principles
+
+1. **Evidence first, never fabricate.** Every ATT&CK mapping stores the
+   source phrase that triggered it. Enrichment fields stay `None` when a
+   live source (NVD, FIRST EPSS, CISA KEV) is unreachable — scores are never
+   estimated. Sections without evidence are omitted, never padded.
+2. **Single responsibility, independently testable.** Each stage is one
+   module with its own test file. Network access is injectable
+   (`Enricher(fetch_json=...)`), so the full pipeline is testable offline.
+3. **The gate is code, not a checklist.** `quality.py` executes the
+   publication gate: a report either passes every blocking rule or it is not
+   eligible. The Sigma builder validates its own output against the same
+   gate, so the engine cannot emit a rule the gate would reject.
+
+## Modules
+
+| Module | Responsibility |
+|---|---|
+| `models.py` | Typed artifacts: IOC, TechniqueMapping, NormalizedDoc, GateResult… |
+| `normalizer.py` | Strip scraper noise / site chrome; produce the evidence layer |
+| `ioc_extractor.py` | Deterministic IOC extraction, categorization, defang/refang |
+| `attack_mapper.py` | Evidence-backed ATT&CK mapping + technique-ID validation |
+| `entities.py` | Curated-lexicon actor/malware/tool/vendor extraction |
+| `enrichment.py` | NVD (CVSS), FIRST (EPSS), CISA (KEV) — injectable fetchers |
+| `knowledge_graph.py` | JSON-backed cross-report entity/relationship memory |
+| `sigma_builder.py` | Validated, evidence-driven Sigma rules (no generic fallbacks) |
+| `report_parser.py` | Parses published SENTINEL APEX reports for auditing |
+| `quality.py` | Executable per-report + corpus-level publication gates |
+| `pipeline.py` | Orchestrator: source → gated draft |
+| `cli.py` | `normalize` / `gate` / `run` / `enrich` commands |
+
+## Usage
+
+```bash
+cd Sentinel-APEX/engine
+
+# run the test suite (53 tests, offline)
+python3 -m pytest tests/ -q
+
+# audit published reports against the quality gates (exit 1 on block)
+python3 cli.py gate path/to/report-*.txt
+
+# full pipeline on a raw source article
+python3 cli.py run source.txt --id CDB-2026-0001 \
+    --url https://vendor.example/advisory --graph intelligence/kg.json
+
+# live CVE enrichment
+python3 cli.py enrich CVE-2024-4577
+```
+
+## Quality gates (executable)
+
+Per-report **blocking** gates:
+
+- required sections present; valid severity; title resolvable
+- MITRE section contains technique IDs; malformed IDs rejected
+  (IDs outside the curated validation set → review warning)
+- live (undefanged) URLs/IPs/domains/emails in the IOC section
+- Sigma rule: YAML-valid, required fields, condition references defined
+  selections, valid level, valid ATT&CK tags
+- assessments present without any confidence labels
+- aggregator/scraper text (`submitted by /u/…`, `[link] [comments]`)
+  leaked into Technical Analysis
+
+Corpus-level gates (templated-content detection):
+
+- **block**: identical Sigma rule published across multiple reports
+- **warn**: MITRE / IOC / Threat Hunting sections ≥80% shingle-identical
+  between reports; thin analysis; executive summary that is a verbatim copy
+  of the technical analysis
+
+These gates were validated against 10 real published reports and correctly
+identified every known defect class (scraper leakage, template-stamped
+detections, duplicated operational sections).
+
+## Roadmap position
+
+- **Phase 1 — Foundation** (done): prompts, templates, workflow, checklist
+- **Phase 2 — Intelligence Engine** (this package): normalization,
+  extraction, enrichment, correlation, knowledge graph, executable gates
+- **Phase 3 — Detection Engine**: broaden per-technique detection logic
+  (KQL/SPL/Suricata/OSQuery), rule back-testing
+- **Phase 4 — Publishing Platform**: multi-format rendering, SEO assembly,
+  syndication integration, API/JSON feed output
+- **Phase 5 — Enterprise Platform**: subscriptions, portals, analytics,
+  feedback loops
