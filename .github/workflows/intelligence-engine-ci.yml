@@ -1,0 +1,39 @@
+name: "🧠 SENTINEL APEX — Intelligence Engine CI"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Sentinel-APEX/engine/**'
+      - '.github/workflows/intelligence-engine-ci.yml'
+  pull_request:
+    paths:
+      - 'Sentinel-APEX/engine/**'
+      - '.github/workflows/intelligence-engine-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  engine-tests:
+    name: "Engine Test Suite"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "📥 Checkout"
+        uses: actions/checkout@v4
+
+      - name: "🐍 Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: "📦 Install dependencies"
+        run: pip install pyyaml pytest
+
+      - name: "🧪 Run engine test suite (offline)"
+        working-directory: Sentinel-APEX/engine
+        run: python3 -m pytest tests/ -v
+
+      - name: "🔬 Compile check"
+        working-directory: Sentinel-APEX/engine
+        run: python3 -m py_compile sentinel_engine/*.py cli.py

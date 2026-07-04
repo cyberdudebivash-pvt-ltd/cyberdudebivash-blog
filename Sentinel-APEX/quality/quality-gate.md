@@ -3,6 +3,12 @@
 Every intelligence product MUST pass this gate before moving from
 `reports/drafts/` to `reports/final/`. A single failed item blocks promotion.
 
+> **Executable enforcement:** the machine-checkable subset of this gate
+> (structure, ATT&CK validity, IOC defanging, Sigma rule validity, confidence
+> labeling, scraper-noise leakage, cross-report duplication) runs as code in
+> `../engine/` — `python3 cli.py gate <report...>` exits non-zero on any
+> blocking finding. Run it before manual review, not instead of it.
+
 ## 1. Evidence Integrity
 - [ ] Every statement in **Verified Facts** is directly supported by a cited source
 - [ ] No invented CVEs, hashes, IOCs, victim names, or telemetry
