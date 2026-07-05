@@ -1456,10 +1456,10 @@ function genMultiPlatformDetections(item, esc) {
   if (!detEngine || !item) return '';
   try {
     const text = `${item.title || ''}. ${item.desc || ''}`;
-    const iocs = (item.iocs || [])
+    const iocs = (Array.isArray(item.iocs) ? item.iocs : [])
       .filter((i) => i && i.value)
       .map((i) => ({ type: i.type, value: i.value }));
-    const refs = (item.refs || []).filter(Boolean).slice(0, 3);
+    const refs = (Array.isArray(item.refs) ? item.refs : []).filter(Boolean).slice(0, 3);
     if (item.id && /^CVE-/i.test(item.id)) refs.unshift(`https://nvd.nist.gov/vuln/detail/${item.id}`);
     const { detections, suricata } = detEngine.buildDetections(text, iocs, { references: refs });
     if (!detections.length && !suricata.length) return '';
