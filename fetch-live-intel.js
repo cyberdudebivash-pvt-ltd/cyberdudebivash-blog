@@ -1292,10 +1292,19 @@ function getMitre(item) {
 // ── PHASE 6: CTI WRITER v5.3 ────────────────────────────────────────────
 
 function genExecutiveSummary(item) {
-  const vendor=item.vendor||'the affected vendor', product=item.product||'affected product';
-  const cvss=item.cvss||7.0, tl=item.threatLevel||'HIGH', score=item.priority||0;
+  const vendor=item.vendor||'the affected vendor', product=item.product||'the affected product';
+  const cvss=item.cvss||7.0, tl=item.threatLevel||'HIGH';
   const srcList = (item._sources||[item.source]).join(', ');
-  return `CYBERDUDEBIVASH SENTINEL APEX has confirmed a ${tl}-tier threat intelligence signal for ${item.id} affecting ${vendor} ${product}. Composite threat score: ${score}/100. Intelligence corroborated across ${item.sourceCount||1} source(s): ${srcList}. CVSS base score: ${cvss}. ${item.cisaKev?'CISA KEV confirmed — active exploitation documented in federal advisory.':item.exploited?'Active exploitation detected in the wild — emergency response required.':'Exploitation probability assessed as HIGH based on vulnerability characteristics.'} ${item.ransomware?'Ransomware-as-a-service operators have been observed using this attack vector.':''}`;
+  // Exploitation status is stated ONLY from verifiable signals (KEV / reported
+  // exploitation). Absent those, we say so plainly rather than asserting a
+  // probability we cannot source — analyst-grade honesty over engagement.
+  const exploitLine = item.cisaKev
+    ? 'CISA has confirmed active exploitation in the wild (listed in the Known Exploited Vulnerabilities catalog).'
+    : item.exploited
+    ? 'Active exploitation has been reported in the wild — prioritize accordingly.'
+    : 'No confirmed in-the-wild exploitation at the time of writing; prioritize on exposure, privilege, and CVSS.';
+  const ransomLine = item.ransomware ? ' Source reporting associates this with known ransomware activity.' : '';
+  return `This report analyzes ${item.id} affecting ${vendor} ${product} (CVSS ${cvss}, ${tl} severity). ${exploitLine}${ransomLine} Corroborated across ${item.sourceCount||1} source(s): ${srcList}. Verify all specifics against the primary sources linked below before acting.`;
 }
 
 function genBusinessImpact(item) {
@@ -1637,10 +1646,19 @@ function genYARA(item) {
 
 // ── PHASE 7: ADVANCED COMMENTARY (Executive Summary + Business Impact) ─
 function genExecutiveSummary(item) {
-  const vendor=item.vendor||'the affected vendor', product=item.product||'affected product';
-  const cvss=item.cvss||7.0, tl=item.threatLevel||'HIGH', score=item.priority||0;
+  const vendor=item.vendor||'the affected vendor', product=item.product||'the affected product';
+  const cvss=item.cvss||7.0, tl=item.threatLevel||'HIGH';
   const srcList = (item._sources||[item.source]).join(', ');
-  return `CYBERDUDEBIVASH SENTINEL APEX has confirmed a ${tl}-tier threat intelligence signal for ${item.id} affecting ${vendor} ${product}. Composite threat score: ${score}/100. Intelligence corroborated across ${item.sourceCount||1} source(s): ${srcList}. CVSS base score: ${cvss}. ${item.cisaKev?'CISA KEV confirmed — active exploitation documented in federal advisory.':item.exploited?'Active exploitation detected in the wild — emergency response required.':'Exploitation probability assessed as HIGH based on vulnerability characteristics.'} ${item.ransomware?'Ransomware-as-a-service operators have been observed using this attack vector.':''}`;
+  // Exploitation status is stated ONLY from verifiable signals (KEV / reported
+  // exploitation). Absent those, we say so plainly rather than asserting a
+  // probability we cannot source — analyst-grade honesty over engagement.
+  const exploitLine = item.cisaKev
+    ? 'CISA has confirmed active exploitation in the wild (listed in the Known Exploited Vulnerabilities catalog).'
+    : item.exploited
+    ? 'Active exploitation has been reported in the wild — prioritize accordingly.'
+    : 'No confirmed in-the-wild exploitation at the time of writing; prioritize on exposure, privilege, and CVSS.';
+  const ransomLine = item.ransomware ? ' Source reporting associates this with known ransomware activity.' : '';
+  return `This report analyzes ${item.id} affecting ${vendor} ${product} (CVSS ${cvss}, ${tl} severity). ${exploitLine}${ransomLine} Corroborated across ${item.sourceCount||1} source(s): ${srcList}. Verify all specifics against the primary sources linked below before acting.`;
 }
 
 function genBusinessImpact(item) {
@@ -1666,7 +1684,7 @@ function genAttackChain(item) {
   if (/unauthenticated|no auth|auth bypass/i.test(t)) {
     chain.push({ phase:'Initial Access', detail:'Unauthenticated exploitation — no credentials required. Single HTTP request sufficient', tactic:'T1190' });
   } else if (/phishing|email|attachment/i.test(t)) {
-    chain.push({ phase:'Initial Access', detail:'Spear-phishing with malicious attachment or link targeting ${item.vendor} users', tactic:'T1566' });
+    chain.push({ phase:'Initial Access', detail:`Spear-phishing with malicious attachment or link targeting ${item.vendor||'the affected'} users`, tactic:'T1566' });
   } else {
     chain.push({ phase:'Initial Access', detail:`Exploitation of ${item.id} in ${item.vendor} ${item.product}`, tactic:'T1190' });
   }
@@ -1697,7 +1715,7 @@ function genCommentary(item) {
     DATA_BREACH:    `A data breach or significant data exposure event has been identified. SENTINEL APEX recommends immediate assessment of third-party data sharing relationships. Credential stuffing attacks typically follow major breach disclosures within 48-72 hours.`,
     THREAT_ACTOR:   `Nation-state or APT actor activity has been observed. State-sponsored cyber operations have dramatically increased in targeting critical infrastructure, defense supply chains, and financial systems. TTPs include living-off-the-land techniques, supply chain compromise, and persistence through legitimate tooling.`,
     AI_SECURITY:    `AI and machine learning security vulnerabilities represent an emerging attack surface that most organizations are unprepared to defend. SENTINEL APEX tracks AI security threats including prompt injection, model poisoning, and AI-assisted cyberattacks.`,
-    NEWS_REPORT:    `SENTINEL APEX is monitoring this developing security event. Analysts are tracking indicators, attribution signals, and potential downstream impact. SENTINEL APEX subscribers receive pre-disclosure intelligence before incidents become public knowledge.`,
+    NEWS_REPORT:    `SENTINEL APEX is monitoring this developing security event. We are tracking indicators, attribution signals, and potential downstream impact, and will update this report as verified details emerge. Treat early details as provisional until confirmed against the primary sources below.`,
     ADVISORY:       `This security advisory from ${vendor} covers critical remediation requirements. SENTINEL APEX recommends treating all vendor advisories as actionable intelligence requiring timely response.`,
   };
   const base = typeCommentary[item.type]||typeCommentary['NEWS_REPORT'];
