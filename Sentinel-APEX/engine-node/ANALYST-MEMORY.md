@@ -1,9 +1,28 @@
-# Analyst Memory — persistent cross-report intelligence
+# Analyst Memory + Threat Correlation — persistent intelligence knowledge graph
 
 Turns a stream of isolated reports into an evolving intelligence asset. As each
-report is generated, the entities it references are recorded; new reports then
-answer **"have we seen this before?"** instead of treating every event as
-isolated.
+report is generated, the entities it references are recorded **and related** to
+one another, so new reports answer not only **"have we seen this before?"** but
+**"which campaigns reused these TTPs?"**, **"what techniques does this actor
+use?"**, and **"which vendors are repeatedly targeted?"**
+
+## Two layers over one store
+
+1. **Analyst Memory** — per-entity `firstSeen` / `lastSeen` / `count` / recent
+   reports. Powers the *Prior Intelligence Context* section.
+2. **Threat Correlation Engine** — a co-occurrence relationship graph
+   (`edges[a][b] = count`) among correlatable entities (actors, malware,
+   techniques, CVEs, vendors, products). Powers the *Threat Correlation
+   Analysis* section. `correlate(item)` returns, computed **before** ingest:
+   - **actor TTP profiles** — techniques a report's actors/malware are known for
+   - **TTP reuse** — for each technique in the report, which actors/malware have
+     used it historically (cross-campaign shared-TTP correlation)
+   - **repeated targeting** — vendors/products seen in ≥2 prior reports
+   - **related prior reports** — ranked by shared-entity overlap
+
+Both layers persist in the single `intel-memory.json` store (one source of
+truth) and are bounded — 50k-entity cap with LRU pruning, plus a per-node
+neighbor cap (60) on the graph, so neither can grow without limit.
 
 ## What's tracked
 
@@ -35,20 +54,23 @@ least-recently-seen pruning — so it cannot grow without limit.
 
 ## Example
 
-A second report on a recurring adversary renders:
+A report on a recurring adversary renders:
 
-> **Prior Intelligence Context** — correlated against SENTINEL APEX persistent memory:
-> - Threat actor APT41 — previously observed 4 times in CYBERDUDEBIVASH intelligence since 2026-05-02
-> - Malware family LockBit — previously observed 11 times …
-> - Vendor Fortinet — previously observed 12 times …
+> **Threat Correlation Analysis** — knowledge-graph correlation:
+> - Malware LockBit has been correlated with prior TTP use: T1059.001, T1490
+> - Technique T1490 was previously observed with: APT41, LockBit, Akira
+> - Vendor Fortinet has been targeted in 2 prior CYBERDUDEBIVASH reports (recurring target)
+> - Related prior intelligence: apt41-lockbit-fortinet (5 shared entities), akira-fortinet (2 shared entities)
 
 ## Tests
 
 ```bash
 cd Sentinel-APEX/engine-node
-node --test        # 34 tests: 18 detection + 8 memory + 8 wiring
+node --test        # 46 tests: 18 detection + 8 memory + 11 correlation + 9 wiring
 ```
 
-Memory tests cover entity extraction, prior-context timing (first sighting is
-empty; recurrence surfaces), count accumulation, bounded pruning, corrupt/missing
--file resilience, and full round-trip persistence.
+Coverage: entity extraction, prior-context timing (first sighting empty,
+recurrence surfaces), count accumulation, edge construction, actor-TTP profiles,
+cross-campaign TTP reuse, recurring-target detection, related-report ranking,
+read-only correlation, bounded entity + neighbor pruning, corrupt/missing-file
+resilience, and full round-trip persistence of both entities and edges.

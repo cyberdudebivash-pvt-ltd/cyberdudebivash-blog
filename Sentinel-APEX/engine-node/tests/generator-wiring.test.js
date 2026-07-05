@@ -80,3 +80,14 @@ test('genPriorIntelligence is guarded (no memory / bad item -> empty)', () => {
   assert.strictEqual(gen.genPriorIntelligence(RICH_ITEM, esc, null), '');
   assert.strictEqual(gen.genPriorIntelligence(null, esc, new AnalystMemory()), '');
 });
+
+test('threat correlation section renders once the graph has history', () => {
+  const mem = new AnalystMemory();
+  // seed a prior report sharing actor + TTPs + vendor with RICH_ITEM
+  mem.ingest({ id: 'CVE-2023-0001', title: 'APT41 LockBit against Fortinet',
+    desc: 'APT41 used encoded PowerShell and vssadmin delete shadows before LockBit encryption',
+    vendor: 'Fortinet', product: 'FortiOS', cves: ['CVE-2023-0001'] }, 'seed-report');
+  const html = gen.genPriorIntelligence(RICH_ITEM, esc, mem);
+  assert.ok(html.includes('Threat Correlation Analysis'));
+  assert.ok(/APT41|LockBit|Fortinet/.test(html));
+});

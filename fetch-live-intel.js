@@ -1503,11 +1503,20 @@ function genMultiPlatformDetections(item, esc) {
 function genPriorIntelligence(item, esc, mem = analystMemory) {
   if (!mem || !item) return '';
   try {
-    const notes = mem.priorContext(item);
-    if (!notes.length) return '';
-    let html = `<h2 class="sh"><span>🧬</span> Prior Intelligence Context</h2>`;
-    html += `<p class="bp">This report is correlated against CYBERDUDEBIVASH SENTINEL APEX's persistent analyst memory. The following entities have been tracked in prior intelligence:</p>`;
-    html += `<ul class="alist">${notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`;
+    const notes = typeof mem.priorContext === 'function' ? mem.priorContext(item) : [];
+    const correlations = typeof mem.correlationNotes === 'function' ? mem.correlationNotes(item) : [];
+    if (!notes.length && !correlations.length) return '';
+    let html = '';
+    if (notes.length) {
+      html += `<h2 class="sh"><span>🧬</span> Prior Intelligence Context</h2>`;
+      html += `<p class="bp">This report is correlated against CYBERDUDEBIVASH SENTINEL APEX's persistent analyst memory. The following entities have been tracked in prior intelligence:</p>`;
+      html += `<ul class="alist">${notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`;
+    }
+    if (correlations.length) {
+      html += `<h2 class="sh"><span>🕸️</span> Threat Correlation Analysis</h2>`;
+      html += `<p class="bp">SENTINEL APEX's intelligence knowledge graph correlates this activity against historical threat actors, campaigns, and shared TTPs:</p>`;
+      html += `<ul class="alist">${correlations.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`;
+    }
     return html;
   } catch (e) {
     console.warn(`⚠️ genPriorIntelligence failed for ${item && item.id}:`, e.message);
