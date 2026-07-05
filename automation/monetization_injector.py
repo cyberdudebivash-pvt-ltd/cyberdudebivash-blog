@@ -29,6 +29,10 @@ _INLINE_CSS = """
 .apex-svc-item span{font-size:11px;color:#64748b}
 .apex-about{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:32px 0;padding:20px 24px;background:#050d1a;border-top:2px solid #00d4ff33;color:#94a3b8;font-size:13px;line-height:1.7}
 .apex-about strong{color:#00d4ff}
+.apex-social{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:24px 0;padding:18px 24px;background:#0a0f1e;border:1px solid #1e3a5f;border-radius:8px}
+.apex-social h4{margin:0 0 12px;font-size:13px;font-weight:700;color:#00d4ff;text-transform:uppercase;letter-spacing:1px}
+.apex-social-grid{display:flex;flex-wrap:wrap;gap:8px}
+.apex-social-grid a{display:inline-block;padding:7px 14px;background:#0d1a2e;border:1px solid #1e3a5f;border-radius:5px;font-size:12px;color:#94a3b8;text-decoration:none}
 .apex-read-more{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:24px 0;text-align:center}
 .apex-read-more a{display:inline-block;padding:12px 28px;background:linear-gradient(90deg,#00d4ff,#0099cc);color:#000;font-weight:800;font-size:15px;border-radius:6px;text-decoration:none;letter-spacing:.5px}
 </style>
@@ -177,6 +181,35 @@ class MonetizationInjector:
   <em>Defending the Future with AI-Powered Cybersecurity.</em><br>
   Contact: <a href="mailto:{self.config.contact_email}">{self.config.contact_email}</a> ·
   Website: <a href="{self.config.brand_url}" target="_blank" rel="noopener">{self.config.brand_url}</a>
+</div>
+""".strip()
+
+    def inject_social_block(self) -> str:
+        """Ecosystem + social profile block — every published report links the
+        full CYBERDUDEBIVASH® brand graph for authority and cross-property SEO."""
+        profiles = [
+            ("🔗 LinkedIn", "https://www.linkedin.com/company/cyberdudebivash/"),
+            ("🐦 X / Twitter", "https://x.com/CDBSENTINELAPEX"),
+            ("📺 YouTube", "https://www.youtube.com/@CYBERDUDEBIVASHSentinelAPEX"),
+            ("📸 Instagram", "https://www.instagram.com/cyberdudebivash_official/"),
+            ("👤 Facebook", "https://www.facebook.com/profile.php?id=61583373732736"),
+            ("🧵 Threads", "https://www.threads.com/@cyberdudebivash_official"),
+            ("✍️ Medium", "https://medium.com/@cyberdudebivash"),
+            ("📌 Pinterest", "https://in.pinterest.com/CYBERDUDEBIVASH_Official/"),
+            ("🟢 Fiverr", "https://www.fiverr.com/bivashkumar007/"),
+            ("🟢 Upwork", "https://www.upwork.com/freelancers/~010d4dde1657fa5619"),
+            ("📡 News Network", "https://cyberdudebivash-news.blogspot.com/"),
+        ]
+        links = "\n    ".join(
+            f'<a href="{url}" target="_blank" rel="noopener">{label}</a>'
+            for label, url in profiles
+        )
+        return f"""
+<div class="apex-social">
+  <h4>🌐 Connect with CYBERDUDEBIVASH®</h4>
+  <div class="apex-social-grid">
+    {links}
+  </div>
 </div>
 """.strip()
 

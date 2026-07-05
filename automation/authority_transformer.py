@@ -1341,6 +1341,8 @@ class AuthorityTransformer:
 
 {self.monetization.inject_about_block()}
 
+{self.monetization.inject_social_block()}
+
 <div style="margin-top:20px;padding:12px 16px;background:#050d1a;border-top:1px solid #1e3a5f22;font-size:11px;color:#334155;font-family:monospace">
   Intelligence syndicated from <a href="{article.url}" target="_blank" rel="noopener" style="color:#334155">{article.url}</a> · CYBERDUDEBIVASH® SENTINEL APEX Intelligence Engine v2.0
 </div>
