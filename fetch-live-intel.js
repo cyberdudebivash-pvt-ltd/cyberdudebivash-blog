@@ -1858,6 +1858,71 @@ function sentinelApexStamp(item) {
   };
 }
 
+// ── CVSS VECTOR DECODER — factual, per-CVE severity anatomy ──────────────
+// Decodes the official CVSS v3.x vector string from NVD into plain-language
+// attack characteristics. This is primary-source data, not assessment: every
+// row is a direct read of the vendor/NVD-assigned vector, so a defender learns
+// exactly HOW the vulnerability is reached and what it costs — the single most
+// useful triage signal beyond the base score.
+const CVSS_METRICS = {
+  AV: { label: 'Attack Vector', vals: {
+    N: ['Network', 'Remotely exploitable across the network — internet-facing instances are directly at risk.'],
+    A: ['Adjacent', 'Requires same physical/logical network (LAN, Bluetooth, adjacent subnet).'],
+    L: ['Local', 'Requires local access — a shell, session, or local file/app interaction.'],
+    P: ['Physical', 'Requires physical access to the device.'] } },
+  AC: { label: 'Attack Complexity', vals: {
+    L: ['Low', 'No special conditions — reliably repeatable by an attacker.'],
+    H: ['High', 'Depends on conditions outside attacker control (race, specific config) — harder to weaponize.'] } },
+  PR: { label: 'Privileges Required', vals: {
+    N: ['None', 'No authentication needed — pre-auth exploitation.'],
+    L: ['Low', 'Requires basic user-level privileges.'],
+    H: ['High', 'Requires administrative/elevated privileges.'] } },
+  UI: { label: 'User Interaction', vals: {
+    N: ['None', 'No victim action required — fully automatable.'],
+    R: ['Required', 'A user must click, open, or visit something — social engineering component.'] } },
+  S:  { label: 'Scope', vals: {
+    U: ['Unchanged', 'Impact confined to the vulnerable component.'],
+    C: ['Changed', 'Impact extends beyond the vulnerable component — can affect other systems/security domains.'] } },
+  C:  { label: 'Confidentiality Impact', vals: {
+    H: ['High', 'Total loss of confidentiality — full data disclosure possible.'],
+    L: ['Low', 'Limited disclosure of some data.'], N: ['None', 'No confidentiality impact.'] } },
+  I:  { label: 'Integrity Impact', vals: {
+    H: ['High', 'Total loss of integrity — attacker can modify any data.'],
+    L: ['Low', 'Limited modification of some data.'], N: ['None', 'No integrity impact.'] } },
+  A:  { label: 'Availability Impact', vals: {
+    H: ['High', 'Total loss of availability — full denial of service possible.'],
+    L: ['Low', 'Reduced performance or intermittent availability.'], N: ['None', 'No availability impact.'] } },
+};
+
+function decodeCvssVector(vector) {
+  if (!vector || !/^CVSS:3\.[01]\//.test(vector)) return null;
+  const parts = {};
+  vector.split('/').slice(1).forEach(p => { const [k, v] = p.split(':'); if (k && v) parts[k] = v; });
+  const order = ['AV', 'AC', 'PR', 'UI', 'S', 'C', 'I', 'A'];
+  const rows = [];
+  for (const k of order) {
+    const spec = CVSS_METRICS[k]; const code = parts[k];
+    if (!spec || !code || !spec.vals[code]) continue;
+    const [val, meaning] = spec.vals[code];
+    rows.push({ metric: spec.label, value: val, meaning, code: `${k}:${code}` });
+  }
+  return rows.length ? { rows, version: vector.match(/^CVSS:(3\.[01])/)[1] } : null;
+}
+
+function genSeverityAnatomy(item, esc) {
+  const decoded = decodeCvssVector(item.vector);
+  if (!decoded) return '';
+  const hi = m => (m.code === 'AV:N' || m.code === 'PR:N' || m.code === 'UI:N' || m.code === 'S:C' || /:H$/.test(m.code));
+  const rows = decoded.rows.map(m => `<tr>
+      <td style="color:var(--apex-muted);white-space:nowrap">${esc(m.metric)}</td>
+      <td style="font-weight:700;color:${hi(m) ? 'var(--apex-red)' : 'var(--apex-text)'};white-space:nowrap">${esc(m.value)} <code style="color:var(--apex-muted);font-size:11px">${esc(m.code)}</code></td>
+      <td style="font-size:13px;color:#c9d1d9">${esc(m.meaning)}</td>
+    </tr>`).join('\n');
+  return `<h2 class="sh"><span>🧮</span> Severity Anatomy <span style="font-size:12px;font-weight:500;color:var(--apex-muted)">— CVSS ${esc(decoded.version)} vector, decoded from the primary record</span></h2>
+    <p class="bp">The base score summarizes severity in one number; the vector explains <em>why</em>. Each row below is a direct read of the official CVSS vector — verifiable against the <a href="https://nvd.nist.gov/vuln/detail/${esc(item.id)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">NVD record</a>.</p>
+    <table class="tbl"><thead><tr><th>Metric</th><th>Value</th><th>What it means for defenders</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
 function generatePostHTML(item) {
   const mitre = getMitre(item);
   const execSummary = genExecutiveSummary(item);
@@ -2054,10 +2119,11 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
     ${item.cisaKev?`<div class="alert alert-crit"><span class="aico">🚨</span><div class="abody"><div class="atitle">CISA KNOWN EXPLOITED VULNERABILITY — MANDATORY REMEDIATION</div><p>Active exploitation confirmed. CISA KEV catalog listed. ${item.dueDate?`Federal agencies must remediate by <strong>${item.dueDate}</strong>.`:'All organizations must patch immediately.'} Required action: ${escHtml(item.reqAction||'Apply vendor patch immediately.')}</p></div></div>`:item.exploited?`<div class="alert alert-warn"><span class="aico">⚠️</span><div class="abody"><div class="atitle">ACTIVE EXPLOITATION DETECTED</div><p>Exploitation confirmed in the wild. Emergency patching required. Score: ${score}/100 — do not wait for maintenance window.</p></div></div>`:`<div class="alert alert-info"><span class="aico">🔵</span><div class="abody"><div class="atitle">HIGH-PRIORITY SECURITY ADVISORY — Priority Score: ${score}/100</div><p>CVSS ${cvss} ${tl}. SENTINEL APEX recommends immediate patch evaluation. Intelligence from ${item.sourceCount||1} confirmed source(s).</p></div></div>`}
     <h2 class="sh"><span>📋</span> Executive Summary</h2>
     <div class="exec-box"><div class="ex-label">⚡ Analyst Assessment — SENTINEL APEX v4.0</div><p>${escHtml(execSummary)}</p><div style="margin-top:12px;font-size:12px;color:var(--apex-muted)">Intelligence sources: ${srcBadges}</div></div>
+    ${genSeverityAnatomy(item, escHtml)}
     <h2 class="sh"><span>⚠️</span> Business Impact Analysis</h2>
     <ul class="impact-list">${bizImpactItems}</ul>
-    <h2 class="sh"><span>🔗</span> Attack Chain Analysis</h2>
-    <p class="bp" style="font-size:14px">Step-by-step attack chain based on observed TTPs and vulnerability characteristics:</p>
+    <h2 class="sh"><span>🔗</span> Representative Attack Path</h2>
+    <p class="bp" style="font-size:14px">A typical attack path for this vulnerability class, mapped to MITRE ATT&amp;CK. This is a representative model to guide detection and defense — not a claim of observed activity against a specific target. Confirm specifics against the primary sources below.</p>
     <table class="tbl"><thead><tr><th>#</th><th>Phase</th><th>Attacker Action</th><th>MITRE</th></tr></thead><tbody>${chainRows}</tbody></table>
     <h2 class="sh"><span>⚠</span> Deep Dive Analysis</h2>
     ${commentary.split('\n\n').map(p=>`<p class="bp">${escHtml(p)}</p>`).join('\n    ')}
