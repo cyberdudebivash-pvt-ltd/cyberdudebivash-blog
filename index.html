@@ -255,7 +255,7 @@
     .hdr-logo-img:hover { box-shadow: 0 0 20px rgba(0,255,224,.5); transform: scale(1.05); }
     header.hdr-compact .hdr-logo-img { width: 28px; height: 28px; }
     .header-inner {
-      max-width: 1300px;
+      max-width: 1520px;
       margin: 0 auto;
       padding: 12px 40px;
       display: flex;
@@ -263,7 +263,10 @@
       align-items: center;
       gap: 12px;
     }
-    .logo-wrap { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    /* flex-shrink:0 + nowrap: brand identity must never be compressed by the nav.
+       Without these, flexbox crushes .logo to min-content (1 char wide) whenever
+       nav min-width exceeds the container — the vertical letter-stack defect. */
+    .logo-wrap { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; }
     .logo-badge {
       background: linear-gradient(135deg, rgba(0,255,224,0.15), rgba(0,180,216,0.15));
       border: 1px solid rgba(0,255,224,0.35);
@@ -281,6 +284,7 @@
       font-weight: 900;
       color: #fff;
       letter-spacing: 2px;
+      white-space: nowrap;
       text-decoration: none;
       text-transform: uppercase;
       background: linear-gradient(135deg, #fff 40%, var(--apex-cyan));
@@ -290,13 +294,15 @@
     }
     .logo span { color: var(--apex-cyan); -webkit-text-fill-color: var(--apex-cyan); }
     /* ── Desktop Nav ── */
-    nav { display: flex; align-items: center; gap: 2px; }
+    /* flex-wrap: if links ever exceed available width, they wrap to a tidy
+       second row instead of forcing horizontal overflow or crushing the logo */
+    nav { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; justify-content: flex-end; row-gap: 4px; min-width: 0; }
     nav a {
       color: #8892a4;
       text-decoration: none;
       font-size: 12px;
       font-weight: 600;
-      padding: 7px 11px;
+      padding: 7px 8px;
       border-radius: 6px;
       text-transform: uppercase;
       letter-spacing: 0.8px;
@@ -412,9 +418,12 @@
       backdrop-filter: blur(4px);
       z-index: 19999;
       opacity: 0;
+      /* while closed the overlay is invisible but still stacked over the whole
+         page — without this it swallows every tap on mobile */
+      pointer-events: none;
       transition: opacity .35s;
     }
-    .mobile-overlay.open { opacity: 1; }
+    .mobile-overlay.open { opacity: 1; pointer-events: auto; }
 
     /* ══════════════════════════════════════════════
        APEX THREAT STATUS BAR — GOD MODE
@@ -924,6 +933,20 @@
       display: grid;
       grid-template-columns: 1fr 340px;
       gap: 40px;
+    }
+    /* ══════════════════════════════════════════════
+       RESPONSIVE — DESKTOP HEADER TIERS
+       Header min-content must stay below viewport width
+       so the brand + nav render on a single clean row.
+       ══════════════════════════════════════════════ */
+    @media (max-width: 1519px) {
+      /* Badge only fits on very wide screens (compact + mobile already hide it) */
+      .logo-badge { display: none; }
+    }
+    @media (max-width: 1340px) and (min-width: 961px) {
+      .logo { font-size: 17px; }
+      nav a:not(.nav-cta) { font-size: 11px !important; padding: 6px 6px; }
+      .header-inner { padding: 12px 24px; }
     }
     /* ══════════════════════════════════════════════
        RESPONSIVE — TABLET (960px)
@@ -1819,7 +1842,7 @@ input:focus, textarea:focus {
       <a href="https://intel.cyberdudebivash.com" target="_blank">Platform</a>
       <a href="https://cyberdudebivash.in" target="_blank">AI Hub</a>
       <div class="nav-sep"></div>
-      <a href="/search.html">🔍 Search</a>
+      <a href="/search.html" aria-label="Search" title="Search">🔍</a>
       <a href="/products.html">Products</a>
       <a href="/pricing.html">Pricing</a>
       <a href="/api.html">API</a>

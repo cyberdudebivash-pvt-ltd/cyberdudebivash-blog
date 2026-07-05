@@ -30,6 +30,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* anchor targets land below the sticky header instead of underneath it */
+  scroll-padding-top: 90px;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -1348,9 +1350,11 @@ button:hover {
 }
 
 /* ── 20.8 NAVIGATION — always readable ───────────────────────── */
+/* 12px matches the header's designed size; 13px inflated nav min-width
+   past the container and crushed the .logo into a vertical letter stack */
 header nav a,
 .nav-link {
-  font-size: 13px !important;
+  font-size: 12px !important;
   letter-spacing: 0.3px !important;
   white-space: nowrap !important;
 }
