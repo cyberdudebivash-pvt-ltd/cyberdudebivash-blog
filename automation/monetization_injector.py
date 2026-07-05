@@ -67,7 +67,7 @@ class MonetizationInjector:
         return f"""
 <div class="apex-cta-block">
   <h4>🛡 SENTINEL APEX ECOSYSTEM</h4>
-  <p>Get real-time threat intelligence, CVE analysis, YARA/Sigma rules, and SOC-ready intelligence feeds trusted by 4,800+ security professionals worldwide.</p>
+  <p>Get real-time threat intelligence, CVE analysis, YARA/Sigma rules, and SOC-ready intelligence feeds trusted by 2,400+ security professionals worldwide.</p>
   <div class="apex-cta-grid">
     <a class="apex-btn apex-btn-primary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">🛡 Sentinel APEX Platform</a>
     <a class="apex-btn apex-btn-secondary" href="{self.config.api_url}" target="_blank" rel="noopener">⎋ Threat Intelligence API</a>

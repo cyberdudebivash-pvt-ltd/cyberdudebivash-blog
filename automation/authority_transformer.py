@@ -23,6 +23,25 @@ from .seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss
 logger = setup_logger("authority_transformer")
 
 
+# Internal prioritization artifacts that leak into RSS summaries from the source
+# platform (e.g. "Score 100/100 CRITICAL — CVSS 8 —"). These are pipeline-internal
+# scoring labels, not analyst content — they contradict the report's own severity
+# assessment and must never appear in published intelligence.
+_SCORE_ARTIFACT_RE = re.compile(
+    r"Score\s*\d{1,3}\s*/\s*100\s*(?:CRITICAL|HIGH|MEDIUM|LOW|INFO)?"
+    r"\s*[—–\-]*\s*(?:CVSS\s*[\d.]{1,4})?\s*[—–\-]*\s*",
+    re.IGNORECASE,
+)
+
+
+def _sanitize_summary(text: str) -> str:
+    """Strip internal scoring artifacts and collapse whitespace in source summaries."""
+    if not text:
+        return text
+    cleaned = _SCORE_ARTIFACT_RE.sub("", text)
+    return re.sub(r"\s{2,}", " ", cleaned).strip()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # CATEGORY PALETTE — maps to SVG banner color schemes
 # ─────────────────────────────────────────────────────────────────────────────
@@ -257,6 +276,7 @@ ABSOLUTE RULES — VIOLATIONS WILL BREAK ENTERPRISE TRUST:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
+    article.summary = _sanitize_summary(article.summary)
     cves = _extract_cve_ids(article.title + " " + article.summary)
     cvss = _extract_cvss(article.title + " " + article.summary)
     category = primary_category(article.labels)
@@ -766,6 +786,12 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 <li><strong>File system IOC:</strong> Unexpected files written to ~/.ssh, ~/.aws, ~/.config directories during package installation — potential credential harvesting</li>
 <li><strong>Dependency manifest IOC:</strong> Package name with character substitution vs. known popular packages (typosquatting) — e.g., 'requets' vs 'requests', 'colourama' vs 'colorama'</li>
 <li><strong>CI/CD pipeline IOC:</strong> Build job timing anomaly — significantly longer execution time than baseline during dependency installation phase indicates potential malicious script execution</li>"""
+    elif is_cve:
+        ioc_behavioral = """<li><strong>Exploitation attempt IOC:</strong> Web/application access logs showing anomalous requests against the vulnerable component — unexpected URI paths, oversized or malformed parameters, and unusual User-Agent strings returning 200/500 status codes</li>
+<li><strong>Process behavioral IOC:</strong> The vulnerable service process spawning unexpected child processes (cmd.exe, powershell.exe, bash, sh) — primary post-exploitation signal for this vulnerability class</li>
+<li><strong>Network behavioral IOC:</strong> Outbound connections initiated by the vulnerable service to external hosts it has no operational need to contact — reverse shell establishment or second-stage payload staging</li>
+<li><strong>File system behavioral IOC:</strong> New executable, script, or web shell files written to application directories by the service account outside scheduled deployment windows</li>
+<li><strong>Account behavioral IOC:</strong> New local or domain account creation, or privilege elevation events, correlated within minutes of anomalous requests to the vulnerable service</li>"""
     else:
         ioc_behavioral = """<li><strong>Email delivery IOC:</strong> Sender domain registered within past 30 days, mismatched Reply-To domain, or use of free email service to impersonate enterprise domains</li>
 <li><strong>Process behavioral IOC:</strong> Office applications (Outlook, Word, Excel) spawning PowerShell, cmd.exe, wscript.exe, or mshta.exe as child processes following email attachment open</li>
@@ -811,7 +837,8 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     _ics_ref = '<li>MITRE ATT&CK for ICS — <a href="https://attack.mitre.org/matrices/ics/" target="_blank" rel="noopener">https://attack.mitre.org/matrices/ics/</a></li>' if is_ot else ''
     _ai_ref = '<li>OWASP LLM Top 10 — <a href="https://owasp.org/www-project-top-10-for-large-language-model-applications/" target="_blank" rel="noopener">https://owasp.org/www-project-top-10-for-large-language-model-applications/</a></li>' if is_ai else ''
     _nvd_refs = ''.join(f'<li>NVD — {cve} — <a href="https://nvd.nist.gov/vuln/detail/{cve}" target="_blank" rel="noopener">https://nvd.nist.gov/vuln/detail/{cve}</a></li>' for cve in cves) if cves else '<li>NIST National Vulnerability Database — <a href="https://nvd.nist.gov" target="_blank" rel="noopener">https://nvd.nist.gov</a></li>'
-    _cve_analysis = ('<ul>' + '\n'.join(f'<li><strong>{cve}</strong> — {category} vulnerability. CVSS: {cvss_str}. Monitor NVD entry at https://nvd.nist.gov/vuln/detail/{cve} and vendor security advisory for authoritative CVSS vector string, affected version range, and patch availability.</li>' for cve in cves) + '</ul>') if cves else ''
+    _cvss_plain = cvss if cvss else "pending — see NVD entry"
+    _cve_analysis = ('<ul>' + '\n'.join(f'<li><strong>{cve}</strong> — {category} vulnerability. CVSS: {_cvss_plain}. Monitor NVD entry at https://nvd.nist.gov/vuln/detail/{cve} and vendor security advisory for authoritative CVSS vector string, affected version range, and patch availability.</li>' for cve in cves) + '</ul>') if cves else ''
     _cisa_sentence = 'CISA has added this to the Known Exploited Vulnerabilities catalog, imposing mandatory patching deadlines for U.S. federal agencies.' if (is_patch and 'cisa' in text) else 'CYBERDUDEBIVASH® SENTINEL APEX has classified this as a priority intelligence item requiring immediate defensive action.'
     _cve_facts = (f'<li>CVE identifiers: {", ".join(cves)} — extracted from article content</li>' + '\n') if cves else ''
     _cvss_fact = (f'<li>CVSS score: {cvss} — extracted from article or vendor advisory</li>' + '\n') if cvss else ''
@@ -820,7 +847,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     _cvss_header = f'  |  CVSS {cvss}' if cvss else ''
     _exploit_confidence = 'Actively exploited in the wild — CISA KEV inclusion or vendor confirmation (HIGH CONFIDENCE)' if is_patch else 'Technical details sufficient for exploitation — weaponization timeline estimated 24-72 hours post-PoC publication (MEDIUM CONFIDENCE)'
     _impact_text = 'Operational disruption, data encryption, ransom demand, potential double-extortion data leak' if is_ransomware else ('Production system disruption, perishable goods spoilage, supply chain continuity impact' if is_ot else ('Unauthorized account access, financial fraud, identity theft, regulatory breach notification obligation' if is_ato else 'Unauthorized access, privilege escalation, potential data exfiltration'))
-    _prevalence_text = 'Widespread ransomware campaign with multiple victims across sector' if is_ransomware else ('Targeted exploitation — organizations matching the threat actor known targeting profile' if is_apt else f'Broad exposure — all organizations running affected {category} systems')
+    _prevalence_text = 'Widespread ransomware campaign with multiple victims across sector' if is_ransomware else ('Targeted exploitation — organizations matching the threat actor known targeting profile' if is_apt else 'Broad exposure — all organizations running the affected software or exposed services')
     _patch_status_text = 'Emergency patch available — deploy immediately' if is_patch else 'Monitor vendor advisory channel; implement compensating controls immediately pending patch availability'
     _ot_classification = 'Operational technology and industrial control system targeting with direct production impact risk.' if is_ot else 'Enterprise IT environment threat with potential for data loss, operational disruption, or financial impact.'
     _exploit_status = 'Exploitation is confirmed active based on CISA KEV inclusion or public exploitation reporting (HIGH CONFIDENCE).' if is_patch else 'Active exploitation status is unconfirmed at time of publication — assess as pre-exploitation risk (MEDIUM CONFIDENCE).'
@@ -904,7 +931,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
         (
             f'<div style="margin:6px 0;padding:10px 14px;background:#1a0005;border-left:3px solid #ef4444;border-radius:0 4px 4px 0">'
             f'<span style="color:#ef4444;font-family:monospace;font-size:11px;font-weight:700">{cve}</span>'
-            f'<span style="color:#94a3b8;font-size:12px;margin-left:10px">{category} &middot; CVSS: {cvss_str} &middot; </span>'
+            f'<span style="color:#94a3b8;font-size:12px;margin-left:10px">{category} &middot; CVSS: {_cvss_plain} &middot; </span>'
             f'<a href="https://nvd.nist.gov/vuln/detail/{cve}" target="_blank" rel="noopener" style="color:#60a5fa;font-size:12px;text-decoration:none">NVD &#8599;</a>'
             f'</div>'
         )
@@ -964,7 +991,15 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     elif is_apt:
         predictive = "<p><strong>Ongoing access maintenance (HIGH CONFIDENCE):</strong> Nation-state actors with established footholds rotate infrastructure and implants on 30-60 day cycles to survive IOC-based defenses — confirmed IOC blocks provide limited protection without behavioral detection capability.</p><p><strong>Campaign scope expansion (MEDIUM CONFIDENCE):</strong> APT campaigns typically expand to additional targets in the same sector or supply chain after initial success — organizations in the same sector should treat this as direct targeting risk regardless of confirmed victim identity.</p><p><strong>Attribution stability (LOW CONFIDENCE):</strong> Technical attribution to specific nation-state actors based on public reporting carries inherent uncertainty — false flag operations and shared tooling between groups are documented phenomena that limit high-confidence attribution.</p>"
     elif is_cve:
-        predictive = f"<p><strong>Active exploitation escalation (HIGH CONFIDENCE):</strong> Based on historical patterns for vulnerabilities in this class, {cve_str} will be incorporated into exploit kits and automated scanning tools within 72 hours of PoC publication, dramatically expanding the threat actor population able to exploit it.</p><p><strong>CISA KEV addition (MEDIUM CONFIDENCE):</strong> Vulnerabilities actively exploited in the wild with public PoC availability are added to CISA KEV within 7-14 days of confirmed exploitation — monitor KEV for mandatory patching deadline implications.</p><p><strong>RaaS initial access broker adoption (MEDIUM CONFIDENCE):</strong> High-CVSS network-exploitable vulnerabilities are routinely adopted by ransomware initial access brokers within 30 days of public exploit availability.</p>"
+        # KEV-aware: never forecast a KEV addition for a CVE the report already
+        # states is in the KEV catalog — that contradiction destroys analyst credibility.
+        _kev_listed = is_patch and 'cisa' in text
+        _kev_paragraph = (
+            "<p><strong>KEV remediation deadline pressure (HIGH CONFIDENCE):</strong> With this vulnerability already listed in the CISA Known Exploited Vulnerabilities catalog, U.S. federal agencies face a mandatory remediation deadline — expect intensified adversary scanning for unpatched instances as the deadline approaches and public attention peaks.</p>"
+            if _kev_listed else
+            "<p><strong>CISA KEV addition (MEDIUM CONFIDENCE):</strong> Vulnerabilities actively exploited in the wild with public PoC availability are added to CISA KEV within 7-14 days of confirmed exploitation — monitor KEV for mandatory patching deadline implications.</p>"
+        )
+        predictive = f"<p><strong>Active exploitation escalation (HIGH CONFIDENCE):</strong> Based on historical patterns for vulnerabilities in this class, {cve_str} will be incorporated into exploit kits and automated scanning tools within 72 hours of PoC publication, dramatically expanding the threat actor population able to exploit it.</p>{_kev_paragraph}<p><strong>RaaS initial access broker adoption (MEDIUM CONFIDENCE):</strong> High-CVSS network-exploitable vulnerabilities are routinely adopted by ransomware initial access brokers within 30 days of public exploit availability.</p>"
     else:
         predictive = "<p><strong>Threat vector persistence (MEDIUM CONFIDENCE):</strong> Based on the attack methodology described, this threat vector is likely to remain active for the next 60-90 days as threat actors exhaust the target population or shift to alternative delivery mechanisms.</p><p><strong>Detection evasion evolution (MEDIUM CONFIDENCE):</strong> Threat actors actively monitor public detection rule releases and typically modify malware signatures within 24-48 hours of public Sigma/YARA rule publication to evade new detections.</p><p><strong>Targeting scope (LOW CONFIDENCE):</strong> Without confirmed attribution or explicit campaign scope disclosure in the source material, targeting scope projection carries significant uncertainty — maintain standard monitoring posture while avoiding over-scoping defensive response.</p>"
 
@@ -1171,6 +1206,9 @@ class AuthorityTransformer:
     def transform(self, article: DiscoveredArticle) -> dict:
         """Return full transformed post ready for Blogger publication."""
         logger.info("Transforming article", extra={"title": article.title[:80], "url": article.url})
+
+        # Strip internal scoring artifacts before any content generation or SEO use
+        article.summary = _sanitize_summary(article.summary)
 
         # Generate core content — try LLM providers, fall back to template
         llm_result = call_llm(self.config, _build_analyst_prompt(article))

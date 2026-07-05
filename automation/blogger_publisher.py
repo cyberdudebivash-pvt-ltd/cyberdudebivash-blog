@@ -120,6 +120,9 @@ class BloggerPublisher:
         url = f"{BLOGGER_API_BASE}/blogs/{self.config.blogger_blog_id}/posts"
         params = {"isDraft": "true" if is_draft else "false", "fetchBody": "false"}
 
+        last_error = "no attempt made"
+        auth_refreshed = False
+
         for attempt in range(1, self.config.retry_attempts + 1):
             try:
                 resp = requests.post(
@@ -131,19 +134,31 @@ class BloggerPublisher:
                 )
 
                 if resp.status_code == 429:
+                    last_error = f"HTTP 429 rate limited: {resp.text[:300]}"
                     wait = self.config.retry_base_delay * (2 ** attempt)
                     logger.warning(
                         "Blogger API rate limited — backing off",
-                        extra={"attempt": attempt, "wait_seconds": wait},
+                        extra={"attempt": attempt, "wait_seconds": wait, "body": resp.text[:300]},
                     )
                     time.sleep(wait)
                     continue
 
                 if resp.status_code == 401:
-                    logger.info("Access token expired mid-request, refreshing")
+                    # Refresh once; a second 401 means the credential itself is
+                    # rejected (revoked refresh token, wrong scope, blog access
+                    # removed) — retrying cannot fix that.
+                    if auth_refreshed:
+                        raise BloggerAuthError(
+                            f"Blogger API rejected refreshed token (HTTP 401): {resp.text[:300]}"
+                        )
+                    logger.info("Access token rejected, refreshing once")
+                    last_error = f"HTTP 401 unauthorized: {resp.text[:300]}"
                     self._access_token = None
+                    auth_refreshed = True
                     continue
 
+                if not resp.ok:
+                    last_error = f"HTTP {resp.status_code}: {resp.text[:300]}"
                 resp.raise_for_status()
                 post_data = resp.json()
 
@@ -159,18 +174,19 @@ class BloggerPublisher:
                 return post_data
 
             except requests.RequestException as e:
+                last_error = str(e)
                 if attempt == self.config.retry_attempts:
                     raise BloggerPublishError(
-                        f"Failed after {attempt} attempts: {e}"
+                        f"Failed after {attempt} attempts: {last_error}"
                     ) from e
                 wait = self.config.retry_base_delay * (2 ** attempt)
                 logger.warning(
                     "Publish attempt failed, retrying",
-                    extra={"attempt": attempt, "error": str(e), "wait": wait},
+                    extra={"attempt": attempt, "error": last_error, "wait": wait},
                 )
                 time.sleep(wait)
 
-        raise BloggerPublishError("All retry attempts exhausted")
+        raise BloggerPublishError(f"All retry attempts exhausted — last error: {last_error}")
 
     def update_post(self, post_id: str, title: str, content: str, labels: list[str]) -> dict:
         """Update an existing Blogger post."""
