@@ -1,0 +1,96 @@
+name: "🧠 SENTINEL APEX — AI Security Intelligence Pipeline"
+
+# Dedicated AI Security Intelligence lane, run ALONGSIDE (never merged with) the
+# general intel pipeline (sentinel-apex.yml). See Sentinel-APEX/pipeline/AI-SECURITY-PIPELINE.md.
+#
+# Cron is aligned to even UTC hours :00 so pushes land inside the Vercel deploy
+# window defined by vercel-ignore-build.sh (bot builds allowed only in the first
+# 10 minutes of even UTC hours). This lane never contributes to Vercel rate-limit
+# exhaustion. Commit prefix "SENTINEL APEX AI-SEC:" is matched by the bot throttle.
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"   # even UTC hours, on the hour
+  workflow_dispatch:
+    inputs:
+      run_analyst:
+        description: "Run the optional LLM analyst stage (requires ANTHROPIC_API_KEY secret)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sentinel-apex-aisec
+  cancel-in-progress: false
+
+jobs:
+  ai-security-intel:
+    name: "Collect → Classify → Map (ATLAS/OWASP) → Gate → Publish"
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: "Pre-flight: verify engine"
+        run: |
+          echo "🧠 SENTINEL APEX — AI Security Intelligence — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          test -f ai-security-intel-engine.js || (echo "❌ FATAL: ai-security-intel-engine.js missing" && exit 1)
+          if ! node --check ai-security-intel-engine.js 2>&1; then
+            echo "::error title=Engine Syntax Error::ai-security-intel-engine.js failed node --check."
+            exit 1
+          fi
+          echo "✅ Engine syntax OK — $(wc -l < ai-security-intel-engine.js) lines"
+
+      - name: "Run AI Security Intelligence pipeline"
+        timeout-minutes: 6
+        env:
+          # Optional — only the LLM analyst stage uses it; pipeline runs fully without it.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AISEC_ANALYST: ${{ github.event.inputs.run_analyst == 'true' && '1' || '' }}
+        run: |
+          echo "🚀 Starting pipeline at $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          timeout 340 node ai-security-intel-engine.js
+          EXIT=$?
+          rm -f ai-security-intel.lock 2>/dev/null || true
+          if [ $EXIT -eq 0 ]; then
+            echo "✅ Pipeline completed (exit 0)"
+          elif [ $EXIT -eq 124 ] || [ $EXIT -eq 143 ]; then
+            echo "⚠️ Pipeline timed out — partial results written atomically. Non-fatal."
+          else
+            echo "::error title=Pipeline Runtime Error::exit ${EXIT}"; exit $EXIT
+          fi
+
+      - name: "Detect changes"
+        id: changes
+        run: |
+          git config user.name  "SENTINEL-APEX[bot]"
+          git config user.email "sentinel-apex@cyberdudebivash.com"
+          rm -f ai-security-intel.lock
+          CHANGED=$(git status --short | grep -v "ai-security-intel.lock" | wc -l | tr -d ' ')
+          echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "ℹ️ ${CHANGED} file(s) changed"
+
+      - name: "Commit & push"
+        if: steps.changes.outputs.changed != '0'
+        run: |
+          git add api/intel/ai-security.json ai-security/ ai-security-intel-state.json ai-security-intel-memory.json 2>/dev/null || true
+          STATS=$(node -e "try{const s=require('./ai-security-intel-state.json').lastStats||{};console.log('pub='+(s.published||0)+' p1='+(s.p1||0)+' leads='+(s.leadsHeld||0))}catch(e){console.log('updated')}")
+          git commit -m "SENTINEL APEX AI-SEC: ${STATS} [$(date -u '+%Y-%m-%dT%H:%M:%SZ')] [skip ci]" || { echo "nothing to commit"; exit 0; }
+          for i in 1 2 3 4; do
+            if git push origin HEAD; then echo "✅ pushed"; break; fi
+            echo "push failed, retrying in $((2**i))s"; git pull --rebase origin "$(git rev-parse --abbrev-ref HEAD)" || true; sleep $((2**i))
+          done
