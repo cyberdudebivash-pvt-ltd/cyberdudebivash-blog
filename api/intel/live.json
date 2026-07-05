@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-05T06:31:42.190Z",
+  "generated": "2026-07-05T07:01:49.258Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -11,9 +11,98 @@
   "s2n_stats": {
     "passed": 83,
     "suppressed": 9,
-    "avg_qs": 0.553
+    "avg_qs": 0.557
   },
   "items": [
+    {
+      "id": "CVE-2026-43456",
+      "title": "Patch now: CISA warns of actively exploited Linux kernel zero-day (CVE-2026-43456)",
+      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1unu3t9/patch_now_cisa_warns_of_actively_exploited_linux/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/SZrdNnuFJRVK1iu7qGCKoxlDDmFriguxoiBB-QJrbBM.jpeg?width=640&amp;amp;crop=smart&amp",
+      "cvss": 8,
+      "final_ps": 100,
+      "quality_score": 0.655,
+      "threat_level": "CRITICAL",
+      "type": "ZERO_DAY",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-07-05",
+      "last_seen": "2026-07-05",
+      "exploited": true,
+      "cisa_kev": true,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-43456"
+      ],
+      "ioc_count": 7,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1unu3t9/patch_now_cisa_warns_of_actively_exploited_linux/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=1.00",
+          "ioc_presence=7 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.655"
+        ],
+        "priority": [
+          "+15 CISA_KEV",
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "REDDIT_CYBER-d68ec9068ec63a13",
+      "title": "just made my first somewhat useful tool",
+      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Hey, I published a small Python defensive-security project I’ve been building.&lt;/p&gt; &lt;p&gt;It’s called SentinelForge. It combines scanner results, passive recon, honeypot telemetry, vulnerability feeds, and reporting into an eviden",
+      "cvss": 6.5,
+      "final_ps": 79,
+      "quality_score": 0.555,
+      "threat_level": "HIGH",
+      "type": "NEWS_REPORT",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-07-05",
+      "last_seen": "2026-07-05",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 4,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1unubfg/just_made_my_first_somewhat_useful_tool/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.80",
+          "ioc_presence=4 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.555"
+        ],
+        "priority": [
+          "+12 PoC_available",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -2056,7 +2145,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-634e03182dd384cb",
@@ -2188,7 +2279,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -4297,104 +4390,6 @@
         "https://github.com/decolua/9router/security/advisories/GHSA-6g2f-w7g3-77vf",
         "https://github.com/decolua/9router/commit/5e1c1261368e06dced1cbc650684561b2c8844db",
         "https://github.com/decolua/9router/commit/bb86808582067e4fc6f004508a919efb9970d1d5"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-52834",
-      "title": "jxl-grid on 32-bit platforms has an out-of-bounds writes due to integer overflow",
-      "description": "### Summary On 32-bit platforms, decoding a crafted image may lead to out-of-bounds writes due to integer overflow in length calculation. ### Details & PoC The test listed below fail under miri with command `cargo +nightly miri test --release -p jxl-grid` Or you can use Address Sanitizer, which igno",
-      "cvss": 7.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-02",
-      "last_seen": "2026-07-02",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "jxl-grid",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-52834",
-        "CVE-2026-52834"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-5pmv-rx8r-wmv5",
-        "https://github.com/tirr-c/jxl-oxide/security/advisories/GHSA-5pmv-rx8r-wmv5",
-        "https://rustsec.org/advisories/RUSTSEC-2026-0151.html",
-        "https://github.com/advisories/GHSA-5pmv-rx8r-wmv5"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-46599",
-      "title": "golang.org/x/image/tiff has excessive resource consumption in PackBits decompression",
-      "description": "The TIFF decoder does not place a limit on the size of PackBits-compressed data. A maliciously-crafted image can exploit this to cause a small image (both in terms of pixel width/height and encoded size) to make the decoder decode large amounts of compressed data.",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-02",
-      "last_seen": "2026-07-02",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "golang.org/x/image",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-46599",
-        "CVE-2026-46599"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-q675-qj96-32m9",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-46599",
-        "https://go.dev/cl/759960",
-        "https://go.dev/issue/79577"
       ],
       "explanation": {
         "quality": [
