@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-05T01:01:55.600Z",
+  "generated": "2026-07-05T01:11:11.300Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4201,
+    "total_nodes": 4203,
     "actors": 8,
     "cves": 899,
-    "campaigns": 372,
+    "campaigns": 373,
     "malware": 0,
     "iocs": 445,
-    "edges": 1693
+    "edges": 1695
   },
   "nodes": {
     "actor:lockbit": {
@@ -6603,7 +6603,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-07-04"
+        "first_seen": "2026-07-05"
       },
       "connections": []
     },
@@ -81036,6 +81036,50 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_CYBER-f4dd168f1edc4ccf": {
+      "id": "REDDIT_CYBER-f4dd168f1edc4ccf",
+      "type": "Intel",
+      "name": "Need help identifying and reporting possible child abuse website",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-05",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-4ee3eb95": {
+      "id": "campaign:cluster-4ee3eb95",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-05",
+        "last_seen": "2026-07-05",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 3 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-f4dd168f1edc4ccf",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -96312,6 +96356,24 @@
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-07-04",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-f4dd168f1edc4ccf→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-f4dd168f1edc4ccf",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-05",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-4ee3eb95→includes→REDDIT_CYBER-f4dd168f1edc4ccf",
+      "source": "campaign:cluster-4ee3eb95",
+      "target": "REDDIT_CYBER-f4dd168f1edc4ccf",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-05",
       "sources": []
     }
   ]
