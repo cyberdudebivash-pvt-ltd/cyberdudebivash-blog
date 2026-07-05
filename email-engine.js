@@ -258,14 +258,16 @@
               segment: segment,
               source:  source
             }, function(success, msg) {
-              if (success || msg === 'formsubmit_mode') {
+              if (success && msg !== 'formsubmit_mode') {
+                // Real ESP subscription (resend/mailchimp/convertkit) — inline success
                 FORM_WIRER.showSuccess(form, submitBtn);
               } else {
-                // Fallback to formsubmit action
-                form.action = FORMSUBMIT.buildUrl();
+                // formsubmit_mode OR ESP failure: actually submit to formsubmit so
+                // the lead reaches the inbox (never fake success — that drops leads).
+                if (!form.getAttribute('action') || form.getAttribute('action').indexOf('formsubmit.co') === -1) {
+                  form.action = FORMSUBMIT.buildUrl();
+                }
                 form.method = 'POST';
-                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Get Access'; }
-                // Try native submit
                 var clone = form.cloneNode(true);
                 clone.removeAttribute('data-ee-wired');
                 form.parentNode.replaceChild(clone, form);
