@@ -1866,12 +1866,24 @@ function generatePostHTML(item) {
   const typeLabel = typeLabels[item.type]||'⚡ INTEL';
   const slug = slugify(item.id.startsWith('CVE')?`${item.id}-${item.vendor}-${item.product}`:item.title.slice(0,60));
   const intelligenceProducts = genIntelligenceProducts(item, escHtml, slug);
-  const metaTitle = `${item.title} | CYBERDUDEBIVASH SENTINEL APEX`;
+  // Control chars in titles break JSON-LD parsing (raw newlines are illegal in JSON strings)
+  const safeTitle = String(item.title||'').replace(/[\u0000-\u001F\u007F]/g,' ').replace(/\s+/g,' ').trim();
+  const metaTitle = `${safeTitle} | CYBERDUDEBIVASH SENTINEL APEX`;
   const isCVEItem = /^CVE-/i.test(item.id);
-  const cleanDescText = (item.desc||'').replace(/<[^>]+>/g,' ').replace(/&[a-zA-Z]+;/g,' ').replace(/\s+/g,' ').trim();
+  const cleanDescText = (item.desc||'')
+    .replace(/<[^>]+>/g,' ')
+    .replace(/&[a-zA-Z#0-9]+;/g,' ')
+    .replace(/```[\s\S]*?```/g,' ')
+    .replace(/`+/g,'')
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g,'$1')
+    .replace(/(^|\s)#{1,6}\s+/g,' ')
+    .replace(/[*_]{2,}/g,' ')
+    .replace(/\s+/g,' ').trim();
+  // Truncate at a word boundary so Google/social snippets never end mid-word
+  const truncAtWord = (s,n)=> s.length<=n ? s : s.slice(0,n+1).replace(/\s+\S*$/,'').slice(0,n);
   const metaDesc = isCVEItem
-    ? `${item.id} (CVSS ${cvss}) — ${cleanDescText.slice(0,130)}. Analysis, IOCs and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.`
-    : `${(cleanDescText.slice(0,155)||item.title.slice(0,155))}. Cybersecurity analysis, IOCs, and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.`;
+    ? `${item.id} (CVSS ${cvss}) — ${truncAtWord(cleanDescText,130)}. Analysis, IOCs and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.`
+    : `${(truncAtWord(cleanDescText,155)||truncAtWord(item.title,155))}. Cybersecurity analysis, IOCs, and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.`;
   const badges = [
     item.cisaKev?`<span class="badge bdg-cisa">⚠️ CISA KEV</span>`:'',
     item.exploited?`<span class="badge bdg-red">⚡ ACTIVELY EXPLOITED</span>`:'',
@@ -1913,13 +1925,21 @@ function generatePostHTML(item) {
 <meta name="description" content="${escHtml(metaDesc)}">
 <meta property="og:title" content="${escHtml(metaTitle)}"><meta property="og:type" content="article">
 <meta property="og:url" content="${CFG.baseUrl}/posts/${escHtml(slug)}.html">
+<meta property="og:description" content="${escHtml(metaDesc)}">
+<meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:image" content="${CFG.baseUrl}/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="article:published_time" content="${today}">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escHtml(metaTitle)}">
+<meta name="twitter:description" content="${escHtml(metaDesc)}">
+<meta name="twitter:image" content="${CFG.baseUrl}/og-image.png">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <link rel="canonical" href="${CFG.baseUrl}/posts/${escHtml(slug)}.html">
 <link rel="alternate" type="application/rss+xml" title="CYBERDUDEBIVASH SENTINEL APEX" href="${CFG.baseUrl}/rss.xml">
 <title>${escHtml(metaTitle)}</title>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"${escHtml(item.title)}","description":"${escHtml(metaDesc)}","datePublished":"${today}","dateModified":"${today}","author":{"@type":"Organization","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"${CFG.baseUrl}"},"publisher":{"@type":"Organization","name":"CYBERDUDEBIVASH"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CYBERDUDEBIVASH SENTINEL APEX","item":"${CFG.baseUrl}/"},{"@type":"ListItem","position":2,"name":"Intelligence Reports","item":"${CFG.baseUrl}/"},{"@type":"ListItem","position":3,"name":"${escHtml(item.title.slice(0,120))}","item":"${CFG.baseUrl}/posts/${slug}.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"${escHtml(safeTitle)}","description":"${escHtml(metaDesc)}","image":"${CFG.baseUrl}/og-image.png","datePublished":"${today}","dateModified":"${today}","author":{"@type":"Organization","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"${CFG.baseUrl}"},"publisher":{"@type":"Organization","name":"CYBERDUDEBIVASH"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CYBERDUDEBIVASH SENTINEL APEX","item":"${CFG.baseUrl}/"},{"@type":"ListItem","position":2,"name":"Intelligence Reports","item":"${CFG.baseUrl}/"},{"@type":"ListItem","position":3,"name":"${escHtml(safeTitle.slice(0,120))}","item":"${CFG.baseUrl}/posts/${slug}.html"}]}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-yellow:#ffe000;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
