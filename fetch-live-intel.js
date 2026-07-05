@@ -34,6 +34,11 @@ try { ({ AnalystMemory } = require('./Sentinel-APEX/engine-node/analyst-memory')
 catch (e) { console.warn('⚠️ analyst-memory unavailable:', e.message); }
 let analystMemory = null;
 
+// Analyst Reasoning Engine (v2). Defensive load; render is a no-op if absent.
+let reasoningEngine = null;
+try { reasoningEngine = require('./Sentinel-APEX/engine-node/reasoning-engine'); }
+catch (e) { console.warn('⚠️ reasoning-engine unavailable:', e.message); }
+
 const CFG = {
   // ── Core paths ─────────────────────────────────────────────────────
   baseUrl:            'https://blog.cyberdudebivash.in',
@@ -1503,23 +1508,43 @@ function genMultiPlatformDetections(item, esc) {
 function genPriorIntelligence(item, esc, mem = analystMemory) {
   if (!mem || !item) return '';
   try {
+    // Entity-recurrence notes only. Relational correlation is presented inside
+    // the Structured Intelligence Assessment (single home, no duplication).
     const notes = typeof mem.priorContext === 'function' ? mem.priorContext(item) : [];
-    const correlations = typeof mem.correlationNotes === 'function' ? mem.correlationNotes(item) : [];
-    if (!notes.length && !correlations.length) return '';
-    let html = '';
-    if (notes.length) {
-      html += `<h2 class="sh"><span>🧬</span> Prior Intelligence Context</h2>`;
-      html += `<p class="bp">This report is correlated against CYBERDUDEBIVASH SENTINEL APEX's persistent analyst memory. The following entities have been tracked in prior intelligence:</p>`;
-      html += `<ul class="alist">${notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`;
-    }
-    if (correlations.length) {
-      html += `<h2 class="sh"><span>🕸️</span> Threat Correlation Analysis</h2>`;
-      html += `<p class="bp">SENTINEL APEX's intelligence knowledge graph correlates this activity against historical threat actors, campaigns, and shared TTPs:</p>`;
-      html += `<ul class="alist">${correlations.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`;
-    }
+    if (!notes.length) return '';
+    let html = `<h2 class="sh"><span>🧬</span> Prior Intelligence Context</h2>`;
+    html += `<p class="bp">This report is correlated against CYBERDUDEBIVASH SENTINEL APEX's persistent analyst memory. The following entities have been tracked in prior intelligence:</p>`;
+    html += `<ul class="alist">${notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`;
     return html;
   } catch (e) {
     console.warn(`⚠️ genPriorIntelligence failed for ${item && item.id}:`, e.message);
+    return '';
+  }
+}
+
+// ── STRUCTURED INTELLIGENCE ASSESSMENT (Analyst Reasoning, v2) ───────────
+// Renders the five reasoning stages (facts / correlated observations /
+// assessments / gaps / outlook). Fully guarded: '' on any failure or when the
+// item lacks the substance to reason over.
+function genStructuredReasoning(item, esc, mem = analystMemory) {
+  if (!reasoningEngine || !item) return '';
+  try {
+    const r = reasoningEngine.buildReasoning(item, mem);
+    if (!reasoningEngine.hasSubstance(r)) return '';
+    const CONF = { HIGH: '#22c55e', MEDIUM: '#eab308', LOW: '#94a3b8' };
+    const list = (items) => `<ul class="alist">${items.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
+    const labeled = (items) => `<ul class="alist">${items.map((x) =>
+      `<li><span style="display:inline-block;min-width:74px;font-weight:800;font-size:.7rem;letter-spacing:.05em;color:${CONF[x.confidence] || '#94a3b8'}">${x.confidence} CONF</span> ${esc(x.text)}</li>`).join('')}</ul>`;
+    let html = `<h2 class="sh"><span>🧠</span> Structured Intelligence Assessment</h2>`;
+    html += `<p class="bp">SENTINEL APEX analytical tradecraft separates verified fact from labeled assessment and states intelligence gaps explicitly. Confidence reflects evidentiary support, not certainty.</p>`;
+    if (r.facts.length) html += `<h3 style="font-size:1rem;color:#22c55e;margin:1.1rem 0 .4rem">✔ Verified Facts</h3>${list(r.facts)}`;
+    if (r.observations.length) html += `<h3 style="font-size:1rem;color:var(--apex-cyan);margin:1.1rem 0 .4rem">🕸️ Correlated Observations</h3>${list(r.observations)}`;
+    if (r.assessments.length) html += `<h3 style="font-size:1rem;color:#a78bfa;margin:1.1rem 0 .4rem">🧩 Analyst Assessments</h3>${labeled(r.assessments)}`;
+    if (r.gaps.length) html += `<h3 style="font-size:1rem;color:#f59e0b;margin:1.1rem 0 .4rem">❓ Intelligence Gaps</h3>${list(r.gaps)}`;
+    if (r.outlook.length) html += `<h3 style="font-size:1rem;color:#38bdf8;margin:1.1rem 0 .4rem">🔮 Forward Outlook</h3>${labeled(r.outlook)}`;
+    return html;
+  } catch (e) {
+    console.warn(`⚠️ genStructuredReasoning failed for ${item && item.id}:`, e.message);
     return '';
   }
 }
@@ -1764,6 +1789,7 @@ function generatePostHTML(item) {
   const yara  = genYARA(item);
   const multiDetections = genMultiPlatformDetections(item, escHtml);
   const priorIntel = genPriorIntelligence(item, escHtml);
+  const structuredReasoning = genStructuredReasoning(item, escHtml);
   const pubDateFmt = fmtDate(item.pubDate||isoNow()), today = isoNow();
   const cvss = item.cvss||7.0;
   const cvssColor = cvss>=9.0?'#ff3b3b':cvss>=7.0?'#ff8c00':'#ffe000';
@@ -1925,6 +1951,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
     <table class="tbl"><thead><tr><th>#</th><th>Phase</th><th>Attacker Action</th><th>MITRE</th></tr></thead><tbody>${chainRows}</tbody></table>
     <h2 class="sh"><span>⚠</span> Deep Dive Analysis</h2>
     ${commentary.split('\n\n').map(p=>`<p class="bp">${escHtml(p)}</p>`).join('\n    ')}
+    ${structuredReasoning}
     ${priorIntel}
     <h2 class="sh"><span>🎯</span> MITRE ATT&CK Mapping</h2>
     <table class="tbl"><thead><tr><th>Category</th><th>Mapping</th></tr></thead><tbody>
@@ -2681,5 +2708,5 @@ if (require.main === module) {
     process.exit(1);
   });
 } else {
-  module.exports = { generatePostHTML, genMultiPlatformDetections, genPriorIntelligence, genSigma, genYARA, getMitre };
+  module.exports = { generatePostHTML, genMultiPlatformDetections, genPriorIntelligence, genStructuredReasoning, genSigma, genYARA, getMitre };
 }

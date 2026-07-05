@@ -81,13 +81,34 @@ test('genPriorIntelligence is guarded (no memory / bad item -> empty)', () => {
   assert.strictEqual(gen.genPriorIntelligence(null, esc, new AnalystMemory()), '');
 });
 
-test('threat correlation section renders once the graph has history', () => {
+test('prior-intelligence section carries only recurrence, not correlation', () => {
   const mem = new AnalystMemory();
-  // seed a prior report sharing actor + TTPs + vendor with RICH_ITEM
   mem.ingest({ id: 'CVE-2023-0001', title: 'APT41 LockBit against Fortinet',
     desc: 'APT41 used encoded PowerShell and vssadmin delete shadows before LockBit encryption',
     vendor: 'Fortinet', product: 'FortiOS', cves: ['CVE-2023-0001'] }, 'seed-report');
   const html = gen.genPriorIntelligence(RICH_ITEM, esc, mem);
-  assert.ok(html.includes('Threat Correlation Analysis'));
-  assert.ok(/APT41|LockBit|Fortinet/.test(html));
+  assert.ok(html.includes('Prior Intelligence Context'));
+  // relational correlation now lives in the structured-reasoning section
+  assert.ok(!html.includes('Threat Correlation Analysis'));
+});
+
+// ── Structured Reasoning (Analyst Reasoning) wiring ─────────────────────
+test('structured reasoning renders the five labeled stages', () => {
+  const item = { id: 'CVE-2024-4577', type: 'RANSOMWARE',
+    title: 'LockBit exploits public-facing PHP',
+    desc: 'exploited a public-facing app, encoded PowerShell, vssadmin delete shadows before encryption',
+    vendor: 'PHP', cves: ['CVE-2024-4577'], cvss: 9.8, cisaKev: true, exploited: true,
+    iocs: [{ type: 'domain', value: 'evil.top' }] };
+  const html = gen.genStructuredReasoning(item, esc, new AnalystMemory());
+  assert.ok(html.includes('Structured Intelligence Assessment'));
+  assert.ok(html.includes('Verified Facts'));
+  assert.ok(html.includes('Analyst Assessments'));
+  assert.ok(html.includes('Intelligence Gaps'));
+  assert.ok(html.includes('Forward Outlook'));
+  assert.ok(html.includes('CONF')); // confidence labels present
+});
+
+test('structured reasoning is guarded (bad item / no engine path -> empty)', () => {
+  assert.strictEqual(gen.genStructuredReasoning(null, esc, new AnalystMemory()), '');
+  assert.strictEqual(gen.genStructuredReasoning({}, esc, new AnalystMemory()), '');
 });

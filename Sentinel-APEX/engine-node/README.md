@@ -1,9 +1,35 @@
-# Sentinel APEX Detection Engine — Node port
+# Sentinel APEX Node Intelligence Modules
+
+Zero-dependency Node modules wired into the **live publishing generator**
+(`fetch-live-intel.js`) so every report carries evidence-driven detections,
+persistent memory, threat correlation, and structured analyst reasoning.
+
+| Module | Role |
+|---|---|
+| `detection-engine.js` | Multi-platform detections (Sigma/KQL/Splunk/OSQuery + Suricata) |
+| `analyst-memory.js` | Persistent memory + threat-correlation knowledge graph |
+| `reasoning-engine.js` | Structured analyst reasoning (facts / observations / assessments / gaps / outlook) |
+
+See `ANALYST-MEMORY.md` for the memory + correlation layer.
+
+## Analyst Reasoning Engine
+
+`reasoning-engine.js` makes the platform's core discipline explicit and
+auditable: it **separates verified fact from labeled assessment** and states
+intelligence gaps honestly. `buildReasoning(item, memory)` returns five stages —
+Verified Facts, Correlated Observations (from the knowledge graph), Analyst
+Assessments (each LOW/MEDIUM/HIGH with a stated basis), Intelligence Gaps
+(explicit unknowns), and Forward Outlook (labeled, evidence-anchored). It is
+deterministic and composed from artifacts already produced — no model calls,
+no fabrication — and renders as the *Structured Intelligence Assessment*
+section. Attribution is always an assessment (never a fact); severity is an
+assessment while CVSS is a fact; gaps shrink only as real evidence appears.
+
+## Detection Engine — Node port
 
 A zero-dependency Node port of the Python engine's detection layer, so the
-**live publishing generator** (`fetch-live-intel.js`) can emit the same
-evidence-driven, multi-platform detections the Python engine produces and its
-tests validate.
+live generator can emit the same evidence-driven, multi-platform detections the
+Python engine produces and its tests validate.
 
 ## Why a port (and not a shell-out)
 
