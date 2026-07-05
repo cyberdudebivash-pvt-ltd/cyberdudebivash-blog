@@ -1,7 +1,11 @@
 name: "⚡ SENTINEL APEX v5.0 — High-Frequency Global Intel Pipeline"
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    # Runs at :00 and :30. Interleaved with blogger-syndication (:15/:45) so
+    # pushes to main land every ~15 min — longer than the Vercel build time,
+    # which prevents deploy starvation (rapid pushes canceling in-flight
+    # deploys so nothing ever publishes). Intel still refreshes every 30 min.
+    - cron: "0,30 * * * *"
   workflow_dispatch:
     inputs:
       force_reset_state:
