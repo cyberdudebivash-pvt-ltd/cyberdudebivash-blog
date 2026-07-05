@@ -11,6 +11,7 @@ Single-responsibility, independently testable modules:
 - ``detection_specs``  normalized per-technique detection registry
 - ``detection_builder``compiles specs to Sigma/KQL/Splunk/OSQuery + Suricata
 - ``sigma_builder``    evidence-threaded Sigma (thin layer over the registry)
+- ``scoring``          deterministic 10-dimension publication scoring + tiering
 - ``quality``          executable publication quality gates
 - ``report_parser``    parses published reports for auditing
 - ``pipeline``         orchestrates source -> gated draft

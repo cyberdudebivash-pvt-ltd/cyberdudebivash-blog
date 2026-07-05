@@ -21,6 +21,12 @@ Usage (from Sentinel-APEX/engine/):
   python3 cli.py detect <source.txt> [--url URL]
       Compile multi-platform detections (Sigma/KQL/Splunk/OSQuery + Suricata)
       from a raw source's evidence. Prints each format.
+
+  python3 cli.py score <source.txt> --id RPT-ID [--url URL] [--graph kg.json]
+                       [--enrich] [--threshold N]
+      Run the full pipeline and print the intelligence score (10 dimensions,
+      overall publication score, tier, eligibility) as JSON. Exit 0 if
+      publish-eligible, 2 if held below threshold.
 """
 
 from __future__ import annotations
@@ -113,6 +119,20 @@ def cmd_detect(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_score(args: argparse.Namespace) -> int:
+    text = Path(args.source).read_text(errors="replace")
+    source = SourceDocument(raw_text=text, source_url=args.url or "")
+    graph = KnowledgeGraph.load(args.graph) if args.graph else None
+    enricher = Enricher() if args.enrich else None
+    result = pipeline.run(
+        source, args.id, enricher=enricher, graph=graph, threshold=args.threshold
+    )
+    if graph is not None and args.graph:
+        graph.save(args.graph)
+    print(json.dumps(result.score.to_dict(), indent=2))
+    return 0 if result.score.eligible else 2
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -142,6 +162,15 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("source")
     p.add_argument("--url", default="")
     p.set_defaults(func=cmd_detect)
+
+    p = sub.add_parser("score", help="intelligence scoring + publication decision")
+    p.add_argument("source")
+    p.add_argument("--id", required=True)
+    p.add_argument("--url", default="")
+    p.add_argument("--graph", default="")
+    p.add_argument("--enrich", action="store_true")
+    p.add_argument("--threshold", type=int, default=60)
+    p.set_defaults(func=cmd_score)
 
     args = parser.parse_args(argv)
     return args.func(args)

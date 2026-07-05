@@ -18,6 +18,7 @@ from .ioc_extractor import defang
 from .knowledge_graph import KnowledgeGraph
 from .models import CVEEnrichment, GateResult, NormalizedDoc, SourceDocument
 from .normalizer import normalize
+from .scoring import DEFAULT_THRESHOLD, IntelligenceScore, score
 from .sigma_builder import build_rules
 
 
@@ -32,6 +33,7 @@ class PipelineResult:
     suricata_rules: list[str] = field(default_factory=list)
     draft_markdown: str = ""
     gate: GateResult = field(default_factory=GateResult)
+    score: IntelligenceScore | None = None
 
 
 def run(
@@ -39,6 +41,7 @@ def run(
     report_id: str,
     enricher: Enricher | None = None,
     graph: KnowledgeGraph | None = None,
+    threshold: int = DEFAULT_THRESHOLD,
 ) -> PipelineResult:
     doc = normalize(source)
     result = PipelineResult(report_id=report_id, normalized=doc)
@@ -56,8 +59,41 @@ def run(
     result.detections, result.suricata_rules = build_all(
         doc.techniques, iocs=iocs, references=references
     )
+    # Score before rendering so the draft can carry the publication decision.
+    result.score = score(result, threshold=threshold)
     result.draft_markdown = render_draft(result, source)
     return result
+
+
+_DIM_LABELS = {
+    "evidence_quality": "Evidence Quality",
+    "original_analysis": "Original Analysis",
+    "detection_value": "Detection Value",
+    "soc_value": "SOC Value",
+    "dfir_value": "DFIR Value",
+    "executive_value": "Executive Value",
+    "commercial_value": "Commercial Value",
+    "analyst_confidence": "Analyst Confidence",
+    "seo_value": "SEO Value",
+}
+
+
+def _render_score(s) -> list[str]:
+    decision = "PUBLISH" if s.eligible else "HOLD — below threshold"
+    lines = [
+        "## Intelligence Score",
+        "",
+        f"- **Overall publication score:** {s.overall}/100 "
+        f"(threshold {s.threshold}) → **{decision}**",
+        f"- **Commercial tier:** {s.tier}",
+        "",
+        "| Dimension | Score | Basis |",
+        "|---|---|---|",
+    ]
+    for key, label in _DIM_LABELS.items():
+        lines.append(f"| {label} | {s.dimensions.get(key, 0)} | {s.rationale.get(key, '')} |")
+    lines.append("")
+    return lines
 
 
 def render_draft(result: PipelineResult, source: SourceDocument) -> str:
@@ -69,9 +105,10 @@ def render_draft(result: PipelineResult, source: SourceDocument) -> str:
         f"- **Source:** {source.source_url or source.source_name or 'n/a'}",
         f"- **Published:** {doc.published or 'unknown'}",
         "",
-        "## Verified Facts",
-        "",
     ]
+    if result.score is not None:
+        lines += _render_score(result.score)
+    lines += ["## Verified Facts", ""]
     if doc.cves:
         lines.append(f"- CVEs referenced in source: {', '.join(doc.cves)}")
     if doc.entities:

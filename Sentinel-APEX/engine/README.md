@@ -57,10 +57,37 @@ raw source ──▶ normalizer ──▶ evidence layer (NormalizedDoc)
 | `detection_specs.py` | One normalized detection spec per technique (source of truth) |
 | `detection_builder.py` | Compiles specs → Sigma/KQL/Splunk/OSQuery + Suricata; self-validates |
 | `sigma_builder.py` | Evidence-threaded Sigma (thin layer over the registry) |
+| `scoring.py` | Deterministic 10-dimension publication scoring + tiering |
 | `report_parser.py` | Parses published SENTINEL APEX reports for auditing |
 | `quality.py` | Executable per-report + corpus-level publication gates |
-| `pipeline.py` | Orchestrator: source → gated draft |
-| `cli.py` | `normalize` / `gate` / `run` / `enrich` / `detect` commands |
+| `pipeline.py` | Orchestrator: source → scored, gated draft |
+| `cli.py` | `normalize` / `gate` / `run` / `enrich` / `detect` / `score` commands |
+
+## Intelligence Scoring (v2)
+
+The analytical gate the pipeline funnels through. Every report is scored
+0–100 across ten dimensions — computed **only** from artifacts the engine
+already produced, so scoring never fabricates or re-derives:
+
+| Dimension | Weight | Driven by |
+|---|:-:|---|
+| Evidence Quality | 0.22 | source, CVEs, IOCs, successful enrichment, entities, techniques |
+| Original Analysis | 0.18 | techniques mapped, prior-context correlation, derived detections |
+| Detection Value | 0.15 | detection formats generated + Suricata rules |
+| SOC Value | 0.10 | detection value + network IOCs + hunt hypotheses |
+| DFIR Value | 0.06 | forensic-tactic techniques + host artifacts |
+| Executive Value | 0.10 | KEV listing, CVSS, named threat actors |
+| Commercial Value | 0.08 | mappable services (detection pack, IOC feed, consulting) |
+| Analyst Confidence | 0.06 | technique confidence + enrichment + source corroboration |
+| SEO Value | 0.05 | title, CVE, vendor/product, entity richness |
+
+The weighted **overall publication score** plus a hard **threshold** (default
+60) decide eligibility — and a blocking quality-gate finding forces
+ineligibility regardless of score (correctness before commercial value). The
+score also assigns a commercial **tier** (FREE / PRO / ENTERPRISE), so the
+same evidence effort is routed to the audience its value justifies. Every
+dimension carries a one-line, auditable rationale. `cli.py score` prints the
+full breakdown and exits non-zero when a report is held below threshold.
 
 ## Detection Engine (Phase 3)
 
