@@ -2139,9 +2139,9 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
   </aside>
 </main>
 <footer>
-  <p>&copy; ${new Date().getFullYear()} CYBERDUDEBIVASH PRIVATE LIMITED. All intelligence reports are original research and analysis by CYBERDUDEBIVASH SENTINEL APEX v4.0.<br>
+  <p>&copy; ${new Date().getFullYear()} CYBERDUDEBIVASH PRIVATE LIMITED. Intelligence aggregation, analysis and enrichment by CYBERDUDEBIVASH SENTINEL APEX v4.0 — sourcing standards at <a href="/about.html">About &amp; Editorial Standards</a>.<br>
   Unauthorized reproduction without attribution is prohibited.<br>
-  <a href="/">Blog</a> · <a href="/products.html">Detection Packs</a> · <a href="/pricing.html">SOC Pro</a> · <a href="/api.html">API</a> · <a href="/enterprise.html">Enterprise</a> · <a href="/contact.html">Contact Sales</a> · <a href="/rss.xml">RSS</a></p>
+  <a href="/">Blog</a> · <a href="/products.html">Detection Packs</a> · <a href="/pricing.html">SOC Pro</a> · <a href="/api.html">API</a> · <a href="/enterprise.html">Enterprise</a> · <a href="/contact.html">Contact Sales</a> · <a href="/rss.xml">RSS</a> · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></p>
 </footer>
 <script src="/security-engine.js" defer></script><script src="/monetization.js" defer></script><script src="/conversion-engine.js" defer></script><script src="/seo-engine.js" defer></script>
 <script>
