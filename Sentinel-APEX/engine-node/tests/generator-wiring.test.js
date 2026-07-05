@@ -112,3 +112,37 @@ test('structured reasoning is guarded (bad item / no engine path -> empty)', () 
   assert.strictEqual(gen.genStructuredReasoning(null, esc, new AnalystMemory()), '');
   assert.strictEqual(gen.genStructuredReasoning({}, esc, new AnalystMemory()), '');
 });
+
+// ── Multi-Audience Products wiring ──────────────────────────────────────
+test('intelligence products section renders audience briefs + API link', () => {
+  const html = gen.genIntelligenceProducts(RICH_ITEM, esc, 'cve-2024-4577-php', new AnalystMemory());
+  assert.ok(html.includes('Multi-Audience Intelligence Products'));
+  assert.ok(html.includes('Executive Advisory'));
+  assert.ok(html.includes('Board Brief'));
+  assert.ok(html.includes('SOC Bulletin'));
+  assert.ok(html.includes('/api/intel/products/cve-2024-4577-php.json'));
+});
+
+test('product API JSON is valid, machine-readable, and complete', () => {
+  const json = gen.buildProductApiJSON(RICH_ITEM, new AnalystMemory());
+  assert.ok(json.length > 0);
+  const pkg = JSON.parse(json);
+  assert.strictEqual(pkg.schema, 'sentinel-apex.intelligence/1.0');
+  assert.strictEqual(pkg.severity, 'CRITICAL');
+  assert.ok(pkg.mitre_attack.length > 0);
+  assert.ok(pkg.detections.sigma.length > 0);
+  assert.ok(pkg.iocs.some((i) => i.value === 'evil-c2[.]top')); // defanged in feed
+});
+
+test('products wiring is fully guarded', () => {
+  assert.strictEqual(gen.genIntelligenceProducts(null, esc, 'x', new AnalystMemory()), '');
+  assert.strictEqual(gen.buildProductApiJSON(null), '');
+  assert.strictEqual(gen.genIntelligenceProducts({}, esc, 'x', new AnalystMemory()), '');
+});
+
+test('full post with products stays well-formed and div-balanced', () => {
+  const { html } = gen.generatePostHTML(RICH_ITEM);
+  assert.ok(html.includes('Multi-Audience Intelligence Products'));
+  assert.ok(html.trim().endsWith('</html>'));
+  assert.strictEqual((html.match(/<div/g) || []).length, (html.match(/<\/div>/g) || []).length);
+});

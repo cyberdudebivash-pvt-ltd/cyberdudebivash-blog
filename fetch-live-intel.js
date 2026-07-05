@@ -39,6 +39,11 @@ let reasoningEngine = null;
 try { reasoningEngine = require('./Sentinel-APEX/engine-node/reasoning-engine'); }
 catch (e) { console.warn('⚠️ reasoning-engine unavailable:', e.message); }
 
+// Multi-Audience Products Engine (v2). Defensive load.
+let productsEngine = null;
+try { productsEngine = require('./Sentinel-APEX/engine-node/products-engine'); }
+catch (e) { console.warn('⚠️ products-engine unavailable:', e.message); }
+
 const CFG = {
   // ── Core paths ─────────────────────────────────────────────────────
   baseUrl:            'https://blog.cyberdudebivash.in',
@@ -1549,6 +1554,67 @@ function genStructuredReasoning(item, esc, mem = analystMemory) {
   }
 }
 
+// ── MULTI-AUDIENCE INTELLIGENCE PRODUCTS (v2) ───────────────────────────
+// Renders audience-specific deliverables (Executive Advisory, Board Brief,
+// SOC Bulletin, Threat Hunting Guide) from one evidence set, and advertises
+// the machine-readable API package. Fully guarded.
+function genIntelligenceProducts(item, esc, slug, mem = analystMemory) {
+  if (!productsEngine || !item) return '';
+  try {
+    const p = productsEngine.buildProducts(item, mem);
+    if (!productsEngine.hasProducts(p)) return '';
+    const ul = (arr) => `<ul class="alist">${arr.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
+    let html = `<h2 class="sh"><span>🎯</span> Multi-Audience Intelligence Products</h2>`;
+    html += `<p class="bp">This single analysis is packaged for every stakeholder — from the boardroom to the SOC — plus a machine-readable feed for API and MSSP integration. <strong>Enterprise &amp; SOC Pro subscribers</strong> receive these as structured deliverables.</p>`;
+
+    if (p.executiveAdvisory) {
+      const e = p.executiveAdvisory;
+      html += `<h3 style="font-size:1rem;color:#a78bfa;margin:1.1rem 0 .4rem">🏛 Executive Advisory — ${esc(e.audience)}</h3>`;
+      if (e.situation.length) html += ul(e.situation);
+      if (e.decisions.length) {
+        html += `<table class="tbl"><thead><tr><th>Owner</th><th>Decision</th><th>Timeline</th></tr></thead><tbody>`
+          + e.decisions.map((d) => `<tr><td>${esc(d.owner)}</td><td>${esc(d.decision)}</td><td>${esc(d.timeline)}</td></tr>`).join('')
+          + `</tbody></table>`;
+      }
+    }
+    if (p.boardBrief) {
+      html += `<h3 style="font-size:1rem;color:#38bdf8;margin:1.1rem 0 .4rem">📋 Board Brief</h3>${ul(p.boardBrief.bullets)}`;
+    }
+    if (p.socBulletin) {
+      const s = p.socBulletin;
+      html += `<h3 style="font-size:1rem;color:var(--apex-cyan);margin:1.1rem 0 .4rem">🛡 SOC Bulletin</h3>`;
+      html += `<p class="bp" style="font-size:13px">Severity <strong>${esc(s.severity)}</strong> · Detection coverage: ${s.detectionCoverage.techniques.length} technique(s) across ${esc(s.detectionCoverage.platforms.join(', ') || 'behavioral analytics')} · ${s.detectionCoverage.networkRules} network rule(s)</p>`;
+      if (s.immediateActions.length) html += ul(s.immediateActions);
+    }
+    if (p.huntingGuide && p.huntingGuide.hypotheses.length) {
+      html += `<h3 style="font-size:1rem;color:#22c55e;margin:1.1rem 0 .4rem">🔭 Threat Hunting Guide</h3>`;
+      html += ul(p.huntingGuide.hypotheses.map((h) => `${h.technique}: ${h.hypothesis}`));
+    }
+    if (slug) {
+      html += `<div style="margin-top:1rem;padding:.8rem 1rem;background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.18);border-radius:8px;font-size:.82rem;color:#94a3b8">`
+        + `⎋ <strong>Machine-readable intelligence:</strong> this report is available as a structured JSON package (MITRE ATT&amp;CK, IOCs, multi-platform detections, analyst assessments) at `
+        + `<a href="/api/intel/products/${esc(slug)}.json" style="color:var(--apex-cyan);font-family:var(--mono)">/api/intel/products/${esc(slug)}.json</a> — built for SIEM, SOAR, and MSSP integration.</div>`;
+    }
+    return html;
+  } catch (e) {
+    console.warn(`⚠️ genIntelligenceProducts failed for ${item && item.id}:`, e.message);
+    return '';
+  }
+}
+
+// Build the machine-readable product package JSON string (or '' on failure).
+function buildProductApiJSON(item, mem = analystMemory) {
+  if (!productsEngine || !item) return '';
+  try {
+    const p = productsEngine.buildProducts(item, mem);
+    if (!productsEngine.hasProducts(p)) return '';
+    return JSON.stringify(p.apiPackage, null, 2);
+  } catch (e) {
+    console.warn(`⚠️ buildProductApiJSON failed for ${item && item.id}:`, e.message);
+    return '';
+  }
+}
+
 // ── YARA RULE ──────────────────────────────────────────────────────────
 function genYARA(item) {
   const n = (item.id||'unknown').replace(/[^a-zA-Z0-9_]/g,'_');
@@ -1799,6 +1865,7 @@ function generatePostHTML(item) {
   const typeLabels = { CVE_REPORT:'🔴 CVE ANALYSIS', ZERO_DAY:'💀 ZERO-DAY', RANSOMWARE:'🏴 RANSOMWARE', MALWARE_REPORT:'🦠 MALWARE', DATA_BREACH:'⚠️ DATA BREACH', THREAT_ACTOR:'🎯 THREAT ACTOR', AI_SECURITY:'🤖 AI SECURITY', NEWS_REPORT:'📡 INTEL', ADVISORY:'🛡️ ADVISORY' };
   const typeLabel = typeLabels[item.type]||'⚡ INTEL';
   const slug = slugify(item.id.startsWith('CVE')?`${item.id}-${item.vendor}-${item.product}`:item.title.slice(0,60));
+  const intelligenceProducts = genIntelligenceProducts(item, escHtml, slug);
   const metaTitle = `${item.title} | CYBERDUDEBIVASH SENTINEL APEX`;
   const isCVEItem = /^CVE-/i.test(item.id);
   const cleanDescText = (item.desc||'').replace(/<[^>]+>/g,' ').replace(/&[a-zA-Z]+;/g,' ').replace(/\s+/g,' ').trim();
@@ -1967,6 +2034,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
     ${showDetection?`<h2 class="sh"><span>🔍</span> Detection Rules — Sigma (SIEM)</h2><p class="bp">Deploy to Splunk, Elastic, Microsoft Sentinel, or QRadar. SOC Pro subscribers receive pre-compiled SIEM-native query packs updated with each pipeline run.</p><div class="code-block"><span class="code-lbl">Sigma YAML</span>${escHtml(sigma)}</div>
     <h2 class="sh"><span>📡</span> Detection Rules — YARA (Endpoint)</h2><p class="bp">Deploy to endpoint detection platforms. Enterprise subscribers receive tuned, FP-validated YARA rule packs.</p><div class="code-block"><span class="code-lbl">YARA</span>${escHtml(yara)}</div>`:''}
     ${showDetection?multiDetections:''}
+    ${showDetection?intelligenceProducts:''}
     <h2 class="sh"><span>🛡️</span> SOC Response Playbook</h2>
     <ul class="alist">${playbookItems}</ul>
     <h2 class="sh"><span>📎</span> Intelligence References</h2>
@@ -2654,6 +2722,15 @@ async function main() {
         // Record this report's entities into persistent analyst memory (after
         // the post's prior-context note was already rendered above).
         if (analystMemory) { try { analystMemory.ingest(item, slug); } catch(_) {} }
+        // Machine-readable intelligence product for API/MSSP consumers.
+        try {
+          const productJson = buildProductApiJSON(item);
+          if (productJson) {
+            const productsDir = path.join(CFG.apiDir, 'products');
+            if (!fs.existsSync(productsDir)) fs.mkdirSync(productsDir, { recursive: true });
+            safeWriteSync(path.join(productsDir, `${slug}.json`), productJson, 'utf8');
+          }
+        } catch (e) { warn(`Product package write failed for ${item.id}: ${e.message}`); }
         generatedCards.push({ card: generatePostCard(item, slug, title) });
         rssItems.push({ ...item, slug, title });
         newSlugs.push(slug);
@@ -2708,5 +2785,5 @@ if (require.main === module) {
     process.exit(1);
   });
 } else {
-  module.exports = { generatePostHTML, genMultiPlatformDetections, genPriorIntelligence, genStructuredReasoning, genSigma, genYARA, getMitre };
+  module.exports = { generatePostHTML, genMultiPlatformDetections, genPriorIntelligence, genStructuredReasoning, genIntelligenceProducts, buildProductApiJSON, genSigma, genYARA, getMitre };
 }
