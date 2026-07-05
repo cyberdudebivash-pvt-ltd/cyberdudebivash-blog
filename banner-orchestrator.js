@@ -232,21 +232,3 @@
   };
 
 })();
-) {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
-    boot();
-  }
-
-  // Expose for debugging
-  window.BO = {
-    enforce: enforceSingleTopBanner,
-    guard: guardHeader,
-    cfg: BO_CFG
-  };
-
-})();
-
-  };
-
-})();

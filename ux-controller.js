@@ -264,6 +264,8 @@
 
       // Add hamburger if it doesn't exist yet
       if (document.getElementById('ux-hamburger')) return;
+      // Native header hamburger already provides mobile nav — don't render a duplicate
+      if (document.getElementById('navHamburger')) return;
 
       var btn = document.createElement('button');
       btn.id = 'ux-hamburger';

@@ -51,6 +51,13 @@
     leads:       '/leads.html',
     rss:         '/rss.xml',
 
+    /* Feature flags */
+    /* DEPRECATED 2026-07-05: return-visitor banner ("Welcome back — claim your
+       25% OFF") disabled — it overlapped page content and drew customer
+       complaints. Code retained per deprecation policy; flip to true only with
+       an explicit product decision. */
+    returnBanner: false,
+
     /* Intent thresholds */
     intentMediumSec:   30,
     intentHighSec:     60,
@@ -906,6 +913,7 @@
     }
 
     function showReturnBanner (visits) {
+      if (!CFG.returnBanner) return; /* deprecated — see CFG.returnBanner */
       if (document.getElementById('cx4-return-banner')) return;
       var offer =
         visits >= 6 ? '25% OFF — code APEX25' :
@@ -966,9 +974,9 @@
     function init () {
       INTENT.onUpgrade(onIntentUpgrade);
 
-      /* Return visitor banner */
+      /* Return visitor banner (disabled via CFG.returnBanner — see SECTION 0) */
       var v = SESSION.visits;
-      if (v >= 2) {
+      if (CFG.returnBanner && v >= 2) {
         setTimeout(function () { showReturnBanner(v); }, 3000);
       }
     }
