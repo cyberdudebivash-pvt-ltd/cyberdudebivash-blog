@@ -1399,7 +1399,7 @@ body {
         <div class="footer-brand-name">CYBERDUDEBIVASH</div>
         <div style="font-size:11px;color:var(--apex-cyan);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">CYBERDUDEBIVASH SENTINEL APEX Intelligence Platform</div>
         <div class="footer-brand-desc">
-          World's #1 AI-powered cybersecurity intelligence platform. Real-time CVE tracking, zero-day analysis, ransomware intelligence, and enterprise SOC advisory. Trusted by security professionals globally.
+          Analyst-grade AI-powered cybersecurity intelligence platform. Real-time CVE tracking, zero-day analysis, ransomware intelligence, and enterprise SOC advisory. Trusted by security professionals globally.
         </div>
         <div style="font-size:11px;color:var(--apex-muted);margin-bottom:14px">
           📍 Bhubaneswar, Odisha, India &nbsp;|&nbsp; 📧 <a href="mailto:bivash@cyberdudebivash.com" style="color:var(--apex-cyan);text-decoration:none">bivash@cyberdudebivash.com</a><br>
@@ -1458,7 +1458,6 @@ body {
         <ul class="footer-links">
           <li><a href="/posts/cve-2026-33825-microsoft-defender-zero-day-bluehammer-redsun.html">CVE-2026-33825 Defender</a></li>
           <li><a href="/posts/cve-2026-35616-fortinet-forticlient-ems-zero-day.html">CVE-2026-35616 Fortinet</a></li>
-          <li><a href="/posts/cve-2026-21497-vmware-esxi-hypervisor-escape-guest-to-host-rce.html">CVE-2026-21497 VMware</a></li>
           <li><a href="/posts/april-2026-ransomware-roundup-qilin-akira-lockbit-blackbasta.html">Ransomware Roundup</a></li>
           <li><a href="/posts/cve-2026-33824-windows-ike-service-rce-critical.html">CVE-2026-33824 Windows</a></li>
           <li><a href="/posts/cve-2026-32201-sharepoint-zero-day-patch-tuesday-april-2026.html">CVE-2026-32201 SharePoint</a></li>
@@ -1473,8 +1472,8 @@ body {
         <ul class="footer-links">
           <li><a href="/pricing.html">SOC Pro $49/mo</a></li>
           <li><a href="/pricing.html">Enterprise Custom</a></li>
-          <li><a href="https://www.fiverr.com/users/bivashkumar007/seller_dashboard" target="_blank" rel="noopener">Fiverr Services</a></li>
-          <li><a href="https://www.upwork.com/freelancers/~010d4dde1657fa5619" target="_blank" rel="noopener">Upwork Profile</a></li>
+          <li><a href="/enterprise.html">AI Security Consulting</a></li>
+          
           <li><a href="https://www.freelancer.com/u/iambivash" target="_blank" rel="noopener">Freelancer</a></li>
           <li><a href="https://www.linkedin.com/showcase/cyberdudebivash-sentinel-apex/" target="_blank" rel="noopener">LinkedIn CYBERDUDEBIVASH SENTINEL APEX</a></li>
           <li><a href="https://www.reddit.com/user/Immediate_Gold9789/" target="_blank" rel="noopener">Reddit</a></li>
@@ -2148,16 +2147,14 @@ async function fetchNVDData() {
 
 // ==================== FETCH CISA KEV (multi-proxy CORS chain) ====================
 const STATIC_KEV_FALLBACK = [
-  { cveID:'CVE-2026-35616', vulnerabilityName:'Fortinet FortiClient EMS Pre-Auth RCE', shortDescription:'Unauthenticated remote code execution in Fortinet FortiClient EMS versions 7.4.5-7.4.6 via API bypass. Actively exploited since March 31 2026.', dateAdded:'2026-04-06', dueDate:'2026-04-27', requiredAction:'Apply FortiClient EMS 7.4.7 patch immediately.', vendorProject:'Fortinet', product:'FortiClient EMS', cisaRequired:true },
-  { cveID:'CVE-2026-33825', vulnerabilityName:'Microsoft Windows Defender TOCTOU LPE (BlueHammer)', shortDescription:'Time-of-check time-of-use race condition in Windows Defender threat remediation engine allows local privilege escalation to SYSTEM. Two variants unpatched.', dateAdded:'2026-04-10', dueDate:'2026-04-28', requiredAction:'Apply Microsoft security updates. Enable ASR rules as interim mitigation.', vendorProject:'Microsoft', product:'Windows Defender', cisaRequired:true },
-  { cveID:'CVE-2026-5281', vulnerabilityName:'Google Chrome Dawn WebGPU Use-After-Free RCE', shortDescription:'Use-after-free in Chrome Dawn WebGPU renderer enables arbitrary code execution from compromised renderer process. CISA KEV added April 8.', dateAdded:'2026-04-08', dueDate:'2026-04-15', requiredAction:'Update Chrome to 146.0.7680.177 or later.', vendorProject:'Google', product:'Chrome', cisaRequired:true },
-  { cveID:'CVE-2026-32201', vulnerabilityName:'Microsoft SharePoint Server Spoofing Zero-Day', shortDescription:'Improper input validation in SharePoint Server enables attackers to spoof requests and gain elevated access. Exploited in targeted attacks before April Patch Tuesday.', dateAdded:'2026-04-14', dueDate:'2026-04-28', requiredAction:'Apply April 2026 Patch Tuesday update KB5037000.', vendorProject:'Microsoft', product:'SharePoint Server', cisaRequired:true },
-  { cveID:'CVE-2026-33824', vulnerabilityName:'Windows IKE Service Double-Free Unauthenticated RCE', shortDescription:'Double-free memory corruption in Windows IKE Service Extensions allows unauthenticated remote code execution via UDP 500/4500 on all Windows versions.', dateAdded:'2026-04-14', dueDate:'2026-04-28', requiredAction:'Apply April 2026 Patch Tuesday updates immediately.', vendorProject:'Microsoft', product:'Windows IKE', cisaRequired:true },
-  { cveID:'CVE-2026-27855', vulnerabilityName:'Palo Alto PAN-OS Auth Bypass — Admin Interface', shortDescription:'Authentication bypass in PAN-OS management interface allows remote unauthenticated attackers to execute arbitrary code with root privileges. Internet-exposed firewalls at critical risk.', dateAdded:'2026-04-02', dueDate:'2026-04-16', requiredAction:'Restrict management interface access and apply PAN-OS 11.2.5 patch.', vendorProject:'Palo Alto Networks', product:'PAN-OS', cisaRequired:true },
-  { cveID:'CVE-2026-28936', vulnerabilityName:'Cisco IOS XE Web UI Remote Code Execution', shortDescription:'Unauthenticated remote code execution via Cisco IOS XE web management interface. CISA confirmed active exploitation targeting enterprise network infrastructure.', dateAdded:'2026-03-28', dueDate:'2026-04-11', requiredAction:'Disable HTTP server or apply IOS XE 17.15.1 patch.', vendorProject:'Cisco', product:'IOS XE', cisaRequired:true },
-  { cveID:'CVE-2026-24521', vulnerabilityName:'Ivanti Connect Secure SAML Auth Bypass Zero-Day', shortDescription:'Authentication bypass via SAML implementation flaw in Ivanti Connect Secure VPN. Exploited by UNC5221 (Chinese APT) for initial access to enterprise networks.', dateAdded:'2026-03-15', dueDate:'2026-04-05', requiredAction:'Apply Ivanti Connect Secure 22.7R2.6 immediately.', vendorProject:'Ivanti', product:'Connect Secure', cisaRequired:true },
-  { cveID:'CVE-2026-21497', vulnerabilityName:'VMware ESXi Hypervisor Escape — Guest-to-Host RCE', shortDescription:'Heap overflow in VMware ESXi VMXNET3 driver enables guest VM to execute code on the host hypervisor. Actively exploited by ransomware groups for lateral movement.', dateAdded:'2026-03-10', dueDate:'2026-03-31', requiredAction:'Apply ESXi 8.0 Update 4 immediately. Disable VMXNET3 on untrusted VMs as mitigation.', vendorProject:'VMware', product:'ESXi', cisaRequired:true },
-  { cveID:'CVE-2026-19424', vulnerabilityName:'Apache Tomcat Partial PUT Request HTTP/2 RCE', shortDescription:'Deserialization of untrusted data via partial PUT requests over HTTP/2 in Apache Tomcat 11.0.x enables remote code execution without authentication.', dateAdded:'2026-03-01', dueDate:'2026-03-22', requiredAction:'Update Apache Tomcat to 11.0.4 or later.', vendorProject:'Apache', product:'Tomcat', cisaRequired:true }
+  { cveID:'CVE-2026-45659', vulnerabilityName:'Microsoft SharePoint Server Deserialization of Untrusted Data Vulnerability', shortDescription:'Microsoft SharePoint Server contains a deserialization of untrusted data vulnerability which allows an authorized attacker to execute code over a network.', dateAdded:'2026-07-01', dueDate:'2026-07-04', requiredAction:'Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA', vendorProject:'Microsoft', product:'SharePoint Server', cisaRequired:true },
+  { cveID:'CVE-2026-48558', vulnerabilityName:'SimpleHelp Authentication Bypass Vulnerability', shortDescription:'SimpleHelp contains an authentication bypass vulnerability in the OIDC authentication flow. When OIDC authentication is configured, identity tokens submitted during login are accepted without verifying their cryptographi', dateAdded:'2026-06-29', dueDate:'2026-07-02', requiredAction:'Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA', vendorProject:'SimpleHelp', product:'SimpleHelp', cisaRequired:true },
+  { cveID:'CVE-2026-12569', vulnerabilityName:'PTC Windchill and FlexPLM Improper Input Validation Vulnerability', shortDescription:'PTC Windchill and FlexPLM contains an improper input validation vulnerability allowing an unauthenticated, remote attacker to execute arbitrary code by sending a malicious request to the network.', dateAdded:'2026-06-25', dueDate:'2026-06-28', requiredAction:'Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA', vendorProject:'PTC', product:'Windchill and FlexPLM', cisaRequired:true },
+  { cveID:'CVE-2026-20230', vulnerabilityName:'Cisco Unified Communications Manager Server-Side Request Forgery (SSRF) Vulnerability', shortDescription:'Cisco Unified Communications Manager (Unified CM) and Cisco Unified Communications Manager Session Management Edition (Unified CM SME) contain a server-side request forgery (SSRF) Vulnerability that could allow an unauth', dateAdded:'2026-06-25', dueDate:'2026-06-28', requiredAction:'Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA', vendorProject:'Cisco', product:'Unified Communications Manager', cisaRequired:true },
+  { cveID:'CVE-2026-34910', vulnerabilityName:'Ubiquiti UniFi OS Improper Input Validation Vulnerability', shortDescription:'Ubiquiti UniFi OS contains an improper input validation vulnerability which could allow a malicious actor with access to the network to conduct command injection.', dateAdded:'2026-06-23', dueDate:'2026-06-26', requiredAction:'Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA', vendorProject:'Ubiquiti', product:'UniFi OS', cisaRequired:true },
+  { cveID:'CVE-2026-34909', vulnerabilityName:'Ubiquiti UniFi OS Path Traversal Vulnerability', shortDescription:'Ubiquiti UniFi OS contains a path traversal vulnerability which could allow a malicious actor with access to the network to access files on the underlying system that could be manipulated to access an underlying account.', dateAdded:'2026-06-23', dueDate:'2026-06-26', requiredAction:'Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA', vendorProject:'Ubiquiti', product:'UniFi OS', cisaRequired:true },
+  { cveID:'CVE-2026-34908', vulnerabilityName:'Ubiquiti UniFi OS Improper Access Control Vulnerability', shortDescription:'Ubiquiti UniFi OS contains an improper access control vulnerability which could allow a malicious actor with access to the network to make unauthorized changes to the system.', dateAdded:'2026-06-23', dueDate:'2026-06-26', requiredAction:'Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA', vendorProject:'Ubiquiti', product:'UniFi OS', cisaRequired:true },
+  { cveID:'CVE-2026-20253', vulnerabilityName:'Splunk Enterprise Missing Authentication for Critical Function Vulnerability', shortDescription:'Splunk Enterprise contains a missing authentication for critical function vulnerability which could allow an unauthenticated user to create or truncate arbitrary files through a PostgreSQL sidecar service endpoint.', dateAdded:'2026-06-18', dueDate:'2026-06-21', requiredAction:'Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA', vendorProject:'Splunk', product:'Enterprise', cisaRequired:true },
 ];
 
 async function fetchCISAKEV() {
@@ -2821,22 +2818,21 @@ const STATIC_NVD = (function() {
   });
   return {
     today: [
-      mkCVE('CVE-2026-33825',8.8,'HIGH','Microsoft Windows Defender TOCTOU Race Condition Local Privilege Escalation to SYSTEM — BlueHammer Exploit',0),
-      mkCVE('CVE-2026-33826',8.5,'HIGH','Microsoft Windows Defender Quarantine DLL Injection RedSun — SYSTEM Privilege Escalation',0),
-      mkCVE('CVE-2026-33827',7.8,'HIGH','Microsoft Windows Defender UnDefend Variant — Local Privilege Escalation Third Variant',0),
-      mkCVE('CVE-2026-35616',9.8,'CRITICAL','Fortinet FortiClient EMS Pre-Authentication API Bypass Remote Code Execution CVSS 9.8',0),
-      mkCVE('CVE-2026-32201',6.5,'MEDIUM','Microsoft SharePoint Server Spoofing Zero-Day CISA KEV Federal Deadline April 28',0),
+      mkCVE('CVE-2026-45659',8.8,'HIGH','Microsoft SharePoint Server — SharePoint Server Deserialization of Untrusted Data Vulnerability (CISA KEV 2026-07-01)',0),
+      mkCVE('CVE-2026-48558',9.5,'CRITICAL','SimpleHelp SimpleHelp — Authentication Bypass Vulnerability (CISA KEV 2026-06-29)',0),
+      mkCVE('CVE-2026-12569',9.3,'CRITICAL','PTC Windchill and FlexPLM — Windchill and FlexPLM Improper Input Validation Vulnerability (CISA KEV 2026-06-25)',0),
+      mkCVE('CVE-2026-20230',8.6,'HIGH','Cisco Unified Communications Manager — Unified Communications Manager Server-Side Request Forgery (SSRF) Vulnerability (CISA KEV 2026-06-25)',0),
+      mkCVE('CVE-2026-34910',10,'CRITICAL','Ubiquiti UniFi OS — UniFi OS Improper Input Validation Vulnerability (CISA KEV 2026-06-23)',0),
     ],
     week: [
-      mkCVE('CVE-2026-35616',9.8,'CRITICAL','Fortinet FortiClient EMS Pre-Authentication Remote Code Execution CVSS 9.8 CISA KEV',0),
-      mkCVE('CVE-2026-33824',9.8,'CRITICAL','Windows IKE Service Double-Free Unauthenticated RCE SYSTEM All Windows Versions CVSS 9.8',0),
-      mkCVE('CVE-2026-33825',8.8,'HIGH','Microsoft Windows Defender TOCTOU BlueHammer SYSTEM LPE Actively Exploited',0),
-      mkCVE('CVE-2026-33826',8.5,'HIGH','Microsoft Windows Defender RedSun DLL Injection SYSTEM Privilege Escalation',0),
-      mkCVE('CVE-2026-21497',9.3,'CRITICAL','VMware ESXi VMXNET3 Heap Overflow Guest-to-Host Hypervisor Escape RCE Ransomware',2),
-      mkCVE('CVE-2026-32201',6.5,'MEDIUM','Microsoft SharePoint Server Spoofing CISA KEV Federal Deadline',3),
-      mkCVE('CVE-2026-5281',8.1,'HIGH','Google Chrome Dawn WebGPU Use-After-Free RCE All Chromium Browsers CISA KEV',5),
-      mkCVE('CVE-2026-27855',9.1,'CRITICAL','Palo Alto PAN-OS Management Interface Authentication Bypass Remote Code Execution',5),
-      mkCVE('CVE-2026-28936',9.3,'CRITICAL','Cisco IOS XE Web UI Unauthenticated Remote Code Execution Critical Infrastructure',6),
+      mkCVE('CVE-2026-45659',8.8,'HIGH','Microsoft SharePoint Server — SharePoint Server Deserialization of Untrusted Data Vulnerability (CISA KEV 2026-07-01)',0),
+      mkCVE('CVE-2026-48558',9.5,'CRITICAL','SimpleHelp SimpleHelp — Authentication Bypass Vulnerability (CISA KEV 2026-06-29)',1),
+      mkCVE('CVE-2026-12569',9.3,'CRITICAL','PTC Windchill and FlexPLM — Windchill and FlexPLM Improper Input Validation Vulnerability (CISA KEV 2026-06-25)',2),
+      mkCVE('CVE-2026-20230',8.6,'HIGH','Cisco Unified Communications Manager — Unified Communications Manager Server-Side Request Forgery (SSRF) Vulnerability (CISA KEV 2026-06-25)',3),
+      mkCVE('CVE-2026-34910',10,'CRITICAL','Ubiquiti UniFi OS — UniFi OS Improper Input Validation Vulnerability (CISA KEV 2026-06-23)',4),
+      mkCVE('CVE-2026-34909',10,'CRITICAL','Ubiquiti UniFi OS — UniFi OS Path Traversal Vulnerability (CISA KEV 2026-06-23)',5),
+      mkCVE('CVE-2026-34908',10,'CRITICAL','Ubiquiti UniFi OS — UniFi OS Improper Access Control Vulnerability (CISA KEV 2026-06-23)',6),
+      mkCVE('CVE-2026-20253',9.8,'CRITICAL','Splunk Enterprise — Enterprise Missing Authentication for Critical Function Vulnerability (CISA KEV 2026-06-18)',6),
     ]
   };
 })();
