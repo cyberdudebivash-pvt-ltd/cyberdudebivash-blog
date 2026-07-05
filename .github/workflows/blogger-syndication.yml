@@ -2,8 +2,11 @@ name: "⚡ CYBERDUDEBIVASH® — Blogger Syndication Engine"
 
 on:
   schedule:
-    # Every 15 minutes — continuous syndication
-    - cron: "*/15 * * * *"
+    # Runs at :15 and :45, interleaved with the sentinel-apex intel pipeline
+    # (:00/:30) so pushes to main land every ~15 min — longer than the Vercel
+    # build (~10-13 min) so deploys complete instead of canceling each other
+    # (deploy starvation). Syndication still runs twice an hour.
+    - cron: "15,45 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
