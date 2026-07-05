@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-05T16:38:45.664Z",
+  "generated": "2026-07-05T17:31:47.377Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4222,
+    "total_nodes": 4225,
     "actors": 8,
     "cves": 900,
     "campaigns": 377,
     "malware": 0,
-    "iocs": 447,
-    "edges": 1711
+    "iocs": 448,
+    "edges": 1714
   },
   "nodes": {
     "actor:lockbit": {
@@ -81488,6 +81488,70 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_CYBER-bb5abfcf8dbd1c6b": {
+      "id": "REDDIT_CYBER-bb5abfcf8dbd1c6b",
+      "type": "Intel",
+      "name": "Releasing my Windows 10/11 Hardening app, free, of course, else it wouldn't be here.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-05",
+        "type": "RANSOMWARE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:atlantsecurity.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:atlantsecurity.com": {
+      "id": "ioc:domain:atlantsecurity.com",
+      "type": "IOC",
+      "name": "atlantsecurity.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-05"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-8a6f8a1ee5eb5f64": {
+      "id": "REDDIT_CYBER-8a6f8a1ee5eb5f64",
+      "type": "Intel",
+      "name": "Built a Codex-AES v2 prototype: AES-GCM wrapped in a symbolic protocol layer with chunk-binding, structural commitments, replay protection, and policy gates — looking for serious feedback",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-05",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -96922,6 +96986,33 @@
     {
       "id": "REDDIT_CYBER-38b94373caece820→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_CYBER-38b94373caece820",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-05",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-bb5abfcf8dbd1c6b→linked_to→ioc:domain:atlantsecurity.com",
+      "source": "REDDIT_CYBER-bb5abfcf8dbd1c6b",
+      "target": "ioc:domain:atlantsecurity.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-05",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-bb5abfcf8dbd1c6b→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-bb5abfcf8dbd1c6b",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-05",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-8a6f8a1ee5eb5f64→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-8a6f8a1ee5eb5f64",
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
