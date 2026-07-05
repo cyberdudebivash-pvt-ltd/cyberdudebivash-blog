@@ -1,0 +1,96 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-aa81fe2174d4ab5a",
+  "title": "COSMIC Cypher Encryption",
+  "generated": "2026-07-05T20:53:06.251Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "b98f742e954a35f2718ca9fd9a5b4fbf2e3edf90",
+      "type": "sha1",
+      "confidence": 0.9
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uocxu9/cosmic_cypher_encryption/&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://external-preview[.]redd[.]it/_vIKWtkcbVXNY9af4mF_wpmBUT8bClIP2qMDf_98n8k[.]png?width=640&amp;amp;c",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/Extension-Cap-6807&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://github[.]com/Novritch/COSMIC-Cipher-Data_Encryption&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uocxu9/cosmic_cypher_encryption/&quot;&gt;[comments",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uocxu9/cosmic_cypher_encryption/&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uocxu9/cosmic_cypher_encryption/&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/_vIKWtkcbVXNY9af4mF_wpmBUT8bClIP2qMDf_98n8k.png?width=640&amp;amp;c\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/_vIKWtkcbVXNY9af4mF_wpmBUT8bClIP2qMDf_98n8k.png?width=640&amp\\;amp\\;c\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Extension-Cap-6807&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Extension-Cap-6807&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/Novritch/COSMIC-Cipher-Data_Encryption&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/Novritch/COSMIC-Cipher-Data_Encryption&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uocxu9/cosmic_cypher_encryption/&quot;&gt;[comments\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uocxu9/cosmic_cypher_encryption/&quot\\;&gt\\;[comments\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "7 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 14 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 15 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: cosmic-cypher-encryption (8 shared entities), microsoft-account-security (3 shared entities), releasing-my-windows-10-11-hardening-app-free-of-course-e (3 shared entities), building-an-interactive-career-simulator-for-network-enginee (3 shared entities), free-certifications (3 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uocxu9/cosmic_cypher_encryption/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
