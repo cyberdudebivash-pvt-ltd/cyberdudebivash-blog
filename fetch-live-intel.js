@@ -1923,6 +1923,56 @@ function genSeverityAnatomy(item, esc) {
     <table class="tbl"><thead><tr><th>Metric</th><th>Value</th><th>What it means for defenders</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+// ── CWE ANATOMY — weakness-class exploitation & detection reference ──────
+// Maps the NVD-assigned CWE to authoritative, factual guidance on how the
+// weakness class is exploited and how it is detected/prevented. Sourced from
+// the MITRE CWE corpus (definitions are public). This is class-level fact, not
+// per-incident claim — labeled as such — and turns a bare "CWE-79" into
+// something a defender can act on.
+const CWE_LIB = {
+  '20':  ['Improper Input Validation', 'Attacker supplies input the application fails to validate for type, length, format, or range, driving unexpected code paths, memory corruption, or downstream injection.', 'Validate/allowlist all input at trust boundaries; enforce schema and length limits; alert on malformed requests and input-length anomalies at the WAF/app tier.'],
+  '79':  ['Cross-Site Scripting (XSS)', 'Attacker injects script into pages rendered to other users, running in their browser session to steal cookies/tokens or perform actions as the victim.', 'Context-aware output encoding; Content-Security-Policy; sanitize rich input. Detect via WAF signatures for script payloads and anomalous parameter content.'],
+  '89':  ['SQL Injection', 'Attacker injects SQL through unsanitized input to read, modify, or destroy database contents, or bypass authentication.', 'Parameterized queries / prepared statements; least-privilege DB accounts. Detect via WAF SQLi signatures and DB query-anomaly / error-rate monitoring.'],
+  '78':  ['OS Command Injection', 'Attacker injects shell metacharacters into input passed to a system command, executing arbitrary OS commands in the application context.', 'Avoid shelling out; use parameterized APIs; strict allowlists. Detect via process-creation telemetry: web/app service spawning shells (cmd/bash/sh).'],
+  '77':  ['Command Injection', 'Attacker controls part of a command that the application constructs and executes, leading to arbitrary command execution.', 'Never build commands from untrusted input; use safe APIs. Detect anomalous child processes of service accounts and unexpected interpreter launches.'],
+  '787': ['Out-of-Bounds Write', 'Attacker triggers a write past the bounds of a buffer, corrupting memory to crash the process or achieve code execution.', 'Memory-safe languages, bounds checks, compiler hardening (ASLR/DEP/stack canaries). Detect via crash telemetry and EDR memory-integrity alerts.'],
+  '125': ['Out-of-Bounds Read', 'Attacker reads memory outside the intended buffer, disclosing sensitive data (keys, tokens) or enabling further exploitation.', 'Bounds validation; memory-safe handling. Detect via crash/exception monitoring and abnormal memory-access patterns in EDR.'],
+  '416': ['Use After Free', 'Attacker causes the program to use memory after it is freed; with heap grooming this yields code execution.', 'Memory-safe languages, sanitizers in CI, allocator hardening. Detect via EDR exploit-guard and process-crash telemetry.'],
+  '119': ['Improper Restriction of Memory Buffer', 'Attacker reads or writes outside buffer bounds (classic buffer overflow) to corrupt memory and control execution.', 'Bounds checking, safe string APIs, compiler mitigations. Detect via crash monitoring and EDR memory-protection events.'],
+  '22':  ['Path Traversal', 'Attacker uses ../ sequences or absolute paths to access files outside the intended directory, reading or writing arbitrary files.', 'Canonicalize and confine paths to a safe root; reject traversal sequences. Detect via web logs for ../ and encoded-traversal patterns.'],
+  '352': ['Cross-Site Request Forgery (CSRF)', 'Attacker tricks an authenticated victim’s browser into submitting a forged state-changing request.', 'Anti-CSRF tokens, SameSite cookies, re-authentication for sensitive actions. Detect via missing/invalid CSRF tokens and off-origin Referer.'],
+  '434': ['Unrestricted File Upload', 'Attacker uploads an executable or web-shell file the server later runs, yielding remote code execution.', 'Validate type/extension/content, store outside webroot, disable execution in upload dirs. Detect via new files in upload paths and web-shell signatures.'],
+  '862': ['Missing Authorization', 'Attacker accesses functions or data without an authorization check, reaching resources they should not.', 'Enforce authorization on every request server-side; deny by default. Detect via access to privileged endpoints from unprivileged sessions.'],
+  '863': ['Incorrect Authorization', 'Authorization logic is present but flawed, letting an attacker bypass intended access controls.', 'Centralize authorization; test with least-privilege accounts. Detect via privilege-boundary crossings in access logs.'],
+  '306': ['Missing Authentication for Critical Function', 'A sensitive function is exposed without requiring authentication, allowing anonymous access.', 'Require authentication on all sensitive endpoints; segment management interfaces. Detect via unauthenticated hits to admin/critical paths.'],
+  '287': ['Improper Authentication', 'Attacker bypasses or subverts authentication (weak logic, token flaws, replay) to gain access.', 'Robust auth, MFA, session integrity. Detect via impossible-travel, credential-stuffing patterns, and auth-anomaly alerts.'],
+  '502': ['Deserialization of Untrusted Data', 'Attacker supplies crafted serialized objects that instantiate dangerous types on deserialization, leading to RCE.', 'Avoid native deserialization of untrusted data; use allowlists/safe formats. Detect via app-tier process anomalies (e.g., web worker spawning shells).'],
+  '918': ['Server-Side Request Forgery (SSRF)', 'Attacker makes the server issue requests to attacker-chosen targets, reaching internal services or cloud metadata.', 'Allowlist egress destinations; block link-local/metadata IPs; validate URLs. Detect via outbound requests to 169.254.169.254 and internal ranges.'],
+  '190': ['Integer Overflow', 'Attacker causes an arithmetic overflow that undersizes an allocation or bypasses a check, leading to memory corruption.', 'Checked arithmetic, size validation. Detect via crash telemetry and fuzzing in CI.'],
+  '476': ['NULL Pointer Dereference', 'Attacker forces a null dereference, typically crashing the service (denial of service).', 'Null checks, defensive coding. Detect via crash/restart telemetry and availability monitoring.'],
+  '798': ['Use of Hard-coded Credentials', 'Attacker extracts embedded credentials from firmware/binaries/config to authenticate as a privileged user.', 'Remove hard-coded secrets; use secret managers and per-device credentials. Detect via known-default-credential login attempts.'],
+  '269': ['Improper Privilege Management', 'Attacker leverages mismanaged privileges to escalate to higher rights than intended.', 'Least privilege, correct token/role handling. Detect via privilege-escalation and unexpected SYSTEM/root token use in EDR.'],
+  '94':  ['Code Injection', 'Attacker injects code that the application interprets and executes (eval-style), achieving arbitrary execution.', 'Never evaluate untrusted input; sandbox interpreters. Detect via anomalous interpreter activity and unexpected dynamic-code execution.'],
+  '400': ['Uncontrolled Resource Consumption', 'Attacker exhausts CPU, memory, disk, or connections to cause denial of service.', 'Rate limiting, quotas, timeouts, backpressure. Detect via resource-utilization spikes and request-rate anomalies.'],
+  '295': ['Improper Certificate Validation', 'Attacker with network position exploits weak TLS validation to intercept or spoof connections (MITM).', 'Enforce full chain + hostname validation; pin where feasible. Detect via TLS-anomaly and unexpected CA monitoring.'],
+  '611': ['XML External Entity (XXE)', 'Attacker supplies XML referencing external entities to read local files, perform SSRF, or cause DoS.', 'Disable external entity/DTD processing in XML parsers. Detect via app logs for DOCTYPE/ENTITY in XML payloads.'],
+};
+function normalizeCwe(cweId) {
+  const m = String(cweId||'').match(/CWE-(\d+)/i);
+  return m ? m[1] : null;
+}
+function genCweAnatomy(item, esc) {
+  const num = normalizeCwe(item.cweId);
+  if (!num || !CWE_LIB[num]) return '';
+  const [name, exploited, detected] = CWE_LIB[num];
+  return `<h2 class="sh"><span>🧬</span> Weakness Anatomy <span style="font-size:12px;font-weight:500;color:var(--apex-muted)">— CWE-${esc(num)}, the underlying flaw class</span></h2>
+    <p class="bp">This vulnerability is classified as <a href="https://cwe.mitre.org/data/definitions/${esc(num)}.html" target="_blank" rel="noopener" style="color:var(--apex-cyan)"><strong>CWE-${esc(num)}: ${esc(name)}</strong></a> in the primary record. The mechanics below are characteristic of this weakness class (per the MITRE CWE corpus), not a claim about a specific exploit observed against your environment.</p>
+    <table class="tbl"><tbody>
+      <tr><td style="color:var(--apex-muted);white-space:nowrap;vertical-align:top">How it's exploited</td><td style="font-size:13px;color:#c9d1d9">${esc(exploited)}</td></tr>
+      <tr><td style="color:var(--apex-muted);white-space:nowrap;vertical-align:top">Detect &amp; prevent</td><td style="font-size:13px;color:#c9d1d9">${esc(detected)}</td></tr>
+    </tbody></table>`;
+}
+
 function generatePostHTML(item) {
   const mitre = getMitre(item);
   const execSummary = genExecutiveSummary(item);
@@ -2120,6 +2170,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
     <h2 class="sh"><span>📋</span> Executive Summary</h2>
     <div class="exec-box"><div class="ex-label">⚡ Analyst Assessment — SENTINEL APEX v4.0</div><p>${escHtml(execSummary)}</p><div style="margin-top:12px;font-size:12px;color:var(--apex-muted)">Intelligence sources: ${srcBadges}</div></div>
     ${genSeverityAnatomy(item, escHtml)}
+    ${genCweAnatomy(item, escHtml)}
     <h2 class="sh"><span>⚠️</span> Business Impact Analysis</h2>
     <ul class="impact-list">${bizImpactItems}</ul>
     <h2 class="sh"><span>🔗</span> Representative Attack Path</h2>
