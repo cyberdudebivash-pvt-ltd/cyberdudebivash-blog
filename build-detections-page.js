@@ -35,12 +35,17 @@ const html = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XTGLNMNNC7',{page_title:document.title,page_location:window.location.href});</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#00ffe0">
 <meta name="description" content="Traceable Sigma detection pack for actively-exploited CISA KEV vulnerabilities. Every rule links to its CVE, KEV catalog entry, and vendor advisory. Free, verifiable, SIEM-ready. Updated ${updated}.">
 <meta name="keywords" content="Sigma rules, detection engineering, CISA KEV detection, SIEM rules, threat detection, SharePoint RCE detection, Ivanti detection, Splunk detection">
 <meta property="og:title" content="Traceable Detection Pack — Sigma Rules for KEV CVEs | CYBERDUDEBIVASH SENTINEL APEX">
 <meta property="og:description" content="Traceable Sigma detection rules for actively-exploited KEV vulnerabilities. Every rule linked to its CVE, KEV entry, and vendor advisory.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="${BASE}/detections/">
+<meta property="og:url" content="${BASE}/detections">
 <meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
 <meta property="og:image" content="${BASE}/og-image.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -49,9 +54,9 @@ const html = `<!DOCTYPE html>
 <meta name="twitter:description" content="Every rule linked to its CVE, KEV entry, and vendor advisory. Free and verifiable.">
 <meta name="twitter:image" content="${BASE}/og-image.png">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
-<link rel="canonical" href="${BASE}/detections/">
+<link rel="canonical" href="${BASE}/detections">
 <title>Traceable Detection Pack — Sigma Rules for KEV CVEs | CYBERDUDEBIVASH SENTINEL APEX</title>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"CYBERDUDEBIVASH SENTINEL APEX Detection Pack","description":"Traceable Sigma detection rules for actively-exploited CISA KEV vulnerabilities.","url":"${BASE}/detections/","isPartOf":{"@type":"WebSite","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"${BASE}"},"dateModified":"${updated}"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"CYBERDUDEBIVASH SENTINEL APEX Detection Pack","description":"Traceable Sigma detection rules for actively-exploited CISA KEV vulnerabilities.","url":"${BASE}/detections","isPartOf":{"@type":"WebSite","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"${BASE}"},"dateModified":"${updated}"}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
@@ -97,7 +102,7 @@ footer a{color:var(--apex-cyan);text-decoration:none}
 <body>
 <nav>
   <a class="nbrand" href="/"><span class="nlogo">CYBERDUDEBIVASH</span><span class="ntag">Sentinel APEX</span></a>
-  <div class="nlinks"><a href="/">Reports</a><a href="/research/">Research</a><a href="/detections/">Detections</a><a href="/intelligence.html">Intelligence</a><a href="/pricing.html">Pricing</a><a href="/enterprise.html">Enterprise</a></div>
+  <div class="nlinks"><a href="/">Reports</a><a href="/research">Research</a><a href="/detections">Detections</a><a href="/intelligence.html">Intelligence</a><a href="/pricing.html">Pricing</a><a href="/enterprise.html">Enterprise</a></div>
 </nav>
 <main>
   <div class="crumb"><a href="/">Home</a> › Detection Pack</div>

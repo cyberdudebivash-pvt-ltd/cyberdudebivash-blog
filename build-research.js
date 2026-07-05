@@ -33,6 +33,11 @@ const report = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XTGLNMNNC7',{page_title:document.title,page_location:window.location.href});</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#00ffe0">
 <meta name="description" content="Real-world exploitation is extremely concentrated: the top 5 vendors account for ${top5Share}% of every CVE CISA confirms exploited in the wild. An analyst argument for prioritizing patches by KEV representation and ransomware association over raw CVSS.">
 <meta name="keywords" content="KEV analysis, patch prioritization, exploitation concentration, ransomware CVE, CVSS alternative, vulnerability management, threat intelligence research">
 <meta property="og:title" content="Exploitation Is Concentrated: Why Patch Prioritization Should Follow KEV, Not CVSS | CYBERDUDEBIVASH SENTINEL APEX">
@@ -52,7 +57,7 @@ const report = `<!DOCTYPE html>
 <link rel="canonical" href="${BASE}/research/kev-exploitation-concentration-2026.html">
 <title>Exploitation Is Concentrated: Why Patch Prioritization Should Follow KEV, Not CVSS | CYBERDUDEBIVASH SENTINEL APEX</title>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"AnalysisNewsArticle","headline":"Exploitation Is Concentrated: Why Patch Prioritization Should Follow KEV, Not CVSS","description":"The top 5 vendors account for ${top5Share}% of every CVE CISA confirms exploited in the wild — a data-driven case for KEV-led patch prioritization.","image":"${BASE}/og-image.png","datePublished":"${PUBDATE}","dateModified":"${PUBDATE}","author":{"@type":"Person","name":"${AUTHOR}","jobTitle":"Founder & Principal Analyst","worksFor":{"@type":"Organization","name":"CYBERDUDEBIVASH SENTINEL APEX"},"url":"${BASE}/about.html"},"publisher":{"@type":"Organization","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"${BASE}"},"citation":"https://www.cisa.gov/known-exploited-vulnerabilities-catalog","isBasedOn":"${BASE}/research/exploitation-velocity-index.html"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"${BASE}/"},{"@type":"ListItem","position":2,"name":"Research","item":"${BASE}/research/"},{"@type":"ListItem","position":3,"name":"Exploitation Is Concentrated","item":"${BASE}/research/kev-exploitation-concentration-2026.html"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"${BASE}/"},{"@type":"ListItem","position":2,"name":"Research","item":"${BASE}/research"},{"@type":"ListItem","position":3,"name":"Exploitation Is Concentrated","item":"${BASE}/research/kev-exploitation-concentration-2026.html"}]}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-green:#00ff88;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
@@ -96,10 +101,10 @@ footer a{color:var(--apex-cyan);text-decoration:none}
 <body>
 <nav>
   <a class="nbrand" href="/"><span class="nlogo">CYBERDUDEBIVASH</span><span class="ntag">Sentinel APEX</span></a>
-  <div class="nlinks"><a href="/">Reports</a><a href="/research/">Research</a><a href="/detections/">Detections</a><a href="/intelligence.html">Intelligence</a><a href="/pricing.html">Pricing</a><a href="/enterprise.html">Enterprise</a></div>
+  <div class="nlinks"><a href="/">Reports</a><a href="/research">Research</a><a href="/detections">Detections</a><a href="/intelligence.html">Intelligence</a><a href="/pricing.html">Pricing</a><a href="/enterprise.html">Enterprise</a></div>
 </nav>
 <main>
-  <div class="crumb"><a href="/">Home</a> › <a href="/research/">Research</a> › Exploitation Concentration</div>
+  <div class="crumb"><a href="/">Home</a> › <a href="/research">Research</a> › Exploitation Concentration</div>
   <span class="eyebrow">Original Analysis</span>
   <h1>Exploitation Is Concentrated: Why Patch Prioritization Should Follow KEV, Not CVSS</h1>
   <div class="byline">
@@ -131,7 +136,7 @@ footer a{color:var(--apex-cyan);text-decoration:none}
       <li><strong>Structurally accelerate your top KEV vendors.</strong> Build a faster patch lane for the product families that dominate the catalog for <em>your</em> stack — for most organizations that starts with ${esc(ms.vendor)}.</li>
       <li><strong>Escalate the ransomware flag.</strong> Route ransomware-linked KEV entries to business-continuity owners, not just the patch queue.</li>
       <li><strong>Inherit CISA's deadlines.</strong> Use the remediation window as your internal SLA. It is a defensible, externally-sourced urgency label.</li>
-      <li><strong>Detect while you patch.</strong> Patching takes time; deploy detections for KEV entries in parallel. Our <a href="/detections/">detection pack</a> ships traceable Sigma rules for the highest-priority entries in this dataset.</li>
+      <li><strong>Detect while you patch.</strong> Patching takes time; deploy detections for KEV entries in parallel. Our <a href="/detections">detection pack</a> ships traceable Sigma rules for the highest-priority entries in this dataset.</li>
     </ol>
   </div>
 
@@ -151,7 +156,7 @@ footer a{color:var(--apex-cyan);text-decoration:none}
     <h3>Operationalize it</h3>
     <p>Traceable Sigma detections for the highest-priority KEV entries — every rule linked to its CVE, KEV date, and vendor advisory.</p>
     <div class="cta-row">
-      <a class="btn-p" href="/detections/">Detection Pack →</a>
+      <a class="btn-p" href="/detections">Detection Pack →</a>
       <a class="btn-s" href="/enterprise.html">Enterprise Advisory →</a>
     </div>
   </div>
@@ -187,11 +192,16 @@ const hub = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XTGLNMNNC7',{page_title:document.title,page_location:window.location.href});</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#00ffe0">
 <meta name="description" content="Original cyber threat intelligence research from CYBERDUDEBIVASH SENTINEL APEX — named-analyst analysis and reproducible datasets built on primary sources (CISA KEV, NVD, vendor advisories).">
 <meta property="og:title" content="Research | CYBERDUDEBIVASH SENTINEL APEX">
 <meta property="og:description" content="Named-analyst analysis and reproducible datasets built on primary sources.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="${BASE}/research/">
+<meta property="og:url" content="${BASE}/research">
 <meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
 <meta property="og:image" content="${BASE}/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -199,9 +209,9 @@ const hub = `<!DOCTYPE html>
 <meta name="twitter:description" content="Named-analyst analysis and reproducible datasets built on primary sources.">
 <meta name="twitter:image" content="${BASE}/og-image.png">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
-<link rel="canonical" href="${BASE}/research/">
+<link rel="canonical" href="${BASE}/research">
 <title>Research | CYBERDUDEBIVASH SENTINEL APEX</title>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"CYBERDUDEBIVASH SENTINEL APEX Research","description":"Original named-analyst threat intelligence research and reproducible datasets.","url":"${BASE}/research/","dateModified":"${PUBDATE}"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"CYBERDUDEBIVASH SENTINEL APEX Research","description":"Original named-analyst threat intelligence research and reproducible datasets.","url":"${BASE}/research","dateModified":"${PUBDATE}"}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--apex-cyan:#00ffe0;--apex-bg:#07090f;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
@@ -229,7 +239,7 @@ footer a{color:var(--apex-cyan);text-decoration:none}
 <body>
 <nav>
   <a class="nbrand" href="/"><span class="nlogo">CYBERDUDEBIVASH</span><span class="ntag">Sentinel APEX</span></a>
-  <div class="nlinks"><a href="/">Reports</a><a href="/research/">Research</a><a href="/detections/">Detections</a><a href="/intelligence.html">Intelligence</a><a href="/pricing.html">Pricing</a><a href="/enterprise.html">Enterprise</a></div>
+  <div class="nlinks"><a href="/">Reports</a><a href="/research">Research</a><a href="/detections">Detections</a><a href="/intelligence.html">Intelligence</a><a href="/pricing.html">Pricing</a><a href="/enterprise.html">Enterprise</a></div>
 </nav>
 <main>
   <span class="eyebrow">Research</span>

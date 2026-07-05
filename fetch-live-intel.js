@@ -1935,6 +1935,11 @@ function generatePostHTML(item) {
 <meta name="twitter:description" content="${escHtml(metaDesc)}">
 <meta name="twitter:image" content="${CFG.baseUrl}/og-image.png">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#00ffe0">
 <link rel="canonical" href="${CFG.baseUrl}/posts/${escHtml(slug)}.html">
 <link rel="alternate" type="application/rss+xml" title="CYBERDUDEBIVASH SENTINEL APEX" href="${CFG.baseUrl}/rss.xml">
 <title>${escHtml(metaTitle)}</title>
