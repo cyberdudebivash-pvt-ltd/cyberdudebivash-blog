@@ -2,11 +2,12 @@ name: "⚡ CYBERDUDEBIVASH® — Blogger Syndication Engine"
 
 on:
   schedule:
-    # Runs at :15 and :45, interleaved with the sentinel-apex intel pipeline
-    # (:00/:30) so pushes to main land every ~15 min — longer than the Vercel
-    # build (~10-13 min) so deploys complete instead of canceling each other
-    # (deploy starvation). Syndication still runs twice an hour.
-    - cron: "15,45 * * * *"
+    # Runs every 2 hours at :15 (00:15, 02:15, … 22:15) = 12 runs/day.
+    # Reduced from twice-hourly to cut Vercel deployment usage — each run
+    # commits to main and triggers a deploy. Offset from the sentinel-apex
+    # intel pipeline (:00/:30) so pushes never collide. Syndication 12×/day
+    # is ample for SEO freshness; use "Run workflow" for an immediate push.
+    - cron: "15 */2 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
