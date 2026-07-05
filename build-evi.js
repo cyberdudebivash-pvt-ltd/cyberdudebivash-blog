@@ -142,7 +142,7 @@ const out = {
   recentAdditions: recentAdds,
 };
 
-fs.writeFileSync('/home/user/cyberdudebivash-blog/api/intel/exploitation-velocity-index.json', JSON.stringify(out, null, 2));
+fs.writeFileSync('/home/user/cyberdudebivash-blog/data/exploitation-velocity-index.json', JSON.stringify(out, null, 2));
 
 // Human summary to stdout
 console.log('EVI built from KEV', catalog.catalogVersion);

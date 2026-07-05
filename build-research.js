@@ -10,7 +10,7 @@
  * author schema (closes the author-schema SEO gap).
  */
 const fs = require('fs');
-const D = JSON.parse(fs.readFileSync('/home/user/cyberdudebivash-blog/api/intel/exploitation-velocity-index.json', 'utf8'));
+const D = JSON.parse(fs.readFileSync('/home/user/cyberdudebivash-blog/data/exploitation-velocity-index.json', 'utf8'));
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const BASE = 'https://blog.cyberdudebivash.in';
 const AUTHOR = 'Bivash';
@@ -143,7 +143,7 @@ footer a{color:var(--apex-cyan);text-decoration:none}
       <li><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener">CISA Known Exploited Vulnerabilities Catalog</a> — primary dataset (v${esc(D.catalogVersion)})</li>
       <li><a href="https://www.cisa.gov/news-events/directives/bod-22-01-reducing-significant-risk-known-exploited-vulnerabilities" target="_blank" rel="noopener">CISA BOD 22-01</a> — the directive establishing KEV remediation deadlines</li>
       <li><a href="/research/exploitation-velocity-index.html">Exploitation Velocity Index</a> — the derived dataset and full methodology behind every figure</li>
-      <li><a href="${BASE}/api/intel/exploitation-velocity-index.json">exploitation-velocity-index.json</a> — machine-readable data (CC BY 4.0)</li>
+      <li><a href="${BASE}/data/exploitation-velocity-index.json">exploitation-velocity-index.json</a> — machine-readable data (CC BY 4.0)</li>
     </ul>
   </div>
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
  * Renders /research/exploitation-velocity-index.html from the EVI dataset.
- * The page is generated from api/intel/exploitation-velocity-index.json so
+ * The page is generated from data/exploitation-velocity-index.json so
  * displayed numbers are always identical to the machine-readable data.
  */
 const fs = require('fs');
-const D = JSON.parse(fs.readFileSync('/home/user/cyberdudebivash-blog/api/intel/exploitation-velocity-index.json', 'utf8'));
+const D = JSON.parse(fs.readFileSync('/home/user/cyberdudebivash-blog/data/exploitation-velocity-index.json', 'utf8'));
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const BASE = 'https://blog.cyberdudebivash.in';
 
@@ -74,7 +74,7 @@ const html = `<!DOCTYPE html>
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <link rel="canonical" href="${BASE}/research/exploitation-velocity-index.html">
 <title>Exploitation Velocity Index — CISA KEV Analysis | CYBERDUDEBIVASH SENTINEL APEX</title>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Exploitation Velocity Index (EVI)","description":"Reproducible aggregate statistics derived from the official CISA Known Exploited Vulnerabilities catalog: vendor representation, ransomware association, catalog growth velocity, and CISA remediation-urgency windows.","url":"${BASE}/research/exploitation-velocity-index.html","license":"https://creativecommons.org/licenses/by/4.0/","creator":{"@type":"Organization","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"${BASE}"},"isBasedOn":"https://www.cisa.gov/known-exploited-vulnerabilities-catalog","dateModified":"${updated}","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"${BASE}/api/intel/exploitation-velocity-index.json"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Exploitation Velocity Index (EVI)","description":"Reproducible aggregate statistics derived from the official CISA Known Exploited Vulnerabilities catalog: vendor representation, ransomware association, catalog growth velocity, and CISA remediation-urgency windows.","url":"${BASE}/research/exploitation-velocity-index.html","license":"https://creativecommons.org/licenses/by/4.0/","creator":{"@type":"Organization","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"${BASE}"},"isBasedOn":"https://www.cisa.gov/known-exploited-vulnerabilities-catalog","dateModified":"${updated}","distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"${BASE}/data/exploitation-velocity-index.json"}]}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-green:#00ff88;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
@@ -130,7 +130,7 @@ footer a{color:var(--apex-cyan);text-decoration:none}
   <span class="eyebrow">Original Research · Reproducible Data</span>
   <h1>The Exploitation Velocity Index</h1>
   <p class="lede">A reproducible read on <em>which vendors actually get exploited in the wild</em> — derived entirely from the official CISA Known Exploited Vulnerabilities catalog, not from vendor marketing or estimated severity.</p>
-  <p class="dateline">Dataset: CISA KEV catalog <strong>v${esc(D.catalogVersion)}</strong> · ${cs.totalKevEntries} entries · updated ${updated} · <a href="${BASE}/api/intel/exploitation-velocity-index.json">Download JSON</a> · <a href="#methodology">Methodology</a></p>
+  <p class="dateline">Dataset: CISA KEV catalog <strong>v${esc(D.catalogVersion)}</strong> · ${cs.totalKevEntries} entries · updated ${updated} · <a href="${BASE}/data/exploitation-velocity-index.json">Download JSON</a> · <a href="#methodology">Methodology</a></p>
 
   <div class="kpis">
     <div class="kpi"><div class="v">${cs.totalKevEntries}</div><div class="l">confirmed in-the-wild exploited CVEs in the catalog</div></div>
@@ -182,7 +182,7 @@ footer a{color:var(--apex-cyan);text-decoration:none}
       <li><strong>Remediation window</strong> = <code>dueDate − dateAdded</code> in days, straight from the record. A shorter median window is CISA signalling higher assessed urgency.</li>
       <li><strong>Velocity</strong> = count of entries grouped by <code>dateAdded</code> calendar month.</li>
     </ul>
-    <p>What this index deliberately does <strong>not</strong> claim: KEV contains no disclosure-to-exploitation timing, so we publish no such metric. Every figure here is reproducible by re-running the same computation against the same public feed. The machine-readable output is published under CC BY 4.0: <a href="${BASE}/api/intel/exploitation-velocity-index.json">exploitation-velocity-index.json</a>.</p>
+    <p>What this index deliberately does <strong>not</strong> claim: KEV contains no disclosure-to-exploitation timing, so we publish no such metric. Every figure here is reproducible by re-running the same computation against the same public feed. The machine-readable output is published under CC BY 4.0: <a href="${BASE}/data/exploitation-velocity-index.json">exploitation-velocity-index.json</a>.</p>
   </div>
 
   <div class="cta">
