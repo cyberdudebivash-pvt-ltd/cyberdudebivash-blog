@@ -58,3 +58,25 @@ test('full post embeds the section and stays well-formed', () => {
   const closes = (html.match(/<\/div>/g) || []).length;
   assert.strictEqual(opens, closes, 'div tags balanced');
 });
+
+// ── Analyst Memory wiring ──────────────────────────────────────────────
+const { AnalystMemory } = require(path.join(__dirname, '..', 'analyst-memory'));
+
+test('prior-intelligence section is empty for a first sighting', () => {
+  const mem = new AnalystMemory();
+  assert.strictEqual(gen.genPriorIntelligence(RICH_ITEM, esc, mem), '');
+});
+
+test('prior-intelligence section renders after the entity was seen', () => {
+  const mem = new AnalystMemory();
+  mem.ingest(RICH_ITEM, 'prior-report');           // history
+  const html = gen.genPriorIntelligence(RICH_ITEM, esc, mem);
+  assert.ok(html.includes('Prior Intelligence Context'));
+  assert.ok(html.includes('CVE-2024-4577'));
+  assert.ok(html.includes('previously observed'));
+});
+
+test('genPriorIntelligence is guarded (no memory / bad item -> empty)', () => {
+  assert.strictEqual(gen.genPriorIntelligence(RICH_ITEM, esc, null), '');
+  assert.strictEqual(gen.genPriorIntelligence(null, esc, new AnalystMemory()), '');
+});

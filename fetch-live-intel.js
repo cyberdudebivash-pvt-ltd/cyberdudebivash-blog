@@ -26,6 +26,14 @@ let detEngine = null;
 try { detEngine = require('./Sentinel-APEX/engine-node/detection-engine'); }
 catch (e) { console.warn('⚠️ detection-engine unavailable:', e.message); }
 
+// Persistent Analyst Memory (v2). Also loaded defensively. The instance is
+// populated in main() from intel-memory.json; render/ingest are no-ops until
+// then, so requiring this module for tests has no side effects.
+let AnalystMemory = null;
+try { ({ AnalystMemory } = require('./Sentinel-APEX/engine-node/analyst-memory')); }
+catch (e) { console.warn('⚠️ analyst-memory unavailable:', e.message); }
+let analystMemory = null;
+
 const CFG = {
   // ── Core paths ─────────────────────────────────────────────────────
   baseUrl:            'https://blog.cyberdudebivash.in',
@@ -35,6 +43,7 @@ const CFG = {
   postsDir:           path.join(__dirname, 'posts'),
   indexPath:          path.join(__dirname, 'index.html'),
   statePath:          path.join(__dirname, 'intel-state.json'),
+  memoryPath:         path.join(__dirname, 'intel-memory.json'),
   lockPath:           path.join(__dirname, 'pipeline.lock'),
   rssPath:            path.join(__dirname, 'rss.xml'),
   liveJsonPath:       path.join(__dirname, 'live-intel.json'),
@@ -1488,6 +1497,24 @@ function genMultiPlatformDetections(item, esc) {
   }
 }
 
+// ── PRIOR INTELLIGENCE CONTEXT (Analyst Memory, v2) ─────────────────────
+// Renders "have we seen this before?" notes from persistent analyst memory.
+// Fully guarded: returns '' if memory is unavailable or the entity is new.
+function genPriorIntelligence(item, esc, mem = analystMemory) {
+  if (!mem || !item) return '';
+  try {
+    const notes = mem.priorContext(item);
+    if (!notes.length) return '';
+    let html = `<h2 class="sh"><span>🧬</span> Prior Intelligence Context</h2>`;
+    html += `<p class="bp">This report is correlated against CYBERDUDEBIVASH SENTINEL APEX's persistent analyst memory. The following entities have been tracked in prior intelligence:</p>`;
+    html += `<ul class="alist">${notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>`;
+    return html;
+  } catch (e) {
+    console.warn(`⚠️ genPriorIntelligence failed for ${item && item.id}:`, e.message);
+    return '';
+  }
+}
+
 // ── YARA RULE ──────────────────────────────────────────────────────────
 function genYARA(item) {
   const n = (item.id||'unknown').replace(/[^a-zA-Z0-9_]/g,'_');
@@ -1727,6 +1754,7 @@ function generatePostHTML(item) {
   const sigma = genSigma(item);
   const yara  = genYARA(item);
   const multiDetections = genMultiPlatformDetections(item, escHtml);
+  const priorIntel = genPriorIntelligence(item, escHtml);
   const pubDateFmt = fmtDate(item.pubDate||isoNow()), today = isoNow();
   const cvss = item.cvss||7.0;
   const cvssColor = cvss>=9.0?'#ff3b3b':cvss>=7.0?'#ff8c00':'#ffe000';
@@ -1888,6 +1916,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
     <table class="tbl"><thead><tr><th>#</th><th>Phase</th><th>Attacker Action</th><th>MITRE</th></tr></thead><tbody>${chainRows}</tbody></table>
     <h2 class="sh"><span>⚠</span> Deep Dive Analysis</h2>
     ${commentary.split('\n\n').map(p=>`<p class="bp">${escHtml(p)}</p>`).join('\n    ')}
+    ${priorIntel}
     <h2 class="sh"><span>🎯</span> MITRE ATT&CK Mapping</h2>
     <table class="tbl"><thead><tr><th>Category</th><th>Mapping</th></tr></thead><tbody>
       <tr><td>Primary Tactic</td><td style="color:var(--apex-red);font-weight:700">${escHtml(mitre.tactic)}</td></tr>
@@ -2403,6 +2432,14 @@ async function main() {
     const sourceStats = {};
     log(`State: ${state.published.length} in dedup window (TTL=${CFG.dedupTtlDays}d). Total published: ${state.totalPublished}`);
 
+    // Load persistent analyst memory (defensive: never fatal).
+    if (AnalystMemory) {
+      try {
+        analystMemory = AnalystMemory.load(fs, CFG.memoryPath);
+        log(`Analyst memory: ${analystMemory.stats().entities} entities tracked`);
+      } catch (e) { warn(`Analyst memory load failed: ${e.message}`); analystMemory = null; }
+    }
+
     // ══════════════════════════════════════════════════════════════════
     // TIER 1 — Critical CVE/Exploit sources (processed first, always)
     // ══════════════════════════════════════════════════════════════════
@@ -2578,6 +2615,9 @@ async function main() {
         safeWriteSync(filePath, html, 'utf8');
         log(`✅ [${item.threatLevel||'HIGH'}] [${item.type}] ${slug}.html (score=${item.priority||0}, srcs=${item.sourceCount||1})`);
         markPublished(state, { id:item.id, slug, title });
+        // Record this report's entities into persistent analyst memory (after
+        // the post's prior-context note was already rendered above).
+        if (analystMemory) { try { analystMemory.ingest(item, slug); } catch(_) {} }
         generatedCards.push({ card: generatePostCard(item, slug, title) });
         rssItems.push({ ...item, slug, title });
         newSlugs.push(slug);
@@ -2605,6 +2645,12 @@ async function main() {
 
     log(`  Quality gate: ${qualityPassed} passed, ${qualityRejected} rejected`);
     saveState(state);
+    if (analystMemory) {
+      try {
+        analystMemory.save(fs, CFG.memoryPath);
+        log(`  Analyst memory: ${analystMemory.stats().entities} entities persisted`);
+      } catch (e) { warn(`Analyst memory save failed: ${e.message}`); }
+    }
     validateAndReport(enrichedItems, generatedCards, state, T0, sourceStats);
 
   } catch(fatalErr) {
@@ -2626,5 +2672,5 @@ if (require.main === module) {
     process.exit(1);
   });
 } else {
-  module.exports = { generatePostHTML, genMultiPlatformDetections, genSigma, genYARA, getMitre };
+  module.exports = { generatePostHTML, genMultiPlatformDetections, genPriorIntelligence, genSigma, genYARA, getMitre };
 }
