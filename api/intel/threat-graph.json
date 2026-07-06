@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-06T13:32:10.782Z",
+  "generated": "2026-07-06T14:02:06.277Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4267,
+    "total_nodes": 4273,
     "actors": 8,
     "cves": 901,
     "campaigns": 382,
     "malware": 0,
-    "iocs": 450,
-    "edges": 1748
+    "iocs": 453,
+    "edges": 1752
   },
   "nodes": {
     "actor:lockbit": {
@@ -82477,6 +82477,115 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-4c12a26a8714f060": {
+      "id": "REDDIT_CYBER-4c12a26a8714f060",
+      "type": "Intel",
+      "name": "Shadowserver.org - Heard of It / Use It / Worth it?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-06",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:shadowserver.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.shadowserver.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:shadowserver.org": {
+      "id": "ioc:domain:shadowserver.org",
+      "type": "IOC",
+      "name": "shadowserver.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-06"
+      },
+      "connections": []
+    },
+    "ioc:domain:www.shadowserver.org": {
+      "id": "ioc:domain:www.shadowserver.org",
+      "type": "IOC",
+      "name": "www.shadowserver.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-06"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-6bf9fd66f438d21e": {
+      "id": "REDDIT_CYBER-6bf9fd66f438d21e",
+      "type": "Intel",
+      "name": "What's Going On With Cisco Vulnerabilities This Past Months? There's Too Many",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-06",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:vulnipulse.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:vulnipulse.com": {
+      "id": "ioc:domain:vulnipulse.com",
+      "type": "IOC",
+      "name": "vulnipulse.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-06"
+      },
+      "connections": []
+    },
+    "SANS_ISC-2aec142228c2cf56": {
+      "id": "SANS_ISC-2aec142228c2cf56",
+      "type": "Intel",
+      "name": "RCS and DNS: The NAPTR Record, (Mon, Jul 6th)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SANS ISC",
+        "product": "Threat Intelligence",
+        "published": "2026-07-06",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -98247,6 +98356,42 @@
       "target": "CVE-2026-48282",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-4c12a26a8714f060→linked_to→ioc:domain:shadowserver.org",
+      "source": "REDDIT_CYBER-4c12a26a8714f060",
+      "target": "ioc:domain:shadowserver.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-4c12a26a8714f060→linked_to→ioc:domain:www.shadowserver.org",
+      "source": "REDDIT_CYBER-4c12a26a8714f060",
+      "target": "ioc:domain:www.shadowserver.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-6bf9fd66f438d21e→linked_to→ioc:domain:vulnipulse.com",
+      "source": "REDDIT_CYBER-6bf9fd66f438d21e",
+      "target": "ioc:domain:vulnipulse.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-6bf9fd66f438d21e→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-6bf9fd66f438d21e",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-06",
       "sources": []
     }
