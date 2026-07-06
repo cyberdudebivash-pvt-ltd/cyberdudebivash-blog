@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-06T13:02:06.118Z",
+  "generated": "2026-07-06T13:32:10.782Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4264,
+    "total_nodes": 4267,
     "actors": 8,
-    "cves": 900,
-    "campaigns": 381,
+    "cves": 901,
+    "campaigns": 382,
     "malware": 0,
     "iocs": 450,
-    "edges": 1747
+    "edges": 1748
   },
   "nodes": {
     "actor:lockbit": {
@@ -82421,6 +82421,62 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-48282": {
+      "id": "CVE-2026-48282",
+      "type": "CVE",
+      "name": "Max severity Adobe ColdFusion flaw now exploited in attacks",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-06",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-a8990fe0fcbfdaba": {
+      "id": "SECURITYWEEK-a8990fe0fcbfdaba",
+      "type": "Intel",
+      "name": "North Korean Hackers Target Open Source Developers in Supply Chain Attacks",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-06",
+        "type": "SUPPLY_CHAIN"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-48282": {
+      "id": "campaign:cve-2026-48282",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-06",
+        "last_seen": "2026-07-06",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-48282 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-48282",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -98182,6 +98238,15 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-48282→includes→CVE-2026-48282",
+      "source": "campaign:cve-2026-48282",
+      "target": "CVE-2026-48282",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-06",
       "sources": []
     }
