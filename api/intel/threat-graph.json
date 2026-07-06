@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-06T11:02:04.644Z",
+  "generated": "2026-07-06T11:31:54.378Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4256,
+    "total_nodes": 4261,
     "actors": 8,
     "cves": 900,
-    "campaigns": 379,
+    "campaigns": 381,
     "malware": 0,
     "iocs": 450,
-    "edges": 1742
+    "edges": 1746
   },
   "nodes": {
     "actor:lockbit": {
@@ -82255,6 +82255,112 @@
           "confidence": 0.75
         }
       ]
+    },
+    "SECURITYWEEK-d2ea5a1200ceb3ec": {
+      "id": "SECURITYWEEK-d2ea5a1200ceb3ec",
+      "type": "Intel",
+      "name": "Prompt Injection Attacks Trick AI Agents Into Making Crypto Payments",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 62,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-06",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-7fa16640d23c9f96": {
+      "id": "REDDIT_CYBER-7fa16640d23c9f96",
+      "type": "Intel",
+      "name": "Vale a pena estudar cibersegurança para quem trabalha com manutenção de notebooks?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-06",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-b3aec3b9c9f495d3": {
+      "id": "REDDIT_CYBER-b3aec3b9c9f495d3",
+      "type": "Intel",
+      "name": "If I want to be a red teamer what should I do",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-06",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-1347e80b": {
+      "id": "campaign:cluster-1347e80b",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-06",
+        "last_seen": "2026-07-06",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-d2ea5a1200ceb3ec",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-300d46c0": {
+      "id": "campaign:cluster-300d46c0",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-06",
+        "last_seen": "2026-07-06",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 3 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-7fa16640d23c9f96",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -97971,6 +98077,42 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-7fa16640d23c9f96→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-7fa16640d23c9f96",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-b3aec3b9c9f495d3→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-b3aec3b9c9f495d3",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-1347e80b→includes→SECURITYWEEK-d2ea5a1200ceb3ec",
+      "source": "campaign:cluster-1347e80b",
+      "target": "SECURITYWEEK-d2ea5a1200ceb3ec",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-300d46c0→includes→REDDIT_CYBER-7fa16640d23c9f96",
+      "source": "campaign:cluster-300d46c0",
+      "target": "REDDIT_CYBER-7fa16640d23c9f96",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-06",
       "sources": []
     }
