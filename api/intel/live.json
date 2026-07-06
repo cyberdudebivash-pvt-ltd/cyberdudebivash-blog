@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-06T21:31:59.326Z",
+  "generated": "2026-07-06T21:54:17.638Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1810,
+  "total_published": 1815,
   "s2n_stats": {
     "passed": 89,
-    "suppressed": 9,
+    "suppressed": 11,
     "avg_qs": 0.55
   },
   "items": [
@@ -4003,6 +4003,152 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-55794",
+      "title": "Craft CMS: Potential authenticated Remote Code Execution via referrer redirect",
+      "description": "### Requirements: * Control panel access\n* Permissions to edit an entry ### Details Control panel users with the ability to edit entries can execute unsandboxed Twig code via the HTTP Referrer header. The issue happens when a user is saving entries. Strings for a signed redirect URL are being compil",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-06",
+      "last_seen": "2026-07-06",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "craftcms/cms",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55794",
+        "CVE-2026-55794"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-f74w-488g-8x5r",
+        "https://github.com/craftcms/cms/security/advisories/GHSA-f74w-488g-8x5r",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-55794",
+        "https://github.com/craftcms/cms/pull/18680"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-55501",
+      "title": "9router: Login brute-force protection bypass via spoofed X-Forwarded-For header",
+      "description": "## Summary The 9router dashboard login rate limiter derives the client identity from the attacker-controlled `X-Forwarded-For` HTTP header. When 9router is directly exposed, or deployed behind a reverse proxy that does not overwrite untrusted forwarding headers, a remote attacker can rotate the `X-F",
+      "cvss": 7.3,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-06",
+      "last_seen": "2026-07-06",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "9router",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55501",
+        "CVE-2026-55501"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-7cfm-pqrj-xgq7",
+        "https://github.com/decolua/9router/security/advisories/GHSA-7cfm-pqrj-xgq7",
+        "https://github.com/advisories/GHSA-7cfm-pqrj-xgq7"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-35341",
+      "title": "mkfifo: permissions of an existing file are changed after FIFO creation fails",
+      "description": "When `mkfifo()` fails (e.g. target already exists), the code shows an error but is missing a `continue;`, so it falls through to `fs::set_permissions` and changes the permissions of the pre-existing file to the default FIFO mode (`0o666` & umask -> `0644`). ```\n$ touch secret; chmod 000 secret\n$ cor",
+      "cvss": 7.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-06",
+      "last_seen": "2026-07-06",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "uu_mkfifo",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-35341",
+        "CVE-2026-35341"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-pmf6-rcx4-v53v",
+        "https://github.com/uutils/coreutils/security/advisories/GHSA-pmf6-rcx4-v53v",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-35341",
+        "https://github.com/uutils/coreutils/issues/10020"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-55431",
       "title": "Coder's session token leaked to arbitrary hosts via `coder open app` for external workspace apps",
       "description": "### Summary `coder open app` opens external workspace-app URLs without validating the scheme or host. When an external app URL contains the `$SESSION_TOKEN` placeholder the CLI replaces it with the user's real session token before handing the URL to the OS open handler. > **Note:** Practical exploit",
@@ -4277,153 +4423,6 @@
         "https://github.com/coder/coder/security/advisories/GHSA-9rjw-3gwp-f59v",
         "https://github.com/coder/coder/pull/26103",
         "https://github.com/advisories/GHSA-9rjw-3gwp-f59v"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55427",
-      "title": "Coder vulnerable to SSH config injection via unsanitized server-supplied values in `coder config-ssh`",
-      "description": "### Summary `coder config-ssh` wrote server-supplied SSH settings (`HostnameSuffix`, `SSHConfigOptions`) into the user's `~/.ssh/config` without sanitizing embedded newlines or restricting directives so a malicious or compromised Coder server could inject arbitrary SSH configuration. > **Note:** Pra",
-      "cvss": 8.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-06",
-      "last_seen": "2026-07-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/coder/coder/v2",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55427",
-        "CVE-2026-55427"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-mcqq-fqgf-rxwm",
-        "https://github.com/coder/coder/security/advisories/GHSA-mcqq-fqgf-rxwm",
-        "https://github.com/coder/coder/pull/26154",
-        "https://github.com/advisories/GHSA-mcqq-fqgf-rxwm"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55428",
-      "title": "Coder: Route hijacking through lack of validation of agent-supplied AllowedIPs in tailnet coordinator",
-      "description": "### Summary The tailnet coordinator validates that an agent's `Addresses` derive from its authenticated UUID but applies no equivalent check to `AllowedIPs`. The coordinator forwards agent-supplied `AllowedIPs` verbatim to tunnel peers which install them into the WireGuard peer configuration. ### Im",
-      "cvss": 8.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-06",
-      "last_seen": "2026-07-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/coder/coder/v2",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55428",
-        "CVE-2026-55428"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wrq8-fcv5-8hvp",
-        "https://github.com/coder/coder/security/advisories/GHSA-wrq8-fcv5-8hvp",
-        "https://github.com/coder/coder/pull/26144",
-        "https://github.com/advisories/GHSA-wrq8-fcv5-8hvp"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54640",
-      "title": "OpenRemote has an incomplete fix for CVE-2026-40882: XXE in KNXProtocol.startAssetImport() allows arbitrary file read vi",
-      "description": "### Summary\nThe fix for CVE-2026-40882 addressed only the Velbus asset import handler. The KNX asset import handler (`KNXProtocol`) processes user-uploaded ETS project ZIP files through Saxon XSLT and `XMLInputFactory.newInstance()` with no XXE protection, allowing any authenticated user to read arb",
-      "cvss": 7.6,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-06",
-      "last_seen": "2026-07-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "io.openremote:openremote-agent",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54640",
-        "CVE-2026-54640"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7v6w-c3f4-9wpq",
-        "https://github.com/openremote/openremote/security/advisories/GHSA-7v6w-c3f4-9wpq",
-        "https://github.com/openremote/openremote/commit/c28d3c60ebc2da68d9b6c4a6d7a5ad875a255ee9",
-        "https://github.com/advisories/GHSA-7v6w-c3f4-9wpq"
       ],
       "explanation": {
         "quality": [
