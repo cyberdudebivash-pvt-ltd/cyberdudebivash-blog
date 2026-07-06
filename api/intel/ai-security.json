@@ -2,16 +2,24 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-07-06T16:53:18.505Z",
+  "generated": "2026-07-06T20:01:48.722Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 15,
+    "published": 14,
     "p1": 0,
-    "leadsHeld": 6,
+    "leadsHeld": 7,
     "analystReports": 0,
-    "sourcesOk": 5,
+    "sourcesOk": 3,
     "sourcesTotal": 6,
     "sourceHealth": [
+      {
+        "name": "GitHub Security Advisories",
+        "key": "ghsa",
+        "tier": 1,
+        "status": "degraded",
+        "items": 0,
+        "error": "HTTP 403"
+      },
       {
         "name": "r/netsec",
         "key": "reddit_ns",
@@ -37,14 +45,6 @@
         "error": null
       },
       {
-        "name": "GitHub Security Advisories",
-        "key": "ghsa",
-        "tier": 1,
-        "status": "ok",
-        "items": 60,
-        "error": null
-      },
-      {
         "name": "r/MachineLearning",
         "key": "reddit_ml",
         "tier": 3,
@@ -56,12 +56,12 @@
         "name": "NVD (AI/LLM keyword)",
         "key": "nvd_ai",
         "tier": 1,
-        "status": "ok",
-        "items": 40,
-        "error": null
+        "status": "degraded",
+        "items": 0,
+        "error": "This operation was aborted"
       }
     ],
-    "runtimeMs": 1528
+    "runtimeMs": 15075
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,64 +88,8 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 15,
+  "count": 14,
   "items": [
-    {
-      "id": "126a32ba95c66a1c",
-      "title": "Grackle: Fail-open authorization in the MCP tool layer lets scoped agents perform cross-task and cross-session mutations (IDOR)",
-      "url": "https://github.com/advisories/GHSA-f9ff-5x35-7gfw",
-      "source": "GitHub Security Advisories",
-      "tier": 1,
-      "published": "2026-07-02T19:35:03Z",
-      "cve": null,
-      "severity": "high",
-      "cvss": null,
-      "evidence_label": "VERIFIED_ADVISORY",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": true,
-          "rag": false,
-          "tool_use": true,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 48,
-        "priority": "P2"
-      },
-      "confidence": {
-        "source": "HIGH",
-        "evidence": "MODERATE",
-        "overall": "HIGH",
-        "rationale": "Authoritative source (GitHub Security Advisories)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
     {
       "id": "a6b13c337dc51df7",
       "title": "Behind the Refusal: Determining Guardrail Activation via Behavioral Monitoring",
