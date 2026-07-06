@@ -1,0 +1,96 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-6576c47e6346b327",
+  "title": "The ANT Catalog Leak: Inside the NSA's Covert Hacking Program [Documentary]",
+  "generated": "2026-07-06T02:01:55.487Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "c75f00a0d12a5499fa909f6467603bd4bcac6353",
+      "type": "sha1",
+      "confidence": 0.9
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uoju7g/the_ant_catalog_leak_inside_the_nsas_covert/",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://external-preview[.]redd[.]it/X89c3s8SFPMqZozYrHZqdLZuHR4kVzl19JSN5Nw8CWk[.]jpeg?width=320&amp;amp;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/Efficient_Creme1900&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]youtube[.]com/watch?v=FDiIC_NJ2a8&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "www[.]youtube[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uoju7g/the_ant_catalog_leak_inside_the_nsas_covert/\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uoju7g/the_ant_catalog_leak_inside_the_nsas_covert/\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/X89c3s8SFPMqZozYrHZqdLZuHR4kVzl19JSN5Nw8CWk.jpeg?width=320&amp;amp;\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/X89c3s8SFPMqZozYrHZqdLZuHR4kVzl19JSN5Nw8CWk.jpeg?width=320&amp\\;amp\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Efficient_Creme1900&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Efficient_Creme1900&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.youtube.com/watch?v=FDiIC_NJ2a8&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"www.youtube.com\"; nocase; http.uri; content:\"/watch?v=FDiIC_NJ2a8&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.youtube.com\"; dns.query; content:\"www.youtube.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "7 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 19 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 20 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: the-ant-catalog-leak-inside-the-nsa-s-covert-hacking-progra (8 shared entities), ive-been-pwned (3 shared entities), cyber-security-analyst-vs-insider-threat-dlp-analyst (3 shared entities), cybersecurity-awards (3 shared entities), how-to-get-employed (3 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uoju7g/the_ant_catalog_leak_inside_the_nsas_covert/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
