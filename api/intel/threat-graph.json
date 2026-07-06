@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-06T19:31:54.453Z",
+  "generated": "2026-07-06T20:02:02.465Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4306,
+    "total_nodes": 4308,
     "actors": 8,
     "cves": 906,
-    "campaigns": 385,
+    "campaigns": 386,
     "malware": 0,
     "iocs": 458,
-    "edges": 1775
+    "edges": 1777
   },
   "nodes": {
     "actor:lockbit": {
@@ -83268,6 +83268,50 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-ac8f24a24cef82a2": {
+      "id": "REDDIT_CYBER-ac8f24a24cef82a2",
+      "type": "Intel",
+      "name": "Anyone know these listening ports/vendors used?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 72,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-06",
+        "type": "ZERO_DAY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-5ea79d3b": {
+      "id": "campaign:cluster-5ea79d3b",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-06",
+        "last_seen": "2026-07-06",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 4 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-ac8f24a24cef82a2",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -99279,6 +99323,24 @@
       "id": "campaign:cve-2026-20896→includes→CVE-2026-20896",
       "source": "campaign:cve-2026-20896",
       "target": "CVE-2026-20896",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-ac8f24a24cef82a2→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-ac8f24a24cef82a2",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-06",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-5ea79d3b→includes→REDDIT_CYBER-ac8f24a24cef82a2",
+      "source": "campaign:cluster-5ea79d3b",
+      "target": "REDDIT_CYBER-ac8f24a24cef82a2",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-06",
