@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-06T18:31:57.279Z",
+  "generated": "2026-07-06T19:02:00.953Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,11 +9,55 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 1792,
   "s2n_stats": {
-    "passed": 82,
-    "suppressed": 8,
-    "avg_qs": 0.552
+    "passed": 80,
+    "suppressed": 10,
+    "avg_qs": 0.558
   },
   "items": [
+    {
+      "id": "CVE-2026-20896",
+      "title": "Exploitarium coverage update: CVE-2026-20896 Gitea probing confirmed + 10 new rules added",
+      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Sysdig just published telemetry confirming active probing of CVE-2026-20896 (Gitea Docker auth bypass) 13 days after disclosure. First observed attempt came from ProtonVPN egress 159.26.98[.]241. Detection for the X-WEBAUTH-USER header in",
+      "cvss": 8,
+      "final_ps": 76,
+      "quality_score": 0.655,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-07-06",
+      "last_seen": "2026-07-06",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-20896"
+      ],
+      "ioc_count": 6,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1up5tj5/exploitarium_coverage_update_cve202620896_gitea/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=1.00",
+          "ioc_presence=6 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.655"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -2056,7 +2100,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-55407",
@@ -2100,7 +2146,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-634e03182dd384cb",
@@ -2232,7 +2280,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2585,9 +2635,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-9e1cdf218003c206",
@@ -2630,9 +2678,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-73f2731ba15421b5",
@@ -4351,55 +4397,6 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-35338",
-      "title": "chmod: --preserve-root bypassed by any path that resolves to root (e.g. /../)",
-      "description": "`Chmoder::chmod()` only compares the literal argument against `Path::new(\"/\")`, so the `--preserve-root` guard is bypassed by any path that *resolves* to root — a symlink to `/` or simply `/../`. ```\nif self.recursive && self.preserve_root && file == Path::new(\"/\") { return Err(ChmodError::PreserveR",
-      "cvss": 7.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-06",
-      "last_seen": "2026-07-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "rust",
-      "product": "uu_chmod",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-35338",
-        "CVE-2026-35338"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4c7q-4928-8445",
-        "https://github.com/uutils/coreutils/security/advisories/GHSA-4c7q-4928-8445",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-35338",
-        "https://github.com/uutils/coreutils/pull/10033"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
     }
   ]
 }
