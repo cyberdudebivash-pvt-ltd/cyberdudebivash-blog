@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-07T17:31:54.792Z",
+  "generated": "2026-07-07T18:02:02.290Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4381,
+    "total_nodes": 4383,
     "actors": 8,
     "cves": 930,
     "campaigns": 390,
     "malware": 0,
     "iocs": 466,
-    "edges": 1806
+    "edges": 1807
   },
   "nodes": {
     "actor:lockbit": {
@@ -84725,6 +84725,48 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-9b779aebcd16e930": {
+      "id": "REDDIT_CYBER-9b779aebcd16e930",
+      "type": "Intel",
+      "name": "Company is bragging about having an Agentic SOC in production then posts a senior role asking for IR, DFIR, threat hunting AND training experience. Am I reading this right?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "SECURITYWEEK-e74d8bb5d0ed8e35": {
+      "id": "SECURITYWEEK-e74d8bb5d0ed8e35",
+      "type": "Intel",
+      "name": "County Government Reportedly Paid $1 Million to Cyber Extortion Group",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -101017,6 +101059,15 @@
       "target": "CVE-2026-26192",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-9b779aebcd16e930→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-9b779aebcd16e930",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-07",
       "sources": []
     }
