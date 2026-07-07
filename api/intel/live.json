@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-07T16:31:56.560Z",
+  "generated": "2026-07-07T17:02:03.135Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,9 +9,9 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 1848,
   "s2n_stats": {
-    "passed": 88,
-    "suppressed": 7,
-    "avg_qs": 0.549
+    "passed": 87,
+    "suppressed": 8,
+    "avg_qs": 0.55
   },
   "items": [
     {
@@ -2277,7 +2277,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2587,9 +2589,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-a6da19aea46994a1",
@@ -4183,6 +4183,153 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-26193",
+      "title": "Open WebUI vulnerable to Stored XSS via iFrame embeds in response messages",
+      "description": "### Summary\nManually modifying chat history allows setting the `embeds` property on a response message, the content of which is loaded into an iFrame with a sandbox that has `allow-scripts` and `allow-same-origin` set, ignoring the \"iframe Sandbox Allow Same Origin\" configuration. This enables store",
+      "cvss": 7.3,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-07",
+      "last_seen": "2026-07-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "open-webui",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-26193",
+        "CVE-2026-26193"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://github.com/advisories/GHSA-vjm7-m4xh-7wrc",
+        "https://github.com/open-webui/open-webui/security/advisories/GHSA-vjm7-m4xh-7wrc",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-26193",
+        "https://github.com/open-webui/open-webui/blob/6f1486ffd0cb288d0e21f41845361924e0d742b3/src/lib/components/chat/Messages/ResponseMessage.svelte#L689-L703"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-26192",
+      "title": "Open WebUI vulnerable to Stored XSS via iFrame in citations model",
+      "description": "### Summary\nManually modifying chat history allows setting the `html` property within document metadata. This causes the frontend to enter a code path that treats document contents as HTML, and render them in an iFrame when the citation is previewed. This allows stored XSS via a weaponised document ",
+      "cvss": 7.3,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-07",
+      "last_seen": "2026-07-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "open-webui",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-26192",
+        "CVE-2026-26192"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://github.com/advisories/GHSA-xc8p-9rr6-97r2",
+        "https://github.com/open-webui/open-webui/security/advisories/GHSA-xc8p-9rr6-97r2",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-26192",
+        "https://github.com/open-webui/open-webui/blob/6f1486ffd0cb288d0e21f41845361924e0d742b3/src/lib/components/chat/Messages/Citations/CitationModal.svelte#L163-L170"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2025-46719",
+      "title": "Open WebUI vulnerable to stored XSS via unescaped markdown token in MarkdownTokens.svelte leading to full account takeov",
+      "description": "### Summary A vulnerability in the way certain html tags in chat messages are rendered allows attackers to inject JavaScript code into a chat transcript. The JavaScript code will be executed in the user's browser every time that chat transcript is opened, allowing attackers to retrieve the user's ac",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-07",
+      "last_seen": "2026-07-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "open-webui",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-46719",
+        "CVE-2025-46719"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-9f4f-jv96-8766",
+        "https://github.com/open-webui/open-webui/security/advisories/GHSA-9f4f-jv96-8766",
+        "https://nvd.nist.gov/vuln/detail/CVE-2025-46719",
+        "https://github.com/open-webui/open-webui/commit/6fd082d55ffaf6eb226efdeebc7155e3693d2d01"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-34151",
       "title": "XWiki Platform Old Core: Resource path traversal via /skin/ action endpoint in Jetty 12+",
       "description": "### Impact With Jetty 12+ a user can craft a URL to access any resource the Jetty instance is allowed to access. For example `http://[host]/xwiki/bin/skin/..%252f/..%252f..%252f..%252f..%252f..%252f..%252f..%252fetc/passwd` allows downloading the content of the /etc/passwd file, provided Jetty is al",
@@ -4262,152 +4409,6 @@
         "https://github.com/advisories/GHSA-8737-2x9g-xjj7",
         "https://github.com/EGroupware/egroupware/security/advisories/GHSA-8737-2x9g-xjj7",
         "https://github.com/advisories/GHSA-8737-2x9g-xjj7"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-33655",
-      "title": "New API: SSRF Protection Bypass via Unresolved Hostname in Notification URLs",
-      "description": "## Summary The default SSRF protection configuration did not apply IP filtering to hostnames. With `ApplyIPFilterForDomain` disabled by default, URL validation checked domain allow/block rules but did not resolve a hostname and validate the resolved IP address. Authenticated users could configure no",
-      "cvss": 7.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-07",
-      "last_seen": "2026-07-07",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/QuantumNous/new-api",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-33655",
-        "CVE-2026-33655"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-6qcr-qxgr-m7fv",
-        "https://github.com/QuantumNous/new-api/security/advisories/GHSA-6qcr-qxgr-m7fv",
-        "https://github.com/QuantumNous/new-api/commit/20399d3c8fcb4e3649d53163eb11940fd6763743",
-        "https://github.com/advisories/GHSA-6qcr-qxgr-m7fv"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55794",
-      "title": "Craft CMS: Potential authenticated Remote Code Execution via referrer redirect",
-      "description": "### Requirements: * Control panel access\n* Permissions to edit an entry ### Details Control panel users with the ability to edit entries can execute unsandboxed Twig code via the HTTP Referrer header. The issue happens when a user is saving entries. Strings for a signed redirect URL are being compil",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-06",
-      "last_seen": "2026-07-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "craftcms/cms",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55794",
-        "CVE-2026-55794"
-      ],
-      "ioc_count": 1,
-      "refs": [
-        "https://github.com/advisories/GHSA-f74w-488g-8x5r",
-        "https://github.com/craftcms/cms/security/advisories/GHSA-f74w-488g-8x5r",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-55794",
-        "https://github.com/craftcms/cms/pull/18680"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55501",
-      "title": "9router: Login brute-force protection bypass via spoofed X-Forwarded-For header",
-      "description": "## Summary The 9router dashboard login rate limiter derives the client identity from the attacker-controlled `X-Forwarded-For` HTTP header. When 9router is directly exposed, or deployed behind a reverse proxy that does not overwrite untrusted forwarding headers, a remote attacker can rotate the `X-F",
-      "cvss": 7.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-06",
-      "last_seen": "2026-07-06",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "9router",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55501",
-        "CVE-2026-55501"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7cfm-pqrj-xgq7",
-        "https://github.com/decolua/9router/security/advisories/GHSA-7cfm-pqrj-xgq7",
-        "https://github.com/advisories/GHSA-7cfm-pqrj-xgq7"
       ],
       "explanation": {
         "quality": [

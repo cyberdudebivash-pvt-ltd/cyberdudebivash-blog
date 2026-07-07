@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-07T16:31:56.527Z",
+  "generated": "2026-07-07T17:02:03.101Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4374,
+    "total_nodes": 4380,
     "actors": 8,
-    "cves": 927,
-    "campaigns": 389,
+    "cves": 930,
+    "campaigns": 390,
     "malware": 0,
-    "iocs": 465,
-    "edges": 1801
+    "iocs": 466,
+    "edges": 1806
   },
   "nodes": {
     "actor:lockbit": {
@@ -84581,6 +84581,132 @@
           "confidence": 0.75
         }
       ]
+    },
+    "CVE-2026-26193": {
+      "id": "CVE-2026-26193",
+      "type": "CVE",
+      "name": "Open WebUI vulnerable to Stored XSS via iFrame embeds in response messages",
+      "attributes": {
+        "cvss": 7.3,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "open-webui",
+        "published": "2026-07-07",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:6f1486ffd0cb288d0e21f41845361924e0d742b3",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:6f1486ffd0cb288d0e21f41845361924e0d742b3": {
+      "id": "ioc:sha1:6f1486ffd0cb288d0e21f41845361924e0d742b3",
+      "type": "IOC",
+      "name": "6f1486ffd0cb288d0e21f41845361924e0d742b3",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-07"
+      },
+      "connections": []
+    },
+    "CVE-2026-26192": {
+      "id": "CVE-2026-26192",
+      "type": "CVE",
+      "name": "Open WebUI vulnerable to Stored XSS via iFrame in citations model",
+      "attributes": {
+        "cvss": 7.3,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "open-webui",
+        "published": "2026-07-07",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:6f1486ffd0cb288d0e21f41845361924e0d742b3",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "CVE-2025-46719": {
+      "id": "CVE-2025-46719",
+      "type": "CVE",
+      "name": "Open WebUI vulnerable to stored XSS via unescaped markdown token in MarkdownTokens.svelte leading to full account takeover and RCE via functions",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "open-webui",
+        "published": "2026-07-07",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-baaaba5730c2ce07": {
+      "id": "REDDIT_CYBER-baaaba5730c2ce07",
+      "type": "Intel",
+      "name": "Is it realistic for one security person to lead SOC 2 readiness at a 60 person company?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cve-2026-26193-and-cve-2026-26192": {
+      "id": "campaign:cve-2026-26193-and-cve-2026-26192",
+      "type": "Campaign",
+      "name": "pip open-webui Exploitation Campaign",
+      "attributes": {
+        "severity": "LOW",
+        "item_count": 2,
+        "first_seen": "2026-07-07",
+        "last_seen": "2026-07-07",
+        "confidence": 0.83,
+        "reasoning": "2 intel item(s) clustered with composite confidence 0.830 | 2 related CVEs: CVE-2026-26193, CVE-2026-26192 | 2 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-26193",
+          "relationship": "includes",
+          "confidence": 1
+        },
+        {
+          "target": "CVE-2026-26192",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -100828,6 +100954,51 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-26193→linked_to→ioc:sha1:6f1486ffd0cb288d0e21f41845361924e0d742b3",
+      "source": "CVE-2026-26193",
+      "target": "ioc:sha1:6f1486ffd0cb288d0e21f41845361924e0d742b3",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-26192→linked_to→ioc:sha1:6f1486ffd0cb288d0e21f41845361924e0d742b3",
+      "source": "CVE-2026-26192",
+      "target": "ioc:sha1:6f1486ffd0cb288d0e21f41845361924e0d742b3",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-baaaba5730c2ce07→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-baaaba5730c2ce07",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-26193-and-cve-2026-26192→includes→CVE-2026-26193",
+      "source": "campaign:cve-2026-26193-and-cve-2026-26192",
+      "target": "CVE-2026-26193",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-26193-and-cve-2026-26192→includes→CVE-2026-26192",
+      "source": "campaign:cve-2026-26193-and-cve-2026-26192",
+      "target": "CVE-2026-26192",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-07",
       "sources": []
     }
