@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-07T18:02:02.290Z",
+  "generated": "2026-07-07T18:31:56.289Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4383,
+    "total_nodes": 4386,
     "actors": 8,
     "cves": 930,
-    "campaigns": 390,
+    "campaigns": 391,
     "malware": 0,
     "iocs": 466,
-    "edges": 1807
+    "edges": 1808
   },
   "nodes": {
     "actor:lockbit": {
@@ -84767,6 +84767,62 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-64cd08743b118738": {
+      "id": "REDDIT_CYBER-64cd08743b118738",
+      "type": "Intel",
+      "name": "Cybersecurity statistics of the week (June 29th - July 5th)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "CRITICAL",
+        "priority_score": 85,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "SANS_ISC-54867612c8192b87": {
+      "id": "SANS_ISC-54867612c8192b87",
+      "type": "Intel",
+      "name": "More Odd DNS Records: NIMLOC, (Tue, Jul 7th)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SANS ISC",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-d1930106": {
+      "id": "campaign:cluster-d1930106",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "CRITICAL",
+        "item_count": 1,
+        "first_seen": "2026-07-07",
+        "last_seen": "2026-07-07",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 6 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-64cd08743b118738",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -101068,6 +101124,15 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-d1930106→includes→REDDIT_CYBER-64cd08743b118738",
+      "source": "campaign:cluster-d1930106",
+      "target": "REDDIT_CYBER-64cd08743b118738",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-07",
       "sources": []
     }
