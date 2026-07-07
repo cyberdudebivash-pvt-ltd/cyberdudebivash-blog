@@ -1,0 +1,85 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-c7a42dd95457ed17",
+  "title": "Open-source AI security risk register mapped to MITRE ATLAS, OWASP LLM/Agentic Apps, and NIST AI 100-2",
+  "generated": "2026-07-07T20:32:02.433Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://www[.]airiskdeployer[.]org/&quot;&gt;hxxps://www[.]airiskdeployer[.]org&lt;/a&gt;&lt;/p&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/Typical-Look-1331&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uq6mix/opensource_ai_security_risk_register_mapped_",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]airiskdeployer[.]org",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.airiskdeployer.org/&quot;&gt;https://www.airiskdeployer.org&lt;/a&gt;&lt;/p&gt;\"; http.host; content:\"www.airiskdeployer.org\"; nocase; http.uri; content:\"/&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Typical-Look-1331&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Typical-Look-1331&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uq6mix/opensource_ai_security_risk_register_mapped_\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uq6mix/opensource_ai_security_risk_register_mapped_\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.airiskdeployer.org\"; dns.query; content:\"www.airiskdeployer.org\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "5 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 51 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 88 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: open-source-ai-security-risk-register-mapped-to-mitre-atlas (7 shared entities), mep-martin-sonneborn-was-cutoff-after-pointing-out-the-quest (3 shared entities), how-dumb-is-it (3 shared entities), safer-dependencies-a-toolkit-for-claude-code-to-ensure-depe (3 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uq6mix/opensource_ai_security_risk_register_mapped_to/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
