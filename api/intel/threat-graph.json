@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-07T15:02:10.286Z",
+  "generated": "2026-07-07T15:24:15.492Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4367,
+    "total_nodes": 4371,
     "actors": 8,
     "cves": 927,
     "campaigns": 389,
     "malware": 0,
-    "iocs": 463,
-    "edges": 1796
+    "iocs": 464,
+    "edges": 1799
   },
   "nodes": {
     "actor:lockbit": {
@@ -84440,6 +84440,88 @@
           "confidence": 0.75
         }
       ]
+    },
+    "BLEEPINGCOMPUTER-e0177106d1957d72": {
+      "id": "BLEEPINGCOMPUTER-e0177106d1957d72",
+      "type": "Intel",
+      "name": "Spain arrests suspected member of pro-Russian hacktivist groups",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-09601d319dfb356d": {
+      "id": "REDDIT_NETSEC-09601d319dfb356d",
+      "type": "Intel",
+      "name": "A rule mapped to MITRE is not the same as real coverage",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:socauthority.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:socauthority.com": {
+      "id": "ioc:domain:socauthority.com",
+      "type": "IOC",
+      "name": "socauthority.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-07"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-586aa671c547a2f1": {
+      "id": "REDDIT_NETSEC-586aa671c547a2f1",
+      "type": "Intel",
+      "name": "GitLost: a public GitHub issue can steer an org's Agentic Workflow into leaking private repo contents, and a one-word prefix (&quot;Additionally&quot;) bypassed the threat-detection guardrail",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -100639,6 +100721,33 @@
     {
       "id": "REDDIT_CYBER-02b93c044d7b24cb→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_CYBER-02b93c044d7b24cb",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-09601d319dfb356d→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-09601d319dfb356d",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-09601d319dfb356d→linked_to→ioc:domain:socauthority.com",
+      "source": "REDDIT_NETSEC-09601d319dfb356d",
+      "target": "ioc:domain:socauthority.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-586aa671c547a2f1→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-586aa671c547a2f1",
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
