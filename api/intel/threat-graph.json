@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-07T23:31:52.215Z",
+  "generated": "2026-07-07T23:54:09.606Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4406,
+    "total_nodes": 4409,
     "actors": 8,
-    "cves": 934,
+    "cves": 936,
     "campaigns": 393,
     "malware": 0,
     "iocs": 468,
-    "edges": 1816
+    "edges": 1817
   },
   "nodes": {
     "actor:lockbit": {
@@ -85208,6 +85208,66 @@
         "type": "DARK_WEB"
       },
       "connections": []
+    },
+    "CVE-2026-53530": {
+      "id": "CVE-2026-53530",
+      "type": "CVE",
+      "name": "ratex-parser panics on `\\verb` with a multibyte delimiter (UTF-8 byte-boundary slice)",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "rust",
+        "product": "ratex-parser",
+        "published": "2026-07-07",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-53553": {
+      "id": "CVE-2026-53553",
+      "type": "CVE",
+      "name": "Goploy: Arbitrary File Read via Path Traversal in /deploy/fileDiff allows Remote Server Compromise",
+      "attributes": {
+        "cvss": 7.7,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/zhenorzz/goploy",
+        "published": "2026-07-07",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-f0d52c042c2e19f4": {
+      "id": "REDDIT_CYBER-f0d52c042c2e19f4",
+      "type": "Intel",
+      "name": "2026 Chainanalysis Crime Report",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -101590,6 +101650,15 @@
       "target": "REDDIT_CYBER-d7300adfc86f9a75",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-f0d52c042c2e19f4→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-f0d52c042c2e19f4",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-07",
       "sources": []
     }

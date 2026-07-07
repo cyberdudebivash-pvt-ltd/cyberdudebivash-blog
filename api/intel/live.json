@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-07T23:31:52.246Z",
+  "generated": "2026-07-07T23:54:09.634Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,9 +9,9 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 1871,
   "s2n_stats": {
-    "passed": 88,
-    "suppressed": 7,
-    "avg_qs": 0.549
+    "passed": 87,
+    "suppressed": 8,
+    "avg_qs": 0.55
   },
   "items": [
     {
@@ -2322,7 +2322,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2632,9 +2634,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-a6da19aea46994a1",
@@ -4230,6 +4230,102 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-53530",
+      "title": "ratex-parser panics on `\\verb` with a multibyte delimiter (UTF-8 byte-boundary slice)",
+      "description": "### Summary The public parser entrypoint `ratex_parser::parse(&str)` panics on the **9-byte** input `\\verbéxé` (i.e. `\\verb` followed by the non-ASCII delimiter `é`). When handling a `\\verb` command, the parser slices the verbatim argument with **byte** indices (`arg[1..arg.len() - 1]`); if the deli",
+      "cvss": 7.5,
+      "final_ps": 25,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-07",
+      "last_seen": "2026-07-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "ratex-parser",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53530",
+        "CVE-2026-53530"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4hgp-59h5-gvrj",
+        "https://github.com/erweixin/RaTeX/security/advisories/GHSA-4hgp-59h5-gvrj",
+        "https://github.com/advisories/GHSA-4hgp-59h5-gvrj"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53553",
+      "title": "Goploy: Arbitrary File Read via Path Traversal in /deploy/fileDiff allows Remote Server Compromise",
+      "description": "> [ Click here to jump to the Simplified Chinese version (点击跳转到简体中文版本)](#goploy-系统任意文件读取)\n# Goploy System Arbitrary File Read Vulnerability ## Basic Information\n- **Vulnerability Name**: Goploy Endpoints Arbitrary File Read via Path Traversal\n- **Vulnerability Type**: Path Traversal (CWE-22) / Arbit",
+      "cvss": 7.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-07",
+      "last_seen": "2026-07-07",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/zhenorzz/goploy",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53553",
+        "CVE-2026-53553"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4g5x-hcwm-82jw",
+        "https://github.com/zhenorzz/goploy/security/advisories/GHSA-4g5x-hcwm-82jw",
+        "https://github.com/advisories/GHSA-4g5x-hcwm-82jw"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-53516",
       "title": "Better Auth has an account takeover issue via OAuth auto-link to unverified pre-registered email",
       "description": "### Am I affected? Users are affected if all of the following are true: - Their application uses `better-auth` at a version `< 1.6.11` on the stable line, or any current `next` pre-release.\n- `emailAndPassword.enabled: true` is set in their application's `betterAuth({ ... })` configuration.\n- At lea",
@@ -4310,104 +4406,6 @@
         "https://github.com/better-auth/better-auth/security/advisories/GHSA-7w99-5wm4-3g79",
         "https://github.com/better-auth/better-auth/releases/tag/v1.6.11",
         "https://github.com/advisories/GHSA-7w99-5wm4-3g79"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53517",
-      "title": "Better Auth: OAuth refresh-token rotation forks the token family on concurrent redemption",
-      "description": "### Am I affected? Users are affected if all of the following are true: - Their project depends on `@better-auth/oauth-provider` at a version `>= 1.6.0, = 1.4.8-beta.7, < 1.6.0`.\n- At least one OAuth client served by their application's authorization server requests the `offline_access` scope, so re",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-07",
-      "last_seen": "2026-07-07",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "@better-auth/oauth-provider",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53517",
-        "CVE-2026-53517"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-392p-2q2v-4372",
-        "https://github.com/better-auth/better-auth/security/advisories/GHSA-392p-2q2v-4372",
-        "https://github.com/better-auth/better-auth/releases/tag/v1.6.0",
-        "https://github.com/better-auth/better-auth/releases/tag/v1.6.11"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53514",
-      "title": "Better Auth vulnerable to unauthorized invitation acceptance via unverified email match in organization plugin",
-      "description": "### Am I affected? Users are affected if all of the following are true: - Their application uses `better-auth` with the `organization` plugin (`import { organization } from \"better-auth/plugins/organization\"`).\n- Their application enables a sign-up surface that allows arbitrary unverified email regi",
-      "cvss": 7.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-07",
-      "last_seen": "2026-07-07",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "better-auth",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53514",
-        "CVE-2026-53514"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-fmh4-wcc4-5jm3",
-        "https://github.com/better-auth/better-auth/security/advisories/GHSA-fmh4-wcc4-5jm3",
-        "https://github.com/better-auth/better-auth/releases/tag/v1.6.11",
-        "https://github.com/advisories/GHSA-fmh4-wcc4-5jm3"
       ],
       "explanation": {
         "quality": [
