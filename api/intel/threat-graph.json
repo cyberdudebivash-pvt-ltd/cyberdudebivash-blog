@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-07T06:32:09.865Z",
+  "generated": "2026-07-07T07:02:03.347Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4338,
+    "total_nodes": 4342,
     "actors": 8,
-    "cves": 923,
-    "campaigns": 387,
+    "cves": 924,
+    "campaigns": 388,
     "malware": 0,
     "iocs": 459,
-    "edges": 1783
+    "edges": 1785
   },
   "nodes": {
     "actor:lockbit": {
@@ -83877,6 +83877,86 @@
           "confidence": 0.75
         }
       ]
+    },
+    "CVE-2026-53582": {
+      "id": "CVE-2026-53582",
+      "type": "CVE",
+      "name": "OPNsense XPATH Injection (CVE-2026-53582)",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecLists",
+        "product": "Multiple Targets",
+        "published": "2026-07-07",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "FULLDIS-040d654a1a8f71b2": {
+      "id": "FULLDIS-040d654a1a8f71b2",
+      "type": "Intel",
+      "name": "SCHUTZWERK-SA-2025-001: Authentication Bypass for SafeLine SL6 and SL6+",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecLists",
+        "product": "Multiple Targets",
+        "published": "2026-07-07",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-3dd143554da288bd": {
+      "id": "REDDIT_CYBER-3dd143554da288bd",
+      "type": "Intel",
+      "name": "Security+ exam readiness",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cve-2026-53582": {
+      "id": "campaign:cve-2026-53582",
+      "type": "Campaign",
+      "name": "SecLists Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-07",
+        "last_seen": "2026-07-07",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-53582 | 1 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-53582",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -99962,6 +100042,24 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-3dd143554da288bd→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-3dd143554da288bd",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-53582→includes→CVE-2026-53582",
+      "source": "campaign:cve-2026-53582",
+      "target": "CVE-2026-53582",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-07",
       "sources": []
     }
