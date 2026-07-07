@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-07T08:02:07.394Z",
+  "generated": "2026-07-07T08:31:53.836Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4343,
+    "total_nodes": 4346,
     "actors": 8,
     "cves": 924,
     "campaigns": 388,
     "malware": 0,
-    "iocs": 459,
-    "edges": 1785
+    "iocs": 460,
+    "edges": 1786
   },
   "nodes": {
     "actor:lockbit": {
@@ -83975,6 +83975,59 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-10bd2bf6bd4daaf4": {
+      "id": "REDDIT_CYBER-10bd2bf6bd4daaf4",
+      "type": "Intel",
+      "name": "Stealer Logs data breach?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "DATA_BREACH"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:haveibeenpwned.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:haveibeenpwned.com": {
+      "id": "ioc:domain:haveibeenpwned.com",
+      "type": "IOC",
+      "name": "haveibeenpwned.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-07"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-a751616b18064ef5": {
+      "id": "BLEEPINGCOMPUTER-a751616b18064ef5",
+      "type": "Intel",
+      "name": "BeyondTrust warns of critical flaws in remote access software",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-07",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -100078,6 +100131,15 @@
       "target": "CVE-2026-53582",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-07",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-10bd2bf6bd4daaf4→linked_to→ioc:domain:haveibeenpwned.com",
+      "source": "REDDIT_CYBER-10bd2bf6bd4daaf4",
+      "target": "ioc:domain:haveibeenpwned.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-07",
       "sources": []
     }
