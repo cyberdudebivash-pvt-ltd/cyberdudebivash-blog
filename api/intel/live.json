@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-08T21:01:34.047Z",
+  "generated": "2026-07-08T21:31:53.544Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,7 +7,7 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1911,
+  "total_published": 1912,
   "s2n_stats": {
     "passed": 87,
     "suppressed": 8,
@@ -4274,6 +4274,103 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-49471",
+      "title": "Serena: Unauthenticated Flask dashboard on fixed port enables DNS rebinding → memory poisoning → RCE",
+      "description": "### Summary Serena's built-in web dashboard exposes an unauthenticated Flask API on a fixed, predictable port (TCP 24282, hardcoded as `0x5EDA` in `constants.py`). The server has no authentication, no CSRF protection, and no Host header validation. A DNS rebinding attack allows a malicious webpage t",
+      "cvss": 8.3,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-08",
+      "last_seen": "2026-07-08",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "serena-agent",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49471",
+        "CVE-2026-49471"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-37h2-6p4f-mp3q",
+        "https://github.com/oraios/serena/security/advisories/GHSA-37h2-6p4f-mp3q",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49471",
+        "https://github.com/oraios/serena/commit/016ccbe1c095a3eed7967737ac1d4df2754f5d96"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-49464",
+      "title": "NL Portal: IDOR allows any authenticated user to complete and tamper with another user's taak",
+      "description": "## Impact In versions from 1.5.0 up to and including 3.0.0, any authenticated portal user could complete and tamper with another user's open task by submitting it on their behalf. The task submission endpoint accepted a task ID and a payload, but it never checked whether the task actually belonged t",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-08",
+      "last_seen": "2026-07-08",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "nl.nl-portal:taak",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49464",
+        "CVE-2026-49464"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-6h3c-r723-7fx3",
+        "https://github.com/nl-portal/nl-portal-backend-libraries/security/advisories/GHSA-6h3c-r723-7fx3",
+        "https://github.com/advisories/GHSA-6h3c-r723-7fx3"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-49832",
       "title": "DSpace has possible Remote Code Execution (RCE)  through Velocity Templates used by LDN",
       "description": "## Overview Remote Code Execution (RCE) is possible via Velocity Templates used by DSpace for [COAR Notify/LDN messages](https://wiki.lyrasis.org/spaces/DSDOC9x/pages/379126679/COAR+Notify). _This vulnerability impacts DSpace versions 8.0 <= 8.3, 9.0 <= 9.2._ The attacker MUST already have DSpace ad",
@@ -4305,102 +4402,6 @@
         "https://github.com/DSpace/DSpace/security/advisories/GHSA-9x82-rm84-c6x7",
         "https://github.com/DSpace/DSpace/pull/12548",
         "https://github.com/DSpace/DSpace/pull/12549"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-50197",
-      "title": "Skipper: opaAuthorizeRequestWithBody filter bypasses OPA policy on Transfer-Encoding — chunked / HTTP/2 requests",
-      "description": "### Summary `zalando/skipper`'s OpenPolicyAgent integration silently bypasses request-body\ninspection on HTTP/1.1 `Transfer-Encoding: chunked` and HTTP/2 requests that\nomit the `content-length` pseudo-header. When the\n`opaAuthorizeRequestWithBody` filter is configured, the\n`OpenPolicyAgentInstance.E",
-      "cvss": 8.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-08",
-      "last_seen": "2026-07-08",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/zalando/skipper",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-50197",
-        "CVE-2026-50197"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-659f-rgp5-w4wf",
-        "https://github.com/zalando/skipper/security/advisories/GHSA-659f-rgp5-w4wf",
-        "https://github.com/advisories/GHSA-659f-rgp5-w4wf"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-49825",
-      "title": "`lxml_html_clean.Cleaner` does not strip `javascript:` URLs from namespaced URL attributes",
-      "description": "# `lxml_html_clean.Cleaner` does not strip `javascript:` URLs from namespaced URL attributes (`xlink:href`) **Reporter:** Guillem Lefait · **Date:** 2026-05-10\n**Affected:** `lxml` ≤ 6.1.0 and `lxml_html_clean` ≤ 0.4.4 (latest stable)\n**Confirmed against:** lxml 6.1.0 + lxml_html_clean 0.4.4 on Pyth",
-      "cvss": 8.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-08",
-      "last_seen": "2026-07-08",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "lxml_html_clean",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49825",
-        "CVE-2026-49825"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4jhm-jv67-739f",
-        "https://github.com/fedora-python/lxml_html_clean/security/advisories/GHSA-4jhm-jv67-739f",
-        "https://github.com/advisories/GHSA-4jhm-jv67-739f"
       ],
       "explanation": {
         "quality": [
