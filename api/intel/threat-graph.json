@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-08T12:31:55.144Z",
+  "generated": "2026-07-08T13:02:05.771Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4432,
+    "total_nodes": 4434,
     "actors": 8,
     "cves": 937,
     "campaigns": 395,
     "malware": 0,
-    "iocs": 469,
-    "edges": 1833
+    "iocs": 470,
+    "edges": 1834
   },
   "nodes": {
     "actor:lockbit": {
@@ -85757,6 +85757,41 @@
         "type": "AI_SECURITY"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-1a114578b3080d53": {
+      "id": "REDDIT_CYBER-1a114578b3080d53",
+      "type": "Intel",
+      "name": "Telco giant KDDI says data breach affects over 12 million people",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-08",
+        "type": "DATA_BREACH"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:78960d9a50146af1d79ec2686644c69f9ca2cde0",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:78960d9a50146af1d79ec2686644c69f9ca2cde0": {
+      "id": "ioc:sha1:78960d9a50146af1d79ec2686644c69f9ca2cde0",
+      "type": "IOC",
+      "name": "78960d9a50146af1d79ec2686644c69f9ca2cde0",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-08"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -102292,6 +102327,15 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-08",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-1a114578b3080d53→linked_to→ioc:sha1:78960d9a50146af1d79ec2686644c69f9ca2cde0",
+      "source": "REDDIT_CYBER-1a114578b3080d53",
+      "target": "ioc:sha1:78960d9a50146af1d79ec2686644c69f9ca2cde0",
+      "relationship": "linked_to",
+      "confidence": 0.9,
       "first_seen": "2026-07-08",
       "sources": []
     }
