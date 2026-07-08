@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-08T05:32:02.260Z",
+  "generated": "2026-07-08T05:35:42.261Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
@@ -9,7 +9,7 @@
     "campaigns": 393,
     "malware": 0,
     "iocs": 468,
-    "edges": 1819
+    "edges": 1821
   },
   "nodes": {
     "actor:lockbit": {
@@ -58915,7 +58915,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-26"
+        "first_seen": "2026-07-08"
       },
       "connections": []
     },
@@ -83104,18 +83104,28 @@
       "attributes": {
         "cvss": 8,
         "threat_level": "HIGH",
-        "priority_score": 65,
+        "priority_score": 70,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "SecurityWeek",
+        "vendor": "reddit_cyber",
         "product": "Threat Intelligence",
-        "published": "2026-07-07",
+        "published": "2026-07-08",
         "type": "CVE_REPORT"
       },
       "connections": [
         {
           "target": "ioc:domain:systemtwosecurity.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.securityweek.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
           "relationship": "linked_to",
           "confidence": 0.75
         }
@@ -83234,14 +83244,14 @@
     "campaign:cve-2026-20896": {
       "id": "campaign:cve-2026-20896",
       "type": "Campaign",
-      "name": "SecurityWeek Threat Exploitation Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
       "attributes": {
         "severity": "HIGH",
         "item_count": 1,
-        "first_seen": "2026-07-07",
-        "last_seen": "2026-07-07",
+        "first_seen": "2026-07-08",
+        "last_seen": "2026-07-08",
         "confidence": 0.9,
-        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-20896 | 1 item(s) confirmed exploited in the wild"
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-20896 | 5 shared IOC(s) across items"
       },
       "connections": [
         {
@@ -101740,6 +101750,24 @@
     {
       "id": "REDDIT_CYBER-c2b90a524141b339→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_CYBER-c2b90a524141b339",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-08",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-20896→linked_to→ioc:domain:www.securityweek.com",
+      "source": "CVE-2026-20896",
+      "target": "ioc:domain:www.securityweek.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-08",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-20896→linked_to→ioc:domain:www.reddit.com",
+      "source": "CVE-2026-20896",
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
