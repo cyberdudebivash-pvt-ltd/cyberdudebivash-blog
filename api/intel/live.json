@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-08T20:02:17.895Z",
+  "generated": "2026-07-08T20:31:54.305Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1907,
+  "total_published": 1908,
   "s2n_stats": {
-    "passed": 86,
-    "suppressed": 8,
-    "avg_qs": 0.55
+    "passed": 87,
+    "suppressed": 7,
+    "avg_qs": 0.549
   },
   "items": [
     {
@@ -4274,36 +4274,37 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-53530",
-      "title": "ratex-parser panics on `\\verb` with a multibyte delimiter (UTF-8 byte-boundary slice)",
-      "description": "### Summary The public parser entrypoint `ratex_parser::parse(&str)` panics on the **9-byte** input `\\verbéxé` (i.e. `\\verb` followed by the non-ASCII delimiter `é`). When handling a `\\verb` command, the parser slices the verbatim argument with **byte** indices (`arg[1..arg.len() - 1]`); if the deli",
-      "cvss": 7.5,
-      "final_ps": 25,
+      "id": "CVE-2026-49832",
+      "title": "DSpace has possible Remote Code Execution (RCE)  through Velocity Templates used by LDN",
+      "description": "## Overview Remote Code Execution (RCE) is possible via Velocity Templates used by DSpace for [COAR Notify/LDN messages](https://wiki.lyrasis.org/spaces/DSDOC9x/pages/379126679/COAR+Notify). _This vulnerability impacts DSpace versions 8.0 <= 8.3, 9.0 <= 9.2._ The attacker MUST already have DSpace ad",
+      "cvss": 8,
+      "final_ps": 21,
       "quality_score": 0.523,
-      "threat_level": "MEDIUM",
+      "threat_level": "HIGH",
       "type": "CVE_REPORT",
       "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
         "github_advisories"
       ],
-      "first_seen": "2026-07-07",
-      "last_seen": "2026-07-07",
+      "first_seen": "2026-07-08",
+      "last_seen": "2026-07-08",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "rust",
-      "product": "ratex-parser",
+      "vendor": "maven",
+      "product": "org.dspace:dspace-api",
       "due_date": null,
       "cves": [
-        "CVE-2026-53530",
-        "CVE-2026-53530"
+        "CVE-2026-49832",
+        "CVE-2026-49832"
       ],
-      "ioc_count": 0,
+      "ioc_count": 4,
       "refs": [
-        "https://github.com/advisories/GHSA-4hgp-59h5-gvrj",
-        "https://github.com/erweixin/RaTeX/security/advisories/GHSA-4hgp-59h5-gvrj",
-        "https://github.com/advisories/GHSA-4hgp-59h5-gvrj"
+        "https://github.com/advisories/GHSA-9x82-rm84-c6x7",
+        "https://github.com/DSpace/DSpace/security/advisories/GHSA-9x82-rm84-c6x7",
+        "https://github.com/DSpace/DSpace/pull/12548",
+        "https://github.com/DSpace/DSpace/pull/12549"
       ],
       "explanation": {
         "quality": [
@@ -4313,7 +4314,7 @@
           "QS=0.523"
         ],
         "priority": [
-          "+4 critical_infra"
+          "base_ps=21 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4322,53 +4323,10 @@
       "suppression_reason": null
     },
     {
-      "id": "REDDIT_NETSEC-9bcc4863a0ccf816",
-      "title": "Drift Corpus: binary diffs of 240+ 2026 Windows kernel patches",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;&lt;strong&gt;Patch Tuesday&lt;/strong&gt; confirms a CVE is fixed but not what changed in the binary, which function, which check, or whether it&amp;#39;s a real fix or just churn.&lt;/p&gt; &lt;p&gt;The &lt;strong&gt;Drift Corpus&lt;/st",
-      "cvss": 6.5,
-      "final_ps": 23,
-      "quality_score": 0.38,
-      "threat_level": "HIGH",
-      "type": "DETECTION_ENGINEERING",
-      "source": "reddit_netsec",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_netsec"
-      ],
-      "first_seen": "2026-07-08",
-      "last_seen": "2026-07-08",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_netsec",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
-      "refs": [
-        "https://www.reddit.com/r/netsec/comments/1uqxlxq/drift_corpus_binary_diffs_of_240_2026_windows/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_netsec)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-53553",
-      "title": "Goploy: Arbitrary File Read via Path Traversal in /deploy/fileDiff allows Remote Server Compromise",
-      "description": "> [ Click here to jump to the Simplified Chinese version (点击跳转到简体中文版本)](#goploy-系统任意文件读取)\n# Goploy System Arbitrary File Read Vulnerability ## Basic Information\n- **Vulnerability Name**: Goploy Endpoints Arbitrary File Read via Path Traversal\n- **Vulnerability Type**: Path Traversal (CWE-22) / Arbit",
-      "cvss": 7.7,
+      "id": "CVE-2026-50197",
+      "title": "Skipper: opaAuthorizeRequestWithBody filter bypasses OPA policy on Transfer-Encoding — chunked / HTTP/2 requests",
+      "description": "### Summary `zalando/skipper`'s OpenPolicyAgent integration silently bypasses request-body\ninspection on HTTP/1.1 `Transfer-Encoding: chunked` and HTTP/2 requests that\nomit the `content-length` pseudo-header. When the\n`opaAuthorizeRequestWithBody` filter is configured, the\n`OpenPolicyAgentInstance.E",
+      "cvss": 8.7,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4378,23 +4336,71 @@
       "merged_sources": [
         "github_advisories"
       ],
-      "first_seen": "2026-07-07",
-      "last_seen": "2026-07-07",
+      "first_seen": "2026-07-08",
+      "last_seen": "2026-07-08",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "go",
-      "product": "github.com/zhenorzz/goploy",
+      "product": "github.com/zalando/skipper",
       "due_date": null,
       "cves": [
-        "CVE-2026-53553",
-        "CVE-2026-53553"
+        "CVE-2026-50197",
+        "CVE-2026-50197"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-4g5x-hcwm-82jw",
-        "https://github.com/zhenorzz/goploy/security/advisories/GHSA-4g5x-hcwm-82jw",
-        "https://github.com/advisories/GHSA-4g5x-hcwm-82jw"
+        "https://github.com/advisories/GHSA-659f-rgp5-w4wf",
+        "https://github.com/zalando/skipper/security/advisories/GHSA-659f-rgp5-w4wf",
+        "https://github.com/advisories/GHSA-659f-rgp5-w4wf"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-49825",
+      "title": "`lxml_html_clean.Cleaner` does not strip `javascript:` URLs from namespaced URL attributes",
+      "description": "# `lxml_html_clean.Cleaner` does not strip `javascript:` URLs from namespaced URL attributes (`xlink:href`) **Reporter:** Guillem Lefait · **Date:** 2026-05-10\n**Affected:** `lxml` ≤ 6.1.0 and `lxml_html_clean` ≤ 0.4.4 (latest stable)\n**Confirmed against:** lxml 6.1.0 + lxml_html_clean 0.4.4 on Pyth",
+      "cvss": 8.2,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-08",
+      "last_seen": "2026-07-08",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "lxml_html_clean",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49825",
+        "CVE-2026-49825"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4jhm-jv67-739f",
+        "https://github.com/fedora-python/lxml_html_clean/security/advisories/GHSA-4jhm-jv67-739f",
+        "https://github.com/advisories/GHSA-4jhm-jv67-739f"
       ],
       "explanation": {
         "quality": [
