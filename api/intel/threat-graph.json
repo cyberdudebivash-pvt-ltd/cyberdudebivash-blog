@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-08T19:02:03.774Z",
+  "generated": "2026-07-08T19:31:53.098Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4454,
+    "total_nodes": 4457,
     "actors": 8,
     "cves": 938,
-    "campaigns": 396,
+    "campaigns": 397,
     "malware": 0,
-    "iocs": 472,
-    "edges": 1843
+    "iocs": 473,
+    "edges": 1846
   },
   "nodes": {
     "actor:lockbit": {
@@ -86187,6 +86187,66 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-22f5cdbb171e4f90": {
+      "id": "REDDIT_CYBER-22f5cdbb171e4f90",
+      "type": "Intel",
+      "name": "AI agents went from &quot;cool demo&quot; to &quot;exploiting CVEs in 10 hours&quot;",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 73,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-08",
+        "type": "ZERO_DAY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:blog.checkpoint.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:blog.checkpoint.com": {
+      "id": "ioc:domain:blog.checkpoint.com",
+      "type": "IOC",
+      "name": "blog.checkpoint.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-08"
+      },
+      "connections": []
+    },
+    "campaign:cluster-0f2925ed": {
+      "id": "campaign:cluster-0f2925ed",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-08",
+        "last_seen": "2026-07-08",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 5 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-22f5cdbb171e4f90",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -102812,6 +102872,33 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-08",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-22f5cdbb171e4f90→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-22f5cdbb171e4f90",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-08",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-22f5cdbb171e4f90→linked_to→ioc:domain:blog.checkpoint.com",
+      "source": "REDDIT_CYBER-22f5cdbb171e4f90",
+      "target": "ioc:domain:blog.checkpoint.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-08",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-0f2925ed→includes→REDDIT_CYBER-22f5cdbb171e4f90",
+      "source": "campaign:cluster-0f2925ed",
+      "target": "REDDIT_CYBER-22f5cdbb171e4f90",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-08",
       "sources": []
     }
