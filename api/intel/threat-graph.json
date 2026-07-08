@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-08T09:31:55.300Z",
+  "generated": "2026-07-08T10:02:10.323Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4421,
+    "total_nodes": 4424,
     "actors": 8,
     "cves": 937,
-    "campaigns": 393,
+    "campaigns": 394,
     "malware": 0,
     "iocs": 469,
-    "edges": 1827
+    "edges": 1829
   },
   "nodes": {
     "actor:lockbit": {
@@ -442,6 +442,11 @@
         },
         {
           "target": "THEHACKERNEWS-a8c491b86a3708f2",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "WIRED_SECURITY-fb974920b1a427a8",
           "relationship": "exploits",
           "confidence": 0.85
         }
@@ -85532,6 +85537,62 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-6ac7d0ab5da41ebb": {
+      "id": "BLEEPINGCOMPUTER-6ac7d0ab5da41ebb",
+      "type": "Intel",
+      "name": "CISA orders feds to prioritize patching Langflow auth bypass flaw",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-08",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "WIRED_SECURITY-fb974920b1a427a8": {
+      "id": "WIRED_SECURITY-fb974920b1a427a8",
+      "type": "Intel",
+      "name": "What Happens if China Hacks the US Water Supply? I Went to a Secret War Game to Find Out",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 57,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "wired_security",
+        "product": "Threat Intelligence",
+        "published": "2026-07-08",
+        "type": "THREAT_ACTOR"
+      },
+      "connections": []
+    },
+    "campaign:cluster-31f12c0f": {
+      "id": "campaign:cluster-31f12c0f",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-08",
+        "last_seen": "2026-07-08",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-6ac7d0ab5da41ebb",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -102013,6 +102074,24 @@
       "target": "THEHACKERNEWS-a8c491b86a3708f2",
       "relationship": "exploits",
       "confidence": 0.85,
+      "first_seen": "2026-07-08",
+      "sources": []
+    },
+    {
+      "id": "actor:volt-typhoon→exploits→WIRED_SECURITY-fb974920b1a427a8",
+      "source": "actor:volt-typhoon",
+      "target": "WIRED_SECURITY-fb974920b1a427a8",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-07-08",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-31f12c0f→includes→BLEEPINGCOMPUTER-6ac7d0ab5da41ebb",
+      "source": "campaign:cluster-31f12c0f",
+      "target": "BLEEPINGCOMPUTER-6ac7d0ab5da41ebb",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-08",
       "sources": []
     }
