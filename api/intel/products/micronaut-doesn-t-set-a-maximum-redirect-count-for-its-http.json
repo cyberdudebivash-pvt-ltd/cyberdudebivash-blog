@@ -1,0 +1,90 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "GHSA-343ba03511635fe4",
+  "title": "Micronaut doesn't set a maximum redirect count for its HTTP Client, enabling infinite loop DoS",
+  "generated": "2026-07-09T14:02:01.174Z",
+  "severity": "HIGH",
+  "cvss": 7.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "maven",
+  "product": "io.micronaut:micronaut-http-client",
+  "mitre_attack": [
+    {
+      "id": "T1498",
+      "name": "Network Denial of Service",
+      "tactic": "impact",
+      "confidence": "HIGH"
+    }
+  ],
+  "iocs": [
+    {
+      "value": "6e88a972718d6e1521c5b3bb7766451798dba4e3",
+      "type": "sha1",
+      "confidence": 0.9
+    },
+    {
+      "value": "hxxps://github[.]com/micronaut-projects/micronaut-core/releases/v5[.]0[.]1)",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://github[.]com/micronaut-projects/micronaut-core/releases/v4[.]10[.]24)",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://github[.]com/micronaut-projects/micronaut-core/releases/v3[.]10[.]7)",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://github[.]com/micronaut-projects/micronaut-core/commit/6e88a972718d6e1521c5b3bb7766451798dba4e3",
+      "type": "url",
+      "confidence": 0.82
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/micronaut-projects/micronaut-core/releases/v5.0.1)\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/micronaut-projects/micronaut-core/releases/v5.0.1)\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/micronaut-projects/micronaut-core/releases/v4.10.24)\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/micronaut-projects/micronaut-core/releases/v4.10.24)\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/micronaut-projects/micronaut-core/releases/v3.10.7)\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/micronaut-projects/micronaut-core/releases/v3.10.7)\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/micronaut-projects/micronaut-core/commit/6e88a972718d6e1521c5b3bb7766451798dba4e3\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/micronaut-projects/micronaut-core/commit/6e88a972718d6e1521c5b3bb7766451798dba4e3\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: maven io.micronaut:micronaut-http-client.",
+      "CVSS base score of 7.5 assigned by an authoritative source.",
+      "5 indicator(s) of compromise extracted from source reporting.",
+      "1 MITRE ATT&CK technique(s) evidenced in the source material."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as high (CVSS 7.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor maven has been targeted in 8 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: micronaut-doesn-t-set-a-maximum-redirect-count-for-its-http (7 shared entities), cve-2026-49485-maven-ca-uhn-hapi-fhir-org-hl7-fhir-dstu2 (2 shared entities)"
+  ],
+  "source": null,
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
