@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-09T05:31:50.289Z",
+  "generated": "2026-07-09T06:02:10.038Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,9 +9,9 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 1919,
   "s2n_stats": {
-    "passed": 87,
-    "suppressed": 7,
-    "avg_qs": 0.549
+    "passed": 85,
+    "suppressed": 10,
+    "avg_qs": 0.55
   },
   "items": [
     {
@@ -2322,7 +2322,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2632,9 +2634,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-a6da19aea46994a1",
@@ -4319,6 +4319,49 @@
       "suppression_reason": null
     },
     {
+      "id": "FULLDIS-6c1d4b59daed0c0f",
+      "title": "[REVIVE-SA-2026-003] Revive Adserver Vulnerabilities",
+      "description": "&lt;p&gt;Posted by Matteo Beccati on Jul 08&lt;/p&gt;========================================================================&lt;br&gt;\nRevive Adserver Security Advisory REVIVE-SA-2026-003&lt;br&gt;\n------------------------------------------------------------------------&lt;br&gt;\n&lt;a rel=&quot;no",
+      "cvss": 6.5,
+      "final_ps": 23,
+      "quality_score": 0.41,
+      "threat_level": "MEDIUM",
+      "type": "ZERO_DAY",
+      "source": "fulldisclosure",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "fulldisclosure"
+      ],
+      "first_seen": "2026-07-09",
+      "last_seen": "2026-07-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecLists",
+      "product": "Multiple Targets",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 2,
+      "refs": [
+        "https://seclists.org/fulldisclosure/2026/Jul/19"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.78 (fulldisclosure)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.410"
+        ],
+        "priority": [
+          "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
+    },
+    {
       "id": "CVE-2026-49471",
       "title": "Serena: Unauthenticated Flask dashboard on fixed port enables DNS rebinding → memory poisoning → RCE",
       "description": "### Summary Serena's built-in web dashboard exposes an unauthenticated Flask API on a fixed, predictable port (TCP 24282, hardcoded as `0x5EDA` in `constants.py`). The server has no authentication, no CSRF protection, and no Host header validation. A DNS rebinding attack allows a malicious webpage t",
@@ -4350,54 +4393,6 @@
         "https://github.com/oraios/serena/security/advisories/GHSA-37h2-6p4f-mp3q",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-49471",
         "https://github.com/oraios/serena/commit/016ccbe1c095a3eed7967737ac1d4df2754f5d96"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-49464",
-      "title": "NL Portal: IDOR allows any authenticated user to complete and tamper with another user's taak",
-      "description": "## Impact In versions from 1.5.0 up to and including 3.0.0, any authenticated portal user could complete and tamper with another user's open task by submitting it on their behalf. The task submission endpoint accepted a task ID and a payload, but it never checked whether the task actually belonged t",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-08",
-      "last_seen": "2026-07-08",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "nl.nl-portal:taak",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49464",
-        "CVE-2026-49464"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-6h3c-r723-7fx3",
-        "https://github.com/nl-portal/nl-portal-backend-libraries/security/advisories/GHSA-6h3c-r723-7fx3",
-        "https://github.com/advisories/GHSA-6h3c-r723-7fx3"
       ],
       "explanation": {
         "quality": [
