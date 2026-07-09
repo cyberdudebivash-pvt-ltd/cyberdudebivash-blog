@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-09T23:02:01.266Z",
+  "generated": "2026-07-09T23:31:52.944Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -4139,6 +4139,104 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-48862",
+      "title": "mint: Unbounded streams map growth via PUSH_PROMISE without follow-up HEADERS",
+      "description": "### Summary Mint's HTTP/2 client accepts `PUSH_PROMISE` frames from any server it connects to and inserts every promised stream into a per-connection map without consulting `max_concurrent_streams`. A malicious or compromised HTTP/2 server can flood the client with `PUSH_PROMISE` frames and withhold",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-09",
+      "last_seen": "2026-07-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "erlang",
+      "product": "mint",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-48862",
+        "CVE-2026-48862"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-g586-ccqf-7x4r",
+        "https://github.com/elixir-mint/mint/security/advisories/GHSA-g586-ccqf-7x4r",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-48862",
+        "https://github.com/elixir-mint/mint/commit/70b97b6a5209fb288b0e04d8e657dda26c59de67"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-49754",
+      "title": "mint: Unbounded CONTINUATION/HEADERS frame accumulation (CONTINUATION flood)",
+      "description": "### Summary Mint's HTTP/2 client accumulates `CONTINUATION` header-block fragments into a per-connection buffer with no cap on size or frame count. A malicious or compromised HTTP/2 server can drive the client's memory to arbitrary size by streaming an endless chain of `CONTINUATION` frames after a ",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-09",
+      "last_seen": "2026-07-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "erlang",
+      "product": "mint",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49754",
+        "CVE-2026-49754"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-2p26-p43x-fhp8",
+        "https://github.com/elixir-mint/mint/security/advisories/GHSA-2p26-p43x-fhp8",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49754",
+        "https://github.com/elixir-mint/mint/commit/b662d127d3028b5426c88d4c9cc7fe430491a10b"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-52775",
       "title": "YesWiki has Authenticated SQL Injection via ReactionManager ",
       "description": "## Summary YesWiki through the latest development branch contains a SQL injection vulnerability in `ReactionManager::deleteUserReaction()` that allows any authenticated user to inject arbitrary SQL via the `{idreaction}` and `{id}` URL path parameters. The parameters are concatenated directly into a",
@@ -4317,103 +4415,6 @@
         "https://github.com/YesWiki/yeswiki/security/advisories/GHSA-mv28-wj57-f57g",
         "https://github.com/YesWiki/yeswiki/commit/d1795e0301e1a1078f17b4b98f56fff70de2029e",
         "https://github.com/advisories/GHSA-mv28-wj57-f57g"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53932",
-      "title": "laravel-backup-restore has an OS Command Injection during database restore",
-      "description": "## Summary\nA crafted backup archive can trigger OS command injection during database restore. The restore workflow extracts a ZIP archive, enumerates files under `db-dumps`, converts the dump path to an absolute path, and passes that path into database import commands that are built as shell command",
-      "cvss": 8,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-09",
-      "last_seen": "2026-07-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "wnx/laravel-backup-restore",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53932",
-        "CVE-2026-53932"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-w9mx-xmg4-gc4r",
-        "https://github.com/stefanzweifel/laravel-backup-restore/security/advisories/GHSA-w9mx-xmg4-gc4r",
-        "https://github.com/advisories/GHSA-w9mx-xmg4-gc4r"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-52770",
-      "title": "YesWiki: SQL Injection possible through public Bazar entry-listing APIs via numeric `query`/`queries` filters",
-      "description": "### Summary\nYesWiki’s public Bazar entry-listing APIs are vulnerable to unauthenticated SQL injection in numeric `query` / `queries` filters. For Bazar fields whose value structure is numeric, YesWiki escapes the attacker-controlled filter value but inserts it into SQL without quotes or numeric vali",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-09",
-      "last_seen": "2026-07-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "yeswiki/yeswiki",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-52770",
-        "CVE-2026-52770"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-qg78-vmvc-fhjw",
-        "https://github.com/YesWiki/yeswiki/security/advisories/GHSA-qg78-vmvc-fhjw",
-        "https://github.com/YesWiki/yeswiki/commit/f3b0dd093a7ace47dc29a515faeb02635baceae2",
-        "https://github.com/advisories/GHSA-qg78-vmvc-fhjw"
       ],
       "explanation": {
         "quality": [
