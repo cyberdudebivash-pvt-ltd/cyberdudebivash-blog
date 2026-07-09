@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-09T10:02:13.005Z",
+  "generated": "2026-07-09T10:31:59.875Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4495,
+    "total_nodes": 4497,
     "actors": 8,
     "cves": 944,
     "campaigns": 399,
     "malware": 0,
     "iocs": 476,
-    "edges": 1864
+    "edges": 1866
   },
   "nodes": {
     "actor:lockbit": {
@@ -55799,18 +55799,18 @@
     "CVE-2026-50656": {
       "id": "CVE-2026-50656",
       "type": "CVE",
-      "name": "Microsoft Confirms RoguePlanet Defender Zero-Day, Says Patch is in Development",
+      "name": "Microsoft Patches Defender &#8216;RoguePlanet&#8217; Vulnerability",
       "attributes": {
         "cvss": 8,
-        "threat_level": "HIGH",
-        "priority_score": 75,
-        "exploited": true,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "The Hacker News",
+        "vendor": "SecurityWeek",
         "product": "Threat Intelligence",
-        "published": "2026-06-17",
-        "type": "ZERO_DAY"
+        "published": "2026-07-09",
+        "type": "MALWARE_REPORT"
       },
       "connections": []
     },
@@ -58935,7 +58935,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-07-08"
+        "first_seen": "2026-07-09"
       },
       "connections": []
     },
@@ -87009,6 +87009,53 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "SECURITYWEEK-6ceb0c11bc4bf8ef": {
+      "id": "SECURITYWEEK-6ceb0c11bc4bf8ef",
+      "type": "Intel",
+      "name": "Mount Royal University Confirms Data Stolen in Ransomware Attack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-09",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-487a4923c74760b0": {
+      "id": "REDDIT_CYBER-487a4923c74760b0",
+      "type": "Intel",
+      "name": "Chrome 150 Update Patches 27 Vulnerabilities",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-09",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.securityweek.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -103821,6 +103868,24 @@
       "id": "REDDIT_NETSEC-38e5f2e118f589ed→linked_to→ioc:domain:blog.sicuranext.com",
       "source": "REDDIT_NETSEC-38e5f2e118f589ed",
       "target": "ioc:domain:blog.sicuranext.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-09",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-487a4923c74760b0→linked_to→ioc:domain:www.securityweek.com",
+      "source": "REDDIT_CYBER-487a4923c74760b0",
+      "target": "ioc:domain:www.securityweek.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-09",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-487a4923c74760b0→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-487a4923c74760b0",
+      "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-07-09",
