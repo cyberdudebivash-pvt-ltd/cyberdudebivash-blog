@@ -1,0 +1,85 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_NETSEC-6377e0fbd267090e",
+  "title": "Inside Raton RAT: A Commodity Trojan That Tries to Do Everything",
+  "generated": "2026-07-10T22:31:58.686Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_netsec",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/SpectreTv&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://decodalabs[.]com/blog/inside-raton-rat/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/netsec/comments/1ut205g/inside_raton_rat_a_commodity_trojan_that_tries_to/&",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "decodalabs[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/SpectreTv&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/SpectreTv&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://decodalabs.com/blog/inside-raton-rat/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"decodalabs.com\"; nocase; http.uri; content:\"/blog/inside-raton-rat/&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1ut205g/inside_raton_rat_a_commodity_trojan_that_tries_to/&\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1ut205g/inside_raton_rat_a_commodity_trojan_that_tries_to/&\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain decodalabs.com\"; dns.query; content:\"decodalabs.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_netsec Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "5 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_netsec has been targeted in 15 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 201 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: inside-raton-rat-a-commodity-trojan-that-tries-to-do-everyt (7 shared entities), closing-the-timing-gap-defensive-temporal-observability (3 shared entities), how-are-you-handling-ssl-inspection-without-constantly-break (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/netsec/comments/1ut205g/inside_raton_rat_a_commodity_trojan_that_tries_to/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}

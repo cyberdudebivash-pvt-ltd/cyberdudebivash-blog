@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-10T22:02:05.425Z",
+  "generated": "2026-07-10T22:31:58.618Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4615,
+    "total_nodes": 4617,
     "actors": 8,
     "cves": 968,
     "campaigns": 406,
     "malware": 0,
-    "iocs": 481,
-    "edges": 1919
+    "iocs": 482,
+    "edges": 1921
   },
   "nodes": {
     "actor:lockbit": {
@@ -89425,6 +89425,46 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-6377e0fbd267090e": {
+      "id": "REDDIT_NETSEC-6377e0fbd267090e",
+      "type": "Intel",
+      "name": "Inside Raton RAT: A Commodity Trojan That Tries to Do Everything",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-10",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:decodalabs.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:decodalabs.com": {
+      "id": "ioc:domain:decodalabs.com",
+      "type": "IOC",
+      "name": "decodalabs.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-10"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -106734,6 +106774,24 @@
       "target": "REDDIT_NETSEC-b5a6d240201a595c",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-10",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-6377e0fbd267090e→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-6377e0fbd267090e",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-10",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-6377e0fbd267090e→linked_to→ioc:domain:decodalabs.com",
+      "source": "REDDIT_NETSEC-6377e0fbd267090e",
+      "target": "ioc:domain:decodalabs.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-10",
       "sources": []
     }
