@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-10T21:34:03.261Z",
+  "generated": "2026-07-10T22:02:05.452Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -10,7 +10,7 @@
   "total_published": 2023,
   "s2n_stats": {
     "passed": 84,
-    "suppressed": 7,
+    "suppressed": 9,
     "avg_qs": 0.551
   },
   "items": [
@@ -4268,6 +4268,54 @@
       "suppression_reason": "Quality score below minimum threshold (QS < 0.35)"
     },
     {
+      "id": "CVE-2026-54174",
+      "title": "melange: Incomplete package integrity verification allows data section substitution",
+      "description": "Previously, Apko verified the control section hash (`.PKGINFO` etc.) against the signed `APKINDEX`, but never verified the data section hash (the actual package files that get installed). An attacker who could compromise a mirror, poison a cache, or MITM a package fetch could substitute arbitrary fi",
+      "cvss": 8.3,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-10",
+      "last_seen": "2026-07-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "chainguard.dev/apko",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54174",
+        "CVE-2026-54174"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-fpg8-7664-jc5q",
+        "https://github.com/chainguard-dev/melange/security/advisories/GHSA-fpg8-7664-jc5q",
+        "https://github.com/advisories/GHSA-fpg8-7664-jc5q"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-54071",
       "title": "BabelDOC: Arbitrary Code Execution via CMap Pickle Deserialization in babeldoc/pdfminer/cmapdb.py",
       "description": "## Arbitrary Code Execution via CMap Pickle Deserialization in babeldoc/pdfminer/cmapdb.py ### Summary BabelDOC's vendored PDF parser (`babeldoc/pdfminer/cmapdb.py`) deserializes untrusted pickle data when loading CMap files. The `_load_data()` method strips only NUL bytes from a PDF-controlled CMap",
@@ -4347,55 +4395,6 @@
         "https://github.com/qax-os/excelize/security/advisories/GHSA-h69g-9hx6-f3v4",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-54063",
         "https://github.com/qax-os/excelize/releases/tag/v2.11.0"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54066",
-      "title": "SiYuan: Path Traversal via Double URL Encoding in /assets/*path (publish mode arbitrary   file─read), Incomplete fix of ",
-      "description": "## Summary The patch for CVE-2026-41894 (\"Path Traversal via Double URL Encoding\") sanitized the `/export/` route but the **identical root cause remains in the `/assets/*path` route**. In publish mode (anonymous read-only HTTP endpoint, default port 6808), an unauthenticated remote attacker can read",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-10",
-      "last_seen": "2026-07-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/siyuan-note/siyuan/kernel",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54066",
-        "CVE-2026-54066"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-p4m3-mgmm-c664",
-        "https://github.com/siyuan-note/siyuan/security/advisories/GHSA-p4m3-mgmm-c664",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-54066",
-        "https://github.com/advisories/GHSA-p4m3-mgmm-c664"
       ],
       "explanation": {
         "quality": [
