@@ -1,0 +1,60 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "GHSA-3e28fc5321163614",
+  "title": "Clauster: Non-loopback deployments can serve the dashboard unauthenticated when auth.enabled is unset",
+  "generated": "2026-07-10T21:02:04.430Z",
+  "severity": "HIGH",
+  "cvss": 7.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "pip",
+  "product": "clauster",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "0[.]0[.]0[.]0",
+      "type": "ipv4",
+      "confidence": 0.88
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert ip $HOME_NET any -> 0.0.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 0.0.0.0\"; classtype:trojan-activity; sid:9000001; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: pip clauster.",
+      "CVSS base score of 7.5 assigned by an authoritative source.",
+      "1 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as high (CVSS 7.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor pip has been targeted in 18 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: clauster-non-loopback-deployments-can-serve-the-dashboard-u (3 shared entities)"
+  ],
+  "source": null,
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}

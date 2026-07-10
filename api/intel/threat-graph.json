@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-10T20:31:53.776Z",
+  "generated": "2026-07-10T21:02:04.346Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4609,
+    "total_nodes": 4612,
     "actors": 8,
     "cves": 967,
-    "campaigns": 405,
+    "campaigns": 406,
     "malware": 0,
     "iocs": 481,
-    "edges": 1916
+    "edges": 1919
   },
   "nodes": {
     "actor:lockbit": {
@@ -10395,7 +10395,7 @@
       "attributes": {
         "ioc_type": "ipv4",
         "confidence": 0.88,
-        "first_seen": "2026-07-06"
+        "first_seen": "2026-07-10"
       },
       "connections": []
     },
@@ -89303,6 +89303,74 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-b5a6d240201a595c": {
+      "id": "REDDIT_NETSEC-b5a6d240201a595c",
+      "type": "Intel",
+      "name": "Closing the Timing Gap: Defensive Temporal Observability",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 74,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-10",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:arxiv.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "GHSA-3e28fc5321163614": {
+      "id": "GHSA-3e28fc5321163614",
+      "type": "Intel",
+      "name": "Clauster: Non-loopback deployments can serve the dashboard unauthenticated when auth.enabled is unset",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "clauster",
+        "published": "2026-07-10",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:0.0.0.0",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        }
+      ]
+    },
+    "campaign:cluster-593870ef": {
+      "id": "campaign:cluster-593870ef",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-10",
+        "last_seen": "2026-07-10",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 6 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_NETSEC-b5a6d240201a595c",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -106585,6 +106653,33 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-10",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-b5a6d240201a595c→linked_to→ioc:domain:arxiv.org",
+      "source": "REDDIT_NETSEC-b5a6d240201a595c",
+      "target": "ioc:domain:arxiv.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-10",
+      "sources": []
+    },
+    {
+      "id": "GHSA-3e28fc5321163614→linked_to→ioc:ipv4:0.0.0.0",
+      "source": "GHSA-3e28fc5321163614",
+      "target": "ioc:ipv4:0.0.0.0",
+      "relationship": "linked_to",
+      "confidence": 0.88,
+      "first_seen": "2026-07-10",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-593870ef→includes→REDDIT_NETSEC-b5a6d240201a595c",
+      "source": "campaign:cluster-593870ef",
+      "target": "REDDIT_NETSEC-b5a6d240201a595c",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-10",
       "sources": []
     }
