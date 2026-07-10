@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-10T16:01:59.821Z",
+  "generated": "2026-07-10T16:31:55.673Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,7 +7,7 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2003,
+  "total_published": 2004,
   "s2n_stats": {
     "passed": 85,
     "suppressed": 9,
@@ -4225,6 +4225,55 @@
       "suppression_reason": "Quality score below minimum threshold (QS < 0.35)"
     },
     {
+      "id": "CVE-2026-49866",
+      "title": "libp2p: CPU DoS via oversized IHAVE and IWANT control message arrays",
+      "description": "### Summary\ngossipsub processes IHAVE and IWANT control messages by iterating every received message ID synchronously before doing anything with the results. There is no cap on how many IDs a single frame may contain. The default LP frame limit is 4MB, which fits roughly 180,000 message IDs. Iterati",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-10",
+      "last_seen": "2026-07-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@libp2p/gossipsub",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49866",
+        "CVE-2026-49866"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-cwc9-cp4j-mcvv",
+        "https://github.com/libp2p/js-libp2p/security/advisories/GHSA-cwc9-cp4j-mcvv",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49866",
+        "https://github.com/libp2p/js-libp2p/pull/3520"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-48597",
       "title": "Tesla vulnerable to atom exhaustion via untrusted URL scheme",
       "description": "### Summary In the Mint adapter for the Tesla HTTP client library, `Tesla.Adapter.Mint.open_conn/2` passes the URL scheme of every outgoing request through `String.to_atom/1` with no allow-list validation. Because BEAM atoms are permanent (never garbage-collected) and the atom table is bounded at ro",
@@ -4354,55 +4403,6 @@
         "https://github.com/elixir-tesla/tesla/security/advisories/GHSA-mc85-72gr-vm9f",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-48594",
         "https://github.com/elixir-tesla/tesla/commit/340f75b5d191dc747ef7ac6365bd002d1cd55a9d"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-49851",
-      "title": " Mistune: Potential DoS via quadratic-time parsing in parse_link_text",
-      "description": "### Summary\nMistune is vulnerable to a CPU exhaustion DoS due to superlinear (approximately O(n²)) behavior in parse_link_text. A relatively small input consisting of repeated [ characters causes significant parsing slowdown. ### Affected component\nmistune/inline_parser.py → **parse_link_text** ### ",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-09",
-      "last_seen": "2026-07-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "mistune",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49851",
-        "CVE-2026-49851"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-qcq2-496w-v96p",
-        "https://github.com/lepture/mistune/security/advisories/GHSA-qcq2-496w-v96p",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-49851",
-        "https://access.redhat.com/security/cve/CVE-2026-49851"
       ],
       "explanation": {
         "quality": [
