@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-10T19:02:01.321Z",
+  "generated": "2026-07-10T19:31:50.877Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,9 +9,9 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 2012,
   "s2n_stats": {
-    "passed": 85,
-    "suppressed": 7,
-    "avg_qs": 0.551
+    "passed": 84,
+    "suppressed": 8,
+    "avg_qs": 0.552
   },
   "items": [
     {
@@ -2322,7 +2322,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2632,9 +2634,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-a6da19aea46994a1",
@@ -4225,6 +4225,153 @@
       "suppression_reason": "Quality score below minimum threshold (QS < 0.35)"
     },
     {
+      "id": "CVE-2026-54063",
+      "title": "Excelize: Unbounded Row Index Allocation in Worksheet Parser (checkSheet OOM/Panic DoS)",
+      "description": "## Unbounded Row Index Allocation in Worksheet Parser (checkSheet OOM/Panic DoS) ### Summary\nThe `checkSheet()` function in `github.com/xuri/excelize/v2` uses an attacker-controlled ` ` XML attribute value directly as the length argument to `make([]xlsxRow, row)` without validating it against the Ex",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-10",
+      "last_seen": "2026-07-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/xuri/excelize/v2",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54063",
+        "CVE-2026-54063"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-h69g-9hx6-f3v4",
+        "https://github.com/qax-os/excelize/security/advisories/GHSA-h69g-9hx6-f3v4",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-54063",
+        "https://github.com/qax-os/excelize/releases/tag/v2.11.0"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54066",
+      "title": "SiYuan: Path Traversal via Double URL Encoding in /assets/*path (publish mode arbitrary   file─read), Incomplete fix of ",
+      "description": "## Summary The patch for CVE-2026-41894 (\"Path Traversal via Double URL Encoding\") sanitized the `/export/` route but the **identical root cause remains in the `/assets/*path` route**. In publish mode (anonymous read-only HTTP endpoint, default port 6808), an unauthenticated remote attacker can read",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-10",
+      "last_seen": "2026-07-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/siyuan-note/siyuan/kernel",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54066",
+        "CVE-2026-54066"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-p4m3-mgmm-c664",
+        "https://github.com/siyuan-note/siyuan/security/advisories/GHSA-p4m3-mgmm-c664",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-54066",
+        "https://github.com/advisories/GHSA-p4m3-mgmm-c664"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54070",
+      "title": "SiYuan: Stored XSS in Bazaar marketplace via package README event handlers",
+      "description": "## Summary `renderPackageREADME` in `kernel/bazaar/readme.go` renders a Bazaar package README from Markdown to HTML with the lute engine and `SetSanitize(true)`. The lute sanitizer is an event-handler blocklist: `allowAttr` rejects only attribute names present in a fixed `eventAttrs` map copied from",
+      "cvss": 7.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-10",
+      "last_seen": "2026-07-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/siyuan-note/siyuan/kernel",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54070",
+        "CVE-2026-54070"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-w7cg-whh7-xp28",
+        "https://github.com/siyuan-note/siyuan/security/advisories/GHSA-w7cg-whh7-xp28",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-54070",
+        "https://github.com/advisories/GHSA-w7cg-whh7-xp28"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-49866",
       "title": "libp2p: CPU DoS via oversized IHAVE and IWANT control message arrays",
       "description": "### Summary\ngossipsub processes IHAVE and IWANT control messages by iterating every received message ID synchronously before doing anything with the results. There is no cap on how many IDs a single frame may contain. The default LP frame limit is 4MB, which fits roughly 180,000 message IDs. Iterati",
@@ -4256,153 +4403,6 @@
         "https://github.com/libp2p/js-libp2p/security/advisories/GHSA-cwc9-cp4j-mcvv",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-49866",
         "https://github.com/libp2p/js-libp2p/pull/3520"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48597",
-      "title": "Tesla vulnerable to atom exhaustion via untrusted URL scheme",
-      "description": "### Summary In the Mint adapter for the Tesla HTTP client library, `Tesla.Adapter.Mint.open_conn/2` passes the URL scheme of every outgoing request through `String.to_atom/1` with no allow-list validation. Because BEAM atoms are permanent (never garbage-collected) and the atom table is bounded at ro",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-10",
-      "last_seen": "2026-07-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "erlang",
-      "product": "tesla",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48597",
-        "CVE-2026-48597"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-h74c-q9j7-mpcm",
-        "https://github.com/elixir-tesla/tesla/security/advisories/GHSA-h74c-q9j7-mpcm",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-48597",
-        "https://github.com/elixir-tesla/tesla/commit/4699c3cb3e2fd6078f99f45f11cf7466aeedbf0e"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48595",
-      "title": "Tesla: Authorization header leaks on cross-origin redirect via case-sensitive filtering",
-      "description": "### Summary `Tesla.Middleware.FollowRedirects` is meant to strip the `Authorization` header when following a cross-origin redirect, but performs the check with a case-sensitive comparison against the lowercase string `\"authorization\"`. Because Tesla preserves header keys exactly as supplied by the c",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-10",
-      "last_seen": "2026-07-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "erlang",
-      "product": "tesla",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48595",
-        "CVE-2026-48595"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-9m9w-gxf7-rh8m",
-        "https://github.com/elixir-tesla/tesla/security/advisories/GHSA-9m9w-gxf7-rh8m",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-48595",
-        "https://github.com/elixir-tesla/tesla/commit/db963dba67651b9abd1fc420a1d9679cf6efe182"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48594",
-      "title": "Tesla has decompression bomb on response body",
-      "description": "### Summary Any Tesla client pipeline that includes `Tesla.Middleware.DecompressResponse` or `Tesla.Middleware.Compression` eagerly decompresses HTTP response bodies with no size limit. A server under attacker control (or reached via a redirect) can return a tiny gzip-encoded payload that expands in",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-10",
-      "last_seen": "2026-07-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "erlang",
-      "product": "tesla",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48594",
-        "CVE-2026-48594"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-mc85-72gr-vm9f",
-        "https://github.com/elixir-tesla/tesla/security/advisories/GHSA-mc85-72gr-vm9f",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-48594",
-        "https://github.com/elixir-tesla/tesla/commit/340f75b5d191dc747ef7ac6365bd002d1cd55a9d"
       ],
       "explanation": {
         "quality": [
