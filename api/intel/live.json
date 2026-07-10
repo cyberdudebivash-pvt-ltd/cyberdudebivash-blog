@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-10T00:02:05.557Z",
+  "generated": "2026-07-10T00:31:50.388Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,7 +7,7 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 1970,
+  "total_published": 1971,
   "s2n_stats": {
     "passed": 87,
     "suppressed": 7,
@@ -4139,6 +4139,153 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-48597",
+      "title": "Tesla vulnerable to atom exhaustion via untrusted URL scheme",
+      "description": "### Summary In the Mint adapter for the Tesla HTTP client library, `Tesla.Adapter.Mint.open_conn/2` passes the URL scheme of every outgoing request through `String.to_atom/1` with no allow-list validation. Because BEAM atoms are permanent (never garbage-collected) and the atom table is bounded at ro",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-10",
+      "last_seen": "2026-07-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "erlang",
+      "product": "tesla",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-48597",
+        "CVE-2026-48597"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-h74c-q9j7-mpcm",
+        "https://github.com/elixir-tesla/tesla/security/advisories/GHSA-h74c-q9j7-mpcm",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-48597",
+        "https://github.com/elixir-tesla/tesla/commit/4699c3cb3e2fd6078f99f45f11cf7466aeedbf0e"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-48595",
+      "title": "Tesla: Authorization header leaks on cross-origin redirect via case-sensitive filtering",
+      "description": "### Summary `Tesla.Middleware.FollowRedirects` is meant to strip the `Authorization` header when following a cross-origin redirect, but performs the check with a case-sensitive comparison against the lowercase string `\"authorization\"`. Because Tesla preserves header keys exactly as supplied by the c",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-10",
+      "last_seen": "2026-07-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "erlang",
+      "product": "tesla",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-48595",
+        "CVE-2026-48595"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-9m9w-gxf7-rh8m",
+        "https://github.com/elixir-tesla/tesla/security/advisories/GHSA-9m9w-gxf7-rh8m",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-48595",
+        "https://github.com/elixir-tesla/tesla/commit/db963dba67651b9abd1fc420a1d9679cf6efe182"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-48594",
+      "title": "Tesla has decompression bomb on response body",
+      "description": "### Summary Any Tesla client pipeline that includes `Tesla.Middleware.DecompressResponse` or `Tesla.Middleware.Compression` eagerly decompresses HTTP response bodies with no size limit. A server under attacker control (or reached via a redirect) can return a tiny gzip-encoded payload that expands in",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-10",
+      "last_seen": "2026-07-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "erlang",
+      "product": "tesla",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-48594",
+        "CVE-2026-48594"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-mc85-72gr-vm9f",
+        "https://github.com/elixir-tesla/tesla/security/advisories/GHSA-mc85-72gr-vm9f",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-48594",
+        "https://github.com/elixir-tesla/tesla/commit/340f75b5d191dc747ef7ac6365bd002d1cd55a9d"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-49851",
       "title": " Mistune: Potential DoS via quadratic-time parsing in parse_link_text",
       "description": "### Summary\nMistune is vulnerable to a CPU exhaustion DoS due to superlinear (approximately O(n²)) behavior in parse_link_text. A relatively small input consisting of repeated [ characters causes significant parsing slowdown. ### Affected component\nmistune/inline_parser.py → **parse_link_text** ### ",
@@ -4268,153 +4415,6 @@
         "https://github.com/elixir-mint/mint/security/advisories/GHSA-2p26-p43x-fhp8",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-49754",
         "https://github.com/elixir-mint/mint/commit/b662d127d3028b5426c88d4c9cc7fe430491a10b"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-52775",
-      "title": "YesWiki has Authenticated SQL Injection via ReactionManager ",
-      "description": "## Summary YesWiki through the latest development branch contains a SQL injection vulnerability in `ReactionManager::deleteUserReaction()` that allows any authenticated user to inject arbitrary SQL via the `{idreaction}` and `{id}` URL path parameters. The parameters are concatenated directly into a",
-      "cvss": 8.8,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-09",
-      "last_seen": "2026-07-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "yeswiki/yeswiki",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-52775",
-        "CVE-2026-52775"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4pf7-cc4r-g63h",
-        "https://github.com/YesWiki/yeswiki/security/advisories/GHSA-4pf7-cc4r-g63h",
-        "https://github.com/YesWiki/yeswiki/commit/90ca54fb518e1c43a1ead6e4f5bf9f0389789841",
-        "https://github.com/advisories/GHSA-4pf7-cc4r-g63h"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-52769",
-      "title": "YesWiki has Unauthenticated Server-Side Request Forgery via ActivityPub `Signature.keyId`",
-      "description": "## Summary\nThe `POST /api/forms/{formId}/actor/inbox` route - exposed publicly with `acl:\"public\"` - accepts an HTTP `Signature` header whose `keyId` parameter is a URL. `HttpSignatureService::verifySignature()` parses the header and **immediately makes a server-side HTTP GET** to that URL, **before",
-      "cvss": 8.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-09",
-      "last_seen": "2026-07-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "yeswiki/yeswiki",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-52769",
-        "CVE-2026-52769"
-      ],
-      "ioc_count": 1,
-      "refs": [
-        "https://github.com/advisories/GHSA-vw42-752g-5mrp",
-        "https://github.com/YesWiki/yeswiki/security/advisories/GHSA-vw42-752g-5mrp",
-        "http://github.com/YesWiki/yeswiki/commit/87e627f33e79879827a3669fee2aa1244612c487",
-        "https://github.com/advisories/GHSA-vw42-752g-5mrp"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-52771",
-      "title": "YesWiki: Second-Order SQL Injection in Page Delete API via Unescaped Page Tag (`ApiController::deletePage`)",
-      "description": "## Summary\n`ApiController::deletePage()` interpolates a page tag retrieved from the database into a `DELETE FROM …_links WHERE to_tag = '$tag'` query without escaping. The page tag is attacker-controlled — the `POST /api/pages/{tag}` API accepts arbitrary URL-encoded values, including single quotes,",
-      "cvss": 8.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-09",
-      "last_seen": "2026-07-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "yeswiki/yeswiki",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-52771",
-        "CVE-2026-52771"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-8f2v-2qhj-gfwg",
-        "https://github.com/YesWiki/yeswiki/security/advisories/GHSA-8f2v-2qhj-gfwg",
-        "https://github.com/YesWiki/yeswiki/commit/23d3cc124613b9428ab963b31807c08879a9c631",
-        "https://github.com/advisories/GHSA-8f2v-2qhj-gfwg"
       ],
       "explanation": {
         "quality": [
