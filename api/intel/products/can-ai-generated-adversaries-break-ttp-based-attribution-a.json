@@ -1,0 +1,85 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_NETSEC-63f8ebc2f25f9271",
+  "title": "Can AI-generated adversaries break TTP-based attribution? (arXiv 2026)",
+  "generated": "2026-07-10T12:02:05.482Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_netsec",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/Obvious-Language4462&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://arxiv[.]org/pdf/2606[.]07158&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/netsec/comments/1uslf2v/can_aigenerated_adversaries_break_ttpbased/&quot;&g",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "arxiv[.]org",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Obvious-Language4462&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Obvious-Language4462&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://arxiv.org/pdf/2606.07158&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"arxiv.org\"; nocase; http.uri; content:\"/pdf/2606.07158&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1uslf2v/can_aigenerated_adversaries_break_ttpbased/&quot;&g\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1uslf2v/can_aigenerated_adversaries_break_ttpbased/&quot\\;&g\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain arxiv.org\"; dns.query; content:\"arxiv.org\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_netsec Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "5 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_netsec has been targeted in 13 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 173 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: can-ai-generated-adversaries-break-ttp-based-attribution-a (11 shared entities), towards-csi-what-s-the-best-harness-arxiv-2026 (5 shared entities), new-research-why-no-single-ai-agent-harness-wins-every-cybe (4 shared entities), hallusquatting-turns-ai-hallucinations-into-botnet-deliver (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/netsec/comments/1uslf2v/can_aigenerated_adversaries_break_ttpbased/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
