@@ -2,10 +2,10 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-07-10T17:49:12.907Z",
+  "generated": "2026-07-10T19:36:35.792Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 14,
+    "published": 13,
     "p1": 0,
     "leadsHeld": 2,
     "analystReports": 0,
@@ -37,6 +37,14 @@
         "error": null
       },
       {
+        "name": "GitHub Security Advisories",
+        "key": "ghsa",
+        "tier": 1,
+        "status": "ok",
+        "items": 60,
+        "error": null
+      },
+      {
         "name": "arXiv cs.CR (LLM security)",
         "key": "arxiv_sec",
         "tier": 2,
@@ -51,17 +59,9 @@
         "status": "ok",
         "items": 40,
         "error": null
-      },
-      {
-        "name": "GitHub Security Advisories",
-        "key": "ghsa",
-        "tier": 1,
-        "status": "ok",
-        "items": 60,
-        "error": null
       }
     ],
-    "runtimeMs": 1602
+    "runtimeMs": 3262
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,16 +88,16 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 14,
+  "count": 13,
   "items": [
     {
-      "id": "b857b511447de098",
-      "title": "Serena: Unauthenticated Flask dashboard on fixed port enables DNS rebinding → memory poisoning → RCE",
-      "url": "https://github.com/advisories/GHSA-37h2-6p4f-mp3q",
+      "id": "92ca06ea0ed86c9a",
+      "title": "mcp-atlassian: Arbitrary file read via missing path validation in confluence_upload_attachment",
+      "url": "https://github.com/advisories/GHSA-g5r6-gv6m-f5jv",
       "source": "GitHub Security Advisories",
       "tier": 1,
-      "published": "2026-07-08T21:12:08Z",
-      "cve": "CVE-2026-49471",
+      "published": "2026-07-10T19:34:37Z",
+      "cve": null,
       "severity": "high",
       "cvss": null,
       "evidence_label": "VERIFIED_ADVISORY",
@@ -105,59 +105,7 @@
         {
           "id": "prompt_injection",
           "label": "Prompt Injection"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM01",
-          "name": "Prompt Injection"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0051",
-          "name": "LLM Prompt Injection"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
         },
-        "level": "standard"
-      },
-      "enterprise_impact": {
-        "score": 53,
-        "priority": "P2"
-      },
-      "confidence": {
-        "source": "HIGH",
-        "evidence": "HIGH",
-        "overall": "HIGH",
-        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
-        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "d89d48c3dc280fca",
-      "title": "Phantom: Arbitrary file write and decode-bomb DoS via unconfined MCP tool paths",
-      "url": "https://github.com/advisories/GHSA-52vm-mxx8-f227",
-      "source": "GitHub Security Advisories",
-      "tier": 1,
-      "published": "2026-07-09T13:37:34Z",
-      "cve": null,
-      "severity": "high",
-      "cvss": null,
-      "evidence_label": "VERIFIED_ADVISORY",
-      "categories": [
         {
           "id": "agent_tool",
           "label": "Agentic / Tool / MCP Exploitation"
@@ -165,11 +113,19 @@
       ],
       "owasp_llm": [
         {
+          "id": "LLM01",
+          "name": "Prompt Injection"
+        },
+        {
           "id": "LLM06",
           "name": "Sensitive Information Disclosure / Excessive Agency"
         }
       ],
       "mitre_atlas": [
+        {
+          "id": "AML.T0051",
+          "name": "LLM Prompt Injection"
+        },
         {
           "id": "AML.T0053",
           "name": "LLM Plugin Compromise"
@@ -197,8 +153,8 @@
       },
       "corroboration": 1,
       "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
+        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
       },
       "has_analyst_report": false
     },
