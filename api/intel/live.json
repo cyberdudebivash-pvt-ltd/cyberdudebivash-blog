@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-10T19:31:50.877Z",
+  "generated": "2026-07-10T20:02:02.233Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2012,
+  "total_published": 2015,
   "s2n_stats": {
     "passed": 84,
-    "suppressed": 8,
+    "suppressed": 12,
     "avg_qs": 0.552
   },
   "items": [
@@ -4225,6 +4225,54 @@
       "suppression_reason": "Quality score below minimum threshold (QS < 0.35)"
     },
     {
+      "id": "CVE-2026-54071",
+      "title": "BabelDOC: Arbitrary Code Execution via CMap Pickle Deserialization in babeldoc/pdfminer/cmapdb.py",
+      "description": "## Arbitrary Code Execution via CMap Pickle Deserialization in babeldoc/pdfminer/cmapdb.py ### Summary BabelDOC's vendored PDF parser (`babeldoc/pdfminer/cmapdb.py`) deserializes untrusted pickle data when loading CMap files. The `_load_data()` method strips only NUL bytes from a PDF-controlled CMap",
+      "cvss": 7.8,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-10",
+      "last_seen": "2026-07-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "BabelDOC",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54071",
+        "CVE-2026-54071"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-m8gf-v64p-gfmg",
+        "https://github.com/funstory-ai/BabelDOC/security/advisories/GHSA-m8gf-v64p-gfmg",
+        "https://github.com/advisories/GHSA-m8gf-v64p-gfmg"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-54063",
       "title": "Excelize: Unbounded Row Index Allocation in Worksheet Parser (checkSheet OOM/Panic DoS)",
       "description": "## Unbounded Row Index Allocation in Worksheet Parser (checkSheet OOM/Panic DoS) ### Summary\nThe `checkSheet()` function in `github.com/xuri/excelize/v2` uses an attacker-controlled ` ` XML attribute value directly as the length argument to `make([]xlsxRow, row)` without validating it against the Ex",
@@ -4354,55 +4402,6 @@
         "https://github.com/siyuan-note/siyuan/security/advisories/GHSA-w7cg-whh7-xp28",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-54070",
         "https://github.com/advisories/GHSA-w7cg-whh7-xp28"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-49866",
-      "title": "libp2p: CPU DoS via oversized IHAVE and IWANT control message arrays",
-      "description": "### Summary\ngossipsub processes IHAVE and IWANT control messages by iterating every received message ID synchronously before doing anything with the results. There is no cap on how many IDs a single frame may contain. The default LP frame limit is 4MB, which fits roughly 180,000 message IDs. Iterati",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-10",
-      "last_seen": "2026-07-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "@libp2p/gossipsub",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49866",
-        "CVE-2026-49866"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-cwc9-cp4j-mcvv",
-        "https://github.com/libp2p/js-libp2p/security/advisories/GHSA-cwc9-cp4j-mcvv",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-49866",
-        "https://github.com/libp2p/js-libp2p/pull/3520"
       ],
       "explanation": {
         "quality": [
