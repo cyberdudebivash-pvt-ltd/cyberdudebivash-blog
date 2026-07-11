@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-11T14:35:11.769Z",
+  "generated": "2026-07-11T15:02:01.315Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4634,
+    "total_nodes": 4637,
     "actors": 8,
     "cves": 968,
     "campaigns": 407,
     "malware": 0,
     "iocs": 485,
-    "edges": 1933
+    "edges": 1938
   },
   "nodes": {
     "actor:lockbit": {
@@ -44,6 +44,11 @@
         },
         {
           "target": "THEHACKERNEWS-0bd4a62dbe41a6b9",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "REDDIT_CYBER-c2569aa17c979db2",
           "relationship": "exploits",
           "confidence": 0.85
         }
@@ -328,6 +333,11 @@
         },
         {
           "target": "REDDIT_CYBER-06fc45518ff0905e",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "REDDIT_CYBER-c2569aa17c979db2",
           "relationship": "exploits",
           "confidence": 0.85
         }
@@ -89816,6 +89826,78 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_CYBER-c2569aa17c979db2": {
+      "id": "REDDIT_CYBER-c2569aa17c979db2",
+      "type": "Intel",
+      "name": "DarkLayer — Ransomware Tower Defense. Free, in your browser.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 57,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-11",
+        "type": "RANSOMWARE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-0e2416d083cefd7d": {
+      "id": "REDDIT_CYBER-0e2416d083cefd7d",
+      "type": "Intel",
+      "name": "How does insider threat software fit into your security workflow?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-11",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-a57735c1dd176b99": {
+      "id": "REDDIT_CYBER-a57735c1dd176b99",
+      "type": "Intel",
+      "name": "Help with Root-Me &quot;Self XSS - Race Condition&quot; Challenge",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-11",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -107248,6 +107330,51 @@
     {
       "id": "REDDIT_CYBER-25b17dde2b783146→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_CYBER-25b17dde2b783146",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-11",
+      "sources": []
+    },
+    {
+      "id": "actor:lockbit→exploits→REDDIT_CYBER-c2569aa17c979db2",
+      "source": "actor:lockbit",
+      "target": "REDDIT_CYBER-c2569aa17c979db2",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-07-11",
+      "sources": []
+    },
+    {
+      "id": "actor:cl0p→exploits→REDDIT_CYBER-c2569aa17c979db2",
+      "source": "actor:cl0p",
+      "target": "REDDIT_CYBER-c2569aa17c979db2",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-07-11",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-c2569aa17c979db2→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-c2569aa17c979db2",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-11",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-0e2416d083cefd7d→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-0e2416d083cefd7d",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-11",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-a57735c1dd176b99→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-a57735c1dd176b99",
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,

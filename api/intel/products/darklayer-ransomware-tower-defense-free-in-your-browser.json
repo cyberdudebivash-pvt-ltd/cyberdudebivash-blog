@@ -1,0 +1,100 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-c2569aa17c979db2",
+  "title": "DarkLayer — Ransomware Tower Defense. Free, in your browser.",
+  "generated": "2026-07-11T15:02:01.386Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [
+    {
+      "id": "T1486",
+      "name": "Data Encrypted for Impact",
+      "tactic": "impact",
+      "confidence": "HIGH"
+    }
+  ],
+  "iocs": [
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/darklayerai&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://darklayer[.]ai&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1utlssk/darklayer_ransomware_tower_defense_free_in_y",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/darklayerai&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/darklayerai&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://darklayer.ai&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"darklayer.ai&quot\\;&gt\\;[link]&lt\\;\"; nocase; http.uri; content:\"/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utlssk/darklayer_ransomware_tower_defense_free_in_y\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utlssk/darklayer_ransomware_tower_defense_free_in_y\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "4 indicator(s) of compromise extracted from source reporting.",
+      "1 MITRE ATT&CK technique(s) evidenced in the source material."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "HIGH",
+        "text": "Activity is consistent with a ransomware operation — data encryption and/or recovery inhibition (shadow-copy deletion) was observed."
+      },
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      },
+      {
+        "confidence": "LOW",
+        "text": "Any actor attribution derives from historical TTP/infrastructure overlap and requires corroboration before operational use."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Double-extortion and data-leak-site activity is anticipated to accompany encryption events."
+      },
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Malware LockBit has been correlated with prior TTP use: T1486",
+    "Malware Cl0p has been correlated with prior TTP use: T1486",
+    "Technique T1486 was previously observed with: ALPHV/BlackCat, LockBit, Cl0p",
+    "Vendor reddit_cyber has been targeted in 82 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 210 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: darklayer-ransomware-tower-defense-free-in-your-browser (9 shared entities), precision-vs-accuracy (3 shared entities), cto-at-ncsc-summary-week-ending-july-12th (3 shared entities), a-degree-in-cs-or-ai-engineering-amp-robotics (2 shared entities), physical-security-work-and-research-with-nasa-and-darpa (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1utlssk/darklayer_ransomware_tower_defense_free_in_your/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
