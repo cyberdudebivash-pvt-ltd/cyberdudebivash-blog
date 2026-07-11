@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-11T17:31:57.876Z",
+  "generated": "2026-07-11T17:51:08.922Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4642,
+    "total_nodes": 4645,
     "actors": 8,
     "cves": 968,
     "campaigns": 408,
     "malware": 0,
-    "iocs": 485,
-    "edges": 1944
+    "iocs": 486,
+    "edges": 1946
   },
   "nodes": {
     "actor:lockbit": {
@@ -90018,6 +90018,65 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-a66b8a605bf2c1e1": {
+      "id": "REDDIT_CYBER-a66b8a605bf2c1e1",
+      "type": "Intel",
+      "name": "Microsoft admits Windows 11 has a GDID tracker with no off switch, first documented publicly in an FBI hacker complaint",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-11",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:07cea1303f9af664a48bcc90b4d0bd13a3b7ea62",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:07cea1303f9af664a48bcc90b4d0bd13a3b7ea62": {
+      "id": "ioc:sha1:07cea1303f9af664a48bcc90b4d0bd13a3b7ea62",
+      "type": "IOC",
+      "name": "07cea1303f9af664a48bcc90b4d0bd13a3b7ea62",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-11"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-3157021d959dedc4": {
+      "id": "REDDIT_CYBER-3157021d959dedc4",
+      "type": "Intel",
+      "name": "Freelancing on cybersec/ai",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-11",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -107552,6 +107611,24 @@
       "target": "REDDIT_CYBER-15b153e4dab794e7",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-11",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-a66b8a605bf2c1e1→linked_to→ioc:sha1:07cea1303f9af664a48bcc90b4d0bd13a3b7ea62",
+      "source": "REDDIT_CYBER-a66b8a605bf2c1e1",
+      "target": "ioc:sha1:07cea1303f9af664a48bcc90b4d0bd13a3b7ea62",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-11",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-3157021d959dedc4→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-3157021d959dedc4",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-11",
       "sources": []
     }
