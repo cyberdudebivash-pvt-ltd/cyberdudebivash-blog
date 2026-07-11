@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-11T17:01:59.894Z",
+  "generated": "2026-07-11T17:31:57.876Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4639,
+    "total_nodes": 4642,
     "actors": 8,
     "cves": 968,
-    "campaigns": 407,
+    "campaigns": 408,
     "malware": 0,
     "iocs": 485,
-    "edges": 1942
+    "edges": 1944
   },
   "nodes": {
     "actor:lockbit": {
@@ -89956,6 +89956,68 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_CYBER-15b153e4dab794e7": {
+      "id": "REDDIT_CYBER-15b153e4dab794e7",
+      "type": "Intel",
+      "name": "BloodBash Feedback Needed Before DEF CON 34 Red Team Village Talk - AD/hybrid Recon Tool",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 62,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-11",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "SECURITYWEEK-d3a8873d3f120677": {
+      "id": "SECURITYWEEK-d3a8873d3f120677",
+      "type": "Intel",
+      "name": "Ghost Accounts Abuse GitHub API in Mass Recon Campaign",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-11",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-1a18c186": {
+      "id": "campaign:cluster-1a18c186",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-11",
+        "last_seen": "2026-07-11",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 4 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-15b153e4dab794e7",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -107472,6 +107534,24 @@
       "target": "ioc:domain:discounttimu.substack.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-11",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-15b153e4dab794e7→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-15b153e4dab794e7",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-11",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-1a18c186→includes→REDDIT_CYBER-15b153e4dab794e7",
+      "source": "campaign:cluster-1a18c186",
+      "target": "REDDIT_CYBER-15b153e4dab794e7",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-11",
       "sources": []
     }
