@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-12T20:31:54.822Z",
+  "generated": "2026-07-12T21:02:03.364Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4685,
+    "total_nodes": 4688,
     "actors": 8,
     "cves": 969,
     "campaigns": 409,
     "malware": 0,
-    "iocs": 493,
-    "edges": 1982
+    "iocs": 494,
+    "edges": 1985
   },
   "nodes": {
     "actor:lockbit": {
@@ -90955,6 +90955,70 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-c073160bbd16d95b": {
+      "id": "REDDIT_NETSEC-c073160bbd16d95b",
+      "type": "Intel",
+      "name": "Vulnerability in Realtek driver allows DMA controller abuse from user mode with no additional hardware or driver",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-12",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:zwclose.github.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:zwclose.github.io": {
+      "id": "ioc:domain:zwclose.github.io",
+      "type": "IOC",
+      "name": "zwclose.github.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-12"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-49ec7e83a7628b8b": {
+      "id": "REDDIT_CYBER-49ec7e83a7628b8b",
+      "type": "Intel",
+      "name": "Master's Research on AI Governance &amp; the EU AI Act",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-12",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -108828,6 +108892,33 @@
     {
       "id": "REDDIT_CYBER-0afa90782d30d257→linked_to→ioc:domain:www.reddit.com",
       "source": "REDDIT_CYBER-0afa90782d30d257",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-12",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-c073160bbd16d95b→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-c073160bbd16d95b",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-12",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-c073160bbd16d95b→linked_to→ioc:domain:zwclose.github.io",
+      "source": "REDDIT_NETSEC-c073160bbd16d95b",
+      "target": "ioc:domain:zwclose.github.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-12",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-49ec7e83a7628b8b→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-49ec7e83a7628b8b",
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
