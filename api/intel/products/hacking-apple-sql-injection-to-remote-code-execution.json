@@ -1,0 +1,96 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-05f3264fa42ef39e",
+  "title": "Hacking Apple - SQL Injection to Remote Code Execution",
+  "generated": "2026-07-12T11:02:02.454Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "137f9ebaf76b9c112cd56cb18cd36211101788cf",
+      "type": "sha1",
+      "confidence": 0.9
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uuc6ek/hacking_apple_sql_injection_to_remote_code/&",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://external-preview[.]redd[.]it/MKJieF6gfPqwRk7anMhxEQtbpsveFbdUzDPuIkICH3k[.]png?width=640&amp;amp;c",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/ni5arga&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://projectdiscovery[.]io/blog/hacking-apple-with-sql-injection&quot;&gt;[link]&lt;/a&gt;&lt;/span",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "projectdiscovery[.]io",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uuc6ek/hacking_apple_sql_injection_to_remote_code/&\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uuc6ek/hacking_apple_sql_injection_to_remote_code/&\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/MKJieF6gfPqwRk7anMhxEQtbpsveFbdUzDPuIkICH3k.png?width=640&amp;amp;c\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/MKJieF6gfPqwRk7anMhxEQtbpsveFbdUzDPuIkICH3k.png?width=640&amp\\;amp\\;c\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/ni5arga&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/ni5arga&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://projectdiscovery.io/blog/hacking-apple-with-sql-injection&quot;&gt;[link]&lt;/a&gt;&lt;/span\"; http.host; content:\"projectdiscovery.io\"; nocase; http.uri; content:\"/blog/hacking-apple-with-sql-injection&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain projectdiscovery.io\"; dns.query; content:\"projectdiscovery.io\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "7 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 94 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 224 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: hacking-apple-sql-injection-to-remote-code-execution (8 shared entities), looking-for-cybersecurity-contributors-building-an-open-so (3 shared entities), microsoft-is-rewriting-windows-patch-guidance-because-of-ai (3 shared entities), anonymity-security (3 shared entities), can-gamification-actually-improve-security-awareness (3 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uuc6ek/hacking_apple_sql_injection_to_remote_code/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
