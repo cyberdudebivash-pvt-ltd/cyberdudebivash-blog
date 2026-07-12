@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-12T16:53:43.555Z",
+  "generated": "2026-07-12T17:02:02.582Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4679,
+    "total_nodes": 4681,
     "actors": 8,
     "cves": 969,
     "campaigns": 409,
     "malware": 0,
-    "iocs": 492,
-    "edges": 1975
+    "iocs": 493,
+    "edges": 1977
   },
   "nodes": {
     "actor:lockbit": {
@@ -90815,6 +90815,46 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-e81907f61eda863c": {
+      "id": "REDDIT_CYBER-e81907f61eda863c",
+      "type": "Intel",
+      "name": "Artlist.io appears to have been compromised by a ClickFix attack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-12",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:artlist.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:artlist.io": {
+      "id": "ioc:domain:artlist.io",
+      "type": "IOC",
+      "name": "artlist.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-12"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -108628,6 +108668,24 @@
       "target": "REDDIT_CYBER-359e2c618c10aba0",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-12",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-e81907f61eda863c→linked_to→ioc:domain:artlist.io",
+      "source": "REDDIT_CYBER-e81907f61eda863c",
+      "target": "ioc:domain:artlist.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-12",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-e81907f61eda863c→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-e81907f61eda863c",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-12",
       "sources": []
     }
