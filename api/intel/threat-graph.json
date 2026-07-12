@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-12T14:40:14.140Z",
+  "generated": "2026-07-12T15:02:10.357Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4674,
+    "total_nodes": 4679,
     "actors": 8,
-    "cves": 968,
-    "campaigns": 408,
+    "cves": 969,
+    "campaigns": 409,
     "malware": 0,
-    "iocs": 490,
-    "edges": 1971
+    "iocs": 492,
+    "edges": 1975
   },
   "nodes": {
     "actor:lockbit": {
@@ -90720,6 +90720,101 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-359e2c618c10aba0": {
+      "id": "REDDIT_CYBER-359e2c618c10aba0",
+      "type": "Intel",
+      "name": "Passive security measurement of 10,020 .it domains: CSP, cookies, TLS and email authentication",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-12",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:doi.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:doi.org": {
+      "id": "ioc:domain:doi.org",
+      "type": "IOC",
+      "name": "doi.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-12"
+      },
+      "connections": []
+    },
+    "CVE-2026-47291": {
+      "id": "CVE-2026-47291",
+      "type": "CVE",
+      "name": "CVE-2026-47291: Windows Critical Unauthenticated Remote Code Execution in HTTP.sys",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "MEDIUM",
+        "priority_score": 57,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-12",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:byteray-ai.github.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:byteray-ai.github.io": {
+      "id": "ioc:domain:byteray-ai.github.io",
+      "type": "IOC",
+      "name": "byteray-ai.github.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-12"
+      },
+      "connections": []
+    },
+    "campaign:cluster-65b644d2": {
+      "id": "campaign:cluster-65b644d2",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-12",
+        "last_seen": "2026-07-12",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 6 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-359e2c618c10aba0",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -108497,6 +108592,42 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-12",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-359e2c618c10aba0→linked_to→ioc:domain:doi.org",
+      "source": "REDDIT_CYBER-359e2c618c10aba0",
+      "target": "ioc:domain:doi.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-12",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-47291→linked_to→ioc:domain:www.reddit.com",
+      "source": "CVE-2026-47291",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-12",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-47291→linked_to→ioc:domain:byteray-ai.github.io",
+      "source": "CVE-2026-47291",
+      "target": "ioc:domain:byteray-ai.github.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-12",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-65b644d2→includes→REDDIT_CYBER-359e2c618c10aba0",
+      "source": "campaign:cluster-65b644d2",
+      "target": "REDDIT_CYBER-359e2c618c10aba0",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-12",
       "sources": []
     }
