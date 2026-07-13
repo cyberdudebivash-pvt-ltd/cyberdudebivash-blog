@@ -1,0 +1,96 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-422f7d2eba31c85d",
+  "title": "Balbooa Forms Joomla Flaw Lets Hackers Hijack Sites With a Single Upload",
+  "generated": "2026-07-13T11:36:59.404Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "d9f1a40ce5530783c6e3fdb1c5b1ed565357eed8",
+      "type": "sha1",
+      "confidence": 0.9
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uv8y9p/balbooa_forms_joomla_flaw_lets_hackers_hijac",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://external-preview[.]redd[.]it/qxhdC-PBkVXPAJ1Nt9CmpGwkbaMOyLCwOpEbHUM9m2E[.]jpeg?width=640&amp;amp;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/Consistent_Scene_178&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]secure[.]com/news/balbooa-forms-joomla-file-upload-flaw&quot;&gt;[link]&lt;/a&gt;&lt;/span",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "www[.]secure[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uv8y9p/balbooa_forms_joomla_flaw_lets_hackers_hijac\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uv8y9p/balbooa_forms_joomla_flaw_lets_hackers_hijac\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/qxhdC-PBkVXPAJ1Nt9CmpGwkbaMOyLCwOpEbHUM9m2E.jpeg?width=640&amp;amp;\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/qxhdC-PBkVXPAJ1Nt9CmpGwkbaMOyLCwOpEbHUM9m2E.jpeg?width=640&amp\\;amp\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Consistent_Scene_178&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Consistent_Scene_178&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.secure.com/news/balbooa-forms-joomla-file-upload-flaw&quot;&gt;[link]&lt;/a&gt;&lt;/span\"; http.host; content:\"www.secure.com\"; nocase; http.uri; content:\"/news/balbooa-forms-joomla-file-upload-flaw&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.secure.com\"; dns.query; content:\"www.secure.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "7 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 108 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 252 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: balbooa-forms-joomla-flaw-lets-hackers-hijack-sites-with-a-s (8 shared entities), the-way-forward (3 shared entities), total-isolation-of-legacy-control-system-is-valid-option-to (2 shared entities), persistence-via-fake-amsi-provider-playbook-amp-detectio (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uv8y9p/balbooa_forms_joomla_flaw_lets_hackers_hijack/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}

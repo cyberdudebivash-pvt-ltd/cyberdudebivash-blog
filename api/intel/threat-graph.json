@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-13T11:31:54.352Z",
+  "generated": "2026-07-13T11:36:59.334Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4723,
+    "total_nodes": 4728,
     "actors": 8,
     "cves": 970,
-    "campaigns": 413,
+    "campaigns": 414,
     "malware": 0,
-    "iocs": 497,
-    "edges": 2011
+    "iocs": 498,
+    "edges": 2016
   },
   "nodes": {
     "actor:lockbit": {
@@ -91765,6 +91765,114 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-422f7d2eba31c85d": {
+      "id": "REDDIT_CYBER-422f7d2eba31c85d",
+      "type": "Intel",
+      "name": "Balbooa Forms Joomla Flaw Lets Hackers Hijack Sites With a Single Upload",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:d9f1a40ce5530783c6e3fdb1c5b1ed565357eed8",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:d9f1a40ce5530783c6e3fdb1c5b1ed565357eed8": {
+      "id": "ioc:sha1:d9f1a40ce5530783c6e3fdb1c5b1ed565357eed8",
+      "type": "IOC",
+      "name": "d9f1a40ce5530783c6e3fdb1c5b1ed565357eed8",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-13"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-8004ad1f076f2a9d": {
+      "id": "REDDIT_CYBER-8004ad1f076f2a9d",
+      "type": "Intel",
+      "name": "Presales Engineer (Cybersecurity)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-f4f210d154a0d4e6": {
+      "id": "REDDIT_CYBER-f4f210d154a0d4e6",
+      "type": "Intel",
+      "name": "Demande d'avis",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-cedbf60a": {
+      "id": "campaign:cluster-cedbf60a",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "LOW",
+        "item_count": 2,
+        "first_seen": "2026-07-13",
+        "last_seen": "2026-07-13",
+        "confidence": 0.83,
+        "reasoning": "2 intel item(s) clustered with composite confidence 0.830 | 7 shared IOC(s) across items | Item REDDIT_CYBER-f4f210d154a0d4e6 joined cluster (score: 0.604): 1 shared IOC(s) (Jaccard: 1.000)"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-8004ad1f076f2a9d",
+          "relationship": "includes",
+          "confidence": 1
+        },
+        {
+          "target": "REDDIT_CYBER-f4f210d154a0d4e6",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -109902,6 +110010,51 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-422f7d2eba31c85d→linked_to→ioc:sha1:d9f1a40ce5530783c6e3fdb1c5b1ed565357eed8",
+      "source": "REDDIT_CYBER-422f7d2eba31c85d",
+      "target": "ioc:sha1:d9f1a40ce5530783c6e3fdb1c5b1ed565357eed8",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-8004ad1f076f2a9d→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-8004ad1f076f2a9d",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-f4f210d154a0d4e6→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-f4f210d154a0d4e6",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-cedbf60a→includes→REDDIT_CYBER-8004ad1f076f2a9d",
+      "source": "campaign:cluster-cedbf60a",
+      "target": "REDDIT_CYBER-8004ad1f076f2a9d",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-cedbf60a→includes→REDDIT_CYBER-f4f210d154a0d4e6",
+      "source": "campaign:cluster-cedbf60a",
+      "target": "REDDIT_CYBER-f4f210d154a0d4e6",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-13",
       "sources": []
     }
