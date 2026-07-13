@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-13T22:31:58.526Z",
+  "generated": "2026-07-13T23:02:02.481Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4781,
+    "total_nodes": 4783,
     "actors": 8,
     "cves": 980,
     "campaigns": 416,
     "malware": 0,
-    "iocs": 504,
-    "edges": 2042
+    "iocs": 505,
+    "edges": 2044
   },
   "nodes": {
     "actor:lockbit": {
@@ -92928,6 +92928,46 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-106c5553a6c91c7b": {
+      "id": "REDDIT_NETSEC-106c5553a6c91c7b",
+      "type": "Intel",
+      "name": "Context Bombs: Using AI Guardrails as a defensive mechanism",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:agentic.tracebit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:agentic.tracebit.com": {
+      "id": "ioc:domain:agentic.tracebit.com",
+      "type": "IOC",
+      "name": "agentic.tracebit.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-13"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -111342,6 +111382,24 @@
       "id": "REDDIT_NETSEC-96724e15925144e6→linked_to→ioc:domain:mrtiz.github.io",
       "source": "REDDIT_NETSEC-96724e15925144e6",
       "target": "ioc:domain:mrtiz.github.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-106c5553a6c91c7b→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-106c5553a6c91c7b",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-106c5553a6c91c7b→linked_to→ioc:domain:agentic.tracebit.com",
+      "source": "REDDIT_NETSEC-106c5553a6c91c7b",
+      "target": "ioc:domain:agentic.tracebit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-07-13",
