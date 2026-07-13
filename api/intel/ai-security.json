@@ -2,24 +2,16 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-07-12T22:52:38.780Z",
+  "generated": "2026-07-13T03:16:44.634Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
     "published": 13,
     "p1": 0,
-    "leadsHeld": 2,
+    "leadsHeld": 3,
     "analystReports": 0,
-    "sourcesOk": 5,
+    "sourcesOk": 4,
     "sourcesTotal": 6,
     "sourceHealth": [
-      {
-        "name": "NVD (prompt injection)",
-        "key": "nvd_pi",
-        "tier": 1,
-        "status": "ok",
-        "items": 40,
-        "error": null
-      },
       {
         "name": "r/netsec",
         "key": "reddit_ns",
@@ -27,14 +19,6 @@
         "status": "degraded",
         "items": 0,
         "error": "HTTP 429"
-      },
-      {
-        "name": "NVD (AI/LLM keyword)",
-        "key": "nvd_ai",
-        "tier": 1,
-        "status": "ok",
-        "items": 40,
-        "error": null
       },
       {
         "name": "arXiv cs.CR (LLM security)",
@@ -53,15 +37,31 @@
         "error": null
       },
       {
+        "name": "NVD (prompt injection)",
+        "key": "nvd_pi",
+        "tier": 1,
+        "status": "ok",
+        "items": 40,
+        "error": null
+      },
+      {
         "name": "r/MachineLearning",
         "key": "reddit_ml",
         "tier": 3,
         "status": "ok",
         "items": 25,
         "error": null
+      },
+      {
+        "name": "NVD (AI/LLM keyword)",
+        "key": "nvd_ai",
+        "tier": 1,
+        "status": "degraded",
+        "items": 0,
+        "error": "This operation was aborted"
       }
     ],
-    "runtimeMs": 955
+    "runtimeMs": 15081
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -199,6 +199,62 @@
       },
       "enterprise_impact": {
         "score": 30,
+        "priority": "P3"
+      },
+      "confidence": {
+        "source": "MODERATE",
+        "evidence": "LOW",
+        "overall": "LOW",
+        "rationale": "Research source; 1 corroborating source(s)."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "d148aa9694828118",
+      "title": "VEXAIoT: Autonomous IoT Vulnerability EXploitation using AI Agents",
+      "url": "https://arxiv.org/abs/2607.09653v1",
+      "source": "arXiv cs.CR (LLM security)",
+      "tier": 2,
+      "published": "2026-07-10T17:52:29Z",
+      "cve": null,
+      "severity": null,
+      "cvss": null,
+      "evidence_label": "PUBLISHED_RESEARCH",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": true,
+          "mcp": false,
+          "rag": true,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 20,
         "priority": "P3"
       },
       "confidence": {
@@ -424,62 +480,6 @@
           "agentic": true,
           "mcp": false,
           "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "a741966f2d139e6a",
-      "title": "AutoCedar: An Agentic Framework for Verifier-Guided Access Control Policy Synthesis",
-      "url": "https://arxiv.org/abs/2607.03656v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-07-04T01:13:32Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": true,
-          "mcp": false,
-          "rag": true,
           "tool_use": false,
           "supply_chain": false
         },
