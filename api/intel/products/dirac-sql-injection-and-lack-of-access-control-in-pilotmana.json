@@ -1,0 +1,65 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "GHSA-eaa2f2114d269fd7",
+  "title": "DIRAC: SQL injection and lack of access control in PilotManager service",
+  "generated": "2026-07-13T19:02:06.422Z",
+  "severity": "HIGH",
+  "cvss": 8.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "pip",
+  "product": "DIRAC",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "1738e7c6d2f31d26f1364255d9d2e87b4896c922",
+      "type": "sha1",
+      "confidence": 0.9
+    },
+    {
+      "value": "hxxps://github[.]com/DIRACGrid/DIRAC/blob/1738e7c6d2f31d26f1364255d9d2e87b4896c922/src/DIRAC/WorkloadM",
+      "type": "url",
+      "confidence": 0.82
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/DIRACGrid/DIRAC/blob/1738e7c6d2f31d26f1364255d9d2e87b4896c922/src/DIRAC/WorkloadM\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/DIRACGrid/DIRAC/blob/1738e7c6d2f31d26f1364255d9d2e87b4896c922/src/DIRAC/WorkloadM\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: pip DIRAC.",
+      "CVSS base score of 8.5 assigned by an authoritative source.",
+      "2 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as high (CVSS 8.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor pip has been targeted in 19 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: dirac-sql-injection-and-lack-of-access-control-in-pilotmana (3 shared entities)"
+  ],
+  "source": null,
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}

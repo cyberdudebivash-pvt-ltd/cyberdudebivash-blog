@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-13T18:31:57.601Z",
+  "generated": "2026-07-13T19:02:06.359Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4770,
+    "total_nodes": 4774,
     "actors": 8,
-    "cves": 978,
+    "cves": 980,
     "campaigns": 416,
     "malware": 0,
-    "iocs": 502,
-    "edges": 2037
+    "iocs": 503,
+    "edges": 2038
   },
   "nodes": {
     "actor:lockbit": {
@@ -92715,6 +92715,77 @@
         "type": "AI_SECURITY"
       },
       "connections": []
+    },
+    "GHSA-eaa2f2114d269fd7": {
+      "id": "GHSA-eaa2f2114d269fd7",
+      "type": "Intel",
+      "name": "DIRAC: SQL injection and lack of access control in PilotManager service",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "DIRAC",
+        "published": "2026-07-13",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:1738e7c6d2f31d26f1364255d9d2e87b4896c922",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:1738e7c6d2f31d26f1364255d9d2e87b4896c922": {
+      "id": "ioc:sha1:1738e7c6d2f31d26f1364255d9d2e87b4896c922",
+      "type": "IOC",
+      "name": "1738e7c6d2f31d26f1364255d9d2e87b4896c922",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-13"
+      },
+      "connections": []
+    },
+    "CVE-2026-61668": {
+      "id": "CVE-2026-61668",
+      "type": "CVE",
+      "name": "DIRAC: Pilot code downloaded over unverified HTTPS connection",
+      "attributes": {
+        "cvss": 8.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 46,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "DIRAC",
+        "published": "2026-07-13",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-59955": {
+      "id": "CVE-2026-59955",
+      "type": "CVE",
+      "name": "Apollo ConfigService access key authentication bypass via raw config file appId parsing",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "com.ctrip.framework.apollo:apollo",
+        "published": "2026-07-13",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -111086,6 +111157,15 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "GHSA-eaa2f2114d269fd7→linked_to→ioc:sha1:1738e7c6d2f31d26f1364255d9d2e87b4896c922",
+      "source": "GHSA-eaa2f2114d269fd7",
+      "target": "ioc:sha1:1738e7c6d2f31d26f1364255d9d2e87b4896c922",
+      "relationship": "linked_to",
+      "confidence": 0.9,
       "first_seen": "2026-07-13",
       "sources": []
     }

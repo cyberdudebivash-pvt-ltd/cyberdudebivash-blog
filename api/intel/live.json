@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13T18:31:57.634Z",
+  "generated": "2026-07-13T19:02:06.389Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,8 +9,8 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 2115,
   "s2n_stats": {
-    "passed": 85,
-    "suppressed": 7,
+    "passed": 84,
+    "suppressed": 8,
     "avg_qs": 0.551
   },
   "items": [
@@ -4225,6 +4225,104 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-61668",
+      "title": "DIRAC: Pilot code downloaded over unverified HTTPS connection",
+      "description": "### Summary\nThe second stage pilot (pilot.tar) is downloaded by the initial wrapper script without any verification of the webservers' SSL certificate and the contained script is subsequently executed. The checksum is tested, but the reference checksum file is downloaded over the same unvalidated ch",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-13",
+      "last_seen": "2026-07-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "DIRAC",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-61668",
+        "CVE-2026-61668"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-vg99-gr89-qhw9",
+        "https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-vg99-gr89-qhw9",
+        "https://pypi.org/project/DIRAC/8.0.79",
+        "https://pypi.org/project/DIRAC/9.0.22"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-59955",
+      "title": "Apollo ConfigService access key authentication bypass via raw config file appId parsing",
+      "description": "### Summary\nApollo ConfigService may allow unauthorized access to raw configuration data when AccessKey / management key authentication is enabled because authentication parsed the appId incorrectly for the raw config file endpoint. ### Details\nRequests under /configfiles/raw/{appId}/{clusterName}/{",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-13",
+      "last_seen": "2026-07-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "com.ctrip.framework.apollo:apollo",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59955",
+        "CVE-2026-59955"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-h4pc-58cc-hc95",
+        "https://github.com/apolloconfig/apollo/security/advisories/GHSA-h4pc-58cc-hc95",
+        "https://github.com/apolloconfig/apollo/releases/tag/v2.5.2",
+        "https://github.com/advisories/GHSA-h4pc-58cc-hc95"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-59954",
       "title": "Apollo ConfigService access key authentication bypass via appId parsing and non-canonical matching",
       "description": "### Summary\nApollo ConfigService may allow unauthorized access to configuration data when AccessKey / management key authentication is enabled and ConfigService accepts a non-canonical appId variant during authentication while downstream request handling resolves it to the protected app. ### Details",
@@ -4274,12 +4372,12 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-54065",
-      "title": "NukeViet: Path Traversal to Arbitrary File Deletion in Edit Comment Function",
-      "description": "## Summary Path Traversal to Arbitrary File Deletion in the Edit Comment admin function. An authenticated administrator can delete arbitrary files within the application root (e.g., `config.php`) by injecting a crafted `attach` parameter, rendering the application inoperable. ## Affected Component `",
-      "cvss": 8.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "id": "GHSA-eaa2f2114d269fd7",
+      "title": "DIRAC: SQL injection and lack of access control in PilotManager service",
+      "description": "### Details\nA number of the functions in PilotManager pass parameters directly through to the database layer, which then does not do any escaping on the parameters. For example setPilotStatus:\nhttps://github.com/DIRACGrid/DIRAC/blob/1738e7c6d2f31d26f1364255d9d2e87b4896c922/src/DIRAC/WorkloadManageme",
+      "cvss": 8.5,
+      "final_ps": 20,
+      "quality_score": 0.493,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "github_advisories",
@@ -4292,130 +4390,32 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "composer",
-      "product": "nukeviet/nukeviet",
+      "vendor": "pip",
+      "product": "DIRAC",
       "due_date": null,
-      "cves": [
-        "CVE-2026-54065",
-        "CVE-2026-54065"
-      ],
-      "ioc_count": 0,
+      "cves": [],
+      "ioc_count": 2,
       "refs": [
-        "https://github.com/advisories/GHSA-c9xg-64p9-f2jj",
-        "https://github.com/nukeviet/nukeviet/security/advisories/GHSA-c9xg-64p9-f2jj",
-        "https://github.com/advisories/GHSA-c9xg-64p9-f2jj"
+        "https://github.com/advisories/GHSA-7xw9-549r-8jrc",
+        "https://github.com/DIRACGrid/DIRAC/security/advisories/GHSA-7xw9-549r-8jrc",
+        "https://pypi.org/project/DIRAC/8.0.79",
+        "https://pypi.org/project/DIRAC/9.0.22"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.493"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=20 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54064",
-      "title": "NukeViet: Multiple Anti-XSS Filter Bypasses Leading to Stored XSS in News Module",
-      "description": "## Summary Two filter-bypass techniques in `NukeViet\\Core\\Request::filterAttr()` and `NukeViet\\Core\\Request::unhtmlentities()` allow a low-privileged user (any account with news post permission) to store and serve arbitrary JavaScript to any visitor of the affected page. ## Affected Component `vendo",
-      "cvss": 8.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-13",
-      "last_seen": "2026-07-13",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "nukeviet/nukeviet",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54064",
-        "CVE-2026-54064"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-465g-4q99-5x86",
-        "https://github.com/nukeviet/nukeviet/security/advisories/GHSA-465g-4q99-5x86",
-        "https://github.com/advisories/GHSA-465g-4q99-5x86"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55372",
-      "title": "NukeViet: Pre-authentication SSRF via X-Forwarded-Host",
-      "description": "## Summary An unauthenticated attacker can coerce the server into issuing HTTP requests to an attacker-chosen host by spoofing the `X Forwarded-Host` (and `X-Forwarded-Proto`) request headers. The forwarded host is used, without validation, to build the URL that `server_info_update()` fetches with c",
-      "cvss": 7.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-13",
-      "last_seen": "2026-07-13",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "nukeviet/nukeviet",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55372",
-        "CVE-2026-55372"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4chg-4752-w88r",
-        "https://github.com/nukeviet/nukeviet/security/advisories/GHSA-4chg-4752-w88r",
-        "https://github.com/advisories/GHSA-4chg-4752-w88r"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     }
   ]
 }
