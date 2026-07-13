@@ -1,0 +1,79 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-adca43f56964d3f0",
+  "title": "RELATÓRIOS",
+  "generated": "2026-07-13T14:32:01.663Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/Previous-Ice-6840&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uvcsn6/relatórios/&quot;&gt;[link]&lt;/a&gt;&lt;/sp",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uvcsn6/relatórios/&quot;&gt;[comments]&lt;/a&gt;&lt",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Previous-Ice-6840&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Previous-Ice-6840&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uvcsn6/relatórios/&quot;&gt;[link]&lt;/a&gt;&lt;/sp\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uvcsn6/relatórios/&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/sp\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uvcsn6/relatórios/&quot;&gt;[comments]&lt;/a&gt;&lt\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uvcsn6/relatórios/&quot\\;&gt\\;[comments]&lt\\;/a&gt\\;&lt\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "4 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 114 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 263 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: relat-rios (6 shared entities), how-the-tls-handshake-works-and-why-half-of-it-is-gone (3 shared entities), can-recon-workflow-get-any-easier-and-smarter-than-this (3 shared entities), july-14th-nightmare-eclipse (3 shared entities), demande-d-avis (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uvcsn6/relatórios/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
