@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-13T00:31:50.063Z",
+  "generated": "2026-07-13T01:02:31.355Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4692,
+    "total_nodes": 4696,
     "actors": 8,
     "cves": 969,
-    "campaigns": 409,
+    "campaigns": 410,
     "malware": 0,
     "iocs": 494,
-    "edges": 1989
+    "edges": 1993
   },
   "nodes": {
     "actor:lockbit": {
@@ -91115,6 +91115,97 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_CYBER-b906f735d51708b5": {
+      "id": "REDDIT_CYBER-b906f735d51708b5",
+      "type": "Intel",
+      "name": "How do incident response handlers or SOC analysts handle multiple different priorities at once?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-13",
+        "type": "INCIDENT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-3ed4d20488f0b1c2": {
+      "id": "REDDIT_CYBER-3ed4d20488f0b1c2",
+      "type": "Intel",
+      "name": "How long HackerOne take to respond after submitting a vulnerability report",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-ac6d852f0dc54620": {
+      "id": "BLEEPINGCOMPUTER-ac6d852f0dc54620",
+      "type": "Intel",
+      "name": "OpenAI temporarily relaxes GPT-5.6 Sol usage limits",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-50fdaf8e": {
+      "id": "campaign:cluster-50fdaf8e",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "LOW",
+        "item_count": 2,
+        "first_seen": "2026-07-13",
+        "last_seen": "2026-07-13",
+        "confidence": 0.84,
+        "reasoning": "2 intel item(s) clustered with composite confidence 0.840 | 5 shared IOC(s) across items | Item REDDIT_CYBER-3ed4d20488f0b1c2 joined cluster (score: 0.635): 1 shared IOC(s) (Jaccard: 1.000)"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-b906f735d51708b5",
+          "relationship": "includes",
+          "confidence": 1
+        },
+        {
+          "target": "REDDIT_CYBER-3ed4d20488f0b1c2",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -109054,6 +109145,42 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-b906f735d51708b5→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-b906f735d51708b5",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-3ed4d20488f0b1c2→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-3ed4d20488f0b1c2",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-50fdaf8e→includes→REDDIT_CYBER-b906f735d51708b5",
+      "source": "campaign:cluster-50fdaf8e",
+      "target": "REDDIT_CYBER-b906f735d51708b5",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-50fdaf8e→includes→REDDIT_CYBER-3ed4d20488f0b1c2",
+      "source": "campaign:cluster-50fdaf8e",
+      "target": "REDDIT_CYBER-3ed4d20488f0b1c2",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-13",
       "sources": []
     }
