@@ -1,0 +1,85 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-66a36e90453006f2",
+  "title": "World Cup grudge attackers may have scored Argentine FA access via year-old infostealer infection",
+  "generated": "2026-07-13T16:02:24.450Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/Malwarebeasts&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]theregister[.]com/security/2026/07/13/world-cup-grudge-attackers-may-have-scored-argentine",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uvfbdg/world_cup_grudge_attackers_may_have_scored/&",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "www[.]theregister[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Malwarebeasts&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Malwarebeasts&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.theregister.com/security/2026/07/13/world-cup-grudge-attackers-may-have-scored-argentine\"; http.host; content:\"www.theregister.com\"; nocase; http.uri; content:\"/security/2026/07/13/world-cup-grudge-attackers-may-have-scored-argentine\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uvfbdg/world_cup_grudge_attackers_may_have_scored/&\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uvfbdg/world_cup_grudge_attackers_may_have_scored/&\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.theregister.com\"; dns.query; content:\"www.theregister.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "5 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 118 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 272 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: world-cup-grudge-attackers-may-have-scored-argentine-fa-acce (7 shared entities), what-s-your-pre-deployment-security-checklist-for-a-web-app (3 shared entities), soc-homelab-with-16gb-ram (3 shared entities), i-vibed-an-application-inventory-service (3 shared entities), relat-rios (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uvfbdg/world_cup_grudge_attackers_may_have_scored/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}

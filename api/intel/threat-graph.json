@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-13T15:31:59.090Z",
+  "generated": "2026-07-13T16:02:24.384Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4751,
+    "total_nodes": 4754,
     "actors": 8,
     "cves": 970,
-    "campaigns": 415,
+    "campaigns": 416,
     "malware": 0,
     "iocs": 500,
-    "edges": 2030
+    "edges": 2033
   },
   "nodes": {
     "actor:lockbit": {
@@ -46780,7 +46780,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-07-11"
+        "first_seen": "2026-07-13"
       },
       "connections": []
     },
@@ -92350,6 +92350,73 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-6a3be16d41275c01": {
+      "id": "REDDIT_CYBER-6a3be16d41275c01",
+      "type": "Intel",
+      "name": "I vibed an Application Inventory Service",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 69,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-66a36e90453006f2": {
+      "id": "REDDIT_CYBER-66a36e90453006f2",
+      "type": "Intel",
+      "name": "World Cup grudge attackers may have scored Argentine FA access via year-old infostealer infection",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-13",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.theregister.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-763927da": {
+      "id": "campaign:cluster-763927da",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-13",
+        "last_seen": "2026-07-13",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 7 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-6a3be16d41275c01",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -110658,6 +110725,33 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-66a36e90453006f2→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-66a36e90453006f2",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-66a36e90453006f2→linked_to→ioc:domain:www.theregister.com",
+      "source": "REDDIT_CYBER-66a36e90453006f2",
+      "target": "ioc:domain:www.theregister.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-763927da→includes→REDDIT_CYBER-6a3be16d41275c01",
+      "source": "campaign:cluster-763927da",
+      "target": "REDDIT_CYBER-6a3be16d41275c01",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-13",
       "sources": []
     }
