@@ -1,0 +1,98 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_NETSEC-424619a0ca7623d6",
+  "title": "ExporTheft: 11 &quot;AI Chat Exporter&quot; Chrome extensions upload full chat content on PDF export, while the store listing says &quot;No uploads to external servers&quot;",
+  "generated": "2026-07-13T23:25:05.959Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_netsec",
+  "product": "Threat Intelligence",
+  "mitre_attack": [
+    {
+      "id": "T1071",
+      "name": "Application Layer Protocol",
+      "tactic": "command-and-control",
+      "confidence": "MEDIUM"
+    }
+  ],
+  "iocs": [
+    {
+      "value": "hxxps://malext[.]io/reports/ExporTheft/&quot;&gt;hxxps://malext[.]io/reports/ExporTheft/&lt;/a&gt;&lt;/p",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/Huge-Skirt-6990&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://malext[.]io/reports/ExporTheft/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/netsec/comments/1uvrnbg/exportheft_11_ai_chat_exporter_chrome_extensions/&q",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "malext[.]io",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://malext.io/reports/ExporTheft/&quot;&gt;https://malext.io/reports/ExporTheft/&lt;/a&gt;&lt;/p\"; http.host; content:\"malext.io\"; nocase; http.uri; content:\"/reports/ExporTheft/&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Huge-Skirt-6990&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Huge-Skirt-6990&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://malext.io/reports/ExporTheft/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"malext.io\"; nocase; http.uri; content:\"/reports/ExporTheft/&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1uvrnbg/exportheft_11_ai_chat_exporter_chrome_extensions/&q\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1uvrnbg/exportheft_11_ai_chat_exporter_chrome_extensions/&q\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain malext.io\"; dns.query; content:\"malext.io\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_netsec Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "6 indicator(s) of compromise extracted from source reporting.",
+      "1 MITRE ATT&CK technique(s) evidenced in the source material."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_netsec has been targeted in 23 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 285 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: exportheft-11-quot-ai-chat-exporter-quot-chrome-extension (9 shared entities), cet-compliant-callstack-spoofing-via-thread-pool-amp-enum (3 shared entities), context-bombs-using-ai-guardrails-as-a-defensive-mechanism (3 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/netsec/comments/1uvrnbg/exportheft_11_ai_chat_exporter_chrome_extensions/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
