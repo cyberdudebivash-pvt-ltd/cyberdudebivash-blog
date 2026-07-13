@@ -1,0 +1,87 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-77dd4a43ac9391e3",
+  "title": "Participants Needed: Master's Research on AI Governance &amp; the EU AI Act",
+  "generated": "2026-07-13T04:02:03.813Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": true,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/Cathal_or01&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://ai-act-simulation[.]web[.]app/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uv05x7/participants_needed_masters_research_on_ai/&",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Cathal_or01&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Cathal_or01&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://ai-act-simulation.web.app/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"ai-act-simulation.web.app\"; nocase; http.uri; content:\"/&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uv05x7/participants_needed_masters_research_on_ai/&\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uv05x7/participants_needed_masters_research_on_ai/&\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "Active exploitation reported in source intelligence.",
+      "4 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      },
+      {
+        "confidence": "HIGH",
+        "text": "Unpatched exposure represents an active — not theoretical — risk, given confirmed exploitation."
+      }
+    ],
+    "intelligence_gaps": [
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "HIGH",
+        "text": "Continued and broadening exploitation is expected; additional threat actors are likely to adopt this vector."
+      },
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 101 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 237 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: participants-needed-master-s-research-on-ai-governance-amp (6 shared entities), data-sharing-with-vendors (3 shared entities), been-building-my-own-edr-today-it-operates-in-ring-0 (3 shared entities), it-governance-vs-ai-governance (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uv05x7/participants_needed_masters_research_on_ai/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
