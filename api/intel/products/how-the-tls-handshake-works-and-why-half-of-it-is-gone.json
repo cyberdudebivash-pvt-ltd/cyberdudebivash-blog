@@ -1,0 +1,109 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-40774db827c7bb6b",
+  "title": "How the TLS handshake works, and why half of it is gone",
+  "generated": "2026-07-13T13:32:59.086Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [
+    {
+      "id": "T1071",
+      "name": "Application Layer Protocol",
+      "tactic": "command-and-control",
+      "confidence": "MEDIUM"
+    }
+  ],
+  "iocs": [
+    {
+      "value": "3b1dc20404514173daae8999d9f25e37958e6421",
+      "type": "sha1",
+      "confidence": 0.9
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uvbh3w/how_the_tls_handshake_works_and_why_half_of_",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://external-preview[.]redd[.]it/u6yirn36XurUN65J4QwrF5_NF7qKyqmKhQcUQthMNeQ[.]png?width=640&amp;amp;c",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]certkit[.]io/blog/tls-handshake-explained&quot;&gt;hxxps://www[.]certkit[.]io/blog/tls-handsha",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/certkit&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]certkit[.]io/blog/tls-handshake-explained&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "www[.]certkit[.]io",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uvbh3w/how_the_tls_handshake_works_and_why_half_of_\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uvbh3w/how_the_tls_handshake_works_and_why_half_of_\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/u6yirn36XurUN65J4QwrF5_NF7qKyqmKhQcUQthMNeQ.png?width=640&amp;amp;c\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/u6yirn36XurUN65J4QwrF5_NF7qKyqmKhQcUQthMNeQ.png?width=640&amp\\;amp\\;c\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.certkit.io/blog/tls-handshake-explained&quot;&gt;https://www.certkit.io/blog/tls-handsha\"; http.host; content:\"www.certkit.io\"; nocase; http.uri; content:\"/blog/tls-handshake-explained&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/certkit&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/certkit&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.certkit.io/blog/tls-handshake-explained&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"www.certkit.io\"; nocase; http.uri; content:\"/blog/tls-handshake-explained&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.certkit.io\"; dns.query; content:\"www.certkit.io\"; nocase; classtype:trojan-activity; sid:9000007; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "8 indicator(s) of compromise extracted from source reporting.",
+      "1 MITRE ATT&CK technique(s) evidenced in the source material."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 111 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 259 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: how-the-tls-handshake-works-and-why-half-of-it-is-gone (10 shared entities), the-way-forward (2 shared entities), balbooa-forms-joomla-flaw-lets-hackers-hijack-sites-with-a-s (2 shared entities), presales-engineer-cybersecurity (2 shared entities), demande-d-avis (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uvbh3w/how_the_tls_handshake_works_and_why_half_of_it_is/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
