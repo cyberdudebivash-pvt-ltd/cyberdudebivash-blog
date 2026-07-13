@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-13T05:31:55.075Z",
+  "generated": "2026-07-13T06:02:22.358Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4700,
+    "total_nodes": 4701,
     "actors": 8,
     "cves": 969,
     "campaigns": 411,
     "malware": 0,
     "iocs": 494,
-    "edges": 1995
+    "edges": 1996
   },
   "nodes": {
     "actor:lockbit": {
@@ -91286,6 +91286,30 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-c3b7cf53063b0d00": {
+      "id": "REDDIT_NETSEC-c3b7cf53063b0d00",
+      "type": "Intel",
+      "name": "LIEF 1.0.0 is out featuring a brand-new Runtime API",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-13",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -109279,6 +109303,15 @@
       "target": "REDDIT_CYBER-77dd4a43ac9391e3",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-13",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-c3b7cf53063b0d00→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-c3b7cf53063b0d00",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-13",
       "sources": []
     }
