@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-14T07:02:09.932Z",
+  "generated": "2026-07-14T07:31:55.405Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4793,
+    "total_nodes": 4799,
     "actors": 8,
     "cves": 981,
-    "campaigns": 416,
+    "campaigns": 417,
     "malware": 0,
-    "iocs": 506,
-    "edges": 2049
+    "iocs": 508,
+    "edges": 2054
   },
   "nodes": {
     "actor:lockbit": {
@@ -93171,6 +93171,125 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-56855042aaba93e0": {
+      "id": "REDDIT_CYBER-56855042aaba93e0",
+      "type": "Intel",
+      "name": "Zimbra Classic Web Client has a critical stored XSS, patched in ZCS 10.1.19 (reported by Google TAG, no CVE yet, not flagged as exploited in the wild)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-14",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-64078fc68a31d34b": {
+      "id": "REDDIT_CYBER-64078fc68a31d34b",
+      "type": "Intel",
+      "name": "Japan's largest taxi operator shuts systems after cyberattack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-14",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:755b051e62047b26d332eb539559e64b7291244e",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:755b051e62047b26d332eb539559e64b7291244e": {
+      "id": "ioc:sha1:755b051e62047b26d332eb539559e64b7291244e",
+      "type": "IOC",
+      "name": "755b051e62047b26d332eb539559e64b7291244e",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-14"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-f312c8691a444170": {
+      "id": "REDDIT_CYBER-f312c8691a444170",
+      "type": "Intel",
+      "name": "Enhancing the Threat Intelligence AI Model with Technical Knowledge About Windows Kernel Mode Malware",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-14",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:aibaranov.github.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:aibaranov.github.io": {
+      "id": "ioc:domain:aibaranov.github.io",
+      "type": "IOC",
+      "name": "aibaranov.github.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-14"
+      },
+      "connections": []
+    },
+    "campaign:cluster-4dcebf98": {
+      "id": "campaign:cluster-4dcebf98",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-14",
+        "last_seen": "2026-07-14",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 3 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-56855042aaba93e0",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -111650,6 +111769,51 @@
       "target": "ioc:sha1:1aed8def055be01ac2a05323850f6fb7046db260",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-56855042aaba93e0→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-56855042aaba93e0",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-64078fc68a31d34b→linked_to→ioc:sha1:755b051e62047b26d332eb539559e64b7291244e",
+      "source": "REDDIT_CYBER-64078fc68a31d34b",
+      "target": "ioc:sha1:755b051e62047b26d332eb539559e64b7291244e",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-f312c8691a444170→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-f312c8691a444170",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-f312c8691a444170→linked_to→ioc:domain:aibaranov.github.io",
+      "source": "REDDIT_CYBER-f312c8691a444170",
+      "target": "ioc:domain:aibaranov.github.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-4dcebf98→includes→REDDIT_CYBER-56855042aaba93e0",
+      "source": "campaign:cluster-4dcebf98",
+      "target": "REDDIT_CYBER-56855042aaba93e0",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-14",
       "sources": []
     }
