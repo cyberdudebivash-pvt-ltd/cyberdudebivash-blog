@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-14T06:06:43.125Z",
+  "generated": "2026-07-14T06:31:58.839Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4790,
+    "total_nodes": 4792,
     "actors": 8,
     "cves": 981,
     "campaigns": 416,
     "malware": 0,
-    "iocs": 505,
-    "edges": 2048
+    "iocs": 506,
+    "edges": 2049
   },
   "nodes": {
     "actor:lockbit": {
@@ -93118,6 +93118,41 @@
           "confidence": 0.75
         }
       ]
+    },
+    "REDDIT_CYBER-32502eb9f5a1be04": {
+      "id": "REDDIT_CYBER-32502eb9f5a1be04",
+      "type": "Intel",
+      "name": "Digital twins are becoming security infrastructure - not just monitoring tools",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-14",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:1aed8def055be01ac2a05323850f6fb7046db260",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:1aed8def055be01ac2a05323850f6fb7046db260": {
+      "id": "ioc:sha1:1aed8def055be01ac2a05323850f6fb7046db260",
+      "type": "IOC",
+      "name": "1aed8def055be01ac2a05323850f6fb7046db260",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-14"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -111588,6 +111623,15 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-32502eb9f5a1be04→linked_to→ioc:sha1:1aed8def055be01ac2a05323850f6fb7046db260",
+      "source": "REDDIT_CYBER-32502eb9f5a1be04",
+      "target": "ioc:sha1:1aed8def055be01ac2a05323850f6fb7046db260",
+      "relationship": "linked_to",
+      "confidence": 0.9,
       "first_seen": "2026-07-14",
       "sources": []
     }
