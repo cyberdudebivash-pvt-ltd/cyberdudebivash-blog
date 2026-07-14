@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T19:31:58.814Z",
+  "generated": "2026-07-14T20:02:06.387Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2183,
+  "total_published": 2186,
   "s2n_stats": {
     "passed": 83,
     "suppressed": 10,
-    "avg_qs": 0.551
+    "avg_qs": 0.552
   },
   "items": [
     {
@@ -2322,7 +2322,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2632,9 +2634,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-a6da19aea46994a1",
@@ -4226,95 +4226,9 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
-      "id": "REDDIT_CYBER-3cb85170eadd35e4",
-      "title": "ESET discovered 11 vulnerable UEFI shim bootloaders signed by Microsoft that allow attackers to bypass Secure Boot by ex",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1uwbihw/eset_discovered_11_vulnerable_uefi_shim/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/l229EjBARNaXNk022bucQvVDVY5QozFddl53Amhb2Co.jpeg?width=640&amp;amp;crop=smart&amp;amp;auto",
-      "cvss": 6.5,
-      "final_ps": 23,
-      "quality_score": 0.38,
-      "threat_level": "HIGH",
-      "type": "MALWARE_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-14",
-      "last_seen": "2026-07-14",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1uwbihw/eset_discovered_11_vulnerable_uefi_shim/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "REDDIT_CYBER-36d7dc648b044918",
-      "title": "&quot;Windows event log monitoring&quot; the event IDs that actually matter vs the ones gets ignored",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;so I was reviewing our windows event log coverage last week and realized how many teams are collecting everything but alerting only on like 3 or 4 event IDs and missing the ones that would actually catch something. 4688 is the obvious one",
-      "cvss": 6.5,
-      "final_ps": 23,
-      "quality_score": 0.32,
-      "threat_level": "MEDIUM",
-      "type": "RANSOMWARE",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-14",
-      "last_seen": "2026-07-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 3,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1uwbm8z/windows_event_log_monitoring_the_event_ids_that/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.320"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed"
-        ],
-        "suppression": "Quality score below minimum threshold (QS < 0.35)",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Quality score below minimum threshold (QS < 0.35)"
-    },
-    {
-      "id": "CVE-2026-50141",
-      "title": "Woodpecker gRPC agent_id metadata can be spoofed- cross-tenant agent impersonation",
-      "description": "### Impact\nA vulnerability in Woodpecker CI's gRPC layer allowed any authenticated agent to impersonate any other agent on the same server by injecting a forged `agent_id` value into outgoing gRPC metadata. The server correctly verified the JWT token but then discarded the verified agent identity in",
+      "id": "CVE-2026-54448",
+      "title": "Trivy: Helm chart tar bomb causes OOM via unbounded io.ReadAll in parser",
+      "description": "## Summary When Trivy scans a Helm chart archive (`.tgz`), its custom tar unpacker reads each entry with `io.ReadAll(tr)` and no size limit. An attacker who can place a malicious `.tgz` file in the scanned path can craft a small compressed archive that decompresses to gigabytes, causing the Trivy pr",
       "cvss": 7.5,
       "final_ps": 21,
       "quality_score": 0.523,
@@ -4331,18 +4245,18 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "go",
-      "product": "go.woodpecker-ci.org/woodpecker/v3",
+      "product": "github.com/aquasecurity/trivy",
       "due_date": null,
       "cves": [
-        "CVE-2026-50141",
-        "CVE-2026-50141"
+        "CVE-2026-54448",
+        "CVE-2026-54448"
       ],
-      "ioc_count": 4,
+      "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-g7mm-9vx7-jm7h",
-        "https://github.com/woodpecker-ci/woodpecker/security/advisories/GHSA-g7mm-9vx7-jm7h",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-50141",
-        "https://github.com/woodpecker-ci/woodpecker-security/issues/21"
+        "https://github.com/advisories/GHSA-q3fv-x8vg-qqm4",
+        "https://github.com/aquasecurity/trivy/security/advisories/GHSA-q3fv-x8vg-qqm4",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-54448",
+        "https://github.com/aquasecurity/trivy/pull/10718"
       ],
       "explanation": {
         "quality": [
@@ -4361,10 +4275,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-50131",
-      "title": "Fedify has an incomplete SSRF mitigation after GHSA-p9cg-vqcc-grcx: validatePublicUrl allows special-use IPv4 ranges",
-      "description": "### Summary Fedify previously addressed SSRF/internal network access in GHSA-p9cg-vqcc-grcx by adding public URL validation before runtime document and media fetching. However, the current IPv4 validation logic appears incomplete. The `validatePublicUrl()` protection relies on `isValidPublicIPv4Addr",
-      "cvss": 8.6,
+      "id": "CVE-2026-54087",
+      "title": "EasyAdmin: Stored Cross-Site Scripting (XSS) via uploaded files served inline in FileField and ImageField",
+      "description": "EasyAdmin's `FileField` and `ImageField` accept browser-executable file types by default (`FileField` applies no MIME/extension restrictions; `ImageField`'s default `Image` constraint accepts SVG). When the upload directory is configured inside the public web root — as shown in the documentation — E",
+      "cvss": 7.6,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4379,19 +4293,19 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "npm",
-      "product": "@fedify/fedify",
+      "vendor": "composer",
+      "product": "easycorp/easyadmin-bundle",
       "due_date": null,
       "cves": [
-        "CVE-2026-50131",
-        "CVE-2026-50131"
+        "CVE-2026-54087",
+        "CVE-2026-54087"
       ],
-      "ioc_count": 2,
+      "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-xw9q-2mv6-9fr8",
-        "https://github.com/fedify-dev/fedify/security/advisories/GHSA-xw9q-2mv6-9fr8",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-50131",
-        "https://github.com/advisories/GHSA-xw9q-2mv6-9fr8"
+        "https://github.com/advisories/GHSA-8559-gwj3-q37r",
+        "https://github.com/EasyCorp/EasyAdminBundle/security/advisories/GHSA-8559-gwj3-q37r",
+        "https://github.com/EasyCorp/EasyAdminBundle/commit/8132b2b0ca3876c9261264fa267106a1b2c10a68",
+        "https://github.com/EasyCorp/EasyAdminBundle/releases/tag/v5.0.13"
       ],
       "explanation": {
         "quality": [
@@ -4408,6 +4322,100 @@
       },
       "suppressed": false,
       "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-50158",
+      "title": "yutu: Arbitrary File Write via MCP `caption-download` Tool",
+      "description": "## Arbitrary File Write via MCP `caption-download` Tool ### Summary The `caption-download` MCP tool in yutu passes the caller-supplied `file` parameter directly to `os.Create()` at `pkg/caption/caption.go:272` without any path validation, canonicalization, or confinement to the `pkg.Root` boundary (",
+      "cvss": 7.7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-14",
+      "last_seen": "2026-07-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/eat-pray-ai/yutu",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50158",
+        "CVE-2026-50158"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-2c7f-fxww-6w6c",
+        "https://github.com/eat-pray-ai/yutu/security/advisories/GHSA-2c7f-fxww-6w6c",
+        "https://github.com/eat-pray-ai/yutu/commit/87026c4eee1ed28775383807087343a750707bf3",
+        "https://github.com/eat-pray-ai/yutu/releases/tag/v0.10.9-dev1"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "GHSA-0c7bb93a25471f15",
+      "title": "Ech0: ParseAcceptLanguage `_` separator bypass enables ~70x CPU amplification via Accept-Language header in i18n.Middlew",
+      "description": "### Summary Ech0's i18n middleware runs on every HTTP request and constructs a fresh `*goi18n.Localizer` from the raw `Accept-Language` header without imposing any size or shape filter. `goi18n.NewLocalizer` calls `golang.org/x/text/language.ParseAcceptLanguage` on the value internally. The underlyi",
+      "cvss": 7.5,
+      "final_ps": 20,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-14",
+      "last_seen": "2026-07-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/lin-snow/ech0",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-mqxv-9rm6-w8qc",
+        "https://github.com/lin-snow/Ech0/security/advisories/GHSA-mqxv-9rm6-w8qc",
+        "https://github.com/advisories/GHSA-mqxv-9rm6-w8qc"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     }
   ]
 }
