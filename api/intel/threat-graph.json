@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-14T08:34:09.437Z",
+  "generated": "2026-07-14T09:02:08.360Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4801,
+    "total_nodes": 4806,
     "actors": 8,
     "cves": 981,
-    "campaigns": 417,
+    "campaigns": 418,
     "malware": 0,
-    "iocs": 508,
-    "edges": 2055
+    "iocs": 509,
+    "edges": 2059
   },
   "nodes": {
     "actor:lockbit": {
@@ -93332,6 +93332,108 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-9136b05031c31235": {
+      "id": "REDDIT_CYBER-9136b05031c31235",
+      "type": "Intel",
+      "name": "Nightmare Eclipse could be dropping his big promised exploit today",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 62,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-14",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "REDDIT_CYBER-77dc5276e9f0211b": {
+      "id": "REDDIT_CYBER-77dc5276e9f0211b",
+      "type": "Intel",
+      "name": "Addressing the state-layer gap in autonomous actor architectures: Byzantine fault tolerance without consensus",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 47,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-14",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-3d354959e53ee52d": {
+      "id": "REDDIT_CYBER-3d354959e53ee52d",
+      "type": "Intel",
+      "name": "Free beginner certification - Hackviser CORE",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-14",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:app.hackviser.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:app.hackviser.com": {
+      "id": "ioc:domain:app.hackviser.com",
+      "type": "IOC",
+      "name": "app.hackviser.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-14"
+      },
+      "connections": []
+    },
+    "campaign:cluster-b7b9c9bf": {
+      "id": "campaign:cluster-b7b9c9bf",
+      "type": "Campaign",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-14",
+        "last_seen": "2026-07-14",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 4 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-9136b05031c31235",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -111865,6 +111967,42 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-9136b05031c31235→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-9136b05031c31235",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-3d354959e53ee52d→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-3d354959e53ee52d",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-3d354959e53ee52d→linked_to→ioc:domain:app.hackviser.com",
+      "source": "REDDIT_CYBER-3d354959e53ee52d",
+      "target": "ioc:domain:app.hackviser.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-b7b9c9bf→includes→REDDIT_CYBER-9136b05031c31235",
+      "source": "campaign:cluster-b7b9c9bf",
+      "target": "REDDIT_CYBER-9136b05031c31235",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-14",
       "sources": []
     }
