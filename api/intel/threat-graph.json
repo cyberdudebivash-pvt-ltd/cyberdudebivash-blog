@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-14T21:02:08.878Z",
+  "generated": "2026-07-14T21:29:35.842Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4887,
+    "total_nodes": 4890,
     "actors": 8,
-    "cves": 999,
-    "campaigns": 424,
+    "cves": 1000,
+    "campaigns": 425,
     "malware": 0,
     "iocs": 521,
-    "edges": 2088
+    "edges": 2090
   },
   "nodes": {
     "actor:lockbit": {
@@ -94953,6 +94953,68 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-15409": {
+      "id": "CVE-2026-15409",
+      "type": "CVE",
+      "name": "SonicWall warns of SMA1000 flaws exploited in zero-day attacks, patch now",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 75,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-14",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-e20977fbebfb2fb2": {
+      "id": "REDDIT_CYBER-e20977fbebfb2fb2",
+      "type": "Intel",
+      "name": "What is going on in the cybersecurity job market?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-14",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cve-2026-15409": {
+      "id": "campaign:cve-2026-15409",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-14",
+        "last_seen": "2026-07-14",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 2 related CVEs: CVE-2026-15409, CVE-2026-15410 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-15409",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -113783,6 +113845,24 @@
       "target": "ioc:ipv4:169.254.169.254",
       "relationship": "linked_to",
       "confidence": 0.88,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-e20977fbebfb2fb2→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-e20977fbebfb2fb2",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-15409→includes→CVE-2026-15409",
+      "source": "campaign:cve-2026-15409",
+      "target": "CVE-2026-15409",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-14",
       "sources": []
     }
