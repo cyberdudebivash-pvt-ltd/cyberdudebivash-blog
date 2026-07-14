@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T20:02:06.387Z",
+  "generated": "2026-07-14T20:07:05.637Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2186,
+  "total_published": 2192,
   "s2n_stats": {
-    "passed": 83,
-    "suppressed": 10,
-    "avg_qs": 0.552
+    "passed": 85,
+    "suppressed": 7,
+    "avg_qs": 0.551
   },
   "items": [
     {
@@ -2322,9 +2322,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2634,7 +2632,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CISA-a6da19aea46994a1",
@@ -4226,6 +4226,104 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-54628",
+      "title": "Anyquery: Server-Side Request Forgery (SSRF) via Unrestricted SQLite Virtual Table Modules in Server Mode",
+      "description": "## Summary\nAnyquery's `server` mode does not restrict outbound HTTP requests initiated by its built-in SQLite virtual table modules (e.g., `json_reader`, `log_reader`). Unauthenticated attackers connecting to the MySQL-compatible server port can create virtual tables pointing to internal network end",
+      "cvss": 8.6,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-14",
+      "last_seen": "2026-07-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/julien040/anyquery",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54628",
+        "CVE-2026-54628"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://github.com/advisories/GHSA-hwrq-8wxh-q4xv",
+        "https://github.com/julien040/anyquery/security/advisories/GHSA-hwrq-8wxh-q4xv",
+        "https://github.com/julien040/anyquery/releases/tag/0.4.5",
+        "https://github.com/advisories/GHSA-hwrq-8wxh-q4xv"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53604",
+      "title": "nebula-mesh: CA private key not zeroized on web mobile-bundle error paths",
+      "description": "## Impact The web handler `renderMobileBundle` (`internal/web/handlers.go:1325`) passes the real `*pki.CAResolver` directly into `mobilebundle.Build`. Inside `Build` (`internal/mobilebundle/builder.go:54`), `resolver.LoadByID` decrypts the CA's ed25519 private key into a `*pki.CAManager`, but `Build",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-14",
+      "last_seen": "2026-07-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/forgekeep/nebula-mesh",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53604",
+        "CVE-2026-53604"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-2p2f-px33-4vv5",
+        "https://github.com/forgekeep/nebula-mesh/security/advisories/GHSA-2p2f-px33-4vv5",
+        "https://github.com/forgekeep/nebula-mesh/commit/1f1ab9aa8472239763d967e3d50a3cd53a1a79b9",
+        "https://github.com/forgekeep/nebula-mesh/releases/tag/v0.3.8"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-54448",
       "title": "Trivy: Helm chart tar bomb causes OOM via unbounded io.ReadAll in parser",
       "description": "## Summary When Trivy scans a Helm chart archive (`.tgz`), its custom tar unpacker reads each entry with `io.ReadAll(tr)` and no size limit. An attacker who can place a malicious `.tgz` file in the scanned path can craft a small compressed archive that decompresses to gigabytes, causing the Trivy pr",
@@ -4322,100 +4420,6 @@
       },
       "suppressed": false,
       "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-50158",
-      "title": "yutu: Arbitrary File Write via MCP `caption-download` Tool",
-      "description": "## Arbitrary File Write via MCP `caption-download` Tool ### Summary The `caption-download` MCP tool in yutu passes the caller-supplied `file` parameter directly to `os.Create()` at `pkg/caption/caption.go:272` without any path validation, canonicalization, or confinement to the `pkg.Root` boundary (",
-      "cvss": 7.7,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-14",
-      "last_seen": "2026-07-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/eat-pray-ai/yutu",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-50158",
-        "CVE-2026-50158"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-2c7f-fxww-6w6c",
-        "https://github.com/eat-pray-ai/yutu/security/advisories/GHSA-2c7f-fxww-6w6c",
-        "https://github.com/eat-pray-ai/yutu/commit/87026c4eee1ed28775383807087343a750707bf3",
-        "https://github.com/eat-pray-ai/yutu/releases/tag/v0.10.9-dev1"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "GHSA-0c7bb93a25471f15",
-      "title": "Ech0: ParseAcceptLanguage `_` separator bypass enables ~70x CPU amplification via Accept-Language header in i18n.Middlew",
-      "description": "### Summary Ech0's i18n middleware runs on every HTTP request and constructs a fresh `*goi18n.Localizer` from the raw `Accept-Language` header without imposing any size or shape filter. `goi18n.NewLocalizer` calls `golang.org/x/text/language.ParseAcceptLanguage` on the value internally. The underlyi",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.493,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-14",
-      "last_seen": "2026-07-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/lin-snow/ech0",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 1,
-      "refs": [
-        "https://github.com/advisories/GHSA-mqxv-9rm6-w8qc",
-        "https://github.com/lin-snow/Ech0/security/advisories/GHSA-mqxv-9rm6-w8qc",
-        "https://github.com/advisories/GHSA-mqxv-9rm6-w8qc"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     }
   ]
 }
