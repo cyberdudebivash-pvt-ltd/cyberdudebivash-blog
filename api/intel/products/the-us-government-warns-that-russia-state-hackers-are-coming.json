@@ -1,0 +1,103 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-0c5554c20915250f",
+  "title": "The US government warns that Russia state hackers are coming after your router",
+  "generated": "2026-07-14T09:32:02.188Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [
+    {
+      "id": "T1071",
+      "name": "Application Layer Protocol",
+      "tactic": "command-and-control",
+      "confidence": "MEDIUM"
+    }
+  ],
+  "iocs": [
+    {
+      "value": "43f0c2a2eae76c7e2a0b2c69ac6e8226551bb94b",
+      "type": "sha1",
+      "confidence": 0.9
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uw3n9p/the_us_government_warns_that_russia_state_ha",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://external-preview[.]redd[.]it/7gJaahdwUoCCWW1EcJ4nfDkp9xw0GIYmPWpc7OKA9Fs[.]jpeg?width=640&amp;amp;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/NISMO1968&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://arstechnica[.]com/security/2026/07/the-us-government-warns-that-russia-state-hackers-are-comin",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "arstechnica[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uw3n9p/the_us_government_warns_that_russia_state_ha\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uw3n9p/the_us_government_warns_that_russia_state_ha\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/7gJaahdwUoCCWW1EcJ4nfDkp9xw0GIYmPWpc7OKA9Fs.jpeg?width=640&amp;amp;\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/7gJaahdwUoCCWW1EcJ4nfDkp9xw0GIYmPWpc7OKA9Fs.jpeg?width=640&amp\\;amp\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/NISMO1968&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/NISMO1968&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://arstechnica.com/security/2026/07/the-us-government-warns-that-russia-state-hackers-are-comin\"; http.host; content:\"arstechnica.com\"; nocase; http.uri; content:\"/security/2026/07/the-us-government-warns-that-russia-state-hackers-are-comin\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain arstechnica.com\"; dns.query; content:\"arstechnica.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "7 indicator(s) of compromise extracted from source reporting.",
+      "1 MITRE ATT&CK technique(s) evidenced in the source material."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 129 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 298 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: the-us-government-warns-that-russia-state-hackers-are-coming (9 shared entities), nightmare-eclipse-could-be-dropping-his-big-promised-exploit (3 shared entities), addressing-the-state-layer-gap-in-autonomous-actor-architect (3 shared entities), enhancing-the-threat-intelligence-ai-model-with-technical-kn (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uw3n9p/the_us_government_warns_that_russia_state_hackers/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
