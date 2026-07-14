@@ -1,0 +1,79 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_NETSEC-40bb12e37f52c050",
+  "title": "Enhancing IIoT Security Using Digital Twins in Industry",
+  "generated": "2026-07-14T06:02:09.989Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_netsec",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/TorrensUni&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://research[.]torrens[.]edu[.]au/en/publications/enhancing-iiot-security-using-digital-twins-in-indus",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/netsec/comments/1uvzmuz/enhancing_iiot_security_using_digital_twins_in/&quo",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/TorrensUni&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/TorrensUni&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://research.torrens.edu.au/en/publications/enhancing-iiot-security-using-digital-twins-in-indus\"; http.host; content:\"research.torrens.edu.au\"; nocase; http.uri; content:\"/en/publications/enhancing-iiot-security-using-digital-twins-in-indus\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1uvzmuz/enhancing_iiot_security_using_digital_twins_in/&quo\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1uvzmuz/enhancing_iiot_security_using_digital_twins_in/&quo\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_netsec Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "4 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_netsec has been targeted in 25 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 288 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: enhancing-iiot-security-using-digital-twins-in-industry (6 shared entities), context-bombs-using-ai-guardrails-as-a-defensive-mechanism (3 shared entities), exportheft-11-quot-ai-chat-exporter-quot-chrome-extension (3 shared entities), axon-body-camera-3-of-4-hardware-reverse-cracking-output-vid (3 shared entities), cet-compliant-callstack-spoofing-via-thread-pool-amp-enum (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/netsec/comments/1uvzmuz/enhancing_iiot_security_using_digital_twins_in/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
