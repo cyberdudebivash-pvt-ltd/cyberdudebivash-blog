@@ -1,0 +1,96 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-ecb85001ff8f0c95",
+  "title": "How an Infostealer Infection Led to a Sophisticated ClickFix Campaign at Artlist",
+  "generated": "2026-07-14T10:40:48.527Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "0089e8e28132c987a67bb0882d23b3dbacca5de2",
+      "type": "sha1",
+      "confidence": 0.9
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uw4zu1/how_an_infostealer_infection_led_to_a/&quot;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://external-preview[.]redd[.]it/nbKwNbHkWn_hIi5R3iOVh405JjPdhmBiXmjzUmIsKtE[.]jpeg?width=640&amp;amp;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/Malwarebeasts&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]infostealers[.]com/article/how-an-infostealer-infection-led-to-a-sophisticated-clickfix-ca",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "www[.]infostealers[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uw4zu1/how_an_infostealer_infection_led_to_a/&quot;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uw4zu1/how_an_infostealer_infection_led_to_a/&quot\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/nbKwNbHkWn_hIi5R3iOVh405JjPdhmBiXmjzUmIsKtE.jpeg?width=640&amp;amp;\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/nbKwNbHkWn_hIi5R3iOVh405JjPdhmBiXmjzUmIsKtE.jpeg?width=640&amp\\;amp\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Malwarebeasts&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Malwarebeasts&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.infostealers.com/article/how-an-infostealer-infection-led-to-a-sophisticated-clickfix-ca\"; http.host; content:\"www.infostealers.com\"; nocase; http.uri; content:\"/article/how-an-infostealer-infection-led-to-a-sophisticated-clickfix-ca\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.infostealers.com\"; dns.query; content:\"www.infostealers.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "7 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 131 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 303 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: how-an-infostealer-infection-led-to-a-sophisticated-clickfix (8 shared entities), asyncapi-specs-2-7m-weekly-downloads-got-compromised-toda (3 shared entities), nightmare-eclipse-could-be-dropping-his-big-promised-exploit (2 shared entities), addressing-the-state-layer-gap-in-autonomous-actor-architect (2 shared entities), the-us-government-warns-that-russia-state-hackers-are-coming (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uw4zu1/how_an_infostealer_infection_led_to_a/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
