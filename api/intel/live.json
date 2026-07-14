@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T18:36:41.735Z",
+  "generated": "2026-07-14T19:02:05.866Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,11 +9,53 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 2178,
   "s2n_stats": {
-    "passed": 84,
-    "suppressed": 7,
-    "avg_qs": 0.551
+    "passed": 83,
+    "suppressed": 10,
+    "avg_qs": 0.554
   },
   "items": [
+    {
+      "id": "REDDIT_CYBER-a4418c5eeef50f0c",
+      "title": "🇨🇳 Suspected Chinese Operators Use Claude Code and DeepSeek to Breach Government Systems Across Four Countries",
+      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1uwgpkv/suspected_chinese_operators_use_claude_code_and/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/YPpFVuYLLHPn4jeMqTwg6UVSgb82g0hbSEZoKnEnfWI.png?width=320&amp;amp;crop=smart&amp;a",
+      "cvss": 6.5,
+      "final_ps": 69,
+      "quality_score": 0.585,
+      "threat_level": "HIGH",
+      "type": "AI_SECURITY",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-07-14",
+      "last_seen": "2026-07-14",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 7,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1uwgpkv/suspected_chinese_operators_use_claude_code_and/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.80",
+          "ioc_presence=7 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.585"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -2190,7 +2232,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-634e03182dd384cb",
@@ -2322,7 +2366,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2632,9 +2678,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-a6da19aea46994a1",
@@ -4269,6 +4313,55 @@
       "suppression_reason": "Quality score below minimum threshold (QS < 0.35)"
     },
     {
+      "id": "CVE-2026-50141",
+      "title": "Woodpecker gRPC agent_id metadata can be spoofed- cross-tenant agent impersonation",
+      "description": "### Impact\nA vulnerability in Woodpecker CI's gRPC layer allowed any authenticated agent to impersonate any other agent on the same server by injecting a forged `agent_id` value into outgoing gRPC metadata. The server correctly verified the JWT token but then discarded the verified agent identity in",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-14",
+      "last_seen": "2026-07-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "go.woodpecker-ci.org/woodpecker/v3",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50141",
+        "CVE-2026-50141"
+      ],
+      "ioc_count": 4,
+      "refs": [
+        "https://github.com/advisories/GHSA-g7mm-9vx7-jm7h",
+        "https://github.com/woodpecker-ci/woodpecker/security/advisories/GHSA-g7mm-9vx7-jm7h",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-50141",
+        "https://github.com/woodpecker-ci/woodpecker-security/issues/21"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-50131",
       "title": "Fedify has an incomplete SSRF mitigation after GHSA-p9cg-vqcc-grcx: validatePublicUrl allows special-use IPv4 ranges",
       "description": "### Summary Fedify previously addressed SSRF/internal network access in GHSA-p9cg-vqcc-grcx by adding public URL validation before runtime document and media fetching. However, the current IPv4 validation logic appears incomplete. The `validatePublicUrl()` protection relies on `isValidPublicIPv4Addr",
@@ -4300,103 +4393,6 @@
         "https://github.com/fedify-dev/fedify/security/advisories/GHSA-xw9q-2mv6-9fr8",
         "https://nvd.nist.gov/vuln/detail/CVE-2026-50131",
         "https://github.com/advisories/GHSA-xw9q-2mv6-9fr8"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-50125",
-      "title": "MKP: Unbounded Pod Log Read via Attacker-Controlled `limitBytes`/`tailLines` Causes Memory Exhaustion",
-      "description": "## Unbounded Pod Log Read via Attacker-Controlled `limitBytes`/`tailLines` Causes Memory Exhaustion ### Summary The MKP (Model Context Protocol for Kubernetes) server exposes a `get_resource` MCP tool that proxies Kubernetes pod log requests. User-supplied `limitBytes` and `tailLines` parameters are",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-14",
-      "last_seen": "2026-07-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/StacklokLabs/mkp",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-50125",
-        "CVE-2026-50125"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-qw5r-ppcg-f8rj",
-        "https://github.com/StacklokLabs/mkp/security/advisories/GHSA-qw5r-ppcg-f8rj",
-        "https://github.com/advisories/GHSA-qw5r-ppcg-f8rj"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-50013",
-      "title": "Hoverfly: Process Crash via Concurrent Map Write Race Condition in Diff Mode",
-      "description": "### Summary: When Hoverfly is running in Diff mode, the `AddDiff()` function writes to the shared `responsesDiff` map without any synchronization (no mutex). When multiple proxy requests are processed concurrently (the normal case for any proxy), the concurrent map writes trigger Go's built-in race ",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-14",
-      "last_seen": "2026-07-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/SpectoLabs/hoverfly",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-50013",
-        "CVE-2026-50013"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-qrh4-p6v4-mrfg",
-        "https://github.com/SpectoLabs/hoverfly/security/advisories/GHSA-qrh4-p6v4-mrfg",
-        "https://github.com/SpectoLabs/hoverfly/pull/1227",
-        "https://github.com/SpectoLabs/hoverfly/releases/tag/v1.12.8"
       ],
       "explanation": {
         "quality": [
