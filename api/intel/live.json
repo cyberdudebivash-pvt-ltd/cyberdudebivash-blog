@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-14T20:07:05.637Z",
+  "generated": "2026-07-14T20:32:15.240Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2192,
+  "total_published": 2194,
   "s2n_stats": {
-    "passed": 85,
-    "suppressed": 7,
-    "avg_qs": 0.551
+    "passed": 86,
+    "suppressed": 9,
+    "avg_qs": 0.55
   },
   "items": [
     {
@@ -4183,53 +4183,10 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
-      "id": "REDDIT_CYBER-a4418c5eeef50f0c",
-      "title": "🇨🇳 Suspected Chinese Operators Use Claude Code and DeepSeek to Breach Government Systems Across Four Countries",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1uwgpkv/suspected_chinese_operators_use_claude_code_and/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/YPpFVuYLLHPn4jeMqTwg6UVSgb82g0hbSEZoKnEnfWI.png?width=320&amp;amp;crop=smart&amp;a",
-      "cvss": 6.5,
-      "final_ps": 23,
-      "quality_score": 0.38,
-      "threat_level": "HIGH",
-      "type": "AI_SECURITY",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-14",
-      "last_seen": "2026-07-14",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1uwgpkv/suspected_chinese_operators_use_claude_code_and/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-54628",
-      "title": "Anyquery: Server-Side Request Forgery (SSRF) via Unrestricted SQLite Virtual Table Modules in Server Mode",
-      "description": "## Summary\nAnyquery's `server` mode does not restrict outbound HTTP requests initiated by its built-in SQLite virtual table modules (e.g., `json_reader`, `log_reader`). Unauthenticated attackers connecting to the MySQL-compatible server port can create virtual tables pointing to internal network end",
-      "cvss": 8.6,
+      "id": "CVE-2026-44891",
+      "title": "Netty: Denial of Service via Unbounded Headers in StompSubframeDecoder",
+      "description": "### Summary\nThe StompSubframeDecoder fails to limit the total number of headers or their cumulative size per frame, allowing an attacker to cause an OutOfMemoryError, leading to a Denial of Service. ### Details\n`io.netty.handler.codec.stomp.StompSubframeDecoder` implements the STOMP protocol. The `m",
+      "cvss": 7.5,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4244,19 +4201,18 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/julien040/anyquery",
+      "vendor": "maven",
+      "product": "io.netty:netty-codec-stomp",
       "due_date": null,
       "cves": [
-        "CVE-2026-54628",
-        "CVE-2026-54628"
+        "CVE-2026-44891",
+        "CVE-2026-44891"
       ],
-      "ioc_count": 2,
+      "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-hwrq-8wxh-q4xv",
-        "https://github.com/julien040/anyquery/security/advisories/GHSA-hwrq-8wxh-q4xv",
-        "https://github.com/julien040/anyquery/releases/tag/0.4.5",
-        "https://github.com/advisories/GHSA-hwrq-8wxh-q4xv"
+        "https://github.com/advisories/GHSA-vhch-2wf3-m8rp",
+        "https://github.com/netty/netty/security/advisories/GHSA-vhch-2wf3-m8rp",
+        "https://github.com/advisories/GHSA-vhch-2wf3-m8rp"
       ],
       "explanation": {
         "quality": [
@@ -4275,9 +4231,156 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-53604",
-      "title": "nebula-mesh: CA private key not zeroized on web mobile-bundle error paths",
-      "description": "## Impact The web handler `renderMobileBundle` (`internal/web/handlers.go:1325`) passes the real `*pki.CAResolver` directly into `mobilebundle.Build`. Inside `Build` (`internal/mobilebundle/builder.go:54`), `resolver.LoadByID` decrypts the CA's ed25519 private key into a `*pki.CAManager`, but `Build",
+      "id": "CVE-2026-61549",
+      "title": "Woodpecker: Privilege escalation via unrestricted serviceAccountName in the Kubernetes backend",
+      "description": "### Impact A privilege escalation vulnerability affects Woodpecker instances using the **Kubernetes backend**. The pipeline option `backend_options.kubernetes.serviceAccountName` was passed directly to the pod spec without any admin gating. **Who is impacted:** any operator running the Kubernetes ba",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-14",
+      "last_seen": "2026-07-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "go.woodpecker-ci.org/woodpecker/v3",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-61549",
+        "CVE-2026-61549"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-qf34-295c-26v8",
+        "https://github.com/woodpecker-ci/woodpecker/security/advisories/GHSA-qf34-295c-26v8",
+        "https://github.com/woodpecker-ci/woodpecker/pull/6792",
+        "https://github.com/advisories/GHSA-qf34-295c-26v8"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-61699",
+      "title": "nebula-mesh: Certificate revocation is never enforced at the mesh",
+      "description": "### Summary nebula-mesh revokes a host by adding its certificate fingerprint to a per-CA blocklist and shipping that list to every other agent on each poll. Slack's Nebula enforces certificate revocation ONLY through the `pki.blocklist` list in `config.yml` (no CRL/OCSP). The project's own code stat",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-14",
+      "last_seen": "2026-07-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/forgekeep/nebula-mesh",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-61699",
+        "CVE-2026-61699"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-cm26-5974-52h8",
+        "https://github.com/forgekeep/nebula-mesh/security/advisories/GHSA-cm26-5974-52h8",
+        "https://github.com/forgekeep/nebula-mesh/commit/0426e2f224a9b1e2029029bf923c93ed39d21cdb",
+        "https://github.com/forgekeep/nebula-mesh/releases/tag/v0.7.1"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54629",
+      "title": "Anyquery: Local File Read (LFR) via Unrestricted SQLite Virtual Table Modules in Server Mode",
+      "description": "## Summary\nAnyquery's `server` mode lacks input sanitization and access control over its built-in SQLite virtual table modules (e.g., `csv_reader`, `log_reader`). Unauthenticated attackers connecting to the MySQL-compatible server port can create virtual tables pointing to local files on the system ",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-14",
+      "last_seen": "2026-07-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/julien040/anyquery",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54629",
+        "CVE-2026-54629"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-mf78-3rpf-r784",
+        "https://github.com/julien040/anyquery/security/advisories/GHSA-mf78-3rpf-r784",
+        "https://github.com/julien040/anyquery/releases/tag/0.4.5",
+        "https://github.com/advisories/GHSA-mf78-3rpf-r784"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53603",
+      "title": "nebula-mesh: Operator session tokens stored in plaintext in the database",
+      "description": "## Impact Operator session tokens are stored in plaintext in the `operator_sessions` table (the `token` column is the PRIMARY KEY). The session token is a 32-byte random hex value sent directly in a cookie and valid for 24 hours. - `internal/models/operator.go:61` — `OperatorSession.Token` holds the",
       "cvss": 7.5,
       "final_ps": 21,
       "quality_score": 0.523,
@@ -4297,113 +4400,15 @@
       "product": "github.com/forgekeep/nebula-mesh",
       "due_date": null,
       "cves": [
-        "CVE-2026-53604",
-        "CVE-2026-53604"
+        "CVE-2026-53603",
+        "CVE-2026-53603"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-2p2f-px33-4vv5",
-        "https://github.com/forgekeep/nebula-mesh/security/advisories/GHSA-2p2f-px33-4vv5",
-        "https://github.com/forgekeep/nebula-mesh/commit/1f1ab9aa8472239763d967e3d50a3cd53a1a79b9",
+        "https://github.com/advisories/GHSA-q4vm-pq3q-8wgq",
+        "https://github.com/forgekeep/nebula-mesh/security/advisories/GHSA-q4vm-pq3q-8wgq",
+        "https://github.com/forgekeep/nebula-mesh/commit/7cb01bab281ded557f8b6c81dab5f48d4c10182e",
         "https://github.com/forgekeep/nebula-mesh/releases/tag/v0.3.8"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54448",
-      "title": "Trivy: Helm chart tar bomb causes OOM via unbounded io.ReadAll in parser",
-      "description": "## Summary When Trivy scans a Helm chart archive (`.tgz`), its custom tar unpacker reads each entry with `io.ReadAll(tr)` and no size limit. An attacker who can place a malicious `.tgz` file in the scanned path can craft a small compressed archive that decompresses to gigabytes, causing the Trivy pr",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-14",
-      "last_seen": "2026-07-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "github.com/aquasecurity/trivy",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54448",
-        "CVE-2026-54448"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-q3fv-x8vg-qqm4",
-        "https://github.com/aquasecurity/trivy/security/advisories/GHSA-q3fv-x8vg-qqm4",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-54448",
-        "https://github.com/aquasecurity/trivy/pull/10718"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54087",
-      "title": "EasyAdmin: Stored Cross-Site Scripting (XSS) via uploaded files served inline in FileField and ImageField",
-      "description": "EasyAdmin's `FileField` and `ImageField` accept browser-executable file types by default (`FileField` applies no MIME/extension restrictions; `ImageField`'s default `Image` constraint accepts SVG). When the upload directory is configured inside the public web root — as shown in the documentation — E",
-      "cvss": 7.6,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-14",
-      "last_seen": "2026-07-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "easycorp/easyadmin-bundle",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54087",
-        "CVE-2026-54087"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-8559-gwj3-q37r",
-        "https://github.com/EasyCorp/EasyAdminBundle/security/advisories/GHSA-8559-gwj3-q37r",
-        "https://github.com/EasyCorp/EasyAdminBundle/commit/8132b2b0ca3876c9261264fa267106a1b2c10a68",
-        "https://github.com/EasyCorp/EasyAdminBundle/releases/tag/v5.0.13"
       ],
       "explanation": {
         "quality": [
