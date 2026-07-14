@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-14T18:02:25.055Z",
+  "generated": "2026-07-14T18:31:58.650Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4853,
+    "total_nodes": 4859,
     "actors": 8,
-    "cves": 984,
+    "cves": 987,
     "campaigns": 422,
     "malware": 0,
-    "iocs": 517,
-    "edges": 2079
+    "iocs": 519,
+    "edges": 2081
   },
   "nodes": {
     "actor:lockbit": {
@@ -94324,6 +94324,111 @@
           "confidence": 1
         }
       ]
+    },
+    "SECURITYWEEK-2905c62c997ee3f1": {
+      "id": "SECURITYWEEK-2905c62c997ee3f1",
+      "type": "Intel",
+      "name": "Synopsys Finds No Evidence of Data Breach Amid Bosch Hack Claims",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-14",
+        "type": "DATA_BREACH"
+      },
+      "connections": []
+    },
+    "CVE-2026-50131": {
+      "id": "CVE-2026-50131",
+      "type": "CVE",
+      "name": "Fedify has an incomplete SSRF mitigation after GHSA-p9cg-vqcc-grcx: validatePublicUrl allows special-use IPv4 ranges",
+      "attributes": {
+        "cvss": 8.6,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "@fedify/fedify",
+        "published": "2026-07-14",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:169.254.0.0",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        },
+        {
+          "target": "ioc:ipv4:172.16.0.0",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        }
+      ]
+    },
+    "ioc:ipv4:169.254.0.0": {
+      "id": "ioc:ipv4:169.254.0.0",
+      "type": "IOC",
+      "name": "169.254.0.0",
+      "attributes": {
+        "ioc_type": "ipv4",
+        "confidence": 0.88,
+        "first_seen": "2026-07-14"
+      },
+      "connections": []
+    },
+    "ioc:ipv4:172.16.0.0": {
+      "id": "ioc:ipv4:172.16.0.0",
+      "type": "IOC",
+      "name": "172.16.0.0",
+      "attributes": {
+        "ioc_type": "ipv4",
+        "confidence": 0.88,
+        "first_seen": "2026-07-14"
+      },
+      "connections": []
+    },
+    "CVE-2026-50125": {
+      "id": "CVE-2026-50125",
+      "type": "CVE",
+      "name": "MKP: Unbounded Pod Log Read via Attacker-Controlled `limitBytes`/`tailLines` Causes Memory Exhaustion",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/StacklokLabs/mkp",
+        "published": "2026-07-14",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-50013": {
+      "id": "CVE-2026-50013",
+      "type": "CVE",
+      "name": "Hoverfly: Process Crash via Concurrent Map Write Race Condition in Diff Mode",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/SpectoLabs/hoverfly",
+        "published": "2026-07-14",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -113073,6 +113178,24 @@
       "target": "BLEEPINGCOMPUTER-6fb27962f0e99c48",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-50131→linked_to→ioc:ipv4:169.254.0.0",
+      "source": "CVE-2026-50131",
+      "target": "ioc:ipv4:169.254.0.0",
+      "relationship": "linked_to",
+      "confidence": 0.88,
+      "first_seen": "2026-07-14",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-50131→linked_to→ioc:ipv4:172.16.0.0",
+      "source": "CVE-2026-50131",
+      "target": "ioc:ipv4:172.16.0.0",
+      "relationship": "linked_to",
+      "confidence": 0.88,
       "first_seen": "2026-07-14",
       "sources": []
     }
