@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-15T15:31:58.448Z",
+  "generated": "2026-07-15T16:02:23.249Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4929,
+    "total_nodes": 4933,
     "actors": 8,
     "cves": 1000,
-    "campaigns": 432,
+    "campaigns": 433,
     "malware": 0,
-    "iocs": 523,
-    "edges": 2110
+    "iocs": 524,
+    "edges": 2112
   },
   "nodes": {
     "actor:lockbit": {
@@ -95793,6 +95793,79 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-18463cdba0ceff76": {
+      "id": "REDDIT_CYBER-18463cdba0ceff76",
+      "type": "Intel",
+      "name": "File-Binding, Process-Binding, and Silo-Binding - new process impersonation techniques for EDR evasion",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-15",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.bitdefender.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:www.bitdefender.com": {
+      "id": "ioc:domain:www.bitdefender.com",
+      "type": "IOC",
+      "name": "www.bitdefender.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-15"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-7bad6f1779eb6be9": {
+      "id": "BLEEPINGCOMPUTER-7bad6f1779eb6be9",
+      "type": "Intel",
+      "name": "​ ​AsyncAPI npm packages infected with credential-stealing malware",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-15",
+        "type": "SUPPLY_CHAIN"
+      },
+      "connections": []
+    },
+    "campaign:cluster-8e8866bc": {
+      "id": "campaign:cluster-8e8866bc",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-15",
+        "last_seen": "2026-07-15",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 7 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-18463cdba0ceff76",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -114819,6 +114892,24 @@
       "id": "campaign:cluster-5627cb1e→includes→REDDIT_CYBER-d6ed81958549d9a8",
       "source": "campaign:cluster-5627cb1e",
       "target": "REDDIT_CYBER-d6ed81958549d9a8",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-18463cdba0ceff76→linked_to→ioc:domain:www.bitdefender.com",
+      "source": "REDDIT_CYBER-18463cdba0ceff76",
+      "target": "ioc:domain:www.bitdefender.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-15",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-8e8866bc→includes→REDDIT_CYBER-18463cdba0ceff76",
+      "source": "campaign:cluster-8e8866bc",
+      "target": "REDDIT_CYBER-18463cdba0ceff76",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-15",

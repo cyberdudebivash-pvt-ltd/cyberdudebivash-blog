@@ -1,0 +1,105 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-18463cdba0ceff76",
+  "title": "File-Binding, Process-Binding, and Silo-Binding - new process impersonation techniques for EDR evasion",
+  "generated": "2026-07-15T16:02:23.324Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": true,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://www[.]bitdefender[.]com/en-us/blog/businessinsights/bind-link-abuses-windows-feature-edr-evasion",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://techzone[.]bitdefender[.]com/en/tech-explainers/what-is-process-impersonation[.]html&quot;&gt;What",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/MartinZugec&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1ux9ly5/filebinding_processbinding_and_silobinding_n",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]bitdefender[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "techzone[.]bitdefender[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.bitdefender.com/en-us/blog/businessinsights/bind-link-abuses-windows-feature-edr-evasion\"; http.host; content:\"www.bitdefender.com\"; nocase; http.uri; content:\"/en-us/blog/businessinsights/bind-link-abuses-windows-feature-edr-evasion\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://techzone.bitdefender.com/en/tech-explainers/what-is-process-impersonation.html&quot;&gt;What\"; http.host; content:\"techzone.bitdefender.com\"; nocase; http.uri; content:\"/en/tech-explainers/what-is-process-impersonation.html&quot\\;&gt\\;What\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/MartinZugec&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/MartinZugec&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1ux9ly5/filebinding_processbinding_and_silobinding_n\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1ux9ly5/filebinding_processbinding_and_silobinding_n\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.bitdefender.com\"; dns.query; content:\"www.bitdefender.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain techzone.bitdefender.com\"; dns.query; content:\"techzone.bitdefender.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000007; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "Active exploitation reported in source intelligence.",
+      "7 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      },
+      {
+        "confidence": "HIGH",
+        "text": "Unpatched exposure represents an active — not theoretical — risk, given confirmed exploitation."
+      }
+    ],
+    "intelligence_gaps": [
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "HIGH",
+        "text": "Continued and broadening exploitation is expected; additional threat actors are likely to adopt this vector."
+      },
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 146 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 365 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: file-binding-process-binding-and-silo-binding-new-proces (9 shared entities), runtime-detection-for-ecs-ec2-what-are-people-actually-usin (3 shared entities), coverage-first-soc-why-domains-and-telemetry-matter-as-much (3 shared entities), sophos-the-state-of-ransomware-2026-payments-are-dropping (3 shared entities), kql-queries-for-new-chaotic-eclipse-zero-day-legacy-hive (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1ux9ly5/filebinding_processbinding_and_silobinding_new/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
