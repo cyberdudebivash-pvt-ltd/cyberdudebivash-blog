@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-15T08:02:09.783Z",
+  "generated": "2026-07-15T08:32:03.329Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4899,
+    "total_nodes": 4901,
     "actors": 8,
     "cves": 1000,
     "campaigns": 426,
     "malware": 0,
     "iocs": 522,
-    "edges": 2095
+    "edges": 2096
   },
   "nodes": {
     "actor:lockbit": {
@@ -95194,6 +95194,48 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_NETSEC-10f61c76b6c07795": {
+      "id": "REDDIT_NETSEC-10f61c76b6c07795",
+      "type": "Intel",
+      "name": "(More) Unauthenticated Arbitrary Code Execution in ServiceNow",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-51205cfeab287f2f": {
+      "id": "BLEEPINGCOMPUTER-51205cfeab287f2f",
+      "type": "Intel",
+      "name": "Microsoft: Some Dell PCs shut down after recent Windows updates",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-15",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -114087,6 +114129,15 @@
       "target": "BLEEPINGCOMPUTER-8b72e7a842dcd2e0",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-15",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-10f61c76b6c07795→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_NETSEC-10f61c76b6c07795",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-15",
       "sources": []
     }
