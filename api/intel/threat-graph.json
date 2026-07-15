@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-15T07:31:58.995Z",
+  "generated": "2026-07-15T08:02:09.783Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4896,
+    "total_nodes": 4899,
     "actors": 8,
     "cves": 1000,
-    "campaigns": 425,
+    "campaigns": 426,
     "malware": 0,
     "iocs": 522,
-    "edges": 2092
+    "edges": 2095
   },
   "nodes": {
     "actor:lockbit": {
@@ -994,6 +994,16 @@
         {
           "target": "BLEEPINGCOMPUTER-e069b61a4e422f3f",
           "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "BLEEPINGCOMPUTER-8b72e7a842dcd2e0",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "campaign:cluster-07038cbe",
+          "relationship": "executes",
           "confidence": 0.85
         }
       ],
@@ -95128,6 +95138,62 @@
         "type": "CLOUD_SECURITY"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-8b72e7a842dcd2e0": {
+      "id": "BLEEPINGCOMPUTER-8b72e7a842dcd2e0",
+      "type": "Intel",
+      "name": "US charges alleged operators of Russian bulletproof hosting service",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 60,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-15",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "DARKREADING-e11e682d7eea5a35": {
+      "id": "DARKREADING-e11e682d7eea5a35",
+      "type": "Intel",
+      "name": "Nigeria Deepens Cybersecurity Efforts as Cybercriminals See More Profits",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-07-15",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-07038cbe": {
+      "id": "campaign:cluster-07038cbe",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-15",
+        "last_seen": "2026-07-15",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-8b72e7a842dcd2e0",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -113994,6 +114060,33 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-15",
+      "sources": []
+    },
+    {
+      "id": "actor:russia-nexus-ransomware→exploits→BLEEPINGCOMPUTER-8b72e7a842dcd2e0",
+      "source": "actor:russia-nexus-ransomware",
+      "target": "BLEEPINGCOMPUTER-8b72e7a842dcd2e0",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-07-15",
+      "sources": []
+    },
+    {
+      "id": "actor:russia-nexus-ransomware→executes→campaign:cluster-07038cbe",
+      "source": "actor:russia-nexus-ransomware",
+      "target": "campaign:cluster-07038cbe",
+      "relationship": "executes",
+      "confidence": 0.85,
+      "first_seen": "2026-07-15",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-07038cbe→includes→BLEEPINGCOMPUTER-8b72e7a842dcd2e0",
+      "source": "campaign:cluster-07038cbe",
+      "target": "BLEEPINGCOMPUTER-8b72e7a842dcd2e0",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-15",
       "sources": []
     }
