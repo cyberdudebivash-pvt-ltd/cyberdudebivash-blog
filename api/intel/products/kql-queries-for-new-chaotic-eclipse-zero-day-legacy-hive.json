@@ -1,0 +1,93 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-a861d9ffbfcf5eeb",
+  "title": "KQL Queries for new Chaotic Eclipse Zero day 'Legacy Hive'",
+  "generated": "2026-07-15T14:31:55.874Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": true,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://blog[.]projectnightcrawler[.]dev/posts/2026-07-14-legacyhive-public-disclosure/&quot;&gt;hxxps:/",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://github[.]com/lukehebe/KQL-Hunting_and_Detection-Queries/blob/main/LegacyHive%20Hunting%20queri",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/sysinternalssuite&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1ux652m/kql_queries_for_new_chaotic_eclipse_zero_day",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://blog.projectnightcrawler.dev/posts/2026-07-14-legacyhive-public-disclosure/&quot;&gt;https:/\"; http.host; content:\"blog.projectnightcrawler.dev\"; nocase; http.uri; content:\"/posts/2026-07-14-legacyhive-public-disclosure/&quot\\;&gt\\;https:/\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/lukehebe/KQL-Hunting_and_Detection-Queries/blob/main/LegacyHive%20Hunting%20queri\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/lukehebe/KQL-Hunting_and_Detection-Queries/blob/main/LegacyHive%20Hunting%20queri\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/sysinternalssuite&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/sysinternalssuite&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1ux652m/kql_queries_for_new_chaotic_eclipse_zero_day\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1ux652m/kql_queries_for_new_chaotic_eclipse_zero_day\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "Active exploitation reported in source intelligence.",
+      "5 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      },
+      {
+        "confidence": "HIGH",
+        "text": "Unpatched exposure represents an active — not theoretical — risk, given confirmed exploitation."
+      }
+    ],
+    "intelligence_gaps": [
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "HIGH",
+        "text": "Continued and broadening exploitation is expected; additional threat actors are likely to adopt this vector."
+      },
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 142 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 359 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: kql-queries-for-new-chaotic-eclipse-zero-day-legacy-hive (7 shared entities), need-help-reverse-engineering-an-android-apk-used-in-a-upi-f (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1ux652m/kql_queries_for_new_chaotic_eclipse_zero_day/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
