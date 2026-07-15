@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-15T23:02:16.333Z",
+  "generated": "2026-07-15T23:31:58.678Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2254,
+  "total_published": 2257,
   "s2n_stats": {
-    "passed": 85,
-    "suppressed": 7,
+    "passed": 86,
+    "suppressed": 8,
     "avg_qs": 0.551
   },
   "items": [
@@ -2367,7 +2367,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "REDDIT_CYBER-ff45a34463251100",
@@ -2634,9 +2636,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CISA-c9db34aa54ed0feb",
@@ -4186,98 +4186,10 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
-      "id": "REDDIT_CYBER-22f5cdbb171e4f90",
-      "title": "AI agents went from &quot;cool demo&quot; to &quot;exploiting CVEs in 10 hours&quot;",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;From the blog post:&lt;br/&gt; AI agents run reconnaissance, test exploits, and weaponize vulnerabilities at machine speed – collapsing the mean time from CVE disclosure to confirmed exploitation from 2.3 years in 2018 to roughly 10 hours",
-      "cvss": 6.5,
-      "final_ps": 30,
-      "quality_score": 0.38,
-      "threat_level": "HIGH",
-      "type": "ZERO_DAY",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-08",
-      "last_seen": "2026-07-08",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 5,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1ur29xn/ai_agents_went_from_cool_demo_to_exploiting_cves/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "REDDIT_CYBER-ac8f24a24cef82a2",
-      "title": "Anyone know these listening ports/vendors used?",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;In our general reporting under TOP 150 ports (2nd section) &lt;a href=&quot;https://github.com/sky-poppy/fwfeed/blob/main/blocklist_honeypot_firewall_stats.txt&quot;&gt;https://github.com/sky-poppy/fwfeed/blob/main/blocklist_honeypot_fire",
-      "cvss": 6.5,
-      "final_ps": 30,
-      "quality_score": 0.38,
-      "threat_level": "HIGH",
-      "type": "ZERO_DAY",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-06",
-      "last_seen": "2026-07-06",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 4,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1up8edz/anyone_know_these_listening_portsvendors_used/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-50273",
-      "title": "dd-trace-dotnet: Improper parsing of W3C baggage headers may lead to DoS",
-      "description": "### Impact\nDatadog tracing libraries that implement W3C baggage propagation parse incoming baggage HTTP headers without enforcing item-count or byte-size limits on the extract path. The DD_TRACE_BAGGAGE_MAX_ITEMS (default 64) and DD_TRACE_BAGGAGE_MAX_BYTES (default 8192) limits were applied only to ",
-      "cvss": 7.5,
+      "id": "CVE-2026-54504",
+      "title": "@andrea9293/mcp-documentation-server: Web UI API binds to all interfaces without authentication by default",
+      "description": "### Summary `@andrea9293/mcp-documentation-server` v1.13.0 documents that a Web UI starts automatically on port `3080`. However, the Web UI/API appears to bind to all network interfaces by default (`*:3080` / `0.0.0.0:3080`) instead of localhost-only, and its document-management API endpoints do not",
+      "cvss": 8.8,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -4292,18 +4204,19 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "nuget",
-      "product": "Datadog.Trace",
+      "vendor": "npm",
+      "product": "@andrea9293/mcp-documentation-server",
       "due_date": null,
       "cves": [
-        "CVE-2026-50273",
-        "CVE-2026-50273"
+        "CVE-2026-54504",
+        "CVE-2026-54504"
       ],
-      "ioc_count": 0,
+      "ioc_count": 1,
       "refs": [
-        "https://github.com/advisories/GHSA-38wr-vpc7-2mp4",
-        "https://github.com/DataDog/dd-trace-dotnet/security/advisories/GHSA-38wr-vpc7-2mp4",
-        "https://github.com/advisories/GHSA-38wr-vpc7-2mp4"
+        "https://github.com/advisories/GHSA-6f5r-5672-72j7",
+        "https://github.com/andrea9293/mcp-documentation-server/security/advisories/GHSA-6f5r-5672-72j7",
+        "https://github.com/andrea9293/mcp-documentation-server/commit/37159d4e06b8ee50c3645b2496e3d3f6d32c47f9",
+        "https://github.com/andrea9293/mcp-documentation-server/releases/tag/v1.13.1"
       ],
       "explanation": {
         "quality": [
@@ -4322,9 +4235,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-50272",
-      "title": "dd-trace-js: Improper parsing of W3C baggage headers may lead to DoS",
-      "description": "### Impact\nDatadog tracing libraries that implement W3C baggage propagation parse incoming baggage HTTP headers without enforcing item-count or byte-size limits on the extract path. The DD_TRACE_BAGGAGE_MAX_ITEMS (default 64) and DD_TRACE_BAGGAGE_MAX_BYTES (default 8192) limits were applied only to ",
+      "id": "CVE-2026-50289",
+      "title": "systeminformation: OS command injection in networkInterfaces() via interfaces(5) source-directive path on Linux",
+      "description": "### Summary On Linux, `systeminformation`'s `networkInterfaces()` is vulnerable to OS command injection through the Debian/Ubuntu `interfaces(5)` `source` directive. While collecting per-interface DHCP state, the library reads `/etc/network/interfaces` and, for every `source ` line it encounters, ex",
       "cvss": 7.5,
       "final_ps": 21,
       "quality_score": 0.523,
@@ -4341,17 +4254,18 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "npm",
-      "product": "dd-trace",
+      "product": "systeminformation",
       "due_date": null,
       "cves": [
-        "CVE-2026-50272",
-        "CVE-2026-50272"
+        "CVE-2026-50289",
+        "CVE-2026-50289"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-wxqq-gcq8-c443",
-        "https://github.com/DataDog/dd-trace-js/security/advisories/GHSA-wxqq-gcq8-c443",
-        "https://github.com/advisories/GHSA-wxqq-gcq8-c443"
+        "https://github.com/advisories/GHSA-5xpp-75jx-m839",
+        "https://github.com/sebhildebrandt/systeminformation/security/advisories/GHSA-5xpp-75jx-m839",
+        "https://github.com/sebhildebrandt/systeminformation/commit/bbfddde48672d0ee124fefdb3cb4442fd9dd4f03",
+        "https://github.com/sebhildebrandt/systeminformation/releases/tag/v5.31.7"
       ],
       "explanation": {
         "quality": [
@@ -4370,8 +4284,57 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-50271",
-      "title": "dd-trace-py: Improper parsing of W3C baggage headers may lead to DoS",
+      "id": "CVE-2026-50285",
+      "title": "Pomerium Pre-Auth Memory Exhaustion via Unbounded zstd Decompression in HPKE Callback",
+      "description": "## Summary The HPKE V2 URL decode path in `pkg/hpke/url.go` decompresses attacker-controlled zstd data without any size limit. On Pomerium deployments using the stateless authentication flow (Pomerium Zero / hosted authenticate), the proxy's `/.pomerium/callback` endpoint is reachable without creden",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/pomerium/pomerium",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50285",
+        "CVE-2026-50285"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-ggw3-5987-rx77",
+        "https://github.com/pomerium/pomerium/security/advisories/GHSA-ggw3-5987-rx77",
+        "https://github.com/pomerium/pomerium/commit/593eb81c7e5bdbe6071a30d330f374967869577f",
+        "https://github.com/pomerium/pomerium/releases/tag/v0.32.8"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-50276",
+      "title": "dd-trace-rb: Improper parsing of W3C baggage headers may lead to DoS",
       "description": "### Impact\nDatadog tracing libraries that implement W3C baggage propagation parse incoming baggage HTTP headers without enforcing item-count or byte-size limits on the extract path. The DD_TRACE_BAGGAGE_MAX_ITEMS (default 64) and DD_TRACE_BAGGAGE_MAX_BYTES (default 8192) limits were applied only to ",
       "cvss": 7.5,
       "final_ps": 21,
@@ -4388,18 +4351,66 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "pip",
-      "product": "ddtrace",
+      "vendor": "rubygems",
+      "product": "datadog",
       "due_date": null,
       "cves": [
-        "CVE-2026-50271",
-        "CVE-2026-50271"
+        "CVE-2026-50276",
+        "CVE-2026-50276"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-mw54-j2v2-42hr",
-        "https://github.com/DataDog/dd-trace-py/security/advisories/GHSA-mw54-j2v2-42hr",
-        "https://github.com/advisories/GHSA-mw54-j2v2-42hr"
+        "https://github.com/advisories/GHSA-p5f6-rccc-jv98",
+        "https://github.com/DataDog/dd-trace-rb/security/advisories/GHSA-p5f6-rccc-jv98",
+        "https://github.com/advisories/GHSA-p5f6-rccc-jv98"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-50274",
+      "title": "dd-trace-go: Improper parsing of W3C baggage headers may lead to DoS",
+      "description": "### Impact\nDatadog tracing libraries that implement W3C baggage propagation parse incoming baggage HTTP headers without enforcing item-count or byte-size limits on the extract path. The DD_TRACE_BAGGAGE_MAX_ITEMS (default 64) and DD_TRACE_BAGGAGE_MAX_BYTES (default 8192) limits were applied only to ",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/DataDog/dd-trace-go",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50274",
+        "CVE-2026-50274"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-74j5-xf3v-crq8",
+        "https://github.com/DataDog/dd-trace-go/security/advisories/GHSA-74j5-xf3v-crq8",
+        "https://github.com/advisories/GHSA-74j5-xf3v-crq8"
       ],
       "explanation": {
         "quality": [
