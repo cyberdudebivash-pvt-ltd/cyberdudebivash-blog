@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-16T10:31:58.592Z",
+  "generated": "2026-07-16T11:02:09.953Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5005,
+    "total_nodes": 5010,
     "actors": 8,
     "cves": 1022,
-    "campaigns": 440,
+    "campaigns": 441,
     "malware": 0,
-    "iocs": 535,
-    "edges": 2142
+    "iocs": 536,
+    "edges": 2144
   },
   "nodes": {
     "actor:lockbit": {
@@ -97234,6 +97234,97 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-71585e80b5c2dbb0": {
+      "id": "BLEEPINGCOMPUTER-71585e80b5c2dbb0",
+      "type": "Intel",
+      "name": "CISA orders feds to patch actively exploited Oracle flaw by Saturday",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-e1169a654767398c": {
+      "id": "REDDIT_CYBER-e1169a654767398c",
+      "type": "Intel",
+      "name": "Please Stop Making Me Opt Out of AI",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:0099af06decf4fda67a852c87790c4271b7e6e09",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:0099af06decf4fda67a852c87790c4271b7e6e09": {
+      "id": "ioc:sha1:0099af06decf4fda67a852c87790c4271b7e6e09",
+      "type": "IOC",
+      "name": "0099af06decf4fda67a852c87790c4271b7e6e09",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-16"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-a28884734ef16e2f": {
+      "id": "SECURITYWEEK-a28884734ef16e2f",
+      "type": "Intel",
+      "name": "Splunk, Zoom Patch Critical Vulnerabilities",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-d78677ce": {
+      "id": "campaign:cluster-d78677ce",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-16",
+        "last_seen": "2026-07-16",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-71585e80b5c2dbb0",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -116550,6 +116641,24 @@
       "target": "ioc:sha1:1cfe89b80dd072f2ef1f2d8e2d14ff7102913d41",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-e1169a654767398c→linked_to→ioc:sha1:0099af06decf4fda67a852c87790c4271b7e6e09",
+      "source": "REDDIT_CYBER-e1169a654767398c",
+      "target": "ioc:sha1:0099af06decf4fda67a852c87790c4271b7e6e09",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-d78677ce→includes→BLEEPINGCOMPUTER-71585e80b5c2dbb0",
+      "source": "campaign:cluster-d78677ce",
+      "target": "BLEEPINGCOMPUTER-71585e80b5c2dbb0",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-16",
       "sources": []
     }
