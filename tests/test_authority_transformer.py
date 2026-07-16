@@ -31,23 +31,28 @@ class TestTemplateEnhancement(unittest.TestCase):
         self.config.anthropic_api_key = ""  # Force template path
 
     def test_template_contains_all_sections(self):
+        # Section names/structure below match the 2026-07-06 "trust & quality
+        # retrofit" (commit ee9447e) — several sections were renamed and the
+        # div-card layout replaced the old <h3>/<ul> structure.
         article = _make_article()
         html = _template_enhance(article, self.config)
         required_sections = [
             "Executive Summary",
-            "Threat Overview",
-            "Threat Severity Assessment",
+            "Verified Facts",
+            "Threat Classification & Severity",
             "Business Impact",
             "Technical Analysis",
             "MITRE ATT&CK Mapping",
             "IOC Intelligence",
             "Detection Engineering Guidance",
-            "Sigma Rules",
+            "Sigma Detection Rule",
             "Threat Hunting Queries",
-            "SOC Analyst Actions",
+            "SOC Analyst Playbook",
+            "Executive Decision Matrix",
             "Executive Recommendations",
-            "MSSP Opportunities",
-            "Sentinel APEX Intelligence Correlation",
+            "Predictive Intelligence",
+            "MSSP Partner Advisory",
+            "SENTINEL APEX Intelligence Correlation",
             "Long-Term Strategic Risk",
             "References",
         ]
@@ -61,15 +66,16 @@ class TestTemplateEnhancement(unittest.TestCase):
         self.assertIn("CVE-2026-9999", html)
 
     def test_cve_analysis_fallback_when_no_cve(self):
+        # Trust retrofit made this section CVE-conditional — no CVE means the
+        # section is omitted entirely rather than padded with filler text.
         article = _make_article(title="Ransomware Campaign", summary="Generic ransomware news", labels=["Ransomware"])
         html = _template_enhance(article, self.config)
-        self.assertIn("CVE Analysis", html)
-        self.assertIn("No specific CVE identifiers", html)
+        self.assertNotIn("CVE Analysis", html)
 
     def test_sigma_rules_valid_yaml_structure(self):
         article = _make_article()
         html = _template_enhance(article, self.config)
-        self.assertIn("Sigma Rules", html)
+        self.assertIn("Sigma Detection Rule", html)
         self.assertIn("tags:", html)
         # Each tag must be on its own properly-indented line — no broken double-indent
         self.assertNotIn("attack.impact\n        -", html)
@@ -117,10 +123,13 @@ class TestTemplateEnhancement(unittest.TestCase):
         self.assertNotIn("$4.2 billion", html.lower())
 
     def test_output_has_list_items(self):
+        # Trust retrofit replaced semantic <ul>/<li>/<h3> markup with a
+        # div-card layout (styled bullet chips + a table) for the premium
+        # enterprise UI — check for that structure instead.
         article = _make_article()
         html = _template_enhance(article, self.config)
-        self.assertIn("<li>", html)
-        self.assertIn("<h3>", html)
+        self.assertIn("<table", html)
+        self.assertGreater(html.count("border-radius:0 4px 4px 0"), 5)
 
 
 class TestAuthorityTransformer(unittest.TestCase):
@@ -236,17 +245,18 @@ class TestAuthorityTransformer(unittest.TestCase):
         svg_text = base64.b64decode(result.split("base64,")[1].split('"')[0]).decode("utf-8")
         self.assertIn("#a855f7", svg_text)  # AI Security purple accent
 
-    def test_content_contains_all_18_sections(self):
+    def test_content_contains_all_required_sections(self):
         article = _make_article()
         result = self.transformer.transform(article)
         content = result["content"]
         required = [
-            "Executive Summary", "Threat Overview", "Threat Severity Assessment",
+            "Executive Summary", "Verified Facts", "Threat Classification & Severity",
             "Business Impact", "Technical Analysis", "CVE Analysis",
             "MITRE ATT&CK Mapping", "IOC Intelligence", "Detection Engineering Guidance",
-            "Sigma Rules", "Threat Hunting Queries", "SOC Analyst Actions",
-            "Executive Recommendations", "MSSP Opportunities",
-            "Sentinel APEX Intelligence Correlation", "Long-Term Strategic Risk", "References",
+            "Sigma Detection Rule", "Threat Hunting Queries", "SOC Analyst Playbook",
+            "Executive Decision Matrix", "Executive Recommendations", "Predictive Intelligence",
+            "MSSP Partner Advisory",
+            "SENTINEL APEX Intelligence Correlation", "Long-Term Strategic Risk", "References",
         ]
         for section in required:
             self.assertIn(section, content, f"Section missing from assembled Blogger HTML: {section}")

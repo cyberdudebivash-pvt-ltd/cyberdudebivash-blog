@@ -30,6 +30,19 @@ const ALLOWED_WORKFLOWS = new Set([
   'freshness-check.yml',
 ]);
 
+// Minimum minutes between forwarded dispatches per workflow — must track
+// each workflow file's own `schedule:` cron. This is the guard that was
+// missing when the external caller (Vercel Cron / whatever scheduler is
+// configured outside this repo) fired blogger-syndication.yml every ~5 min
+// instead of its intended 2h cadence, causing the July 2026 outage. If the
+// caller's schedule drifts again, this endpoint now throttles it back to
+// the intended rate instead of forwarding every call to GitHub.
+const MIN_INTERVAL_MINUTES = {
+  'sentinel-apex.yml': 30,        // matches sentinel-apex.yml: "0,30 * * * *"
+  'blogger-syndication.yml': 120, // matches blogger-syndication.yml: "15 */2 * * *"
+  'freshness-check.yml': 30,      // matches freshness-check.yml: "*/30 * * * *"
+};
+
 /** Timing-safe comparison against CRON_SECRET. Fails closed if unconfigured. */
 function verifyCronSecret(req) {
   const expected = process.env.CRON_SECRET;
@@ -62,6 +75,12 @@ module.exports = async (req, res) => {
   if (!ALLOWED_WORKFLOWS.has(workflow)) {
     mw.apiError(res, 400, 'INVALID_WORKFLOW',
       `workflow must be one of: ${[...ALLOWED_WORKFLOWS].join(', ')}`);
+    return;
+  }
+
+  const allowed = await sec.workflowDispatchThrottle(workflow, MIN_INTERVAL_MINUTES[workflow]);
+  if (!allowed) {
+    mw.successResponse(res, { throttled: true, workflow, min_interval_minutes: MIN_INTERVAL_MINUTES[workflow] });
     return;
   }
 

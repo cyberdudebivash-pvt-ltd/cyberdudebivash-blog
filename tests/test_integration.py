@@ -2,11 +2,12 @@
 Integration tests — full pipeline simulation with mocked external services.
 """
 
+import email.utils
 import json
 import os
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
 from automation.config import Config
@@ -14,7 +15,13 @@ from automation.content_discovery import ContentDiscoveryEngine, _compute_hash
 from automation.main import run_pipeline
 
 
-MOCK_RSS = """<?xml version="1.0" encoding="UTF-8"?>
+# Content discovery drops anything older than config.max_article_age_hours
+# (72h) — pubDates must stay relative to "now" or this fixture silently goes
+# stale and every discovery-dependent test starts finding 0 articles.
+_PUBDATE_1 = email.utils.format_datetime(datetime.now(timezone.utc) - timedelta(hours=2))
+_PUBDATE_2 = email.utils.format_datetime(datetime.now(timezone.utc) - timedelta(hours=3))
+
+MOCK_RSS = f"""<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
     <title>CYBERDUDEBIVASH® SENTINEL APEX</title>
@@ -23,14 +30,14 @@ MOCK_RSS = """<?xml version="1.0" encoding="UTF-8"?>
       <title>CVE-2026-9999 Critical Windows IKE RCE — CVSS 9.8 PATCH NOW</title>
       <link>https://blog.cyberdudebivash.in/posts/cve-2026-9999</link>
       <description>A critical remote code execution vulnerability in the Windows IKE service allows unauthenticated attackers to execute code at SYSTEM level.</description>
-      <pubDate>Thu, 19 Jun 2026 06:00:00 +0000</pubDate>
+      <pubDate>{_PUBDATE_1}</pubDate>
       <category>Zero-Day</category>
     </item>
     <item>
       <title>LockBit 4.0 Ransomware Hits Healthcare Sector — 47 Victims</title>
       <link>https://blog.cyberdudebivash.in/posts/lockbit-healthcare-2026</link>
       <description>LockBit 4.0 ransomware group has claimed 47 healthcare victims in a coordinated campaign targeting hospital systems.</description>
-      <pubDate>Thu, 19 Jun 2026 05:30:00 +0000</pubDate>
+      <pubDate>{_PUBDATE_2}</pubDate>
       <category>Ransomware</category>
     </item>
   </channel>
