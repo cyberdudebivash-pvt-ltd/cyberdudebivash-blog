@@ -171,6 +171,12 @@ class NVDCVESource:
                         labels=labels,
                         source="nvd",
                         full_content=full_content,
+                        cve_id=cve_id,
+                        cvss_score=cvss_score,
+                        cvss_vector=cvss_vector,
+                        cwe_ids=cwes or None,
+                        affected_vendor=affected_products[0].split(" ", 1)[0] if affected_products else None,
+                        affected_product=affected_products[0] if affected_products else None,
                     )
                 )
             except Exception as e:

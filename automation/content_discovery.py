@@ -52,6 +52,23 @@ class DiscoveredArticle:
     source: str
     full_content: Optional[str] = None
 
+    # Structured vulnerability data — populated by source modules (NVD, CISA
+    # KEV) when available, and backfilled by automation/enrichment.py for
+    # any article whose CVE ID can be identified regardless of source.
+    # Left None (never fabricated) when a real value isn't known.
+    cve_id: Optional[str] = None
+    cvss_score: Optional[float] = None
+    cvss_vector: Optional[str] = None
+    cwe_ids: Optional[list] = None
+    affected_vendor: Optional[str] = None
+    affected_product: Optional[str] = None
+    epss_score: Optional[float] = None
+    epss_percentile: Optional[float] = None
+    kev_listed: Optional[bool] = None
+    kev_date_added: Optional[str] = None
+    kev_due_date: Optional[str] = None
+    kev_required_action: Optional[str] = None
+
     def to_dict(self) -> dict:
         return asdict(self)
 
@@ -410,6 +427,16 @@ class ContentDiscoveryEngine:
             seen_cves.update(article_cves)
 
         result = deduped[: self.config.max_posts_per_run]
+
+        # Attach real EPSS + CISA KEV data (never fabricated — see
+        # automation/enrichment.py). Scoped to the trimmed result so this
+        # never exceeds 2 network calls regardless of how many candidates
+        # were discovered upstream.
+        from .enrichment import enrich_articles
+        try:
+            result = enrich_articles(result)
+        except Exception as e:
+            logger.warning("Enrichment failed — continuing without it", extra={"error": str(e)})
 
         logger.info(
             "Discovery complete",

@@ -178,6 +178,140 @@ def _generate_svg_thumbnail(title: str, labels: list, cvss: Optional[str] = None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# EXECUTIVE RISK COMMAND CENTER
+# A data-driven dashboard of real, verified fields (CVSS, EPSS, CISA KEV —
+# see automation/enrichment.py). Rendered once in _assemble_html() so it
+# appears identically whether the body came from the LLM path or the
+# template fallback, instead of being duplicated in both. Any field without
+# a genuine source is omitted rather than estimated — this platform's own
+# governance prohibits fabricated cybersecurity intelligence, and a sparse
+# dashboard is more trustworthy than a complete but partly-invented one.
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _risk_tile(label: str, value: str, color: str = "#00d4ff", sub: str = "") -> str:
+    sub_html = f'<div style="color:#64748b;font-size:10px;margin-top:4px;line-height:1.4">{sub}</div>' if sub else ""
+    return (
+        f'<div style="flex:1;min-width:150px;background:#050d1a;border:1px solid {color}33;'
+        f'border-radius:6px;padding:14px 16px">'
+        f'<div style="color:{color};font-size:10px;font-weight:700;font-family:monospace;'
+        f'letter-spacing:1.3px;margin-bottom:6px;text-transform:uppercase">{label}</div>'
+        f'<div style="color:#e2e8f0;font-size:20px;font-weight:900">{value}</div>'
+        f'{sub_html}</div>'
+    )
+
+
+def _build_trust_stats_block(config: Config) -> str:
+    """Compact stats strip using only real, computed numbers — reads the
+    same publication state file the syndication pipeline already writes
+    (data/published_posts.json). Returns "" if the file is missing/corrupt
+    rather than showing a fabricated count."""
+    try:
+        with open(config.state_file, "r", encoding="utf-8") as f:
+            state = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return ""
+
+    total_published = state.get("total_published")
+    if not isinstance(total_published, int) or total_published <= 0:
+        return ""
+
+    unique_cves: set = set()
+    for entry in state.get("posts", {}).values():
+        unique_cves.update(entry.get("cves", []))
+
+    stats = [("Threat Reports Published", f"{total_published:,}")]
+    if unique_cves:
+        stats.append(("Unique CVEs Tracked", f"{len(unique_cves):,}"))
+
+    tiles = "".join(
+        f'<div style="flex:1;min-width:150px;text-align:center;padding:10px">'
+        f'<div style="color:#00d4ff;font-size:22px;font-weight:900">{value}</div>'
+        f'<div style="color:#64748b;font-size:10px;font-weight:700;text-transform:uppercase;'
+        f'letter-spacing:1px;margin-top:2px">{label}</div></div>'
+        for label, value in stats
+    )
+    return (
+        f'<div style="margin:20px 0;padding:6px 0;background:#00080f;border-top:1px solid #1e3a5f33;'
+        f'border-bottom:1px solid #1e3a5f33;display:flex;flex-wrap:wrap;justify-content:center">{tiles}</div>'
+    )
+
+
+def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Optional[str]) -> str:
+    """Executive dashboard of verified CVSS/EPSS/KEV data. Returns "" if nothing real is known."""
+    cve_id = article.cve_id or (cves[0] if cves else None)
+
+    cvss_score: Optional[float] = article.cvss_score
+    if cvss_score is None and cvss:
+        try:
+            cvss_score = float(cvss)
+        except (ValueError, TypeError):
+            cvss_score = None
+
+    sev_color = None
+    if cvss_score is not None:
+        if cvss_score >= 9.0:
+            sev, sev_color = "CRITICAL", "#ef4444"
+        elif cvss_score >= 7.0:
+            sev, sev_color = "HIGH", "#f59e0b"
+        elif cvss_score >= 4.0:
+            sev, sev_color = "MEDIUM", "#22c55e"
+        else:
+            sev, sev_color = "LOW", "#3b82f6"
+
+    tiles = []
+    if cve_id:
+        tiles.append(_risk_tile("CVE ID", cve_id, "#00d4ff"))
+    if cvss_score is not None:
+        tiles.append(_risk_tile("CVSS Score", f"{cvss_score:.1f}", sev_color, sev))
+    if article.epss_score is not None:
+        pct = article.epss_score * 100
+        epss_color = "#ef4444" if pct >= 50 else "#f59e0b" if pct >= 10 else "#22c55e"
+        sub = f"{article.epss_percentile * 100:.0f}th percentile" if article.epss_percentile is not None else "30-day exploit probability"
+        tiles.append(_risk_tile("EPSS Score", f"{pct:.1f}%", epss_color, sub))
+    if article.kev_listed is True:
+        due_note = f"Remediation due {article.kev_due_date}" if article.kev_due_date else "Active exploitation confirmed"
+        tiles.append(_risk_tile("CISA KEV", "LISTED", "#ef4444", due_note))
+    elif article.kev_listed is False:
+        tiles.append(_risk_tile("CISA KEV", "Not Listed", "#22c55e", "No confirmed exploitation on record"))
+    if article.affected_vendor or article.affected_product:
+        vp = (article.affected_product or article.affected_vendor or "")[:32]
+        tiles.append(_risk_tile("Affected", vp, "#a855f7"))
+
+    if not tiles:
+        return ""
+
+    dashboard_html = '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px">' + "\n".join(tiles) + "</div>"
+
+    # Decision panel — conclusions derived from the verified fields above,
+    # never independently invented.
+    decisions = []
+    if article.kev_listed is True:
+        decisions.append(("Exploitation confirmed?", "YES — CISA KEV listed", "#ef4444"))
+        decisions.append(("Patch immediately?", "YES — active exploitation in the wild", "#ef4444"))
+    elif cvss_score is not None and cvss_score >= 9.0:
+        decisions.append(("Patch immediately?", "YES — CVSS ≥ 9.0 (Critical)", "#ef4444"))
+    if article.kev_required_action:
+        decisions.append(("CISA required action", article.kev_required_action[:200], "#f59e0b"))
+
+    decision_html = ""
+    if decisions:
+        rows = "\n".join(
+            f'<div style="margin:5px 0;padding:9px 14px;background:#050d1a;border-left:3px solid {c};'
+            f'border-radius:0 4px 4px 0;font-size:12.5px;color:#cbd5e1;line-height:1.6">'
+            f'<strong style="color:{c}">{q}</strong> &mdash; {a}</div>'
+            for q, a, c in decisions
+        )
+        decision_html = rows
+
+    return (
+        f'<div style="margin:0 0 24px;padding:16px 18px;background:#00080f;border:1px solid #1e3a5f55;border-radius:8px">'
+        f'<div style="color:#00d4ff;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:2px;'
+        f'text-transform:uppercase;margin-bottom:12px">&#9632; Executive Risk Command Center</div>'
+        f'{dashboard_html}{decision_html}</div>'
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # LLM PROMPT — 18-SECTION ENTERPRISE INTELLIGENCE REPORT
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -309,7 +443,9 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     elif is_ato or is_extension or is_supply_chain:
         severity, severity_color = "HIGH", "#f59e0b"
     else:
-        severity, severity_color = "MEDIUM", "#3b82f6"
+        # Matches the CVSS-derived MEDIUM color above — previously #3b82f6 here,
+        # a real inconsistency for two paths asserting the same severity label.
+        severity, severity_color = "MEDIUM", "#22c55e"
 
     # MITRE ATT&CK mapping — priority: ransomware → APT → CVE → OT → ATO → extension → supply chain → general
     if is_ot and not is_ransomware and not is_apt and not is_cve:
@@ -341,6 +477,13 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     condition: selection and not filter_ot_zone"""
         sigma_title = "Anomalous IT-to-OT Protocol Communication — Potential Lateral Movement"
         sigma_tags = "    - attack.lateral_movement\n    - attack.t0866\n    - attack.t0813"
+        siem_queries = {
+            "splunk": 'index=network sourcetype=firewall dest_port IN (102, 502, 44818, 20000, 4840)\n| where cidrmatch("10.0.0.0/8", src_ip) OR cidrmatch("172.16.0.0/12", src_ip) OR cidrmatch("192.168.0.0/16", src_ip)\n| where NOT cidrmatch("10.100.0.0/16", src_ip)\n| stats count by src_ip, dest_ip, dest_port',
+            "elastic": 'network where destination.port in (102, 502, 44818, 20000, 4840) and\n  cidrMatch(source.ip, "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16") and\n  not cidrMatch(source.ip, "10.100.0.0/16")',
+            "sentinel": 'DeviceNetworkEvents\n| where RemotePort in (102, 502, 44818, 20000, 4840)\n| where ipv4_is_in_range(LocalIP, "10.0.0.0/8") or ipv4_is_in_range(LocalIP, "172.16.0.0/12") or ipv4_is_in_range(LocalIP, "192.168.0.0/16")\n| where not(ipv4_is_in_range(LocalIP, "10.100.0.0/16"))',
+            "qradar": "SELECT sourceip, destinationip, destinationport, COUNT(*) FROM events\nWHERE destinationport IN (102,502,44818,20000,4840)\nAND (INCIDR('10.0.0.0/8', sourceip) OR INCIDR('172.16.0.0/12', sourceip) OR INCIDR('192.168.0.0/16', sourceip))\nAND NOT INCIDR('10.100.0.0/16', sourceip)\nGROUP BY sourceip, destinationip, destinationport\nLAST 24 HOURS",
+            "chronicle": 'rule ot_lateral_movement {\n  meta:\n    description = "Anomalous IT-to-OT protocol communication"\n    severity = "High"\n  events:\n    $e.metadata.event_type = "NETWORK_CONNECTION"\n    $e.target.port = 102 or $e.target.port = 502 or $e.target.port = 44818 or $e.target.port = 20000 or $e.target.port = 4840\n  condition:\n    $e\n}',
+        }
         hunt_queries = [
             "IT-to-OT lateral movement — Firewall/network flow logs for connections from IT VLAN to OT VLAN on industrial protocols (Modbus/502, S7comm/102, DNP3/20000)",
             "OT credential abuse — Authentication logs on HMI and engineering workstations for logons outside scheduled maintenance windows",
@@ -391,6 +534,13 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     condition: shadow_deletion or ransom_ps_staging"""
         sigma_title = "Ransomware Pre-Encryption Activity — Shadow Deletion and PowerShell Staging"
         sigma_tags = "    - attack.impact\n    - attack.t1486\n    - attack.t1490\n    - attack.t1059.001"
+        siem_queries = {
+            "splunk": 'index=endpoint (Image IN ("*\\\\vssadmin.exe","*\\\\wmic.exe","*\\\\wbadmin.exe","*\\\\bcdedit.exe") CommandLine IN ("*delete shadows*","*delete catalog*","*recoveryenabled No*","*shadowcopy delete*"))\nOR (Image="*\\\\powershell.exe" CommandLine IN ("*EncodedCommand*","*FromBase64String*","*IEX*","*DownloadString*"))\n| table _time, host, Image, CommandLine, User',
+            "elastic": 'process where (process.name in ("vssadmin.exe","wmic.exe","wbadmin.exe","bcdedit.exe") and\n  process.command_line : ("*delete shadows*","*delete catalog*","*recoveryenabled No*","*shadowcopy delete*"))\nor (process.name == "powershell.exe" and\n  process.command_line : ("*EncodedCommand*","*FromBase64String*","*IEX*","*DownloadString*"))',
+            "sentinel": 'DeviceProcessEvents\n| where (FileName in~ ("vssadmin.exe","wmic.exe","wbadmin.exe","bcdedit.exe")\n    and ProcessCommandLine has_any ("delete shadows","delete catalog","recoveryenabled No","shadowcopy delete"))\n  or (FileName =~ "powershell.exe"\n    and ProcessCommandLine has_any ("EncodedCommand","FromBase64String","IEX","DownloadString"))',
+            "qradar": "SELECT sourceip, username, processname, commandline FROM events\nWHERE processname IN ('vssadmin.exe','wmic.exe','wbadmin.exe','bcdedit.exe')\nAND (commandline ILIKE '%delete shadows%' OR commandline ILIKE '%shadowcopy delete%')\nLAST 24 HOURS",
+            "chronicle": 'rule ransomware_shadow_deletion {\n  meta:\n    description = "Ransomware pre-encryption shadow copy deletion"\n    severity = "Critical"\n  events:\n    $e.metadata.event_type = "PROCESS_LAUNCH"\n    $e.target.process.file.full_path = /vssadmin\\.exe|wmic\\.exe|wbadmin\\.exe|bcdedit\\.exe/ nocase\n    $e.target.process.command_line = /delete shadows|shadowcopy delete/ nocase\n  condition:\n    $e\n}',
+        }
         hunt_queries = [
             "Shadow copy deletion — Windows Security Event ID 4688 with CommandLine containing 'vssadmin delete shadows', 'wmic shadowcopy delete', or 'bcdedit /set recoveryenabled'",
             "SMB lateral propagation — Network flow analysis for a single endpoint establishing SMB connections (port 445) to >20 unique internal hosts within a 5-minute window",
@@ -440,6 +590,13 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     condition: lolbas_net or schtask_non_admin"""
         sigma_title = "APT Indicators — LOLBAS Network Access and Non-Admin Scheduled Task Creation"
         sigma_tags = "    - attack.defense_evasion\n    - attack.t1218\n    - attack.t1053.005\n    - attack.t1027"
+        siem_queries = {
+            "splunk": 'index=endpoint (Image IN ("*\\\\certutil.exe","*\\\\mshta.exe","*\\\\regsvr32.exe","*\\\\bitsadmin.exe") CommandLine IN ("*http*","*urlcache*","*decode*","*/transfer*"))\nOR (Image="*\\\\schtasks.exe" CommandLine="*/create*" NOT (User IN ("*SYSTEM*","*Administrator*")))\n| table _time, host, Image, CommandLine, User',
+            "elastic": 'process where (process.name in ("certutil.exe","mshta.exe","regsvr32.exe","bitsadmin.exe") and\n  process.command_line : ("*http*","*urlcache*","*decode*","*/transfer*"))\nor (process.name == "schtasks.exe" and process.command_line : "*/create*" and\n  not user.name : ("*SYSTEM*","*Administrator*"))',
+            "sentinel": 'DeviceProcessEvents\n| where (FileName in~ ("certutil.exe","mshta.exe","regsvr32.exe","bitsadmin.exe")\n    and ProcessCommandLine has_any ("http","urlcache","decode","/transfer"))\n  or (FileName =~ "schtasks.exe" and ProcessCommandLine has "/create"\n    and AccountName !in~ ("SYSTEM","Administrator"))',
+            "qradar": "SELECT sourceip, username, processname, commandline FROM events\nWHERE processname IN ('certutil.exe','mshta.exe','regsvr32.exe','bitsadmin.exe')\nAND commandline ILIKE '%http%'\nLAST 24 HOURS",
+            "chronicle": 'rule apt_lolbas_network {\n  meta:\n    description = "LOLBAS binaries with outbound network activity"\n    severity = "High"\n  events:\n    $e.metadata.event_type = "PROCESS_LAUNCH"\n    $e.target.process.file.full_path = /certutil\\.exe|mshta\\.exe|regsvr32\\.exe|bitsadmin\\.exe/ nocase\n    $e.target.process.command_line = /http|urlcache|decode/ nocase\n  condition:\n    $e\n}',
+        }
         hunt_queries = [
             "LOLBAS with outbound network connections — EDR process telemetry for certutil.exe, mshta.exe, regsvr32.exe, bitsadmin.exe with DestinationIP not in internal RFC1918 ranges",
             "Non-admin scheduled task creation — Windows Security Event ID 4698 (scheduled task created) attributed to non-SYSTEM, non-administrator user accounts or unusual parent process",
@@ -488,6 +645,13 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     condition: exploit_uri or webshell_access"""
         sigma_title = f"Web Application Exploitation — {cve_str} Payload and Web Shell Activity"
         sigma_tags = "    - attack.initial_access\n    - attack.t1190\n    - attack.t1505.003"
+        siem_queries = {
+            "splunk": 'index=web (uri_query IN ("*../*","*%2e%2e*","*cmd.exe*","*/etc/passwd*","*;id;*","*|whoami*") status IN (200,500))\nOR (uri_path IN ("*.php","*.aspx","*.jsp") method="POST" bytes_out>0)\n| table _time, clientip, uri_path, uri_query, status',
+            "elastic": 'network where url.path : ("*../*","*%2e%2e*","*/etc/passwd*") and http.response.status_code in (200,500)\nor (url.path : ("*.php","*.aspx","*.jsp") and http.request.method == "post" and http.response.body.bytes > 0)',
+            "sentinel": 'W3CIISLog\n| where (csUriQuery has_any ("../", "%2e%2e", "cmd.exe", "/etc/passwd") and scStatus in (200,500))\n  or (csUriStem has_any (".php",".aspx",".jsp") and csMethod == "POST" and scBytes > 0)',
+            "qradar": "SELECT sourceip, \"URL\", httpresponsecode FROM events\nWHERE \"URL\" ILIKE '%../%' OR \"URL\" ILIKE '%25%2e%2e%' OR \"URL\" ILIKE '%/etc/passwd%'\nLAST 24 HOURS",
+            "chronicle": 'rule cve_web_exploitation {\n  meta:\n    description = "Web exploitation payload and web shell access patterns"\n    severity = "High"\n  events:\n    $e.metadata.event_type = "NETWORK_HTTP"\n    $e.network.http.method = "POST"\n    $e.target.url = /\\.php$|\\.aspx$|\\.jsp$/ nocase\n  condition:\n    $e\n}',
+        }
         hunt_queries = [
             f"Exploitation payload patterns — Web access logs for {cve_str}-specific payload signatures in URI parameters, POST body, or HTTP headers (consult vendor advisory for exact patterns)",
             "Web server spawning shells — EDR process tree for web server process (httpd, nginx, IIS w3wp.exe, Tomcat) spawning cmd.exe, powershell.exe, bash, or sh as child processes",
@@ -532,6 +696,13 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     condition: distributed_low_velocity | count() > 500"""
         sigma_title = "Credential Stuffing Attack — High-Volume Authentication Against Login Endpoint"
         sigma_tags = "    - attack.credential_access\n    - attack.t1110.004\n    - attack.t1078"
+        siem_queries = {
+            "splunk": 'index=web uri_path="*/login*"\n| bin _time span=1m\n| stats count by src_ip, _time\n| where count > 30',
+            "elastic": 'network where url.path : "*/login*" and http.response.status_code in (200, 401, 403)\n// pair with a Kibana threshold rule: group by source.ip, >30 matches per 1m',
+            "sentinel": 'SigninLogs\n| where AppDisplayName has "login"\n| summarize AttemptCount = count() by IPAddress, bin(TimeGenerated, 1m)\n| where AttemptCount > 30',
+            "qradar": "SELECT sourceip, COUNT(*) AS attempts FROM events\nWHERE \"URL\" ILIKE '%/login%'\nGROUP BY sourceip\nHAVING COUNT(*) > 30\nLAST 10 MINUTES",
+            "chronicle": 'rule credential_stuffing_velocity {\n  meta:\n    description = "High-volume authentication attempts from a single source"\n    severity = "Medium"\n  events:\n    $e.metadata.event_type = "USER_LOGIN"\n    $e.principal.ip = $src_ip\n  match:\n    $src_ip over 1m\n  condition:\n    #e > 30\n}',
+        }
         hunt_queries = [
             "Single-IP velocity anomaly — Web access logs for >20 authentication attempts per minute from any single IP against login endpoints",
             "Distributed credential stuffing — Authentication logs for >500 login attempts in 10 minutes distributed across >100 unique IPs with <10% success rate",
@@ -582,6 +753,13 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     condition: network_beacon"""
         sigma_title = "Suspicious Browser Extension Activity — Unmanaged Install or Anomalous Network Beacon"
         sigma_tags = "    - attack.persistence\n    - attack.t1176\n    - attack.t1539"
+        siem_queries = {
+            "splunk": 'index=endpoint sourcetype=registry (TargetObject="*\\\\SOFTWARE\\\\Google\\\\Chrome\\\\Extensions\\\\*" OR TargetObject="*\\\\SOFTWARE\\\\Microsoft\\\\Edge\\\\Extensions\\\\*")\nNOT TargetObject="*\\\\SOFTWARE\\\\Policies\\\\*"\n| table _time, host, TargetObject, Details',
+            "elastic": 'registry where registry.path : ("*\\\\Chrome\\\\Extensions\\\\*","*\\\\Edge\\\\Extensions\\\\*") and\n  not registry.path : "*\\\\Policies\\\\*"',
+            "sentinel": 'DeviceRegistryEvents\n| where RegistryKey has_any (@"\\Chrome\\Extensions", @"\\Edge\\Extensions")\n| where RegistryKey !has @"\\Policies\\"',
+            "qradar": "SELECT hostname, \"Registry Key\", \"Registry Value\" FROM events\nWHERE \"Registry Key\" ILIKE '%\\\\Extensions\\\\%'\nAND \"Registry Key\" NOT ILIKE '%\\\\Policies\\\\%'\nLAST 24 HOURS",
+            "chronicle": 'rule unmanaged_extension_install {\n  meta:\n    description = "Browser extension installed outside enterprise policy path"\n    severity = "Medium"\n  events:\n    $e.metadata.event_type = "REGISTRY_MODIFICATION"\n    $e.target.registry.registry_key = /Extensions/ nocase\n    $e.target.registry.registry_key != /Policies/ nocase\n  condition:\n    $e\n}',
+        }
         hunt_queries = [
             "Extension inventory audit — Chrome/Edge management telemetry or registry enumeration for all installed extension IDs across managed endpoints",
             "Suspicious extension network traffic — Proxy/DNS logs for web requests originating from browser processes to recently registered domains or suspicious TLDs (.tk/.ml/.ga)",
@@ -629,6 +807,13 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     condition: pkg_install_net and not filter_known_registries"""
         sigma_title = "Package Manager Network Connection to Non-Registry Host During Install"
         sigma_tags = "    - attack.initial_access\n    - attack.t1195.002\n    - attack.t1059"
+        siem_queries = {
+            "splunk": 'index=endpoint (Image IN ("*/node","*/python","*/pip","*/npm") CommandLine="*install*")\n| join type=inner host [search index=network]\n| where NOT (dest_host="*registry.npmjs.org*" OR dest_host="*pypi.org*" OR dest_host="*files.pythonhosted.org*")\n| table _time, host, Image, CommandLine, dest_host',
+            "elastic": 'process where process.name in ("node","python","pip","npm") and process.command_line : "*install*"\n| network where not destination.domain in ("registry.npmjs.org","pypi.org","files.pythonhosted.org")',
+            "sentinel": 'DeviceProcessEvents\n| where FileName in~ ("node","python","pip","npm") and ProcessCommandLine has "install"\n| join kind=inner DeviceNetworkEvents on DeviceId\n| where RemoteUrl !has_any ("registry.npmjs.org","pypi.org","files.pythonhosted.org")',
+            "qradar": "SELECT hostname, processname, destinationhostname FROM events\nWHERE processname IN ('node','python','pip','npm')\nAND destinationhostname NOT ILIKE '%registry.npmjs.org%'\nAND destinationhostname NOT ILIKE '%pypi.org%'\nLAST 24 HOURS",
+            "chronicle": 'rule supply_chain_nonregistry_install {\n  meta:\n    description = "Package manager network connection to a non-registry host during install"\n    severity = "High"\n  events:\n    $e.metadata.event_type = "NETWORK_CONNECTION"\n    $e.principal.process.file.full_path = /node$|python$|pip$|npm$/ nocase\n    $e.target.hostname != /registry\\.npmjs\\.org|pypi\\.org/ nocase\n  condition:\n    $e\n}',
+        }
         hunt_queries = [
             "Malicious package install scripts — CI/CD pipeline logs for npm/pip install events that triggered outbound network connections to non-registry hosts",
             "Environment variable exfiltration — Process telemetry for package manager processes (node/python) making outbound DNS or HTTP requests containing 'AWS_', 'SECRET_', 'API_KEY' patterns",
@@ -676,6 +861,13 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     condition: office_shell or encoded_ps"""
         sigma_title = "Office Application Shell Spawn and Encoded PowerShell Execution"
         sigma_tags = "    - attack.execution\n    - attack.t1204.002\n    - attack.t1059.001"
+        siem_queries = {
+            "splunk": 'index=endpoint (ParentImage IN ("*\\\\outlook.exe","*\\\\winword.exe","*\\\\excel.exe","*\\\\powerpnt.exe") Image IN ("*\\\\powershell.exe","*\\\\cmd.exe","*\\\\wscript.exe","*\\\\mshta.exe"))\nOR (Image="*\\\\powershell.exe" CommandLine IN ("*-EncodedCommand*","*-enc *","*FromBase64String*"))\n| table _time, host, ParentImage, Image, CommandLine',
+            "elastic": 'process where (process.parent.name in ("outlook.exe","winword.exe","excel.exe","powerpnt.exe") and\n  process.name in ("powershell.exe","cmd.exe","wscript.exe","mshta.exe"))\nor (process.name == "powershell.exe" and\n  process.command_line : ("*-EncodedCommand*","*-enc *","*FromBase64String*"))',
+            "sentinel": 'DeviceProcessEvents\n| where (InitiatingProcessFileName in~ ("outlook.exe","winword.exe","excel.exe","powerpnt.exe")\n    and FileName in~ ("powershell.exe","cmd.exe","wscript.exe","mshta.exe"))\n  or (FileName =~ "powershell.exe"\n    and ProcessCommandLine has_any ("-EncodedCommand","-enc ","FromBase64String"))',
+            "qradar": "SELECT hostname, parentprocessname, processname, commandline FROM events\nWHERE parentprocessname IN ('outlook.exe','winword.exe','excel.exe','powerpnt.exe')\nAND processname IN ('powershell.exe','cmd.exe','wscript.exe','mshta.exe')\nLAST 24 HOURS",
+            "chronicle": 'rule office_shell_spawn {\n  meta:\n    description = "Office application spawning a shell or encoded PowerShell execution"\n    severity = "High"\n  events:\n    $e.metadata.event_type = "PROCESS_LAUNCH"\n    $e.principal.process.file.full_path = /outlook\\.exe|winword\\.exe|excel\\.exe|powerpnt\\.exe/ nocase\n    $e.target.process.file.full_path = /powershell\\.exe|cmd\\.exe|wscript\\.exe|mshta\\.exe/ nocase\n  condition:\n    $e\n}',
+        }
         hunt_queries = [
             "Office application shell spawn — EDR parent-child process telemetry for Outlook/Word/Excel/PowerPoint spawning PowerShell, cmd.exe, wscript.exe, or mshta.exe",
             "Encoded PowerShell execution — EDR process command-line telemetry for PowerShell.exe invoked with -EncodedCommand, -enc, or FromBase64String parameters",
@@ -799,15 +991,23 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 <li><strong>Registry persistence IOC:</strong> Modifications to HKCU/HKLM Run keys by non-administrative processes or from Office application execution context</li>
 <li><strong>DNS behavioral IOC:</strong> Rapid succession of DNS queries to high-entropy subdomains from a single endpoint immediately following user interaction with suspicious content</li>"""
 
-    # AI security section
-    ai_section = ""
-    if is_ai:
-        ai_section = """
-<h3>AI Security Impact</h3>
-<p>This threat has direct operational implications for enterprise AI and LLM deployments. Organizations running large language models, AI agents, RAG pipelines, or AI-powered security tooling must assess their exposure across multiple attack surfaces.</p>
-<p>Primary AI security risk vectors to evaluate against this threat: <strong>LLM01 (Prompt Injection)</strong> — adversarial input via data sources consumed by AI pipelines; <strong>LLM06 (Sensitive Information Disclosure)</strong> — training data or retrieval context exposure via crafted queries; <strong>LLM08 (Excessive Agency)</strong> — agentic AI systems with tool-use capabilities that can be leveraged post-compromise; <strong>LLM10 (Model Theft)</strong> — exfiltration of fine-tuned model weights or proprietary training data.</p>
-<p>Reference frameworks: OWASP LLM Top 10 2025, MITRE ATLAS (Adversarial Threat Landscape for AI Systems), NIST AI RMF 1.0. CYBERDUDEBIVASH® AI Security Hub provides enterprise AI security assessments, adversarial red teaming, and AI governance program development.</p>
-"""
+    # AI security section — content decided here (is_ai gate), rendered after
+    # _sh() is defined below so it matches every other section's styling
+    # instead of the bare <h3>/<p> markup the rest of this template moved
+    # away from in the 2026-07-06 trust & quality retrofit.
+    _ai_section_body = (
+        '<p style="margin:0 0 10px">This threat has direct operational implications for enterprise AI and LLM deployments. '
+        'Organizations running large language models, AI agents, RAG pipelines, or AI-powered security tooling must assess '
+        'their exposure across multiple attack surfaces.</p>'
+        '<p style="margin:0 0 10px">Primary AI security risk vectors to evaluate against this threat: '
+        '<strong>LLM01 (Prompt Injection)</strong> — adversarial input via data sources consumed by AI pipelines; '
+        '<strong>LLM06 (Sensitive Information Disclosure)</strong> — training data or retrieval context exposure via crafted queries; '
+        '<strong>LLM08 (Excessive Agency)</strong> — agentic AI systems with tool-use capabilities that can be leveraged post-compromise; '
+        '<strong>LLM10 (Model Theft)</strong> — exfiltration of fine-tuned model weights or proprietary training data.</p>'
+        '<p style="margin:0;color:#94a3b8;font-size:13px">Reference frameworks: OWASP LLM Top 10 2025, MITRE ATLAS '
+        '(Adversarial Threat Landscape for AI Systems), NIST AI RMF 1.0. CYBERDUDEBIVASH® AI Security Hub provides enterprise '
+        'AI security assessments, adversarial red teaming, and AI governance program development.</p>'
+    ) if is_ai else ""
 
     # Long-term strategic risk — category-specific
     if is_ransomware:
@@ -890,6 +1090,12 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
             f'font-family:monospace">&#9658; {title}</div>'
         )
 
+    ai_section = (
+        f'{_sh("AI Security Impact", "#a855f7")}\n'
+        f'<div style="background:#0d0014;border:1px solid #a855f733;border-radius:6px;padding:16px 20px;'
+        f'font-size:13px;color:#c4b5fd;line-height:1.8">\n{_ai_section_body}\n</div>'
+    ) if _ai_section_body else ""
+
     # ── Terminal-style Sigma block ───────────────────────────────────────────
     _sigma_date = datetime.now(timezone.utc).strftime("%Y%m%d")
     _sigma_date_fmt = datetime.now(timezone.utc).strftime("%Y/%m/%d")
@@ -925,6 +1131,34 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
         f'level: high'
         f'</code></pre></div>'
     )
+
+    # ── Multi-SIEM query pack — same detection logic as the Sigma rule
+    # above, translated to each platform's native query syntax. ─────────────
+    _SIEM_LABELS = {
+        "splunk": "Splunk SPL",
+        "elastic": "Elastic EQL",
+        "sentinel": "Microsoft Sentinel KQL",
+        "qradar": "IBM QRadar AQL",
+        "chronicle": "Google Chronicle YARA-L",
+    }
+
+    def _siem_block(queries: dict) -> str:
+        if not queries:
+            return ""
+        panes = []
+        for key, label in _SIEM_LABELS.items():
+            query = queries.get(key)
+            if not query:
+                continue
+            panes.append(
+                f'<div style="margin:12px 0;border-radius:8px;overflow:hidden;border:1px solid #1e3a5f">'
+                f'<div style="background:#161b22;padding:6px 14px;border-bottom:1px solid #0d2137;'
+                f'color:#67e8f9;font-size:11px;font-weight:700;font-family:monospace;letter-spacing:0.5px">{label}</div>'
+                f'<pre style="margin:0;padding:14px 16px;background:#0a0f0a;color:#67e8f9;'
+                f'font-family:\'Courier New\',monospace;font-size:11.5px;line-height:1.6;'
+                f'overflow-x:auto;white-space:pre-wrap"><code>{query}</code></pre></div>'
+            )
+        return "\n".join(panes)
 
     # ── CVE cards ────────────────────────────────────────────────────────────
     _cve_cards = "\n".join(
@@ -1110,6 +1344,8 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 {_sh("Sigma Detection Rule", "#22c55e")}
 {_sigma_terminal}
 
+{f'{_sh("Multi-SIEM Detection Queries", "#06b6d4")}<div style="background:#001a1a;border:1px solid #06b6d433;border-radius:6px;padding:14px 16px"><div style="color:#0891b2;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:6px">&#9670; SAME DETECTION LOGIC AS THE SIGMA RULE ABOVE &mdash; VALIDATE FIELD NAMES AGAINST YOUR ENVIRONMENT BEFORE DEPLOYING</div>{_siem_block(siem_queries)}</div>' if siem_queries else ''}
+
 {_sh("Threat Hunting Queries", "#22c55e")}
 <div style="background:#001a10;border:1px solid #22c55e33;border-radius:6px;padding:14px 16px">
 <div style="color:#15803d;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9654; SIEM HUNT HYPOTHESES &mdash; VALIDATE AGAINST YOUR ENVIRONMENT</div>
@@ -1271,6 +1507,9 @@ class AuthorityTransformer:
         faq_schema = self.seo.build_faq_schema(article.title, article.summary, article.labels)
         faq_str = json.dumps(faq_schema, indent=2) if faq_schema else ""
 
+        howto_schema = self.seo.build_howto_schema(article.title, article.summary, article.labels)
+        howto_str = json.dumps(howto_schema, indent=2) if howto_schema else ""
+
         cves = _extract_cve_ids(article.title + " " + article.summary)
         cvss = _extract_cvss(article.title + " " + article.summary)
         category = primary_category(article.labels)
@@ -1278,6 +1517,15 @@ class AuthorityTransformer:
 
         # SVG thumbnail — FIRST element so Blogger uses it as firstImageUrl
         svg_thumbnail = _generate_svg_thumbnail(article.title, article.labels, cvss)
+
+        # Executive Risk Command Center — real CVSS/EPSS/KEV data only,
+        # rendered once here so both the LLM and template content paths
+        # get an identical, un-duplicated dashboard above the article body.
+        risk_command_center = _build_risk_command_center(article, cves, cvss)
+
+        # Trust stats — real numbers only, read from the same publication
+        # state file the syndication pipeline writes.
+        trust_stats_block = _build_trust_stats_block(self.config)
 
         # Metadata bar
         meta_items = [f"📅 {pub_date}", f"📂 {category}", "🛡 CYBERDUDEBIVASH®"]
@@ -1298,6 +1546,8 @@ class AuthorityTransformer:
             schema_blocks += f'<script type="application/ld+json">\n{json_ld_str}\n</script>\n'
         if faq_str:
             schema_blocks += f'<script type="application/ld+json">\n{faq_str}\n</script>\n'
+        if howto_str:
+            schema_blocks += f'<script type="application/ld+json">\n{howto_str}\n</script>\n'
 
         html = f"""{self.monetization.get_style_block()}
 {schema_blocks}
@@ -1306,6 +1556,8 @@ class AuthorityTransformer:
 <!-- Generated: {datetime.now(timezone.utc).isoformat()} -->
 
 {svg_thumbnail}
+
+{risk_command_center}
 
 {self.monetization.inject_header_cta()}
 
@@ -1320,6 +1572,8 @@ class AuthorityTransformer:
 {body_content}
 
 </div>
+
+{trust_stats_block}
 
 {self.monetization.inject_mid_products_cta()}
 
