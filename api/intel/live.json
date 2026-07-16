@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-16T19:31:43.745Z",
+  "generated": "2026-07-16T19:58:54.650Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2310,
+  "total_published": 2312,
   "s2n_stats": {
-    "passed": 83,
-    "suppressed": 11,
+    "passed": 85,
+    "suppressed": 8,
     "avg_qs": 0.551
   },
   "items": [
@@ -2323,9 +2323,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "REDDIT_CYBER-634e03182dd384cb",
@@ -2726,7 +2724,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CISA-c9db34aa54ed0feb",
@@ -4276,44 +4276,47 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
-      "id": "CVE-2026-0001",
-      "title": "[NotCVE-2026-0001] Cloudflare Universal SSL CAA augmentation weakens RFC 8657 account binding — CVE-2026-14440 assigned ",
-      "description": "&lt;p&gt;Posted by NotCVE Advisories on Jul 15&lt;/p&gt;----------------------------------------------------------------------------&lt;br&gt;\nNotCVE Disclosure Update — NotCVE-2026-0001 / CVE-2026-14440&lt;br&gt;\n----------------------------------------------------------------------------&lt;br&gt;",
+      "id": "CVE-2026-52833",
+      "title": "Nuclio: Unsanitized runtimeAttributes.repositories injected into Groovy build.gradle leads to build-time RCE",
+      "description": "## Summary Nuclio's Java runtime generates a `build.gradle` file during function builds using Go's `text/template` package. The template renders `runtimeAttributes.repositories[]` values with the `{{ . }}` action, which performs no escaping. An attacker can embed a closing brace (`}`) to break out o",
       "cvss": 8,
-      "final_ps": 26,
-      "quality_score": 0.48,
+      "final_ps": 21,
+      "quality_score": 0.523,
       "threat_level": "MEDIUM",
-      "type": "ZERO_DAY",
-      "source": "fulldisclosure",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
-        "fulldisclosure"
+        "github_advisories"
       ],
       "first_seen": "2026-07-16",
       "last_seen": "2026-07-16",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "SecLists",
-      "product": "Multiple Targets",
+      "vendor": "go",
+      "product": "github.com/nuclio/nuclio",
       "due_date": null,
       "cves": [
-        "CVE-2026-0001",
-        "CVE-2026-14440"
+        "CVE-2026-52833",
+        "CVE-2026-52833"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://seclists.org/fulldisclosure/2026/Jul/22"
+        "https://github.com/advisories/GHSA-3v79-m2cg-89ww",
+        "https://github.com/nuclio/nuclio/security/advisories/GHSA-3v79-m2cg-89ww",
+        "https://github.com/nuclio/nuclio/pull/4149",
+        "https://github.com/nuclio/nuclio/commit/4c78040c759068e927f3ed7c6507543c15d4ae56"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.78 (fulldisclosure)",
+          "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.480"
+          "QS=0.523"
         ],
         "priority": [
-          "+7 zero_day"
+          "base_ps=21 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4322,43 +4325,47 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-56877",
-      "title": "CVE-2026-56877 - Skillable SCORM userId authorisation bypass",
-      "description": "&lt;p&gt;Posted by Greg via Fulldisclosure on Jul 15&lt;/p&gt;Skillable&amp;apos;s SCORM lab launch endpoint validates a launch token but&lt;br&gt;\nenforces per-user allocation limits using a browser-supplied userId&lt;br&gt;\nthat is not bound to the validated token. An authenticated learner&lt;br&g",
-      "cvss": 8,
-      "final_ps": 26,
-      "quality_score": 0.48,
+      "id": "CVE-2026-52870",
+      "title": "MCP Python SDK: Experimental task handlers allow any client to access and cancel other clients' tasks",
+      "description": "### Summary\nIn affected versions, the default request handlers installed by the experimental tasks feature (`server.experimental.enable_tasks()`) did not check which session created a task before acting on it. On a server with more than one connected client, any client could observe, read results fr",
+      "cvss": 7.6,
+      "final_ps": 21,
+      "quality_score": 0.523,
       "threat_level": "MEDIUM",
-      "type": "ZERO_DAY",
-      "source": "fulldisclosure",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
-        "fulldisclosure"
+        "github_advisories"
       ],
       "first_seen": "2026-07-16",
       "last_seen": "2026-07-16",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "SecLists",
-      "product": "Multiple Targets",
+      "vendor": "pip",
+      "product": "mcp",
       "due_date": null,
       "cves": [
-        "CVE-2026-56877"
+        "CVE-2026-52870",
+        "CVE-2026-52870"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://seclists.org/fulldisclosure/2026/Jul/20"
+        "https://github.com/advisories/GHSA-hvrp-rf83-w775",
+        "https://github.com/modelcontextprotocol/python-sdk/security/advisories/GHSA-hvrp-rf83-w775",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-52870",
+        "https://github.com/modelcontextprotocol/python-sdk/pull/2720"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.78 (fulldisclosure)",
+          "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.480"
+          "QS=0.523"
         ],
         "priority": [
-          "+7 zero_day"
+          "base_ps=21 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4367,47 +4374,52 @@
       "suppression_reason": null
     },
     {
-      "id": "REDDIT_NETSEC-f231b19f52e198a6",
-      "title": "New Exploitable BOLA Found in Immich (self-hosted media platform)",
-      "description": "&lt;!-- SC_OFF --&gt;&lt;div class=&quot;md&quot;&gt;&lt;p&gt;Full disclosure I&amp;#39;m at Escape but wanted to share something we found that would be interesting to those here!&lt;/p&gt; &lt;p&gt;Escape&amp;#39;s security research team found a Broken Access Control flaw in &lt;a href=&quot;https:",
-      "cvss": 6.5,
-      "final_ps": 23,
-      "quality_score": 0.38,
-      "threat_level": "HIGH",
-      "type": "NEWS_REPORT",
-      "source": "reddit_netsec",
+      "id": "CVE-2026-53714",
+      "title": "Envoy Gateway: xDS Control Plane Information Disclosure when operating in GatewayNamespaceMode ",
+      "description": "### Impact\nWhen Envoy Gateway runs in GatewayNamespaceMode (`provider.kubernetes.deploy.type=GatewayNamespace`), the xDS gRPC server is configured with a `StreamInterceptor` for JWT authentication but no UnaryInterceptor. The go-control-plane xDS server exposes both streaming and unary (Fetch) RPC m",
+      "cvss": 7.4,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_netsec"
+        "github_advisories"
       ],
       "first_seen": "2026-07-16",
       "last_seen": "2026-07-16",
-      "exploited": true,
+      "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "reddit_netsec",
-      "product": "Threat Intelligence",
+      "vendor": "go",
+      "product": "github.com/envoyproxy/gateway",
       "due_date": null,
-      "cves": [],
-      "ioc_count": 6,
+      "cves": [
+        "CVE-2026-53714",
+        "CVE-2026-53714"
+      ],
+      "ioc_count": 0,
       "refs": [
-        "https://www.reddit.com/r/netsec/comments/1uy9f9u/new_exploitable_bola_found_in_immich_selfhosted/"
+        "https://github.com/advisories/GHSA-22xc-xg2r-9j7v",
+        "https://github.com/envoyproxy/gateway/security/advisories/GHSA-22xc-xg2r-9j7v",
+        "https://github.com/advisories/GHSA-22xc-xg2r-9j7v"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_netsec)",
-          "data_confidence=0.55",
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.380"
+          "QS=0.523"
         ],
         "priority": [
-          "+8 exploited_in_wild"
+          "base_ps=21 (no boosts)"
         ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "suppression": null,
         "merge": null
       },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
+      "suppressed": false,
+      "suppression_reason": null
     }
   ]
 }
