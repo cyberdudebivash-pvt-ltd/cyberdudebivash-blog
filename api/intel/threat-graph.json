@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-16T17:31:41.428Z",
+  "generated": "2026-07-16T18:02:05.799Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5045,
+    "total_nodes": 5048,
     "actors": 8,
     "cves": 1023,
-    "campaigns": 441,
+    "campaigns": 442,
     "malware": 0,
     "iocs": 546,
-    "edges": 2166
+    "edges": 2168
   },
   "nodes": {
     "actor:lockbit": {
@@ -98012,6 +98012,68 @@
         "first_seen": "2026-07-16"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-f231b19f52e198a6": {
+      "id": "REDDIT_NETSEC-f231b19f52e198a6",
+      "type": "Intel",
+      "name": "New Exploitable BOLA Found in Immich (self-hosted media platform)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-b50e7900a943d27f": {
+      "id": "REDDIT_CYBER-b50e7900a943d27f",
+      "type": "Intel",
+      "name": "What should I focus on during my BS in CS to get ahead in cybersecurity?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-8712909b": {
+      "id": "campaign:cluster-8712909b",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-16",
+        "last_seen": "2026-07-16",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 6 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_NETSEC-f231b19f52e198a6",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -117544,6 +117606,24 @@
       "target": "ioc:sha1:ddc82dbf6a3ab896a188c1fdd172af756c209ba7",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-b50e7900a943d27f→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-b50e7900a943d27f",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-8712909b→includes→REDDIT_NETSEC-f231b19f52e198a6",
+      "source": "campaign:cluster-8712909b",
+      "target": "REDDIT_NETSEC-f231b19f52e198a6",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-16",
       "sources": []
     }
