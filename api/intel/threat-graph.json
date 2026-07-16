@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-16T04:31:57.709Z",
+  "generated": "2026-07-16T05:02:03.360Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4970,
+    "total_nodes": 4977,
     "actors": 8,
-    "cves": 1019,
-    "campaigns": 433,
+    "cves": 1021,
+    "campaigns": 436,
     "malware": 0,
-    "iocs": 528,
-    "edges": 2121
+    "iocs": 529,
+    "edges": 2125
   },
   "nodes": {
     "actor:lockbit": {
@@ -96557,6 +96557,137 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "FULLDIS-a1c59a12b3cbb4d0": {
+      "id": "FULLDIS-a1c59a12b3cbb4d0",
+      "type": "Intel",
+      "name": "Subject: Advisory Submission: EZ Game Booster - Cleartext Storage of Sensitive Credentials (CWE-312)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 76,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecLists",
+        "product": "Multiple Targets",
+        "published": "2026-07-16",
+        "type": "ZERO_DAY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:ezsystemrepairs.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:ezsystemrepairs.com": {
+      "id": "ioc:domain:ezsystemrepairs.com",
+      "type": "IOC",
+      "name": "ezsystemrepairs.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-16"
+      },
+      "connections": []
+    },
+    "CVE-2026-0001": {
+      "id": "CVE-2026-0001",
+      "type": "CVE",
+      "name": "[NotCVE-2026-0001] Cloudflare Universal SSL CAA augmentation weakens RFC 8657 account binding — CVE-2026-14440 assigned 163 days after public no-CVE disclosure",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "MEDIUM",
+        "priority_score": 60,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecLists",
+        "product": "Multiple Targets",
+        "published": "2026-07-16",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "CVE-2026-56877": {
+      "id": "CVE-2026-56877",
+      "type": "CVE",
+      "name": "CVE-2026-56877 - Skillable SCORM userId authorisation bypass",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "MEDIUM",
+        "priority_score": 60,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecLists",
+        "product": "Multiple Targets",
+        "published": "2026-07-16",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-3811470d": {
+      "id": "campaign:cluster-3811470d",
+      "type": "Campaign",
+      "name": "SecLists Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-16",
+        "last_seen": "2026-07-16",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 3 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "FULLDIS-a1c59a12b3cbb4d0",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-0001": {
+      "id": "campaign:cve-2026-0001",
+      "type": "Campaign",
+      "name": "SecLists Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-16",
+        "last_seen": "2026-07-16",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 2 related CVEs: CVE-2026-0001, CVE-2026-14440"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-0001",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-56877": {
+      "id": "campaign:cve-2026-56877",
+      "type": "Campaign",
+      "name": "SecLists Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-16",
+        "last_seen": "2026-07-16",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-56877"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-56877",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -115684,6 +115815,42 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "FULLDIS-a1c59a12b3cbb4d0→linked_to→ioc:domain:ezsystemrepairs.com",
+      "source": "FULLDIS-a1c59a12b3cbb4d0",
+      "target": "ioc:domain:ezsystemrepairs.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-3811470d→includes→FULLDIS-a1c59a12b3cbb4d0",
+      "source": "campaign:cluster-3811470d",
+      "target": "FULLDIS-a1c59a12b3cbb4d0",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-0001→includes→CVE-2026-0001",
+      "source": "campaign:cve-2026-0001",
+      "target": "CVE-2026-0001",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-56877→includes→CVE-2026-56877",
+      "source": "campaign:cve-2026-56877",
+      "target": "CVE-2026-56877",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-16",
       "sources": []
     }
