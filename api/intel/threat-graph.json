@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-16T19:58:54.616Z",
+  "generated": "2026-07-16T20:01:49.493Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5057,
+    "total_nodes": 5060,
     "actors": 8,
-    "cves": 1026,
+    "cves": 1028,
     "campaigns": 442,
     "malware": 0,
-    "iocs": 547,
-    "edges": 2171
+    "iocs": 548,
+    "edges": 2172
   },
   "nodes": {
     "actor:lockbit": {
@@ -98247,6 +98247,59 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-54540": {
+      "id": "CVE-2026-54540",
+      "type": "CVE",
+      "name": "Pheditor has an authenticated terminal command whitelist bypass",
+      "attributes": {
+        "cvss": 8.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "pheditor/pheditor",
+        "published": "2026-07-16",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:62b43df7cb8956a9b0deb9bec278ca8676c890c5",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:62b43df7cb8956a9b0deb9bec278ca8676c890c5": {
+      "id": "ioc:sha1:62b43df7cb8956a9b0deb9bec278ca8676c890c5",
+      "type": "IOC",
+      "name": "62b43df7cb8956a9b0deb9bec278ca8676c890c5",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-16"
+      },
+      "connections": []
+    },
+    "CVE-2026-52869": {
+      "id": "CVE-2026-52869",
+      "type": "CVE",
+      "name": "MCP Python SDK: HTTP transports serve session requests without verifying the authenticated principal",
+      "attributes": {
+        "cvss": 7.1,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "mcp",
+        "published": "2026-07-16",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -117824,6 +117877,15 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-54540→linked_to→ioc:sha1:62b43df7cb8956a9b0deb9bec278ca8676c890c5",
+      "source": "CVE-2026-54540",
+      "target": "ioc:sha1:62b43df7cb8956a9b0deb9bec278ca8676c890c5",
+      "relationship": "linked_to",
+      "confidence": 0.9,
       "first_seen": "2026-07-16",
       "sources": []
     }
