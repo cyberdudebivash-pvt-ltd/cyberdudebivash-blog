@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-16T06:31:54.466Z",
+  "generated": "2026-07-16T07:02:02.576Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4982,
+    "total_nodes": 4986,
     "actors": 8,
     "cves": 1022,
-    "campaigns": 438,
+    "campaigns": 439,
     "malware": 0,
-    "iocs": 529,
-    "edges": 2129
+    "iocs": 530,
+    "edges": 2131
   },
   "nodes": {
     "actor:lockbit": {
@@ -96736,7 +96736,7 @@
     "CVE-2026-13585": {
       "id": "CVE-2026-13585",
       "type": "CVE",
-      "name": "ASUS bsitf.sys (CVE-2026-13585): Arbitrary Physical Memory Mapping via Unvalidated IOCTL",
+      "name": "ASUS bsitf.sys (CVE-2026-13585): Arbitrary Physical Memory Mapping 0-day writeup + PoC",
       "attributes": {
         "cvss": 8,
         "threat_level": "HIGH",
@@ -96744,7 +96744,7 @@
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "reddit_netsec",
+        "vendor": "reddit_cyber",
         "product": "Threat Intelligence",
         "published": "2026-07-16",
         "type": "ZERO_DAY"
@@ -96754,6 +96754,11 @@
           "target": "ioc:domain:www.cve.org",
           "relationship": "linked_to",
           "confidence": 0.75
+        },
+        {
+          "target": "ioc:sha1:b930f261783690db3aaf136e47232986a787110d",
+          "relationship": "linked_to",
+          "confidence": 0.9
         }
       ]
     },
@@ -96778,7 +96783,7 @@
     "campaign:cve-2026-13585": {
       "id": "campaign:cve-2026-13585",
       "type": "Campaign",
-      "name": "reddit_netsec Threat Exploitation Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
       "attributes": {
         "severity": "HIGH",
         "item_count": 1,
@@ -96790,6 +96795,73 @@
       "connections": [
         {
           "target": "CVE-2026-13585",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:sha1:b930f261783690db3aaf136e47232986a787110d": {
+      "id": "ioc:sha1:b930f261783690db3aaf136e47232986a787110d",
+      "type": "IOC",
+      "name": "b930f261783690db3aaf136e47232986a787110d",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-16"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-4c24c858ca2de655": {
+      "id": "SECURITYWEEK-4c24c858ca2de655",
+      "type": "Intel",
+      "name": "Nightmare Eclipse Drops &#8216;LegacyHive&#8217; Windows Zero-Day",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "DARKREADING-ba266ac5e486f90d": {
+      "id": "DARKREADING-ba266ac5e486f90d",
+      "type": "Intel",
+      "name": "Police Disrupt a €140M Cyber Fraud Ring in Spain",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-fa5e7030": {
+      "id": "campaign:cluster-fa5e7030",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-16",
+        "last_seen": "2026-07-16",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-4c24c858ca2de655",
           "relationship": "includes",
           "confidence": 1
         }
@@ -115991,6 +116063,24 @@
       "id": "campaign:cve-2026-13585→includes→CVE-2026-13585",
       "source": "campaign:cve-2026-13585",
       "target": "CVE-2026-13585",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-13585→linked_to→ioc:sha1:b930f261783690db3aaf136e47232986a787110d",
+      "source": "CVE-2026-13585",
+      "target": "ioc:sha1:b930f261783690db3aaf136e47232986a787110d",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-fa5e7030→includes→SECURITYWEEK-4c24c858ca2de655",
+      "source": "campaign:cluster-fa5e7030",
+      "target": "SECURITYWEEK-4c24c858ca2de655",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-16",
