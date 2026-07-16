@@ -3,6 +3,7 @@ CYBERDUDEBIVASH® SENTINEL APEX — Internal Linking Engine
 Generates contextual internal links to related reports, CVEs, and platform pages.
 """
 
+import json
 import re
 from typing import Optional
 
@@ -108,6 +109,76 @@ class InternalLinker:
                            f"{self.config.source_base_url}/malware/"))
 
         return result
+
+    def build_correlation_block(
+        self, article_labels: list, article_cves: list,
+        exclude_hash: Optional[str] = None, max_results: int = 5,
+    ) -> str:
+        """
+        Real cross-references against previously published reports — read
+        from data/published_posts.json (the same file the syndication
+        pipeline already writes; every entry's blogger_url is a real, live
+        link, never fabricated). Shared CVEs rank highest, then shared
+        labels, then most recent as a fallback so readers never hit a dead
+        end. Returns "" if the state file is unavailable or has no usable
+        entries.
+        """
+        try:
+            with open(self.config.state_file, "r", encoding="utf-8") as f:
+                state = json.load(f)
+        except (OSError, json.JSONDecodeError):
+            return ""
+
+        posts = state.get("posts", {})
+        if not posts:
+            return ""
+
+        article_cve_set = {c.upper() for c in article_cves}
+        article_label_set = set(article_labels)
+
+        cve_matches, label_matches, others = [], [], []
+        for content_hash, entry in posts.items():
+            if content_hash == exclude_hash:
+                continue
+            blogger_url = entry.get("blogger_url")
+            title = entry.get("source_title")
+            if not blogger_url or not title:
+                continue
+
+            entry_cves = {c.upper() for c in entry.get("cves", [])}
+            entry_labels = set(entry.get("labels", []))
+            published_at = entry.get("published_at", "")
+
+            if article_cve_set and entry_cves & article_cve_set:
+                cve_matches.append((published_at, title, blogger_url))
+            elif article_label_set & entry_labels:
+                label_matches.append((published_at, title, blogger_url))
+            else:
+                others.append((published_at, title, blogger_url))
+
+        cve_matches.sort(reverse=True)
+        label_matches.sort(reverse=True)
+        others.sort(reverse=True)
+
+        combined = cve_matches + label_matches
+        if len(combined) < max_results:
+            combined += others[: max_results - len(combined)]
+        combined = combined[:max_results]
+
+        if not combined:
+            return ""
+
+        items_html = "".join(
+            f'<li><a href="{url}" target="_blank" rel="noopener">{title[:90]}</a></li>\n'
+            for _, title, url in combined
+        )
+        return f"""
+<div style="margin:24px 0;padding:18px 20px;background:#0a0f1e;border:1px solid #1e3a5f;border-radius:8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <h4 style="margin:0 0 12px;font-size:13px;font-weight:700;color:#00d4ff;text-transform:uppercase;letter-spacing:1px">🔗 Related Intelligence Reports</h4>
+  <ul style="margin:0;padding:0 0 0 16px;color:#a0b3cc;font-size:13px;line-height:1.9">
+{items_html}  </ul>
+</div>
+""".strip()
 
     def build_external_references(self, title: str, summary: str) -> str:
         """Generate relevant external authority references."""
