@@ -56,8 +56,16 @@ class BloggerPublisher:
         )
 
         if not resp.ok:
+            hint = ""
+            if "invalid_grant" in resp.text:
+                hint = (
+                    " — BLOGGER_REFRESH_TOKEN has been revoked or expired by Google "
+                    "(commonly triggered by a burst of API calls tripping abuse detection). "
+                    "Reauthorize the Blogger OAuth app and rotate the BLOGGER_REFRESH_TOKEN "
+                    "GitHub Actions secret to restore publishing."
+                )
             raise BloggerAuthError(
-                f"Token refresh failed {resp.status_code}: {resp.text[:200]}"
+                f"Token refresh failed {resp.status_code}: {resp.text[:200]}{hint}"
             )
 
         data = resp.json()

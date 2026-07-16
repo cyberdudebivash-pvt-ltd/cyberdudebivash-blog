@@ -131,15 +131,22 @@ jobs:
             echo "Running in DRY RUN mode — no posts will be published"
           fi
 
+          set +e
           python -m automation.main \
             $DRY_RUN_FLAG \
             --max-posts ${{ github.event.inputs.max_posts || '12' }} \
             2>&1 | tee logs/pipeline-output.txt
+          PIPELINE_EXIT=${PIPESTATUS[0]}
+          if [ "$PIPELINE_EXIT" -ne 0 ]; then
+            echo "::error::Syndication pipeline exited with code ${PIPELINE_EXIT} — 0 posts published this run. See log above for the failing cause (auth, rate-limit, or publish error)."
+          fi
+          exit $PIPELINE_EXIT
 
       # ──────────────────────────────────────────────
       # 8. Commit State & Logs
       # ──────────────────────────────────────────────
       - name: "💾 Commit Publication State"
+        if: always()
         run: |
           # Stage state file and logs (not pipeline logs to reduce noise)
           git add data/published_posts.json || true
