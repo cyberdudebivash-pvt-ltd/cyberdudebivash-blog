@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-16T06:02:06.493Z",
+  "generated": "2026-07-16T06:31:54.466Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 4979,
+    "total_nodes": 4982,
     "actors": 8,
-    "cves": 1021,
-    "campaigns": 437,
+    "cves": 1022,
+    "campaigns": 438,
     "malware": 0,
     "iocs": 529,
-    "edges": 2127
+    "edges": 2129
   },
   "nodes": {
     "actor:lockbit": {
@@ -1885,7 +1885,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-05-29"
+        "first_seen": "2026-07-16"
       },
       "connections": []
     },
@@ -96732,6 +96732,68 @@
           "confidence": 1
         }
       ]
+    },
+    "CVE-2026-13585": {
+      "id": "CVE-2026-13585",
+      "type": "CVE",
+      "name": "ASUS bsitf.sys (CVE-2026-13585): Arbitrary Physical Memory Mapping via Unvalidated IOCTL",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 80,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "ZERO_DAY"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.cve.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "SECURITYWEEK-83cc83df39631c45": {
+      "id": "SECURITYWEEK-83cc83df39631c45",
+      "type": "Intel",
+      "name": "Trend Micro, Tanium, ESET and Tenable Patch Severe Product Vulnerabilities",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-13585": {
+      "id": "campaign:cve-2026-13585",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-16",
+        "last_seen": "2026-07-16",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-13585 | 6 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-13585",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -115911,6 +115973,24 @@
       "id": "campaign:cluster-b786eed4→includes→REDDIT_CYBER-ce4e7724e13e94f4",
       "source": "campaign:cluster-b786eed4",
       "target": "REDDIT_CYBER-ce4e7724e13e94f4",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-13585→linked_to→ioc:domain:www.cve.org",
+      "source": "CVE-2026-13585",
+      "target": "ioc:domain:www.cve.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-13585→includes→CVE-2026-13585",
+      "source": "campaign:cve-2026-13585",
+      "target": "CVE-2026-13585",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-16",
