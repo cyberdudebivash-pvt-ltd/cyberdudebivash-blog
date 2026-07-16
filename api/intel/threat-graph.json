@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-16T11:02:09.953Z",
+  "generated": "2026-07-16T11:31:56.948Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5010,
+    "total_nodes": 5013,
     "actors": 8,
     "cves": 1022,
     "campaigns": 441,
     "malware": 0,
-    "iocs": 536,
-    "edges": 2144
+    "iocs": 537,
+    "edges": 2146
   },
   "nodes": {
     "actor:lockbit": {
@@ -97325,6 +97325,64 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_CYBER-21ea62b288a14b49": {
+      "id": "REDDIT_CYBER-21ea62b288a14b49",
+      "type": "Intel",
+      "name": "Files relating to India’s largest nuclear power plant Kudankulam exposed in data breach",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "DATA_BREACH"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.reddit.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:www.reuters.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:www.reuters.com": {
+      "id": "ioc:domain:www.reuters.com",
+      "type": "IOC",
+      "name": "www.reuters.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-16"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-b2cb04764b2c9f16": {
+      "id": "SECURITYWEEK-b2cb04764b2c9f16",
+      "type": "Intel",
+      "name": "Oak Emerges From Stealth Mode With $60 Million in Funding",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-16",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -116659,6 +116717,24 @@
       "target": "BLEEPINGCOMPUTER-71585e80b5c2dbb0",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-21ea62b288a14b49→linked_to→ioc:domain:www.reddit.com",
+      "source": "REDDIT_CYBER-21ea62b288a14b49",
+      "target": "ioc:domain:www.reddit.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-16",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-21ea62b288a14b49→linked_to→ioc:domain:www.reuters.com",
+      "source": "REDDIT_CYBER-21ea62b288a14b49",
+      "target": "ioc:domain:www.reuters.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-16",
       "sources": []
     }
