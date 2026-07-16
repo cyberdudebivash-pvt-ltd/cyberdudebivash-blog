@@ -7,7 +7,7 @@ import unittest
 from datetime import datetime, timezone
 
 from automation.config import Config
-from automation.seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss, _truncate
+from automation.seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss, _extract_cwe_ids, _truncate
 
 
 class TestHelpers(unittest.TestCase):
@@ -35,6 +35,14 @@ class TestHelpers(unittest.TestCase):
         result = _truncate(text, 30)
         self.assertLessEqual(len(result), 30)
         self.assertTrue(result.endswith("..."))
+
+    def test_extract_cwe_ids(self):
+        cwes = _extract_cwe_ids("Affected by CWE-79 and cwe-787 cross-site scripting")
+        self.assertIn("CWE-79", cwes)
+        self.assertIn("CWE-787", cwes)
+
+    def test_extract_cwe_ids_none_present(self):
+        self.assertEqual(_extract_cwe_ids("No weakness classification here"), [])
 
     def test_truncate_does_not_split_word(self):
         text = "Hello world this is a long text that needs truncation"
@@ -133,6 +141,46 @@ class TestSEOOptimizer(unittest.TestCase):
         )
         # May be empty dict if no matching signals
         self.assertIsInstance(faq, dict)
+
+    def test_cwe_entities_included_in_json_ld_about(self):
+        result = self._generate(
+            title="CVE-2026-1234 Critical Flaw",
+            summary="A vulnerability allows RCE. CWE: CWE-787, CWE-125",
+        )
+        about = result["json_ld"]["@graph"][0]["about"]
+        names = [item["name"] for item in about]
+        self.assertIn("CWE-787", names)
+        self.assertIn("CWE-125", names)
+        cwe_entry = next(item for item in about if item["name"] == "CWE-787")
+        self.assertEqual(cwe_entry["url"], "https://cwe.mitre.org/data/definitions/787.html")
+
+    def test_no_cwe_entities_when_none_present(self):
+        result = self._generate(title="Generic Ransomware News", summary="No CWE mentioned")
+        about = result["json_ld"]["@graph"][0]["about"]
+        self.assertFalse(any(str(item["name"]).startswith("CWE-") for item in about))
+
+    def test_howto_schema_for_ransomware(self):
+        howto = self.optimizer.build_howto_schema(
+            "LockBit Ransomware Hits Healthcare",
+            "LockBit ransomware group encrypted hospital systems.",
+            ["Ransomware"],
+        )
+        self.assertEqual(howto.get("@type"), "HowTo")
+        self.assertGreaterEqual(len(howto["step"]), 3)
+        self.assertTrue(all("name" in s and "text" in s for s in howto["step"]))
+
+    def test_howto_schema_for_cve(self):
+        howto = self.optimizer.build_howto_schema(
+            "CVE-2026-9999 Critical RCE", "Critical remote code execution vulnerability.", ["Vulnerabilities"],
+        )
+        self.assertEqual(howto.get("@type"), "HowTo")
+        self.assertIn("CVE-2026-9999", howto["name"])
+
+    def test_howto_schema_empty_for_generic(self):
+        howto = self.optimizer.build_howto_schema(
+            "General Security News", "Nothing specific here.", ["Threat Intelligence"],
+        )
+        self.assertEqual(howto, {})
 
 
 if __name__ == "__main__":

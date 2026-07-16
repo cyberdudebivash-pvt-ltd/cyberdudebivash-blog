@@ -31,6 +31,13 @@ def _extract_cvss(text: str) -> Optional[str]:
     return match.group(1) if match else None
 
 
+def _extract_cwe_ids(text: str) -> list[str]:
+    """Real CWE IDs only — NVD-sourced summaries include a flattened
+    "CWE: CWE-79, CWE-89" line (see nvd_source.py); other sources won't
+    match, and that's correct — never invent a CWE that wasn't reported."""
+    return sorted({m.upper() for m in re.findall(r"CWE-\d{1,5}", text, re.IGNORECASE)})
+
+
 def _truncate(text: str, max_len: int) -> str:
     if len(text) <= max_len:
         return text
@@ -48,6 +55,7 @@ class SEOOptimizer:
         """Return full SEO payload for a syndicated article."""
         cves = _extract_cve_ids(title + " " + summary)
         cvss = _extract_cvss(title + " " + summary)
+        cwes = _extract_cwe_ids(title + " " + summary)
 
         meta_title = self._build_meta_title(title, cves)
         meta_description = self._build_meta_description(summary, cves, cvss)
@@ -59,7 +67,7 @@ class SEOOptimizer:
             "keywords": keywords,
             "og_tags": self._build_og_tags(meta_title, meta_description, url),
             "twitter_card": self._build_twitter_card(meta_title, meta_description, url),
-            "json_ld": self._build_json_ld(meta_title, meta_description, url, labels, published_at, cves),
+            "json_ld": self._build_json_ld(meta_title, meta_description, url, labels, published_at, cves, cwes),
         }
 
         logger.info("SEO metadata generated", extra={"title": title[:80], "cves": cves})
@@ -115,7 +123,8 @@ class SEOOptimizer:
         }
 
     def _build_json_ld(self, title: str, description: str, url: str,
-                       labels: list[str], published_at: str, cves: list[str]) -> dict:
+                       labels: list[str], published_at: str, cves: list[str],
+                       cwes: Optional[list[str]] = None) -> dict:
         now = datetime.now(timezone.utc).isoformat()
         text_lower = title.lower()
         # Use TechArticle for CVE/vulnerability content — better Google News eligibility
@@ -158,7 +167,10 @@ class SEOOptimizer:
             "keywords": ", ".join(labels + cves),
             "articleSection": labels[0] if labels else "Threat Intelligence",
             "inLanguage": "en-US",
-            "about": [{"@type": "Thing", "name": cve} for cve in cves],
+            "about": (
+                [{"@type": "Thing", "name": cve, "url": f"https://nvd.nist.gov/vuln/detail/{cve}"} for cve in cves]
+                + [{"@type": "Thing", "name": cwe, "url": f"https://cwe.mitre.org/data/definitions/{cwe.split('-')[1]}.html"} for cwe in (cwes or [])]
+            ),
             "mentions": [
                 {"@type": "SoftwareApplication", "name": "CYBERDUDEBIVASH® SENTINEL APEX",
                  "url": self.config.sentinel_apex_url},
@@ -303,4 +315,44 @@ class SEOOptimizer:
             "@context": "https://schema.org",
             "@type": "FAQPage",
             "mainEntity": questions[:5],
+        }
+
+    def build_howto_schema(self, title: str, summary: str, labels: list[str]) -> dict:
+        """Generate HowTo schema for the response-steps content every report
+        already carries (SOC Analyst Playbook). Category-derived the same
+        way build_faq_schema() is — no fabricated steps beyond what the
+        report itself already publishes for that category."""
+        text = (title + " " + summary).lower()
+        cves = _extract_cve_ids(title + " " + summary)
+
+        if "ransomware" in text:
+            name = "How to Respond to a Ransomware Incident"
+            steps = [
+                ("Isolate affected hosts", "Immediately isolate affected hosts via VLAN quarantine or firewall ACL block. Do not power off — preserve volatile memory for forensic imaging."),
+                ("Identify patient zero", "Use EDR lateral movement timeline to find the earliest infected host and block associated C2 indicators at the perimeter firewall and DNS resolver."),
+                ("Verify backup integrity", "Confirm immutable backups are accessible, unaffected by encryption, and that restoration has been tested within the past 90 days."),
+                ("Activate incident response", "Engage an incident response partner and begin forensic preservation of confirmed and suspected affected systems."),
+                ("Assess notification obligations", "Determine mandatory regulatory breach notification requirements (GDPR 72-hour window, HIPAA 60-day window, applicable state laws)."),
+            ]
+        elif cves or "vulnerability" in text:
+            cve_ref = cves[0] if cves else "the vulnerability"
+            name = f"How to Remediate {cve_ref}"
+            steps = [
+                ("Confirm exposure", f"Identify all systems running the affected component to determine {cve_ref} exposure across your environment."),
+                ("Apply the vendor patch", "Apply the vendor-issued patch immediately on all affected instances."),
+                ("Deploy compensating controls", "If a patch is not available within 4 hours, implement WAF virtual patching or restrict access to authenticated users only."),
+                ("Search for prior exploitation", "Query SIEM, WAF, and web logs retroactively for exploitation payload patterns to rule out pre-patch compromise."),
+                ("Verify remediation", "Re-scan affected systems to confirm the patch was applied successfully and the vulnerability is closed."),
+            ]
+        else:
+            return {}
+
+        return {
+            "@context": "https://schema.org",
+            "@type": "HowTo",
+            "name": name,
+            "step": [
+                {"@type": "HowToStep", "position": i + 1, "name": step_name, "text": step_text}
+                for i, (step_name, step_text) in enumerate(steps)
+            ],
         }

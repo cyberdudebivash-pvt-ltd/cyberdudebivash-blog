@@ -84,6 +84,7 @@ const CFG = {
   // ── TIER 1: Critical CVE / exploit sources ──────────────────────────
   nvdApi:             'https://services.nvd.nist.gov/rest/json/cves/2.0',
   cisaKevUrl:         'https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json',
+  epssApi:            'https://api.first.org/data/v1/epss',
   cisaAlertsRss:      'https://www.cisa.gov/cybersecurity-advisories/all.xml',
   ghAdvisoryUrl:      'https://api.github.com/advisories?type=reviewed&severity=high&per_page=30',
   msrcApi:            'https://api.msrc.microsoft.com/cvrf/v2.0/Updates',
@@ -455,6 +456,31 @@ async function fetchCISAKev(state) {
     setSourceLastFetch(state, 'cisa_kev', Date.now());
     log(`CISA KEV: ${items.length} items.`); return items;
   } catch(e) { warn(`CISA KEV failed: ${e.message}`); return []; }
+}
+
+/**
+ * Batch-fetch real EPSS exploitation-probability scores for up to 100 CVE
+ * IDs in one request. Returns {} on failure — callers must treat a missing
+ * entry as "unknown", never fabricate a score. Free, unauthenticated feed.
+ */
+async function fetchEpssBatch(cveIds) {
+  if (!cveIds || !cveIds.length) return {};
+  try {
+    const url = `${CFG.epssApi}?cve=${encodeURIComponent(cveIds.slice(0,100).join(','))}`;
+    const raw = await fetchWithRetry(url);
+    const data = JSON.parse(raw);
+    const map = {};
+    (data.data||[]).forEach(item => {
+      const cve = String(item.cve||'').toUpperCase();
+      const score = parseFloat(item.epss);
+      const pct = parseFloat(item.percentile);
+      if (cve && Number.isFinite(score) && Number.isFinite(pct)) {
+        map[cve] = { score, percentile: pct };
+      }
+    });
+    log(`EPSS: ${Object.keys(map).length}/${cveIds.length} CVEs scored.`);
+    return map;
+  } catch(e) { warn(`EPSS fetch failed: ${e.message}`); return {}; }
 }
 
 // ── SOURCE 3: CISA Alerts RSS ──────────────────────────────────────────
@@ -2397,7 +2423,7 @@ function updateSearchIndex(newItems) {
 }
 
 // ── PHASE 5: ENTERPRISE API PLATFORM (S2N-powered static JSON endpoints) ──
-function writeAPIFiles(allItems, state) {
+async function writeAPIFiles(allItems, state) {
   try {
     // Ensure API directories exist
     const apiCveDir = path.join(CFG.apiDir, 'cve');
@@ -2511,17 +2537,22 @@ function writeAPIFiles(allItems, state) {
 
     // ── /api/intel/cve/{id}.json — per-CVE detail files ─────────────────
     let cveFileCount = 0;
-    s2nResult.passed
+    const cveCandidates = s2nResult.passed
       .filter(i => i.id && i.id.startsWith('CVE') && (i.final_ps||0)>=50)
-      .slice(0, 20)
-      .forEach(item => {
+      .slice(0, 20);
+    // Real EPSS scores, batched once for every CVE file about to be written
+    // (never fabricated — a missing entry means "unknown", not zero).
+    const epssMap = await fetchEpssBatch(cveCandidates.map(i => i.id));
+    cveCandidates.forEach(item => {
         const orig = allItems.find(o => o.id === item.id) || item;
         const cveFile = path.join(apiCveDir, `${item.id}.json`);
+        const epss = epssMap[item.id] || null;
         safeWriteSync(cveFile, JSON.stringify({
           ...apiMeta, endpoint: `/api/intel/cve/${item.id}.json`,
           id: item.id, title: item.title, description: item.description||orig.desc,
           cvss: item.cvss||0, final_ps: item.final_ps||0, quality_score: item.quality_score||0,
           threat_level: finalThreatLevel(item.final_ps||0),
+          epss_score: epss ? epss.score : null, epss_percentile: epss ? epss.percentile : null,
           type: orig.type, sources: item.merged_sources||[item.source],
           sources_confirmed: item.sources_confirmed||1,
           first_seen: item.first_seen, last_seen: item.last_seen,
@@ -2723,7 +2754,7 @@ async function main() {
     if (tier1Items.length > 0) {
       log(`\n── PHASE 6: STREAMING — Writing Tier 1 partial results (${tier1Items.length} items)...`);
       writeLiveIntel(tier1Items.map(i=>({...i,priority:computePriorityScore(i),threatLevel:threatLevel(computePriorityScore(i))})), state);
-      writeAPIFiles(tier1Items.map(i=>({...i,priority:computePriorityScore(i),threatLevel:threatLevel(computePriorityScore(i))})), state);
+      await writeAPIFiles(tier1Items.map(i=>({...i,priority:computePriorityScore(i),threatLevel:threatLevel(computePriorityScore(i))})), state);
     }
     tier1Batches.forEach((b,idx) => { const k=['nvd','cisa_kev','cisa_alerts','github_advisories','msrc','exploitdb','packetstorm','fulldisclosure'][idx]; if(k) sourceStats[k]={fetched:b.length}; });
 
@@ -2838,7 +2869,7 @@ async function main() {
     // ── PHASE 6: FINAL STREAM WRITE — S2N-powered ─────────────────────
     log('\n── PHASE 6: STREAMING — S2N + Final enriched write ─────────────');
     writeLiveIntel(enrichedItems, state);
-    writeAPIFiles(enrichedItems, state);  // <-- runs S2N engine internally
+    await writeAPIFiles(enrichedItems, state);  // <-- runs S2N engine internally
 
     // ── REPORT GENERATION — use S2N-passed items for scoring ──────────
     const newItems   = enrichedItems.filter(item=>item.id&&!isPublished(state,item.id));

@@ -120,6 +120,13 @@ class CISAKEVSource:
                     labels=labels,
                     source="cisa_kev",
                     full_content=full_content,
+                    cve_id=cve_id,
+                    affected_vendor=vendor or None,
+                    affected_product=product or None,
+                    kev_listed=True,
+                    kev_date_added=date_added_str,
+                    kev_due_date=due_date or None,
+                    kev_required_action=required_action or None,
                 )
             )
 

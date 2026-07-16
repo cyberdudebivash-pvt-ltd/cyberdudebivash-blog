@@ -2,6 +2,8 @@
 Tests for authority_transformer — content generation, HTML validity, CTA injection.
 """
 
+import json
+import os
 import unittest
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
@@ -267,6 +269,219 @@ class TestAuthorityTransformer(unittest.TestCase):
         self.assertTrue(all(c == c.upper() for c in ids), f"Non-uppercase CVE IDs: {ids}")
         self.assertIn("CVE-2026-1234", ids)
         self.assertIn("CVE-2025-9999", ids)
+
+
+class TestRiskCommandCenter(unittest.TestCase):
+    """Executive Risk Command Center — must show only verified data, never fabricate."""
+
+    def setUp(self):
+        self.config = Config()
+        self.config.anthropic_api_key = ""
+        self.transformer = AuthorityTransformer(self.config)
+
+    def test_omitted_entirely_when_no_verified_data(self):
+        article = _make_article(
+            title="Generic Ransomware Campaign", summary="A ransomware group claimed victims.",
+            labels=["Ransomware"],
+        )
+        content = self.transformer.transform(article)["content"]
+        self.assertNotIn("Executive Risk Command Center", content)
+
+    def test_renders_cvss_only_when_no_enrichment(self):
+        """A plain CVE title (regex-extractable CVSS) still gets a dashboard,
+        but must not show EPSS/KEV tile values that were never fetched.
+        Note: the article's own "CISA KEV" *label* and the fixed "CISA Known
+        Exploited Vulnerabilities Catalog" reference link legitimately appear
+        elsewhere on the page — this checks the dashboard's own KEV tile
+        values specifically, not the substring "CISA KEV" anywhere at all."""
+        article = _make_article()  # default fixture: CVE-2026-9999, CVSS 9.8, no enrichment fields
+        content = self.transformer.transform(article)["content"]
+        self.assertIn("Executive Risk Command Center", content)
+        self.assertIn("CVE-2026-9999", content)
+        self.assertIn("9.8", content)
+        self.assertNotIn("EPSS Score", content)
+        self.assertNotIn("Not Listed", content)
+        self.assertNotIn(">LISTED<", content)
+
+    def test_full_enrichment_renders_all_verified_fields(self):
+        article = _make_article(
+            cve_id="CVE-2021-44228", cvss_score=10.0,
+            epss_score=0.99999, epss_percentile=1.0,
+            kev_listed=True, kev_due_date="2021-12-24",
+            kev_required_action="Apply updates per vendor instructions.",
+            affected_vendor="Apache", affected_product="Log4j",
+        )
+        content = self.transformer.transform(article)["content"]
+        self.assertIn("Executive Risk Command Center", content)
+        self.assertIn("10.0", content)
+        self.assertIn("100.0%", content)
+        self.assertIn("LISTED", content)
+        self.assertIn("Remediation due 2021-12-24", content)
+        self.assertIn("Exploitation confirmed?", content)
+        self.assertIn("Apply updates per vendor instructions.", content)
+
+    def test_kev_unknown_does_not_render_as_not_listed(self):
+        """kev_listed=None (lookup failed/never ran) must not be shown as a
+        false 'Not Listed' — that would misrepresent an unknown as verified."""
+        article = _make_article(cve_id="CVE-2026-9999", cvss_score=9.8, kev_listed=None)
+        content = self.transformer.transform(article)["content"]
+        self.assertNotIn("Not Listed", content)
+        self.assertNotIn(">LISTED<", content)
+
+    def test_kev_confirmed_absent_renders_not_listed(self):
+        article = _make_article(cve_id="CVE-2026-9999", cvss_score=5.0, kev_listed=False)
+        content = self.transformer.transform(article)["content"]
+        self.assertIn("Not Listed", content)
+
+    def test_low_severity_cvss_does_not_trigger_patch_now_decision(self):
+        article = _make_article(cve_id="CVE-2026-1111", cvss_score=3.1, kev_listed=False)
+        content = self.transformer.transform(article)["content"]
+        self.assertNotIn("Patch immediately?", content)
+
+
+class TestMultiSiemDetectionQueries(unittest.TestCase):
+    """Every detection branch must emit Splunk/Elastic/Sentinel/QRadar/Chronicle
+    queries derived from the same logic as its Sigma rule — not just Sigma alone."""
+
+    def setUp(self):
+        self.config = Config()
+        self.config.anthropic_api_key = ""
+        self.transformer = AuthorityTransformer(self.config)
+
+    def _content_for(self, title, summary, labels):
+        article = _make_article(title=title, summary=summary, labels=labels)
+        return self.transformer.transform(article)["content"]
+
+    def test_all_five_platforms_present_for_ransomware(self):
+        content = self._content_for(
+            "LockBit Ransomware Hits Healthcare Sector",
+            "LockBit ransomware group encrypted hospital systems.",
+            ["Ransomware"],
+        )
+        self.assertIn("Multi-SIEM Detection Queries", content)
+        for label in ["Splunk SPL", "Elastic EQL", "Microsoft Sentinel KQL", "IBM QRadar AQL", "Google Chronicle YARA-L"]:
+            self.assertIn(label, content, f"Missing platform: {label}")
+        self.assertIn("vssadmin", content.lower())
+
+    def test_ot_branch_has_industrial_ports_in_queries(self):
+        content = self._content_for(
+            "SCADA Historian Compromise at Water Treatment Facility",
+            "Attackers accessed the OT network via unprotected industrial control systems.",
+            ["OT Security"],
+        )
+        self.assertIn("Multi-SIEM Detection Queries", content)
+        self.assertIn("502", content)  # Modbus port, shared across all 5 platform queries
+
+    def test_cve_branch_present(self):
+        content = self._content_for(
+            "CVE-2026-9999 Critical Windows RCE", "Critical RCE vulnerability CVSS 9.8.", ["Vulnerabilities"],
+        )
+        self.assertIn("Multi-SIEM Detection Queries", content)
+
+    def test_general_fallback_branch_present(self):
+        content = self._content_for(
+            "Phishing Campaign Targets Finance Employees", "A generic phishing email campaign was observed.", ["Phishing"],
+        )
+        self.assertIn("Multi-SIEM Detection Queries", content)
+
+    def test_deployment_validation_disclaimer_present(self):
+        content = self._content_for(
+            "CVE-2026-9999 Critical Windows RCE", "Critical RCE vulnerability CVSS 9.8.", ["Vulnerabilities"],
+        )
+        self.assertIn("VALIDATE FIELD NAMES AGAINST YOUR ENVIRONMENT", content)
+
+
+class TestTrustStatsBlock(unittest.TestCase):
+    """Real numbers only, read from data/published_posts.json — never fabricated."""
+
+    def setUp(self):
+        import tempfile
+        self.tmpdir = tempfile.mkdtemp()
+        self.state_path = os.path.join(self.tmpdir, "published_posts.json")
+        self.config = Config()
+        self.config.anthropic_api_key = ""
+        self.config.state_file = self.state_path
+        self.transformer = AuthorityTransformer(self.config)
+
+    def _write_state(self, data):
+        with open(self.state_path, "w") as f:
+            json.dump(data, f)
+
+    def test_renders_real_published_count(self):
+        self._write_state({"total_published": 2378, "posts": {}})
+        article = _make_article()
+        content = self.transformer.transform(article)["content"]
+        self.assertIn("Threat Reports Published", content)
+        self.assertIn("2,378", content)
+
+    def test_renders_unique_cve_count_when_present(self):
+        self._write_state({
+            "total_published": 5,
+            "posts": {
+                "a": {"cves": ["CVE-2021-44228"]},
+                "b": {"cves": ["CVE-2021-44228", "CVE-2026-9999"]},
+            },
+        })
+        article = _make_article()
+        content = self.transformer.transform(article)["content"]
+        self.assertIn("Unique CVEs Tracked", content)
+
+    def test_omitted_when_state_file_missing(self):
+        # Deliberately never write self.state_path
+        article = _make_article()
+        content = self.transformer.transform(article)["content"]
+        self.assertNotIn("Threat Reports Published", content)
+
+    def test_omitted_when_total_published_zero(self):
+        self._write_state({"total_published": 0, "posts": {}})
+        article = _make_article()
+        content = self.transformer.transform(article)["content"]
+        self.assertNotIn("Threat Reports Published", content)
+
+
+class TestHowToSchemaWiring(unittest.TestCase):
+    def setUp(self):
+        self.config = Config()
+        self.config.anthropic_api_key = ""
+        self.transformer = AuthorityTransformer(self.config)
+
+    def test_howto_schema_present_for_ransomware(self):
+        article = _make_article(
+            title="LockBit Ransomware Hits Healthcare", summary="LockBit ransomware group encrypted hospital systems.",
+            labels=["Ransomware"],
+        )
+        content = self.transformer.transform(article)["content"]
+        self.assertIn('"@type": "HowTo"', content)
+
+    def test_no_howto_script_block_for_generic_content(self):
+        article = _make_article(
+            title="General Security News", summary="Nothing specific here.", labels=["Threat Intelligence"],
+        )
+        content = self.transformer.transform(article)["content"]
+        self.assertNotIn('"@type": "HowTo"', content)
+
+
+class TestAiSecurityImpactStyling(unittest.TestCase):
+    def setUp(self):
+        self.config = Config()
+        self.config.anthropic_api_key = ""
+        self.transformer = AuthorityTransformer(self.config)
+
+    def test_uses_shared_section_header_not_bare_h3(self):
+        article = _make_article(
+            title="LLM Prompt Injection Attack on Enterprise AI Agents",
+            summary="AI systems vulnerable to prompt injection targeting RAG pipelines.",
+            labels=["AI Security"],
+        )
+        content = self.transformer.transform(article)["content"]
+        self.assertNotIn("<h3>AI Security Impact</h3>", content)
+        self.assertIn("AI Security Impact", content)
+        self.assertIn("border-left:3px solid #a855f7", content)
+
+    def test_omitted_when_not_ai_related(self):
+        article = _make_article(title="Windows RCE Vulnerability", labels=["Vulnerabilities"])
+        content = self.transformer.transform(article)["content"]
+        self.assertNotIn("AI Security Impact", content)
 
 
 if __name__ == "__main__":
