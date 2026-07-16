@@ -179,6 +179,31 @@ async function submissionIpRateLimit(req, res) {
 }
 exports.submissionIpRateLimit = submissionIpRateLimit;
 
+/**
+ * Minimum-interval throttle for external workflow dispatchers.
+ * Bucket key: throttle:dispatch:{workflow}:{window_index}
+ * Guards against an external scheduler (e.g. Vercel Cron) firing a GitHub
+ * Actions workflow_dispatch far more often than the workflow's own
+ * `schedule:` cron intends — this exact drift (dispatcher firing every
+ * ~5 min against a workflow meant to run every 2h) caused a Blogger API
+ * 429 burst that got BLOGGER_REFRESH_TOKEN revoked (invalid_grant) for
+ * 2.5+ days in July 2026. Returns true if the dispatch should proceed.
+ * Fails open on Redis errors — same posture as the rate limiters above.
+ */
+async function workflowDispatchThrottle(workflow, minIntervalMinutes) {
+  const windowMs = minIntervalMinutes * 60000;
+  const windowIndex = Math.floor(Date.now() / windowMs);
+  const key = `throttle:dispatch:${workflow}:${windowIndex}`;
+  try {
+    const count = await redis.incr(key);
+    if (count === 1) await redis.expire(key, minIntervalMinutes * 60);
+    return count === 1;
+  } catch (_) {
+    return true; // Redis down → fail open, matches globalIpRateLimit posture
+  }
+}
+exports.workflowDispatchThrottle = workflowDispatchThrottle;
+
 /* ══════════════════════════════════════════════════════════════════
    PHASE 2 — INPUT VALIDATION
 ══════════════════════════════════════════════════════════════════ */
