@@ -26,6 +26,15 @@ class BloggerPublishError(Exception):
     pass
 
 
+class BloggerRateLimitError(BloggerPublishError):
+    """Raised when every retry attempt for a post was rejected with HTTP 429.
+    Subclasses BloggerPublishError so existing callers that catch the base
+    class are unaffected; callers that want to stop the run early on
+    quota exhaustion (rather than burn it further on the next article)
+    can catch this more specific type instead."""
+    pass
+
+
 class BloggerPublisher:
     """Publishes posts to Blogger via API v3 with OAuth2 refresh token auth."""
 
@@ -194,6 +203,8 @@ class BloggerPublisher:
                 )
                 time.sleep(wait)
 
+        if last_error.startswith("HTTP 429"):
+            raise BloggerRateLimitError(f"All retry attempts exhausted — last error: {last_error}")
         raise BloggerPublishError(f"All retry attempts exhausted — last error: {last_error}")
 
     def update_post(self, post_id: str, title: str, content: str, labels: list[str]) -> dict:
