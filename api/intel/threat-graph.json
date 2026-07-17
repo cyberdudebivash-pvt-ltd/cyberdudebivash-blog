@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-17T09:05:44.624Z",
+  "generated": "2026-07-17T09:31:40.054Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5091,
+    "total_nodes": 5094,
     "actors": 8,
     "cves": 1032,
-    "campaigns": 442,
+    "campaigns": 443,
     "malware": 0,
     "iocs": 550,
-    "edges": 2186
+    "edges": 2187
   },
   "nodes": {
     "actor:lockbit": {
@@ -98928,6 +98928,62 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-26fa925ff2d4422d": {
+      "id": "BLEEPINGCOMPUTER-26fa925ff2d4422d",
+      "type": "Intel",
+      "name": "Windows Server 2022 reach end of mainstream support in 90 days",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-17",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-b3b4b06ba78950b6": {
+      "id": "SECURITYWEEK-b3b4b06ba78950b6",
+      "type": "Intel",
+      "name": "Cyberattack Disrupts Operations of Japanese Frozen Food Giant Nichirei",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-74f905a2": {
+      "id": "campaign:cluster-74f905a2",
+      "type": "Campaign",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-26fa925ff2d4422d",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -118640,6 +118696,15 @@
       "target": "ioc:domain:www.reddit.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-74f905a2→includes→BLEEPINGCOMPUTER-26fa925ff2d4422d",
+      "source": "campaign:cluster-74f905a2",
+      "target": "BLEEPINGCOMPUTER-26fa925ff2d4422d",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-17",
       "sources": []
     }
