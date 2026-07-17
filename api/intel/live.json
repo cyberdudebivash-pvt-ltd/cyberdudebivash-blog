@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T20:02:02.235Z",
+  "generated": "2026-07-17T20:31:34.370Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2364,
+  "total_published": 2365,
   "s2n_stats": {
     "passed": 96,
     "suppressed": 48,
-    "avg_qs": 0.523
+    "avg_qs": 0.522
   },
   "items": [
     {
@@ -19,8 +19,8 @@
       "title": "Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and n",
       "description": "### Summary\n\nThe terminal feature in Pheditor uses an incomplete character blocklist to sanitize user-supplied commands before passing them to `shell_exec()`. After the fix for GHSA-9643-6xjp-vx57 (which added `$` to the blocklist), the characters `|` (single pipe), `` ` `` (backtick), and the newli",
       "cvss": 8.8,
-      "final_ps": 54,
-      "quality_score": 0.593,
+      "final_ps": 52,
+      "quality_score": 0.578,
       "threat_level": "MEDIUM",
       "type": "NEWS_REPORT",
       "source": "sentinel_apex",
@@ -46,11 +46,11 @@
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
           "ioc_presence=2 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.593"
+          "recency=1d (score=0.85)",
+          "QS=0.578"
         ],
         "priority": [
-          "base_ps=54 (no boosts)"
+          "base_ps=52 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -215,90 +215,6 @@
         ],
         "priority": [
           "base_ps=50 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-54076",
-      "title": "ArcadeDB: Read-only users can mutate database schema (incomplete fix of CVE-2026-44221)",
-      "description": "### Impact\n\nThe fix for CVE-2026-44221 (GHSA-fxc7-fm93-6q77) added an `UPDATE_SCHEMA` authorization check to a single schema-mutating method (`LocalDocumentType.createProperty`). The remaining public schema mutators were left unchecked, so an authenticated identity (including a **read-only API token",
-      "cvss": 8.1,
-      "final_ps": 48,
-      "quality_score": 0.533,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54076",
-        "CVE-2026-44221"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.533"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-54077",
-      "title": "ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users",
-      "description": "### Impact\n\nThe SQL `IMPORT DATABASE` statement did not require administrative privileges and passed its source URL to the importer without validation. Any authenticated user with SQL command access (not only `root`/administrators) could therefore:\n\n- **Server-Side Request Forgery (CWE-918):** cause",
-      "cvss": 7.1,
-      "final_ps": 48,
-      "quality_score": 0.563,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54077"
-      ],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "ioc_presence=1 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.563"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -480,12 +396,54 @@
       }
     },
     {
-      "id": "CVE-2026-59950",
-      "title": "MCP Python SDK: WebSocket server transport does not support Host/Origin validation",
-      "description": "### Summary\nIn affected versions, the deprecated WebSocket server transport (`mcp.server.websocket.websocket_server`) accepted the WebSocket handshake without applying any `Host` or `Origin` header validation. The `TransportSecuritySettings` mechanism that the SSE and Streamable HTTP transports use ",
-      "cvss": 7.5,
+      "id": "CVE-2026-54076",
+      "title": "ArcadeDB: Read-only users can mutate database schema (incomplete fix of CVE-2026-44221)",
+      "description": "### Impact\n\nThe fix for CVE-2026-44221 (GHSA-fxc7-fm93-6q77) added an `UPDATE_SCHEMA` authorization check to a single schema-mutating method (`LocalDocumentType.createProperty`). The remaining public schema mutators were left unchecked, so an authenticated identity (including a **read-only API token",
+      "cvss": 8.1,
       "final_ps": 47,
-      "quality_score": 0.533,
+      "quality_score": 0.518,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54076",
+        "CVE-2026-44221"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=1d (score=0.85)",
+          "QS=0.518"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54077",
+      "title": "ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users",
+      "description": "### Impact\n\nThe SQL `IMPORT DATABASE` statement did not require administrative privileges and passed its source URL to the importer without validation. Any authenticated user with SQL command access (not only `root`/administrators) could therefore:\n\n- **Server-Side Request Forgery (CWE-918):** cause",
+      "cvss": 7.1,
+      "final_ps": 46,
+      "quality_score": 0.548,
       "threat_level": "MEDIUM",
       "type": "NEWS_REPORT",
       "source": "sentinel_apex",
@@ -502,19 +460,20 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-59950"
+        "CVE-2026-54077"
       ],
-      "ioc_count": 0,
+      "ioc_count": 1,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.533"
+          "ioc_presence=1 IOCs",
+          "recency=1d (score=0.85)",
+          "QS=0.547"
         ],
         "priority": [
-          "base_ps=47 (no boosts)"
+          "base_ps=46 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -553,6 +512,47 @@
           "data_confidence=0.70",
           "recency=0d (score=1.00)",
           "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-59950",
+      "title": "MCP Python SDK: WebSocket server transport does not support Host/Origin validation",
+      "description": "### Summary\nIn affected versions, the deprecated WebSocket server transport (`mcp.server.websocket.websocket_server`) accepted the WebSocket handshake without applying any `Host` or `Origin` header validation. The `TransportSecuritySettings` mechanism that the SSE and Streamable HTTP transports use ",
+      "cvss": 7.5,
+      "final_ps": 45,
+      "quality_score": 0.518,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59950"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=1d (score=0.85)",
+          "QS=0.518"
         ],
         "priority": [
           "base_ps=45 (no boosts)"
@@ -3564,6 +3564,55 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-54567",
+      "title": "Flask-Reuploaded: Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of ",
+      "description": "## 1. Header | Field | Value |\n|---|---|\n| **Title** | Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of CVE-2026-27641) |\n| **Project** | Flask-Reuploaded (`flask_uploads`) |\n| **Affected** | ` extension(\"shell.php\") = \"php\" -> extension_allowed(\"",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "Flask-Reuploaded",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54567",
+        "CVE-2026-54567"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-937x-gpqr-72gg",
+        "https://github.com/jugmac00/flask-reuploaded/security/advisories/GHSA-937x-gpqr-72gg",
+        "https://github.com/jugmac00/flask-reuploaded/commit/5ded76092429c6eb8a4af941b14fbde40a38fff4",
+        "https://github.com/advisories/GHSA-937x-gpqr-72gg"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-53598",
       "title": "Prompty: Arbitrary file read via file reference expansion",
       "description": "## Summary\nPrompty loaders expanded `${file:...}` references in `.prompty` frontmatter without enforcing that the resolved path stayed within an authorized directory. An attacker-controlled prompt file could use path traversal or an absolute path to cause the host application to read files accessibl",
@@ -4294,51 +4343,6 @@
       "ioc_count": 0,
       "refs": [
         "https://intel.cyberdudebivash.com/reports/2026/07/intel--3dc1ed35cfd116cf.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-20296",
-      "title": "CVE-2026-20296: In Splunk Enterprise versions below 10.4.1, 10.2.5, 10.0.8, and 9.4.13, and Splunk Cloud Platform versio",
-      "description": "CVE-2026-20296: In Splunk Enterprise versions below 10.4.1, 10.2.5, 10.0.8, and 9.4.13, and Splunk Cloud Platform versions below 10.5.26",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-20296"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--f9c3b6b5b048de72.html"
       ],
       "explanation": {
         "quality": [

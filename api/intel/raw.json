@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T20:02:02.235Z",
+  "generated": "2026-07-17T20:31:34.370Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -232,8 +232,8 @@
       "title": "ArcadeDB: Scripting authorization gate (GHSA-48qw-824m-86pr) bypassed via SQL DEFINE FUNCTION ... LANGUAGE js",
       "description": "The GHSA-48qw-824m-86pr hardening added a checkPermissionsOnDatabase(UPDATE_SECURITY) gate on the polyglot engine (PolyglotQueryEngine.java:112-114,126,176,199), but only there. The SQL route to JavaScript never touches it: DefineFunctionStatement.executeSimple (DefineFunctionStatement.java:37-100),",
       "cvss": 7.8,
-      "final_ps": 69,
-      "quality_score": 0.563,
+      "final_ps": 67,
+      "quality_score": 0.548,
       "threat_level": "HIGH",
       "type": "NEWS_REPORT",
       "source": "sentinel_apex",
@@ -256,8 +256,8 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.563"
+          "recency=1d (score=0.85)",
+          "QS=0.548"
         ],
         "priority": [
           "+8 exploited_in_wild"
@@ -274,8 +274,8 @@
       "title": "ArcadeDB: Trigger scripts run with java.lang.* allowed, enabling OS command execution (RCE)",
       "description": "ScriptTriggerExecutor sets allowedPackages to java.lang.*, java.util.*, java.time.*, java.math.* (ScriptTriggerExecutor.java:56); trigger creation is gated only at UPDATE_SCHEMA (LocalSchema.createTrigger:636). Permitting java.lang.* host-class lookup lets a trigger script do Java.type(\"java.lang.Ru",
       "cvss": 7.8,
-      "final_ps": 69,
-      "quality_score": 0.563,
+      "final_ps": 67,
+      "quality_score": 0.548,
       "threat_level": "HIGH",
       "type": "NEWS_REPORT",
       "source": "sentinel_apex",
@@ -298,8 +298,8 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.563"
+          "recency=1d (score=0.85)",
+          "QS=0.548"
         ],
         "priority": [
           "+8 exploited_in_wild"
@@ -481,66 +481,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-55578",
-      "title": "Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and n",
-      "description": "### Summary\n\nThe terminal feature in Pheditor uses an incomplete character blocklist to sanitize user-supplied commands before passing them to `shell_exec()`. After the fix for GHSA-9643-6xjp-vx57 (which added `$` to the blocklist), the characters `|` (single pipe), `` ` `` (backtick), and the newli",
-      "cvss": 8.8,
-      "final_ps": 54,
-      "quality_score": 0.593,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55578"
-      ],
-      "ioc_count": 2,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "ioc_presence=2 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.593"
-        ],
-        "priority": [
-          "base_ps=54 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": [
-        {
-          "type": "sha1",
-          "value": "e538f05b6faec99e5b23726bc9c17d6b57774297",
-          "confidence_score": 0.9,
-          "first_seen": "2026-07-17",
-          "source_count": 1
-        },
-        {
-          "type": "url",
-          "value": "https://github.com/pheditor/pheditor",
-          "confidence_score": 0.82,
-          "first_seen": "2026-07-17",
-          "source_count": 1
-        }
-      ]
-    },
-    {
       "id": "SENTINELAPEX-930812eefa84",
       "title": "23andMe to pay $18 million in new genetics data breach settlement",
       "description": "Genetic testing company 23andMe has agreed to pay $18 million to settle claims from a coalition of 43 attorneys general that it failed to protect customers' genetic data. [...]",
@@ -581,6 +521,66 @@
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
+    },
+    {
+      "id": "CVE-2026-55578",
+      "title": "Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and n",
+      "description": "### Summary\n\nThe terminal feature in Pheditor uses an incomplete character blocklist to sanitize user-supplied commands before passing them to `shell_exec()`. After the fix for GHSA-9643-6xjp-vx57 (which added `$` to the blocklist), the characters `|` (single pipe), `` ` `` (backtick), and the newli",
+      "cvss": 8.8,
+      "final_ps": 52,
+      "quality_score": 0.578,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55578"
+      ],
+      "ioc_count": 2,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "ioc_presence=2 IOCs",
+          "recency=1d (score=0.85)",
+          "QS=0.578"
+        ],
+        "priority": [
+          "base_ps=52 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "sha1",
+          "value": "e538f05b6faec99e5b23726bc9c17d6b57774297",
+          "confidence_score": 0.9,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://github.com/pheditor/pheditor",
+          "confidence_score": 0.82,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        }
+      ]
     },
     {
       "id": "CVE-2023-27351",
@@ -757,104 +757,6 @@
       "suppressed": false,
       "suppression_reason": null,
       "iocs": []
-    },
-    {
-      "id": "CVE-2026-54076",
-      "title": "ArcadeDB: Read-only users can mutate database schema (incomplete fix of CVE-2026-44221)",
-      "description": "### Impact\n\nThe fix for CVE-2026-44221 (GHSA-fxc7-fm93-6q77) added an `UPDATE_SCHEMA` authorization check to a single schema-mutating method (`LocalDocumentType.createProperty`). The remaining public schema mutators were left unchecked, so an authenticated identity (including a **read-only API token",
-      "cvss": 8.1,
-      "final_ps": 48,
-      "quality_score": 0.533,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54076",
-        "CVE-2026-44221"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.533"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54077",
-      "title": "ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users",
-      "description": "### Impact\n\nThe SQL `IMPORT DATABASE` statement did not require administrative privileges and passed its source URL to the importer without validation. Any authenticated user with SQL command access (not only `root`/administrators) could therefore:\n\n- **Server-Side Request Forgery (CWE-918):** cause",
-      "cvss": 7.1,
-      "final_ps": 48,
-      "quality_score": 0.563,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54077"
-      ],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "ioc_presence=1 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.563"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": [
-        {
-          "type": "ipv4",
-          "value": "169.254.169.254",
-          "confidence_score": 0.88,
-          "first_seen": "2026-07-17",
-          "source_count": 1
-        }
-      ]
     },
     {
       "id": "EXPLOITDB-13fc423caf742505",
@@ -1081,90 +983,6 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-ca4774dacef0",
-      "title": "ArcadeDB has cross-database IDOR: /ts/*, /batch/*, Prometheus and Grafana handlers bypass authorization",
-      "description": "About 14 HTTP handlers resolve the {database} path param and call getDatabase(...) WITHOUT user.canAccessToDatabase(...) and without setting the engine principal, because they extend AbstractServerHttpHandler directly instead of DatabaseAbstractHandler (which holds the only per-database gate at Data",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.503,
-      "threat_level": "MEDIUM",
-      "type": "SOCIAL_ENGINEERING",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.503"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "SENTINELAPEX-53417c67273b",
-      "title": "ArcadeDB: Privilege escalation via reader role in /api/v1/command JS scripting language — arbitrary host file read",
-      "description": "### Impact\n\nA user holding only `reader` (read-only) privileges on a single database could execute arbitrary JVM code by sending a `\"language\": \"js\"` command to the `POST /api/v1/command/{database}` HTTP endpoint, and use it to read arbitrary files on the host filesystem (e.g. `/etc/passwd`, configu",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.503,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.503"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-9770",
       "title": "Multiple TP-Link Cameras Vulnerability Allows Hackers to Launch MitM Attacks",
       "description": "TP-Link has released security updates for two vulnerabilities in its Kasa EC70 v4 and EC71 v4 smart cameras. These flaws, tracked as CVE-2026-9770 and CVE-2026-13230, could allow an attacker on the same local network to obtain sensitive information from vulnerable devices. The most serious issue, CV",
@@ -1210,14 +1028,14 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59950",
-      "title": "MCP Python SDK: WebSocket server transport does not support Host/Origin validation",
-      "description": "### Summary\nIn affected versions, the deprecated WebSocket server transport (`mcp.server.websocket.websocket_server`) accepted the WebSocket handshake without applying any `Host` or `Origin` header validation. The `TransportSecuritySettings` mechanism that the SSE and Streamable HTTP transports use ",
-      "cvss": 7.5,
+      "id": "CVE-2026-54076",
+      "title": "ArcadeDB: Read-only users can mutate database schema (incomplete fix of CVE-2026-44221)",
+      "description": "### Impact\n\nThe fix for CVE-2026-44221 (GHSA-fxc7-fm93-6q77) added an `UPDATE_SCHEMA` authorization check to a single schema-mutating method (`LocalDocumentType.createProperty`). The remaining public schema mutators were left unchecked, so an authenticated identity (including a **read-only API token",
+      "cvss": 8.1,
       "final_ps": 47,
-      "quality_score": 0.533,
+      "quality_score": 0.518,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -1232,7 +1050,8 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-59950"
+        "CVE-2026-54076",
+        "CVE-2026-44221"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -1240,8 +1059,8 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.533"
+          "recency=1d (score=0.85)",
+          "QS=0.518"
         ],
         "priority": [
           "base_ps=47 (no boosts)"
@@ -1300,6 +1119,59 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-54077",
+      "title": "ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users",
+      "description": "### Impact\n\nThe SQL `IMPORT DATABASE` statement did not require administrative privileges and passed its source URL to the importer without validation. Any authenticated user with SQL command access (not only `root`/administrators) could therefore:\n\n- **Server-Side Request Forgery (CWE-918):** cause",
+      "cvss": 7.1,
+      "final_ps": 46,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54077"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "ioc_presence=1 IOCs",
+          "recency=1d (score=0.85)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=46 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "ipv4",
+          "value": "169.254.169.254",
+          "confidence_score": 0.88,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        }
+      ]
+    },
+    {
       "id": "CVE-2026-55646",
       "title": "vLLM: Speech-to-text upload size limit is enforced after full UploadFile read",
       "description": "## Summary\n\nCurrent-head vLLM documents `VLLM_MAX_AUDIO_CLIP_FILESIZE_MB` as the maximum audio file size accepted by the speech-to-text APIs. The default is 25 MB. `vllm/envs.py` also describes files larger than this value as rejected.\n\nThe `/v1/audio/transcriptions` and `/v1/audio/translations` rou",
@@ -1344,6 +1216,90 @@
       "iocs": []
     },
     {
+      "id": "SENTINELAPEX-ca4774dacef0",
+      "title": "ArcadeDB has cross-database IDOR: /ts/*, /batch/*, Prometheus and Grafana handlers bypass authorization",
+      "description": "About 14 HTTP handlers resolve the {database} path param and call getDatabase(...) WITHOUT user.canAccessToDatabase(...) and without setting the engine principal, because they extend AbstractServerHttpHandler directly instead of DatabaseAbstractHandler (which holds the only per-database gate at Data",
+      "cvss": 7.8,
+      "final_ps": 45,
+      "quality_score": 0.488,
+      "threat_level": "MEDIUM",
+      "type": "SOCIAL_ENGINEERING",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=1d (score=0.85)",
+          "QS=0.488"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-53417c67273b",
+      "title": "ArcadeDB: Privilege escalation via reader role in /api/v1/command JS scripting language — arbitrary host file read",
+      "description": "### Impact\n\nA user holding only `reader` (read-only) privileges on a single database could execute arbitrary JVM code by sending a `\"language\": \"js\"` command to the `POST /api/v1/command/{database}` HTTP endpoint, and use it to read arbitrary files on the host filesystem (e.g. `/etc/passwd`, configu",
+      "cvss": 7.8,
+      "final_ps": 45,
+      "quality_score": 0.488,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=1d (score=0.85)",
+          "QS=0.488"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "SENTINELAPEX-0668d3ab89ec",
       "title": "New ClickLock macOS malware traps users into revealing login password",
       "description": "A new macOS information-stealing malware dubbed ClickLock terminates all visible processes to force users into entering their system login password. [...]",
@@ -1383,6 +1339,50 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-59950",
+      "title": "MCP Python SDK: WebSocket server transport does not support Host/Origin validation",
+      "description": "### Summary\nIn affected versions, the deprecated WebSocket server transport (`mcp.server.websocket.websocket_server`) accepted the WebSocket handshake without applying any `Host` or `Origin` header validation. The `TransportSecuritySettings` mechanism that the SSE and Streamable HTTP transports use ",
+      "cvss": 7.5,
+      "final_ps": 45,
+      "quality_score": 0.518,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59950"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=1d (score=0.85)",
+          "QS=0.518"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -5322,6 +5322,56 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-54567",
+      "title": "Flask-Reuploaded: Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of ",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "Flask-Reuploaded",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54567",
+        "CVE-2026-54567"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-937x-gpqr-72gg",
+        "https://github.com/jugmac00/flask-reuploaded/security/advisories/GHSA-937x-gpqr-72gg",
+        "https://github.com/jugmac00/flask-reuploaded/commit/5ded76092429c6eb8a4af941b14fbde40a38fff4",
+        "https://github.com/advisories/GHSA-937x-gpqr-72gg"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-53598",
       "title": "Prompty: Arbitrary file read via file reference expansion",
       "description": "",
@@ -6132,98 +6182,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-14960",
-      "title": "CVE-2026-14960: Pegatron `Tdelo64.sys` improperly exposes privileged hardware access functionality through the `\\\\.\\TdeI",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-14960"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--91872157ba3a2c07.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-20297",
-      "title": "CVE-2026-20297: In Splunk Enterprise versions below 10.4.1, 10.2.5, 10.0.8, 9.4.13, and 9.3.14, and Splunk Cloud Platfor",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-20297"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--67b902a60837b371.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-52724",
       "title": "kuma-dp connects to control plane without verifying TLS certificate when no CA is configured",
       "description": "",
@@ -6247,50 +6205,6 @@
       "due_date": null,
       "cves": [
         "CVE-2026-52724"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54542",
-      "title": "nimiq-primitives: Out-of-bounds panic in KeyNibbles::Add from oversized child suffix in a deserialized proof",
-      "description": "",
-      "cvss": 3.7,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54542"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -6434,6 +6348,100 @@
       "refs": [
         "https://intel.cyberdudebivash.com/reports/2026/07/intel--7b6e97f23a76ba2cd6e67ed2.html",
         "https://intel.cyberdudebivash.com/reports/2026/07/intel--a3e8c9cb59b9c2eed8ed83b2.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-9586",
+      "title": "CVE-2026-9586 - Unauthenticated SQL Injection Leading to Remote Code Execution in Switchvox SMB",
+      "description": "",
+      "cvss": 3.2,
+      "final_ps": 18,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-9586"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--9818724ab42c7a1d6d29a681.html",
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d1b510d5bfd40dd8fb2e658f.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-9587",
+      "title": "CVE-2026-9587 - Authenticated Local File Inclusion (LFI) in Switchvox SMB Web Portal",
+      "description": "",
+      "cvss": 3.2,
+      "final_ps": 18,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-9587"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--8981cc5de233ba96cf715544.html",
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--e8b5e3f3b93deb2e1d6a6776.html"
       ],
       "explanation": {
         "quality": [
