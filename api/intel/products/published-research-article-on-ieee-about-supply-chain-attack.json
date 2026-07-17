@@ -1,0 +1,104 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-47a61484a041f84a",
+  "title": "Published research article on IEEE about supply chain attacks and preventive security measures",
+  "generated": "2026-07-17T06:36:07.123Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [
+    {
+      "id": "T1195",
+      "name": "Supply Chain Compromise",
+      "tactic": "initial-access",
+      "confidence": "HIGH"
+    }
+  ],
+  "iocs": [
+    {
+      "value": "hxxps://doi[.]org/10[.]1109/SIST61674[.]2026[.]11596367&quot;&gt;hxxps://doi[.]org/10[.]1109/SIST61674[.]2026[.]1159",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://github[.]com/NoyanTM/aitu-sist-2026%5C_research-paper/blob/main/paper/sist-2026%5C_paper%5C_wo",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://github[.]com/NoyanTM/aitu-sist-2026\\_research-paper/blob/main/paper/sist-2026\\_paper\\_word[.]pdf",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://github[.]com/NoyanTM/blog/blob/main/posts/2026-05-29%5C_teampcp-russians-and-supply-chain-secu",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://github[.]com/NoyanTM/blog/blob/main/posts/2026-05-29\\_teampcp-russians-and-supply-chain-securi",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "doi[.]org",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://doi.org/10.1109/SIST61674.2026.11596367&quot;&gt;https://doi.org/10.1109/SIST61674.2026.1159\"; http.host; content:\"doi.org\"; nocase; http.uri; content:\"/10.1109/SIST61674.2026.11596367&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/NoyanTM/aitu-sist-2026%5C_research-paper/blob/main/paper/sist-2026%5C_paper%5C_wo\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/NoyanTM/aitu-sist-2026%5C_research-paper/blob/main/paper/sist-2026%5C_paper%5C_wo\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/NoyanTM/aitu-sist-2026\\_research-paper/blob/main/paper/sist-2026\\_paper\\_word.pdf\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/NoyanTM/aitu-sist-2026\\\\_research-paper/blob/main/paper/sist-2026\\\\_paper\\\\_word.pdf\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/NoyanTM/blog/blob/main/posts/2026-05-29%5C_teampcp-russians-and-supply-chain-secu\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/NoyanTM/blog/blob/main/posts/2026-05-29%5C_teampcp-russians-and-supply-chain-secu\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/NoyanTM/blog/blob/main/posts/2026-05-29\\_teampcp-russians-and-supply-chain-securi\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/NoyanTM/blog/blob/main/posts/2026-05-29\\\\_teampcp-russians-and-supply-chain-securi\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain doi.org\"; dns.query; content:\"doi.org\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000007; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "7 indicator(s) of compromise extracted from source reporting.",
+      "1 MITRE ATT&CK technique(s) evidenced in the source material."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 174 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 429 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: published-research-article-on-ieee-about-supply-chain-attack (10 shared entities), is-ast-grep-cli-0-44-1-on-pypi-compromised-windows-defender (4 shared entities), alerts-on-server-loopback-traffic (3 shared entities), deber-aa-pagar-por-esto (3 shared entities), advice-on-detection-engineering (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uyrs0g/published_research_article_on_ieee_about_supply/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
