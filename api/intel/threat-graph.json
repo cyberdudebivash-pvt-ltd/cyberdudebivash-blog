@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-17T19:01:52.928Z",
+  "generated": "2026-07-17T19:31:38.072Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5440,
+    "total_nodes": 5442,
     "actors": 8,
     "cves": 1129,
     "campaigns": 481,
     "malware": 0,
-    "iocs": 661,
-    "edges": 2422
+    "iocs": 663,
+    "edges": 2424
   },
   "nodes": {
     "actor:lockbit": {
@@ -33671,20 +33671,31 @@
     "CVE-2026-27771": {
       "id": "CVE-2026-27771",
       "type": "CVE",
-      "name": "Gitea Vulnerability Exposes Private Container Images without Authentication",
+      "name": "Gitea has insufficient permission checks for Composer package source links",
       "attributes": {
-        "cvss": 8,
+        "cvss": 8.2,
         "threat_level": "MEDIUM",
-        "priority_score": 49,
+        "priority_score": 47,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "The Hacker News",
-        "product": "Threat Intelligence",
-        "published": "2026-05-27",
-        "type": "SUPPLY_CHAIN"
+        "vendor": "go",
+        "product": "code.gitea.io/gitea",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
       },
-      "connections": []
+      "connections": [
+        {
+          "target": "ioc:domain:gitea.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:noscope.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     },
     "THEHACKERNEWS-4f39bb1f560352e2": {
       "id": "THEHACKERNEWS-4f39bb1f560352e2",
@@ -105576,6 +105587,28 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "ioc:domain:gitea.io": {
+      "id": "ioc:domain:gitea.io",
+      "type": "IOC",
+      "name": "gitea.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:noscope.com": {
+      "id": "ioc:domain:noscope.com",
+      "type": "IOC",
+      "name": "noscope.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -127412,6 +127445,24 @@
       "target": "ioc:ipv4:169.254.169.254",
       "relationship": "linked_to",
       "confidence": 0.88,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-27771→linked_to→ioc:domain:gitea.io",
+      "source": "CVE-2026-27771",
+      "target": "ioc:domain:gitea.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-27771→linked_to→ioc:domain:noscope.com",
+      "source": "CVE-2026-27771",
+      "target": "ioc:domain:noscope.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-17",
       "sources": []
     }
