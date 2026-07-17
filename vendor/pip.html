@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XTGLNMNNC7',{page_title:document.title,page_location:window.location.href});</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#00ffe0">
+<meta name="description" content="111 real tracked CVE(s) affecting pip, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta property="og:title" content="pip CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:description" content="111 real tracked CVE(s) affecting pip, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://blog.cyberdudebivash.in/vendor/pip.html">
+<meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:image" content="https://blog.cyberdudebivash.in/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="pip CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX">
+<meta name="twitter:description" content="111 real tracked CVE(s) affecting pip, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta name="twitter:image" content="https://blog.cyberdudebivash.in/og-image.png">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://blog.cyberdudebivash.in/vendor/pip.html">
+<title>pip CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"pip CVE Intelligence","url":"https://blog.cyberdudebivash.in/vendor/pip.html","dateModified":"2026-07-17"}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-bg:#07090f;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--apex-font);background:var(--apex-bg);color:var(--apex-text);min-height:100vh;line-height:1.7}
+nav{position:sticky;top:0;z-index:9999;background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}.nlogo{font-size:18px;font-weight:900;color:var(--apex-cyan)}.ntag{font-size:10px;color:var(--apex-muted);letter-spacing:.1em;text-transform:uppercase}
+.nlinks{display:flex;gap:4px;flex-wrap:wrap}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:var(--apex-text)}
+main{max-width:900px;margin:0 auto;padding:44px 24px 80px}
+.eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--apex-cyan);background:#00ffe012;border:1px solid #00ffe033;border-radius:6px;padding:5px 12px;margin-bottom:16px}
+h1{font-size:clamp(28px,4.6vw,42px);font-weight:900;color:#fff;margin-bottom:14px}
+.lede{font-size:17px;color:#c9d1d9;margin-bottom:36px;max-width:70ch}
+.rcard{display:block;background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:20px 24px;margin-bottom:14px;text-decoration:none;transition:border-color .2s}
+.rcard:hover{border-color:#00ffe066}
+.rk{font-size:12px;font-weight:700;color:var(--apex-cyan);font-family:var(--mono);letter-spacing:.04em}
+.rcard h2{font-size:19px;font-weight:800;color:#fff;margin:8px 0 8px;line-height:1.3}
+.rcard p{font-size:14px;color:#c9d1d9;margin-bottom:8px}
+.rmore{font-size:13px;font-weight:700;color:var(--apex-cyan)}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;margin-right:6px;font-family:var(--mono)}
+.stat-row{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 10px}
+.stat{font-size:12.5px;color:var(--apex-muted);font-family:var(--mono)}
+.stat b{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.note{font-size:13.5px;color:var(--apex-muted);margin-top:28px;border-top:1px solid var(--apex-border);padding-top:20px}
+.note a{color:var(--apex-cyan)}
+.empty-state{color:var(--apex-muted);font-size:14px;padding:20px 0}
+footer{border-top:1px solid var(--apex-border);padding:28px 24px;text-align:center;font-size:13px;color:var(--apex-muted);margin-top:40px}
+footer a{color:var(--apex-cyan);text-decoration:none}
+code.rule-preview{display:block;background:#050709;border:1px solid var(--apex-border);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:12px;color:#9ae6b4;white-space:pre-wrap;word-break:break-word;margin-top:8px}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nbrand" href="/"><span class="nlogo">CYBERDUDEBIVASH</span><span class="ntag">Sentinel APEX</span></a>
+  <div class="nlinks"><a href="/">Reports</a><a href="/research">Research</a><a href="/detections">Detections</a><a href="/vendor/" style="color:#fff">Vendors</a><a href="/timeline/">Timeline</a><a href="/collections/">Collections</a><a href="/threat/">Threat Actors</a><a href="/intelligence.html">Intelligence</a></div>
+</nav>
+<main>
+  <span class="eyebrow">Vendor Intelligence</span>
+  <h1>pip</h1>
+  <p class="lede">111 tracked CVEs · 0 in CISA KEV · 0 confirmed exploited in the wild.</p>
+  
+      <a class="rcard" href="/cve/CVE-2026-33760.html">
+        <span class="rk">CVE-2026-33760 · CVSS 8.8</span>
+        <h2>Langflow: IDOR/BOLA in Monitor API — Missing Ownership Enforcement on 7 Endpoints </h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-40217.html">
+        <span class="rk">CVE-2026-40217 · CVSS 8.8</span>
+        <h2>LiteLLM has a sandbox escape in custom-code guardrail</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42305.html">
+        <span class="rk">CVE-2026-42305 · CVSS 8.8</span>
+        <h2>Dulwich has an arbitrary file write via NTFS-hostile tree entries on Windows</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44513.html">
+        <span class="rk">CVE-2026-44513 · CVSS 8.8</span>
+        <h2>Diffusers has a `trust_remote_code` bypass via `custom_pipeline` and local custom components</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45672.html">
+        <span class="rk">CVE-2026-45672 · CVSS 8.8</span>
+        <h2>Open WebUI: Jupyter code execution works despite `ENABLE_CODE_EXECUTION=false` — feature gate bypassed</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47399.html">
+        <span class="rk">CVE-2026-47399 · CVSS 8.8</span>
+        <h2>PraisonAI Platform workspace-scoped routes allow cross-workspace object access by global object ID</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47405.html">
+        <span class="rk">CVE-2026-47405 · CVSS 8.8</span>
+        <h2>PraisonAI Platform: Missing role checks let any workspace member become owner and control workspace membership</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48169.html">
+        <span class="rk">CVE-2026-48169 · CVSS 8.8</span>
+        <h2>PraisonAI has Cross-Workspace IDOR and Privilege Escalation via Platform API</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48508.html">
+        <span class="rk">CVE-2026-48508 · CVSS 8.8</span>
+        <h2>Lemur has an authorization bypass in StrictRolePermission / AuthorityCreatorPermission</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54449.html">
+        <span class="rk">CVE-2026-54449 · CVSS 8.8</span>
+        <h2>LangBot: Authenticated RCE Via MCP Configuration</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44552.html">
+        <span class="rk">CVE-2026-44552 · CVSS 8.7</span>
+        <h2>Open WebUI: Redis Cache Keys tool_servers and terminal_servers Missing Instance Prefix Enable Cross-Instance Cache Poisoning</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54011.html">
+        <span class="rk">CVE-2026-54011 · CVSS 8.7</span>
+        <h2>Open WebUI: Stored XSS in Mermaid Markdown Preview</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42079.html">
+        <span class="rk">CVE-2026-42079 · CVSS 8.6</span>
+        <h2>PPTAgent: Arbitrary Code Execution via Python eval() of LLM-Generated Code with Builtins in Scope</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42352.html">
+        <span class="rk">CVE-2026-42352 · CVSS 8.6</span>
+        <h2>pygeoapi 0.23.x: Unauthenticated SSRF via OGC API - Processes Subscriber  </h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44023.html">
+        <span class="rk">CVE-2026-44023 · CVSS 8.6</span>
+        <h2>Docling Core: Unsafe remote filename resolution</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44339.html">
+        <span class="rk">CVE-2026-44339 · CVSS 8.6</span>
+        <h2>PraisonAI has unsafe tool resolution in `ToolExecutionMixin.execute_tool`: undeclared `__main__` callables execute</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53755.html">
+        <span class="rk">CVE-2026-53755 · CVSS 8.6</span>
+        <h2>Crawl4AI: SSRF via proxy settings in the Docker server bypasses the crawl-URL SSRF check</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44797.html">
+        <span class="rk">CVE-2026-44797 · CVSS 8.5</span>
+        <h2>Nautobot: Webhook definitions could be used for server-side request forgery (SSRF)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45400.html">
+        <span class="rk">CVE-2026-45400 · CVSS 8.5</span>
+        <h2>Open WebUI has a Server-Side Request Forgery (SSRF) bypass in `validate_url`</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45401.html">
+        <span class="rk">CVE-2026-45401 · CVSS 8.5</span>
+        <h2>Open WebUI has a SSRF Bypass via HTTP Redirect Following in Web-Fetch and Image-Load Endpoints (not addressed by CVE-2025-65958)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54008.html">
+        <span class="rk">CVE-2026-54008 · CVSS 8.5</span>
+        <h2>Open WebUI: Redirect-Bypass SSRF in OAuth `_process_picture_url` (incomplete-fix sibling of CVE-2026-45401)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44334.html">
+        <span class="rk">CVE-2026-44334 · CVSS 8.4</span>
+        <h2>PraisonAI has unauthenticated RCE via `tool_override.py` (CVE-2026-40287 patch bypass)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46345.html">
+        <span class="rk">CVE-2026-46345 · CVSS 8.4</span>
+        <h2>compliance-trestle - jinja has an Arbitrary File Write via Path Traversal</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54447.html">
+        <span class="rk">CVE-2026-54447 · CVSS 8.4</span>
+        <h2>garminconnect Has Insecure Permission Assignment for Garmin OAuth Token Store</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55786.html">
+        <span class="rk">CVE-2026-55786 · CVSS 8.4</span>
+        <h2>flyto-core has Unauthenticated Command Execution via HTTP MCP `execute_module`</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42313.html">
+        <span class="rk">CVE-2026-42313 · CVSS 8.3</span>
+        <h2>pyload-ng: non-admin SETTINGS users can redirect all outbound traffic through an attacker-controlled proxy via unrestricted `proxy.*` config (incomplete fix for CVE-2026-33509 / -35463 / -35464 / -35586)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47415.html">
+        <span class="rk">CVE-2026-47415 · CVSS 8.3</span>
+        <h2>praisonai-platform: Issue endpoints accept any issue_id without workspace ownership check, cross-workspace read/update/delete IDOR</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47419.html">
+        <span class="rk">CVE-2026-47419 · CVSS 8.3</span>
+        <h2>praisonai-platform: Agent endpoints accept any agent_id without workspace ownership check, cross-workspace read/update/delete IDOR</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49471.html">
+        <span class="rk">CVE-2026-49471 · CVSS 8.3</span>
+        <h2>Serena: Unauthenticated Flask dashboard on fixed port enables DNS rebinding → memory poisoning → RCE</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50574.html">
+        <span class="rk">CVE-2026-50574 · CVSS 8.3</span>
+        <h2>yt-dlp: Arbitrary code execution via manifest downloads with aria2c</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54010.html">
+        <span class="rk">CVE-2026-54010 · CVSS 8.3</span>
+        <h2>Open WebUI: Forged chat-file link allows cross-user file read and deletion</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44016.html">
+        <span class="rk">CVE-2026-44016 · CVSS 8.2</span>
+        <h2>Docling: Unsafe Playwright-based HTML Rendering</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44843.html">
+        <span class="rk">CVE-2026-44843 · CVSS 8.2</span>
+        <h2>LangChain vulnerable to unsafe deserialization of attacker-controlled objects through overly broad `load()` allowlists</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49825.html">
+        <span class="rk">CVE-2026-49825 · CVSS 8.2</span>
+        <h2>`lxml_html_clean.Cleaner` does not strip `javascript:` URLs from namespaced URL attributes</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42315.html">
+        <span class="rk">CVE-2026-42315 · CVSS 8.1</span>
+        <h2>PyLoad vulnerable to Path Traversal via Package Folder Name in set_package_data</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44019.html">
+        <span class="rk">CVE-2026-44019 · CVSS 8.1</span>
+        <h2>Docling Core: Insufficient validation of image reference URIs</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44304.html">
+        <span class="rk">CVE-2026-44304 · CVSS 8.1</span>
+        <h2>Lemur: LDAP Filter Injection enables post-authentication privilege escalation</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44553.html">
+        <span class="rk">CVE-2026-44553 · CVSS 8.1</span>
+        <h2>Open WebUI: Stale Admin Role in Socket.IO Session Pool Enables Post-Demotion Cross-User Note Access</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44554.html">
+        <span class="rk">CVE-2026-44554 · CVSS 8.1</span>
+        <h2>Open WebUI has Knowledge Base Destruction and RAG Poisoning via Unauthorized Collection Overwrite</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44565.html">
+        <span class="rk">CVE-2026-44565 · CVSS 8.1</span>
+        <h2>Open WebUI Arbitrary File Write, Delete via Path Traversal</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45402.html">
+        <span class="rk">CVE-2026-45402 · CVSS 8.1</span>
+        <h2>Open WebUI: Cross-User File Access via Unchecked file_id in Folder Knowledge and Knowledge-Base Attach Endpoints</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45675.html">
+        <span class="rk">CVE-2026-45675 · CVSS 8.1</span>
+        <h2>Open WebUI: LDAP and OAuth First-User Race Condition Allows Multiple Admin Accounts</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47398.html">
+        <span class="rk">CVE-2026-47398 · CVSS 8.1</span>
+        <h2>PraisonAI: Arbitrary code execution via unguarded `spec.loader.exec_module` in `agents_generator.py` - sibling of CVE-2026-44334</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47406.html">
+        <span class="rk">CVE-2026-47406 · CVSS 8.1</span>
+        <h2>praisonai-platform: IDOR in dependency endpoints allows cross-workspace issue linking, reading, and deletion due to missing ownership checks</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47409.html">
+        <span class="rk">CVE-2026-47409 · CVSS 8.1</span>
+        <h2>praisonai-platform: Missing authorization on member removal enables full workspace takeover by any user regardless of role</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47412.html">
+        <span class="rk">CVE-2026-47412 · CVSS 8.1</span>
+        <h2>praisonai-platform: Any workspace member can delete the entire workspace via DELETE /workspaces/{id}</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47417.html">
+        <span class="rk">CVE-2026-47417 · CVSS 8.1</span>
+        <h2>praisonai-platform: Comment endpoints accept any issue_id without workspace ownership check, cross-workspace comment read and post IDOR</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47418.html">
+        <span class="rk">CVE-2026-47418 · CVSS 8.1</span>
+        <h2>praisonai-platform: Project endpoints accept any project_id without workspace ownership check, cross-workspace read/update/delete IDOR</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48060.html">
+        <span class="rk">CVE-2026-48060 · CVSS 8.1</span>
+        <h2>Litestar has HTML Injection Through its CSRF Token</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49291.html">
+        <span class="rk">CVE-2026-49291 · CVSS 8.1</span>
+        <h2>mcp-memory-service: OAuth read-only clients can write and delete memories through MCP tools/call</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54446.html">
+        <span class="rk">CVE-2026-54446 · CVSS 8.1</span>
+        <h2>NetLicensing-MCP: Unauthenticated Use of Server-Side NetLicensing API Key in HTTP Mode</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54771.html">
+        <span class="rk">CVE-2026-54771 · CVSS 8.1</span>
+        <h2>Langroid: handle_message() executes user-supplied tool JSON without sender verification </h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-61668.html">
+        <span class="rk">CVE-2026-61668 · CVSS 8.1</span>
+        <h2>DIRAC: Pilot code downloaded over unverified HTTPS connection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45671.html">
+        <span class="rk">CVE-2026-45671 · CVSS 8</span>
+        <h2>Open WebUI: shared-chat branch ignores access_type, allowing unauthorized file deletion</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2022-44451.html">
+        <span class="rk">CVE-2022-44451 · CVSS 7.8</span>
+        <h2>Open Babel has uninitialized pointer dereference in MSI atom parser</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2022-46280.html">
+        <span class="rk">CVE-2022-46280 · CVSS 7.8</span>
+        <h2>Open Babel has uninitialized pointer dereference in PQS pFormat</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2022-46289.html">
+        <span class="rk">CVE-2022-46289 · CVSS 7.8</span>
+        <h2>Open Babel has out-of-bounds write in ORCA nAtoms parser</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2022-46290.html">
+        <span class="rk">CVE-2022-46290 · CVSS 7.8</span>
+        <h2>Open Babel has out-of-bounds write in ORCA nAtoms parser (second variant)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2022-46291.html">
+        <span class="rk">CVE-2022-46291 · CVSS 7.8</span>
+        <h2>Open Babel has out-of-bounds write in Gaussian translationVectors[]</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2022-46292.html">
+        <span class="rk">CVE-2022-46292 · CVSS 7.8</span>
+        <h2>Open Babel has out-of-bounds write in MOPAC translationVectors[] (UNIT CELL TRANSLATION)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2022-46293.html">
+        <span class="rk">CVE-2022-46293 · CVSS 7.8</span>
+        <h2>Open Babel has out-of-bounds write in MOPAC translationVectors[] (FINAL POINT)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2022-46294.html">
+        <span class="rk">CVE-2022-46294 · CVSS 7.8</span>
+        <h2>Open Babel has out-of-bounds write in MOPAC IN translationVectors[] (Tv atom)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2022-46295.html">
+        <span class="rk">CVE-2022-46295 · CVSS 7.8</span>
+        <h2>Open Babel has out-of-bounds write in MSI translationVectors[]</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2025-10996.html">
+        <span class="rk">CVE-2025-10996 · CVSS 7.8</span>
+        <h2>Open Babel has heap buffer overflow in SMILES OBSmilesParser::ParseSmiles</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42301.html">
+        <span class="rk">CVE-2026-42301 · CVSS 7.8</span>
+        <h2>pyp2spec is Vulnerable to Code Injection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44244.html">
+        <span class="rk">CVE-2026-44244 · CVSS 7.8</span>
+        <h2>GitPython: Newline injection in config_writer().set_value() enables RCE via core.hooksPath</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46432.html">
+        <span class="rk">CVE-2026-46432 · CVSS 7.8</span>
+        <h2>LMDeploy: Arbitrary code execution via hardcoded trust_remote_code=True in lmdeploy model initialization</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46439.html">
+        <span class="rk">CVE-2026-46439 · CVSS 7.8</span>
+        <h2>compliance-trestle Vulnerable to Remote Code Execution via Recursive Server-Side Template Injection (SSTI)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46517.html">
+        <span class="rk">CVE-2026-46517 · CVSS 7.8</span>
+        <h2>lmdeploy: Hardcoded trust_remote_code=True is an implicit unsafe remote-code load path with no user opt-out</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46606.html">
+        <span class="rk">CVE-2026-46606 · CVSS 7.8</span>
+        <h2>Glances is Vulnerable to Command Injection via KVM/QEMU VM Domain Names in glances/plugins/vms/engines/virsh.py</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46607.html">
+        <span class="rk">CVE-2026-46607 · CVSS 7.8</span>
+        <h2>Glances has Insecure Pickle Deserialization in its Version Cache that Leads to Arbitrary Code Execution</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53925.html">
+        <span class="rk">CVE-2026-53925 · CVSS 7.8</span>
+        <h2>Glances has arbitrary file write and command execution via `secure_popen` redirection and chaining operators in AMP command configuration</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54071.html">
+        <span class="rk">CVE-2026-54071 · CVSS 7.8</span>
+        <h2>BabelDOC: Arbitrary Code Execution via CMap Pickle Deserialization in babeldoc/pdfminer/cmapdb.py</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55426.html">
+        <span class="rk">CVE-2026-55426 · CVSS 7.8</span>
+        <h2>Linuxfabrik Monitoring Plugins have local privilege escalation using embedded command</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-21887.html">
+        <span class="rk">CVE-2026-21887 · CVSS 7.7</span>
+        <h2>OpenCTI has Semi-Blind SSRF via Unvalidated External URL in Data Ingestion Feature</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-33079.html">
+        <span class="rk">CVE-2026-33079 · CVSS 7.5</span>
+        <h2>Mistune has a ReDoS in LINK_TITLE_RE that allows denial of service via crafted Markdown input</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-33441.html">
+        <span class="rk">CVE-2026-33441 · CVSS 7.5</span>
+        <h2>Mistune has a Denial-of-Service (DoS) vulnerability</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-40110.html">
+        <span class="rk">CVE-2026-40110 · CVSS 7.5</span>
+        <h2>Jupyter Server has a  CORS Origin Validation Bypass via `re.match()` in `allow_origin_pat` (from huntr)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-41523.html">
+        <span class="rk">CVE-2026-41523 · CVSS 7.5</span>
+        <h2>vLLM: Security Check Bypass via assert Statement in Activation Function Loading Allows Arbitrary Code Execution</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-41895.html">
+        <span class="rk">CVE-2026-41895 · CVSS 7.5</span>
+        <h2>changedetection.io project has an XXE vulnerability</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42031.html">
+        <span class="rk">CVE-2026-42031 · CVSS 7.5</span>
+        <h2>CKAN has Unauthenticated SQL Injection and Authorization Bypass in `datastore_search_sql`</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42311.html">
+        <span class="rk">CVE-2026-42311 · CVSS 7.5</span>
+        <h2>Pillow has an OOB Write with Invalid PSD Tile Extents (Integer Overflow)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42351.html">
+        <span class="rk">CVE-2026-42351 · CVSS 7.5</span>
+        <h2>pygeoapi 0.23.x: Path Traversal in STAC FileSystemProvider</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-43891.html">
+        <span class="rk">CVE-2026-43891 · CVSS 7.5</span>
+        <h2>changedetection.io has an Arbitrary Local File Read via a crafted backup restore</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44017.html">
+        <span class="rk">CVE-2026-44017 · CVSS 7.5</span>
+        <h2>Docling: Unsafe Zip Extraction in EasyOCR Model Download</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44209.html">
+        <span class="rk">CVE-2026-44209 · CVSS 7.5</span>
+        <h2>banks has Critical Remote Code Execution (RCE) via Jinja2 SSTI</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44335.html">
+        <span class="rk">CVE-2026-44335 · CVSS 7.5</span>
+        <h2>PraisonAI has an SSRF bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45725.html">
+        <span class="rk">CVE-2026-45725 · CVSS 7.5</span>
+        <h2>compliance-trestle Remote Fetching Mechanism has an Arbitrary File Write via Cache Path Traversal</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45727.html">
+        <span class="rk">CVE-2026-45727 · CVSS 7.5</span>
+        <h2>CloakBrowser: Unauthenticated path traversal via fingerprint parameter in cloakserve leads to arbitrary directory deletion</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45804.html">
+        <span class="rk">CVE-2026-45804 · CVSS 7.5</span>
+        <h2>Diffusers: TOCTOU Trust Remote Code Bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47397.html">
+        <span class="rk">CVE-2026-47397 · CVSS 7.5</span>
+        <h2>PraisonAI has an Arbitrary File Write in Python API</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47764.html">
+        <span class="rk">CVE-2026-47764 · CVSS 7.5</span>
+        <h2>PDM  wheel installation leads to Path Traversal via overridden write_to_fs</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48818.html">
+        <span class="rk">CVE-2026-48818 · CVSS 7.5</span>
+        <h2>Starlette: SSRF and NTLM credential theft via UNC paths in StaticFiles on Windows</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49852.html">
+        <span class="rk">CVE-2026-49852 · CVSS 7.5</span>
+        <h2>joserfc: HS256/HS384/HS512 verify accepts empty/nil HMAC key (cross-language sibling of CVE-2026-45363)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50180.html">
+        <span class="rk">CVE-2026-50180 · CVSS 7.5</span>
+        <h2>Langroid: SQLChatAgent _validate_query blocklist misses pg_read_file family enabling arbitrary file read</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52817.html">
+        <span class="rk">CVE-2026-52817 · CVSS 7.5</span>
+        <h2>Linuxfabrik Monitoring Plugins: Sudoers may be able to obtain privilege escalation via /usr/bin/apt-get arguments</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54134.html">
+        <span class="rk">CVE-2026-54134 · CVSS 7.5</span>
+        <h2>OctoPrint has possible file exfiltration via query parameters on upload endpoints</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54499.html">
+        <span class="rk">CVE-2026-54499 · CVSS 7.5</span>
+        <h2>Stanza: Remote Code Execution via Unsafe Pickle Deserialization in Model Loaders</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55446.html">
+        <span class="rk">CVE-2026-55446 · CVSS 7.5</span>
+        <h2>Langflow: Unauthenticated DoS through multipart form boundary file upload</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45539.html">
+        <span class="rk">CVE-2026-45539 · CVSS 7.4</span>
+        <h2>Microsoft APM: Symlinks under `.apm/prompts/` and `.apm/agents/` are dereferenced during `apm install`, copying host-local file contents into the project tree</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-12530.html">
+        <span class="rk">CVE-2026-12530 · CVSS 7.3</span>
+        <h2>Improper neutralization of argument delimiters in AWS Bedrock AgentCore Python SDK install_packages()</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-26192.html">
+        <span class="rk">CVE-2026-26192 · CVSS 7.3</span>
+        <h2>Open WebUI vulnerable to Stored XSS via iFrame in citations model</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-26193.html">
+        <span class="rk">CVE-2026-26193 · CVSS 7.3</span>
+        <h2>Open WebUI vulnerable to Stored XSS via iFrame embeds in response messages</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44549.html">
+        <span class="rk">CVE-2026-44549 · CVSS 7.3</span>
+        <h2>Open WebUI has stored XSS in Excel file preview</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-8596.html">
+        <span class="rk">CVE-2026-8596 · CVSS 7.2</span>
+        <h2>Cleartext storage of HMAC signing key in Amazon SageMaker Python SDK ModelBuilder/Serve path</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-35397.html">
+        <span class="rk">CVE-2026-35397 · CVSS 7.1</span>
+        <h2>Jupyter Server: Path Traversal via incorrect startswith() root directory check allows access to sibling directories</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44556.html">
+        <span class="rk">CVE-2026-44556 · CVSS 7.1</span>
+        <h2>Open WebUI's responses passthrough endpoint lacks access control authorization</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44641.html">
+        <span class="rk">CVE-2026-44641 · CVSS 7.1</span>
+        <h2>Microsoft APM CLI's plugin.json component paths escape plugin root and copy arbitrary host files during install</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50181.html">
+        <span class="rk">CVE-2026-50181 · CVSS 7.1</span>
+        <h2>Langroid: Path traversal in the file tools allows read/write outside configured current directory</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55787.html">
+        <span class="rk">CVE-2026-55787 · CVSS 7.1</span>
+        <h2>flyto-core has SSRF guard bypass via IPv6 transition addresses (IPv4-mapped / 6to4 / NAT64) in validate_url_ssrf</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-9291.html">
+        <span class="rk">CVE-2026-9291 · CVSS 7.1</span>
+        <h2>amazon-braket-sdk vulnerable to Insecure Deserialization via pickle.loads()</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+</main>
+<footer>
+  &copy; 2026 CyberDudeBivash Pvt. Ltd. · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/contact.html">Contact</a>
+</footer>
+</body>
+</html>
