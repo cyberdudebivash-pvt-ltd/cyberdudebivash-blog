@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T17:01:50.775Z",
+  "generated": "2026-07-17T17:09:56.977Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,58 +7,13 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2362,
+  "total_published": 2363,
   "s2n_stats": {
-    "passed": 95,
-    "suppressed": 41,
+    "passed": 97,
+    "suppressed": 40,
     "avg_qs": 0.515
   },
   "items": [
-    {
-      "id": "CVE-2021-44228",
-      "title": "CVE lookup that shows the actual fix (KB / package version / Apple train), plus a no-key API. Built partly because NVD's",
-      "description": "Disclosure up front: I work on a patch-management product (TridentStack Control), and this is a free, standalone spin-off of the remediation data we already maintain. No account, nothing gated on the tool or the API. Putting it here rather than at the bottom because it should come before the pitch, ",
-      "cvss": 8,
-      "final_ps": 87,
-      "quality_score": 0.565,
-      "threat_level": "CRITICAL",
-      "type": "SOCIAL_ENGINEERING",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": true,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [
-        "CVE-2021-44228"
-      ],
-      "ioc_count": 2,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1uz489k/cve_lookup_that_shows_the_actual_fix_kb_package/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=1.00",
-          "ioc_presence=2 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.565"
-        ],
-        "priority": [
-          "+15 CISA_KEV",
-          "+3 supply_chain"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
     {
       "id": "CVE-2026-39808",
       "title": "CISA Warns of Fortinet FortiSandbox OS Injection Vulnerabilities Exploited in Attacks",
@@ -105,14 +60,14 @@
       }
     },
     {
-      "id": "CVE-2026-54540",
-      "title": "Pheditor has an authenticated terminal command whitelist bypass",
-      "description": "### Summary\n\nPheditor 2.0.4 has an authenticated terminal command whitelist bypass.\n\nThe terminal feature checks whether the submitted command starts with one of the configured `TERMINAL_COMMANDS` values, then passes the full command string to `shell_exec()`. Shell command substitution such as `$()`",
+      "id": "CVE-2026-55578",
+      "title": "Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and n",
+      "description": "### Summary\n\nThe terminal feature in Pheditor uses an incomplete character blocklist to sanitize user-supplied commands before passing them to `shell_exec()`. After the fix for GHSA-9643-6xjp-vx57 (which added `$` to the blocklist), the characters `|` (single pipe), `` ` `` (backtick), and the newli",
       "cvss": 8.8,
       "final_ps": 54,
       "quality_score": 0.593,
       "threat_level": "MEDIUM",
-      "type": "SOCIAL_ENGINEERING",
+      "type": "NEWS_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -127,7 +82,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-54540"
+        "CVE-2026-55578"
       ],
       "ioc_count": 2,
       "refs": [],
@@ -223,6 +178,90 @@
           "+10 ransomware_confirmed",
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54076",
+      "title": "ArcadeDB: Read-only users can mutate database schema (incomplete fix of CVE-2026-44221)",
+      "description": "### Impact\n\nThe fix for CVE-2026-44221 (GHSA-fxc7-fm93-6q77) added an `UPDATE_SCHEMA` authorization check to a single schema-mutating method (`LocalDocumentType.createProperty`). The remaining public schema mutators were left unchecked, so an authenticated identity (including a **read-only API token",
+      "cvss": 8.1,
+      "final_ps": 48,
+      "quality_score": 0.533,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54076",
+        "CVE-2026-44221"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=0d (score=1.00)",
+          "QS=0.533"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54077",
+      "title": "ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users",
+      "description": "### Impact\n\nThe SQL `IMPORT DATABASE` statement did not require administrative privileges and passed its source URL to the importer without validation. Any authenticated user with SQL command access (not only `root`/administrators) could therefore:\n\n- **Server-Side Request Forgery (CWE-918):** cause",
+      "cvss": 7.1,
+      "final_ps": 48,
+      "quality_score": 0.563,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54077"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "ioc_presence=1 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.563"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2486,7 +2525,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-5426",
@@ -3812,6 +3853,55 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-54234",
+      "title": "vLLM has Remote DoS via Invalid Recovered Token Reinjection",
+      "description": "## Summary A frontend-legal multi-request speculative workload can make vLLM produce an out-of-vocabulary recovered token equal to `vocab_size`, convert that value to `-1` when choosing the next live token for a request, and then feed that `-1` back into the next drafter input ids. On Qwen3 GPTQ thi",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "vllm",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54234",
+        "CVE-2026-54234"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-8wr5-jm2h-8r4f",
+        "https://github.com/vllm-project/vllm/security/advisories/GHSA-8wr5-jm2h-8r4f",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-54234",
+        "https://github.com/vllm-project/vllm/pull/44744"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-46709",
       "title": "CVE-2026-46709: Tabby (formerly Terminus) is a highly configurable terminal emulator. Prior to 1.0.234, Tabby inserts dr",
       "description": "CVE-2026-46709: Tabby (formerly Terminus) is a highly configurable terminal emulator. Prior to 1.0.234, Tabby inserts dropped file paths",
@@ -4079,14 +4169,14 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-55578",
-      "title": "Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and n",
-      "description": "### Summary\n\nThe terminal feature in Pheditor uses an incomplete character blocklist to sanitize user-supplied commands before passing them to `shell_exec()`. After the fix for GHSA-9643-6xjp-vx57 (which added `$` to the blocklist), the characters `|` (single pipe), `` ` `` (backtick), and the newli",
+      "id": "CVE-2026-54540",
+      "title": "Pheditor has an authenticated terminal command whitelist bypass",
+      "description": "### Summary\n\nPheditor 2.0.4 has an authenticated terminal command whitelist bypass.\n\nThe terminal feature checks whether the submitted command starts with one of the configured `TERMINAL_COMMANDS` values, then passes the full command string to `shell_exec()`. Shell command substitution such as `$()`",
       "cvss": 8.8,
       "final_ps": 19,
       "quality_score": 0.478,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
+      "type": "SOCIAL_ENGINEERING",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -4101,7 +4191,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-55578"
+        "CVE-2026-54540"
       ],
       "ioc_count": 2,
       "refs": [],
@@ -4122,96 +4212,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-54076",
-      "title": "ArcadeDB: Read-only users can mutate database schema (incomplete fix of CVE-2026-44221)",
-      "description": "### Impact\n\nThe fix for CVE-2026-44221 (GHSA-fxc7-fm93-6q77) added an `UPDATE_SCHEMA` authorization check to a single schema-mutating method (`LocalDocumentType.createProperty`). The remaining public schema mutators were left unchecked, so an authenticated identity (including a **read-only API token",
-      "cvss": 8.1,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54076",
-        "CVE-2026-44221"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54077",
-      "title": "ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users",
-      "description": "### Impact\n\nThe SQL `IMPORT DATABASE` statement did not require administrative privileges and passed its source URL to the importer without validation. Any authenticated user with SQL command access (not only `root`/administrators) could therefore:\n\n- **Server-Side Request Forgery (CWE-918):** cause",
-      "cvss": 7.1,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54077"
-      ],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-13410",
-      "title": "CVE-2026-13410 Dancer::Plugin::Auth::Google versions through 0.07 for Perl have TLS verification disabled",
-      "description": "CVE-2026-13410 Dancer::Plugin::Auth::Google versions through 0.07 for Perl have TLS verification disabled",
+      "id": "CVE-2026-8075",
+      "title": "CVE-2026-8075 - Posting a malicious markdown image crashes the Mattermost Desktop App",
+      "description": "CVE-2026-8075 - Posting a malicious markdown image crashes the Mattermost Desktop App",
       "cvss": 3.2,
       "final_ps": 18,
       "quality_score": 0.458,
@@ -4231,11 +4234,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-13410"
+        "CVE-2026-8075"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--fc0b69075723b004a7e5c795.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--b16dbd4efb2e898dc6349cc7.html"
       ],
       "explanation": {
         "quality": [
@@ -4254,9 +4257,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-9602",
-      "title": "CVE-2026-9602 - Mattermost Desktop App crashes when malformed arguments are provided to some exposed IPC methods",
-      "description": "CVE-2026-9602 - Mattermost Desktop App crashes when malformed arguments are provided to some exposed IPC methods",
+      "id": "CVE-2026-59695",
+      "title": "CVE-2026-59695 - Unbounded max_fee_per_gas in mpp Tempo fee-payer enables single-request wallet drain",
+      "description": "CVE-2026-59695 - Unbounded max_fee_per_gas in mpp Tempo fee-payer enables single-request wallet drain",
       "cvss": 3.2,
       "final_ps": 18,
       "quality_score": 0.458,
@@ -4276,11 +4279,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-9602"
+        "CVE-2026-59695"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--666ad6c6174d40f1fbcc02f5.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--6b80a70e6fb35df187184ce5.html"
       ],
       "explanation": {
         "quality": [
@@ -4299,9 +4302,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-16008",
-      "title": "CVE-2026-16008 - sagold json-schema-library propertyDependencies.ts parsePropertyDependencies prototype pollution",
-      "description": "CVE-2026-16008 - sagold json-schema-library propertyDependencies.ts parsePropertyDependencies prototype pollution",
+      "id": "CVE-2026-59694",
+      "title": "CVE-2026-59694 - Unbounded access list in mpp Tempo fee-payer inflates gas cost per payment",
+      "description": "CVE-2026-59694 - Unbounded access list in mpp Tempo fee-payer inflates gas cost per payment",
       "cvss": 3.2,
       "final_ps": 18,
       "quality_score": 0.458,
@@ -4321,11 +4324,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-16008"
+        "CVE-2026-59694"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--b92bf44b224c6eb9df2f6499.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--bf153110def036596c0d7c19.html"
       ],
       "explanation": {
         "quality": [
