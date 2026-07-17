@@ -1,8 +1,24 @@
 {
-  "generated": "2026-07-17T10:03:11.660Z",
+  "generated": "2026-07-17T13:58:24.996Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "ai-security-project-promptshield",
+      "title": "AI security project: PromptShield",
+      "url": "/posts/ai-security-project-promptshield.html",
+      "generated": "2026-07-17T13:01:48.057Z",
+      "severity": "MEDIUM",
+      "cves": [],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://github.com/sirteggun/promptshield\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/sirteggun/promptshield\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
     {
       "slug": "if-you-ve-given-an-ai-agent-real-credentials-how-are-you-sc",
       "title": "If you've given an AI agent real credentials, how are you scoping what it can reach?",
@@ -4169,27 +4185,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uppbhw/checkmarx_mcp/&quot;&gt;[link]&lt;/a&gt;&lt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uppbhw/checkmarx_mcp/&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uppbhw/checkmarx_mcp/&quot;&gt;[comments]&lt;/a&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uppbhw/checkmarx_mcp/&quot\\;&gt\\;[comments]&lt\\;/a&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "stealer-logs-data-breach",
-      "title": "Stealer Logs data breach?",
-      "url": "/posts/stealer-logs-data-breach.html",
-      "generated": "2026-07-07T08:31:53.908Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://haveibeenpwned.com/&quot;&gt;https://haveibeenpwned.com/&lt;/a&gt;\"; http.host; content:\"haveibeenpwned.com\"; nocase; http.uri; content:\"/&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/FancyScene8105&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/FancyScene8105&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1upotnq/stealer_logs_data_breach/&quot;&gt;[link]&lt\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1upotnq/stealer_logs_data_breach/&quot\\;&gt\\;[link]&lt\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1upotnq/stealer_logs_data_breach/&quot;&gt;[comments\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1upotnq/stealer_logs_data_breach/&quot\\;&gt\\;[comments\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain haveibeenpwned.com\"; dns.query; content:\"haveibeenpwned.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
       ]
     }
   ]
