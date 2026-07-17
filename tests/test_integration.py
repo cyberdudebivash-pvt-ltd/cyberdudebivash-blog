@@ -245,5 +245,77 @@ class TestPipelineDeduplication(unittest.TestCase):
         self.assertEqual(report["failed"], 0)
 
 
+class TestRateLimitCircuitBreaker(unittest.TestCase):
+    """
+    Verify the pipeline stops attempting further articles once the first
+    one exhausts its retries on HTTP 429 — rather than retry-storming every
+    remaining article against an already-exhausted quota (see
+    automation/blogger_publisher.py's category='rate_limited' and
+    automation/main.py's circuit breaker).
+    """
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.config = _make_config(self.tmpdir)
+
+    def _rate_limited_resp(self):
+        resp = MagicMock()
+        resp.status_code = 429
+        resp.text = "Resource has been exhausted (e.g. check quota)."
+        resp.headers = {}
+        resp.ok = False
+        return resp
+
+    def test_circuit_breaker_stops_after_first_article_rate_limited(self):
+        token_resp = MagicMock()
+        token_resp.ok = True
+        token_resp.json.return_value = MOCK_TOKEN_RESPONSE
+
+        rss_resp = MagicMock()
+        rss_resp.text = MOCK_RSS  # 2 articles
+        rss_resp.raise_for_status = MagicMock()
+
+        # retry_attempts=2 (see _make_config) -> exactly 2 POST calls for the
+        # first article, then the circuit breaker must trip before any POST
+        # is attempted for the second article. side_effect has exactly
+        # 3 entries (token + 2 rate-limited attempts); a 4th call raises
+        # StopIteration, which would fail this test if the breaker didn't work.
+        with patch("requests.get", return_value=rss_resp):
+            with patch("requests.post", side_effect=[
+                token_resp, self._rate_limited_resp(), self._rate_limited_resp(),
+            ]):
+                with patch("time.sleep"):
+                    report = run_pipeline(self.config, dry_run=False)
+
+        self.assertEqual(report["published"], 0)
+        self.assertEqual(report["failed"], 1)
+        self.assertEqual(report["skipped"], 1)
+        self.assertTrue(report["circuit_breaker_tripped"])
+        self.assertEqual(report["failure_categories"].get("rate_limited"), 1)
+        self.assertEqual(report["posts"][0]["failure_category"], "rate_limited")
+
+    def test_circuit_breaker_requeues_untried_articles(self):
+        token_resp = MagicMock()
+        token_resp.ok = True
+        token_resp.json.return_value = MOCK_TOKEN_RESPONSE
+
+        rss_resp = MagicMock()
+        rss_resp.text = MOCK_RSS
+        rss_resp.raise_for_status = MagicMock()
+
+        with patch("requests.get", return_value=rss_resp):
+            with patch("requests.post", side_effect=[
+                token_resp, self._rate_limited_resp(), self._rate_limited_resp(),
+            ]):
+                with patch("time.sleep"):
+                    run_pipeline(self.config, dry_run=False)
+
+        with open(self.config.state_file) as f:
+            state = json.load(f)
+        retry_queue = state.get("retry_queue", [])
+        # The 2nd article (never attempted) should be queued for retry.
+        self.assertTrue(any("lockbit-healthcare" in item["url"] for item in retry_queue))
+
+
 if __name__ == "__main__":
     unittest.main()

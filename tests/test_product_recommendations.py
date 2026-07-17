@@ -46,6 +46,23 @@ class TestRecommendServices(unittest.TestCase):
             self.assertIn("name", svc, f"{key} missing name")
             self.assertIn("description", svc, f"{key} missing description")
 
+    def test_managed_services_catalog_includes_threat_hunting_virtual_ciso_and_architecture_review(self):
+        self.assertIn("threat_hunting", SERVICES)
+        self.assertIn("virtual_ciso", SERVICES)
+        self.assertIn("security_architecture_review", SERVICES)
+
+    def test_soc_operations_recommends_threat_hunting_alongside_soc_mssp(self):
+        result = recommend_services(["SOC Operations"], max_results=5)
+        names = [s["name"] for s in result]
+        self.assertIn("Threat Hunting", names)
+        self.assertIn("SOC & MSSP Services", names)
+
+    def test_cloud_security_recommends_architecture_review_alongside_devsecops(self):
+        result = recommend_services(["Cloud Security"], max_results=5)
+        names = [s["name"] for s in result]
+        self.assertIn("Security Architecture Review", names)
+        self.assertIn("DevSecOps Optimization", names)
+
 
 class TestTopRecommendation(unittest.TestCase):
     def test_returns_none_for_empty_labels(self):

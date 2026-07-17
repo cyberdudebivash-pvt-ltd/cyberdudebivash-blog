@@ -18,6 +18,7 @@ const { ROOT } = require('../orchestrator/generator-sdk');
 const { generators } = require('../orchestrator/generators');
 const { checkAllFreshness } = require('../orchestrator/freshness');
 const { summarizeRuns } = require('../orchestrator/run-log-stats');
+const { computeStorageStats } = require('../orchestrator/storage-stats');
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -84,8 +85,8 @@ function renderRunTrend(runStats) {
   const alert = !runStats.mostRecent.healthy ? `
     <div class="alert">
       ⚠ Most recent Blogger syndication run (${esc(runStats.mostRecent.runStart)}) published 0 posts with ${runStats.mostRecent.failed} failure(s).
-      Check the blogger-syndication.yml workflow logs — this matches the failure signature of the OAuth/rate-limit
-      incident this platform has hit before.
+      ${runStats.mostRecent.circuitBreakerTripped ? 'Rate-limit circuit breaker tripped — remaining articles were requeued rather than retried.' : 'Check the blogger-syndication.yml workflow logs.'}
+      This matches the failure signature of the OAuth/rate-limit incident this platform has hit before.
     </div>` : '';
 
   const bars = runStats.runs.slice(0, 20).reverse().map((r) => {
@@ -94,10 +95,26 @@ function renderRunTrend(runStats) {
     return `<div class="bar" style="height:${height}px;background:${color}" title="${esc(r.runStart)} — published:${r.published} failed:${r.failed}"></div>`;
   }).join('');
 
+  const categoryEntries = Object.entries(runStats.failureCategoryTotals || {}).sort((a, b) => b[1] - a[1]);
+  const categoryBreakdown = categoryEntries.length ? `
+    <div class="stat-row" style="margin-top:10px">
+      ${categoryEntries.map(([cat, count]) => `<span class="stat">${esc(cat)}: <b>${count}</b></span>`).join('')}
+    </div>` : '';
+
   return `
     ${alert}
-    <p class="card-meta">Last ${runStats.sampledRuns} runs · ${runStats.successRate}% healthy · ${runStats.totalPublished} published · ${runStats.totalFailed} failed</p>
-    <div class="bar-chart">${bars}</div>`;
+    <p class="card-meta">Last ${runStats.sampledRuns} runs · ${runStats.successRate}% healthy · ${runStats.totalPublished} published · ${runStats.totalFailed} failed · ${runStats.circuitBreakerTrips} circuit-breaker trip(s)</p>
+    <div class="bar-chart">${bars}</div>
+    ${categoryBreakdown}`;
+}
+
+function renderStorageStats(storageStats) {
+  const rows = storageStats.map((s) => `
+      <div class="card">
+        <div class="card-head"><strong>${esc(s.dir)}</strong></div>
+        <div class="card-meta"><span>${s.fileCount.toLocaleString()} files</span><span>${s.totalMB} MB</span></div>
+      </div>`).join('\n');
+  return `<div class="grid">${rows}</div>`;
 }
 
 function render(data) {
@@ -146,6 +163,9 @@ footer{margin-top:40px;font-size:11.5px;color:var(--muted)}
   <h2>Blogger Syndication — Publish Trend</h2>
   ${renderRunTrend(data.runStats)}
 
+  <h2>Storage Growth</h2>
+  ${renderStorageStats(data.storageStats)}
+
   <footer>CYBERDUDEBIVASH SENTINEL APEX &middot; internal tooling &middot; not for public distribution</footer>
 </main>
 </body>
@@ -157,8 +177,9 @@ function main() {
   const freshness = checkAllFreshness(generators);
   const manifest = loadLatestManifest();
   const runStats = summarizeRuns(30);
+  const storageStats = computeStorageStats();
 
-  const data = { generated: new Date().toISOString(), freshness, manifest, runStats };
+  const data = { generated: new Date().toISOString(), freshness, manifest, runStats, storageStats };
 
   const outDir = path.join(ROOT, 'ops', 'health');
   fs.mkdirSync(outDir, { recursive: true });

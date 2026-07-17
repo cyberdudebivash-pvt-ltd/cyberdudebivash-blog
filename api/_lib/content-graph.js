@@ -16,8 +16,18 @@
 'use strict';
 const intel = require('./intel');
 const hub = require('./intelligence-hub');
+const catalog = require('./services-catalog');
 
-const ENTITY_TYPES = ['cve', 'vendor', 'actor', 'campaign', 'collection'];
+const ENTITY_TYPES = ['cve', 'vendor', 'actor', 'campaign', 'collection', 'service', 'industry', 'product'];
+
+// Generic placeholders fetch-live-intel.js stamps into a CVE record's
+// `product` field when no real product name is known (see rssToIntel()) —
+// same class of noise isRealVendor() filters out of `vendor`.
+const NON_PRODUCT_LABELS = new Set(['threat intelligence', 'multiple targets']);
+function isRealProduct(product) {
+  const p = String(product || '').trim();
+  return !!p && !NON_PRODUCT_LABELS.has(p.toLowerCase());
+}
 
 function notFound(type, id) {
   return { type, id, found: false, data: null, related: [] };
@@ -69,6 +79,34 @@ function entityCollection(id) {
   return { type: 'collection', id, found: true, data: collection, related };
 }
 
+function entityService(id) {
+  const service = catalog.getService(id);
+  if (!service) return notFound('service', id);
+  const relatedIndustries = Object.entries(catalog.INDUSTRIES)
+    .filter(([, industry]) => industry.services.includes(id))
+    .map(([key, industry]) => ({ type: 'industry', id: key, label: industry.name, url: null }));
+  return { type: 'service', id, found: true, data: service, related: relatedIndustries };
+}
+
+function entityIndustry(id) {
+  const industry = catalog.getIndustry(id);
+  if (!industry) return notFound('industry', id);
+  const related = industry.services
+    .map((svcKey) => catalog.getService(svcKey))
+    .filter(Boolean)
+    .map((svc) => ({ type: 'service', id: svc.key, label: svc.name, url: null }));
+  return { type: 'industry', id, found: true, data: industry, related };
+}
+
+function entityProduct(id) {
+  const cves = hub.loadCves().filter((c) => isRealProduct(c.product) && hub.slugify(c.product) === hub.slugify(id));
+  if (!cves.length) return notFound('product', id);
+  const name = cves[0].product.trim();
+  const items = cves.map((c) => ({ id: c.id || c.slug, title: c.title || c.id, url: `/cve/${c.id || c.slug}.html` }));
+  const related = items.slice(0, 10).map((i) => ({ type: 'cve', id: i.id, label: i.title, url: i.url }));
+  return { type: 'product', id, found: true, data: { name, count: items.length, items }, related };
+}
+
 /**
  * Resolve one entity by type+id across both subsystems, returning a
  * normalized shape: { type, id, found, data, related: [{type,id,label,url}] }
@@ -84,6 +122,9 @@ function getEntity(type, id, opts = {}) {
     case 'campaign': return entityCampaign(key, opts.tier);
     case 'actor': return entityActor(key, opts.tier);
     case 'collection': return entityCollection(key);
+    case 'service': return entityService(key);
+    case 'industry': return entityIndustry(key);
+    case 'product': return entityProduct(key);
     default: return { ...notFound(t, key), error: `Unknown entity type "${t}". Valid: ${ENTITY_TYPES.join(', ')}` };
   }
 }

@@ -2,7 +2,9 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const { defineGenerator, execGenerator } = require('../orchestrator/generator-sdk');
-const { topoSort, newestMtime, shouldSkipIncremental } = require('../orchestrator/build-orchestrator');
+const {
+  topoSort, newestMtime, shouldSkipIncremental, runGenerators, compareManifests, buildDependencyGraph,
+} = require('../orchestrator/build-orchestrator');
 
 /* ─── defineGenerator ────────────────────────────────────────── */
 
@@ -111,4 +113,70 @@ test('shouldSkipIncremental skips when inputs are older than the last successful
 test('shouldSkipIncremental does not skip when inputs are newer than the last successful run', () => {
   const gen = defineGenerator({ id: 'x', description: 'y', outputs: ['z'], command: ['true'], inputs: ['package.json'] });
   assert.strictEqual(shouldSkipIncremental(gen, { x: { lastSuccessAt: 1 } }), false);
+});
+
+/* ─── dry-run mode ───────────────────────────────────────────── */
+
+test('runGenerators with dryRun never executes and reports would_run', async () => {
+  let executed = false;
+  const gen = defineGenerator({ id: 'x', description: 'y', outputs: ['z'], run: async () => { executed = true; } });
+  const results = await runGenerators([gen], { dryRun: true, incremental: false, full: false });
+  assert.strictEqual(executed, false);
+  assert.deepStrictEqual(results, [{ id: 'x', status: 'would_run', durationMs: 0, error: null }]);
+});
+
+test('runGenerators with dryRun and incremental combined still never executes', async () => {
+  let executed = false;
+  const gen = defineGenerator({
+    id: 'x', description: 'y', outputs: ['z'], inputs: ['package.json'],
+    run: async () => { executed = true; },
+  });
+  const results = await runGenerators([gen], { dryRun: true, incremental: true, full: false });
+  assert.strictEqual(executed, false);
+  assert.strictEqual(results[0].status, 'would_run');
+});
+
+/* ─── compareManifests ───────────────────────────────────────── */
+
+test('compareManifests detects newly failing and newly passing generators', () => {
+  const before = { generated: 't1', results: [{ id: 'a', status: 'success', durationMs: 100 }, { id: 'b', status: 'failed', durationMs: 50 }] };
+  const after = { generated: 't2', results: [{ id: 'a', status: 'failed', durationMs: 100 }, { id: 'b', status: 'success', durationMs: 50 }] };
+  const diff = compareManifests(before, after);
+  const byId = Object.fromEntries(diff.changes.map((c) => [c.id, c.change]));
+  assert.strictEqual(byId.a, 'newly_failing');
+  assert.strictEqual(byId.b, 'newly_passing');
+});
+
+test('compareManifests detects a meaningful duration regression', () => {
+  const before = { generated: 't1', results: [{ id: 'a', status: 'success', durationMs: 200 }] };
+  const after = { generated: 't2', results: [{ id: 'a', status: 'success', durationMs: 5000 }] };
+  const diff = compareManifests(before, after);
+  assert.strictEqual(diff.changes[0].change, 'slower');
+});
+
+test('compareManifests ignores small duration noise', () => {
+  const before = { generated: 't1', results: [{ id: 'a', status: 'success', durationMs: 200 }] };
+  const after = { generated: 't2', results: [{ id: 'a', status: 'success', durationMs: 250 }] };
+  const diff = compareManifests(before, after);
+  assert.strictEqual(diff.changes.length, 0);
+  assert.strictEqual(diff.unchanged, 1);
+});
+
+test('compareManifests flags a generator present in only one manifest', () => {
+  const before = { generated: 't1', results: [{ id: 'a', status: 'success', durationMs: 100 }] };
+  const after = { generated: 't2', results: [{ id: 'a', status: 'success', durationMs: 100 }, { id: 'b', status: 'success', durationMs: 100 }] };
+  const diff = compareManifests(before, after);
+  assert.strictEqual(diff.changes.length, 1);
+  assert.strictEqual(diff.changes[0].change, 'added');
+  assert.strictEqual(diff.changes[0].id, 'b');
+});
+
+/* ─── buildDependencyGraph ───────────────────────────────────── */
+
+test('buildDependencyGraph produces nodes and dependency-ordered edges', () => {
+  const a = defineGenerator({ id: 'a', description: 'A', outputs: ['o'], command: ['true'] });
+  const b = defineGenerator({ id: 'b', description: 'B', outputs: ['o'], command: ['true'], dependsOn: ['a'] });
+  const graph = buildDependencyGraph([a, b]);
+  assert.strictEqual(graph.nodes.length, 2);
+  assert.deepStrictEqual(graph.edges, [{ from: 'a', to: 'b' }]);
 });

@@ -98,9 +98,15 @@ async function runGenerators(targets, opts) {
       blocked.add(gen.id);
       continue;
     }
-    if (!opts.full && opts.incremental && shouldSkipIncremental(gen, state)) {
+    const wouldSkipUnchanged = !opts.full && opts.incremental && shouldSkipIncremental(gen, state);
+    if (wouldSkipUnchanged) {
       console.log(`⏭  ${gen.id} — skipped (inputs unchanged since last successful run)`);
       results.push({ id: gen.id, status: 'skipped_unchanged', durationMs: 0, error: null });
+      continue;
+    }
+    if (opts.dryRun) {
+      console.log(`🔎 ${gen.id} — would run (dry-run, not executed)`);
+      results.push({ id: gen.id, status: 'would_run', durationMs: 0, error: null });
       continue;
     }
     console.log(`\n▶ Running "${gen.id}" — ${gen.description}`);
@@ -117,29 +123,95 @@ async function runGenerators(targets, opts) {
     }
   }
 
-  saveState(state);
+  if (!opts.dryRun) saveState(state);
   return results;
 }
 
-function writeManifest(results) {
+function writeManifest(results, { dryRun = false } = {}) {
   const manifest = {
     generated: new Date().toISOString(),
     platform: 'CYBERDUDEBIVASH SENTINEL APEX',
+    dryRun,
     results,
     summary: {
       total: results.length,
       success: results.filter((r) => r.status === 'success').length,
       failed: results.filter((r) => r.status === 'failed').length,
       skipped: results.filter((r) => String(r.status).startsWith('skipped')).length,
+      wouldRun: results.filter((r) => r.status === 'would_run').length,
     },
   };
   const logsDir = path.join(ROOT, 'logs');
   fs.mkdirSync(logsDir, { recursive: true });
   const ts = manifest.generated.replace(/[:.]/g, '-');
-  fs.writeFileSync(path.join(logsDir, `build-manifest-${ts}.json`), JSON.stringify(manifest, null, 2), 'utf8');
-  fs.writeFileSync(path.join(logsDir, 'build-manifest-latest.json'), JSON.stringify(manifest, null, 2), 'utf8');
-  console.log(`\n📋 Build manifest: logs/build-manifest-${ts}.json`);
+  const prefix = dryRun ? 'build-manifest-dryrun' : 'build-manifest';
+  fs.writeFileSync(path.join(logsDir, `${prefix}-${ts}.json`), JSON.stringify(manifest, null, 2), 'utf8');
+  if (!dryRun) {
+    // Only a real run updates the "latest" pointer the health dashboard reads —
+    // a dry-run must never be mistaken for an actual execution result.
+    fs.writeFileSync(path.join(logsDir, 'build-manifest-latest.json'), JSON.stringify(manifest, null, 2), 'utf8');
+  }
+  console.log(`\n📋 Build manifest: logs/${prefix}-${ts}.json`);
   return manifest;
+}
+
+/**
+ * Compares two build manifests (e.g. today's vs. yesterday's, or before/
+ * after a change) and reports what changed per generator: newly failing,
+ * newly succeeding, or a meaningful duration swing (>2x and >500ms, to
+ * avoid noise on already-fast generators).
+ */
+function compareManifests(before, after) {
+  const beforeById = new Map((before.results || []).map((r) => [r.id, r]));
+  const afterById = new Map((after.results || []).map((r) => [r.id, r]));
+  const allIds = new Set([...beforeById.keys(), ...afterById.keys()]);
+
+  const changes = [];
+  for (const id of allIds) {
+    const b = beforeById.get(id);
+    const a = afterById.get(id);
+    if (!b) {
+      changes.push({ id, change: 'added', before: null, after: a.status });
+      continue;
+    }
+    if (!a) {
+      changes.push({ id, change: 'removed', before: b.status, after: null });
+      continue;
+    }
+    if (b.status !== a.status) {
+      const change = a.status === 'success' && b.status !== 'success' ? 'newly_passing'
+        : a.status === 'failed' && b.status !== 'failed' ? 'newly_failing'
+        : 'status_changed';
+      changes.push({ id, change, before: b.status, after: a.status });
+      continue;
+    }
+    if (a.status === 'success' && b.durationMs > 0) {
+      const ratio = a.durationMs / b.durationMs;
+      if ((ratio >= 2 || ratio <= 0.5) && Math.abs(a.durationMs - b.durationMs) > 500) {
+        changes.push({
+          id, change: ratio >= 2 ? 'slower' : 'faster',
+          before: `${b.durationMs}ms`, after: `${a.durationMs}ms`,
+        });
+      }
+    }
+  }
+  return {
+    beforeGenerated: before.generated,
+    afterGenerated: after.generated,
+    unchanged: allIds.size - changes.length,
+    changes,
+  };
+}
+
+function buildDependencyGraph(gens) {
+  const nodes = gens.map((g) => ({ id: g.id, description: g.description, schedule: g.schedule }));
+  const edges = [];
+  for (const g of gens) {
+    for (const dep of g.dependsOn) {
+      edges.push({ from: dep, to: g.id }); // dep must run before g
+    }
+  }
+  return { nodes, edges };
 }
 
 function printDiscovery() {
@@ -150,14 +222,37 @@ function printDiscovery() {
   }
 }
 
+function printGraph() {
+  const graph = buildDependencyGraph(generators);
+  console.log(JSON.stringify(graph, null, 2));
+}
+
 function printUsage() {
-  console.log('Usage: node orchestrator/build-orchestrator.js [--discover|--run <id>|--run-all] [--incremental|--full]');
+  console.log('Usage: node orchestrator/build-orchestrator.js [--discover|--graph|--run <id>|--run-all] [--incremental|--full] [--dry-run] [--compare <manifestA.json> <manifestB.json>]');
 }
 
 async function cli() {
   const args = process.argv.slice(2);
   if (args.includes('--discover') || args.length === 0) {
     printDiscovery();
+    return;
+  }
+  if (args.includes('--graph')) {
+    printGraph();
+    return;
+  }
+  const compareIdx = args.indexOf('--compare');
+  if (compareIdx >= 0) {
+    const [fileA, fileB] = [args[compareIdx + 1], args[compareIdx + 2]];
+    if (!fileA || !fileB) {
+      console.error('::error title=Missing Manifest Paths::--compare requires two manifest file paths');
+      process.exitCode = 1;
+      return;
+    }
+    const before = JSON.parse(fs.readFileSync(fileA, 'utf8'));
+    const after = JSON.parse(fs.readFileSync(fileB, 'utf8'));
+    const diff = compareManifests(before, after);
+    console.log(JSON.stringify(diff, null, 2));
     return;
   }
 
@@ -167,6 +262,7 @@ async function cli() {
     runId: runIdx >= 0 ? args[runIdx + 1] : null,
     incremental: args.includes('--incremental'),
     full: args.includes('--full'),
+    dryRun: args.includes('--dry-run'),
   };
 
   let targets;
@@ -187,9 +283,9 @@ async function cli() {
   }
 
   const results = await runGenerators(targets, opts);
-  const manifest = writeManifest(results);
-  console.log(`\n${manifest.summary.success}/${manifest.summary.total} succeeded, ${manifest.summary.failed} failed, ${manifest.summary.skipped} skipped`);
-  if (manifest.summary.failed > 0) process.exitCode = 1;
+  const manifest = writeManifest(results, { dryRun: opts.dryRun });
+  console.log(`\n${manifest.summary.success}/${manifest.summary.total} succeeded, ${manifest.summary.failed} failed, ${manifest.summary.skipped} skipped${opts.dryRun ? `, ${manifest.summary.wouldRun} would run` : ''}`);
+  if (!opts.dryRun && manifest.summary.failed > 0) process.exitCode = 1;
 }
 
 if (require.main === module) {
@@ -199,4 +295,7 @@ if (require.main === module) {
   });
 }
 
-module.exports = { topoSort, runGenerators, writeManifest, newestMtime, shouldSkipIncremental };
+module.exports = {
+  topoSort, runGenerators, writeManifest, newestMtime, shouldSkipIncremental,
+  compareManifests, buildDependencyGraph,
+};

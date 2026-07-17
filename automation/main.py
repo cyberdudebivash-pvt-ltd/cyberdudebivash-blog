@@ -67,6 +67,8 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         "skipped": 0,
         "posts": [],
         "errors": [],
+        "failure_categories": {},
+        "circuit_breaker_tripped": False,
     }
 
     logger.info("Pipeline started", extra={"dry_run": dry_run, "run_start": run_start})
@@ -123,7 +125,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         return report
 
     # --- Transform and Publish ---
-    for article in articles:
+    for idx, article in enumerate(articles):
         post_result = {
             "source_url": article.url,
             "title": article.title,
@@ -208,13 +210,39 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             break  # Auth errors are fatal; stop the run
 
         except BloggerPublishError as e:
-            logger.error("Publish failed", extra={"url": article.url, "error": str(e)})
+            category = getattr(e, "category", "unknown")
+            logger.error("Publish failed", extra={"url": article.url, "error": str(e), "category": category})
             post_result["status"] = "publish_error"
             post_result["error"] = str(e)
+            post_result["failure_category"] = category
             report["errors"].append(str(e))
+            report["failure_categories"][category] = report["failure_categories"].get(category, 0) + 1
             discovery.state.record_failure(article.url, str(e))
             discovery.state.add_to_retry_queue(article, str(e))
             report["failed"] += 1
+            report["posts"].append(post_result)
+
+            if category == "rate_limited":
+                # The platform's rate limit is exhausted for this window —
+                # retry-storming the remaining articles wastes API calls
+                # against an already-exhausted quota and risks tripping the
+                # same abuse-detection that revokes the refresh token (see
+                # BloggerAuthError's invalid_grant hint). Requeue the rest
+                # untried and stop this run; they'll be retried on the next
+                # scheduled run once the window has had time to reset.
+                remaining = articles[idx + 1:]
+                logger.warning(
+                    "Rate limit circuit breaker tripped — stopping run, requeuing remaining articles",
+                    extra={"remaining_count": len(remaining)},
+                )
+                report["circuit_breaker_tripped"] = True
+                for remaining_article in remaining:
+                    discovery.state.add_to_retry_queue(
+                        remaining_article, "Skipped — rate limit circuit breaker tripped this run"
+                    )
+                    report["skipped"] += 1
+                break
+            continue
 
         except Exception as e:
             logger.exception("Unexpected error processing article", extra={"url": article.url})

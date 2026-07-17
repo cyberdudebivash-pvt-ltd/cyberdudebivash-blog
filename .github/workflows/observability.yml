@@ -45,14 +45,20 @@ jobs:
         run: |
           node -c orchestrator/freshness.js
           node -c orchestrator/run-log-stats.js
+          node -c orchestrator/storage-stats.js
+          node -c orchestrator/build-orchestrator.js
           node -c ops/generate-health-dashboard.js
           node -c scripts/generate-docs.js
+          node -c scripts/validate-config.js
 
       - name: "🩺 Generate health dashboard"
         run: node ops/generate-health-dashboard.js
 
       - name: "📚 Regenerate documentation"
         run: node scripts/generate-docs.js
+
+      - name: "🧪 Validate configuration surfaces"
+        run: node scripts/validate-config.js
 
       - name: "🔍 Check for changes"
         id: check_changes

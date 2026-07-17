@@ -16,7 +16,7 @@
  *  action=campaign     GET  Single campaign detail (?id=campaign:...)
  *  action=top-actors   GET  Most active threat actors ranked by activity
  *  action=entity       GET  Unified content-graph lookup (?type=&id=) across
- *                           CVE/vendor/campaign/actor/collection
+ *                           CVE/vendor/campaign/actor/collection/service/industry/product
  *
  * Backward-compat rewrites in vercel.json map old paths to ?action= params.
  */
@@ -26,6 +26,7 @@ const { authenticate, successResponse, apiError, corsHeaders } = require('../_li
 const { getIntel, getCVEDetail, searchIntel, getPlatformStats,
         getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI } = require('../_lib/intel');
 const { getEntity, ENTITY_TYPES } = require('../_lib/content-graph');
+const cache = require('../_lib/cache');
 const sec = require('../_lib/security');
 
 /* ─── Main Router ────────────────────────────────────────────── */
@@ -45,11 +46,11 @@ module.exports = async (req, res) => {
   /* ── Public: stats — no API key required ───────────────────── */
   if (action === 'stats') {
     try {
-      const stats = getPlatformStats();
+      const { value: stats, cacheHit } = await cache.getOrSet('cache:intel:stats', 60, async () => getPlatformStats());
       return res.status(200).json({
         success: true,
         stats,
-        meta: { platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', timestamp: new Date().toISOString() },
+        meta: { platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', timestamp: new Date().toISOString(), cached: cacheHit },
       });
     } catch (e) {
       return res.status(500).json({ success: false, error: 'Stats unavailable' });
@@ -217,25 +218,36 @@ module.exports = async (req, res) => {
 
       /* ── GET ?action=graph ────────────────────────────────────── */
       case 'graph': {
-        const result = getGraph(user.tier);
+        // Cache key is tier-scoped — the response shape genuinely differs
+        // per tier (see getGraphForTier), so a shared cache entry would
+        // leak higher-tier data to a lower tier. 120s matches
+        // campaign-engine.js's own in-process cache TTL for the same data.
+        const { value: result, cacheHit } = await cache.getOrSet(
+          `cache:intel:graph:${user.tier}`, 120, async () => getGraph(user.tier),
+        );
         return successResponse(res, result, {
           endpoint:       '/api/v1/intel?action=graph',
           description:    'Threat actor relationship graph — nodes (CVE/Actor/Campaign/IOC) and edges',
           tier:           user.tier,
           requests_used:  user.requestsUsed,
           requests_limit: user.requestsLimit,
+          cached:         cacheHit,
         });
       }
 
       /* ── GET ?action=campaigns ────────────────────────────────── */
       case 'campaigns': {
-        const result = getCampaigns(user.tier, req.query);
+        const cacheKey = `cache:intel:campaigns:${user.tier}:${JSON.stringify(req.query)}`;
+        const { value: result, cacheHit } = await cache.getOrSet(
+          cacheKey, 120, async () => getCampaigns(user.tier, req.query),
+        );
         return successResponse(res, result, {
           endpoint:       '/api/v1/intel?action=campaigns',
           description:    'Threat campaign clusters grouped by shared IOCs, CVEs, and actor TTPs',
           tier:           user.tier,
           requests_used:  user.requestsUsed,
           requests_limit: user.requestsLimit,
+          cached:         cacheHit,
         });
       }
 
@@ -262,10 +274,13 @@ module.exports = async (req, res) => {
       /* ── GET ?action=top-actors ───────────────────────────────── */
       case 'top-actors': {
         const actorLimit = Math.min(20, parseInt(req.query.limit || '10', 10));
-        const result     = getTopActorsAPI(user.tier, actorLimit);
+        const { value: result, cacheHit } = await cache.getOrSet(
+          `cache:intel:top-actors:${user.tier}:${actorLimit}`, 120, async () => getTopActorsAPI(user.tier, actorLimit),
+        );
         return successResponse(res, result, {
           endpoint:       '/api/v1/intel?action=top-actors',
           description:    'Most active threat actors ranked by graph connectivity and CVE exploitation count',
+          cached:         cacheHit,
           tier:           user.tier,
           requests_used:  user.requestsUsed,
           requests_limit: user.requestsLimit,
@@ -291,7 +306,7 @@ module.exports = async (req, res) => {
         }
         return successResponse(res, result, {
           endpoint:       `/api/v1/intel?action=entity&type=${entityType}&id=${entityId}`,
-          description:    'Unified content-graph lookup across CVE/vendor/campaign/actor/collection intelligence',
+          description:    'Unified content-graph lookup across CVE/vendor/campaign/actor/collection/service/industry/product intelligence',
           tier:           user.tier,
           requests_used:  user.requestsUsed,
           requests_limit: user.requestsLimit,

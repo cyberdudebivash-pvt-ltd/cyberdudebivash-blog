@@ -5,7 +5,9 @@ Tests for blogger_publisher — OAuth flow, API calls, retry logic.
 import unittest
 from unittest.mock import MagicMock, patch, call
 
-from automation.blogger_publisher import BloggerPublisher, BloggerAuthError, BloggerPublishError
+from automation.blogger_publisher import (
+    BloggerPublisher, BloggerAuthError, BloggerPublishError, _retry_after_seconds,
+)
 from automation.config import Config
 
 
@@ -150,6 +152,94 @@ class TestBloggerPublish(unittest.TestCase):
         with patch("requests.get", side_effect=req_lib.RequestException("Failed")):
             ok = self.publisher.health_check()
         self.assertFalse(ok)
+
+
+class TestBloggerPublishErrorCategory(unittest.TestCase):
+    def test_default_category_is_unknown(self):
+        err = BloggerPublishError("something failed")
+        self.assertEqual(err.category, "unknown")
+
+    def test_category_can_be_set(self):
+        err = BloggerPublishError("rate limited", category="rate_limited")
+        self.assertEqual(err.category, "rate_limited")
+        self.assertEqual(str(err), "rate limited")
+
+
+class TestRetryAfterHeader(unittest.TestCase):
+    def _resp_with_headers(self, headers: dict):
+        resp = MagicMock()
+        resp.headers = headers
+        return resp
+
+    def test_returns_none_when_header_absent(self):
+        self.assertIsNone(_retry_after_seconds(self._resp_with_headers({})))
+
+    def test_parses_numeric_seconds(self):
+        self.assertEqual(_retry_after_seconds(self._resp_with_headers({"Retry-After": "30"})), 30.0)
+
+    def test_parses_http_date(self):
+        import email.utils
+        from datetime import datetime, timedelta, timezone
+        future = datetime.now(timezone.utc) + timedelta(seconds=45)
+        header_val = email.utils.format_datetime(future)
+        result = _retry_after_seconds(self._resp_with_headers({"Retry-After": header_val}))
+        self.assertIsNotNone(result)
+        self.assertAlmostEqual(result, 45, delta=5)
+
+    def test_returns_none_for_garbage_value(self):
+        self.assertIsNone(_retry_after_seconds(self._resp_with_headers({"Retry-After": "not-a-value"})))
+
+    def test_never_returns_negative(self):
+        import email.utils
+        from datetime import datetime, timedelta, timezone
+        past = datetime.now(timezone.utc) - timedelta(seconds=100)
+        header_val = email.utils.format_datetime(past)
+        result = _retry_after_seconds(self._resp_with_headers({"Retry-After": header_val}))
+        self.assertEqual(result, 0.0)
+
+
+class TestPublishFailureCategorization(unittest.TestCase):
+    def setUp(self):
+        self.config = _make_config()
+        self.publisher = BloggerPublisher(self.config)
+        self.publisher._access_token = "valid-token"
+        self.publisher._token_expiry = float("inf")
+
+    def _rate_limited_resp(self):
+        resp = MagicMock()
+        resp.status_code = 429
+        resp.text = "quota exceeded"
+        resp.headers = {}
+        return resp
+
+    def test_exhausted_rate_limit_retries_raise_with_rate_limited_category(self):
+        with patch("requests.post", return_value=self._rate_limited_resp()):
+            with patch("time.sleep"):
+                with self.assertRaises(BloggerPublishError) as ctx:
+                    self.publisher.publish_post("Title", "<p>x</p>", [])
+        self.assertEqual(ctx.exception.category, "rate_limited")
+
+    def test_rate_limited_retry_honors_retry_after_header(self):
+        limited = self._rate_limited_resp()
+        limited.headers = {"Retry-After": "7"}
+        success = MagicMock()
+        success.status_code = 200
+        success.ok = True
+        success.json.return_value = {"id": "x", "url": "https://example.com", "title": "t"}
+        success.raise_for_status = MagicMock()
+
+        with patch("requests.post", side_effect=[limited, success]):
+            with patch("time.sleep") as mock_sleep:
+                self.publisher.publish_post("Title", "<p>x</p>", [])
+        mock_sleep.assert_called_once_with(7.0)
+
+    def test_network_error_category_is_network_error(self):
+        import requests as req_lib
+        with patch("requests.post", side_effect=req_lib.RequestException("Connection refused")):
+            with patch("time.sleep"):
+                with self.assertRaises(BloggerPublishError) as ctx:
+                    self.publisher.publish_post("Title", "<p>x</p>", [])
+        self.assertEqual(ctx.exception.category, "network_error")
 
 
 if __name__ == "__main__":

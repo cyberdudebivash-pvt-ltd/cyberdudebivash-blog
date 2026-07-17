@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XTGLNMNNC7',{page_title:document.title,page_location:window.location.href});</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#00ffe0">
+<meta name="description" content="Your saved searches and watchlist — stored locally in your browser, no account required.">
+<meta name="robots" content="noindex, follow">
+<title>My Watchlist &amp; Saved Searches | CYBERDUDEBIVASH SENTINEL APEX</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-bg:#07090f;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--apex-font);background:var(--apex-bg);color:var(--apex-text);min-height:100vh;line-height:1.7}
+nav{position:sticky;top:0;z-index:9999;background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}.nlogo{font-size:18px;font-weight:900;color:var(--apex-cyan)}.ntag{font-size:10px;color:var(--apex-muted);letter-spacing:.1em;text-transform:uppercase}
+.nlinks{display:flex;gap:4px;flex-wrap:wrap}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:var(--apex-text)}
+main{max-width:820px;margin:0 auto;padding:44px 24px 80px}
+.eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--apex-cyan);background:#00ffe012;border:1px solid #00ffe033;border-radius:6px;padding:5px 12px;margin-bottom:16px}
+h1{font-size:clamp(28px,4.6vw,42px);font-weight:900;color:#fff;margin-bottom:14px}
+.lede{font-size:16px;color:#c9d1d9;margin-bottom:24px;max-width:70ch}
+h2{font-size:15px;font-weight:800;margin:32px 0 14px;color:var(--apex-cyan);text-transform:uppercase;letter-spacing:.05em}
+.rcard{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--apex-card);border:1px solid var(--apex-border);border-radius:12px;padding:14px 18px;margin-bottom:10px}
+.rcard a.item-link{color:#fff;font-weight:700;text-decoration:none;font-size:14.5px}
+.rcard a.item-link:hover{color:var(--apex-cyan)}
+.rk{font-size:11px;font-weight:700;color:var(--apex-cyan);font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase;display:block;margin-bottom:4px}
+.remove-btn{background:transparent;border:1px solid var(--apex-border);color:var(--apex-muted);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:var(--apex-font);white-space:nowrap}
+.remove-btn:hover{border-color:#ff3b5c;color:#ff3b5c}
+.empty-state{color:var(--apex-muted);font-size:14px;padding:16px 0;border:1px dashed var(--apex-border);border-radius:12px;text-align:center}
+.note{font-size:13px;color:var(--apex-muted);margin-top:28px;border-top:1px solid var(--apex-border);padding-top:20px}
+.note a{color:var(--apex-cyan)}
+footer{border-top:1px solid var(--apex-border);padding:28px 24px;text-align:center;font-size:13px;color:var(--apex-muted);margin-top:40px}
+footer a{color:var(--apex-cyan);text-decoration:none}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nbrand" href="/"><span class="nlogo">CYBERDUDEBIVASH</span><span class="ntag">Sentinel APEX</span></a>
+  <div class="nlinks"><a href="/">Reports</a><a href="/search.html">Search</a><a href="/vendor/">Vendors</a><a href="/timeline/">Timeline</a><a href="/collections/">Collections</a></div>
+</nav>
+<main>
+  <span class="eyebrow">Your Workspace</span>
+  <h1>My Watchlist &amp; Saved Searches</h1>
+  <p class="lede">Stored locally in your browser (localStorage) — no account or sign-in required. Clearing your browser data or switching devices will clear this list.</p>
+
+  <h2 id="watchlist-heading">Watchlist</h2>
+  <div id="watchlistItems"></div>
+
+  <h2 id="searches-heading">Saved Searches</h2>
+  <div id="savedSearchItems"></div>
+
+  <p class="note">Save a search from the <a href="/search.html">search page</a> — click "☆ Save this search" once you've typed a query. Watchlist items (individual CVEs, vendors, actors) can be added programmatically via <code>window.SentinelWatchlist</code>; per-item "+ Watch" buttons on <a href="/vendor/">vendor</a>, <a href="/timeline/">timeline</a>, and <a href="/collections/">collections</a> pages are a planned follow-up.</p>
+</main>
+<footer>
+  &copy; 2026 CyberDudeBivash Pvt. Ltd. · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/contact.html">Contact</a>
+</footer>
+<script src="/watchlist.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function renderWatchlist() {
+    var container = document.getElementById('watchlistItems');
+    if (!window.SentinelWatchlist) { container.innerHTML = '<p class="empty-state">Watchlist unavailable.</p>'; return; }
+    var items = window.SentinelWatchlist.getWatchlist();
+    if (!items.length) {
+      container.innerHTML = '<p class="empty-state">Nothing watched yet.</p>';
+      return;
+    }
+    var html = '';
+    items.forEach(function (item) {
+      var link = item.url
+        ? '<a class="item-link" href="' + esc(item.url) + '">' + esc(item.label) + '</a>'
+        : '<span class="item-link">' + esc(item.label) + '</span>';
+      html += '<div class="rcard">' +
+        '<div><span class="rk">' + esc(item.type) + '</span>' + link + '</div>' +
+        '<button class="remove-btn" data-type="' + esc(item.type) + '" data-id="' + esc(item.id) + '">Remove</button>' +
+        '</div>';
+    });
+    container.innerHTML = html;
+    container.querySelectorAll('.remove-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        window.SentinelWatchlist.removeFromWatchlist(this.dataset.type, this.dataset.id);
+        renderWatchlist();
+      });
+    });
+  }
+
+  function renderSavedSearches() {
+    var container = document.getElementById('savedSearchItems');
+    if (!window.SentinelWatchlist) { container.innerHTML = '<p class="empty-state">Saved searches unavailable.</p>'; return; }
+    var items = window.SentinelWatchlist.getSavedSearches();
+    if (!items.length) {
+      container.innerHTML = '<p class="empty-state">No saved searches yet.</p>';
+      return;
+    }
+    var html = '';
+    items.forEach(function (s) {
+      var url = '/search.html?q=' + encodeURIComponent(s.query) + (s.typeFilter && s.typeFilter !== 'ALL' ? '&type=' + encodeURIComponent(s.typeFilter) : '');
+      html += '<div class="rcard">' +
+        '<div><span class="rk">' + esc(s.typeFilter) + '</span><a class="item-link" href="' + esc(url) + '">' + esc(s.query) + '</a></div>' +
+        '<button class="remove-btn" data-q="' + esc(s.query) + '" data-type="' + esc(s.typeFilter) + '">Remove</button>' +
+        '</div>';
+    });
+    container.innerHTML = html;
+    container.querySelectorAll('.remove-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        window.SentinelWatchlist.removeSavedSearch(this.dataset.q, this.dataset.type);
+        renderSavedSearches();
+      });
+    });
+  }
+
+  renderWatchlist();
+  renderSavedSearches();
+})();
+</script>
+</body>
+</html>

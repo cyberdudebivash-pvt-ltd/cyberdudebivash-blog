@@ -18,12 +18,49 @@ BLOGGER_API_BASE = "https://www.googleapis.com/blogger/v3"
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 
 
+def _retry_after_seconds(resp: "requests.Response") -> Optional[float]:
+    """
+    Honor a Retry-After header (seconds, or an HTTP-date) when present —
+    more correct than blind exponential backoff since it's the server
+    telling us exactly how long its rate-limit window has left. Returns
+    None if absent or unparseable, so callers fall back to their own
+    backoff schedule.
+    """
+    raw = resp.headers.get("Retry-After")
+    if not raw:
+        return None
+    try:
+        return max(0.0, float(raw))
+    except ValueError:
+        pass
+    try:
+        from email.utils import parsedate_to_datetime
+        from datetime import datetime, timezone as _tz
+
+        target = parsedate_to_datetime(raw)
+        if target.tzinfo is None:
+            target = target.replace(tzinfo=_tz.utc)
+        return max(0.0, (target - datetime.now(_tz.utc)).total_seconds())
+    except (TypeError, ValueError):
+        return None
+
+
 class BloggerAuthError(Exception):
     pass
 
 
 class BloggerPublishError(Exception):
-    pass
+    """
+    category distinguishes failure types so callers can react differently —
+    in particular 'rate_limited' signals the *pipeline* should stop
+    attempting further posts this run rather than retry-storm every
+    remaining article against an already-exhausted quota (see
+    automation/main.py's circuit breaker).
+    """
+
+    def __init__(self, message: str, category: str = "unknown") -> None:
+        super().__init__(message)
+        self.category = category
 
 
 class BloggerPublisher:
@@ -129,6 +166,7 @@ class BloggerPublisher:
         params = {"isDraft": "true" if is_draft else "false", "fetchBody": "false"}
 
         last_error = "no attempt made"
+        last_category = "unknown"
         auth_refreshed = False
 
         for attempt in range(1, self.config.retry_attempts + 1):
@@ -143,7 +181,8 @@ class BloggerPublisher:
 
                 if resp.status_code == 429:
                     last_error = f"HTTP 429 rate limited: {resp.text[:300]}"
-                    wait = self.config.retry_base_delay * (2 ** attempt)
+                    last_category = "rate_limited"
+                    wait = _retry_after_seconds(resp) or self.config.retry_base_delay * (2 ** attempt)
                     logger.warning(
                         "Blogger API rate limited — backing off",
                         extra={"attempt": attempt, "wait_seconds": wait, "body": resp.text[:300]},
@@ -161,12 +200,14 @@ class BloggerPublisher:
                         )
                     logger.info("Access token rejected, refreshing once")
                     last_error = f"HTTP 401 unauthorized: {resp.text[:300]}"
+                    last_category = "auth_error"
                     self._access_token = None
                     auth_refreshed = True
                     continue
 
                 if not resp.ok:
                     last_error = f"HTTP {resp.status_code}: {resp.text[:300]}"
+                    last_category = "http_error"
                 resp.raise_for_status()
                 post_data = resp.json()
 
@@ -183,9 +224,10 @@ class BloggerPublisher:
 
             except requests.RequestException as e:
                 last_error = str(e)
+                last_category = "network_error"
                 if attempt == self.config.retry_attempts:
                     raise BloggerPublishError(
-                        f"Failed after {attempt} attempts: {last_error}"
+                        f"Failed after {attempt} attempts: {last_error}", category=last_category
                     ) from e
                 wait = self.config.retry_base_delay * (2 ** attempt)
                 logger.warning(
@@ -194,7 +236,9 @@ class BloggerPublisher:
                 )
                 time.sleep(wait)
 
-        raise BloggerPublishError(f"All retry attempts exhausted — last error: {last_error}")
+        raise BloggerPublishError(
+            f"All retry attempts exhausted — last error: {last_error}", category=last_category
+        )
 
     def update_post(self, post_id: str, title: str, content: str, labels: list[str]) -> dict:
         """Update an existing Blogger post."""

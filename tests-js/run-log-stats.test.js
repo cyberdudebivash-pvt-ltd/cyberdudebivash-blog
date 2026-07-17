@@ -64,3 +64,35 @@ test('malformed JSON log files are skipped rather than crashing', () => {
   assert.strictEqual(s.sampledRuns, 0);
   fs.rmSync(tmpDir, { recursive: true, force: true });
 });
+
+test('summarizeRuns aggregates failure_categories across sampled runs', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sentinel-runlog-'));
+  fs.writeFileSync(path.join(tmpDir, 'run-20260101-000000.json'), JSON.stringify({
+    run_start: '2026-01-01T00:00:00Z', run_end: '2026-01-01T00:01:00Z',
+    discovered: 5, published: 0, failed: 1, skipped: 4,
+    circuit_breaker_tripped: true,
+    failure_categories: { rate_limited: 1 },
+  }));
+  fs.writeFileSync(path.join(tmpDir, 'run-20260101-010000.json'), JSON.stringify({
+    run_start: '2026-01-01T01:00:00Z', run_end: '2026-01-01T01:01:00Z',
+    discovered: 2, published: 1, failed: 1, skipped: 0,
+    failure_categories: { network_error: 1 },
+  }));
+
+  const s = summarizeRuns(10, tmpDir);
+  assert.strictEqual(s.circuitBreakerTrips, 1);
+  assert.deepStrictEqual(s.failureCategoryTotals, { rate_limited: 1, network_error: 1 });
+  fs.rmSync(tmpDir, { recursive: true, force: true });
+});
+
+test('summarizeRuns tolerates run logs written before failure_categories existed', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sentinel-runlog-'));
+  fs.writeFileSync(path.join(tmpDir, 'run-20260101-000000.json'), JSON.stringify({
+    run_start: '2026-01-01T00:00:00Z', run_end: '2026-01-01T00:01:00Z',
+    discovered: 1, published: 1, failed: 0, skipped: 0,
+  }));
+  const s = summarizeRuns(10, tmpDir);
+  assert.strictEqual(s.circuitBreakerTrips, 0);
+  assert.deepStrictEqual(s.failureCategoryTotals, {});
+  fs.rmSync(tmpDir, { recursive: true, force: true });
+});

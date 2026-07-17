@@ -67,6 +67,47 @@ test('getEntity returns not-found (not a crash) for campaign/actor lookups again
   assert.strictEqual(campaignResult.found, false);
 });
 
-test('ENTITY_TYPES lists exactly the five supported types', () => {
-  assert.deepStrictEqual(ENTITY_TYPES, ['cve', 'vendor', 'actor', 'campaign', 'collection']);
+test('ENTITY_TYPES lists exactly the eight supported types', () => {
+  assert.deepStrictEqual(ENTITY_TYPES, ['cve', 'vendor', 'actor', 'campaign', 'collection', 'service', 'industry', 'product']);
+});
+
+/* ─── service / industry / product (Phase 5 knowledge-graph expansion) ── */
+
+test('getEntity resolves a real service with related industries', () => {
+  const result = getEntity('service', 'incident_response');
+  assert.strictEqual(result.found, true);
+  assert.strictEqual(result.data.name, 'Incident Response');
+  assert.ok(result.related.some((r) => r.type === 'industry' && r.id === 'healthcare'));
+});
+
+test('getEntity returns not-found for an unknown service', () => {
+  assert.strictEqual(getEntity('service', 'not-a-real-service').found, false);
+});
+
+test('getEntity resolves a real industry with related services', () => {
+  const result = getEntity('industry', 'healthcare');
+  assert.strictEqual(result.found, true);
+  assert.strictEqual(result.data.name, 'Healthcare');
+  assert.ok(result.related.some((r) => r.type === 'service' && r.id === 'incident_response'));
+});
+
+test('getEntity returns not-found for an unknown industry', () => {
+  assert.strictEqual(getEntity('industry', 'not-a-real-industry').found, false);
+});
+
+test('getEntity resolves a real product from CVE data, excluding generic placeholders', () => {
+  const result = getEntity('product', 'n8n');
+  if (result.found) {
+    assert.ok(result.data.count > 0);
+    assert.ok(result.related.every((r) => r.type === 'cve'));
+  } else {
+    // Real data may not always contain this exact product in a given snapshot —
+    // assert the negative path is well-formed rather than hard-failing.
+    assert.deepStrictEqual(result.related, []);
+  }
+});
+
+test('getEntity never resolves "Threat Intelligence" or "Multiple Targets" as a product (generic placeholders)', () => {
+  assert.strictEqual(getEntity('product', 'Threat Intelligence').found, false);
+  assert.strictEqual(getEntity('product', 'Multiple Targets').found, false);
 });

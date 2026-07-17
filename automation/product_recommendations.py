@@ -44,6 +44,24 @@ SERVICES = {
         "name": "Detection Engineering",
         "description": "2,400+ Sigma · YARA · SIEM Rules",
     },
+    # Added for the managed-services catalog (Phase 5, Module 10). Not yet
+    # mirrored into monetization_injector.py's inject_services_block() —
+    # that block is a separate, already-published, revenue-critical HTML
+    # grid with no test coverage; touching it is out of scope here. These
+    # three are reachable via recommend_services()/the content-graph
+    # 'service' entity, not the legacy hardcoded CTA block.
+    "threat_hunting": {
+        "name": "Threat Hunting",
+        "description": "Proactive Compromise Assessment · TTP Sweeps",
+    },
+    "virtual_ciso": {
+        "name": "Virtual CISO",
+        "description": "Fractional Executive Security Leadership",
+    },
+    "security_architecture_review": {
+        "name": "Security Architecture Review",
+        "description": "Zero Trust · Cloud & Network Design Audit",
+    },
 }
 
 # Ordered by priority — first matching rule(s) win. Each rule maps a
@@ -58,10 +76,10 @@ RECOMMENDATION_RULES = [
     {"label": "APT", "services": ["soc_mssp", "detection_engineering"]},
     {"label": "AI Security", "services": ["ai_security_assessment", "ai_governance"]},
     {"label": "Malware Research", "services": ["incident_response", "detection_engineering"]},
-    {"label": "Cloud Security", "services": ["devsecops"]},
+    {"label": "Cloud Security", "services": ["devsecops", "security_architecture_review"]},
     {"label": "Supply Chain", "services": ["devsecops"]},
     {"label": "Detection Engineering", "services": ["detection_engineering"]},
-    {"label": "SOC Operations", "services": ["soc_mssp"]},
+    {"label": "SOC Operations", "services": ["soc_mssp", "threat_hunting"]},
     {"label": "Data Breach", "services": ["incident_response"]},
     {"label": "Incident Response", "services": ["incident_response"]},
     {"label": "Phishing", "services": ["soc_mssp"]},

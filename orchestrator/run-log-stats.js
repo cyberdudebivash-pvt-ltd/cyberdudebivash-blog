@@ -54,15 +54,30 @@ function summarizeRuns(limit = 30, logsDir = LOGS_DIR) {
       failed: r.failed || 0,
       skipped: r.skipped || 0,
       healthy: !(r.failed > 0 && r.published === 0),
+      circuitBreakerTripped: !!r.circuit_breaker_tripped,
+      failureCategories: r.failure_categories || {},
     }));
 
   const healthyCount = runs.filter((r) => r.healthy).length;
+
+  // Aggregate failure_categories across sampled runs (field added alongside
+  // the rate-limit circuit breaker — older run logs simply won't have it,
+  // which is fine, they just contribute nothing to the breakdown).
+  const failureCategoryTotals = {};
+  for (const run of runs) {
+    for (const [category, count] of Object.entries(run.failureCategories)) {
+      failureCategoryTotals[category] = (failureCategoryTotals[category] || 0) + count;
+    }
+  }
+
   return {
     sampledRuns: runs.length,
     healthyRuns: healthyCount,
     successRate: runs.length ? Math.round((healthyCount / runs.length) * 100) : null,
     totalPublished: runs.reduce((sum, r) => sum + r.published, 0),
     totalFailed: runs.reduce((sum, r) => sum + r.failed, 0),
+    circuitBreakerTrips: runs.filter((r) => r.circuitBreakerTripped).length,
+    failureCategoryTotals,
     mostRecent: runs[0] || null,
     runs,
   };
