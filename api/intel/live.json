@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T14:28:36.302Z",
+  "generated": "2026-07-17T14:31:40.125Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2358,
+  "total_published": 2360,
   "s2n_stats": {
     "passed": 95,
-    "suppressed": 41,
-    "avg_qs": 0.515
+    "suppressed": 40,
+    "avg_qs": 0.514
   },
   "items": [
     {
@@ -60,14 +60,14 @@
       }
     },
     {
-      "id": "CVE-2026-55578",
-      "title": "Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and n",
-      "description": "### Summary\n\nThe terminal feature in Pheditor uses an incomplete character blocklist to sanitize user-supplied commands before passing them to `shell_exec()`. After the fix for GHSA-9643-6xjp-vx57 (which added `$` to the blocklist), the characters `|` (single pipe), `` ` `` (backtick), and the newli",
+      "id": "CVE-2026-54540",
+      "title": "Pheditor has an authenticated terminal command whitelist bypass",
+      "description": "### Summary\n\nPheditor 2.0.4 has an authenticated terminal command whitelist bypass.\n\nThe terminal feature checks whether the submitted command starts with one of the configured `TERMINAL_COMMANDS` values, then passes the full command string to `shell_exec()`. Shell command substitution such as `$()`",
       "cvss": 8.8,
       "final_ps": 54,
       "quality_score": 0.593,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
+      "type": "SOCIAL_ENGINEERING",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -82,7 +82,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-55578"
+        "CVE-2026-54540"
       ],
       "ioc_count": 2,
       "refs": [],
@@ -178,90 +178,6 @@
           "+10 ransomware_confirmed",
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-54076",
-      "title": "ArcadeDB: Read-only users can mutate database schema (incomplete fix of CVE-2026-44221)",
-      "description": "### Impact\n\nThe fix for CVE-2026-44221 (GHSA-fxc7-fm93-6q77) added an `UPDATE_SCHEMA` authorization check to a single schema-mutating method (`LocalDocumentType.createProperty`). The remaining public schema mutators were left unchecked, so an authenticated identity (including a **read-only API token",
-      "cvss": 8.1,
-      "final_ps": 48,
-      "quality_score": 0.533,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54076",
-        "CVE-2026-44221"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.533"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-54077",
-      "title": "ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users",
-      "description": "### Impact\n\nThe SQL `IMPORT DATABASE` statement did not require administrative privileges and passed its source URL to the importer without validation. Any authenticated user with SQL command access (not only `root`/administrators) could therefore:\n\n- **Server-Side Request Forgery (CWE-918):** cause",
-      "cvss": 7.1,
-      "final_ps": 48,
-      "quality_score": 0.563,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54077"
-      ],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "ioc_presence=1 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.563"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -395,6 +311,88 @@
           "+10 CVSS≥9",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-59950",
+      "title": "MCP Python SDK: WebSocket server transport does not support Host/Origin validation",
+      "description": "### Summary\nIn affected versions, the deprecated WebSocket server transport (`mcp.server.websocket.websocket_server`) accepted the WebSocket handshake without applying any `Host` or `Origin` header validation. The `TransportSecuritySettings` mechanism that the SSE and Streamable HTTP transports use ",
+      "cvss": 7.5,
+      "final_ps": 47,
+      "quality_score": 0.533,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59950"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=0d (score=1.00)",
+          "QS=0.533"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-52870",
+      "title": "MCP Python SDK: Experimental task handlers allow any client to access and cancel other clients' tasks",
+      "description": "### Summary\nIn affected versions, the default request handlers installed by the experimental tasks feature (`server.experimental.enable_tasks()`) did not check which session created a task before acting on it. On a server with more than one connected client, any client could observe, read results fr",
+      "cvss": 7.6,
+      "final_ps": 47,
+      "quality_score": 0.533,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52870"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=0d (score=1.00)",
+          "QS=0.533"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4034,14 +4032,14 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-54540",
-      "title": "Pheditor has an authenticated terminal command whitelist bypass",
-      "description": "### Summary\n\nPheditor 2.0.4 has an authenticated terminal command whitelist bypass.\n\nThe terminal feature checks whether the submitted command starts with one of the configured `TERMINAL_COMMANDS` values, then passes the full command string to `shell_exec()`. Shell command substitution such as `$()`",
+      "id": "CVE-2026-55578",
+      "title": "Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and n",
+      "description": "### Summary\n\nThe terminal feature in Pheditor uses an incomplete character blocklist to sanitize user-supplied commands before passing them to `shell_exec()`. After the fix for GHSA-9643-6xjp-vx57 (which added `$` to the blocklist), the characters `|` (single pipe), `` ` `` (backtick), and the newli",
       "cvss": 8.8,
       "final_ps": 19,
       "quality_score": 0.478,
       "threat_level": "MEDIUM",
-      "type": "SOCIAL_ENGINEERING",
+      "type": "NEWS_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -4056,7 +4054,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-54540"
+        "CVE-2026-55578"
       ],
       "ioc_count": 2,
       "refs": [],
@@ -4077,14 +4075,14 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59950",
-      "title": "MCP Python SDK: WebSocket server transport does not support Host/Origin validation",
-      "description": "### Summary\nIn affected versions, the deprecated WebSocket server transport (`mcp.server.websocket.websocket_server`) accepted the WebSocket handshake without applying any `Host` or `Origin` header validation. The `TransportSecuritySettings` mechanism that the SSE and Streamable HTTP transports use ",
-      "cvss": 7.5,
+      "id": "CVE-2026-54076",
+      "title": "ArcadeDB: Read-only users can mutate database schema (incomplete fix of CVE-2026-44221)",
+      "description": "### Impact\n\nThe fix for CVE-2026-44221 (GHSA-fxc7-fm93-6q77) added an `UPDATE_SCHEMA` authorization check to a single schema-mutating method (`LocalDocumentType.createProperty`). The remaining public schema mutators were left unchecked, so an authenticated identity (including a **read-only API token",
+      "cvss": 8.1,
       "final_ps": 19,
       "quality_score": 0.478,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -4099,7 +4097,8 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-59950"
+        "CVE-2026-54076",
+        "CVE-2026-44221"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4120,10 +4119,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-52870",
-      "title": "MCP Python SDK: Experimental task handlers allow any client to access and cancel other clients' tasks",
-      "description": "### Summary\nIn affected versions, the default request handlers installed by the experimental tasks feature (`server.experimental.enable_tasks()`) did not check which session created a task before acting on it. On a server with more than one connected client, any client could observe, read results fr",
-      "cvss": 7.6,
+      "id": "CVE-2026-54077",
+      "title": "ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users",
+      "description": "### Impact\n\nThe SQL `IMPORT DATABASE` statement did not require administrative privileges and passed its source URL to the importer without validation. Any authenticated user with SQL command access (not only `root`/administrators) could therefore:\n\n- **Server-Side Request Forgery (CWE-918):** cause",
+      "cvss": 7.1,
       "final_ps": 19,
       "quality_score": 0.478,
       "threat_level": "MEDIUM",
@@ -4142,9 +4141,9 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-52870"
+        "CVE-2026-54077"
       ],
-      "ioc_count": 0,
+      "ioc_count": 1,
       "refs": [],
       "explanation": {
         "quality": [
@@ -4163,9 +4162,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-8075",
-      "title": "CVE-2026-8075 - Posting a malicious markdown image crashes the Mattermost Desktop App",
-      "description": "CVE-2026-8075 - Posting a malicious markdown image crashes the Mattermost Desktop App",
+      "id": "CVE-2026-13410",
+      "title": "CVE-2026-13410 Dancer::Plugin::Auth::Google versions through 0.07 for Perl have TLS verification disabled",
+      "description": "CVE-2026-13410 Dancer::Plugin::Auth::Google versions through 0.07 for Perl have TLS verification disabled",
       "cvss": 3.2,
       "final_ps": 18,
       "quality_score": 0.458,
@@ -4185,11 +4184,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-8075"
+        "CVE-2026-13410"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--b16dbd4efb2e898dc6349cc7.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--fc0b69075723b004a7e5c795.html"
       ],
       "explanation": {
         "quality": [
@@ -4208,9 +4207,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59695",
-      "title": "CVE-2026-59695 - Unbounded max_fee_per_gas in mpp Tempo fee-payer enables single-request wallet drain",
-      "description": "CVE-2026-59695 - Unbounded max_fee_per_gas in mpp Tempo fee-payer enables single-request wallet drain",
+      "id": "CVE-2026-9602",
+      "title": "CVE-2026-9602 - Mattermost Desktop App crashes when malformed arguments are provided to some exposed IPC methods",
+      "description": "CVE-2026-9602 - Mattermost Desktop App crashes when malformed arguments are provided to some exposed IPC methods",
       "cvss": 3.2,
       "final_ps": 18,
       "quality_score": 0.458,
@@ -4230,11 +4229,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-59695"
+        "CVE-2026-9602"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--6b80a70e6fb35df187184ce5.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--666ad6c6174d40f1fbcc02f5.html"
       ],
       "explanation": {
         "quality": [
@@ -4253,9 +4252,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59694",
-      "title": "CVE-2026-59694 - Unbounded access list in mpp Tempo fee-payer inflates gas cost per payment",
-      "description": "CVE-2026-59694 - Unbounded access list in mpp Tempo fee-payer inflates gas cost per payment",
+      "id": "CVE-2026-16008",
+      "title": "CVE-2026-16008 - sagold json-schema-library propertyDependencies.ts parsePropertyDependencies prototype pollution",
+      "description": "CVE-2026-16008 - sagold json-schema-library propertyDependencies.ts parsePropertyDependencies prototype pollution",
       "cvss": 3.2,
       "final_ps": 18,
       "quality_score": 0.458,
@@ -4275,11 +4274,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-59694"
+        "CVE-2026-16008"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--bf153110def036596c0d7c19.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--b92bf44b224c6eb9df2f6499.html"
       ],
       "explanation": {
         "quality": [
@@ -4298,21 +4297,21 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59252",
-      "title": "CVE-2026-59252 - Missing gas_limit validation in mpp Tempo fee-payer enables wallet drain",
-      "description": "CVE-2026-59252 - Missing gas_limit validation in mpp Tempo fee-payer enables wallet drain",
-      "cvss": 3.2,
+      "id": "CVE-2026-52724",
+      "title": "kuma-dp connects to control plane without verifying TLS certificate when no CA is configured",
+      "description": "When kuma-dp is started against an HTTPS control plane and the operator did not pass a CA certificate, the data plane connects with TLS peer verification disabled. The dataplane authentication token is sent over this unverified connection\n\n## Impact\n\nAn on-path attacker can intercept the dataplane a",
+      "cvss": 5.5,
       "final_ps": 18,
-      "quality_score": 0.458,
+      "quality_score": 0.438,
       "threat_level": "LOW",
-      "type": "CVE_REPORT",
+      "type": "NEWS_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4320,18 +4319,16 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-59252"
+        "CVE-2026-52724"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--07395a217366e983f27af288.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.55",
+          "data_confidence=0.45",
           "recency=0d (score=1.00)",
-          "QS=0.458"
+          "QS=0.438"
         ],
         "priority": [
           "base_ps=18 (no boosts)"
