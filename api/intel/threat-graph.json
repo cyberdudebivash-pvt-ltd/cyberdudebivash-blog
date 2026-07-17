@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-17T17:31:40.343Z",
+  "generated": "2026-07-17T18:01:48.111Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5328,
+    "total_nodes": 5422,
     "actors": 8,
-    "cves": 1101,
-    "campaigns": 470,
+    "cves": 1125,
+    "campaigns": 481,
     "malware": 0,
-    "iocs": 614,
-    "edges": 2333
+    "iocs": 661,
+    "edges": 2421
   },
   "nodes": {
     "actor:lockbit": {
@@ -1003,6 +1003,16 @@
         },
         {
           "target": "campaign:cluster-07038cbe",
+          "relationship": "executes",
+          "confidence": 0.85
+        },
+        {
+          "target": "SENTINELAPEX-91a9e8640659",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "campaign:cluster-af9325ae",
           "relationship": "executes",
           "confidence": 0.85
         }
@@ -40631,20 +40641,26 @@
     "CVE-2026-45337": {
       "id": "CVE-2026-45337",
       "type": "CVE",
-      "name": "Better Auth: Device authorization approve and deny accept any authenticated session while the user code is pending",
+      "name": "CVE-2026-45337: Better Auth is an authentication and authorization library for TypeScript. From 1.6.0 until 1.6.11, the deviceAuthorizat",
       "attributes": {
         "cvss": 7.6,
         "threat_level": "LOW",
-        "priority_score": 43,
+        "priority_score": 42,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "npm",
-        "product": "better-auth",
-        "published": "2026-06-04",
-        "type": "CVE_REPORT"
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "AI_SECURITY"
       },
-      "connections": []
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-45337",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
     },
     "CVE-2026-44496": {
       "id": "CVE-2026-44496",
@@ -85151,7 +85167,7 @@
     "CVE-2026-53516": {
       "id": "CVE-2026-53516",
       "type": "CVE",
-      "name": "Better Auth has an account takeover issue via OAuth auto-link to unverified pre-registered email",
+      "name": "CVE-2026-53516: Better Auth is an authentication and authorization library for TypeScript. Prior to 1.6.11, Better Auth's OAuth callback",
       "attributes": {
         "cvss": 8.3,
         "threat_level": "MEDIUM",
@@ -85159,48 +85175,71 @@
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "npm",
-        "product": "better-auth",
-        "published": "2026-07-07",
-        "type": "CVE_REPORT"
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "AI_SECURITY"
       },
-      "connections": []
+      "connections": [
+        {
+          "target": "ioc:domain:emailandpassword.requireemailverification",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-53516",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
     },
     "CVE-2026-53518": {
       "id": "CVE-2026-53518",
       "type": "CVE",
-      "name": "@better-auth/oauth-provider's OAuth authorization-code grant allows concurrent redemption when two token requests race the find-then-delete primitive",
+      "name": "CVE-2026-53518: Better Auth is an authentication and authorization library for TypeScript. From 1.6.0 until 1.6.11, the @better-auth/oau",
       "attributes": {
         "cvss": 8.1,
-        "threat_level": "MEDIUM",
-        "priority_score": 45,
+        "threat_level": "LOW",
+        "priority_score": 44,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "npm",
-        "product": "@better-auth/oauth-provider",
-        "published": "2026-07-07",
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
         "type": "CVE_REPORT"
       },
-      "connections": []
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-53518",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
     },
     "CVE-2026-53517": {
       "id": "CVE-2026-53517",
       "type": "CVE",
-      "name": "Better Auth: OAuth refresh-token rotation forks the token family on concurrent redemption",
+      "name": "CVE-2026-53517: Better Auth is an authentication and authorization library for TypeScript. From 1.4.8-beta.7 until 1.6.11, the @better-a",
       "attributes": {
         "cvss": 8.1,
-        "threat_level": "MEDIUM",
-        "priority_score": 45,
+        "threat_level": "LOW",
+        "priority_score": 44,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "npm",
-        "product": "@better-auth/oauth-provider",
-        "published": "2026-07-07",
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
         "type": "CVE_REPORT"
       },
-      "connections": []
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-53517",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
     },
     "GHSA-4c399171d08548c2": {
       "id": "GHSA-4c399171d08548c2",
@@ -85223,20 +85262,26 @@
     "CVE-2026-53514": {
       "id": "CVE-2026-53514",
       "type": "CVE",
-      "name": "Better Auth vulnerable to unauthorized invitation acceptance via unverified email match in organization plugin",
+      "name": "CVE-2026-53514: Better Auth is an authentication and authorization library for TypeScript. Prior to 1.6.11, and in 1.6.14 and later when",
       "attributes": {
         "cvss": 7.7,
         "threat_level": "LOW",
-        "priority_score": 43,
+        "priority_score": 42,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "npm",
-        "product": "better-auth",
-        "published": "2026-07-07",
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
         "type": "CVE_REPORT"
       },
-      "connections": []
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-53514",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
     },
     "DARKREADING-f0bcdbdbd3588e52": {
       "id": "DARKREADING-f0bcdbdbd3588e52",
@@ -99682,11 +99727,11 @@
     "CVE-2026-50454": {
       "id": "CVE-2026-50454",
       "type": "CVE",
-      "name": "Exploit for CVE-2026-50454",
+      "name": "Exploit for CVE-2026-50454 exploit",
       "attributes": {
         "cvss": 7.8,
         "threat_level": "HIGH",
-        "priority_score": 69,
+        "priority_score": 65,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
@@ -99718,6 +99763,11 @@
         },
         {
           "target": "ioc:indicator:CVE-2026-16009",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-50454",
           "relationship": "linked_to",
           "confidence": 1
         }
@@ -100483,7 +100533,7 @@
       "attributes": {
         "cvss": 7.8,
         "threat_level": "LOW",
-        "priority_score": 44,
+        "priority_score": 42,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
@@ -100515,11 +100565,11 @@
     "CVE-2026-50416": {
       "id": "CVE-2026-50416",
       "type": "CVE",
-      "name": "Exploit for CVE-2026-50416",
+      "name": "Exploit for CVE-2026-50416 exploit",
       "attributes": {
         "cvss": 3.3,
         "threat_level": "MEDIUM",
-        "priority_score": 50,
+        "priority_score": 46,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
@@ -100551,6 +100601,11 @@
         },
         {
           "target": "ioc:indicator:CVE-2026-16009",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-50416",
           "relationship": "linked_to",
           "confidence": 1
         }
@@ -101611,7 +101666,7 @@
         "first_seen": "2026-07-17",
         "last_seen": "2026-07-17",
         "confidence": 0.9,
-        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-50454 | 18 shared IOC(s) across items"
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-50454 | 1 shared IOC(s) across items"
       },
       "connections": [
         {
@@ -102072,10 +102127,10 @@
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "pip",
-        "product": "vllm",
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
         "published": "2026-07-17",
-        "type": "CVE_REPORT"
+        "type": "AI_SECURITY"
       },
       "connections": []
     },
@@ -102393,10 +102448,10 @@
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "pip",
-        "product": "vllm",
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
         "published": "2026-07-17",
-        "type": "CVE_REPORT"
+        "type": "AI_SECURITY"
       },
       "connections": []
     },
@@ -103025,12 +103080,12 @@
     "CVE-2026-16013": {
       "id": "CVE-2026-16013",
       "type": "CVE",
-      "name": "Low Security Vulnerability (CVE-2026-16013)",
+      "name": "CVE-2026-16013 - liftoff-sr CIPster cipepath.cc deserialize_symbolic out-of-bounds",
       "attributes": {
         "cvss": 5.3,
-        "threat_level": "LOW",
-        "priority_score": 38,
-        "exploited": false,
+        "threat_level": "MEDIUM",
+        "priority_score": 56,
+        "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
         "vendor": "Unknown Vendor",
@@ -103061,6 +103116,16 @@
         },
         {
           "target": "ioc:indicator:CVE-2026-15943",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:cipepath.cc",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-16013",
           "relationship": "linked_to",
           "confidence": 1
         }
@@ -103441,6 +103506,1742 @@
       "connections": [
         {
           "target": "CVE-2026-16014",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "SENTINELAPEX-d25bc0a22163": {
+      "id": "SENTINELAPEX-d25bc0a22163",
+      "type": "Intel",
+      "name": "In Other News: Iran Tracks US Military Phones, CrashStealer macOS Malware, CVD Blueprint",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "HIGH",
+        "priority_score": 84,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "RANSOMWARE"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:45.222.99.136",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:api-2833.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:sha256:0871f6b0e25c5d8fc81ec5a889044803a0eb8b8f61738c8f04",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:behavioral:DNS_beaconing:_regular_60-second_interval_queries_",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:ipv4:45.222.99.136": {
+      "id": "ioc:ipv4:45.222.99.136",
+      "type": "IOC",
+      "name": "45.222.99.136",
+      "attributes": {
+        "ioc_type": "ipv4",
+        "confidence": 74,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:api-2833.com": {
+      "id": "ioc:domain:api-2833.com",
+      "type": "IOC",
+      "name": "api-2833.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 78,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:sha256:0871f6b0e25c5d8fc81ec5a889044803a0eb8b8f61738c8f04": {
+      "id": "ioc:sha256:0871f6b0e25c5d8fc81ec5a889044803a0eb8b8f61738c8f04",
+      "type": "IOC",
+      "name": "0871f6b0e25c5d8fc81ec5a889044803a0eb8b8f61738c8f045a29a16b957369",
+      "attributes": {
+        "ioc_type": "sha256",
+        "confidence": 84,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:behavioral:DNS_beaconing:_regular_60-second_interval_queries_": {
+      "id": "ioc:behavioral:DNS_beaconing:_regular_60-second_interval_queries_",
+      "type": "IOC",
+      "name": "DNS beaconing: regular 60-second interval queries to single domain",
+      "attributes": {
+        "ioc_type": "behavioral",
+        "confidence": 82,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-92aa46fed79f": {
+      "id": "SENTINELAPEX-92aa46fed79f",
+      "type": "Intel",
+      "name": "New Windows LegacyHive zero-day gives hackers admin privileges",
+      "attributes": {
+        "cvss": 9.5,
+        "threat_level": "HIGH",
+        "priority_score": 81,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-50454": {
+      "id": "ioc:indicator:CVE-2026-50454",
+      "type": "IOC",
+      "name": "CVE-2026-50454",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-faa7ec053684": {
+      "id": "SENTINELAPEX-faa7ec053684",
+      "type": "Intel",
+      "name": "metaExploit exploit",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-63eeafc12156": {
+      "id": "SENTINELAPEX-63eeafc12156",
+      "type": "Intel",
+      "name": "Exploit for Out-of-bounds Read in Openssl exploit",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-3947c01466fd": {
+      "id": "SENTINELAPEX-3947c01466fd",
+      "type": "Intel",
+      "name": "Windows-AppResolver-LPE-PoC exploit",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-0a7ea634e001": {
+      "id": "SENTINELAPEX-0a7ea634e001",
+      "type": "Intel",
+      "name": "Hack-The-Box-Exploit-Ports-and-Fixes exploit",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-c9f27d0cd9d1": {
+      "id": "SENTINELAPEX-c9f27d0cd9d1",
+      "type": "Intel",
+      "name": "Spirals ransomware locks down victim systems in under 24 hours",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "RANSOMWARE"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:193.131.229.129",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:portal-1786.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:sha256:d2e9a7a4b2becf9d82a2f9671a4510310ae8bc270b17658f97",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:behavioral:Shadow_copy_deletion:_vssadmin_delete_shadows__all",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:ipv4:193.131.229.129": {
+      "id": "ioc:ipv4:193.131.229.129",
+      "type": "IOC",
+      "name": "193.131.229.129",
+      "attributes": {
+        "ioc_type": "ipv4",
+        "confidence": 74,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:portal-1786.com": {
+      "id": "ioc:domain:portal-1786.com",
+      "type": "IOC",
+      "name": "portal-1786.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 82,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:sha256:d2e9a7a4b2becf9d82a2f9671a4510310ae8bc270b17658f97": {
+      "id": "ioc:sha256:d2e9a7a4b2becf9d82a2f9671a4510310ae8bc270b17658f97",
+      "type": "IOC",
+      "name": "d2e9a7a4b2becf9d82a2f9671a4510310ae8bc270b17658f9723332b21f2ed7d",
+      "attributes": {
+        "ioc_type": "sha256",
+        "confidence": 89,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:behavioral:Shadow_copy_deletion:_vssadmin_delete_shadows__all": {
+      "id": "ioc:behavioral:Shadow_copy_deletion:_vssadmin_delete_shadows__all",
+      "type": "IOC",
+      "name": "Shadow copy deletion: vssadmin delete shadows /all /quiet",
+      "attributes": {
+        "ioc_type": "behavioral",
+        "confidence": 96,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-91a9e8640659": {
+      "id": "SENTINELAPEX-91a9e8640659",
+      "type": "Intel",
+      "name": "Armenia Detains Russian Tourist on U.S. Warrant for REvil Hacker, Lawyers Say Wrong Man",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "RANSOMWARE"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:91.57.11.68",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:api-9177.io",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:sha256:4e644571e157d268b0684f7949f1922b7a667c04068c49969c",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:behavioral:PowerShell_encoded_command_execution:_-EncodedComm",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:ipv4:91.57.11.68": {
+      "id": "ioc:ipv4:91.57.11.68",
+      "type": "IOC",
+      "name": "91.57.11.68",
+      "attributes": {
+        "ioc_type": "ipv4",
+        "confidence": 72,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:api-9177.io": {
+      "id": "ioc:domain:api-9177.io",
+      "type": "IOC",
+      "name": "api-9177.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 85,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:sha256:4e644571e157d268b0684f7949f1922b7a667c04068c49969c": {
+      "id": "ioc:sha256:4e644571e157d268b0684f7949f1922b7a667c04068c49969c",
+      "type": "IOC",
+      "name": "4e644571e157d268b0684f7949f1922b7a667c04068c49969ca00e275a88f1ee",
+      "attributes": {
+        "ioc_type": "sha256",
+        "confidence": 90,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-58658": {
+      "id": "CVE-2026-58658",
+      "type": "CVE",
+      "name": "CVE-2026-58658: GPUStack through 2.2.1, fixed in commit 4e20551, contains an unauthenticated information disclosure vulnerability that a",
+      "attributes": {
+        "cvss": 8.2,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-58658",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-58658": {
+      "id": "ioc:indicator:CVE-2026-58658",
+      "type": "IOC",
+      "name": "CVE-2026-58658",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-56687": {
+      "id": "CVE-2026-56687",
+      "type": "CVE",
+      "name": "CVE-2026-56687: Dell ThinOS 10, versions prior to 2605_10.2100, contain an Obsolete Feature in UI vulnerability. A low privileged attack",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-56687",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-56687": {
+      "id": "ioc:indicator:CVE-2026-56687",
+      "type": "IOC",
+      "name": "CVE-2026-56687",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-34760": {
+      "id": "CVE-2026-34760",
+      "type": "CVE",
+      "name": "vLLM: Processing differential in multi-channel audio downmixing enables hidden-input/moderation bypass for audio models",
+      "attributes": {
+        "cvss": 5.9,
+        "threat_level": "MEDIUM",
+        "priority_score": 62,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:af8c839fb15317fa2712ea66e7a22da6a9267b32",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:af8c839fb15317fa2712ea66e7a22da6a9267b32": {
+      "id": "ioc:sha1:af8c839fb15317fa2712ea66e7a22da6a9267b32",
+      "type": "IOC",
+      "name": "af8c839fb15317fa2712ea66e7a22da6a9267b32",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-16015": {
+      "id": "CVE-2026-16015",
+      "type": "CVE",
+      "name": "CVE-2026-16015 - poco-ai poco-claw executor_manager API tasks.py create_task missing authentication",
+      "attributes": {
+        "cvss": 6.3,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-16015",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-16015": {
+      "id": "ioc:indicator:CVE-2026-16015",
+      "type": "IOC",
+      "name": "CVE-2026-16015",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:cipepath.cc": {
+      "id": "ioc:domain:cipepath.cc",
+      "type": "IOC",
+      "name": "cipepath.cc",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 32.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-16013": {
+      "id": "ioc:indicator:CVE-2026-16013",
+      "type": "IOC",
+      "name": "CVE-2026-16013",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-56087": {
+      "id": "CVE-2026-56087",
+      "type": "CVE",
+      "name": "CVE-2026-56087: Dell ThinOS 10, versions prior to 2605_10.2100 contain a Protection Mechanism Failure vulnerability. An attacker with ph",
+      "attributes": {
+        "cvss": 6.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 56,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-56087",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-56087": {
+      "id": "ioc:indicator:CVE-2026-56087",
+      "type": "IOC",
+      "name": "CVE-2026-56087",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-63096": {
+      "id": "CVE-2026-63096",
+      "type": "CVE",
+      "name": "CVE-2026-63096 - Dendrite 0.13.8 SSRF via Unauthenticated Legacy Media Download Endpoint",
+      "attributes": {
+        "cvss": 9.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 54,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:chronoengine.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:joomdonation.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-58148",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-58149",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:domain:chronoengine.com": {
+      "id": "ioc:domain:chronoengine.com",
+      "type": "IOC",
+      "name": "chronoengine.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 32.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:joomdonation.com": {
+      "id": "ioc:domain:joomdonation.com",
+      "type": "IOC",
+      "name": "joomdonation.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 32.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-58148": {
+      "id": "ioc:indicator:CVE-2026-58148",
+      "type": "IOC",
+      "name": "CVE-2026-58148",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-58149": {
+      "id": "ioc:indicator:CVE-2026-58149",
+      "type": "IOC",
+      "name": "CVE-2026-58149",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-63098": {
+      "id": "CVE-2026-63098",
+      "type": "CVE",
+      "name": "CVE-2026-63098 - TheHive 4.1.24 Unauthenticated Information Disclosure via /api/status Endpoint",
+      "attributes": {
+        "cvss": 9.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 54,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:chronoengine.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:joomdonation.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-58148",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-58149",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "SENTINELAPEX-8d4fe8613f9b": {
+      "id": "SENTINELAPEX-8d4fe8613f9b",
+      "type": "Intel",
+      "name": "New Windows LegacyHive 0-Day Vulnerability Allows Hackers to Gain Admin Access",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 54,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "CVE-2026-63093": {
+      "id": "CVE-2026-63093",
+      "type": "CVE",
+      "name": "CVE-2026-63093 - Cursor for Windows 3.2.16 RCE via Malicious git.exe in Workspace",
+      "attributes": {
+        "cvss": 8.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:chronoengine.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:joomdonation.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-14741",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-15343",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-14741": {
+      "id": "ioc:indicator:CVE-2026-14741",
+      "type": "IOC",
+      "name": "CVE-2026-14741",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-15343": {
+      "id": "ioc:indicator:CVE-2026-15343",
+      "type": "IOC",
+      "name": "CVE-2026-15343",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-53513": {
+      "id": "CVE-2026-53513",
+      "type": "CVE",
+      "name": "CVE-2026-53513: Better Auth is an authentication and authorization library for TypeScript. Prior to 1.6.11, the @better-auth/sso plugin'",
+      "attributes": {
+        "cvss": 9.6,
+        "threat_level": "MEDIUM",
+        "priority_score": 51,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:oidcconfig.userinfoendpoint",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-53513",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:domain:oidcconfig.userinfoendpoint": {
+      "id": "ioc:domain:oidcconfig.userinfoendpoint",
+      "type": "IOC",
+      "name": "oidcconfig.userinfoendpoint",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 32.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-53513": {
+      "id": "ioc:indicator:CVE-2026-53513",
+      "type": "IOC",
+      "name": "CVE-2026-53513",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-63094": {
+      "id": "CVE-2026-63094",
+      "type": "CVE",
+      "name": "CVE-2026-63094 - SigNoz 0.133.0 SSO OAuth State Manipulation Session Token Theft",
+      "attributes": {
+        "cvss": 8.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:chronoengine.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:joomdonation.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-14741",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-15343",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "CVE-2024-23564": {
+      "id": "CVE-2024-23564",
+      "type": "CVE",
+      "name": "CVE-2024-23564 - HCL Aftermarket EPC Business Logic Vulnerability",
+      "attributes": {
+        "cvss": 9.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 50,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2024-23564",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2024-23564": {
+      "id": "ioc:indicator:CVE-2024-23564",
+      "type": "IOC",
+      "name": "CVE-2024-23564",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-15343": {
+      "id": "CVE-2026-15343",
+      "type": "CVE",
+      "name": "CVE-2026-15343 - Path traversal vulnerability in GitHub Enterprise Server allowed writing files to arbitrary repository paths, including GitHub Actions workflow files, via unchecked Dependabot depende",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:chronoengine.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:joomdonation.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-14741",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-15343",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "CVE-2026-15783": {
+      "id": "CVE-2026-15783",
+      "type": "CVE",
+      "name": "CVE-2026-15783 - Missing Authorization vulnerability was identified in GitHub Enterprise Server that allowed reading private repository metadata via delegated bypass rule suites",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:chronoengine.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:joomdonation.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-15783",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-58148",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-15783": {
+      "id": "ioc:indicator:CVE-2026-15783",
+      "type": "IOC",
+      "name": "CVE-2026-15783",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-53512": {
+      "id": "CVE-2026-53512",
+      "type": "CVE",
+      "name": "CVE-2026-53512: Better Auth is an authentication and authorization library for TypeScript. Prior to 1.6.11, the legacy oidcProvider and",
+      "attributes": {
+        "cvss": 9.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 48,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-53512",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-53512": {
+      "id": "ioc:indicator:CVE-2026-53512",
+      "type": "IOC",
+      "name": "CVE-2026-53512",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-50416": {
+      "id": "ioc:indicator:CVE-2026-50416",
+      "type": "IOC",
+      "name": "CVE-2026-50416",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:emailandpassword.requireemailverification": {
+      "id": "ioc:domain:emailandpassword.requireemailverification",
+      "type": "IOC",
+      "name": "emailandpassword.requireemailverification",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 32.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-53516": {
+      "id": "ioc:indicator:CVE-2026-53516",
+      "type": "IOC",
+      "name": "CVE-2026-53516",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-8396": {
+      "id": "CVE-2026-8396",
+      "type": "CVE",
+      "name": "CVE-2026-8396 - XXE in Netcad's NetGIS",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-8396",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-8396": {
+      "id": "ioc:indicator:CVE-2026-8396",
+      "type": "IOC",
+      "name": "CVE-2026-8396",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-7488": {
+      "id": "CVE-2026-7488",
+      "type": "CVE",
+      "name": "CVE-2026-7488 - Sensitive Data Exposure in IKAS Technologies' E-Commerce",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-7488",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-7488": {
+      "id": "ioc:indicator:CVE-2026-7488",
+      "type": "IOC",
+      "name": "CVE-2026-7488",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-68df8efd768e": {
+      "id": "SENTINELAPEX-68df8efd768e",
+      "type": "Intel",
+      "name": "AWS Cost Explorer Bug Shows Trillion-Dollar Billing Estimates",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-ee27bbed3050": {
+      "id": "SENTINELAPEX-ee27bbed3050",
+      "type": "Intel",
+      "name": "The Race to Field Military Autonomy Is On, Can Trusted Information Infrastructure Keep Pace?",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-53517": {
+      "id": "ioc:indicator:CVE-2026-53517",
+      "type": "IOC",
+      "name": "CVE-2026-53517",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-58660": {
+      "id": "CVE-2026-58660",
+      "type": "CVE",
+      "name": "CVE-2026-58660: Kanboard through 1.2.52, fixed in commit 564cc30, BoardAjaxController save() method (used by the kanban board drag-and-d",
+      "attributes": {
+        "cvss": 8.1,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-58660",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-58660": {
+      "id": "ioc:indicator:CVE-2026-58660",
+      "type": "IOC",
+      "name": "CVE-2026-58660",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-53518": {
+      "id": "ioc:indicator:CVE-2026-53518",
+      "type": "IOC",
+      "name": "CVE-2026-53518",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-58659": {
+      "id": "CVE-2026-58659",
+      "type": "CVE",
+      "name": "CVE-2026-58659: PyTorch Lightning through 2.6.5, fixed in commit d710d68, contains a remote code execution vulnerability in the _load_st",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-58659",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-58659": {
+      "id": "ioc:indicator:CVE-2026-58659",
+      "type": "IOC",
+      "name": "CVE-2026-58659",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-53515": {
+      "id": "CVE-2026-53515",
+      "type": "CVE",
+      "name": "CVE-2026-53515: Better Auth is an authentication and authorization library for TypeScript. From 1.2.10 until 1.6.11, the @better-auth/ss",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:indicator:CVE-2026-53515",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-53515": {
+      "id": "ioc:indicator:CVE-2026-53515",
+      "type": "IOC",
+      "name": "CVE-2026-53515",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-55646": {
+      "id": "CVE-2026-55646",
+      "type": "CVE",
+      "name": "vLLM: Speech-to-text upload size limit is enforced after full UploadFile read",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "CVE-2026-51081": {
+      "id": "CVE-2026-51081",
+      "type": "CVE",
+      "name": "CVE-2026-51081 - Proxmox Virtual Environment Cross-Site Scripting Vulnerability",
+      "attributes": {
+        "cvss": 6.1,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:chronoengine.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:joomdonation.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-14741",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-15343",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:indicator:CVE-2026-53514": {
+      "id": "ioc:indicator:CVE-2026-53514",
+      "type": "IOC",
+      "name": "CVE-2026-53514",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:indicator:CVE-2026-45337": {
+      "id": "ioc:indicator:CVE-2026-45337",
+      "type": "IOC",
+      "name": "CVE-2026-45337",
+      "attributes": {
+        "ioc_type": "indicator",
+        "confidence": 23.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "CVE-2026-58148": {
+      "id": "CVE-2026-58148",
+      "type": "CVE",
+      "name": "CVE-2026-58148 - Joomla Extension - chronoengine.com - Stored XSS in ChronoForms extension for Joomla < 8.0.53",
+      "attributes": {
+        "cvss": 6.1,
+        "threat_level": "LOW",
+        "priority_score": 40,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:chronoengine.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-58148",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "CVE-2026-16089": {
+      "id": "CVE-2026-16089",
+      "type": "CVE",
+      "name": "CVE-2026-16089 - Keycloak-services: keycloak-services: authorization codes can be retargeted to another client session",
+      "attributes": {
+        "cvss": 5.4,
+        "threat_level": "LOW",
+        "priority_score": 39,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:chronoengine.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:joomdonation.com",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-14741",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:indicator:CVE-2026-15343",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "BLEEPINGCOMPUTER-68dcc1f4937ae734": {
+      "id": "BLEEPINGCOMPUTER-68dcc1f4937ae734",
+      "type": "Intel",
+      "name": "HollowByte DDoS flaw bloats OpenSSL server memory with 11-byte payload",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-50562": {
+      "id": "CVE-2026-50562",
+      "type": "CVE",
+      "name": "CVE-2026-50562: FastGPT is a knowledge-based AI application platform. At commit 22ebfacbb43311e9b73294040ae0eb87390c6bba and earlier, ar",
+      "attributes": {
+        "cvss": 5.5,
+        "threat_level": "LOW",
+        "priority_score": 37,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-15",
+        "type": "AI_SECURITY"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:22ebfacbb43311e9b73294040ae0eb87390c6bba",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:preview-docs-build.yml",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:preview-docs-push.yml",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:preview-fastgpt-build.yml",
+          "relationship": "linked_to",
+          "confidence": 1
+        },
+        {
+          "target": "ioc:domain:preview-fastgpt-push.yml",
+          "relationship": "linked_to",
+          "confidence": 1
+        }
+      ]
+    },
+    "ioc:sha1:22ebfacbb43311e9b73294040ae0eb87390c6bba": {
+      "id": "ioc:sha1:22ebfacbb43311e9b73294040ae0eb87390c6bba",
+      "type": "IOC",
+      "name": "22ebfacbb43311e9b73294040ae0eb87390c6bba",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 38.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:preview-docs-build.yml": {
+      "id": "ioc:domain:preview-docs-build.yml",
+      "type": "IOC",
+      "name": "preview-docs-build.yml",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 32.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:preview-docs-push.yml": {
+      "id": "ioc:domain:preview-docs-push.yml",
+      "type": "IOC",
+      "name": "preview-docs-push.yml",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 32.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:preview-fastgpt-build.yml": {
+      "id": "ioc:domain:preview-fastgpt-build.yml",
+      "type": "IOC",
+      "name": "preview-fastgpt-build.yml",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 32.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "ioc:domain:preview-fastgpt-push.yml": {
+      "id": "ioc:domain:preview-fastgpt-push.yml",
+      "type": "IOC",
+      "name": "preview-fastgpt-push.yml",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 32.5,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "campaign:cluster-b6f7bf3b": {
+      "id": "campaign:cluster-b6f7bf3b",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 5 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-d25bc0a22163",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-3b0dea13": {
+      "id": "campaign:cluster-3b0dea13",
+      "type": "Campaign",
+      "name": "Unknown Unknown Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-92aa46fed79f",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-561fb50b": {
+      "id": "campaign:cluster-561fb50b",
+      "type": "Campaign",
+      "name": "Unknown Unknown Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-faa7ec053684",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-966f1978": {
+      "id": "campaign:cluster-966f1978",
+      "type": "Campaign",
+      "name": "Unknown Unknown Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-63eeafc12156",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-8fda08f6": {
+      "id": "campaign:cluster-8fda08f6",
+      "type": "Campaign",
+      "name": "Unknown Unknown Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-3947c01466fd",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-c723ff9c": {
+      "id": "campaign:cluster-c723ff9c",
+      "type": "Campaign",
+      "name": "Unknown Unknown Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-0a7ea634e001",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-1bb7146f": {
+      "id": "campaign:cluster-1bb7146f",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 5 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-c9f27d0cd9d1",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-af9325ae": {
+      "id": "campaign:cluster-af9325ae",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 5 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-91a9e8640659",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-58658": {
+      "id": "campaign:cve-2026-58658",
+      "type": "Campaign",
+      "name": "Unknown Unknown Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-15",
+        "last_seen": "2026-07-15",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-58658 | 1 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-58658",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-56687": {
+      "id": "campaign:cve-2026-56687",
+      "type": "Campaign",
+      "name": "Unknown Unknown Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-15",
+        "last_seen": "2026-07-15",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-56687 | 1 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-56687",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-34760": {
+      "id": "campaign:cve-2026-34760",
+      "type": "Campaign",
+      "name": "Unknown Unknown Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-34760 | 2 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-34760",
           "relationship": "includes",
           "confidence": 1
         }
@@ -124478,6 +126279,798 @@
       "id": "campaign:cve-2026-16014→includes→CVE-2026-16014",
       "source": "campaign:cve-2026-16014",
       "target": "CVE-2026-16014",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-d25bc0a22163→linked_to→ioc:ipv4:45.222.99.136",
+      "source": "SENTINELAPEX-d25bc0a22163",
+      "target": "ioc:ipv4:45.222.99.136",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-d25bc0a22163→linked_to→ioc:domain:api-2833.com",
+      "source": "SENTINELAPEX-d25bc0a22163",
+      "target": "ioc:domain:api-2833.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-d25bc0a22163→linked_to→ioc:sha256:0871f6b0e25c5d8fc81ec5a889044803a0eb8b8f61738c8f04",
+      "source": "SENTINELAPEX-d25bc0a22163",
+      "target": "ioc:sha256:0871f6b0e25c5d8fc81ec5a889044803a0eb8b8f61738c8f04",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-d25bc0a22163→linked_to→ioc:behavioral:DNS_beaconing:_regular_60-second_interval_queries_",
+      "source": "SENTINELAPEX-d25bc0a22163",
+      "target": "ioc:behavioral:DNS_beaconing:_regular_60-second_interval_queries_",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-50454→linked_to→ioc:indicator:CVE-2026-50454",
+      "source": "CVE-2026-50454",
+      "target": "ioc:indicator:CVE-2026-50454",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-c9f27d0cd9d1→linked_to→ioc:ipv4:193.131.229.129",
+      "source": "SENTINELAPEX-c9f27d0cd9d1",
+      "target": "ioc:ipv4:193.131.229.129",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-c9f27d0cd9d1→linked_to→ioc:domain:portal-1786.com",
+      "source": "SENTINELAPEX-c9f27d0cd9d1",
+      "target": "ioc:domain:portal-1786.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-c9f27d0cd9d1→linked_to→ioc:sha256:d2e9a7a4b2becf9d82a2f9671a4510310ae8bc270b17658f97",
+      "source": "SENTINELAPEX-c9f27d0cd9d1",
+      "target": "ioc:sha256:d2e9a7a4b2becf9d82a2f9671a4510310ae8bc270b17658f97",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-c9f27d0cd9d1→linked_to→ioc:behavioral:Shadow_copy_deletion:_vssadmin_delete_shadows__all",
+      "source": "SENTINELAPEX-c9f27d0cd9d1",
+      "target": "ioc:behavioral:Shadow_copy_deletion:_vssadmin_delete_shadows__all",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "actor:russia-nexus-ransomware→exploits→SENTINELAPEX-91a9e8640659",
+      "source": "actor:russia-nexus-ransomware",
+      "target": "SENTINELAPEX-91a9e8640659",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-91a9e8640659→linked_to→ioc:ipv4:91.57.11.68",
+      "source": "SENTINELAPEX-91a9e8640659",
+      "target": "ioc:ipv4:91.57.11.68",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-91a9e8640659→linked_to→ioc:domain:api-9177.io",
+      "source": "SENTINELAPEX-91a9e8640659",
+      "target": "ioc:domain:api-9177.io",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-91a9e8640659→linked_to→ioc:sha256:4e644571e157d268b0684f7949f1922b7a667c04068c49969c",
+      "source": "SENTINELAPEX-91a9e8640659",
+      "target": "ioc:sha256:4e644571e157d268b0684f7949f1922b7a667c04068c49969c",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-91a9e8640659→linked_to→ioc:behavioral:PowerShell_encoded_command_execution:_-EncodedComm",
+      "source": "SENTINELAPEX-91a9e8640659",
+      "target": "ioc:behavioral:PowerShell_encoded_command_execution:_-EncodedComm",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-58658→linked_to→ioc:indicator:CVE-2026-58658",
+      "source": "CVE-2026-58658",
+      "target": "ioc:indicator:CVE-2026-58658",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-56687→linked_to→ioc:indicator:CVE-2026-56687",
+      "source": "CVE-2026-56687",
+      "target": "ioc:indicator:CVE-2026-56687",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-34760→linked_to→ioc:sha1:af8c839fb15317fa2712ea66e7a22da6a9267b32",
+      "source": "CVE-2026-34760",
+      "target": "ioc:sha1:af8c839fb15317fa2712ea66e7a22da6a9267b32",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-16015→linked_to→ioc:indicator:CVE-2026-16015",
+      "source": "CVE-2026-16015",
+      "target": "ioc:indicator:CVE-2026-16015",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-16013→linked_to→ioc:domain:cipepath.cc",
+      "source": "CVE-2026-16013",
+      "target": "ioc:domain:cipepath.cc",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-16013→linked_to→ioc:indicator:CVE-2026-16013",
+      "source": "CVE-2026-16013",
+      "target": "ioc:indicator:CVE-2026-16013",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-56087→linked_to→ioc:indicator:CVE-2026-56087",
+      "source": "CVE-2026-56087",
+      "target": "ioc:indicator:CVE-2026-56087",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63096→linked_to→ioc:domain:chronoengine.com",
+      "source": "CVE-2026-63096",
+      "target": "ioc:domain:chronoengine.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63096→linked_to→ioc:domain:joomdonation.com",
+      "source": "CVE-2026-63096",
+      "target": "ioc:domain:joomdonation.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63096→linked_to→ioc:indicator:CVE-2026-58148",
+      "source": "CVE-2026-63096",
+      "target": "ioc:indicator:CVE-2026-58148",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63096→linked_to→ioc:indicator:CVE-2026-58149",
+      "source": "CVE-2026-63096",
+      "target": "ioc:indicator:CVE-2026-58149",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63098→linked_to→ioc:domain:chronoengine.com",
+      "source": "CVE-2026-63098",
+      "target": "ioc:domain:chronoengine.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63098→linked_to→ioc:domain:joomdonation.com",
+      "source": "CVE-2026-63098",
+      "target": "ioc:domain:joomdonation.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63098→linked_to→ioc:indicator:CVE-2026-58148",
+      "source": "CVE-2026-63098",
+      "target": "ioc:indicator:CVE-2026-58148",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63098→linked_to→ioc:indicator:CVE-2026-58149",
+      "source": "CVE-2026-63098",
+      "target": "ioc:indicator:CVE-2026-58149",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63093→linked_to→ioc:domain:chronoengine.com",
+      "source": "CVE-2026-63093",
+      "target": "ioc:domain:chronoengine.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63093→linked_to→ioc:domain:joomdonation.com",
+      "source": "CVE-2026-63093",
+      "target": "ioc:domain:joomdonation.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63093→linked_to→ioc:indicator:CVE-2026-14741",
+      "source": "CVE-2026-63093",
+      "target": "ioc:indicator:CVE-2026-14741",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63093→linked_to→ioc:indicator:CVE-2026-15343",
+      "source": "CVE-2026-63093",
+      "target": "ioc:indicator:CVE-2026-15343",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53513→linked_to→ioc:domain:oidcconfig.userinfoendpoint",
+      "source": "CVE-2026-53513",
+      "target": "ioc:domain:oidcconfig.userinfoendpoint",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53513→linked_to→ioc:indicator:CVE-2026-53513",
+      "source": "CVE-2026-53513",
+      "target": "ioc:indicator:CVE-2026-53513",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63094→linked_to→ioc:domain:chronoengine.com",
+      "source": "CVE-2026-63094",
+      "target": "ioc:domain:chronoengine.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63094→linked_to→ioc:domain:joomdonation.com",
+      "source": "CVE-2026-63094",
+      "target": "ioc:domain:joomdonation.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63094→linked_to→ioc:indicator:CVE-2026-14741",
+      "source": "CVE-2026-63094",
+      "target": "ioc:indicator:CVE-2026-14741",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63094→linked_to→ioc:indicator:CVE-2026-15343",
+      "source": "CVE-2026-63094",
+      "target": "ioc:indicator:CVE-2026-15343",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2024-23564→linked_to→ioc:indicator:CVE-2024-23564",
+      "source": "CVE-2024-23564",
+      "target": "ioc:indicator:CVE-2024-23564",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-15343→linked_to→ioc:domain:chronoengine.com",
+      "source": "CVE-2026-15343",
+      "target": "ioc:domain:chronoengine.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-15343→linked_to→ioc:domain:joomdonation.com",
+      "source": "CVE-2026-15343",
+      "target": "ioc:domain:joomdonation.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-15343→linked_to→ioc:indicator:CVE-2026-14741",
+      "source": "CVE-2026-15343",
+      "target": "ioc:indicator:CVE-2026-14741",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-15343→linked_to→ioc:indicator:CVE-2026-15343",
+      "source": "CVE-2026-15343",
+      "target": "ioc:indicator:CVE-2026-15343",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-15783→linked_to→ioc:domain:chronoengine.com",
+      "source": "CVE-2026-15783",
+      "target": "ioc:domain:chronoengine.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-15783→linked_to→ioc:domain:joomdonation.com",
+      "source": "CVE-2026-15783",
+      "target": "ioc:domain:joomdonation.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-15783→linked_to→ioc:indicator:CVE-2026-15783",
+      "source": "CVE-2026-15783",
+      "target": "ioc:indicator:CVE-2026-15783",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-15783→linked_to→ioc:indicator:CVE-2026-58148",
+      "source": "CVE-2026-15783",
+      "target": "ioc:indicator:CVE-2026-58148",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53512→linked_to→ioc:indicator:CVE-2026-53512",
+      "source": "CVE-2026-53512",
+      "target": "ioc:indicator:CVE-2026-53512",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-50416→linked_to→ioc:indicator:CVE-2026-50416",
+      "source": "CVE-2026-50416",
+      "target": "ioc:indicator:CVE-2026-50416",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53516→linked_to→ioc:domain:emailandpassword.requireemailverification",
+      "source": "CVE-2026-53516",
+      "target": "ioc:domain:emailandpassword.requireemailverification",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53516→linked_to→ioc:indicator:CVE-2026-53516",
+      "source": "CVE-2026-53516",
+      "target": "ioc:indicator:CVE-2026-53516",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-8396→linked_to→ioc:indicator:CVE-2026-8396",
+      "source": "CVE-2026-8396",
+      "target": "ioc:indicator:CVE-2026-8396",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-7488→linked_to→ioc:indicator:CVE-2026-7488",
+      "source": "CVE-2026-7488",
+      "target": "ioc:indicator:CVE-2026-7488",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53517→linked_to→ioc:indicator:CVE-2026-53517",
+      "source": "CVE-2026-53517",
+      "target": "ioc:indicator:CVE-2026-53517",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-58660→linked_to→ioc:indicator:CVE-2026-58660",
+      "source": "CVE-2026-58660",
+      "target": "ioc:indicator:CVE-2026-58660",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53518→linked_to→ioc:indicator:CVE-2026-53518",
+      "source": "CVE-2026-53518",
+      "target": "ioc:indicator:CVE-2026-53518",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-58659→linked_to→ioc:indicator:CVE-2026-58659",
+      "source": "CVE-2026-58659",
+      "target": "ioc:indicator:CVE-2026-58659",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53515→linked_to→ioc:indicator:CVE-2026-53515",
+      "source": "CVE-2026-53515",
+      "target": "ioc:indicator:CVE-2026-53515",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-51081→linked_to→ioc:domain:chronoengine.com",
+      "source": "CVE-2026-51081",
+      "target": "ioc:domain:chronoengine.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-51081→linked_to→ioc:domain:joomdonation.com",
+      "source": "CVE-2026-51081",
+      "target": "ioc:domain:joomdonation.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-51081→linked_to→ioc:indicator:CVE-2026-14741",
+      "source": "CVE-2026-51081",
+      "target": "ioc:indicator:CVE-2026-14741",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-51081→linked_to→ioc:indicator:CVE-2026-15343",
+      "source": "CVE-2026-51081",
+      "target": "ioc:indicator:CVE-2026-15343",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53514→linked_to→ioc:indicator:CVE-2026-53514",
+      "source": "CVE-2026-53514",
+      "target": "ioc:indicator:CVE-2026-53514",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-45337→linked_to→ioc:indicator:CVE-2026-45337",
+      "source": "CVE-2026-45337",
+      "target": "ioc:indicator:CVE-2026-45337",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-58148→linked_to→ioc:domain:chronoengine.com",
+      "source": "CVE-2026-58148",
+      "target": "ioc:domain:chronoengine.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-58148→linked_to→ioc:indicator:CVE-2026-58148",
+      "source": "CVE-2026-58148",
+      "target": "ioc:indicator:CVE-2026-58148",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-16089→linked_to→ioc:domain:chronoengine.com",
+      "source": "CVE-2026-16089",
+      "target": "ioc:domain:chronoengine.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-16089→linked_to→ioc:domain:joomdonation.com",
+      "source": "CVE-2026-16089",
+      "target": "ioc:domain:joomdonation.com",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-16089→linked_to→ioc:indicator:CVE-2026-14741",
+      "source": "CVE-2026-16089",
+      "target": "ioc:indicator:CVE-2026-14741",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-16089→linked_to→ioc:indicator:CVE-2026-15343",
+      "source": "CVE-2026-16089",
+      "target": "ioc:indicator:CVE-2026-15343",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-50562→linked_to→ioc:sha1:22ebfacbb43311e9b73294040ae0eb87390c6bba",
+      "source": "CVE-2026-50562",
+      "target": "ioc:sha1:22ebfacbb43311e9b73294040ae0eb87390c6bba",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-50562→linked_to→ioc:domain:preview-docs-build.yml",
+      "source": "CVE-2026-50562",
+      "target": "ioc:domain:preview-docs-build.yml",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-50562→linked_to→ioc:domain:preview-docs-push.yml",
+      "source": "CVE-2026-50562",
+      "target": "ioc:domain:preview-docs-push.yml",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-50562→linked_to→ioc:domain:preview-fastgpt-build.yml",
+      "source": "CVE-2026-50562",
+      "target": "ioc:domain:preview-fastgpt-build.yml",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-50562→linked_to→ioc:domain:preview-fastgpt-push.yml",
+      "source": "CVE-2026-50562",
+      "target": "ioc:domain:preview-fastgpt-push.yml",
+      "relationship": "linked_to",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-b6f7bf3b→includes→SENTINELAPEX-d25bc0a22163",
+      "source": "campaign:cluster-b6f7bf3b",
+      "target": "SENTINELAPEX-d25bc0a22163",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-3b0dea13→includes→SENTINELAPEX-92aa46fed79f",
+      "source": "campaign:cluster-3b0dea13",
+      "target": "SENTINELAPEX-92aa46fed79f",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-561fb50b→includes→SENTINELAPEX-faa7ec053684",
+      "source": "campaign:cluster-561fb50b",
+      "target": "SENTINELAPEX-faa7ec053684",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-966f1978→includes→SENTINELAPEX-63eeafc12156",
+      "source": "campaign:cluster-966f1978",
+      "target": "SENTINELAPEX-63eeafc12156",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-8fda08f6→includes→SENTINELAPEX-3947c01466fd",
+      "source": "campaign:cluster-8fda08f6",
+      "target": "SENTINELAPEX-3947c01466fd",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-c723ff9c→includes→SENTINELAPEX-0a7ea634e001",
+      "source": "campaign:cluster-c723ff9c",
+      "target": "SENTINELAPEX-0a7ea634e001",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-1bb7146f→includes→SENTINELAPEX-c9f27d0cd9d1",
+      "source": "campaign:cluster-1bb7146f",
+      "target": "SENTINELAPEX-c9f27d0cd9d1",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "actor:russia-nexus-ransomware→executes→campaign:cluster-af9325ae",
+      "source": "actor:russia-nexus-ransomware",
+      "target": "campaign:cluster-af9325ae",
+      "relationship": "executes",
+      "confidence": 0.85,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-af9325ae→includes→SENTINELAPEX-91a9e8640659",
+      "source": "campaign:cluster-af9325ae",
+      "target": "SENTINELAPEX-91a9e8640659",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-58658→includes→CVE-2026-58658",
+      "source": "campaign:cve-2026-58658",
+      "target": "CVE-2026-58658",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-56687→includes→CVE-2026-56687",
+      "source": "campaign:cve-2026-56687",
+      "target": "CVE-2026-56687",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-34760→includes→CVE-2026-34760",
+      "source": "campaign:cve-2026-34760",
+      "target": "CVE-2026-34760",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-17",
