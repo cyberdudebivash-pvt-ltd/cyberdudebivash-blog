@@ -16,11 +16,33 @@
   const POLL_MS     = 10000;
   const SESSION_KEY = 'apex_pf_state';
 
-  const PLANS = {
+  /* Fallback only — used if action=plans hasn't resolved yet (or fails) by
+     the time a user clicks upgrade. The real source of truth is the backend
+     (api/_lib/payment-utils.js); this must be kept in sync with it as a
+     last-resort, not treated as authoritative. See docs/PRICING.md. */
+  let PLANS = {
     starter:    { name: 'API Starter', price: '₹2,499', amount: 2499, currency: 'INR' },
     pro:        { name: 'SOC Pro',    price: '₹1,499', amount: 1499, currency: 'INR' },
     enterprise: { name: 'Enterprise', price: '₹4,999', amount: 4999, currency: 'INR' },
   };
+
+  /* Fetched once at script load and cached — the actual source of truth for
+     every price this module displays. Fires immediately so it has almost
+     always resolved by the time a user reaches the upgrade button. */
+  const _plansReady = fetch(`${API_BASE}/billing?action=plans`)
+    .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+    .then(data => {
+      const fetched = data.plans || data.data?.plans;
+      if (!fetched) return;
+      const merged = {};
+      for (const [key, p] of Object.entries(fetched)) {
+        merged[key] = { name: p.label, amount: p.amount, currency: p.currency,
+          price: `${p.currency === 'INR' ? '₹' : '$'}${p.amount.toLocaleString('en-IN')}` };
+      }
+      PLANS = merged;
+    })
+    .catch(e => console.warn('[ApexPF] Could not load canonical plans, using fallback:', e.message));
+
   const FEATURES = {
     starter:    ['5,000 API calls/day', 'Weekly threat intel digest', 'Full-text search (unrestricted)', 'Single API key'],
     pro:        ['50 live threat items per request', 'Complete IOC feed access', 'SIGMA + Yara detection rules', 'Unlimited full-text search', '25,000 API calls/day'],
@@ -307,7 +329,8 @@
   ══════════════════════════════════════════════════════════════ */
   const ApexPaymentFlow = {
 
-    startUpgrade(plan) {
+    async startUpgrade(plan) {
+      await _plansReady; // resolves near-instantly if already loaded; never blocks more than one fetch
       if (!PLANS[plan]) { console.warn('[ApexPF] Unknown plan:', plan); return; }
       _inject();
       S.plan = plan;
@@ -540,15 +563,21 @@
   }
 
   function _fillPayment(data) {
-    const intentId = S.intentId || data.intent_id;
+    const intentId = S.intentId || data.intent_id || data.intent?.intent_id;
     _set('pf-intent-id', intentId || '—');
+
+    // The amount the server actually recorded against this intent is the
+    // only value that's ever correct here — it's what a human reviewer will
+    // check the transferred amount against. The local PLANS cache is a
+    // display-only fallback for the rare case a response omits it.
+    const amount = data.intent?.amount ?? PLANS[S.plan]?.amount;
 
     const upi   = data.payment_instructions?.upi || data.upi || {};
     const upiId = upi.upi_id || 'UNAVAILABLE';
     _set('pf-upi-val', upiId);
 
     const qrData = upi.upi_link ||
-      `upi://pay?pa=${upiId}&pn=CYBERDUDEBIVASH&am=${PLANS[S.plan]?.amount}&cu=INR&tn=${intentId}`;
+      `upi://pay?pa=${upiId}&pn=CYBERDUDEBIVASH&am=${amount}&cu=INR&tn=${intentId}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(qrData)}&bgcolor=141c2b&color=00ffe0&margin=10`;
     const qrImg = _el('pf-qr');
     if (qrImg) qrImg.src = qrUrl;
@@ -559,7 +588,7 @@
       ['Account Number', bank.account_number || 'Contact support'],
       ['IFSC Code',      bank.ifsc           || 'Contact support'],
       ['Bank',           bank.bank_name      || '—'],
-      ['Amount',         `₹${PLANS[S.plan]?.amount || '—'}`],
+      ['Amount',         `₹${amount ?? '—'}`],
       ['Reference Note', intentId || '—'],
     ];
     const bankEl = _el('pf-bank-rows');

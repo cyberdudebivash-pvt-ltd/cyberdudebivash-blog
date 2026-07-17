@@ -97,11 +97,43 @@ jobs:
               process.exit(1);
             }
 
-            // Check $49 pricing regression
+            // SOC Pro must never advertise the old $49/₹4,099 price (fixed
+            // 2026-07-17 — see docs/PRICING.md). This is a hard failure, not
+            // a warning: a stale price here is a customer-trust incident,
+            // not a content-quality nit.
             const json = JSON.stringify(d);
             if (json.includes('\$49/mo') || json.includes('\$49/month')) {
-              console.error('::warning title=Pricing Regression::live-intel.json contains old \$49/mo pricing reference');
+              console.error('::error title=Pricing Regression::live-intel.json contains the old \$49/mo SOC Pro price — canonical price is \$18/mo (api/_lib/payment-utils.js).');
+              process.exit(1);
             }
 
             console.log('✅ Content integrity OK');
           "
+
+      - name: "💳 Pricing integrity — live check"
+        if: success()
+        run: |
+          echo "🔍 Verifying deployed pricing matches the canonical backend price..."
+          FAILED=0
+
+          PLANS_JSON=$(curl -s --max-time 15 "https://blog.cyberdudebivash.in/api/v1/billing?action=plans")
+          PRO_AMOUNT=$(echo "$PLANS_JSON" | node -e "
+            let d=''; process.stdin.on('data',c=>d+=c); process.stdin.on('end',()=>{
+              try { console.log(JSON.parse(d).plans.pro.amount); } catch(e) { console.log('PARSE_ERROR'); }
+            });")
+          if [ "$PRO_AMOUNT" != "1499" ]; then
+            echo "::error title=Pricing API Regression::GET /api/v1/billing?action=plans returned pro.amount=${PRO_AMOUNT}, expected 1499."
+            FAILED=1
+          else
+            echo "✅ Canonical plans API reports pro.amount=1499"
+          fi
+
+          PRICING_HTML=$(curl -s --max-time 15 "https://blog.cyberdudebivash.in/pricing.html")
+          if echo "$PRICING_HTML" | grep -qE '\$49(/mo|/month)?[^0-9]|₹4,099'; then
+            echo "::error title=Pricing Page Regression::pricing.html appears to display the old \$49/₹4,099 price."
+            FAILED=1
+          else
+            echo "✅ pricing.html shows no trace of the old price"
+          fi
+
+          [ "$FAILED" -eq 0 ] || exit 1

@@ -411,10 +411,10 @@
               'Full IOC packs, SIEM rules, 48H pre-disclosure CVE reports, and ransomware tracker. ' +
               'Reduce SOC triage time by 60%.' +
             '</div>' +
-            '<div class="rcb-card-price" data-cx-price="49" data-cx-orig="129">' +
-              '<span class="rcb-orig">$129</span>$49' +
+            '<div class="rcb-card-price" data-cx-price="18" data-cx-orig="49">' +
+              '<span class="rcb-orig">$49</span>$18' +
               '<span class="rcb-unit">/mo</span>' +
-              '<span class="rcb-save">Save 62%</span>' +
+              '<span class="rcb-save">Save 63%</span>' +
             '</div>' +
             '<a href="' + LINKS.pricing + '" class="rcb-card-btn" data-track="rcb_soc_pro_click">' +
               'Start 7-Day Free Trial \u2192' +
@@ -458,11 +458,7 @@
             '<div class="rcb-card-sub">' +
               'White-label feeds, SLA-backed data, dedicated analyst support, and custom detection engineering.' +
             '</div>' +
-            '<div class="rcb-card-price" data-cx-price="299" data-cx-orig="699">' +
-              '<span class="rcb-orig">$699</span>$299' +
-              '<span class="rcb-unit">/mo</span>' +
-              '<span class="rcb-save">Save 57%</span>' +
-            '</div>' +
+            '<div class="rcb-card-price">Custom pricing</div>' +
             '<a href="' + LINKS.enterprise + '" class="rcb-card-btn outline" data-track="rcb_enterprise_click">' +
               'Get Proposal \u2192' +
             '</a>' +

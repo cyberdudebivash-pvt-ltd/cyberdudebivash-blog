@@ -399,7 +399,7 @@
       text:    '\u26A1 Start SOC Pro Free Trial \u2192',
       href:    '/pricing.html',
       cls:     'intent-high',
-      urgency: '\uD83D\uDD25 23 spots left at $49/mo — normally $129'
+      urgency: '\uD83D\uDD25 23 spots left at $18/mo — normally $49'
     }
   };
 

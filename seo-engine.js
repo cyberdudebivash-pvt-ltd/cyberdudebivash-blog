@@ -206,8 +206,8 @@
         operatingSystem: 'Any',
         offers: [
           { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD' },
-          { '@type': 'Offer', name: 'SOC Pro', price: '49', priceCurrency: 'USD', billingIncrement: 'Monthly' },
-          { '@type': 'Offer', name: 'Enterprise', price: '299', priceCurrency: 'USD', billingIncrement: 'Monthly' }
+          { '@type': 'Offer', name: 'SOC Pro', price: '18', priceCurrency: 'USD', billingIncrement: 'Monthly' },
+          { '@type': 'Offer', name: 'Enterprise', price: '0', priceCurrency: 'USD', description: 'Custom pricing' }
         ]
       });
     }

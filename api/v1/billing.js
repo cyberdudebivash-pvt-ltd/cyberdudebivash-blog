@@ -60,7 +60,7 @@ module.exports = async (req, res) => {
 
   const action = String(req.query.action || '').toLowerCase().trim();
 
-  const VALID_ACTIONS = 'create-intent, submit-payment, status, subscribe, create-razorpay-order, verify-razorpay-payment, create-product-checkout';
+  const VALID_ACTIONS = 'plans, create-intent, submit-payment, status, subscribe, create-razorpay-order, verify-razorpay-payment, create-product-checkout';
 
   if (!action) {
     return fail(res, 400, 'MISSING_ACTION', `action parameter required. Valid: ${VALID_ACTIONS}.`);
@@ -68,6 +68,7 @@ module.exports = async (req, res) => {
 
   /* ─── Route Dispatcher ───────────────────────────────────────── */
   switch (action) {
+    case 'plans':                    return handlePlans(req, res);
     case 'create-intent':            return handleCreateIntent(req, res);
     case 'submit-payment':           return handleSubmitPayment(req, res);
     case 'status':                   return handlePaymentStatus(req, res);
@@ -387,6 +388,28 @@ async function handlePaymentStatus(req, res) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   GET /api/v1/billing?action=plans
+   Canonical, public plan/pricing catalogue. The single authoritative
+   source every customer-facing surface (pricing page, checkout modal,
+   marketing CTAs) should read from instead of hardcoding its own copy —
+   see docs/PRICING.md for the incident this closes.
+═══════════════════════════════════════════════════════════════ */
+async function handlePlans(req, res) {
+  if (req.method !== 'GET') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'GET required');
+
+  const publicPlans = {};
+  for (const [key, plan] of Object.entries(PLANS)) {
+    publicPlans[key] = {
+      tier: plan.tier, label: plan.label, amount: plan.amount,
+      currency: plan.currency, period: plan.period, rateLimit: plan.rateLimit,
+      description: plan.description,
+    };
+  }
+  res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
+  return ok(res, { plans: publicPlans });
+}
+
+/* ═══════════════════════════════════════════════════════════════
    POST /api/v1/billing?action=subscribe
    Create Stripe Checkout session for automated billing.
    Body: { plan: "pro"|"enterprise" }
@@ -427,7 +450,7 @@ async function handleSubscribe(req, res) {
       checkout_url: session.url,
       session_id:   session.id,
       plan,
-      price: { starter: '₹2,499/month', pro: '₹4,099/month', enterprise: 'Custom pricing' }[plan],
+      price: plan === 'enterprise' ? 'Custom pricing' : `₹${PLANS[plan].amount}/${PLANS[plan].period}`,
     });
 
   } catch (e) {
