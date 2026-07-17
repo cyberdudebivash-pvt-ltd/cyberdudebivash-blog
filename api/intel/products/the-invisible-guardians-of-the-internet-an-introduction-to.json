@@ -1,0 +1,96 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-c4e1a35ab147771d",
+  "title": "The Invisible Guardians of the Internet: An Introduction to Content Moderation &amp; Trust &amp; Safety",
+  "generated": "2026-07-17T03:31:36.458Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "c11b7f01c03b01eeaab258ad08c1ea155e0fe489",
+      "type": "sha1",
+      "confidence": 0.9
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/comments/1uyo6we/the_invisible_guardians_of_the_internet_an/&",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://external-preview[.]redd[.]it/DyBXChfSESrj8Xh8VosWSrIk0rky17kL4wVyhEBR4Hk[.]png?width=640&amp;amp;c",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://www[.]reddit[.]com/user/DragoStark&quot;&gt;",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://medium[.]com/@sagarpaul07/the-invisible-guardians-of-the-internet-an-introduction-to-content-m",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    },
+    {
+      "value": "medium[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uyo6we/the_invisible_guardians_of_the_internet_an/&\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uyo6we/the_invisible_guardians_of_the_internet_an/&\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/DyBXChfSESrj8Xh8VosWSrIk0rky17kL4wVyhEBR4Hk.png?width=640&amp;amp;c\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/DyBXChfSESrj8Xh8VosWSrIk0rky17kL4wVyhEBR4Hk.png?width=640&amp\\;amp\\;c\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/DragoStark&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/DragoStark&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://medium.com/@sagarpaul07/the-invisible-guardians-of-the-internet-an-introduction-to-content-m\"; http.host; content:\"medium.com\"; nocase; http.uri; content:\"/@sagarpaul07/the-invisible-guardians-of-the-internet-an-introduction-to-content-m\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain medium.com\"; dns.query; content:\"medium.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "7 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 169 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 423 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: the-invisible-guardians-of-the-internet-an-introduction-to (8 shared entities), beta-bios-uefi (3 shared entities), cybersec-vs-data-science (3 shared entities), apple-sued-over-reported-hide-my-email-flaw (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1uyo6we/the_invisible_guardians_of_the_internet_an/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
