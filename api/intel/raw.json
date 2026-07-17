@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T21:01:44.651Z",
+  "generated": "2026-07-17T21:14:02.257Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 145,
+  "count": 156,
   "items": [
     {
       "id": "SENTINELAPEX-92aa46fed79f",
@@ -184,6 +184,66 @@
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
+    },
+    {
+      "id": "CVE-2026-34760",
+      "title": "vLLM: Processing differential in multi-channel audio downmixing enables hidden-input/moderation bypass for audio models",
+      "description": "## Issue Description\nLibrosa defaults to using `numpy.mean` for mono downmixing (`to_mono`), while the international standard ITU-R BS.775-4 specifies a weighted downmixing algorithm. This discrepancy results in:\n- Inconsistency between audio heard by humans (e.g., through headphones/regular speaker",
+      "cvss": 5.9,
+      "final_ps": 70,
+      "quality_score": 0.613,
+      "threat_level": "HIGH",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-34760"
+      ],
+      "ioc_count": 2,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "ioc_presence=2 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.613"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "sha1",
+          "value": "af8c839fb15317fa2712ea66e7a22da6a9267b32",
+          "confidence_score": 0.9,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://github.com/librosa/librosa/blob/af8c839fb15317fa2712ea66e7a22da6a9267b32/librosa/core/audio.",
+          "confidence_score": 0.82,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        }
+      ]
     },
     {
       "id": "SENTINELAPEX-37fdfdbf46f3",
@@ -396,6 +456,66 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-55579",
+      "title": "Pheditor: Hardcoded default password 'admin' with no forced change enables full application compromise",
+      "description": "### Summary\n\nPheditor ships with a hardcoded default password `admin` (SHA-512 hash stored at `pheditor.php:11`). There is no mechanism to force a password change on first login. Any deployment using the default credentials grants an attacker full access to the file editor, file upload, and terminal",
+      "cvss": 9.8,
+      "final_ps": 64,
+      "quality_score": 0.578,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55579"
+      ],
+      "ioc_count": 2,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "ioc_presence=2 IOCs",
+          "recency=1d (score=0.85)",
+          "QS=0.578"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "sha1",
+          "value": "e538f05b6faec99e5b23726bc9c17d6b57774297",
+          "confidence_score": 0.9,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://github.com/pheditor/pheditor",
+          "confidence_score": 0.82,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        }
+      ]
+    },
+    {
       "id": "SENTINELAPEX-3ef08de55407",
       "title": "New Windows LegacyHive 0-Day Vulnerability Allows Hackers to Gain Admin Access",
       "description": "A Windows zero-day vulnerability, dubbed LegacyHive (MSNightmare), abuses the User Profile Service to enable local privilege escalation, tampering with administrator accounts, and admin-level code execution. LegacyHive targets the Windows User Profile Service (ProfSvc), which is responsible for load",
@@ -469,6 +589,94 @@
           "data_confidence=0.70",
           "recency=0d (score=1.00)",
           "QS=0.522"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-53412",
+      "title": "Zoom Fixes CVE-2026-53412, a Critical Account Takeover Bug",
+      "description": "Zoom warns of a critical Windows flaw, tracked as CVE-2026-53412, that could let attackers take over accounts without authentication. Zoom has fixed a critical Windows vulnerability, tracked as CVE-2026-53412 (CVSS score of 9.8) that could allow unauthenticated attackers to hijack user accounts. The",
+      "cvss": 9.8,
+      "final_ps": 60,
+      "quality_score": 0.518,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53412"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=1d (score=0.85)",
+          "QS=0.518"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_CYBER-76065ff4a35fd0a0",
+      "title": "ClickLock macOS stealer relies on a pasted Terminal command, not an exploit",
+      "description": "submitted by /u/Infinite_Antelope_45 [link] [comments]",
+      "cvss": 6.5,
+      "final_ps": 58,
+      "quality_score": 0.385,
+      "threat_level": "MEDIUM",
+      "type": "MALWARE_REPORT",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1uzay5s/clicklock_macos_stealer_relies_on_a_pasted/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.385"
         ],
         "priority": [
           "+8 exploited_in_wild"
@@ -759,48 +967,92 @@
       "iocs": []
     },
     {
-      "id": "BLEEPINGCOMPUTER-189850f386a02db0",
-      "title": "Abbott Laboratories probes two cyber incidents amid extortion claims",
-      "description": "Abbott Laboratories is investigating two separate cybersecurity incidents after confirming unauthorized access to internal legacy Exact Sciences systems in its Cancer Diagnostics business, while also investigating a separate claim that attackers breached its LabCentral portal and stole company data.",
-      "cvss": 6.5,
+      "id": "CVE-2026-8297",
+      "title": "CVE-2026-8297 - SQLi in GIS Informatics' GisLab Laboratory Management System",
+      "description": "CVE-2026-8297 - SQLi in GIS Informatics' GisLab Laboratory Management System",
+      "cvss": 3.2,
       "final_ps": 49,
-      "quality_score": 0.45,
+      "quality_score": 0.593,
       "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "bleepingcomputer",
+      "type": "CRITICAL_INFRASTRUCTURE",
+      "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
-        "bleepingcomputer"
+        "sentinel_apex"
       ],
       "first_seen": "2026-07-17",
       "last_seen": "2026-07-17",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "BleepingComputer",
-      "product": "Threat Intelligence",
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
       "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/security/abbott-laboratories-probes-two-cyber-incidents-amid-extortion-claims/"
+      "cves": [
+        "CVE-2026-8297"
       ],
+      "ioc_count": 6,
+      "refs": [],
       "explanation": {
         "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
-          "data_confidence=0.80",
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "ioc_presence=6 IOCs",
           "recency=0d (score=1.00)",
-          "QS=0.450"
+          "QS=0.593"
         ],
         "priority": [
           "+4 critical_infra"
         ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "suppression": null,
         "merge": null
       },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "url",
+          "value": "https://cvefeed.io/vuln/detail/CVE-2026-8297",
+          "confidence_score": 31,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        },
+        {
+          "type": "indicator",
+          "value": "CVE-2026-8297",
+          "confidence_score": 23.5,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        },
+        {
+          "type": "indicator",
+          "value": "CVE-2026-9585",
+          "confidence_score": 23.5,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        },
+        {
+          "type": "indicator",
+          "value": "CVE-2026-9586",
+          "confidence_score": 23.5,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        },
+        {
+          "type": "indicator",
+          "value": "CVE-2026-9587",
+          "confidence_score": 23.5,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        },
+        {
+          "type": "indicator",
+          "value": "CVE-2026-9588",
+          "confidence_score": 23.5,
+          "first_seen": "2026-07-17",
+          "source_count": 1
+        }
+      ]
     },
     {
       "id": "EXPLOITDB-13fc423caf742505",
@@ -2528,9 +2780,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-c24f7cf5948d",
-      "title": "intel--8acba011534efe29",
-      "description": "intel--8acba011534efe29",
+      "id": "SENTINELAPEX-5b808227cb55",
+      "title": "intel--03b6952e30d7e019",
+      "description": "intel--03b6952e30d7e019",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2552,7 +2804,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/12/intel--8acba011534efe29.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--03b6952e30d7e019.html"
       ],
       "explanation": {
         "quality": [
@@ -2572,9 +2824,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-c3a0070941c9",
-      "title": "intel--0d4fb2ecb7179a18",
-      "description": "intel--0d4fb2ecb7179a18",
+      "id": "SENTINELAPEX-4434f384edf4",
+      "title": "intel--bf80f526d5f896ab",
+      "description": "intel--bf80f526d5f896ab",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2596,7 +2848,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/09/intel--0d4fb2ecb7179a18.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--bf80f526d5f896ab.html"
       ],
       "explanation": {
         "quality": [
@@ -2616,9 +2868,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-784e2fdd1ec2",
-      "title": "intel--ffefb0dc9f933f04",
-      "description": "intel--ffefb0dc9f933f04",
+      "id": "SENTINELAPEX-ef5fc87d768a",
+      "title": "intel--8601126e3b47ccb2",
+      "description": "intel--8601126e3b47ccb2",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2640,7 +2892,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffefb0dc9f933f04.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--8601126e3b47ccb2.html"
       ],
       "explanation": {
         "quality": [
@@ -2660,9 +2912,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-1b37625af993",
-      "title": "intel--ffefa36eda16b200",
-      "description": "intel--ffefa36eda16b200",
+      "id": "SENTINELAPEX-4e09352ddd35",
+      "title": "intel--4994585494cfe97f",
+      "description": "intel--4994585494cfe97f",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2684,7 +2936,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffefa36eda16b200.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--4994585494cfe97f.html"
       ],
       "explanation": {
         "quality": [
@@ -2704,9 +2956,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-13ae1823efeb",
-      "title": "intel--ffd92d6375b080f0b8e14459",
-      "description": "intel--ffd92d6375b080f0b8e14459",
+      "id": "SENTINELAPEX-c1649013e926",
+      "title": "intel--2b1683c189dce5bf",
+      "description": "intel--2b1683c189dce5bf",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2728,7 +2980,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffd92d6375b080f0b8e14459.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--2b1683c189dce5bf.html"
       ],
       "explanation": {
         "quality": [
@@ -2748,9 +3000,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-6453b84c0496",
-      "title": "intel--ffd65cdc3c8c2ce583f8d95d",
-      "description": "intel--ffd65cdc3c8c2ce583f8d95d",
+      "id": "SENTINELAPEX-eb2e6e0aefc5",
+      "title": "intel--525c856304b69572",
+      "description": "intel--525c856304b69572",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2772,7 +3024,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffd65cdc3c8c2ce583f8d95d.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--525c856304b69572.html"
       ],
       "explanation": {
         "quality": [
@@ -2792,9 +3044,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-0bbe7069a02d",
-      "title": "intel--ffcf3d06a4c3adee",
-      "description": "intel--ffcf3d06a4c3adee",
+      "id": "SENTINELAPEX-d4fda2e0a9c6",
+      "title": "intel--2ac827bc18d41507",
+      "description": "intel--2ac827bc18d41507",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2816,7 +3068,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffcf3d06a4c3adee.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--2ac827bc18d41507.html"
       ],
       "explanation": {
         "quality": [
@@ -2836,9 +3088,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-3cde49193699",
-      "title": "intel--ffe826572ee9e82d",
-      "description": "intel--ffe826572ee9e82d",
+      "id": "SENTINELAPEX-50af8a86cf7b",
+      "title": "intel--8927828eb9d1db54",
+      "description": "intel--8927828eb9d1db54",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2860,7 +3112,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffe826572ee9e82d.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--8927828eb9d1db54.html"
       ],
       "explanation": {
         "quality": [
@@ -2880,9 +3132,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-20204aa1d874",
-      "title": "intel--ffdb099929284740",
-      "description": "intel--ffdb099929284740",
+      "id": "SENTINELAPEX-5728e2181532",
+      "title": "intel--bed2306ff735bfaa",
+      "description": "intel--bed2306ff735bfaa",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2904,7 +3156,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffdb099929284740.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--bed2306ff735bfaa.html"
       ],
       "explanation": {
         "quality": [
@@ -2924,9 +3176,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-d492e57fbf2a",
-      "title": "intel--ffd1dd925b68d615",
-      "description": "intel--ffd1dd925b68d615",
+      "id": "SENTINELAPEX-dc038efaefd0",
+      "title": "intel--397e1db69211b3ab",
+      "description": "intel--397e1db69211b3ab",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2948,7 +3200,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffd1dd925b68d615.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--397e1db69211b3ab.html"
       ],
       "explanation": {
         "quality": [
@@ -2968,9 +3220,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-b04597e536be",
-      "title": "intel--ffe5761a00204296",
-      "description": "intel--ffe5761a00204296",
+      "id": "SENTINELAPEX-9e28fc529514",
+      "title": "intel--e586871b0f651e94",
+      "description": "intel--e586871b0f651e94",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -2992,7 +3244,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffe5761a00204296.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--e586871b0f651e94.html"
       ],
       "explanation": {
         "quality": [
@@ -3012,9 +3264,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-5e04bf3a7cac",
-      "title": "intel--ffb2462a6f928f8e07c542e1",
-      "description": "intel--ffb2462a6f928f8e07c542e1",
+      "id": "SENTINELAPEX-d60f6ef147a5",
+      "title": "intel--88066698bfdf0f98",
+      "description": "intel--88066698bfdf0f98",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -3036,7 +3288,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffb2462a6f928f8e07c542e1.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--88066698bfdf0f98.html"
       ],
       "explanation": {
         "quality": [
@@ -3056,9 +3308,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-266c6a291131",
-      "title": "intel--ffa05955ed4fe54c",
-      "description": "intel--ffa05955ed4fe54c",
+      "id": "SENTINELAPEX-c99603b8c622",
+      "title": "intel--f7a24a66729f711b",
+      "description": "intel--f7a24a66729f711b",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -3080,7 +3332,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffa05955ed4fe54c.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--f7a24a66729f711b.html"
       ],
       "explanation": {
         "quality": [
@@ -3100,9 +3352,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-eafda8ad5857",
-      "title": "intel--ffc61de71839bcb5",
-      "description": "intel--ffc61de71839bcb5",
+      "id": "SENTINELAPEX-174af7eee908",
+      "title": "intel--7c763a68d1f0214b",
+      "description": "intel--7c763a68d1f0214b",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -3124,7 +3376,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffc61de71839bcb5.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--7c763a68d1f0214b.html"
       ],
       "explanation": {
         "quality": [
@@ -3144,9 +3396,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-08e86bd3bbf3",
-      "title": "intel--ffc2ae643803b113",
-      "description": "intel--ffc2ae643803b113",
+      "id": "SENTINELAPEX-5d19164d6485",
+      "title": "intel--c2b627267176e889",
+      "description": "intel--c2b627267176e889",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -3168,7 +3420,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffc2ae643803b113.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--c2b627267176e889.html"
       ],
       "explanation": {
         "quality": [
@@ -3188,9 +3440,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-1ab73782b779",
-      "title": "intel--ffbb5f0392500daa",
-      "description": "intel--ffbb5f0392500daa",
+      "id": "SENTINELAPEX-a9ca9991e0a6",
+      "title": "intel--dfff087ee11347e2",
+      "description": "intel--dfff087ee11347e2",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -3212,7 +3464,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffbb5f0392500daa.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--dfff087ee11347e2.html"
       ],
       "explanation": {
         "quality": [
@@ -3232,9 +3484,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-72d4416df9e9",
-      "title": "intel--ffaa48158dfdcb23",
-      "description": "intel--ffaa48158dfdcb23",
+      "id": "SENTINELAPEX-168c339c4552",
+      "title": "intel--15aa0f4837f00b44",
+      "description": "intel--15aa0f4837f00b44",
       "cvss": 6,
       "final_ps": 39,
       "quality_score": 0.433,
@@ -3256,7 +3508,315 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ffaa48158dfdcb23.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--15aa0f4837f00b44.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-7af4bc7637d5",
+      "title": "intel--ea44b32f214e3b91",
+      "description": "intel--ea44b32f214e3b91",
+      "cvss": 6,
+      "final_ps": 39,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ea44b32f214e3b91.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-adb95b7d3f85",
+      "title": "intel--1cd3e49627a47ee4",
+      "description": "intel--1cd3e49627a47ee4",
+      "cvss": 6,
+      "final_ps": 39,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1cd3e49627a47ee4.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-245cea3175c3",
+      "title": "intel--2cf0396cf6bd5b60",
+      "description": "intel--2cf0396cf6bd5b60",
+      "cvss": 6,
+      "final_ps": 39,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--2cf0396cf6bd5b60.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-f7f450e9c27c",
+      "title": "intel--adf70ba2021a04fc",
+      "description": "intel--adf70ba2021a04fc",
+      "cvss": 6,
+      "final_ps": 39,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--adf70ba2021a04fc.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-57da4edd26a1",
+      "title": "intel--623fe9037c3cde45",
+      "description": "intel--623fe9037c3cde45",
+      "cvss": 6,
+      "final_ps": 39,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--623fe9037c3cde45.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-7b454c76c1b0",
+      "title": "intel--024afd9069ae75c6",
+      "description": "intel--024afd9069ae75c6",
+      "cvss": 6,
+      "final_ps": 39,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--024afd9069ae75c6.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-6badf5e5a4cf",
+      "title": "intel--30a8d8486e4492b4",
+      "description": "intel--30a8d8486e4492b4",
+      "cvss": 6,
+      "final_ps": 39,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--30a8d8486e4492b4.html"
       ],
       "explanation": {
         "quality": [
@@ -4705,184 +5265,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-63096",
-      "title": "CVE-2026-63096 - Dendrite 0.13.8 SSRF via Unauthenticated Legacy Media Download Endpoint",
-      "description": "",
-      "cvss": 9.1,
-      "final_ps": 29,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-63096"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-63098",
-      "title": "CVE-2026-63098 - TheHive 4.1.24 Unauthenticated Information Disclosure via /api/status Endpoint",
-      "description": "",
-      "cvss": 9.1,
-      "final_ps": 29,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-63098"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2024-23564",
-      "title": "CVE-2024-23564 - HCL Aftermarket EPC Business Logic Vulnerability",
-      "description": "",
-      "cvss": 9.1,
-      "final_ps": 29,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-23564"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-55579",
-      "title": "Pheditor: Hardcoded default password 'admin' with no forced change enables full application compromise",
-      "description": "",
-      "cvss": 9.8,
-      "final_ps": 29,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55579"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-53412",
-      "title": "Zoom Fixes CVE-2026-53412, a Critical Account Takeover Bug",
+      "id": "CVE-2026-63307",
+      "title": "CVE-2026-63307 - Chat2DB < 5.3.0 Insecure Direct Object Reference via GET /api/connection/datasource",
       "description": "",
       "cvss": 9.8,
       "final_ps": 29,
@@ -4894,8 +5278,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4903,7 +5287,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-53412"
+        "CVE-2026-63307"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4925,10 +5309,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-53513",
-      "title": "CVE-2026-53513: Better Auth is an authentication and authorization library for TypeScript. Prior to 1.6.11, the @better-",
+      "id": "CVE-2026-9202",
+      "title": "CVE-2026-9202 Unauthenticated User Registration Could Lead to Remote Code Execution",
       "description": "",
-      "cvss": 9.6,
+      "cvss": 9.8,
       "final_ps": 29,
       "quality_score": 0.478,
       "threat_level": "LOW",
@@ -4938,8 +5322,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4947,7 +5331,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-53513"
+        "CVE-2026-9202"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4969,8 +5353,140 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-53512",
-      "title": "CVE-2026-53512: Better Auth is an authentication and authorization library for TypeScript. Prior to 1.6.11, the legacy o",
+      "id": "CVE-2026-9198",
+      "title": "CVE-2026-9198 Unauthenticated Remote Code Execution via Auto-Login Bypass and Code Validation",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-9198"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-57860",
+      "title": "CVE-2026-57860 - ForgeCode Arbitrary Code Execution via Unvetted .mcp.json in Untrusted Repository",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-57860"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-54496",
+      "title": "CVE-2026-54496 - Missing copy constraint in halo2_gadgets variable-base scalar multiplication allows under-constrained b",
+      "description": "",
+      "cvss": 9.3,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54496"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-63101",
+      "title": "CVE-2026-63101 - Open Event Server 1.19.1 Unauthenticated Member Roster Export via CSV Export Endpoint",
       "description": "",
       "cvss": 9.1,
       "final_ps": 29,
@@ -4982,8 +5498,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4991,7 +5507,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-53512"
+        "CVE-2026-63101"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -5013,12 +5529,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-50416",
-      "title": "Exploit for CVE-2026-50416 exploit",
+      "id": "CVE-2026-9585",
+      "title": "CVE-2026-9585 - Unauthenticated Reflected Cross-Site Scripting (XSS) in Switchvox SMB Web Portal",
       "description": "",
-      "cvss": 3.3,
-      "final_ps": 28,
-      "quality_score": 0.497,
+      "cvss": 9.1,
+      "final_ps": 29,
+      "quality_score": 0.478,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -5028,26 +5544,26 @@
       ],
       "first_seen": "2026-07-17",
       "last_seen": "2026-07-17",
-      "exploited": true,
+      "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "Unknown Vendor",
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-50416"
+        "CVE-2026-9585"
       ],
       "ioc_count": 0,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
+          "data_confidence=0.65",
           "recency=0d (score=1.00)",
-          "QS=0.497"
+          "QS=0.478"
         ],
         "priority": [
-          "+8 exploited_in_wild"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -5057,140 +5573,12 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-c9f27d0cd9d1",
-      "title": "Spirals ransomware locks down victim systems in under 24 hours",
+      "id": "CVE-2026-9586",
+      "title": "CVE-2026-9586 - Unauthenticated SQL Injection Leading to Remote Code Execution in Switchvox SMB",
       "description": "",
-      "cvss": 7.8,
-      "final_ps": 28,
-      "quality_score": 0.448,
-      "threat_level": "LOW",
-      "type": "RANSOMWARE",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.448"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "SENTINELAPEX-91a9e8640659",
-      "title": "Armenia Detains Russian Tourist on U.S. Warrant for REvil Hacker, Lawyers Say Wrong Man",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 28,
-      "quality_score": 0.448,
-      "threat_level": "LOW",
-      "type": "RANSOMWARE",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.448"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-34760",
-      "title": "vLLM: Processing differential in multi-channel audio downmixing enables hidden-input/moderation bypass for audio models",
-      "description": "",
-      "cvss": 5.9,
-      "final_ps": 28,
-      "quality_score": 0.497,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-34760"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.497"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-16013",
-      "title": "CVE-2026-16013 - liftoff-sr CIPster cipepath.cc deserialize_symbolic out-of-bounds",
-      "description": "",
-      "cvss": 5.3,
-      "final_ps": 28,
-      "quality_score": 0.497,
+      "cvss": 9.8,
+      "final_ps": 29,
+      "quality_score": 0.478,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -5200,26 +5588,26 @@
       ],
       "first_seen": "2026-07-17",
       "last_seen": "2026-07-17",
-      "exploited": true,
+      "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "Unknown Vendor",
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-16013"
+        "CVE-2026-9586"
       ],
       "ioc_count": 0,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
+          "data_confidence=0.65",
           "recency=0d (score=1.00)",
-          "QS=0.497"
+          "QS=0.478"
         ],
         "priority": [
-          "+8 exploited_in_wild"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -5229,52 +5617,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-56087",
-      "title": "CVE-2026-56087: Dell ThinOS 10, versions prior to 2605_10.2100 contain a Protection Mechanism Failure vulnerability. An ",
-      "description": "",
-      "cvss": 6.1,
-      "final_ps": 28,
-      "quality_score": 0.497,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-56087"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.497"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-45793",
-      "title": "CVE-2026-45793: Composer is a dependency Manager for the PHP language. Prior to 1.10.28, 2.2.28, and 2.9.8, Composer\\IO\\",
+      "id": "CVE-2026-62349",
+      "title": "CVE-2026-62349: TDengine is an open source, time-series database optimized for Internet of Things devices. In 3.4.1.6 an",
       "description": "",
       "cvss": 7.8,
       "final_ps": 23,
@@ -5295,11 +5639,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-45793"
+        "CVE-2026-62349"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--3972f5d15f95808e.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d64df7dea32856af.html"
       ],
       "explanation": {
         "quality": [
@@ -5319,21 +5663,21 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-8297",
-      "title": "CVE-2026-8297 - SQLi in GIS Informatics' GisLab Laboratory Management System",
+      "id": "CVE-2026-62350",
+      "title": "CVE-2026-62350: TDengine is an open source, time-series database optimized for Internet of Things devices. Prior to 3.4.",
       "description": "",
-      "cvss": 3.2,
-      "final_ps": 22,
-      "quality_score": 0.458,
+      "cvss": 7.8,
+      "final_ps": 23,
+      "quality_score": 0.498,
       "threat_level": "LOW",
-      "type": "CRITICAL_INFRASTRUCTURE",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -5341,12 +5685,195 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-8297"
+        "CVE-2026-62350"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--07cd174c69a46fce5df9aff1.html",
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--fd6a349d81ab2899f4a26b7e.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--024b7dc11fcab777.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-15895",
+      "title": "CVE-2026-15895: OS command injection in the npm package loading component in AWS jsii-diff before 1.131.0 might allow co",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 23,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "SUPPLY_CHAIN",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-15895"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--afb135c760509d89.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-52869",
+      "title": "CVE-2026-52869: The MCP Python SDK, called mcp on PyPI, is a Python implementation of the Model Context Protocol (MCP). ",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 23,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52869"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--3eeca1f702773473.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-52870",
+      "title": "CVE-2026-52870: The MCP Python SDK, called mcp on PyPI, is a Python implementation of the Model Context Protocol (MCP). ",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 23,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52870"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--bf46843970d2a397.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-62355",
+      "title": "CVE-2026-62355: TDengine is an open source, time-series database optimized for Internet of Things devices. Prior to 3.4.",
+      "description": "",
+      "cvss": 5.5,
+      "final_ps": 21,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-62355"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--89064f42cd09e373.html"
       ],
       "explanation": {
         "quality": [
@@ -5356,7 +5883,7 @@
           "QS=0.458"
         ],
         "priority": [
-          "+4 critical_infra"
+          "+3 supply_chain"
         ],
         "suppression": null,
         "merge": null
@@ -5366,47 +5893,43 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-54567",
-      "title": "Flask-Reuploaded: Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of ",
+      "id": "CVE-2026-15746",
+      "title": "CVE-2026-15746: Strands Agents is an open-source Python SDK for building and running AI agents. The strands-agents-tools",
       "description": "",
-      "cvss": 7.5,
+      "cvss": 5.5,
       "final_ps": 21,
-      "quality_score": 0.523,
+      "quality_score": 0.458,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
-      "source": "github_advisories",
+      "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
-        "github_advisories"
+        "sentinel_apex"
       ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "pip",
-      "product": "Flask-Reuploaded",
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-54567",
-        "CVE-2026-54567"
+        "CVE-2026-15746"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-937x-gpqr-72gg",
-        "https://github.com/jugmac00/flask-reuploaded/security/advisories/GHSA-937x-gpqr-72gg",
-        "https://github.com/jugmac00/flask-reuploaded/commit/5ded76092429c6eb8a4af941b14fbde40a38fff4",
-        "https://github.com/advisories/GHSA-937x-gpqr-72gg"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--c6c0fbcc26ba338c.html"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.458"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "+3 supply_chain"
         ],
         "suppression": null,
         "merge": null
@@ -5416,358 +5939,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-53598",
-      "title": "Prompty: Arbitrary file read via file reference expansion",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "prompty",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53598",
-        "CVE-2026-53598"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wxhm-2mq7-7697",
-        "https://github.com/microsoft/prompty/security/advisories/GHSA-wxhm-2mq7-7697",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-53598",
-        "https://github.com/microsoft/prompty/commit/88ac9948d7d37995edbb2f6d36913436626c39e1"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-53597",
-      "title": "Prompty: Arbitrary code execution via JavaScript frontmatter in TypeScript loader",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "@prompty/core",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53597",
-        "CVE-2026-53597"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-c4gh-rv8h-q9vw",
-        "https://github.com/microsoft/prompty/security/advisories/GHSA-c4gh-rv8h-q9vw",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-53597",
-        "https://github.com/microsoft/prompty/commit/c27402da2487075be577f06aa79df627fb9d6853"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-27771",
-      "title": "Gitea has insufficient permission checks for Composer package source links",
-      "description": "",
-      "cvss": 8.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "go",
-      "product": "code.gitea.io/gitea",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-27771",
-        "CVE-2026-27771"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-8qw8-rq86-9pc2",
-        "https://github.com/go-gitea/gitea/security/advisories/GHSA-8qw8-rq86-9pc2",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-27771",
-        "https://github.com/go-gitea/gitea/pull/37610"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54549",
-      "title": "meta-ads-mcp: Server-Side Request Forgery (SSRF) in `upload_ad_image` via Unrestricted `image_url` Fetch",
-      "description": "",
-      "cvss": 8.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "meta-ads-mcp",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54549",
-        "CVE-2026-54549"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-45gf-fjxp-cjpq",
-        "https://github.com/pipeboard-co/meta-ads-mcp/security/advisories/GHSA-45gf-fjxp-cjpq",
-        "https://github.com/pipeboard-co/meta-ads-mcp/commit/7d9926336bbdac6285a988d043c4ccfe126c94c5",
-        "https://github.com/pipeboard-co/meta-ads-mcp/releases/tag/1.0.115"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-11400",
-      "title": "AWS-JDBC Wrapper: Privilege Escalation in Aurora PostgreSQL instance",
-      "description": "",
-      "cvss": 8,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "software.amazon.jdbc:aws-advanced-jdbc-wrapper",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-11400",
-        "CVE-2026-11400"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-mhww-p97m-3368",
-        "https://github.com/aws/aws-advanced-jdbc-wrapper/security/advisories/GHSA-mhww-p97m-3368",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-11400",
-        "https://aws.amazon.com/security/security-bulletins/2026-039-aws"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54552",
-      "title": "sh _uid does not drop supplementary groups (incomplete privilege drop)",
-      "description": "",
-      "cvss": 7.9,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "sh",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54552",
-        "CVE-2026-54552"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-q38v-wp89-2w55",
-        "https://github.com/amoffat/sh/security/advisories/GHSA-q38v-wp89-2w55",
-        "https://github.com/amoffat/sh/releases/tag/2.2.4",
-        "https://github.com/advisories/GHSA-q38v-wp89-2w55"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54547",
-      "title": "meta-ads-mcp: X-Pipeboard-Token Header Auth Bypass Reuses Operator Meta Token",
-      "description": "",
-      "cvss": 7.4,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "meta-ads-mcp",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54547",
-        "CVE-2026-54547"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-2v2f-mvfg-ph56",
-        "https://github.com/pipeboard-co/meta-ads-mcp/security/advisories/GHSA-2v2f-mvfg-ph56",
-        "https://github.com/pipeboard-co/meta-ads-mcp/releases/tag/1.0.115",
-        "https://github.com/advisories/GHSA-2v2f-mvfg-ph56"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-10673",
-      "title": "CVE-2026-10673: The Zephyr ADIN2111/ADIN1110 10BASE-T1S/T1L Ethernet driver (drivers/ethernet/eth_adin2111.c) reassemble",
+      "id": "CVE-2026-38753",
+      "title": "CVE-2026-38753: A use-after-free in the awk_sub() function (editors/awk.c) of Busybox v1.38.0 allows attackers to cause ",
       "description": "",
       "cvss": 7.8,
       "final_ps": 20,
@@ -5788,11 +5961,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-10673"
+        "CVE-2026-38753"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--88225550ed117418.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--e18c9aebeedf03b7.html"
       ],
       "explanation": {
         "quality": [
@@ -5812,8 +5985,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-12382",
-      "title": "CVE-2026-12382: A flaw was found in the AAP Gateway Envoy proxy configuration. The non-mTLS route to EDA event streams d",
+      "id": "CVE-2026-46339",
+      "title": "CVE-2026-46339: 9Router is an AI router & token saver. From 0.4.30 until 0.4.37, 9Router's src/proxy.js middleware did n",
       "description": "",
       "cvss": 7.8,
       "final_ps": 20,
@@ -5834,11 +6007,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-12382"
+        "CVE-2026-46339"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--baf157f38a9c223f.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--b5f35239bc677dcc.html"
       ],
       "explanation": {
         "quality": [
@@ -5858,8 +6031,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-45804",
-      "title": "CVE-2026-45804: Diffusers is the a library for pretrained diffusion models. Prior to 0.38.0, Diffusers' DiffusionPipelin",
+      "id": "CVE-2026-49352",
+      "title": "CVE-2026-49352: 9Router is an AI router & token saver. From 0.2.21 until 0.4.44, 9Router used the hardcoded fallback JWT",
       "description": "",
       "cvss": 7.8,
       "final_ps": 20,
@@ -5880,11 +6053,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-45804"
+        "CVE-2026-49352"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d7ab7dc242ecd06b.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--874e95eca4f14dad.html"
       ],
       "explanation": {
         "quality": [
@@ -5904,8 +6077,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-20187",
-      "title": "CVE-2026-20187: As part of Cisco's ongoing commitment to proactive security and product quality, the Cisco RoomOS engine",
+      "id": "CVE-2026-49353",
+      "title": "CVE-2026-49353: 9Router is an AI router & token saver. In 0.4.45 and earlier, 9Router's src/dashboardGuard.js local-only",
       "description": "",
       "cvss": 7.8,
       "final_ps": 20,
@@ -5926,11 +6099,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-20187"
+        "CVE-2026-49353"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--88ffb60073bc250b.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--06012546b69362a8.html"
       ],
       "explanation": {
         "quality": [
@@ -5950,8 +6123,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59954",
-      "title": "CVE-2026-59954: Apollo is a reliable configuration management system suitable for microservice configuration management ",
+      "id": "CVE-2026-51380",
+      "title": "CVE-2026-51380: Buffer Overflow vulnerability in Tenda AC10 v3 (firmware V03.03.16.09) allows attackers to cause a perma",
       "description": "",
       "cvss": 7.8,
       "final_ps": 20,
@@ -5972,11 +6145,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-59954"
+        "CVE-2026-51380"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--29397bc4c6f85fec.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--a4149d13ed841001.html"
       ],
       "explanation": {
         "quality": [
@@ -5996,8 +6169,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-20153",
-      "title": "CVE-2026-20153: As part of Cisco's ongoing commitment to proactive security and product quality, the Cisco RoomOS engine",
+      "id": "CVE-2026-62351",
+      "title": "CVE-2026-62351: TDengine is a time-series database optimized for Internet of Things devices. Prior to 3.4.1.15, source/l",
       "description": "",
       "cvss": 7.8,
       "final_ps": 20,
@@ -6018,11 +6191,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-20153"
+        "CVE-2026-62351"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--21348399c10befe0.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--53fa0eaecc26a828.html"
       ],
       "explanation": {
         "quality": [
@@ -6042,8 +6215,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-20158",
-      "title": "CVE-2026-20158: As part of Cisco's ongoing commitment to proactive security and product quality, the Cisco RoomOS engine",
+      "id": "CVE-2026-12997",
+      "title": "CVE-2026-12997: The Gravity Forms plugin for WordPress is vulnerable to Directory Traversal in all versions up to, and i",
       "description": "",
       "cvss": 7.8,
       "final_ps": 20,
@@ -6064,11 +6237,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-20158"
+        "CVE-2026-12997"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--43e7d367cdd2eddb.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--93f153a3f442519b.html"
       ],
       "explanation": {
         "quality": [
@@ -6088,8 +6261,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-20157",
-      "title": "CVE-2026-20157: As part of Cisco's ongoing commitment to proactive security and product quality, the Cisco RoomOS engine",
+      "id": "CVE-2026-46485",
+      "title": "CVE-2026-46485: Dashy is a self-hostable personal dashboard. Prior to 4.0.8, Dashy deployments using OIDC can allow unau",
       "description": "",
       "cvss": 7.8,
       "final_ps": 20,
@@ -6110,11 +6283,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-20157"
+        "CVE-2026-46485"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--851b47d273c082b7.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1fe37f8d55514a0e.html"
       ],
       "explanation": {
         "quality": [
@@ -6134,8 +6307,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-40501",
-      "title": "CVE-2026-40501: Cherry Studio versions 1.2.2 through 1.9.12, fixed in commit 1518530, contain a remote code execution vu",
+      "id": "CVE-2026-40952",
+      "title": "CVE-2026-40952: CVE-2026-40952 is a privilege misconfiguration\nin the Secure Access installer for the Windows client and",
       "description": "",
       "cvss": 7.8,
       "final_ps": 20,
@@ -6156,11 +6329,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-40501"
+        "CVE-2026-40952"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--3dc1ed35cfd116cf.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--3d75e5f56eb3a0e2.html"
       ],
       "explanation": {
         "quality": [
@@ -6180,21 +6353,205 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-52724",
-      "title": "kuma-dp connects to control plane without verifying TLS certificate when no CA is configured",
+      "id": "CVE-2026-40957",
+      "title": "CVE-2026-40957: o\nCVE-2026-40957 is a frameable content\nvulnerability in the Secure Access server login page prior to 14",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-40957"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--53f71c86cf42d82b.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-45738",
+      "title": "CVE-2026-45738: Argo CD is a declarative, GitOps continuous delivery tool for Kubernetes. Prior to 3.2.12, 3.3.10, and 3",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45738"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--f943dc29fbf8a27c.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-49445",
+      "title": "CVE-2026-49445: Cilium is a networking, observability, and security solution. Prior to 1.17.14, 1.18.8, and 1.19.2, when",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49445"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--980479caefbc3957.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-50144",
+      "title": "CVE-2026-50144: ncnn is a high-performance neural network inference framework optimized for the mobile platform. In comm",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50144"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--16c9fa56cc0068e2.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-49208",
+      "title": "CVE-2026-49208 - Symfony UX: Format-less date LiveProps parsed with the permissive DateTime constructor",
       "description": "",
       "cvss": 5.5,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
-      "type": "NEWS_REPORT",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -6202,7 +6559,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-52724"
+        "CVE-2026-49208"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -6224,12 +6581,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-63101",
-      "title": "CVE-2026-63101 - Open Event Server 1.19.1 Unauthenticated Member Roster Export via CSV Export Endpoint",
+      "id": "CVE-2026-49210",
+      "title": "CVE-2026-49210 - Symfony UX: XSS in symfony/ux-live-component via attacker-controlled child component tag",
       "description": "",
-      "cvss": 3.2,
+      "cvss": 5.5,
       "final_ps": 18,
-      "quality_score": 0.458,
+      "quality_score": 0.438,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -6246,19 +6603,16 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-63101"
+        "CVE-2026-49210"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--9e3a537e90c1a565b1f6f208.html",
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--e479280f00a7bac9b1e7d585.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.55",
+          "data_confidence=0.45",
           "recency=0d (score=1.00)",
-          "QS=0.458"
+          "QS=0.438"
         ],
         "priority": [
           "base_ps=18 (no boosts)"
@@ -6271,12 +6625,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-9585",
-      "title": "CVE-2026-9585 - Unauthenticated Reflected Cross-Site Scripting (XSS) in Switchvox SMB Web Portal",
+      "id": "CVE-2026-49211",
+      "title": "CVE-2026-49211 - Symfony UX: Information exposure via unescaped LIKE wildcards in EntitySearchUtil",
       "description": "",
-      "cvss": 3.2,
+      "cvss": 5.5,
       "final_ps": 18,
-      "quality_score": 0.458,
+      "quality_score": 0.438,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -6293,19 +6647,148 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-9585"
+        "CVE-2026-49211"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--a7d5f2c711b540ee143ac0d8.html",
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--c4f5cf4efe1865846681c490.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.55",
+          "data_confidence=0.45",
           "recency=0d (score=1.00)",
-          "QS=0.458"
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-49216",
+      "title": "CVE-2026-49216 - Symfony UX: XSS in symfony/ux-autocomplete via unescaped AJAX response data",
+      "description": "",
+      "cvss": 5.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49216"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-63309",
+      "title": "CVE-2026-63309 - SurrealDB < 3.1.5 Information Disclosure via ORDER BY",
+      "description": "",
+      "cvss": 5.3,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-63309"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-63308",
+      "title": "CVE-2026-63308 - Helm Files.Lines Denial of Service via Empty Chart Files",
+      "description": "",
+      "cvss": 5.3,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-63308"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
         ],
         "priority": [
           "base_ps=18 (no boosts)"
@@ -6321,9 +6804,9 @@
       "id": "CVE-2026-9588",
       "title": "CVE-2026-9588 - Authenticated Stored Cross-Site Scripting (XSS) in Switchvox SMB Web Portal",
       "description": "",
-      "cvss": 3.2,
+      "cvss": 6.1,
       "final_ps": 18,
-      "quality_score": 0.458,
+      "quality_score": 0.438,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -6343,16 +6826,13 @@
         "CVE-2026-9588"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--7b6e97f23a76ba2cd6e67ed2.html",
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--a3e8c9cb59b9c2eed8ed83b2.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.55",
+          "data_confidence=0.45",
           "recency=0d (score=1.00)",
-          "QS=0.458"
+          "QS=0.438"
         ],
         "priority": [
           "base_ps=18 (no boosts)"
@@ -6365,12 +6845,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-9586",
-      "title": "CVE-2026-9586 - Unauthenticated SQL Injection Leading to Remote Code Execution in Switchvox SMB",
+      "id": "CVE-2026-49215",
+      "title": "CVE-2026-49215 - Symfony UX: CSRF Protection Bypass in symfony/ux-live-component  Accept Header is CORS-Safelisted",
       "description": "",
-      "cvss": 3.2,
+      "cvss": 2.5,
       "final_ps": 18,
-      "quality_score": 0.458,
+      "quality_score": 0.438,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -6387,146 +6867,8 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-9586"
+        "CVE-2026-49215"
       ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--9818724ab42c7a1d6d29a681.html",
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d1b510d5bfd40dd8fb2e658f.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.458"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-9587",
-      "title": "CVE-2026-9587 - Authenticated Local File Inclusion (LFI) in Switchvox SMB Web Portal",
-      "description": "",
-      "cvss": 3.2,
-      "final_ps": 18,
-      "quality_score": 0.458,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-9587"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--8981cc5de233ba96cf715544.html",
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--e8b5e3f3b93deb2e1d6a6776.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.458"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-9202",
-      "title": "CVE-2026-9202 Unauthenticated User Registration Could Lead to Remote Code Execution",
-      "description": "",
-      "cvss": 3.2,
-      "final_ps": 18,
-      "quality_score": 0.458,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-9202"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--b4473410f554c8a24ba5a3c9.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.458"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "SENTINELAPEX-c0c4b6b57d32",
-      "title": "Claude Code and DeepSeek Powered Chinese Cyber Espionage Campaign",
-      "description": "",
-      "cvss": 5.5,
-      "final_ps": 16,
-      "quality_score": 0.408,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [],
       "ioc_count": 0,
       "refs": [],
       "explanation": {
@@ -6534,16 +6876,192 @@
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.45",
           "recency=0d (score=1.00)",
-          "QS=0.407"
+          "QS=0.438"
         ],
         "priority": [
-          "base_ps=16 (no boosts)"
+          "base_ps=18 (no boosts)"
         ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "suppression": null,
         "merge": null
       },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-49209",
+      "title": "CVE-2026-49209 - Symfony UX: Denial of service in symfony/ux-live-component via unbounded batch action requests",
+      "description": "",
+      "cvss": 2.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49209"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-49212",
+      "title": "CVE-2026-49212 - Symfony UX: LiveComponentHydrator HMAC checksum lacks component and slot binding",
+      "description": "",
+      "cvss": 2.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49212"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2025-59866",
+      "title": "Low Security Vulnerability (CVE-2025-59866)",
+      "description": "",
+      "cvss": 3.2,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-59866"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-21764",
+      "title": "CVE-2026-21764 - Insufficient Input Validation in DevOps Loop",
+      "description": "",
+      "cvss": 3.2,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-21764"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     }
   ]
