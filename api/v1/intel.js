@@ -15,6 +15,8 @@
  *  action=campaigns    GET  Campaign clusters (?severity=&has_kev=)
  *  action=campaign     GET  Single campaign detail (?id=campaign:...)
  *  action=top-actors   GET  Most active threat actors ranked by activity
+ *  action=entity       GET  Unified content-graph lookup (?type=&id=) across
+ *                           CVE/vendor/campaign/actor/collection
  *
  * Backward-compat rewrites in vercel.json map old paths to ?action= params.
  */
@@ -23,6 +25,7 @@ const crypto = require('crypto');
 const { authenticate, successResponse, apiError, corsHeaders } = require('../_lib/middleware');
 const { getIntel, getCVEDetail, searchIntel, getPlatformStats,
         getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI } = require('../_lib/intel');
+const { getEntity, ENTITY_TYPES } = require('../_lib/content-graph');
 const sec = require('../_lib/security');
 
 /* ─── Main Router ────────────────────────────────────────────── */
@@ -269,10 +272,36 @@ module.exports = async (req, res) => {
         });
       }
 
+      /* ── GET ?action=entity&type=&id= ─────────────────────────── */
+      case 'entity': {
+        const entityType = String(req.query.type || '').toLowerCase().trim();
+        const entityId = String(req.query.id || '').trim();
+        if (!entityType || !entityId) {
+          return apiError(res, 400, 'MISSING_ENTITY_PARAMS',
+            `type and id parameters required. Valid types: ${ENTITY_TYPES.join(', ')}. ` +
+            'Example: GET /api/v1/intel?action=entity&type=vendor&id=microsoft');
+        }
+        if (!ENTITY_TYPES.includes(entityType)) {
+          return apiError(res, 400, 'INVALID_ENTITY_TYPE',
+            `Unknown entity type "${entityType}". Valid types: ${ENTITY_TYPES.join(', ')}`);
+        }
+        const result = getEntity(entityType, entityId, { tier: user.tier });
+        if (!result.found) {
+          return apiError(res, 404, 'ENTITY_NOT_FOUND', `No ${entityType} found for id "${entityId}"`);
+        }
+        return successResponse(res, result, {
+          endpoint:       `/api/v1/intel?action=entity&type=${entityType}&id=${entityId}`,
+          description:    'Unified content-graph lookup across CVE/vendor/campaign/actor/collection intelligence',
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
       /* ── Unknown action ────────────────────────────────────── */
       default:
         return apiError(res, 400, 'INVALID_ACTION',
-          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors`);
+          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors, entity`);
     }
   } catch (e) {
     return apiError(res, 500, 'INTERNAL_ERROR',

@@ -1,0 +1,76 @@
+name: "🩺 SENTINEL APEX — Observability"
+
+# Read-only monitoring — this workflow never executes a generator (that
+# stays the job of each generator's own workflow, or the manual
+# build-orchestrator.yml). It only inspects what they've already produced:
+# freshness of declared outputs across all 6 generators (today
+# freshness-check.yml only watches 1 of 6) and a real publish-success
+# trend from automation/main.py's previously write-only run logs.
+
+on:
+  schedule:
+    - cron: '5,35 * * * *'   # every 30 minutes, offset from other crons
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'orchestrator/**'
+      - 'ops/generate-health-dashboard.js'
+      - 'scripts/generate-docs.js'
+      - 'api/v1/**'
+      - '.github/workflows/observability.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  health-check:
+    name: "Generate Health Dashboard"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "📥 Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "⚙️ Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "🔬 Syntax-check"
+        run: |
+          node -c orchestrator/freshness.js
+          node -c orchestrator/run-log-stats.js
+          node -c ops/generate-health-dashboard.js
+          node -c scripts/generate-docs.js
+
+      - name: "🩺 Generate health dashboard"
+        run: node ops/generate-health-dashboard.js
+
+      - name: "📚 Regenerate documentation"
+        run: node scripts/generate-docs.js
+
+      - name: "🔍 Check for changes"
+        id: check_changes
+        run: |
+          if [ -z "$(git status --porcelain ops/health/ data/health-status.json docs/)" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "📦 Commit and push health snapshot"
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "CYBERDUDEBIVASH"
+          git config user.email "bivash@cyberdudebivash.com"
+          git add ops/health/ data/health-status.json docs/
+          git commit -m "🩺 [SENTINEL APEX] Health snapshot + docs regen — $(date -u '+%Y-%m-%d %H:%M UTC') [skip ci]"
+          for i in 1 2 3; do
+            git push origin main && break
+            if [ $i -lt 3 ]; then git pull --rebase origin main; sleep $((i * 3)); else exit 1; fi
+          done

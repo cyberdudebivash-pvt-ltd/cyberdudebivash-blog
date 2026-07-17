@@ -6,9 +6,13 @@ on:
     paths:
       - 'package.json'
       - 'package-lock.json'
+      - 'requirements.txt'
       - 'api/**'
       - 'fetch-live-intel.js'
       - 'generate-rss.js'
+      - 'orchestrator/**'
+      - 'ops/**'
+      - 'scripts/**'
   schedule:
     - cron: '0 6 * * 1'   # Every Monday at 06:00 UTC
   workflow_dispatch:
@@ -75,7 +79,12 @@ jobs:
 
           FOUND=0
           for pattern in "${PATTERNS[@]}"; do
-            if git grep -rE "$pattern" -- '*.js' '*.html' '*.json' '*.yml' '*.yaml' 2>/dev/null | grep -v "node_modules" | grep -v ".git" | grep -v "# example" | head -5; then
+            # Capture into a variable first — checking the exit code of a
+            # multi-stage pipe directly is unreliable in bash (it reflects the
+            # last command, e.g. `head`, which exits 0 even on empty input).
+            MATCHES=$(git grep -nE "$pattern" -- '*.js' '*.html' '*.json' '*.yml' '*.yaml' ':(exclude).github/workflows/security-audit.yml' 2>/dev/null | grep -v "node_modules" | grep -v "# example" || true)
+            if [ -n "$MATCHES" ]; then
+              echo "$MATCHES" | head -5
               echo "::warning title=Potential Secret Exposure::Pattern '$pattern' found in tracked files. Review above matches."
               FOUND=1
             fi
@@ -83,7 +92,24 @@ jobs:
 
           if [ "$FOUND" -eq 0 ]; then
             echo "✅ No secret patterns detected in tracked files"
+          else
+            echo "::error title=Secret Exposure Check Failed::One or more secret-shaped patterns were found in tracked files. Review the matches above, rotate any real credential immediately, and remove it from git history before merging."
+            exit 1
           fi
+
+      - name: "🐍 Python Dependency Audit"
+        run: |
+          echo "🐍 Checking requirements.txt for known vulnerabilities..."
+          if [ ! -f "requirements.txt" ]; then
+            echo "ℹ️  No requirements.txt found — skipping"
+            exit 0
+          fi
+          pip install --quiet pip-audit
+          if ! pip-audit -r requirements.txt; then
+            echo "::error title=Python Dependency Vulnerabilities Found::pip-audit detected known vulnerabilities in requirements.txt. Review output above and update the affected package(s)."
+            exit 1
+          fi
+          echo "✅ No known vulnerabilities in requirements.txt"
 
       - name: "🔐 Security Headers Validation"
         run: |

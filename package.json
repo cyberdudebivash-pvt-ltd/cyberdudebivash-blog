@@ -1,11 +1,16 @@
 {
   "name": "cyberdudebivash-sentinel-apex",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "CYBERDUDEBIVASH — Sentinel APEX Intelligence Platform. Live threat intel auto-publisher.",
   "main": "fetch-live-intel.js",
   "scripts": {
     "fetch-intel": "node fetch-live-intel.js",
-    "start": "node fetch-live-intel.js"
+    "start": "node fetch-live-intel.js",
+    "build:discover": "node orchestrator/build-orchestrator.js --discover",
+    "build:all": "node orchestrator/build-orchestrator.js --run-all --incremental",
+    "health": "node ops/generate-health-dashboard.js",
+    "docs": "node scripts/generate-docs.js",
+    "test": "node --test tests-js/*.test.js"
   },
   "keywords": [
     "cybersecurity",

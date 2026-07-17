@@ -131,3 +131,71 @@ curl -s -o /dev/null -w 'favicon    %{http_code}\n' $BASE/favicon.ico           
 The infrastructure is in place. The gating item for measurable revenue is
 **switching on the env-configured systems above** — code changes cannot do this;
 they require account credentials set in Vercel.
+
+---
+
+## 5. Build Orchestrator, Observability & Rollback
+
+Added alongside the Phase 4 platform-maturity work. See `docs/build-system.md`
+(auto-generated) for the full generator registry.
+
+### 5.1 Running a generator on demand
+
+Six generators already run on independent schedules (see `docs/build-system.md`
+for the current list and cadence). To re-run one manually without waiting for
+its cron — e.g. after fixing a bug, or to backfill after an outage — use the
+`workflow_dispatch`-only **Build Orchestrator** workflow (GitHub → Actions →
+"🛰 SENTINEL APEX — Build Orchestrator (manual)" → Run workflow), or locally:
+
+```
+node orchestrator/build-orchestrator.js --discover        # list generators + dependencies
+node orchestrator/build-orchestrator.js --run cve-pages    # run one
+node orchestrator/build-orchestrator.js --run-all --incremental  # run all, skipping unchanged
+```
+
+This never replaces or reschedules any of the six existing workflows — it is a
+manual/on-demand tool only.
+
+### 5.2 Checking platform health
+
+`ops/health/index.html` (regenerated every 30 min by `observability.yml`, and
+on every push to `orchestrator/**`) shows, for all six generators: freshness
+status, last successful output timestamp, and — for the Blogger syndication
+pipeline specifically — a real trend of the last 30 runs' publish/fail counts,
+since a run can commit state and exit non-zero-only-sometimes while still
+publishing nothing (see `automation/main.py`'s exit logic: only `failed > 0
+and published == 0` is treated as a hard failure). This page is intentionally
+**not** linked from public navigation or included in `sitemap.xml` — it's an
+operator view, not a content surface.
+
+If the dashboard shows the Blogger syndication trend below ~50% healthy,
+re-check the failure signature first — `HTTP 429 rate limited` matches the
+OAuth/rate-limit incident this platform has hit before (see the root-cause
+analysis in the `fix: surface Blogger syndication pipeline failures` and
+`fix: throttle-guard the external dispatcher` commits).
+
+### 5.3 Rollback
+
+There is no automated rollback pipeline (see `CHANGELOG.md` for the tagging
+convention used to identify known-good points). To roll back a bad production
+deploy today:
+
+1. **Identify the last good commit** — check `git log --oneline main` and/or
+   the version tags in `CHANGELOG.md` for the most recent tagged release known
+   to be healthy.
+2. **Revert forward, don't force-push** — `git revert <bad-commit>` (or a
+   range) and push a new commit to `main`. Force-pushing `main` is not
+   recommended: the six generator workflows commit to `main` on their own
+   schedules and a force-push can silently drop or conflict with one of those
+   in-flight commits.
+3. **Vercel dashboard fallback** — Vercel keeps prior deployments; from the
+   Vercel dashboard, "Promote to Production" on the last known-good deployment
+   gives an immediate rollback while the `git revert` above lands properly in
+   history. Use this for anything user-facing and urgent; still follow up with
+   the git revert so `main` and production stay in sync.
+4. **Bot-commit throttle interaction** — remember `vercel-ignore-build.sh`
+   (see §1.1) only allows bot commits (`SENTINEL APEX`/`syndication:
+   auto-published` messages) to trigger a build in the first 10 minutes of
+   each even UTC hour. A revert commit authored by a human (or with a
+   different message prefix) always builds immediately regardless of that
+   gate.

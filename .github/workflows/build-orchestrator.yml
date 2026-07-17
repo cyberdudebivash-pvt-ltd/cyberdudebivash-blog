@@ -1,0 +1,95 @@
+name: "🛰 SENTINEL APEX — Build Orchestrator (manual)"
+
+# Manual/on-demand only — deliberately NOT scheduled. Each of the six
+# generators already has its own independent cron in its own workflow
+# (sentinel-apex.yml, ai-security-intel.yml, blogger-syndication.yml,
+# cve-pages.yml, intelligence-hub.yml, generate-rss.yml); this workflow
+# exists for ad-hoc full/incremental rebuilds and manifest generation
+# without touching any of those schedules.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Generator id to run, or 'all' for every generator in dependency order"
+        required: true
+        default: "all"
+      incremental:
+        description: "Skip generators whose declared inputs haven't changed since their last successful run"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  orchestrate:
+    name: "Run Build Orchestrator"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: "📥 Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "⚙️ Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "🐍 Setup Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: "📦 Install Python dependencies"
+        run: pip install -r requirements.txt
+
+      - name: "🔬 Syntax-check orchestrator"
+        run: |
+          node -c orchestrator/generator-sdk.js
+          node -c orchestrator/generators.js
+          node -c orchestrator/build-orchestrator.js
+
+      - name: "🛰 Run orchestrator"
+        env:
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+        run: |
+          if [ "${{ inputs.target }}" = "all" ]; then
+            ARGS="--run-all"
+          else
+            ARGS="--run ${{ inputs.target }}"
+          fi
+          if [ "${{ inputs.incremental }}" = "true" ]; then
+            ARGS="$ARGS --incremental"
+          fi
+          echo "Running: node orchestrator/build-orchestrator.js $ARGS"
+          node orchestrator/build-orchestrator.js $ARGS
+
+      - name: "🔍 Check for changes"
+        id: check_changes
+        if: always()
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "📦 Commit and push orchestrator output"
+        if: always() && steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "CYBERDUDEBIVASH"
+          git config user.email "bivash@cyberdudebivash.com"
+          git add -A
+          git commit -m "🛰 [SENTINEL APEX] Build orchestrator run (${{ inputs.target }}) — $(date -u '+%Y-%m-%d %H:%M UTC') [skip ci]"
+          for i in 1 2 3; do
+            git push origin main && break
+            if [ $i -lt 3 ]; then git pull --rebase origin main; sleep $((i * 3)); else exit 1; fi
+          done
