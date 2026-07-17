@@ -2,14 +2,14 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-07-17T17:14:57.105Z",
+  "generated": "2026-07-17T19:14:29.387Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 15,
+    "published": 18,
     "p1": 0,
     "leadsHeld": 4,
     "analystReports": 0,
-    "sourcesOk": 5,
+    "sourcesOk": 4,
     "sourcesTotal": 6,
     "sourceHealth": [
       {
@@ -19,14 +19,6 @@
         "status": "degraded",
         "items": 0,
         "error": "HTTP 429"
-      },
-      {
-        "name": "NVD (prompt injection)",
-        "key": "nvd_pi",
-        "tier": 1,
-        "status": "ok",
-        "items": 40,
-        "error": null
       },
       {
         "name": "arXiv cs.CR (LLM security)",
@@ -45,6 +37,14 @@
         "error": null
       },
       {
+        "name": "NVD (prompt injection)",
+        "key": "nvd_pi",
+        "tier": 1,
+        "status": "ok",
+        "items": 40,
+        "error": null
+      },
+      {
         "name": "r/MachineLearning",
         "key": "reddit_ml",
         "tier": 3,
@@ -56,12 +56,12 @@
         "name": "NVD (AI/LLM keyword)",
         "key": "nvd_ai",
         "tier": 1,
-        "status": "ok",
-        "items": 40,
-        "error": null
+        "status": "degraded",
+        "items": 0,
+        "error": "This operation was aborted"
       }
     ],
-    "runtimeMs": 1443
+    "runtimeMs": 15082
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,8 +88,120 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 15,
+  "count": 18,
   "items": [
+    {
+      "id": "be4b38f52b0064f1",
+      "title": "meta-ads-mcp: X-Pipeboard-Token Header Auth Bypass Reuses Operator Meta Token",
+      "url": "https://github.com/advisories/GHSA-2v2f-mvfg-ph56",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-07-17T18:48:54Z",
+      "cve": "CVE-2026-54547",
+      "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": true,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 63,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "817bca844f5ee45b",
+      "title": "meta-ads-mcp: Server-Side Request Forgery (SSRF) in `upload_ad_image` via Unrestricted `image_url` Fetch",
+      "url": "https://github.com/advisories/GHSA-45gf-fjxp-cjpq",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-07-17T18:47:31Z",
+      "cve": "CVE-2026-54549",
+      "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": true,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 63,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
     {
       "id": "e10ed4c7c0b29a31",
       "title": "vLLM has Remote DoS via Invalid Recovered Token Reinjection",
@@ -263,62 +375,6 @@
       "has_analyst_report": false
     },
     {
-      "id": "0fb64f96f853c638",
-      "title": "obsidian-local-rest-api: Authenticated path traversal via URL-encoded %2F in /vault/{path} — arbitrary host file read/write/delete",
-      "url": "https://github.com/advisories/GHSA-62gx-5q78-wrvx",
-      "source": "GitHub Security Advisories",
-      "tier": 1,
-      "published": "2026-07-15T21:56:45Z",
-      "cve": null,
-      "severity": "high",
-      "cvss": null,
-      "evidence_label": "VERIFIED_ADVISORY",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": true,
-          "rag": false,
-          "tool_use": true,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 48,
-        "priority": "P2"
-      },
-      "confidence": {
-        "source": "HIGH",
-        "evidence": "MODERATE",
-        "overall": "HIGH",
-        "rationale": "Authoritative source (GitHub Security Advisories)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
       "id": "1ea2efc7009451c0",
       "title": "vLLM: ReDoS via structured_outputs.regex compiled without timeout in xgrammar and outlines backends",
       "url": "https://github.com/advisories/GHSA-rwxx-mrjm-wc2m",
@@ -431,6 +487,62 @@
       "has_analyst_report": false
     },
     {
+      "id": "3fee551ac84c485c",
+      "title": "vLLM: Speech-to-text upload size limit is enforced after full UploadFile read",
+      "url": "https://github.com/advisories/GHSA-v82g-2437-67m2",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-07-17T17:16:17Z",
+      "cve": "CVE-2026-55646",
+      "severity": "medium",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "infra",
+          "label": "AI Infrastructure / Inference Server"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM05",
+          "name": "Supply Chain Vulnerabilities"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0010",
+          "name": "ML Supply Chain Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": false,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "standard"
+      },
+      "enterprise_impact": {
+        "score": 30,
+        "priority": "P3"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Expose-check inference servers (Triton/vLLM/Ollama/MLflow/Ray) for unauthenticated management endpoints.",
+        "hunt": "Shodan/asset-inventory sweep for AI infra bound to 0.0.0.0 without auth."
+      },
+      "has_analyst_report": false
+    },
+    {
       "id": "5dd793f876942a5d",
       "title": "vLLM: Processing differential in multi-channel audio downmixing enables hidden-input/moderation bypass for audio models",
       "url": "https://github.com/advisories/GHSA-6c4r-fmh3-7rh8",
@@ -483,6 +595,62 @@
       "detection": {
         "detect": "Expose-check inference servers (Triton/vLLM/Ollama/MLflow/Ray) for unauthenticated management endpoints.",
         "hunt": "Shodan/asset-inventory sweep for AI infra bound to 0.0.0.0 without auth."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "05728cee2cbb8357",
+      "title": "oapi-codegen: OpenAPI Server Description Escapes Generated Go Comment and Injects Executable Code",
+      "url": "https://github.com/advisories/GHSA-rjwr-m7qx-3fjr",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-07-17T18:50:17Z",
+      "cve": null,
+      "severity": "low",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": true,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 20,
+        "priority": "P3"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "MODERATE",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories)."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
       },
       "has_analyst_report": false
     },
