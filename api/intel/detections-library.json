@@ -1,8 +1,55 @@
 {
-  "generated": "2026-07-17T05:50:56.574Z",
+  "generated": "2026-07-17T08:30:38.039Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "if-you-ve-given-an-ai-agent-real-credentials-how-are-you-sc",
+      "title": "If you've given an AI agent real credentials, how are you scoping what it can reach?",
+      "url": "/posts/if-you-ve-given-an-ai-agent-real-credentials-how-are-you-sc.html",
+      "generated": "2026-07-17T07:31:39.360Z",
+      "severity": "MEDIUM",
+      "cves": [],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/sudo_human_&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/sudo_human_&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uysecb/if_youve_given_an_ai_agent_real_credentials_\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uysecb/if_youve_given_an_ai_agent_real_credentials_\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
+      ]
+    },
+    {
+      "slug": "published-research-article-on-ieee-about-supply-chain-attack",
+      "title": "Published research article on IEEE about supply chain attacks and preventive security measures",
+      "url": "/posts/published-research-article-on-ieee-about-supply-chain-attack.html",
+      "generated": "2026-07-17T06:36:07.123Z",
+      "severity": "MEDIUM",
+      "cves": [],
+      "mitreAttack": [
+        {
+          "id": "T1195",
+          "name": "Supply Chain Compromise",
+          "tactic": "initial-access",
+          "confidence": "HIGH"
+        }
+      ],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://doi.org/10.1109/SIST61674.2026.11596367&quot;&gt;https://doi.org/10.1109/SIST61674.2026.1159\"; http.host; content:\"doi.org\"; nocase; http.uri; content:\"/10.1109/SIST61674.2026.11596367&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/NoyanTM/aitu-sist-2026%5C_research-paper/blob/main/paper/sist-2026%5C_paper%5C_wo\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/NoyanTM/aitu-sist-2026%5C_research-paper/blob/main/paper/sist-2026%5C_paper%5C_wo\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/NoyanTM/aitu-sist-2026\\_research-paper/blob/main/paper/sist-2026\\_paper\\_word.pdf\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/NoyanTM/aitu-sist-2026\\\\_research-paper/blob/main/paper/sist-2026\\\\_paper\\\\_word.pdf\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/NoyanTM/blog/blob/main/posts/2026-05-29%5C_teampcp-russians-and-supply-chain-secu\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/NoyanTM/blog/blob/main/posts/2026-05-29%5C_teampcp-russians-and-supply-chain-secu\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/NoyanTM/blog/blob/main/posts/2026-05-29\\_teampcp-russians-and-supply-chain-securi\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/NoyanTM/blog/blob/main/posts/2026-05-29\\\\_teampcp-russians-and-supply-chain-securi\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain doi.org\"; dns.query; content:\"doi.org\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000007; rev:1;)"
+      ]
+    },
     {
       "slug": "deber-aa-pagar-por-esto",
       "title": "deberíaa pagar por esto?",
@@ -4143,50 +4190,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1upotnq/stealer_logs_data_breach/&quot;&gt;[comments\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1upotnq/stealer_logs_data_breach/&quot\\;&gt\\;[comments\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain haveibeenpwned.com\"; dns.query; content:\"haveibeenpwned.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
-      ]
-    },
-    {
-      "slug": "security-exam-readiness",
-      "title": "Security+ exam readiness",
-      "url": "/posts/security-exam-readiness.html",
-      "generated": "2026-07-07T07:02:03.436Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Repulsive-Roof3259&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Repulsive-Roof3259&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1upmutc/security_exam_readiness/&quot;&gt;[link]&lt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1upmutc/security_exam_readiness/&quot\\;&gt\\;[link]&lt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1upmutc/security_exam_readiness/&quot;&gt;[comments]\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1upmutc/security_exam_readiness/&quot\\;&gt\\;[comments]\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "cve-2026-53582-seclists-multiple-targets",
-      "title": "OPNsense XPATH Injection (CVE-2026-53582)",
-      "url": "/posts/cve-2026-53582-seclists-multiple-targets.html",
-      "generated": "2026-07-07T07:02:03.428Z",
-      "severity": "HIGH",
-      "cves": [
-        "CVE-2026-53582"
-      ],
-      "mitreAttack": [
-        {
-          "id": "T1068",
-          "name": "Exploitation for Privilege Escalation",
-          "tactic": "privilege-escalation",
-          "confidence": "MEDIUM"
-        }
-      ],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/opnsense/core/security/advisories/GHSA-xww7-76m6-mh2r&quot;&gt;https://github.com\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/opnsense/core/security/advisories/GHSA-xww7-76m6-mh2r&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
       ]
     }
   ]
