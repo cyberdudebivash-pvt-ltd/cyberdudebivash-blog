@@ -1114,11 +1114,28 @@
 
 /* ── Config ─────────────────────────────────────────────────────── */
 const API_BASE = '/api/v1';
-const PLANS = {
+// Fallback only — used if action=plans hasn't resolved yet (or fails) by the
+// time a user clicks upgrade. The backend (api/_lib/payment-utils.js) is the
+// real source of truth; this must be kept in sync with it, not treated as
+// authoritative. See docs/PRICING.md.
+let PLANS = {
   starter:    { name: 'API Starter', price: '₹2,499', amount: 2499, currency: 'INR' },
   pro:        { name: 'SOC Pro',    price: '₹1,499', amount: 1499, currency: 'INR' },
   enterprise: { name: 'Enterprise', price: '₹4,999', amount: 4999, currency: 'INR' },
 };
+const plansReady = fetch(`${API_BASE}/billing?action=plans`)
+  .then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)))
+  .then(data => {
+    const fetched = data.plans || data.data?.plans;
+    if (!fetched) return;
+    const merged = {};
+    for (const [key, p] of Object.entries(fetched)) {
+      merged[key] = { name: p.label, amount: p.amount, currency: p.currency,
+        price: `${p.currency === 'INR' ? '₹' : '$'}${p.amount.toLocaleString('en-IN')}` };
+    }
+    PLANS = merged;
+  })
+  .catch(e => console.warn('[Pricing] Could not load canonical plans, using fallback:', e.message));
 const PLAN_FEATURES = {
   starter: ['5,000 API calls per day', 'Weekly threat intel digest', 'Unlimited full-text search', 'Single API key'],
   pro: ['50 live threat items per request', 'Complete IOC feed access', 'SIGMA + Yara detection rules', 'Unlimited full-text search', '25,000 API calls per day'],
@@ -1135,7 +1152,8 @@ const PaymentFlow = (() => {
   };
 
   /* ── Open modal ── */
-  function startUpgrade(plan) {
+  async function startUpgrade(plan) {
+    await plansReady; // resolves near-instantly if already loaded; never blocks more than one fetch
     if (!PLANS[plan]) return;
     state.plan = plan;
 
@@ -1255,9 +1273,15 @@ const PaymentFlow = (() => {
   }
 
   function populatePaymentDetails(data) {
-    const intentId = state.intentId || data.intent_id;
+    const intentId = state.intentId || data.intent_id || data.intent?.intent_id;
     document.getElementById('intentIdDisplay').textContent = intentId || '—';
     document.getElementById('bankRef').textContent = intentId || '—';
+
+    // The amount the server actually recorded against this intent is the
+    // only value that's ever correct here — it's what a human reviewer will
+    // check the transferred amount against. The local PLANS cache is a
+    // display-only fallback for the rare case a response omits it.
+    const amount = data.intent?.amount ?? PLANS[state.plan]?.amount;
 
     // UPI
     const upi = data.payment_instructions?.upi || data.upi || {};
@@ -1265,7 +1289,7 @@ const PaymentFlow = (() => {
     document.getElementById('upiIdDisplay').textContent = upiId;
 
     // QR
-    const qrData = upi.upi_link || `upi://pay?pa=${upiId}&pn=CYBERDUDEBIVASH&am=${PLANS[state.plan]?.amount}&cu=INR&tn=${intentId}`;
+    const qrData = upi.upi_link || `upi://pay?pa=${upiId}&pn=CYBERDUDEBIVASH&am=${amount}&cu=INR&tn=${intentId}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrData)}&bgcolor=0f1520&color=00ffe0&margin=10`;
     document.getElementById('qrCodeImg').src = qrUrl;
 
@@ -1275,7 +1299,7 @@ const PaymentFlow = (() => {
     document.getElementById('bankAccount').textContent = bank.account_number   || 'Contact support';
     document.getElementById('bankIfsc').textContent    = bank.ifsc             || 'Contact support';
     document.getElementById('bankName2').textContent   = bank.bank_name        || '—';
-    document.getElementById('bankAmount').textContent  = `₹${PLANS[state.plan]?.amount || '—'}`;
+    document.getElementById('bankAmount').textContent  = `₹${amount ?? '—'}`;
   }
 
   function switchTab(tab) {

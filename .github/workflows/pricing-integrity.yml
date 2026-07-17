@@ -1,0 +1,63 @@
+name: "💳 SENTINEL APEX — Pricing Integrity"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'api/_lib/payment-utils.js'
+      - 'api/v1/billing.js'
+      - 'api/_lib/stripe.js'
+      - 'payment-flow.js'
+      - 'pricing.html'
+      - 'api-dashboard.html'
+      - 'ai-monetization-engine.js'
+      - 'ux-controller.js'
+      - 'revenue-cta-block.js'
+      - 'conversion-engine.js'
+      - 'auto-intel-engine.js'
+      - 'seo-engine.js'
+      - 'api.html'
+      - 'tests-js/pricing-consistency.test.js'
+      - '.github/workflows/pricing-integrity.yml'
+  pull_request:
+    paths:
+      - 'api/_lib/payment-utils.js'
+      - 'api/v1/billing.js'
+      - 'api/_lib/stripe.js'
+      - 'payment-flow.js'
+      - 'pricing.html'
+      - 'api-dashboard.html'
+      - 'ai-monetization-engine.js'
+      - 'ux-controller.js'
+      - 'revenue-cta-block.js'
+      - 'conversion-engine.js'
+      - 'auto-intel-engine.js'
+      - 'seo-engine.js'
+      - 'api.html'
+      - 'tests-js/pricing-consistency.test.js'
+  workflow_dispatch:
+
+jobs:
+  pricing-consistency:
+    name: "Backend price vs. every customer-facing surface"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "📥 Checkout"
+        uses: actions/checkout@v4
+
+      - name: "🟢 Set up Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "🔬 Syntax-check touched pricing surfaces"
+        run: |
+          node -c api/_lib/payment-utils.js
+          node -c api/v1/billing.js
+          node -c api/_lib/stripe.js
+          node -c payment-flow.js
+
+      - name: "🧪 Run pricing-consistency tests"
+        run: node --test tests-js/pricing-consistency.test.js

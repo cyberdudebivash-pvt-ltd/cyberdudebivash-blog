@@ -85,7 +85,7 @@
     },
     ransomware: {
       primary:   { cta:'🛡️ Get Ransomware Defense Kit',  url:'/products.html' },
-      secondary: { cta:'⚡ SOC Pro — $49/mo',            url:'/pricing.html' },
+      secondary: { cta:'⚡ SOC Pro — $18/mo',            url:'/pricing.html' },
       sub: '800+ YARA rules, IR playbook, IOC bundle for active ransomware campaigns.'
     },
     apt: {
@@ -99,7 +99,7 @@
       sub: 'LLM attack surfaces, prompt injection TTPs, enterprise AI governance — research-grade.'
     },
     general: {
-      primary:   { cta:'⚡ Start SOC Pro — $49/mo',       url:'/pricing.html' },
+      primary:   { cta:'⚡ Start SOC Pro — $18/mo',       url:'/pricing.html' },
       secondary: { cta:'📦 Browse Products',              url:'/products.html' },
       sub: '48H pre-disclosure CVEs, daily IOC feeds, SIEM rules. 4,800+ analysts subscribed.'
     }
@@ -514,7 +514,7 @@
       <span>✓ Full IOC list</span><span>✓ YARA detection rules</span>
       <span>✓ SIEM queries</span><span>✓ Response playbook</span>
     </div>
-    <a class="gate-cta" href="/pricing.html">Unlock with SOC Pro — $49/mo</a>
+    <a class="gate-cta" href="/pricing.html">Unlock with SOC Pro — $18/mo</a>
     <a class="gate-cta gate-cta-outline" href="/leads.html">Get Free Sample Report</a>
   </div>
 </div>`;

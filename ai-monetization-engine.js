@@ -395,7 +395,7 @@
             <a href="${CFG.enterpriseUrl}" onclick="if(window.trackEvent)window.trackEvent('engagement_high_enterprise_click',{})" style="background:linear-gradient(135deg,#ffd700,#ff8c00);color:#000;font-weight:800;font-size:.78rem;padding:.45rem .95rem;border-radius:7px;text-decoration:none;white-space:nowrap">Get Enterprise Proposal \u2192</a>
             <button onclick="document.getElementById('aim-high-intent-strip').remove();if(window.trackEvent)window.trackEvent('engagement_high_dismissed',{})" style="background:none;border:none;color:#475569;cursor:pointer;font-size:.85rem">\u2715</button>`;
         } else {
-          const { final, discount, code } = DYNPRICE.compute(49);
+          const { final, discount, code } = DYNPRICE.compute(18);
           strip.innerHTML = `
             <span style="font-size:.82rem;color:#94a3b8;font-weight:500">\u26A1 You're clearly invested in threat intelligence.</span>
             <strong style="font-size:.85rem;color:${CFG.CYAN}">SOC Pro \u2014 $${final}/mo</strong>${discount > 0 ? `<span style="font-size:.72rem;color:#22c55e;font-weight:700"> ${Math.round(discount*100)}% off \u00B7 ${code}</span>` : ''}
@@ -924,7 +924,7 @@
       if (window.innerWidth <= 767) return; // mobile: suppressed to avoid header overlap
       if (document.getElementById('aim-upgrade-strip')) return;
       const p = INTENT.profile;
-      const { final, discount, code } = DYNPRICE.compute(49);
+      const { final, discount, code } = DYNPRICE.compute(18);
       const strip = document.createElement('div');
       strip.id = 'aim-upgrade-strip';
       strip.style.cssText = `position:fixed;bottom:0;left:0;right:0;z-index:9997;background:linear-gradient(90deg,rgba(0,255,224,.1),rgba(0,100,200,.08));border-top:1px solid rgba(0,255,224,.2);padding:.55rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;font-family:'Segoe UI',system-ui,sans-serif;transform:translateY(100%);transition:transform .35s ease;`;
@@ -1005,7 +1005,7 @@
   function printRevenueDashboard() {
     const p       = INTENT.profile;
     const events  = ls.get('cx_events') || [];
-    const price   = DYNPRICE.compute(49);
+    const price   = DYNPRICE.compute(18);
     console.groupCollapsed('%c[CYBERDUDEBIVASH SENTINEL APEX] AI Monetization Engine — Revenue Dashboard', 'color:#00ffe0;font-weight:bold;font-size:12px');
     console.log('Intent Profile:', p);
     console.log('Dynamic Pricing:', price);

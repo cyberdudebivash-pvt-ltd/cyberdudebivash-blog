@@ -22,12 +22,12 @@ const PLANS = {
   pro: {
     tier:        'pro',
     label:       'SOC Pro',
-    amount:      4099,
+    amount:      1499,
     currency:    'INR',
     period:      'month',
     rateLimit:   25000,
     description: 'Pro tier — 25,000 API calls/day, IOC access, detection rules, full intel reports',
-    upiNote:     'Transfer ₹4,099 to the UPI ID below. Include your intent ID in remarks.',
+    upiNote:     'Transfer ₹1,499 to the UPI ID below. Include your intent ID in remarks.',
   },
   enterprise: {
     tier:        'enterprise',

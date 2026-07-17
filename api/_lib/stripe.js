@@ -2,7 +2,12 @@
  * SENTINEL APEX — Stripe REST Client (zero npm dependencies)
  * Uses Stripe REST API directly via fetch.
  * Required env vars: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
- * Price IDs: STRIPE_PRICE_PRO (monthly $49), STRIPE_PRICE_ENTERPRISE (custom)
+ * Price IDs: STRIPE_PRICE_PRO, STRIPE_PRICE_ENTERPRISE (custom).
+ * STRIPE_PRICE_PRO must point at a Stripe Price object matching the
+ * canonical amount in api/_lib/payment-utils.js (PLANS.pro — currently
+ * ₹1,499/mo, ≈$18) — verify this in the Stripe dashboard directly; a code
+ * change here cannot confirm what the live env var actually points at.
+ * See docs/PRICING.md.
  */
 'use strict';
 const crypto = require('crypto');
