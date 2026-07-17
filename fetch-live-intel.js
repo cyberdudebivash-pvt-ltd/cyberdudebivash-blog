@@ -210,8 +210,24 @@ function slugify(str) {
 function escHtml(str) {
   return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+// Some RSS/Atom feeds (Reddit's notably) emit CDATA content whose tags are
+// themselves HTML-entity-encoded as text, occasionally double-encoded
+// (e.g. "&amp;lt;div&amp;gt;"). Decoding twice resolves one level of
+// double-escaping so real tags are exposed before stripHtml removes them —
+// otherwise tag names and entity fragments leak into plain text unchanged.
+const HTML_NAMED_ENTITIES = { amp:'&', lt:'<', gt:'>', quot:'"', apos:"'", nbsp:' ' };
+function decodeEntities(str) {
+  const decodeOnce = t => String(t||'').replace(/&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z]+);/g, (m, ent) => {
+    if (ent[0] === '#') {
+      const code = (ent[1]==='x'||ent[1]==='X') ? parseInt(ent.slice(2),16) : parseInt(ent.slice(1),10);
+      return Number.isFinite(code) ? String.fromCodePoint(code) : m;
+    }
+    return Object.prototype.hasOwnProperty.call(HTML_NAMED_ENTITIES, ent) ? HTML_NAMED_ENTITIES[ent] : m;
+  });
+  return decodeOnce(decodeOnce(str));
+}
 function stripHtml(str) {
-  return String(str||'').replace(/<[^>]*>/g,' ').replace(/\s{2,}/g,' ').trim();
+  return decodeEntities(str).replace(/<[^>]*>/g,' ').replace(/\s{2,}/g,' ').trim();
 }
 function extractCVEs(text) {
   const m = (text||'').match(/CVE-\d{4}-\d{4,7}/gi)||[];
@@ -312,7 +328,7 @@ function parseRSS(xml) {
     const b = m[1];
     const get = tag => {
       const cd = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tag}>`, 'i').exec(b);
-      if (cd) return cd[1].trim();
+      if (cd) return stripHtml(cd[1]).trim();
       const pl = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, 'i').exec(b);
       if (pl) return stripHtml(pl[1]).trim();
       if (tag === 'link') { const hr = /<link[^>]+href=["']([^"']+)["']/i.exec(b); if(hr) return hr[1]; }
@@ -2029,9 +2045,7 @@ function generatePostHTML(item) {
   const safeTitle = String(item.title||'').replace(/[\u0000-\u001F\u007F]/g,' ').replace(/\s+/g,' ').trim();
   const metaTitle = `${safeTitle} | CYBERDUDEBIVASH SENTINEL APEX`;
   const isCVEItem = /^CVE-/i.test(item.id);
-  const cleanDescText = (item.desc||'')
-    .replace(/<[^>]+>/g,' ')
-    .replace(/&[a-zA-Z#0-9]+;/g,' ')
+  const cleanDescText = stripHtml(item.desc||'')
     .replace(/```[\s\S]*?```/g,' ')
     .replace(/`+/g,'')
     .replace(/!?\[([^\]]*)\]\([^)]*\)/g,'$1')
@@ -2183,7 +2197,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
   <article>
     <div class="meta-bar">${badges}<span class="rep-date">Published: ${pubDateFmt}</span></div>
     <h1 class="rh1">${escHtml(item.title)}</h1>
-    <p class="rsubtitle">${escHtml((item.desc||'').slice(0,350))}${(item.desc||'').length>350?'...':''}</p>
+    <p class="rsubtitle">${escHtml(cleanDescText.slice(0,350))}${cleanDescText.length>350?'...':''}</p>
     <div class="stats-bar">
       <div class="stat red"><div class="sv">${cvss}</div><div class="sl">CVSS Score</div></div>
       <div class="stat"><div class="sv" style="color:${cvssColor}">${tl}</div><div class="sl">Threat Level</div></div>
@@ -2976,5 +2990,5 @@ if (require.main === module) {
     process.exit(1);
   });
 } else {
-  module.exports = { generatePostHTML, genMultiPlatformDetections, genPriorIntelligence, genStructuredReasoning, genIntelligenceProducts, buildProductApiJSON, genSigma, genYARA, getMitre };
+  module.exports = { generatePostHTML, genMultiPlatformDetections, genPriorIntelligence, genStructuredReasoning, genIntelligenceProducts, buildProductApiJSON, genSigma, genYARA, getMitre, stripHtml, decodeEntities };
 }
