@@ -391,6 +391,80 @@ class TestMultiSiemDetectionQueries(unittest.TestCase):
         self.assertIn("VALIDATE FIELD NAMES AGAINST YOUR ENVIRONMENT", content)
 
 
+class TestRecommendedServicesWiring(unittest.TestCase):
+    def setUp(self):
+        self.config = Config()
+        self.config.anthropic_api_key = ""
+        self.transformer = AuthorityTransformer(self.config)
+
+    def test_ransomware_report_recommends_incident_response(self):
+        article = _make_article(
+            title="LockBit Ransomware Hits Healthcare", summary="LockBit ransomware group encrypted hospital systems.",
+            labels=["Ransomware", "CYBERDUDEBIVASH", "Threat Intelligence"],
+        )
+        content = self.transformer.transform(article)["content"]
+        self.assertIn("Recommended For This Threat", content)
+        self.assertIn("Incident Response", content)
+
+    def test_uses_existing_service_css_classes(self):
+        article = _make_article(labels=["Vulnerabilities", "CYBERDUDEBIVASH"])
+        content = self.transformer.transform(article)["content"]
+        self.assertIn('class="apex-services"', content)
+        self.assertIn('class="apex-svc-item"', content)
+
+
+class TestIndustryIntelligenceWiring(unittest.TestCase):
+    def setUp(self):
+        self.config = Config()
+        self.config.anthropic_api_key = ""
+        self.transformer = AuthorityTransformer(self.config)
+
+    def test_healthcare_report_renders_industry_block(self):
+        article = _make_article(
+            title="Ransomware Group Hits Regional Hospital Network",
+            summary="A ransomware group encrypted patient records at a healthcare system.",
+            labels=["Ransomware"],
+        )
+        content = self.transformer.transform(article)["content"]
+        self.assertIn("Industry Impact Intelligence", content)
+        self.assertIn("Healthcare", content)
+        self.assertIn("HIPAA", content)
+
+    def test_generic_cve_report_omits_industry_block(self):
+        article = _make_article(title="CVE-2026-9999 Critical RCE", summary="Critical remote code execution.", labels=["Vulnerabilities"])
+        content = self.transformer.transform(article)["content"]
+        self.assertNotIn("Industry Impact Intelligence", content)
+
+
+class TestExecutiveDecisionCenter(unittest.TestCase):
+    def setUp(self):
+        self.config = Config()
+        self.config.anthropic_api_key = ""
+        self.transformer = AuthorityTransformer(self.config)
+
+    def test_all_six_audiences_present(self):
+        article = _make_article(cvss_score=9.8)
+        content = self.transformer.transform(article)["content"]
+        for role in ["CEO Summary", "Board Summary", "CISO Summary", "SOC Summary", "DevSecOps Summary", "Cloud Summary"]:
+            self.assertIn(role, content, f"{role} missing")
+
+    def test_always_present_even_without_cvss(self):
+        article = _make_article(title="Generic Ransomware News", summary="A ransomware group claimed victims.", labels=["Ransomware"])
+        content = self.transformer.transform(article)["content"]
+        self.assertIn("Executive Decision Center", content)
+
+    def test_summaries_are_not_identical_text(self):
+        """Each audience card must say something genuinely different."""
+        article = _make_article(cvss_score=9.8)
+        content = self.transformer.transform(article)["content"]
+        from automation.authority_transformer import _build_executive_decision_center
+        block = _build_executive_decision_center("Vulnerabilities", "CVE-2026-9999", "CRITICAL", self.config)
+        import re
+        texts = re.findall(r'letter-spacing:1px;\s*text-transform:uppercase;margin-bottom:8px">([^<]+)</div>\s*<div[^>]*>([^<]+)</div>', block)
+        bodies = [t[1] for t in texts]
+        self.assertEqual(len(bodies), len(set(bodies)), "Two or more audience summaries are identical text")
+
+
 class TestTrustStatsBlock(unittest.TestCase):
     """Real numbers only, read from data/published_posts.json — never fabricated."""
 
@@ -413,6 +487,15 @@ class TestTrustStatsBlock(unittest.TestCase):
         content = self.transformer.transform(article)["content"]
         self.assertIn("Threat Reports Published", content)
         self.assertIn("2,378", content)
+
+    def test_renders_detection_rules_and_siem_platform_count(self):
+        from automation.authority_transformer import SIEM_PLATFORM_LABELS
+        self._write_state({"total_published": 100, "posts": {}})
+        article = _make_article()
+        content = self.transformer.transform(article)["content"]
+        self.assertIn("Detection Rules Generated", content)
+        self.assertIn("Supported SIEM Platforms", content)
+        self.assertIn(str(len(SIEM_PLATFORM_LABELS)), content)
 
     def test_renders_unique_cve_count_when_present(self):
         self._write_state({

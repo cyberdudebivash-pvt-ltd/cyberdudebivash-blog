@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XTGLNMNNC7',{page_title:document.title,page_location:window.location.href});</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#00ffe0">
+<meta name="description" content="126 real tracked CVE(s) affecting npm, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta property="og:title" content="npm CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:description" content="126 real tracked CVE(s) affecting npm, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://blog.cyberdudebivash.in/vendor/npm.html">
+<meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:image" content="https://blog.cyberdudebivash.in/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="npm CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX">
+<meta name="twitter:description" content="126 real tracked CVE(s) affecting npm, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta name="twitter:image" content="https://blog.cyberdudebivash.in/og-image.png">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://blog.cyberdudebivash.in/vendor/npm.html">
+<title>npm CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"npm CVE Intelligence","url":"https://blog.cyberdudebivash.in/vendor/npm.html","dateModified":"2026-07-17"}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-bg:#07090f;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--apex-font);background:var(--apex-bg);color:var(--apex-text);min-height:100vh;line-height:1.7}
+nav{position:sticky;top:0;z-index:9999;background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}.nlogo{font-size:18px;font-weight:900;color:var(--apex-cyan)}.ntag{font-size:10px;color:var(--apex-muted);letter-spacing:.1em;text-transform:uppercase}
+.nlinks{display:flex;gap:4px;flex-wrap:wrap}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:var(--apex-text)}
+main{max-width:900px;margin:0 auto;padding:44px 24px 80px}
+.eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--apex-cyan);background:#00ffe012;border:1px solid #00ffe033;border-radius:6px;padding:5px 12px;margin-bottom:16px}
+h1{font-size:clamp(28px,4.6vw,42px);font-weight:900;color:#fff;margin-bottom:14px}
+.lede{font-size:17px;color:#c9d1d9;margin-bottom:36px;max-width:70ch}
+.rcard{display:block;background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:20px 24px;margin-bottom:14px;text-decoration:none;transition:border-color .2s}
+.rcard:hover{border-color:#00ffe066}
+.rk{font-size:12px;font-weight:700;color:var(--apex-cyan);font-family:var(--mono);letter-spacing:.04em}
+.rcard h2{font-size:19px;font-weight:800;color:#fff;margin:8px 0 8px;line-height:1.3}
+.rcard p{font-size:14px;color:#c9d1d9;margin-bottom:8px}
+.rmore{font-size:13px;font-weight:700;color:var(--apex-cyan)}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;margin-right:6px;font-family:var(--mono)}
+.stat-row{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 10px}
+.stat{font-size:12.5px;color:var(--apex-muted);font-family:var(--mono)}
+.stat b{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.note{font-size:13.5px;color:var(--apex-muted);margin-top:28px;border-top:1px solid var(--apex-border);padding-top:20px}
+.note a{color:var(--apex-cyan)}
+.empty-state{color:var(--apex-muted);font-size:14px;padding:20px 0}
+footer{border-top:1px solid var(--apex-border);padding:28px 24px;text-align:center;font-size:13px;color:var(--apex-muted);margin-top:40px}
+footer a{color:var(--apex-cyan);text-decoration:none}
+code.rule-preview{display:block;background:#050709;border:1px solid var(--apex-border);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:12px;color:#9ae6b4;white-space:pre-wrap;word-break:break-word;margin-top:8px}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nbrand" href="/"><span class="nlogo">CYBERDUDEBIVASH</span><span class="ntag">Sentinel APEX</span></a>
+  <div class="nlinks"><a href="/">Reports</a><a href="/research">Research</a><a href="/detections">Detections</a><a href="/vendor/" style="color:#fff">Vendors</a><a href="/timeline/">Timeline</a><a href="/collections/">Collections</a><a href="/threat/">Threat Actors</a><a href="/intelligence.html">Intelligence</a></div>
+</nav>
+<main>
+  <span class="eyebrow">Vendor Intelligence</span>
+  <h1>npm</h1>
+  <p class="lede">126 tracked CVEs · 0 in CISA KEV · 0 confirmed exploited in the wild.</p>
+  
+      <a class="rcard" href="/cve/CVE-2026-54309.html">
+        <span class="rk">CVE-2026-54309 · CVSS 10</span>
+        <h2>n8n: MCP Browser HTTP Transport Exposes Unauthenticated Browser-Control Sessions</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54305.html">
+        <span class="rk">CVE-2026-54305 · CVSS 9.9</span>
+        <h2>n8n: Cross-Tenant Credential Takeover via Dynamic Credentials EE Endpoints</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54307.html">
+        <span class="rk">CVE-2026-54307 · CVSS 9.6</span>
+        <h2>n8n: Credential Exfiltration via Permission Bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-43941.html">
+        <span class="rk">CVE-2026-43941 · CVSS 8.8</span>
+        <h2>Electerm has an unvalidated shell.openExternal that allows arbitrary protocol execution via terminal link click</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-43943.html">
+        <span class="rk">CVE-2026-43943 · CVSS 8.8</span>
+        <h2>Electerm Security Vulnerability: RCE via malicious SSH server filename in openFileWithEditor</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45716.html">
+        <span class="rk">CVE-2026-45716 · CVSS 8.8</span>
+        <h2>Budibase: Builder-to-Admin Privilege Escalation via onboardUsers Endpoint Without SMTP Configuration</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45717.html">
+        <span class="rk">CVE-2026-45717 · CVSS 8.8</span>
+        <h2>Budibase: `PUT /api/datasources/:datasourceId` is protected only by `TABLE/READ` permission instead of builder access, allowing any authenticated app user to overwrite datasource connection parameters including host, port, and URL</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48017.html">
+        <span class="rk">CVE-2026-48017 · CVSS 8.8</span>
+        <h2>DbGate: Remote Code Execution via functionName injection in loadReader endpoint</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48054.html">
+        <span class="rk">CVE-2026-48054 · CVSS 8.8</span>
+        <h2>OpenZeppelin Contracts Wizard has Code Injection in Generated Hardhat and Foundry Tests via Unsanitized opts.name / opts.uri</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49143.html">
+        <span class="rk">CVE-2026-49143 · CVSS 8.8</span>
+        <h2>browserstack-runner vulnerable to Remote Code Execution via vm sandbox escape in _log HTTP handler</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49255.html">
+        <span class="rk">CVE-2026-49255 · CVSS 8.8</span>
+        <h2>electerm has Command Injection in File System Operations (rmrf, mv, cp)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49473.html">
+        <span class="rk">CVE-2026-49473 · CVSS 8.8</span>
+        <h2>@cedar-policy/authorization-for-expressjs has an authorization bypass via query string manipulation</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49987.html">
+        <span class="rk">CVE-2026-49987 · CVSS 8.8</span>
+        <h2>repomix Vulnerable to Command Injection (RCE) via `--remote-branch` Argument Injection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50016.html">
+        <span class="rk">CVE-2026-50016 · CVSS 8.8</span>
+        <h2>pnpm: Transitive dependency alias path traversal allows project path override via symlink replacement</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53806.html">
+        <span class="rk">CVE-2026-53806 · CVSS 8.8</span>
+        <h2>OpenClaw: Combined POSIX shell options could confuse exec revalidation</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53810.html">
+        <span class="rk">CVE-2026-53810 · CVSS 8.8</span>
+        <h2>OpenClaw's marketplace runtime extension metadata could point at unscanned payloads</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53811.html">
+        <span class="rk">CVE-2026-53811 · CVSS 8.8</span>
+        <h2>OpenClaw: Matrix allowFrom could bind to mutable display names</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53819.html">
+        <span class="rk">CVE-2026-53819 · CVSS 8.8</span>
+        <h2>OpenClaw: Workspace .env could override Homebrew executable selection for skill install flows</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54504.html">
+        <span class="rk">CVE-2026-54504 · CVSS 8.8</span>
+        <h2>@andrea9293/mcp-documentation-server: Web UI API binds to all interfaces without authentication by default</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55698.html">
+        <span class="rk">CVE-2026-55698 · CVSS 8.8</span>
+        <h2>pnpm: Project env lockfile can short-circuit package-manager resolution and execute lockfile-selected pnpm bytes</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-28445.html">
+        <span class="rk">CVE-2026-28445 · CVSS 8.7</span>
+        <h2>Typebot has Stored XSS via Rating Block Custom Icon that Bypasses isUnsafe Sandbox in Builder Preview</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44295.html">
+        <span class="rk">CVE-2026-44295 · CVSS 8.7</span>
+        <h2>protobuf.js: Code injection in pbjs static output from crafted schema names</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44494.html">
+        <span class="rk">CVE-2026-44494 · CVSS 8.7</span>
+        <h2>axios Vulnerable to Full Man-in-the-Middle via Prototype Pollution Gadget in `config.proxy`</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47135.html">
+        <span class="rk">CVE-2026-47135 · CVSS 8.7</span>
+        <h2>vm2 has a sandbox escape via unblocked cross-realm Symbol.for keys + missing bridge write-trap symbol checks</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47759.html">
+        <span class="rk">CVE-2026-47759 · CVSS 8.7</span>
+        <h2>TinyMCE Cross-Site Scripting (XSS) vulnerability using through data-mce- prefixed src, href, style attributes</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47760.html">
+        <span class="rk">CVE-2026-47760 · CVSS 8.7</span>
+        <h2>TinyMCE Cross-Site Scripting (XSS) vulnerability using sanitization bypass through nested SVGs</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47761.html">
+        <span class="rk">CVE-2026-47761 · CVSS 8.7</span>
+        <h2>TinyMCE Cross-Site Scripting (XSS) vulnerability using media plugin `data-mce-object` injection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47762.html">
+        <span class="rk">CVE-2026-47762 · CVSS 8.7</span>
+        <h2>TinyMCE Cross-Site Scripting (XSS) vulnerability through `mce:protected` comments</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48527.html">
+        <span class="rk">CVE-2026-48527 · CVSS 8.7</span>
+        <h2>HaxCMS has a stored Cross-Site Scripting (XSS) bypass in its saveNode endpoint</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42047.html">
+        <span class="rk">CVE-2026-42047 · CVSS 8.6</span>
+        <h2>Inngest TypeScript SDK exposes environment variables via serve() handler on unhandled HTTP methods</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42089.html">
+        <span class="rk">CVE-2026-42089 · CVSS 8.6</span>
+        <h2>yeoman-environment Vulnerable to Arbitrary Package Installation without User Confirmation</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44001.html">
+        <span class="rk">CVE-2026-44001 · CVSS 8.6</span>
+        <h2>vm2 has a Sandbox Escape via Promise Constructor Unhandled Rejection (Process Crash DoS)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44492.html">
+        <span class="rk">CVE-2026-44492 · CVSS 8.6</span>
+        <h2>axios's shouldBypassProxy does not recognize IPv4-mapped IPv6 addresses, allowing NO_PROXY bypass (incomplete fix for CVE-2025-62718)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47139.html">
+        <span class="rk">CVE-2026-47139 · CVSS 8.6</span>
+        <h2>NodeVM network builtin exclusions bypass via internal _http_client and _http_server</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47209.html">
+        <span class="rk">CVE-2026-47209 · CVSS 8.6</span>
+        <h2>vm2's Bridge Proxy set trap ignores receiver parameter, enabling host object property injection via prototype chain</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48795.html">
+        <span class="rk">CVE-2026-48795 · CVSS 8.6</span>
+        <h2>@adonisjs/bodyparser has an incomplete fix for CVE-2026-25754</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50131.html">
+        <span class="rk">CVE-2026-50131 · CVSS 8.6</span>
+        <h2>Fedify has an incomplete SSRF mitigation after GHSA-p9cg-vqcc-grcx: validatePublicUrl allows special-use IPv4 ranges</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42226.html">
+        <span class="rk">CVE-2026-42226 · CVSS 8.5</span>
+        <h2>n8n's Credential Authorization Bypass in dynamic-node-parameters Allows Foreign API Key Replay</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42449.html">
+        <span class="rk">CVE-2026-42449 · CVSS 8.5</span>
+        <h2>n8n-mcp's IPv4-mapped IPv6 addresses bypass SSRF protection in validateUrlSync(), enabling full SSRF for SDK embedders</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-43998.html">
+        <span class="rk">CVE-2026-43998 · CVSS 8.5</span>
+        <h2>vm2 has a NodeVM require.root bypass via symlink traversal that allows sandbox escape</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46372.html">
+        <span class="rk">CVE-2026-46372 · CVSS 8.5</span>
+        <h2>SillyTavern: SSRF in SearXNG Search Proxy via Unvalidated baseUrl</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48153.html">
+        <span class="rk">CVE-2026-48153 · CVSS 8.5</span>
+        <h2>Budibase: SSRF via OAuth2 token endpoint URL reaches internal hosts and cloud metadata</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49444.html">
+        <span class="rk">CVE-2026-49444 · CVSS 8.5</span>
+        <h2>n8n: Python sandbox escape</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54312.html">
+        <span class="rk">CVE-2026-54312 · CVSS 8.5</span>
+        <h2>n8n: Microsoft SQL Node Prototype Pollution</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54353.html">
+        <span class="rk">CVE-2026-54353 · CVSS 8.5</span>
+        <h2>@budibase/backend-core has potential SSRF DNS rebinding bypass in outbound fetch validation</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53814.html">
+        <span class="rk">CVE-2026-53814 · CVSS 8.4</span>
+        <h2>OpenClaw: Hook-triggered CLI runs could receive owner MCP tool authority</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44966.html">
+        <span class="rk">CVE-2026-44966 · CVSS 8.3</span>
+        <h2>Velocity.js has a Prototype Pollution vulnerability through #set path assignment</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49229.html">
+        <span class="rk">CVE-2026-49229 · CVSS 8.3</span>
+        <h2>@actual-app/sync-server: Disabled OpenID users keep access through existing session tokens</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53516.html">
+        <span class="rk">CVE-2026-53516 · CVSS 8.3</span>
+        <h2>Better Auth has an account takeover issue via OAuth auto-link to unverified pre-registered email</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42235.html">
+        <span class="rk">CVE-2026-42235 · CVSS 8.2</span>
+        <h2>n8n Vulnerable to XSS via MCP OAuth client</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42353.html">
+        <span class="rk">CVE-2026-42353 · CVSS 8.2</span>
+        <h2>i18next-http-middleware has path traversal / SSRF via user-controlled language and namespace parameters</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-43893.html">
+        <span class="rk">CVE-2026-43893 · CVSS 8.2</span>
+        <h2>exiftool-vendored vulnerable to argument injection via newline characters in tag names</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44483.html">
+        <span class="rk">CVE-2026-44483 · CVSS 8.2</span>
+        <h2>@rvf/set-get has a prototype pollution issue that's reachable via @rvf/core preprocessFormData (HTTP form data)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44728.html">
+        <span class="rk">CVE-2026-44728 · CVSS 8.2</span>
+        <h2>@babel/plugin-transform-modules-systemjs generates arbitrary code when compiling malicious input</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45302.html">
+        <span class="rk">CVE-2026-45302 · CVSS 8.2</span>
+        <h2>parse-nested-form-data has Prototype Pollution via `__proto__` in FormData field names</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45325.html">
+        <span class="rk">CVE-2026-45325 · CVSS 8.2</span>
+        <h2>@tmlmobilidade/utils has prototype pollution in its setValueAtPath</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46509.html">
+        <span class="rk">CVE-2026-46509 · CVSS 8.2</span>
+        <h2>Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution') in @ranfdev/deepobj</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46510.html">
+        <span class="rk">CVE-2026-46510 · CVSS 8.2</span>
+        <h2>form-data-objectizer: Prototype pollution in form-data-objectizer via bracket-notation form keys</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47423.html">
+        <span class="rk">CVE-2026-47423 · CVSS 8.2</span>
+        <h2>DOMPurify XSS via selectedcontent re-clone</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47719.html">
+        <span class="rk">CVE-2026-47719 · CVSS 8.2</span>
+        <h2>FUXA: Unauthenticated SSRF via Socket.IO DEVICE_WEBAPI_REQUEST and DEVICE_PROPERTY with response reading</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54351.html">
+        <span class="rk">CVE-2026-54351 · CVSS 8.2</span>
+        <h2>Budibase: Mass Assignment in Webhook Trigger Allows Cross-Workspace Automation Execution via appId Override</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42211.html">
+        <span class="rk">CVE-2026-42211 · CVSS 8.1</span>
+        <h2>React Router's vendored turbo-stream v2 allows arbitrary constructor invocation via TYPE_ERROR deserialization leading to Unauth RCE</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44291.html">
+        <span class="rk">CVE-2026-44291 · CVSS 8.1</span>
+        <h2>protobuf.js: Code generation gadget after prototype pollution</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45013.html">
+        <span class="rk">CVE-2026-45013 · CVSS 8.1</span>
+        <h2>Apostrophe has a Weak Password Recovery Mechanism for Forgotten Password and Improper Input Validation</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45665.html">
+        <span class="rk">CVE-2026-45665 · CVSS 8.1</span>
+        <h2>Open WebUI has Stored XSS in Banner Component via Improper Sanitization Order</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45707.html">
+        <span class="rk">CVE-2026-45707 · CVSS 8.1</span>
+        <h2>n8n-MCP: Multi-tenant MCP requests fall back to process-level n8n credentials when tenant headers are absent or incomplete</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48152.html">
+        <span class="rk">CVE-2026-48152 · CVSS 8.1</span>
+        <h2>Budibase: Basic app users can exfiltrate stored REST datasource auth by rewriting datasource base URL</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50143.html">
+        <span class="rk">CVE-2026-50143 · CVSS 8.1</span>
+        <h2>Apify Model Context Protocol (MCP) server: Actor MCP path authority injection leaks Apify token</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53517.html">
+        <span class="rk">CVE-2026-53517 · CVSS 8.1</span>
+        <h2>Better Auth: OAuth refresh-token rotation forks the token family on concurrent redemption</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53518.html">
+        <span class="rk">CVE-2026-53518 · CVSS 8.1</span>
+        <h2>@better-auth/oauth-provider's OAuth authorization-code grant allows concurrent redemption when two token requests race the find-then-delete primitive</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53849.html">
+        <span class="rk">CVE-2026-53849 · CVSS 8.1</span>
+        <h2>OpenClaw: Discord allowFrom could bind to mutable display names</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53855.html">
+        <span class="rk">CVE-2026-53855 · CVSS 8.1</span>
+        <h2>OpenClaw: Shell positional parameters could weaken strict inline-eval checks</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53857.html">
+        <span class="rk">CVE-2026-53857 · CVSS 8.1</span>
+        <h2>OpenClaw: Zalo allowFrom could bind to mutable display names</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-33245.html">
+        <span class="rk">CVE-2026-33245 · CVSS 8</span>
+        <h2>React Router vulnerable to XSS in unstable RSC redirect handling via javascript: redirect targets</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53817.html">
+        <span class="rk">CVE-2026-53817 · CVSS 8</span>
+        <h2>OpenClaw: Control UI locality spoofing could mint a durable admin device token</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42290.html">
+        <span class="rk">CVE-2026-42290 · CVSS 7.8</span>
+        <h2>protobuf.js is Vulnerable to OS Command Injection in the CLI</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44724.html">
+        <span class="rk">CVE-2026-44724 · CVSS 7.8</span>
+        <h2>Systeminformation vulnerable to Linux command injection in networkInterfaces() via unsanitized NetworkManager connection profile name</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53813.html">
+        <span class="rk">CVE-2026-53813 · CVSS 7.8</span>
+        <h2>OpenClaw: Fake package roots could influence memory-core artifact loading</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54074.html">
+        <span class="rk">CVE-2026-54074 · CVSS 7.8</span>
+        <h2>@tinacms/cli: Remote Code Execution in @tinacms/cli via Forestry migration — unsanitised __TINA_INTERNAL__ marker in user-controlled YAML labels</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46701.html">
+        <span class="rk">CVE-2026-46701 · CVSS 7.6</span>
+        <h2>Network-AI: Unauthenticated Cross-Origin MCP Tool Invocation via Empty Default Secret</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-34077.html">
+        <span class="rk">CVE-2026-34077 · CVSS 7.5</span>
+        <h2>React Router vulnerable to Denial of Service via reflected user input in single-fetch</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42342.html">
+        <span class="rk">CVE-2026-42342 · CVSS 7.5</span>
+        <h2>React Router vulnerable to DoS via unbounded path expansion in __manifest endpoint</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42856.html">
+        <span class="rk">CVE-2026-42856 · CVSS 7.5</span>
+        <h2>Network-AI missing authentication on MCP HTTP endpoint, which allows unauthenticated privileged tool calls</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-43897.html">
+        <span class="rk">CVE-2026-43897 · CVSS 7.5</span>
+        <h2>link-preview-js vulnerable to IPv6 and internal loopback attacks</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-43945.html">
+        <span class="rk">CVE-2026-43945 · CVSS 7.5</span>
+        <h2>FUXA Vulnerable to Pre-auth RCE via Path Manipulation &amp; Configuration Injection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44232.html">
+        <span class="rk">CVE-2026-44232 · CVSS 7.5</span>
+        <h2>dssrf: every IPv6 category bypasses is_url_safe</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44648.html">
+        <span class="rk">CVE-2026-44648 · CVSS 7.5</span>
+        <h2>SillyTavern: Existing sessions are not invalidated after password change, allowing session reuse and account takeover</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44705.html">
+        <span class="rk">CVE-2026-44705 · CVSS 7.5</span>
+        <h2>tmp has Path Traversal via unsanitized prefix/postfix that enables directory escape</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44895.html">
+        <span class="rk">CVE-2026-44895 · CVSS 7.5</span>
+        <h2>@yoda.digital/gitlab-mcp-server's SSE transport has no authentication and wildcard CORS, exposing all 86 GitLab tools</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44974.html">
+        <span class="rk">CVE-2026-44974 · CVSS 7.5</span>
+        <h2>@hapi/content header parser has a parameter smuggling issue that allows upload-filter bypass via duplicate parameters</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45109.html">
+        <span class="rk">CVE-2026-45109 · CVSS 7.5</span>
+        <h2>Next.js has a Middleware / Proxy bypass in App Router applications via segment-prefetch routes - Incomplete Fix Follow-Up</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46417.html">
+        <span class="rk">CVE-2026-46417 · CVSS 7.5</span>
+        <h2>@angular/platform-server: SSRF via Hostname Hijacking</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46490.html">
+        <span class="rk">CVE-2026-46490 · CVSS 7.5</span>
+        <h2>samlify: XML Injection in AttributeValue Allows Privilege Escalation in Signed SAML Assertions</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46679.html">
+        <span class="rk">CVE-2026-46679 · CVSS 7.5</span>
+        <h2>js-libp2p: Memory DoS via subscription flood of unique topics</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46681.html">
+        <span class="rk">CVE-2026-46681 · CVSS 7.5</span>
+        <h2>@nevware21/ts-utils: Prototype Pollution in objDeepCopy/objCopyProps via for...in without hasOwnProperty</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48007.html">
+        <span class="rk">CVE-2026-48007 · CVSS 7.5</span>
+        <h2>Element Call reports full URLs of visited pages to analytics server</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49250.html">
+        <span class="rk">CVE-2026-49250 · CVSS 7.5</span>
+        <h2>@conform-to/dom parseSubmission vulnerable to CPU exhaustion when parsing many unique form fields</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49357.html">
+        <span class="rk">CVE-2026-49357 · CVSS 7.5</span>
+        <h2>Streamable HTTP mode exposes LINE Desktop read/send tools without MCP authentication</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50137.html">
+        <span class="rk">CVE-2026-50137 · CVSS 7.5</span>
+        <h2>Budibase: POST /api/attachments/:datasourceId/url is unauthenticated and lets anonymous callers mint S3 PUT pre-signed URLs using stored datasource IAM credentials</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50555.html">
+        <span class="rk">CVE-2026-50555 · CVSS 7.5</span>
+        <h2>@angular/platform-server: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50556.html">
+        <span class="rk">CVE-2026-50556 · CVSS 7.5</span>
+        <h2>@angular/platform-server: Missing `&lt;noscript&gt;` Raw-Text Serialization Escaping leads to Cross-Site Scripting (XSS) in Angular SSR</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-5079.html">
+        <span class="rk">CVE-2026-5079 · CVSS 7.5</span>
+        <h2>Multer vulnerable to Denial of Service via deeply nested field names</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52746.html">
+        <span class="rk">CVE-2026-52746 · CVSS 7.5</span>
+        <h2>jsonata: Malicious inputs to &quot;$toMillis&quot; function can cause resource exhaustion</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53571.html">
+        <span class="rk">CVE-2026-53571 · CVSS 7.5</span>
+        <h2>vite: `server.fs.deny` bypass on Windows alternate paths</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55487.html">
+        <span class="rk">CVE-2026-55487 · CVSS 7.5</span>
+        <h2>pnpm: Manifest identity spoof satisfies allowBuilds and runs attacker lifecycle</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55660.html">
+        <span class="rk">CVE-2026-55660 · CVSS 7.5</span>
+        <h2>TinaCMS: Cross-origin postMessage handlers and rich-text URL-sanitization bypass enable stored XSS and session takeover</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55697.html">
+        <span class="rk">CVE-2026-55697 · CVSS 7.5</span>
+        <h2>pnpm: Repository-controlled configDependencies can select a pacquet native install engine</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-6321.html">
+        <span class="rk">CVE-2026-6321 · CVSS 7.5</span>
+        <h2>fast-uri vulnerable to path traversal via percent-encoded dot segments</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-6322.html">
+        <span class="rk">CVE-2026-6322 · CVSS 7.5</span>
+        <h2>fast-uri vulnerable to host confusion via percent-encoded authority delimiters</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-6734.html">
+        <span class="rk">CVE-2026-6734 · CVSS 7.5</span>
+        <h2>undici vulnerable to cross-origin request routing via SOCKS5 proxy pool reuse</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-7768.html">
+        <span class="rk">CVE-2026-7768 · CVSS 7.5</span>
+        <h2>@fastify/accepts-serializer Vulnerable to Denial of Service via Unbounded Accept Header Cache Growth</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-8159.html">
+        <span class="rk">CVE-2026-8159 · CVSS 7.5</span>
+        <h2>multiparty vulnerable to ReDoS via filename parsing</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-8813.html">
+        <span class="rk">CVE-2026-8813 · CVSS 7.5</span>
+        <h2>ExifReader is vulnerable to denial of service via crafted ICC `mluc` tag</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42033.html">
+        <span class="rk">CVE-2026-42033 · CVSS 7.4</span>
+        <h2>Axios: Prototype Pollution Gadgets - Response Tampering, Data Exfiltration, and Request Hijacking</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42035.html">
+        <span class="rk">CVE-2026-42035 · CVSS 7.4</span>
+        <h2>Axios: Header Injection via Prototype Pollution</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42264.html">
+        <span class="rk">CVE-2026-42264 · CVSS 7.4</span>
+        <h2>Axios has prototype pollution read-side gadgets in HTTP adapter that allow credential injection and request hijacking</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49857.html">
+        <span class="rk">CVE-2026-49857 · CVSS 7.4</span>
+        <h2>auth-fetch-mcp has SSRF Protection Bypass via IPv4-mapped IPv6 Loopback</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-11417.html">
+        <span class="rk">CVE-2026-11417 · CVSS 7.3</span>
+        <h2>aws-cdk-lib: OS Command Injection in NodejsFunction Bundling</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50015.html">
+        <span class="rk">CVE-2026-50015 · CVSS 7.3</span>
+        <h2>pnpm Vulnerable to Arbitrary File Write/Delete via Malicious Patch File (Path Traversal)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54328.html">
+        <span class="rk">CVE-2026-54328 · CVSS 7.3</span>
+        <h2>Pi Agent: Predictable temporary extension install paths allow local privilege escalation on shared Linux hosts</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42043.html">
+        <span class="rk">CVE-2026-42043 · CVSS 7.2</span>
+        <h2>Axios: Incomplete Fix for CVE-2025-62718 — NO_PROXY Protection Bypassed via RFC 1122 Loopback Subnet (127.0.0.0/8) in Axios 1.15.0</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50146.html">
+        <span class="rk">CVE-2026-50146 · CVSS 7.1</span>
+        <h2>Astro: Reflected XSS via unescaped slot name</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53846.html">
+        <span class="rk">CVE-2026-53846 · CVSS 7.1</span>
+        <h2>OpenClaw: Workspace .env npm_execpath could influence bundled runtime dependency install</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53858.html">
+        <span class="rk">CVE-2026-53858 · CVSS 7.1</span>
+        <h2>OpenClaw: Workspace .env STATE_DIRECTORY could influence bundled runtime dependency roots</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53865.html">
+        <span class="rk">CVE-2026-53865 · CVSS 7.1</span>
+        <h2>OpenClaw: Workspace-derived service PATH could influence trash command selection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55700.html">
+        <span class="rk">CVE-2026-55700 · CVSS 7.1</span>
+        <h2>pnpm: `stage download` writes outside its destination directory via manifest name/version traversal</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+</main>
+<footer>
+  &copy; 2026 CyberDudeBivash Pvt. Ltd. · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/contact.html">Contact</a>
+</footer>
+</body>
+</html>

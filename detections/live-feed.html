@@ -1,0 +1,2080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XTGLNMNNC7',{page_title:document.title,page_location:window.location.href});</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#00ffe0">
+<meta name="description" content="Real Sigma, KQL, Splunk, osquery, and Suricata detection content, aggregated live from every CYBERDUDEBIVASH SENTINEL APEX intelligence report as it publishes.">
+<meta property="og:title" content="Live Detection Engineering Feed | CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:description" content="Real Sigma, KQL, Splunk, osquery, and Suricata detection content, aggregated live from every CYBERDUDEBIVASH SENTINEL APEX intelligence report as it publishes.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://blog.cyberdudebivash.in/detections/live-feed.html">
+<meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:image" content="https://blog.cyberdudebivash.in/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Live Detection Engineering Feed | CYBERDUDEBIVASH SENTINEL APEX">
+<meta name="twitter:description" content="Real Sigma, KQL, Splunk, osquery, and Suricata detection content, aggregated live from every CYBERDUDEBIVASH SENTINEL APEX intelligence report as it publishes.">
+<meta name="twitter:image" content="https://blog.cyberdudebivash.in/og-image.png">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://blog.cyberdudebivash.in/detections/live-feed.html">
+<title>Live Detection Engineering Feed | CYBERDUDEBIVASH SENTINEL APEX</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"CYBERDUDEBIVASH SENTINEL APEX Live Detection Feed","url":"https://blog.cyberdudebivash.in/detections/live-feed.html","dateModified":"2026-07-17"}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-bg:#07090f;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--apex-font);background:var(--apex-bg);color:var(--apex-text);min-height:100vh;line-height:1.7}
+nav{position:sticky;top:0;z-index:9999;background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}.nlogo{font-size:18px;font-weight:900;color:var(--apex-cyan)}.ntag{font-size:10px;color:var(--apex-muted);letter-spacing:.1em;text-transform:uppercase}
+.nlinks{display:flex;gap:4px;flex-wrap:wrap}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:var(--apex-text)}
+main{max-width:900px;margin:0 auto;padding:44px 24px 80px}
+.eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--apex-cyan);background:#00ffe012;border:1px solid #00ffe033;border-radius:6px;padding:5px 12px;margin-bottom:16px}
+h1{font-size:clamp(28px,4.6vw,42px);font-weight:900;color:#fff;margin-bottom:14px}
+.lede{font-size:17px;color:#c9d1d9;margin-bottom:36px;max-width:70ch}
+.rcard{display:block;background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:20px 24px;margin-bottom:14px;text-decoration:none;transition:border-color .2s}
+.rcard:hover{border-color:#00ffe066}
+.rk{font-size:12px;font-weight:700;color:var(--apex-cyan);font-family:var(--mono);letter-spacing:.04em}
+.rcard h2{font-size:19px;font-weight:800;color:#fff;margin:8px 0 8px;line-height:1.3}
+.rcard p{font-size:14px;color:#c9d1d9;margin-bottom:8px}
+.rmore{font-size:13px;font-weight:700;color:var(--apex-cyan)}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;margin-right:6px;font-family:var(--mono)}
+.stat-row{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 10px}
+.stat{font-size:12.5px;color:var(--apex-muted);font-family:var(--mono)}
+.stat b{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.note{font-size:13.5px;color:var(--apex-muted);margin-top:28px;border-top:1px solid var(--apex-border);padding-top:20px}
+.note a{color:var(--apex-cyan)}
+.empty-state{color:var(--apex-muted);font-size:14px;padding:20px 0}
+footer{border-top:1px solid var(--apex-border);padding:28px 24px;text-align:center;font-size:13px;color:var(--apex-muted);margin-top:40px}
+footer a{color:var(--apex-cyan);text-decoration:none}
+code.rule-preview{display:block;background:#050709;border:1px solid var(--apex-border);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:12px;color:#9ae6b4;white-space:pre-wrap;word-break:break-word;margin-top:8px}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nbrand" href="/"><span class="nlogo">CYBERDUDEBIVASH</span><span class="ntag">Sentinel APEX</span></a>
+  <div class="nlinks"><a href="/">Reports</a><a href="/research">Research</a><a href="/detections" style="color:#fff">Detections</a><a href="/vendor/">Vendors</a><a href="/timeline/">Timeline</a><a href="/collections/">Collections</a><a href="/threat/">Threat Actors</a><a href="/intelligence.html">Intelligence</a></div>
+</nav>
+<main>
+  <span class="eyebrow">Detection Engineering</span>
+  <h1>Live Detection Feed</h1>
+  <p class="lede">200 reports with real, generated multi-format detection content — refreshed automatically as new intelligence is ingested.</p>
+  
+    <p class="note" style="border:none;padding-top:0;margin-top:0">
+      This live feed aggregates real detection content (Sigma, KQL, Splunk, osquery, Suricata) generated
+      alongside individual intelligence reports as they are published. For the 8 hand-curated flagship
+      Sigma rules covering major CISA KEV vulnerabilities, see the <a href="/detections">Detection Engineering hub</a>.
+    </p>
+    
+      <a class="rcard" href="/posts/deber-aa-pagar-por-esto.html">
+        <span class="rk">2026-07-17 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>deberíaa pagar por esto?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/is-ast-grep-cli-0-44-1-on-pypi-compromised-windows-defender.html">
+        <span class="rk">2026-07-17 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Is ast_grep_cli 0.44.1 on PyPI compromised? Windows Defender detected Trojan:Win64/Lazy!MTB during install</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/alerts-on-server-loopback-traffic.html">
+        <span class="rk">2026-07-17 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Alerts on Server Loopback Traffic?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/advice-on-detection-engineering.html">
+        <span class="rk">2026-07-17 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Advice on Detection Engineering</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/the-invisible-guardians-of-the-internet-an-introduction-to.html">
+        <span class="rk">2026-07-17 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>The Invisible Guardians of the Internet: An Introduction to Content Moderation &amp;amp; Trust &amp;amp; Safety</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cybersec-vs-data-science.html">
+        <span class="rk">2026-07-17 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>cybersec VS data science</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/isc-stormcast-for-friday-july-17th-2026-https-isc-sans-e.html">
+        <span class="rk">2026-07-17 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ISC Stormcast For Friday, July 17th, 2026 https://isc.sans.edu/podcastdetail/10012, (Fri, Jul 17th)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/beta-bios-uefi.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Beta BIOS/UEFI</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-54077-maven-com-arcadedb-arcadedb-engine.html">
+        <span class="rk">2026-07-16 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-55578-composer-pheditor-pheditor.html">
+        <span class="rk">2026-07-16 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and newline injection</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-54540-composer-pheditor-pheditor.html">
+        <span class="rk">2026-07-16 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Pheditor has an authenticated terminal command whitelist bypass</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/apple-sued-over-reported-hide-my-email-flaw.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Apple Sued Over Reported 'Hide My Email' Flaw</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/new-exploitable-bola-found-in-immich-self-hosted-media-plat.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>New Exploitable BOLA Found in Immich (self-hosted media platform)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/with-ai-your-entire-internet-history-is-attributable-to-you.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>With AI, Your Entire Internet History is Attributable to you Personally</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/teen-hackers-jailed-after-live-streaming-the-16-hour-tfl-att.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Teen hackers jailed after live-streaming the 16-hour TfL attack</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/open-sourced-my-claude-code-team-kit-for-secure-multi-agent.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Open-sourced my Claude Code team kit for secure multi-agent development and governance. Feedback welcome.</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/this-might-be-a-dumb-question.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>This might be a dumb question</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/how-to-measure-the-revenue-impact-of-security-hardening-proj.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>How to Measure the Revenue Impact of Security Hardening Projects with a Simple Formula</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/soc-analyst-platforms-and-lacks.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>SOC Analyst platforms and lacks</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/preciso-de-ajuda.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Preciso de ajuda</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/13337-confused-deputy-google-idp-universal-account-takeo.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>[$13337] Confused Deputy: Google IdP Universal Account Takeover via Device Code Flow Hijacking</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/no-shark-is-safe-millions-of-shark-vacuums-are-vulnerable-t.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>No Shark is Safe: Millions of Shark Vacuums are Vulnerable to RCE</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/top-10-data-center-and-ai-infrastructure-security-risks.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Top 10 Data Center and AI Infrastructure Security Risks</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (7)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/the-british-teenager-who-hacked-into-vegas-casinos-from-an-e.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>The British teenager who hacked into Vegas casinos from an east London flat</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/critical-nginx-vulnerability-discovered-hackers-can-attempt.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Critical NGINX vulnerability discovered: hackers can attempt to crash servers or even gain code execution</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-58635-reddit-cyber-threat-intelligence.html">
+        <span class="rk">2026-07-16 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Proof of concept for CVE-2026-58635 LPE in Windows Braille Narrator service</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/files-relating-to-india-s-largest-nuclear-power-plant-kudank.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Files relating to India’s largest nuclear power plant Kudankulam exposed in data breach</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/please-stop-making-me-opt-out-of-ai.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Please Stop Making Me Opt Out of AI</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/moroccan-intelligence-insider-reveals-widespread-use-of-pega.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Moroccan intelligence insider reveals widespread use of Pegasus hacking software | Morocco</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/learning-devsecops-week-2.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Learning DevSecOps - Week 2</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/when-inclusive-language-ends-in-phishing.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>When Inclusive Language ends in phishing</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/ai-agent-for-reconaissasion.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>AI Agent for reconaissasion</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-13585-reddit-netsec-threat-intelligence.html">
+        <span class="rk">2026-07-16 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>ASUS bsitf.sys (CVE-2026-13585): Arbitrary Physical Memory Mapping via Unvalidated IOCTL</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/i-get-stuck.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>i get stuck</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/subject-advisory-submission-ez-game-booster-cleartext-st.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Subject: Advisory Submission: EZ Game Booster - Cleartext Storage of Sensitive Credentials (CWE-312)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/isc-stormcast-for-thursday-july-16th-2026-https-isc-sans.html">
+        <span class="rk">2026-07-16 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ISC Stormcast For Thursday, July 16th, 2026 https://isc.sans.edu/podcastdetail/10010, (Thu, Jul 16th)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/greene-county-georgia-cybersecurity-incident-disrupts-serv.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Greene County, Georgia, cybersecurity incident disrupts services</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-54504-npm-andrea9293-mcp-documentation-server.html">
+        <span class="rk">2026-07-15 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>@andrea9293/mcp-documentation-server: Web UI API binds to all interfaces without authentication by default</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/getting-mitre-techniques-a-customer-raw-detection-rule-cover.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Getting mitre techniques a customer raw detection rule covers</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-62944-composer-mantisbt-mantisbt.html">
+        <span class="rk">2026-07-15 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>MantisBT: Stored XSS in print_all_bug_page_word.php</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/file-binding-process-binding-and-silo-binding-new-proces.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>File-Binding, Process-Binding, and Silo-Binding - new process impersonation techniques for EDR evasion</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (7)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/sophos-the-state-of-ransomware-2026-payments-are-dropping.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Sophos: The State of Ransomware 2026: Payments are dropping but encryption is climbing</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (7)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/coverage-first-soc-why-domains-and-telemetry-matter-as-much.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Coverage-First SOC: why domains and telemetry matter as much as threat intel</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/runtime-detection-for-ecs-ec2-what-are-people-actually-usin.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Runtime detection for ECS/EC2, what are people actually using?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/kql-queries-for-new-chaotic-eclipse-zero-day-legacy-hive.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>KQL Queries for new Chaotic Eclipse Zero day 'Legacy Hive'</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/need-help-reverse-engineering-an-android-apk-used-in-a-upi-f.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Need help reverse engineering an Android APK used in a UPI fraud</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object], [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/hn-security-my-semgrep-c-c-ruleset-is-ready-for-prime-ti.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>HN Security - My Semgrep C/C++ ruleset is ready for prime time again</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/the-memory-heist-how-i-tricked-claude-into-leaking-your-de.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>The Memory Heist - How I tricked Claude into leaking your deepest, darkest secrets</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/more-unauthenticated-arbitrary-code-execution-in-serviceno.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>(More) Unauthenticated Arbitrary Code Execution in ServiceNow</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/isc-stormcast-for-wednesday-july-15th-2026-https-isc-san.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ISC Stormcast For Wednesday, July 15th, 2026 https://isc.sans.edu/podcastdetail/10008, (Wed, Jul 15th)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/isc2-board-of-directors-election-is-open.html">
+        <span class="rk">2026-07-15 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ISC2 Board of Directors Election is open.</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/hochul-halts-new-data-center-approvals-via-executive-order.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Hochul halts new data center approvals via executive order</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-61549-go-go-woodpecker-ci-org-woodpecker-v3.html">
+        <span class="rk">2026-07-14 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Woodpecker: Privilege escalation via unrestricted serviceAccountName in the Kubernetes backend</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object], [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-54628-go-github-com-julien040-anyquery.html">
+        <span class="rk">2026-07-14 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Anyquery: Server-Side Request Forgery (SSRF) via Unrestricted SQLite Virtual Table Modules in Server Mode</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/ech0-parseacceptlanguage-separator-bypass-enables-70x.html">
+        <span class="rk">2026-07-14 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Ech0: ParseAcceptLanguage `_` separator bypass enables ~70x CPU amplification via Accept-Language header in i18n.Middleware</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/legacyhive-windows-user-profile-service-arbitrary-hive-loa.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>LegacyHive : Windows user profile service arbitrary hive load elevation of privileges vulnerability</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-50141-go-go-woodpecker-ci-org-woodpecker-v3.html">
+        <span class="rk">2026-07-14 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Woodpecker gRPC agent_id metadata can be spoofed- cross-tenant agent impersonation</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/suspected-chinese-operators-use-claude-code-and-deepsee.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>🇨🇳 Suspected Chinese Operators Use Claude Code and DeepSeek to Breach Government Systems Across Four Countries</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-50131-npm-fedify-fedify.html">
+        <span class="rk">2026-07-14 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Fedify has an incomplete SSRF mitigation after GHSA-p9cg-vqcc-grcx: validatePublicUrl allows special-use IPv4 ranges</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/asyncapi-supply-chain-compromise-via-github-actions.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>AsyncAPI Supply Chain Compromise via GitHub Actions</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/quot-windows-event-log-monitoring-quot-the-event-ids-that.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>&amp;quot;Windows event log monitoring&amp;quot; the event IDs that actually matter vs the ones gets ignored</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Sigma (1)</span><span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">KQL (1)</span><span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Splunk (1)</span><span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">osquery (1)</span><span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object], [object Object], [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/eset-discovered-11-vulnerable-uefi-shim-bootloaders-signed-b.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ESET discovered 11 vulnerable UEFI shim bootloaders signed by Microsoft that allow attackers to bypass Secure Boot by exploiting decade-old vulnerabilities</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/source-reviewing-200-self-hosted-multi-tenant-ai-saas-apps.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Source-reviewing 200+ self-hosted multi-tenant AI/SaaS apps for tenant isolation: 78 leaked across tenants (the &amp;quot;un-retrofitted read sibling&amp;quot;)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cybersecurity-projects.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Cybersecurity projects</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/smashing-the-servicenow-sandbox-pre-authentication-rce.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Smashing the ServiceNow Sandbox – Pre Authentication RCE</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/when-llms-do-more-than-they-have-to.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>When LLMs do more than they have to</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/rfc8555-acme-servers-and-dns-auth-reusal.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>RFC8555 ACME servers and DNS auth reusal</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/how-an-infostealer-infection-led-to-a-sophisticated-clickfix.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>How an Infostealer Infection Led to a Sophisticated ClickFix Campaign at Artlist</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/asyncapi-specs-2-7m-weekly-downloads-got-compromised-toda.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>@asyncapi/specs (2.7M weekly downloads) got compromised today via a malicious CI commit</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/the-us-government-warns-that-russia-state-hackers-are-coming.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>The US government warns that Russia state hackers are coming after your router</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/addressing-the-state-layer-gap-in-autonomous-actor-architect.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Addressing the state-layer gap in autonomous actor architectures: Byzantine fault tolerance without consensus</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (7)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/nightmare-eclipse-could-be-dropping-his-big-promised-exploit.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Nightmare Eclipse could be dropping his big promised exploit today</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/writing-an-evasive-net-shellcode-loader.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Writing an Evasive .NET Shellcode Loader</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/enhancing-the-threat-intelligence-ai-model-with-technical-kn.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Enhancing the Threat Intelligence AI Model with Technical Knowledge About Windows Kernel Mode Malware</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/zimbra-classic-web-client-has-a-critical-stored-xss-patched.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Zimbra Classic Web Client has a critical stored XSS, patched in ZCS 10.1.19 (reported by Google TAG, no CVE yet, not flagged as exploited in the wild)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/digital-twins-are-becoming-security-infrastructure-not-jus.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Digital twins are becoming security infrastructure - not just monitoring tools</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/enhancing-iiot-security-using-digital-twins-in-industry.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Enhancing IIoT Security Using Digital Twins in Industry</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/isc-stormcast-for-tuesday-july-14th-2026-https-isc-sans.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ISC Stormcast For Tuesday, July 14th, 2026 https://isc.sans.edu/podcastdetail/10006, (Tue, Jul 14th)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/axon-body-camera-3-of-4-hardware-reverse-cracking-output-vid.html">
+        <span class="rk">2026-07-14 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>AXON Body camera 3 of 4 hardware reverse cracking output video！</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/exportheft-11-quot-ai-chat-exporter-quot-chrome-extension.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ExporTheft: 11 &amp;quot;AI Chat Exporter&amp;quot; Chrome extensions upload full chat content on PDF export, while the store listing says &amp;quot;No uploads to external servers&amp;quot;</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/context-bombs-using-ai-guardrails-as-a-defensive-mechanism.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Context Bombs: Using AI Guardrails as a defensive mechanism</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cet-compliant-callstack-spoofing-via-thread-pool-amp-enum.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>CET-Compliant Callstack Spoofing via Thread Pool &amp;amp; Enum Callback Trampolining (Rust PoC)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/im-taking-ec-council-cct-exam.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Im taking ec council cct exam</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-61668-pip-dirac.html">
+        <span class="rk">2026-07-13 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>DIRAC: Pilot code downloaded over unverified HTTPS connection</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/dirac-sql-injection-and-lack-of-access-control-in-pilotmana.html">
+        <span class="rk">2026-07-13 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>DIRAC: SQL injection and lack of access control in PilotManager service</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/every-ai-coding-agent-writes-the-secrets-you-paste-straight.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Every AI coding agent writes the secrets you paste straight to a plaintext history file — and nobody scans it</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/stolen-from.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Stolen from</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/official-jscrambler-npm-package-compromised-malicious-versi.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Official jscrambler npm package compromised: malicious versions 8.14, 8.16, 8.17, and 8.20</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/now-defenders-are-embracing-the-prompt-injection-too.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Now, defenders are embracing the prompt injection, too</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/world-cup-grudge-attackers-may-have-scored-argentine-fa-acce.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>World Cup grudge attackers may have scored Argentine FA access via year-old infostealer infection</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/i-vibed-an-application-inventory-service.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>I vibed an Application Inventory Service</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (7)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/soc-homelab-with-16gb-ram.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>SOC homelab with 16gb RAM</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/what-s-your-pre-deployment-security-checklist-for-a-web-app.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>What's your pre-deployment security checklist for a web app before going live?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/relat-rios.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>RELATÓRIOS</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/july-14th-nightmare-eclipse.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>July 14th Nightmare Eclipse</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/can-recon-workflow-get-any-easier-and-smarter-than-this.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Can recon workflow get any easier and smarter than this ?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/how-the-tls-handshake-works-and-why-half-of-it-is-gone.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>How the TLS handshake works, and why half of it is gone</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (7)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/demande-d-avis.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Demande d'avis</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/presales-engineer-cybersecurity.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Presales Engineer (Cybersecurity)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/balbooa-forms-joomla-flaw-lets-hackers-hijack-sites-with-a-s.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Balbooa Forms Joomla Flaw Lets Hackers Hijack Sites With a Single Upload</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/the-way-forward.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>The way forward</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-40639-reddit-netsec-threat-intelligence.html">
+        <span class="rk">2026-07-13 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Dell BIOS Passwords: Weak XOR Encryption Allows Recovery from SPI Flash (CVE-2026-40639)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/persistence-via-fake-amsi-provider-playbook-amp-detectio.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Persistence via Fake AMSI Provider | Playbook &amp;amp; Detection Strategies</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/total-isolation-of-legacy-control-system-is-valid-option-to.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Total Isolation of legacy Control System is valid option to ….</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/a-hardware-security-ai-assistant-that-checks-chips-for-hidde.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>A hardware security AI assistant that checks chips for hidden backdoors</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/passed-oscp-from-rajasthan-things-nobody-told-me-about-prepa.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Passed OSCP from Rajasthan things nobody told me about preparation</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/large-scale-exploitation-campaign-targeting-website-content.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Large-scale exploitation campaign targeting website content management systems (CMS)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/lief-1-0-0-is-out-featuring-a-brand-new-runtime-api.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>LIEF 1.0.0 is out featuring a brand-new Runtime API</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/participants-needed-master-s-research-on-ai-governance-amp.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Participants Needed: Master's Research on AI Governance &amp;amp; the EU AI Act</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/isc-stormcast-for-monday-july-13th-2026-https-isc-sans-e.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ISC Stormcast For Monday, July 13th, 2026 https://isc.sans.edu/podcastdetail/10004, (Mon, Jul 13th)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/been-building-my-own-edr-today-it-operates-in-ring-0.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Been building my own edr; today it operates in ring 0</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/data-sharing-with-vendors.html">
+        <span class="rk">2026-07-13 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Data Sharing With Vendors</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/vulnerability-in-realtek-driver-allows-dma-controller-abuse.html">
+        <span class="rk">2026-07-12 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Vulnerability in Realtek driver allows DMA controller abuse from user mode with no additional hardware or driver</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/it-governance-vs-ai-governance.html">
+        <span class="rk">2026-07-12 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>IT Governance vs AI Governance</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/artlist-io-appears-to-have-been-compromised-by-a-clickfix-at.html">
+        <span class="rk">2026-07-12 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Artlist.io appears to have been compromised by a ClickFix attack</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-47291-reddit-netsec-threat-intelligence.html">
+        <span class="rk">2026-07-12 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>CVE-2026-47291: Windows Critical Unauthenticated Remote Code Execution in HTTP.sys</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/passive-security-measurement-of-10-020-it-domains-csp-coo.html">
+        <span class="rk">2026-07-12 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Passive security measurement of 10,020 .it domains: CSP, cookies, TLS and email authentication</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/what-s-stopping-big-orgs-to-replicate-those-ai-security-star.html">
+        <span class="rk">2026-07-12 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>What's stopping big orgs to replicate those AI Security startups themselves?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/hacking-apple-sql-injection-to-remote-code-execution.html">
+        <span class="rk">2026-07-12 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Hacking Apple - SQL Injection to Remote Code Execution</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/can-gamification-actually-improve-security-awareness.html">
+        <span class="rk">2026-07-12 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Can gamification actually improve security awareness?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/anonymity-security.html">
+        <span class="rk">2026-07-12 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Anonymity + security</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/microsoft-is-rewriting-windows-patch-guidance-because-of-ai.html">
+        <span class="rk">2026-07-12 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Microsoft is rewriting Windows patch guidance because of AI - Help Net Security</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/looking-for-cybersecurity-contributors-building-an-open-so.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Looking for Cybersecurity Contributors – Building an Open-Source AI Bot Detection Project</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/ransomware-negotiator-hired-to-represent-victims-was-working.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Ransomware negotiator hired to represent victims was working for the attackers</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/thoughts-on-aikido-dev.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Thoughts on Aikido.dev?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/freelancing-on-cybersec-ai.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Freelancing on cybersec/ai</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/microsoft-admits-windows-11-has-a-gdid-tracker-with-no-off-s.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Microsoft admits Windows 11 has a GDID tracker with no off switch, first documented publicly in an FBI hacker complaint</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/bloodbash-feedback-needed-before-def-con-34-red-team-village.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>BloodBash Feedback Needed Before DEF CON 34 Red Team Village Talk - AD/hybrid Recon Tool</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/scanning-malicious-websites-with-arbitrary-number-of-vpn-tun.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Scanning malicious websites with arbitrary number of VPN tunnels (Part 2)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/destructive-windows-backdoor-stuffs-multiple-wipers-and-rans.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Destructive Windows backdoor stuffs multiple wipers and ransomware code into a single package</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/how-does-insider-threat-software-fit-into-your-security-work.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>How does insider threat software fit into your security workflow?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/darklayer-ransomware-tower-defense-free-in-your-browser.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>DarkLayer — Ransomware Tower Defense. Free, in your browser.</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cto-at-ncsc-summary-week-ending-july-12th.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>CTO at NCSC Summary: week ending July 12th</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/precision-vs-accuracy.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Precision Vs Accuracy</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (7)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/physical-security-work-and-research-with-nasa-and-darpa.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Physical security work and research with NASA and DARPA</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/a-degree-in-cs-or-ai-engineering-amp-robotics.html">
+        <span class="rk">2026-07-11 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>A degree in CS or AI engineering &amp;amp; robotics</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/how-do-you-keep-archived-firewall-logs-usable-during-a-threa.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>How do you keep archived firewall logs usable during a threat hunt?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/inside-raton-rat-a-commodity-trojan-that-tries-to-do-everyt.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Inside Raton RAT: A Commodity Trojan That Tries to Do Everything</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/clauster-non-loopback-deployments-can-serve-the-dashboard-u.html">
+        <span class="rk">2026-07-10 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Clauster: Non-loopback deployments can serve the dashboard unauthenticated when auth.enabled is unset</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/closing-the-timing-gap-defensive-temporal-observability.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Closing the Timing Gap: Defensive Temporal Observability</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/how-are-you-handling-ssl-inspection-without-constantly-break.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>How are you handling SSL inspection without constantly breaking developer tooling?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/uptick-in-email-bombing.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Uptick in email bombing</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/training-recommendations-for-soc-teams-in-the-age-of-ai.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Training recommendations for SOC teams in the age of AI?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cisa-kev-threat-intel-orchestrator.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>CISA KEV Threat Intel Orchestrator</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/who-is-interested-in-digital-forensics.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Who is interested in digital forensics</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/crypto-investigations-using-ai.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Crypto Investigations using AI</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (7)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/can-ai-imitate-apt-behavior-well-enough-to-confuse-attributi.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Can AI imitate APT behavior well enough to confuse attribution?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/can-ai-generated-adversaries-break-ttp-based-attribution-a.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Can AI-generated adversaries break TTP-based attribution? (arXiv 2026)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/towards-csi-what-s-the-best-harness-arxiv-2026.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Towards CSI: What's the best harness? (arXiv 2026)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/hallusquatting-turns-ai-hallucinations-into-botnet-deliver.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>'HalluSquatting' Turns AI Hallucinations Into Botnet Delivery Mechanism</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/new-research-why-no-single-ai-agent-harness-wins-every-cybe.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>New research: Why no single AI agent harness wins every cybersecurity task</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/network-of-200-github-repositories-used-for-malware-infectio.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Network of 200 GitHub Repositories Used for Malware Infection</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Sigma (1)</span><span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">KQL (1)</span><span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Splunk (1)</span><span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">osquery (1)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/need-help-with-my-project.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Need help with my project</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/isc-stormcast-for-friday-july-10th-2026-https-isc-sans-e.html">
+        <span class="rk">2026-07-10 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ISC Stormcast For Friday, July 10th, 2026 https://isc.sans.edu/podcastdetail/10002, (Fri, Jul 10th)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-52769-composer-yeswiki-yeswiki.html">
+        <span class="rk">2026-07-09 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>YesWiki has Unauthenticated Server-Side Request Forgery via ActivityPub `Signature.keyId`</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/siem-solution-recommendations.html">
+        <span class="rk">2026-07-09 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>SIEM Solution Recommendations</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/soc-analyst-1-yoe-doing-full-investigations-remediation.html">
+        <span class="rk">2026-07-09 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>SOC analyst (1 YOE) doing full investigations/remediation — what practical IR skills should I actually be building?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/suspected-russian-threat-actor-impersonates-legitimate-crypt.html">
+        <span class="rk">2026-07-09 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Suspected Russian Threat Actor Impersonates Legitimate Crypto Wallets to Deploy Remote Utilities</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/micronaut-doesn-t-set-a-maximum-redirect-count-for-its-http.html">
+        <span class="rk">2026-07-09 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Micronaut doesn't set a maximum redirect count for its HTTP Client, enabling infinite loop DoS</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/a-puerto-rico-government-agency-exposed-1-million-social-sec.html">
+        <span class="rk">2026-07-09 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>A Puerto Rico Government Agency Exposed 1 Million Social Security Numbers</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/mod-request-can-you-ban-the-excessive-ai-posters-please.html">
+        <span class="rk">2026-07-09 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>MOD REQUEST: Can you ban the excessive AI posters please?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/why-the-http-query-method-is-a-bad-idea-and-accept-query-is.html">
+        <span class="rk">2026-07-09 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Why the HTTP QUERY Method Is a Bad Idea, and Accept-Query Is Why</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/seeking-refferals.html">
+        <span class="rk">2026-07-09 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Seeking Refferals</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/revive-sa-2026-003-revive-adserver-vulnerabilities.html">
+        <span class="rk">2026-07-09 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>[REVIVE-SA-2026-003] Revive Adserver Vulnerabilities</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/isc-stormcast-for-thursday-july-9th-2026-https-isc-sans.html">
+        <span class="rk">2026-07-09 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ISC Stormcast For Thursday, July 9th, 2026 https://isc.sans.edu/podcastdetail/10000, (Thu, Jul 9th)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/fable-5-and-opus.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>FABLE 5 AND OPUS</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-49832-maven-org-dspace-dspace-api.html">
+        <span class="rk">2026-07-08 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>DSpace has possible Remote Code Execution (RCE)  through Velocity Templates used by LDN</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/ai-agents-went-from-quot-cool-demo-quot-to-quot-exploitin.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>AI agents went from &amp;quot;cool demo&amp;quot; to &amp;quot;exploiting CVEs in 10 hours&amp;quot;</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/are-companies-thinking-about-insurance-liability-for-ai-tool.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Are companies thinking about insurance/liability for AI tool usage, or is that not on the radar yet?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/1-in-2-devices-sold-in-africa-exfiltrate-data-to-china.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>1 in 2 devices sold in Africa exfiltrate data to China</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/btl1-done-now-what.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>BTL1 done, now what?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/meta-glasses.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Meta Glasses</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/drift-corpus-binary-diffs-of-240-2026-windows-kernel-patch.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Drift Corpus: binary diffs of 240+ 2026 Windows kernel patches</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (7)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/researchers-find-new-ghostapproval-bug-in-many-ai-coding-ass.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Researchers Find New GhostApproval Bug in Many AI Coding Assistants</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cissp-exam.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>CISSP Exam</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/the-teenage-millionaire-hacker-from-tower-hamlets-who-took-d.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>The teenage millionaire hacker from Tower Hamlets who took down TfL</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/internal-web-app-testing.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Internal web app testing</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/isc-stormcast-for-wednesday-july-8th-2026-https-isc-sans.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>ISC Stormcast For Wednesday, July 8th, 2026 https://isc.sans.edu/podcastdetail/9998, (Wed, Jul 8th)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/bad-epoll-the-bug-missed-by-mythos.html">
+        <span class="rk">2026-07-08 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Bad Epoll: The bug missed by Mythos</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/2026-chainanalysis-crime-report.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>2026 Chainanalysis Crime Report</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/open-source-ai-security-risk-register-mapped-to-mitre-atlas.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Open-source AI security risk register mapped to MITRE ATLAS, OWASP LLM/Agentic Apps, and NIST AI 100-2</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/safer-dependencies-a-toolkit-for-claude-code-to-ensure-depe.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Safer-dependencies: A toolkit for claude code to ensure dependencies used aren't vuln, don't use abandoned packages, implement cooldown to avoid supply chain attacks, etc...</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/how-dumb-is-it.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>How dumb is it ?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/mep-martin-sonneborn-was-cutoff-after-pointing-out-the-quest.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>MEP Martin Sonneborn was cutoff after pointing out the questionable rationale for the reintroduction of Chat Control.</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cybersecurity-statistics-of-the-week-june-29th-july-5th.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Cybersecurity statistics of the week (June 29th - July 5th)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/company-is-bragging-about-having-an-agentic-soc-in-productio.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Company is bragging about having an Agentic SOC in production then posts a senior role asking for IR, DFIR, threat hunting AND training experience. Am I reading this right?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (3)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-26192-pip-open-webui.html">
+        <span class="rk">2026-07-07 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Open WebUI vulnerable to Stored XSS via iFrame in citations model</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-26193-pip-open-webui.html">
+        <span class="rk">2026-07-07 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>Open WebUI vulnerable to Stored XSS via iFrame embeds in response messages</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/security-you-can-t-justify-is-a-vicious-cycle.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Security you can't justify is a vicious cycle</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/gitlost-a-public-github-issue-can-steer-an-org-s-agentic-wo.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>GitLost: a public GitHub issue can steer an org's Agentic Workflow into leaking private repo contents, and a one-word prefix (&amp;quot;Additionally&amp;quot;) bypassed the threat-detection guardrail</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/a-rule-mapped-to-mitre-is-not-the-same-as-real-coverage.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>A rule mapped to MITRE is not the same as real coverage</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/suspected-chinese-espionage-group-used-a-roundcube-exploit-c.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Suspected Chinese espionage group used a Roundcube exploit chain to burrow into universities</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-34151-maven-org-xwiki-platform-xwiki-platform-oldcore.html">
+        <span class="rk">2026-07-07 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>XWiki Platform Old Core: Resource path traversal via /skin/ action endpoint in Jetty 12+</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (2)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/chinese-researchers-find-a-peephole-to-any-smartphone-in-its.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Chinese researchers find a peephole to any smartphone in its leaked radio signal</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/call-stack-spoofing-via-runtime-pdata-parsing-to-evade-rtlv.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Call Stack Spoofing via Runtime .pdata Parsing to Evade RtlVirtualUnwind</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/call-stack-spoofing-via-runtime-pdata-evade-rtlvirtualunwi.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Call Stack Spoofing via Runtime .pdata (Evade RtlVirtualUnwind)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (5)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/checkmarx-mcp.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Checkmarx MCP</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/stealer-logs-data-breach.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Stealer Logs data breach?</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (6)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/security-exam-readiness.html">
+        <span class="rk">2026-07-07 · <span style="color:#ffd23f">MEDIUM</span></span>
+        <h2>Security+ exam readiness</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (4)</span>
+        </div>
+        
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+
+      <a class="rcard" href="/posts/cve-2026-53582-seclists-multiple-targets.html">
+        <span class="rk">2026-07-07 · <span style="color:#ff8c42">HIGH</span></span>
+        <h2>OPNsense XPATH Injection (CVE-2026-53582)</h2>
+        <div class="stat-row">
+          <span class="badge" style="background:#00ffe012;color:var(--apex-cyan);border:1px solid #00ffe033">Suricata (1)</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--apex-muted)">MITRE ATT&amp;CK: [object Object]</p>
+        <span class="rmore">View full report + detection content →</span>
+      </a>
+</main>
+<footer>
+  &copy; 2026 CyberDudeBivash Pvt. Ltd. · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/contact.html">Contact</a>
+</footer>
+</body>
+</html>

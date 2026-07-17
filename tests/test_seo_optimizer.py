@@ -182,6 +182,28 @@ class TestSEOOptimizer(unittest.TestCase):
         )
         self.assertEqual(howto, {})
 
+    def test_developer_faq_for_supply_chain(self):
+        faq = self.optimizer.build_faq_schema(
+            "Malicious NPM Package Found", "A supply chain attack via a compromised npm package.", ["Supply Chain"],
+        )
+        names = [q["name"] for q in faq.get("mainEntity", [])]
+        self.assertTrue(any("developers" in n.lower() for n in names))
+
+    def test_glossary_includes_only_mentioned_terms(self):
+        glossary = self.optimizer.build_glossary_schema(
+            "CVE-2026-1234 Critical Flaw", "CVSS 9.8 vulnerability, added to CISA KEV catalog.",
+        )
+        self.assertEqual(glossary.get("@type"), "DefinedTermSet")
+        names = [t["name"] for t in glossary["hasDefinedTerm"]]
+        self.assertIn("CVE", names)
+        self.assertIn("CVSS", names)
+        self.assertIn("CISA KEV", names)
+        self.assertNotIn("EPSS", names)  # not mentioned in this text
+
+    def test_glossary_empty_when_no_terms_mentioned(self):
+        glossary = self.optimizer.build_glossary_schema("Generic Security Update", "Nothing specific mentioned here.")
+        self.assertEqual(glossary, {})
+
 
 if __name__ == "__main__":
     unittest.main()

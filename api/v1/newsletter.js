@@ -1,11 +1,17 @@
 /**
  * SENTINEL APEX — Newsletter Signup Endpoint
  * POST /api/v1/newsletter
- * Body: { email, name?, segment?, source? }
+ * Body: { email, name?, segment?, source?, role?, industry?, primary_challenge? }
  *
  * Server-side Resend integration — the API key never reaches the browser
  * (unlike a client-side ESP call). Every lead is also backed up in Redis
  * so no signup is lost if Resend is unconfigured or briefly unavailable.
+ *
+ * role/industry/primary_challenge are optional, free-text-but-sanitized
+ * qualification fields (lightweight profile, not a full lead-qualification
+ * system — see enterprise report Module 7 scoping). Same 3-year lead TTL
+ * as the rest of this record; no new PII-retention policy needed since
+ * these are short, non-sensitive classification strings.
  */
 'use strict';
 const redis  = require('../_lib/redis');
@@ -15,7 +21,7 @@ const {
   normalizeEmail, emailKey, now, ok, fail, parseBody, auditLog,
 } = require('../_lib/payment-utils');
 
-const FIELDS = ['email', 'name', 'segment', 'source'];
+const FIELDS = ['email', 'name', 'segment', 'source', 'role', 'industry', 'primary_challenge'];
 const VALID_SEGMENTS = new Set(['general', 'cve-alerts', 'ai-security', 'mssp', 'enterprise', 'webinar']);
 const NEWSLETTER_LIMIT_PER_IP_PER_DAY = 10;
 const LEAD_TTL_SECONDS = 3 * 365 * 86400; // 3 years
@@ -50,6 +56,9 @@ module.exports = async (req, res) => {
   const segmentRaw = sec.sanitize(String(body.segment || 'general').toLowerCase(), 40);
   const segment    = VALID_SEGMENTS.has(segmentRaw) ? segmentRaw : 'general';
   const source     = sec.sanitize(body.source || 'website', 60);
+  const role       = sec.sanitize(body.role || '', 80);
+  const industry   = sec.sanitize(body.industry || '', 80);
+  const primaryChallenge = sec.sanitize(body.primary_challenge || '', 200);
 
   if (!sec.validateEmail(email)) {
     return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
@@ -73,6 +82,7 @@ module.exports = async (req, res) => {
   try {
     await redis.hmset(`newsletter:lead:${emailKey(email)}`, {
       email, name, segment, source, ip,
+      role, industry, primaryChallenge,
       subscribedAt: now(),
       espStatus,
     });
@@ -82,7 +92,7 @@ module.exports = async (req, res) => {
     // Redis backup is best-effort — never block the response on it.
   }
 
-  await auditLog('NEWSLETTER_SIGNUP', { email, segment, source, espStatus, ip });
+  await auditLog('NEWSLETTER_SIGNUP', { email, segment, source, role, industry, espStatus, ip });
 
   return ok(res, {
     message: espStatus === 'subscribed'

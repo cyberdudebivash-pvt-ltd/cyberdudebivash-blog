@@ -14,10 +14,13 @@ from typing import Optional
 from .category_mapper import primary_category
 from .config import Config
 from .content_discovery import DiscoveredArticle
+from .download_center import build_mitre_navigator_layer
 from .internal_linker import InternalLinker
 from .llm_client import call_llm
 from .logger import setup_logger
+from .industry_intelligence import detect_industries, get_industry_profile
 from .monetization_injector import MonetizationInjector
+from .product_recommendations import SERVICES as _CATALOG_SERVICES, recommend_services
 from .seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss
 
 logger = setup_logger("authority_transformer")
@@ -40,6 +43,18 @@ def _sanitize_summary(text: str) -> str:
         return text
     cleaned = _SCORE_ARTIFACT_RE.sub("", text)
     return re.sub(r"\s{2,}", " ", cleaned).strip()
+
+
+# Real, fixed count of SIEM platforms this pipeline generates detection
+# queries for — single source of truth shared by the multi-SIEM query pack
+# (_template_enhance) and the Trust Center's "Supported SIEM Platforms" stat.
+SIEM_PLATFORM_LABELS = {
+    "splunk": "Splunk SPL",
+    "elastic": "Elastic EQL",
+    "sentinel": "Microsoft Sentinel KQL",
+    "qradar": "IBM QRadar AQL",
+    "chronicle": "Google Chronicle YARA-L",
+}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -222,6 +237,10 @@ def _build_trust_stats_block(config: Config) -> str:
     stats = [("Threat Reports Published", f"{total_published:,}")]
     if unique_cves:
         stats.append(("Unique CVEs Tracked", f"{len(unique_cves):,}"))
+    # Real, derived — one Sigma detection rule is generated per report today.
+    stats.append(("Detection Rules Generated", f"{total_published:,}"))
+    # Real, fixed constant — see SIEM_PLATFORM_LABELS.
+    stats.append(("Supported SIEM Platforms", str(len(SIEM_PLATFORM_LABELS))))
 
     tiles = "".join(
         f'<div style="flex:1;min-width:150px;text-align:center;padding:10px">'
@@ -236,10 +255,91 @@ def _build_trust_stats_block(config: Config) -> str:
     )
 
 
-def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Optional[str]) -> str:
-    """Executive dashboard of verified CVSS/EPSS/KEV data. Returns "" if nothing real is known."""
-    cve_id = article.cve_id or (cves[0] if cves else None)
+def _build_recommended_services_block(labels: list, config: Config) -> str:
+    """Data-driven service recommendation — see automation/product_recommendations.py
+    for the rules table. Reuses the exact .apex-services CSS classes from
+    monetization_injector.py so this renders identically and inherits the
+    same click-tracking analytics-engine.js already applies to CTAs."""
+    services = recommend_services(labels, max_results=3)
+    if not services:
+        return ""
 
+    items = "".join(
+        f'<div class="apex-svc-item"><strong>{svc["name"]}</strong><span>{svc["description"]}</span></div>'
+        for svc in services
+    )
+    return (
+        f'<div class="apex-services">'
+        f'<h4>🎯 Recommended For This Threat</h4>'
+        f'<div class="apex-services-grid">{items}</div>'
+        f'<div style="margin-top:14px">'
+        f'<a class="apex-btn apex-btn-primary" href="mailto:{config.contact_email}">Request This Assessment →</a>'
+        f'<a class="apex-btn apex-btn-secondary" style="margin-left:8px" href="{config.corporate_url}" target="_blank" rel="noopener">View All Services →</a>'
+        f'</div></div>'
+    )
+
+
+def _build_industry_intelligence_block(title: str, summary: str) -> str:
+    """Only the industries genuinely referenced in the article text — see
+    automation/industry_intelligence.py. Returns "" (never a padded list
+    of all 9 sectors) when nothing is detected."""
+    industry_keys = detect_industries(title, summary)
+    if not industry_keys:
+        return ""
+
+    cards = []
+    for key in industry_keys:
+        profile = get_industry_profile(key)
+        if not profile:
+            continue
+        service_names = ", ".join(
+            _CATALOG_SERVICES[s]["name"] for s in profile.get("services", []) if s in _CATALOG_SERVICES
+        )
+        services_line = (
+            f'<p style="margin:0"><strong style="color:#94a3b8">Relevant Services:</strong> {service_names}</p>'
+            if service_names else ""
+        )
+        cards.append(
+            f'<div style="background:#050d1a;border:1px solid #1e3a5f44;border-radius:6px;padding:16px 20px;margin-bottom:10px">'
+            f'<div style="color:#00d4ff;font-size:13px;font-weight:800;margin-bottom:10px">{profile["name"]}</div>'
+            f'<div style="font-size:12.5px;color:#cbd5e1;line-height:1.7">'
+            f'<p style="margin:0 0 8px"><strong style="color:#94a3b8">Risk Profile:</strong> {profile["risk_profile"]}</p>'
+            f'<p style="margin:0 0 8px"><strong style="color:#94a3b8">Common Targets:</strong> {profile["common_targets"]}</p>'
+            f'<p style="margin:0 0 8px"><strong style="color:#94a3b8">Typical Attack Paths:</strong> {profile["attack_paths"]}</p>'
+            f'<p style="margin:0 0 8px"><strong style="color:#94a3b8">Compliance Mapping:</strong> {profile["compliance_mapping"]}</p>'
+            f'<p style="margin:0 0 8px"><strong style="color:#94a3b8">Priority Actions:</strong> {profile["priority_actions"]}</p>'
+            f'{services_line}'
+            f'</div></div>'
+        )
+
+    if not cards:
+        return ""
+
+    return (
+        f'{_sh_module_level("Industry Impact Intelligence", "#a855f7")}'
+        f'{"".join(cards)}'
+    )
+
+
+def _sh_module_level(title: str, color: str = "#00d4ff") -> str:
+    """Module-level equivalent of the nested _sh() helper inside
+    _template_enhance — used by sections rendered in _assemble_html, which
+    runs for both the LLM and template content paths and can't reach the
+    nested closure."""
+    return (
+        f'<div style="margin:32px 0 14px;padding:10px 18px;'
+        f'background:linear-gradient(90deg,#0a1628,#050d1a);'
+        f'border-left:3px solid {color};font-size:11px;font-weight:700;'
+        f'color:{color};letter-spacing:2.5px;text-transform:uppercase;'
+        f'font-family:monospace">&#9658; {title}</div>'
+    )
+
+
+def _derive_severity(article: DiscoveredArticle, cvss: Optional[str]) -> tuple:
+    """Real CVSS-based severity only — prefers article.cvss_score (enrichment)
+    over the regex-extracted string. Returns (None, None) if no score is
+    known at all, rather than guessing. Shared by the Risk Command Center
+    and the Executive Decision Center so severity is computed in one place."""
     cvss_score: Optional[float] = article.cvss_score
     if cvss_score is None and cvss:
         try:
@@ -247,16 +347,138 @@ def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Opt
         except (ValueError, TypeError):
             cvss_score = None
 
-    sev_color = None
-    if cvss_score is not None:
-        if cvss_score >= 9.0:
-            sev, sev_color = "CRITICAL", "#ef4444"
-        elif cvss_score >= 7.0:
-            sev, sev_color = "HIGH", "#f59e0b"
-        elif cvss_score >= 4.0:
-            sev, sev_color = "MEDIUM", "#22c55e"
-        else:
-            sev, sev_color = "LOW", "#3b82f6"
+    if cvss_score is None:
+        return None, None
+    if cvss_score >= 9.0:
+        return "CRITICAL", "#ef4444"
+    if cvss_score >= 7.0:
+        return "HIGH", "#f59e0b"
+    if cvss_score >= 4.0:
+        return "MEDIUM", "#22c55e"
+    return "LOW", "#3b82f6"
+
+
+def _build_executive_decision_center(category: str, cve_id: Optional[str], severity: Optional[str], config: Config) -> str:
+    """Audience-targeted summaries — CEO/Board/CISO/SOC/DevSecOps/Cloud —
+    derived from the same verified category/severity/CVE facts every other
+    section uses, re-angled per audience rather than repeated verbatim."""
+    threat_ref = cve_id or category
+    sev_phrase = f"a {severity.lower()}-severity" if severity else "a"
+
+    is_technical_category = category in {"Vulnerabilities", "Zero-Day", "CISA KEV", "Supply Chain", "Cloud Security", "DevSecOps"}
+    is_operational_category = category in {"Ransomware", "APT", "Data Breach", "Malware Research"}
+
+    audiences = [
+        {
+            "role": "CEO Summary",
+            "color": "#00d4ff",
+            "text": (
+                f"{threat_ref} represents {sev_phrase} business risk requiring executive awareness. "
+                f"The security team is assessing exposure and will escalate if customer-facing systems, revenue operations, "
+                f"or contractual/regulatory obligations are implicated. No board notification is warranted at this stage unless "
+                f"the CISO's assessment confirms material impact."
+            ),
+        },
+        {
+            "role": "Board Summary",
+            "color": "#a855f7",
+            "text": (
+                f"This is a security operations matter tracked under the organization's standard vulnerability/incident management "
+                f"process. {threat_ref} does not currently meet the threshold for board-level reporting; it will be escalated "
+                f"per the incident severity matrix if that changes. Recommend noting in the next routine security update."
+            ),
+        },
+        {
+            "role": "CISO Summary",
+            "color": "#ef4444",
+            "text": (
+                f"{threat_ref} ({category}{f', severity {severity}' if severity else ''}) requires a documented remediation or "
+                f"detection-coverage decision. Confirm exposure against the asset inventory, assign an owner, and set a "
+                f"remediation SLA consistent with severity. Track to closure in the vulnerability/risk register."
+            ),
+        },
+        {
+            "role": "SOC Summary",
+            "color": "#f59e0b",
+            "text": (
+                f"Deploy the Sigma/multi-SIEM detection queries in this report to your monitoring stack and validate against "
+                f"recent telemetry for prior activity. Treat as a monitoring priority "
+                + ("during active-triage rotation given the operational nature of this threat." if is_operational_category
+                   else "and correlate with vulnerability scan results for affected assets.")
+            ),
+        },
+        {
+            "role": "DevSecOps Summary",
+            "color": "#22c55e",
+            "text": (
+                (
+                    f"If {threat_ref} affects components in your CI/CD pipeline, container images, or infrastructure-as-code, "
+                    f"gate deployments on a patched/updated dependency version and add a policy check to prevent regression."
+                ) if is_technical_category else
+                (
+                    f"No direct pipeline/build-system exposure implied by this report's category ({category}), but confirm "
+                    f"no affected components are referenced in current infrastructure-as-code or container base images."
+                )
+            ),
+        },
+        {
+            "role": "Cloud Summary",
+            "color": "#3b82f6",
+            "text": (
+                (
+                    f"Review cloud asset inventory (compute, storage, identity) for exposure to {threat_ref}. Apply cloud-native "
+                    f"WAF/network controls as a compensating measure if patching requires a maintenance window."
+                ) if category == "Cloud Security" else
+                f"Cross-reference {threat_ref} against internet-facing cloud assets even if the primary category is {category} — "
+                f"cloud-hosted instances of on-prem-style vulnerabilities are a common blind spot."
+            ),
+        },
+    ]
+
+    cards = "".join(
+        f'<div style="flex:1;min-width:220px;background:#050d1a;border:1px solid {a["color"]}33;border-radius:6px;padding:14px 16px">'
+        f'<div style="color:{a["color"]};font-size:11px;font-weight:800;font-family:monospace;letter-spacing:1px;'
+        f'text-transform:uppercase;margin-bottom:8px">{a["role"]}</div>'
+        f'<div style="color:#cbd5e1;font-size:12.5px;line-height:1.7">{a["text"]}</div></div>'
+        for a in audiences
+    )
+    return (
+        f'{_sh_module_level("Executive Decision Center", "#00d4ff")}'
+        f'<div style="display:flex;flex-wrap:wrap;gap:10px">{cards}</div>'
+    )
+
+
+def _build_mitre_navigator_download(body_content: str, title: str) -> str:
+    """Client-side data-URI download link for the MITRE ATT&CK Navigator
+    layer — same technique already used for the SVG thumbnail, so this
+    needs zero new hosting/backend infrastructure and works identically on
+    Blogger and on-site pages. Returns "" if the report cites no techniques."""
+    layer = build_mitre_navigator_layer(body_content, title)
+    if not layer:
+        return ""
+
+    layer_json = json.dumps(layer, indent=2)
+    b64 = base64.b64encode(layer_json.encode("utf-8")).decode("utf-8")
+    return (
+        f'<div style="margin:16px 0;text-align:center">'
+        f'<a href="data:application/json;base64,{b64}" download="mitre-navigator-layer.json" '
+        f'style="display:inline-block;padding:9px 18px;border-radius:5px;font-size:13px;font-weight:700;'
+        f'text-decoration:none;letter-spacing:.5px;background:transparent;border:1px solid #a855f7;color:#a855f7">'
+        f'⬇ Download MITRE ATT&CK Navigator Layer ({len(layer["techniques"])} techniques)</a></div>'
+    )
+
+
+def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Optional[str]) -> str:
+    """Executive dashboard of verified CVSS/EPSS/KEV data. Returns "" if nothing real is known."""
+    cve_id = article.cve_id or (cves[0] if cves else None)
+
+    sev, sev_color = _derive_severity(article, cvss)
+    cvss_score: Optional[float] = article.cvss_score
+    if cvss_score is None and cvss:
+        try:
+            cvss_score = float(cvss)
+        except (ValueError, TypeError):
+            cvss_score = None
 
     tiles = []
     if cve_id:
@@ -1134,19 +1356,11 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 
     # ── Multi-SIEM query pack — same detection logic as the Sigma rule
     # above, translated to each platform's native query syntax. ─────────────
-    _SIEM_LABELS = {
-        "splunk": "Splunk SPL",
-        "elastic": "Elastic EQL",
-        "sentinel": "Microsoft Sentinel KQL",
-        "qradar": "IBM QRadar AQL",
-        "chronicle": "Google Chronicle YARA-L",
-    }
-
     def _siem_block(queries: dict) -> str:
         if not queries:
             return ""
         panes = []
-        for key, label in _SIEM_LABELS.items():
+        for key, label in SIEM_PLATFORM_LABELS.items():
             query = queries.get(key)
             if not query:
                 continue
@@ -1510,6 +1724,9 @@ class AuthorityTransformer:
         howto_schema = self.seo.build_howto_schema(article.title, article.summary, article.labels)
         howto_str = json.dumps(howto_schema, indent=2) if howto_schema else ""
 
+        glossary_schema = self.seo.build_glossary_schema(article.title, article.summary)
+        glossary_str = json.dumps(glossary_schema, indent=2) if glossary_schema else ""
+
         cves = _extract_cve_ids(article.title + " " + article.summary)
         cvss = _extract_cvss(article.title + " " + article.summary)
         category = primary_category(article.labels)
@@ -1527,6 +1744,18 @@ class AuthorityTransformer:
         # state file the syndication pipeline writes.
         trust_stats_block = _build_trust_stats_block(self.config)
 
+        # Recommended Services — data-driven, see product_recommendations.py
+        recommended_services_block = _build_recommended_services_block(article.labels, self.config)
+
+        # Industry Impact Intelligence — only genuinely-detected industries
+        industry_block = _build_industry_intelligence_block(article.title, article.summary)
+
+        # Executive Decision Center — CEO/Board/CISO/SOC/DevSecOps/Cloud summaries
+        _sev_for_edc, _ = _derive_severity(article, cvss)
+        exec_decision_center = _build_executive_decision_center(
+            category, article.cve_id or (cves[0] if cves else None), _sev_for_edc, self.config
+        )
+
         # Metadata bar
         meta_items = [f"📅 {pub_date}", f"📂 {category}", "🛡 CYBERDUDEBIVASH®"]
         if cves:
@@ -1538,6 +1767,10 @@ class AuthorityTransformer:
         related_block = self.linker.build_related_resources_block(
             article.title, article.summary, article.labels
         )
+        correlation_block = self.linker.build_correlation_block(
+            article.labels, cves, exclude_hash=article.content_hash
+        )
+        mitre_navigator_download = _build_mitre_navigator_download(body_content, article.title)
         ext_refs = self.linker.build_external_references(article.title, article.summary)
         hashtags = self.linker.build_hashtag_block(article.labels)
 
@@ -1548,6 +1781,8 @@ class AuthorityTransformer:
             schema_blocks += f'<script type="application/ld+json">\n{faq_str}\n</script>\n'
         if howto_str:
             schema_blocks += f'<script type="application/ld+json">\n{howto_str}\n</script>\n'
+        if glossary_str:
+            schema_blocks += f'<script type="application/ld+json">\n{glossary_str}\n</script>\n'
 
         html = f"""{self.monetization.get_style_block()}
 {schema_blocks}
@@ -1575,9 +1810,19 @@ class AuthorityTransformer:
 
 {trust_stats_block}
 
+{recommended_services_block}
+
+{industry_block}
+
+{exec_decision_center}
+
 {self.monetization.inject_mid_products_cta()}
 
 {related_block}
+
+{correlation_block}
+
+{mitre_navigator_download}
 
 {self.monetization.inject_newsletter_cta()}
 

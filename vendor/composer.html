@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XTGLNMNNC7',{page_title:document.title,page_location:window.location.href});</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#00ffe0">
+<meta name="description" content="74 real tracked CVE(s) affecting composer, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta property="og:title" content="composer CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:description" content="74 real tracked CVE(s) affecting composer, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://blog.cyberdudebivash.in/vendor/composer.html">
+<meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:image" content="https://blog.cyberdudebivash.in/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="composer CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX">
+<meta name="twitter:description" content="74 real tracked CVE(s) affecting composer, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta name="twitter:image" content="https://blog.cyberdudebivash.in/og-image.png">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://blog.cyberdudebivash.in/vendor/composer.html">
+<title>composer CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"composer CVE Intelligence","url":"https://blog.cyberdudebivash.in/vendor/composer.html","dateModified":"2026-07-17"}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-bg:#07090f;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--apex-font);background:var(--apex-bg);color:var(--apex-text);min-height:100vh;line-height:1.7}
+nav{position:sticky;top:0;z-index:9999;background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}.nlogo{font-size:18px;font-weight:900;color:var(--apex-cyan)}.ntag{font-size:10px;color:var(--apex-muted);letter-spacing:.1em;text-transform:uppercase}
+.nlinks{display:flex;gap:4px;flex-wrap:wrap}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:var(--apex-text)}
+main{max-width:900px;margin:0 auto;padding:44px 24px 80px}
+.eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--apex-cyan);background:#00ffe012;border:1px solid #00ffe033;border-radius:6px;padding:5px 12px;margin-bottom:16px}
+h1{font-size:clamp(28px,4.6vw,42px);font-weight:900;color:#fff;margin-bottom:14px}
+.lede{font-size:17px;color:#c9d1d9;margin-bottom:36px;max-width:70ch}
+.rcard{display:block;background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:20px 24px;margin-bottom:14px;text-decoration:none;transition:border-color .2s}
+.rcard:hover{border-color:#00ffe066}
+.rk{font-size:12px;font-weight:700;color:var(--apex-cyan);font-family:var(--mono);letter-spacing:.04em}
+.rcard h2{font-size:19px;font-weight:800;color:#fff;margin:8px 0 8px;line-height:1.3}
+.rcard p{font-size:14px;color:#c9d1d9;margin-bottom:8px}
+.rmore{font-size:13px;font-weight:700;color:var(--apex-cyan)}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;margin-right:6px;font-family:var(--mono)}
+.stat-row{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 10px}
+.stat{font-size:12.5px;color:var(--apex-muted);font-family:var(--mono)}
+.stat b{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.note{font-size:13.5px;color:var(--apex-muted);margin-top:28px;border-top:1px solid var(--apex-border);padding-top:20px}
+.note a{color:var(--apex-cyan)}
+.empty-state{color:var(--apex-muted);font-size:14px;padding:20px 0}
+footer{border-top:1px solid var(--apex-border);padding:28px 24px;text-align:center;font-size:13px;color:var(--apex-muted);margin-top:40px}
+footer a{color:var(--apex-cyan);text-decoration:none}
+code.rule-preview{display:block;background:#050709;border:1px solid var(--apex-border);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:12px;color:#9ae6b4;white-space:pre-wrap;word-break:break-word;margin-top:8px}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nbrand" href="/"><span class="nlogo">CYBERDUDEBIVASH</span><span class="ntag">Sentinel APEX</span></a>
+  <div class="nlinks"><a href="/">Reports</a><a href="/research">Research</a><a href="/detections">Detections</a><a href="/vendor/" style="color:#fff">Vendors</a><a href="/timeline/">Timeline</a><a href="/collections/">Collections</a><a href="/threat/">Threat Actors</a><a href="/intelligence.html">Intelligence</a></div>
+</nav>
+<main>
+  <span class="eyebrow">Vendor Intelligence</span>
+  <h1>composer</h1>
+  <p class="lede">74 tracked CVEs · 0 in CISA KEV · 0 confirmed exploited in the wild.</p>
+  
+      <a class="rcard" href="/cve/CVE-2026-42611.html">
+        <span class="rk">CVE-2026-42611 · CVSS 8.9</span>
+        <h2>Grav is Vulnerable to Stored XSS via Tag Injection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-24425.html">
+        <span class="rk">CVE-2026-24425 · CVSS 8.8</span>
+        <h2>Twig: Possible sandbox bypass when using a source policy</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-41235.html">
+        <span class="rk">CVE-2026-41235 · CVSS 8.8</span>
+        <h2>Froxlor has an authorization bypass in FTP shell assignment via missing server-side `available_shells` enforcement</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42605.html">
+        <span class="rk">CVE-2026-42605 · CVSS 8.8</span>
+        <h2>AzuraCast has Path Traversal in `currentDirectory` Parameter that Enables Remote Code Execution via Media Upload</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42843.html">
+        <span class="rk">CVE-2026-42843 · CVSS 8.8</span>
+        <h2>Grav API Privilege Escalation to Super Admin</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44521.html">
+        <span class="rk">CVE-2026-44521 · CVSS 8.8</span>
+        <h2>elFinder MySQL has a SQL Injection in its Volume Driver (elFinderVolumeMySQL)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44741.html">
+        <span class="rk">CVE-2026-44741 · CVSS 8.8</span>
+        <h2>Pimcore Admin Classic Bundle Vulnerable to SQL Injection in Translation Grid Date Filter via Unsanitized Property Parameter</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45578.html">
+        <span class="rk">CVE-2026-45578 · CVSS 8.8</span>
+        <h2>AVideo: OS command injection in on_publish.php execAsync via unescaped m3u8 URL</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52775.html">
+        <span class="rk">CVE-2026-52775 · CVSS 8.8</span>
+        <h2>YesWiki has Authenticated SQL Injection via ReactionManager </h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54540.html">
+        <span class="rk">CVE-2026-54540 · CVSS 8.8</span>
+        <h2>Pheditor has an authenticated terminal command whitelist bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55578.html">
+        <span class="rk">CVE-2026-55578 · CVSS 8.8</span>
+        <h2>Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and newline injection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-41147.html">
+        <span class="rk">CVE-2026-41147 · CVSS 8.7</span>
+        <h2>NukeViet CMS: Stored Cross-Site Scripting (XSS) via insufficient server-side input sanitization in Request class</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44739.html">
+        <span class="rk">CVE-2026-44739 · CVSS 8.7</span>
+        <h2>Pimcore Vulnerable to SQL Injection in Custom Reports Column Configuration</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45270.html">
+        <span class="rk">CVE-2026-45270 · CVSS 8.7</span>
+        <h2>CI4MS: Stored XSS in Pages Module Content via Broken html_purify Validation Rule</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47743.html">
+        <span class="rk">CVE-2026-47743 · CVSS 8.7</span>
+        <h2>Shopper: Multiple data integrity and disclosure issues in admin Livewire components</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49259.html">
+        <span class="rk">CVE-2026-49259 · CVSS 8.7</span>
+        <h2>NukeViet: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49283.html">
+        <span class="rk">CVE-2026-49283 · CVSS 8.7</span>
+        <h2>SimpleSAMLphp HTTP-Artifact TLS validator confusion allows cross-IdP authentication bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54064.html">
+        <span class="rk">CVE-2026-54064 · CVSS 8.7</span>
+        <h2>NukeViet: Multiple Anti-XSS Filter Bypasses Leading to Stored XSS in News Module</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54065.html">
+        <span class="rk">CVE-2026-54065 · CVSS 8.7</span>
+        <h2>NukeViet: Path Traversal to Arbitrary File Deletion in Edit Comment Function</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46491.html">
+        <span class="rk">CVE-2026-46491 · CVSS 8.6</span>
+        <h2>SimpleSAMLphp casserver FileSystemTicketStore path traversal allows out-of-ticket-directory read/unserialize and conditional deletion</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52854.html">
+        <span class="rk">CVE-2026-52854 · CVSS 8.6</span>
+        <h2>mediawiki/maps has stored XSS through the overlays parameter in the display_map parser function</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55691.html">
+        <span class="rk">CVE-2026-55691 · CVSS 8.6</span>
+        <h2>StarCitizenWiki Extension Embed Video: Stored XSS via unsanitized class passed to template</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42612.html">
+        <span class="rk">CVE-2026-42612 · CVSS 8.5</span>
+        <h2>Grav Vulnerable to Publisher-Level Stored XSS via Unquoted Event Attributes</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47198.html">
+        <span class="rk">CVE-2026-47198 · CVSS 8.5</span>
+        <h2>Paymenter has URL parameter injection that bypasses paid plan limits at checkout</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54329.html">
+        <span class="rk">CVE-2026-54329 · CVSS 8.5</span>
+        <h2>Snipe-IT API Vulnerable to Cross-Tenant Accessory Injection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52769.html">
+        <span class="rk">CVE-2026-52769 · CVSS 8.3</span>
+        <h2>YesWiki has Unauthenticated Server-Side Request Forgery via ActivityPub `Signature.keyId`</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52771.html">
+        <span class="rk">CVE-2026-52771 · CVSS 8.3</span>
+        <h2>YesWiki: Second-Order SQL Injection in Page Delete API via Unescaped Page Tag (`ApiController::deletePage`)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-41249.html">
+        <span class="rk">CVE-2026-41249 · CVSS 8.2</span>
+        <h2>CoreShop Vulnerable to Remote Code Execution (RCE) via Insecure `pull_request_target` Configuration</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-41669.html">
+        <span class="rk">CVE-2026-41669 · CVSS 8.2</span>
+        <h2>Admidio Ignores SAML Signature Validation Result, Processes Forged AuthnRequests and LogoutRequests</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-41670.html">
+        <span class="rk">CVE-2026-41670 · CVSS 8.2</span>
+        <h2>Admidio Sends SAML Response to Unvalidated Assertion Consumer Service URL from AuthnRequest</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48118.html">
+        <span class="rk">CVE-2026-48118 · CVSS 8.2</span>
+        <h2>NukeViet: Unauthenticated Reflected XSS in Comment Module</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49260.html">
+        <span class="rk">CVE-2026-49260 · CVSS 8.2</span>
+        <h2>php-weasyprint: shell command injection via configurable WeasyPrint binary path due to inverted is_executable() guard (mirror of KnpLabs/snappy GHSA-vpr4-p6fq-85jc)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52767.html">
+        <span class="rk">CVE-2026-52767 · CVSS 8.2</span>
+        <h2>YesWiki Vulnerable to Unauthenticated ActivityPub Signature-Verification Bypass via `!openssl_verify(...)` accepting `int(-1)`</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42606.html">
+        <span class="rk">CVE-2026-42606 · CVSS 8.1</span>
+        <h2>AzuraCast has Password Reset Poisoning via Untrusted X-Forwarded-Host Header that Leads to Account Takeover and 2FA Bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42609.html">
+        <span class="rk">CVE-2026-42609 · CVSS 8.1</span>
+        <h2>Grav Vulnerable to Administrative Account Disruption and Privilege De-escalation via User Overwrite Logic</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45260.html">
+        <span class="rk">CVE-2026-45260 · CVSS 8.1</span>
+        <h2>Pimcore: Missing Authorization in WebDAV MOVE via unchecked asset move handling</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47231.html">
+        <span class="rk">CVE-2026-47231 · CVSS 8.1</span>
+        <h2>Admidio has IDOR in `documents-files.php` `mode=move_save` that lets any folder-uploader exfiltrate files from private folders</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49286.html">
+        <span class="rk">CVE-2026-49286 · CVSS 8.1</span>
+        <h2>PhpWeasyPrint vulnerable to PHAR deserialization via output filename (CVE-2023-28115 case-insensitive bypass)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55173.html">
+        <span class="rk">CVE-2026-55173 · CVSS 8.1</span>
+        <h2>AVideo has an incomplete fix of CVE-2026-33482: sanitizeFFmpegCommand still allows a single '&amp;' (background operator), giving OS command execution at the same execAsync sh -c sink</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45162.html">
+        <span class="rk">CVE-2026-45162 · CVSS 8</span>
+        <h2>Pimcore has Unsafe PHP Deserialization in Multiple Locations Without allowed_classes Restriction</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45263.html">
+        <span class="rk">CVE-2026-45263 · CVSS 8</span>
+        <h2>FacturaScripts: CSV formula injection in CSVExport allows authenticated low-priv users to plant payloads that execute when an admin opens the export</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53932.html">
+        <span class="rk">CVE-2026-53932 · CVSS 8</span>
+        <h2>laravel-backup-restore has an OS Command Injection during database restore</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-43884.html">
+        <span class="rk">CVE-2026-43884 · CVSS 7.7</span>
+        <h2>AVideo has SSRF Protection Bypass via HTTP Redirect and DNS Rebinding in isSSRFSafeURL()</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54493.html">
+        <span class="rk">CVE-2026-54493 · CVSS 7.7</span>
+        <h2>Koel: Authenticated Full-Read SSRF via Subsonic Internet Radio Stations</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2023-49316.html">
+        <span class="rk">CVE-2023-49316 · CVSS 7.5</span>
+        <h2>Phpseclib needs guardrails on large binaryfield integers</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2024-27355.html">
+        <span class="rk">CVE-2024-27355 · CVSS 7.5</span>
+        <h2>phpseclib guardrails needed on OID length</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-11607.html">
+        <span class="rk">CVE-2026-11607 · CVSS 7.5</span>
+        <h2>TYPO3 CMS has Broken Access Control in its Form Framework</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-34084.html">
+        <span class="rk">CVE-2026-34084 · CVSS 7.5</span>
+        <h2>PhpSpreadsheet has SSRF/RCE in IOFactory::load when $filename is user controlled</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-34463.html">
+        <span class="rk">CVE-2026-34463 · CVSS 7.5</span>
+        <h2>MantisBT is Vulnerable to Stored HTML Injection/XSS in Clone Issue Form</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-40596.html">
+        <span class="rk">CVE-2026-40596 · CVSS 7.5</span>
+        <h2>MantisBT is Vulnerable to XSS leading to account takeover via updating a user's font family preference</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-40597.html">
+        <span class="rk">CVE-2026-40597 · CVSS 7.5</span>
+        <h2>MantisBT has a Content Security Policy bypass via attachments</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-40607.html">
+        <span class="rk">CVE-2026-40607 · CVSS 7.5</span>
+        <h2>MantisBT is Vulnerable to Stored XSS in Saved-Filter Owner Column</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42071.html">
+        <span class="rk">CVE-2026-42071 · CVSS 7.5</span>
+        <h2>MantisBT has a Private Bugnote Attachment Content Leak via REST API</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42608.html">
+        <span class="rk">CVE-2026-42608 · CVSS 7.5</span>
+        <h2>Grav has Unauthenticated Path Traversal &amp; Arbitrary File Write in its FormFlash component</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-43885.html">
+        <span class="rk">CVE-2026-43885 · CVSS 7.5</span>
+        <h2>AVideo Vulnerable to Exposure of Sensitive Information to an Unauthorized Actor and Missing Authorization</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44011.html">
+        <span class="rk">CVE-2026-44011 · CVSS 7.5</span>
+        <h2>Craft CMS has Potential Authenticated Remote Code Execution via Malicious Attached Behavior</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44167.html">
+        <span class="rk">CVE-2026-44167 · CVSS 7.5</span>
+        <h2>phpseclib has a CVE-2024-27355 mitigation bypass — OID amplification DoS in ASN1::decodeOID()</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44655.html">
+        <span class="rk">CVE-2026-44655 · CVSS 7.5</span>
+        <h2>MantisBT has Stored XSS on Move Attachments Admin Page</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44657.html">
+        <span class="rk">CVE-2026-44657 · CVSS 7.5</span>
+        <h2>MantisBT Vulnerable to Stored XSS in File Download</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44832.html">
+        <span class="rk">CVE-2026-44832 · CVSS 7.5</span>
+        <h2>Snipe-IT has Privilege Escalation via API Permissions Assignment</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45063.html">
+        <span class="rk">CVE-2026-45063 · CVSS 7.5</span>
+        <h2>Symfony Vulnerable to Identity Spoofing via Unanchored DN Regex in X509Authenticator</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45067.html">
+        <span class="rk">CVE-2026-45067 · CVSS 7.5</span>
+        <h2>Symfony has Email Header / SMTP Command Injection via CRLF in Symfony\Component\Mime\Address</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45077.html">
+        <span class="rk">CVE-2026-45077 · CVSS 7.5</span>
+        <h2>Symfony has Unauthenticated PHP Object Deserialization in MonologBridge server:log Listener</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45704.html">
+        <span class="rk">CVE-2026-45704 · CVSS 7.5</span>
+        <h2>Pimcore has a CustomReports Share Bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47266.html">
+        <span class="rk">CVE-2026-47266 · CVSS 7.5</span>
+        <h2>formie's unauthenticated front-end submission editing can overwrite existing submissions</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47343.html">
+        <span class="rk">CVE-2026-47343 · CVSS 7.5</span>
+        <h2>TYPO3 CMS: Destructive Actions on File Mount Folders</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47346.html">
+        <span class="rk">CVE-2026-47346 · CVSS 7.5</span>
+        <h2>TYPO3 CMS has Broken Access Control in its Form Framework</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49741.html">
+        <span class="rk">CVE-2026-49741 · CVSS 7.5</span>
+        <h2>TYPO3 CMS has Privilege Escalation &amp; SQL Injection in its Form Framework</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49742.html">
+        <span class="rk">CVE-2026-49742 · CVSS 7.5</span>
+        <h2>TYPO3 CMS has Broken Access Control in its Media Module</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55690.html">
+        <span class="rk">CVE-2026-55690 · CVSS 7.5</span>
+        <h2>StarCitizenWiki Extension Embed Video: Stored XSS via unsanitized service name in exception text</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55794.html">
+        <span class="rk">CVE-2026-55794 · CVSS 7.5</span>
+        <h2>Craft CMS: Potential authenticated Remote Code Execution via referrer redirect</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-62944.html">
+        <span class="rk">CVE-2026-62944 · CVSS 7.5</span>
+        <h2>MantisBT: Stored XSS in print_all_bug_page_word.php</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-4776.html">
+        <span class="rk">CVE-2026-4776 · CVSS 7.1</span>
+        <h2>Mautic has SQL Injection in API Contact Filtering</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48507.html">
+        <span class="rk">CVE-2026-48507 · CVSS 7.1</span>
+        <h2>Snipe-IT: Bulk editing users allowed `ldap_import` and `activated_in` bulk editing users</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+</main>
+<footer>
+  &copy; 2026 CyberDudeBivash Pvt. Ltd. · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/contact.html">Contact</a>
+</footer>
+</body>
+</html>

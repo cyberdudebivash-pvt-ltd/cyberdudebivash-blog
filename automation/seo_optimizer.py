@@ -298,6 +298,17 @@ class SEOOptimizer:
                 },
             })
 
+        if "supply chain" in text or "npm" in text or "pypi" in text or "dependency" in text or (cves and "patch" in text):
+            cve_ref = cves[0] if cves else "this issue"
+            questions.append({
+                "@type": "Question",
+                "name": f"What should developers do about {cve_ref}?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": f"Developers should check dependency manifests and lockfiles for the affected package/component version, pin to a patched release, and add a CI/CD policy check (software composition analysis) to prevent regression. Rotate any secrets that may have been exposed in affected build environments.",
+                },
+            })
+
         # Always add a general SENTINEL APEX FAQ for conversion
         questions.append({
             "@type": "Question",
@@ -355,4 +366,33 @@ class SEOOptimizer:
                 {"@type": "HowToStep", "position": i + 1, "name": step_name, "text": step_text}
                 for i, (step_name, step_text) in enumerate(steps)
             ],
+        }
+
+    def build_glossary_schema(self, title: str, summary: str) -> dict:
+        """DefinedTermSet for the standard threat-intel metrics every report
+        references (CVE, CVSS, EPSS, CISA KEV) — only includes terms
+        actually mentioned in this article, real schema.org definitions,
+        not fabricated content."""
+        text = (title + " " + summary).lower()
+        term_defs = [
+            ("CVE", "Common Vulnerabilities and Exposures — a standardized identifier for a publicly disclosed cybersecurity vulnerability, maintained by MITRE.", ["cve"]),
+            ("CVSS", "Common Vulnerability Scoring System — an industry-standard 0-10 severity score for a vulnerability's technical impact and exploitability.", ["cvss"]),
+            ("EPSS", "Exploit Prediction Scoring System — a data-driven score (0-100%) estimating the probability a vulnerability will be exploited in the wild within the next 30 days, maintained by FIRST.org.", ["epss"]),
+            ("CISA KEV", "CISA Known Exploited Vulnerabilities Catalog — a U.S. government-maintained list of vulnerabilities confirmed to be actively exploited, with mandatory remediation deadlines for federal agencies.", ["cisa kev", "known exploited"]),
+        ]
+
+        matched = [
+            {"@type": "DefinedTerm", "name": name, "description": desc}
+            for name, desc, keywords in term_defs
+            if any(kw in text for kw in keywords)
+        ]
+
+        if not matched:
+            return {}
+
+        return {
+            "@context": "https://schema.org",
+            "@type": "DefinedTermSet",
+            "name": "Threat Intelligence Glossary",
+            "hasDefinedTerm": matched,
         }

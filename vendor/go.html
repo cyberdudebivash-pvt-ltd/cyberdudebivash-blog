@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XTGLNMNNC7',{page_title:document.title,page_location:window.location.href});</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#00ffe0">
+<meta name="description" content="97 real tracked CVE(s) affecting go, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta property="og:title" content="go CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:description" content="97 real tracked CVE(s) affecting go, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://blog.cyberdudebivash.in/vendor/go.html">
+<meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:image" content="https://blog.cyberdudebivash.in/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="go CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX">
+<meta name="twitter:description" content="97 real tracked CVE(s) affecting go, including CISA KEV status and exploitation activity — from CYBERDUDEBIVASH SENTINEL APEX.">
+<meta name="twitter:image" content="https://blog.cyberdudebivash.in/og-image.png">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="canonical" href="https://blog.cyberdudebivash.in/vendor/go.html">
+<title>go CVE &amp; Vulnerability Intelligence | CYBERDUDEBIVASH SENTINEL APEX</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"go CVE Intelligence","url":"https://blog.cyberdudebivash.in/vendor/go.html","dateModified":"2026-07-17"}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-bg:#07090f;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--apex-font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--apex-font);background:var(--apex-bg);color:var(--apex-text);min-height:100vh;line-height:1.7}
+nav{position:sticky;top:0;z-index:9999;background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}.nlogo{font-size:18px;font-weight:900;color:var(--apex-cyan)}.ntag{font-size:10px;color:var(--apex-muted);letter-spacing:.1em;text-transform:uppercase}
+.nlinks{display:flex;gap:4px;flex-wrap:wrap}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:var(--apex-text)}
+main{max-width:900px;margin:0 auto;padding:44px 24px 80px}
+.eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--apex-cyan);background:#00ffe012;border:1px solid #00ffe033;border-radius:6px;padding:5px 12px;margin-bottom:16px}
+h1{font-size:clamp(28px,4.6vw,42px);font-weight:900;color:#fff;margin-bottom:14px}
+.lede{font-size:17px;color:#c9d1d9;margin-bottom:36px;max-width:70ch}
+.rcard{display:block;background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:20px 24px;margin-bottom:14px;text-decoration:none;transition:border-color .2s}
+.rcard:hover{border-color:#00ffe066}
+.rk{font-size:12px;font-weight:700;color:var(--apex-cyan);font-family:var(--mono);letter-spacing:.04em}
+.rcard h2{font-size:19px;font-weight:800;color:#fff;margin:8px 0 8px;line-height:1.3}
+.rcard p{font-size:14px;color:#c9d1d9;margin-bottom:8px}
+.rmore{font-size:13px;font-weight:700;color:var(--apex-cyan)}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;margin-right:6px;font-family:var(--mono)}
+.stat-row{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 10px}
+.stat{font-size:12.5px;color:var(--apex-muted);font-family:var(--mono)}
+.stat b{color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.note{font-size:13.5px;color:var(--apex-muted);margin-top:28px;border-top:1px solid var(--apex-border);padding-top:20px}
+.note a{color:var(--apex-cyan)}
+.empty-state{color:var(--apex-muted);font-size:14px;padding:20px 0}
+footer{border-top:1px solid var(--apex-border);padding:28px 24px;text-align:center;font-size:13px;color:var(--apex-muted);margin-top:40px}
+footer a{color:var(--apex-cyan);text-decoration:none}
+code.rule-preview{display:block;background:#050709;border:1px solid var(--apex-border);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:12px;color:#9ae6b4;white-space:pre-wrap;word-break:break-word;margin-top:8px}
+</style>
+</head>
+<body>
+<nav>
+  <a class="nbrand" href="/"><span class="nlogo">CYBERDUDEBIVASH</span><span class="ntag">Sentinel APEX</span></a>
+  <div class="nlinks"><a href="/">Reports</a><a href="/research">Research</a><a href="/detections">Detections</a><a href="/vendor/" style="color:#fff">Vendors</a><a href="/timeline/">Timeline</a><a href="/collections/">Collections</a><a href="/threat/">Threat Actors</a><a href="/intelligence.html">Intelligence</a></div>
+</nav>
+<main>
+  <span class="eyebrow">Vendor Intelligence</span>
+  <h1>go</h1>
+  <p class="lede">97 tracked CVEs · 0 in CISA KEV · 0 confirmed exploited in the wild.</p>
+  
+      <a class="rcard" href="/cve/CVE-2026-52798.html">
+        <span class="rk">CVE-2026-52798 · CVSS 8.9</span>
+        <h2>Gogs has Stored XSS in `.ipynb` Preview</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-41053.html">
+        <span class="rk">CVE-2026-41053 · CVSS 8.8</span>
+        <h2>Rancher has over-inclusive team membership expansion in GitHub App authentication provider</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44829.html">
+        <span class="rk">CVE-2026-44829 · CVSS 8.8</span>
+        <h2>Gotenberg has path traversal in zip entry name via Windows-style separators in upload filename</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44938.html">
+        <span class="rk">CVE-2026-44938 · CVSS 8.8</span>
+        <h2>Fleet has PSS Bypass through addLabelsFromOptions in Fleet Agent</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46612.html">
+        <span class="rk">CVE-2026-46612 · CVSS 8.8</span>
+        <h2>Fission StorageSvc /v1/archive endpoint exposes unauthenticated CRUD over all function archives</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47125.html">
+        <span class="rk">CVE-2026-47125 · CVSS 8.8</span>
+        <h2>Arcane: Missing admin authorization on global variables endpoint</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49258.html">
+        <span class="rk">CVE-2026-49258 · CVSS 8.8</span>
+        <h2>Nebula Mesh: Web UI lacks ownership checks, enabling cross-operator access to hosts and networks (read, block, delete)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52800.html">
+        <span class="rk">CVE-2026-52800 · CVSS 8.8</span>
+        <h2>Gogs Vulnerable to CSRF Leading to Organization Owner Takeover</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-28737.html">
+        <span class="rk">CVE-2026-28737 · CVSS 8.7</span>
+        <h2>Gitea: Stored XSS via glTF `extensionsRequired` in Gitea 3D File Viewer</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44543.html">
+        <span class="rk">CVE-2026-44543 · CVSS 8.7</span>
+        <h2>Local Path Provisioner Vulnerable to HelperPod Template Injection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49478.html">
+        <span class="rk">CVE-2026-49478 · CVSS 8.7</span>
+        <h2>Fulcio has OIDC Discovery Redirect Following Allows SSRF and JWKS Substitution for Meta-Issuer Paths, with Kubernetes Service-Account Token Leakage</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50197.html">
+        <span class="rk">CVE-2026-50197 · CVSS 8.7</span>
+        <h2>Skipper: opaAuthorizeRequestWithBody filter bypasses OPA policy on Transfer-Encoding — chunked / HTTP/2 requests</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52805.html">
+        <span class="rk">CVE-2026-52805 · CVSS 8.7</span>
+        <h2>Gogs has a Migration Redirect Bypass that Leads to Internal Repository Theft</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55429.html">
+        <span class="rk">CVE-2026-55429 · CVSS 8.7</span>
+        <h2>Coder's workspace app upsert allows cross-workspace agent rebinding via user-controlled app ID</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2025-71261.html">
+        <span class="rk">CVE-2025-71261 · CVSS 8.6</span>
+        <h2>Harvester's SUSE Virtualization Registration Client Vulnerable to MITM and DOS</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-39383.html">
+        <span class="rk">CVE-2026-39383 · CVSS 8.6</span>
+        <h2>Gotenberg Vulnerable to Unauthenticated SSRF via Unfiltered Webhook URL</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42595.html">
+        <span class="rk">CVE-2026-42595 · CVSS 8.6</span>
+        <h2>Gotenberg: Server-Side Request Forgery via Chromium URL Endpoint with Redirect-Based Deny-List Bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44697.html">
+        <span class="rk">CVE-2026-44697 · CVSS 8.6</span>
+        <h2>Klever-Go MultiDataInterceptor has remote OOM via crafted compressed P2P payload</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45298.html">
+        <span class="rk">CVE-2026-45298 · CVSS 8.6</span>
+        <h2>Dozzle: Pre-auth SSRF with response-body reflection via POST /api/notifications/test-webhook (default no-auth deploy)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54628.html">
+        <span class="rk">CVE-2026-54628 · CVSS 8.6</span>
+        <h2>Anyquery: Server-Side Request Forgery (SSRF) via Unrestricted SQLite Virtual Table Modules in Server Mode</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-26231.html">
+        <span class="rk">CVE-2026-26231 · CVSS 8.5</span>
+        <h2>Gitea: Authorization Bypass via &quot;Allow edits from maintainers&quot; allows unauthorized commits to any readable repo</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44850.html">
+        <span class="rk">CVE-2026-44850 · CVSS 8.5</span>
+        <h2>Portainer has a bind-mount restriction bypass via HostConfig.Mounts</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46717.html">
+        <span class="rk">CVE-2026-46717 · CVSS 8.5</span>
+        <h2>Nezha Monitoring: RoleMember-reachable SSRF with full response-body reflection via POST /api/v1/notification</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47201.html">
+        <span class="rk">CVE-2026-47201 · CVSS 8.5</span>
+        <h2>authentik's XML Signature Wrapping in SAML Source ACS allows authentication as arbitrary federated user</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49824.html">
+        <span class="rk">CVE-2026-49824 · CVSS 8.5</span>
+        <h2>Fission: Cross-namespace Environment reference via unvalidated EnvironmentRef in Function admission webhook</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52797.html">
+        <span class="rk">CVE-2026-52797 · CVSS 8.5</span>
+        <h2>Gogs: Overwriting critical files results in a denial of service</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45730.html">
+        <span class="rk">CVE-2026-45730 · CVSS 8.3</span>
+        <h2>Nuclio: Missing authorization on project write paths allows any authenticated user to modify or delete any project</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54174.html">
+        <span class="rk">CVE-2026-54174 · CVSS 8.3</span>
+        <h2>melange: Incomplete package integrity verification allows data section substitution</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55427.html">
+        <span class="rk">CVE-2026-55427 · CVSS 8.3</span>
+        <h2>Coder vulnerable to SSH config injection via unsanitized server-supplied values in `coder config-ssh`</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-40893.html">
+        <span class="rk">CVE-2026-40893 · CVSS 8.2</span>
+        <h2>Gotenberg has an ExifTool Dangerous Tag Blocklist Bypass via Group-Prefixed Tag Names that Allows Arbitrary File Rename and Move</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42083.html">
+        <span class="rk">CVE-2026-42083 · CVSS 8.2</span>
+        <h2>Free5GC PCF: Missing authentication middleware in Npcf_SMPolicyControl allows access to SM policy handlers and disclosure of subscriber SUPI</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44328.html">
+        <span class="rk">CVE-2026-44328 · CVSS 8.2</span>
+        <h2>free5GC's SMF UPI DELETE /upi/v1/upNodesLinks/{ref} panics on AN-node deletion via nil UPF dereference; unauthenticated, state-mutating</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45089.html">
+        <span class="rk">CVE-2026-45089 · CVSS 8.2</span>
+        <h2>Dalfox Server Mode has an Unauthenticated Arbitrary File Create/Append via `output` Option</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46415.html">
+        <span class="rk">CVE-2026-46415 · CVSS 8.2</span>
+        <h2>Caddy Defender trusted proxy client IP bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48126.html">
+        <span class="rk">CVE-2026-48126 · CVSS 8.2</span>
+        <h2>Algernon: Host header path traversal in --domain mode reads files and runs Lua from parent dir</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48788.html">
+        <span class="rk">CVE-2026-48788 · CVSS 8.2</span>
+        <h2>Remark42: Cross-Site Scripting (XSS) on /api/v1/img via content-type spoofing</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49998.html">
+        <span class="rk">CVE-2026-49998 · CVSS 8.2</span>
+        <h2>Centrifugo's dynamic JWKS key cache keyed only by `kid` allows cross-issuer JWT authentication bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55428.html">
+        <span class="rk">CVE-2026-55428 · CVSS 8.2</span>
+        <h2>Coder: Route hijacking through lack of validation of agent-supplied AllowedIPs in tailnet coordinator</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-22555.html">
+        <span class="rk">CVE-2026-22555 · CVSS 8.1</span>
+        <h2>Gitea: API Fork Missing CanCreateOrgRepo Check Allows Org Secret Exfiltration</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-24791.html">
+        <span class="rk">CVE-2026-24791 · CVSS 8.1</span>
+        <h2>Gitea: Public-only tokens bypass private-resource restrictions on `/api/v1/user` self routes</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-28699.html">
+        <span class="rk">CVE-2026-28699 · CVSS 8.1</span>
+        <h2>Gitea: OAuth2 access token scope enforcement bypass via HTTP Basic authentication</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-28744.html">
+        <span class="rk">CVE-2026-28744 · CVSS 8.1</span>
+        <h2>Gitea: Git Smart HTTP Skips Repository Token Scopes for Bearer Tokens</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42221.html">
+        <span class="rk">CVE-2026-42221 · CVSS 8.1</span>
+        <h2>Nginx-UI: Unauthenticated First-Run Installer Allows Remote Initial Admin Claim</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42222.html">
+        <span class="rk">CVE-2026-42222 · CVSS 8.1</span>
+        <h2>Nginx-UI: Unauthenticated first-boot instance claim via POST /api/install allows remote bootstrap takeover</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42296.html">
+        <span class="rk">CVE-2026-42296 · CVSS 8.1</span>
+        <h2>Argo has incomplete fix for CVE-2026-31892: hostNetwork, securityContext, serviceAccountName bypass templateReferencing Strict/Secure</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42602.html">
+        <span class="rk">CVE-2026-42602 · CVSS 8.1</span>
+        <h2>opentelemetry-collector-contrib's azureauthextension Authenticate method does not validate bearer tokens, allowing auth bypass via replay</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44454.html">
+        <span class="rk">CVE-2026-44454 · CVSS 8.1</span>
+        <h2>Coder vulnerable to workspace auto-creation via crafted URL parameters without user consent</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44882.html">
+        <span class="rk">CVE-2026-44882 · CVSS 8.1</span>
+        <h2>Portainer's Kubernetes middleware continues after token validation failure, bypassing endpoint authorization</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44973.html">
+        <span class="rk">CVE-2026-44973 · CVSS 8.1</span>
+        <h2>go-billy has path traversal vulnerabilities</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45062.html">
+        <span class="rk">CVE-2026-45062 · CVSS 8.1</span>
+        <h2>FrankenPHP: Unsafe Unicode Handling in CGI Path Splitting Allows Execution of Non-PHP Files</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45135.html">
+        <span class="rk">CVE-2026-45135 · CVSS 8.1</span>
+        <h2>Caddy: Unsafe Unicode Handling in FastCGI splitPos Allows Execution of Non-PHP Files</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49340.html">
+        <span class="rk">CVE-2026-49340 · CVSS 8.1</span>
+        <h2>gonic has arbitrary file write in createPlaylist: any authenticated user can write playlist M3U content to attacker-controlled path on the host</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50138.html">
+        <span class="rk">CVE-2026-50138 · CVSS 8.1</span>
+        <h2>goshs: WebDAV listener ignores --read-only, --upload-only, and --no-delete mode flags</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52801.html">
+        <span class="rk">CVE-2026-52801 · CVSS 8.1</span>
+        <h2>Gogs has the ability to import local repositories via Mirror Settings</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52845.html">
+        <span class="rk">CVE-2026-52845 · CVSS 8.1</span>
+        <h2>Caddy: FastCGI header normalization bypass in `forward_auth copy_headers`</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-61699.html">
+        <span class="rk">CVE-2026-61699 · CVSS 8.1</span>
+        <h2>nebula-mesh: Certificate revocation is never enforced at the mesh</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-11401.html">
+        <span class="rk">CVE-2026-11401 · CVSS 8</span>
+        <h2>AWS Advanced Go Wrapper has Privilege Escalation in Aurora PostgreSQL instance</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52833.html">
+        <span class="rk">CVE-2026-52833 · CVSS 8</span>
+        <h2>Nuclio: Unsanitized runtimeAttributes.repositories injected into Groovy build.gradle leads to build-time RCE</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45152.html">
+        <span class="rk">CVE-2026-45152 · CVSS 7.8</span>
+        <h2>uniget is Vulnerable to Command Injection in tool.Check Leading to Arbitrary Code Execution</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42283.html">
+        <span class="rk">CVE-2026-42283 · CVSS 7.7</span>
+        <h2>DevSpace UI Server WebSocket CheckOrigin does not validate source</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49821.html">
+        <span class="rk">CVE-2026-49821 · CVSS 7.7</span>
+        <h2>Fission: Cross-namespace Environment reference in Package allows build-time command execution and SA token exfiltration</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49823.html">
+        <span class="rk">CVE-2026-49823 · CVSS 7.7</span>
+        <h2>Fission: Cross-namespace Package read via unvalidated PackageRef in Function admission webhook</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53999.html">
+        <span class="rk">CVE-2026-53999 · CVSS 7.7</span>
+        <h2>Radius Controller May Delete a Container Resource via an Injected Deployment Annotation (Multi-Tenant Installs)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-55431.html">
+        <span class="rk">CVE-2026-55431 · CVSS 7.7</span>
+        <h2>Coder's session token leaked to arbitrary hosts via `coder open app` for external workspace apps</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-24899.html">
+        <span class="rk">CVE-2026-24899 · CVSS 7.5</span>
+        <h2>Fleet Windows MDM Azure AD JWT Authentication Bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-33190.html">
+        <span class="rk">CVE-2026-33190 · CVSS 7.5</span>
+        <h2>CoreDNS has TSIG authentication bypass on DoT, DoH, DoH3, DoQ, and gRPC</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-33489.html">
+        <span class="rk">CVE-2026-33489 · CVSS 7.5</span>
+        <h2>CoreDNS' transfer stanza selection uses lexicographic compare (subzone ACL bypass)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42295.html">
+        <span class="rk">CVE-2026-42295 · CVSS 7.5</span>
+        <h2>Argo vulnerable to exposure of artifact repository credentials</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42339.html">
+        <span class="rk">CVE-2026-42339 · CVSS 7.5</span>
+        <h2>QuantumNous/new-api has an SSRF Filter Bypass via 0.0.0.0</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-42575.html">
+        <span class="rk">CVE-2026-42575 · CVSS 7.5</span>
+        <h2>apko doesn't verify downloaded apk packages against APKINDEX checksum (package substitution possible)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44316.html">
+        <span class="rk">CVE-2026-44316 · CVSS 7.5</span>
+        <h2>free5GC's PCF npcf-smpolicycontrol POST /sm-policies panics on downstream UDR/OpenAPI 404 via nil pointer dereference</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44321.html">
+        <span class="rk">CVE-2026-44321 · CVSS 7.5</span>
+        <h2>free5GC's SMF UPI POST /upi/v1/upNodesLinks exits the SMF process on overlapping UE pools (unauthenticated, reachable Fatalf)</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44322.html">
+        <span class="rk">CVE-2026-44322 · CVSS 7.5</span>
+        <h2>free5GC's NEF 3gpp-pfd-management PATCH applications/{appId} panics on UDR access failure due to nil ProblemDetails dereference</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44325.html">
+        <span class="rk">CVE-2026-44325 · CVSS 7.5</span>
+        <h2>free5GC NRF: type-confusion panic in POST /oauth2/token structured-form parser via Reflect.Set on incompatible types</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-44594.html">
+        <span class="rk">CVE-2026-44594 · CVSS 7.5</span>
+        <h2>esm.sh: Path Traversal via package.json browser field allows reading arbitrary server files</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45678.html">
+        <span class="rk">CVE-2026-45678 · CVSS 7.5</span>
+        <h2>OpenTelemetry eBPF Instrumentation: Postgres BIND parsing can panic on malformed payloads</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45685.html">
+        <span class="rk">CVE-2026-45685 · CVSS 7.5</span>
+        <h2>OpenTelemetry eBPF Instrumentation: MongoDB parser panics on malformed wire messages</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45741.html">
+        <span class="rk">CVE-2026-45741 · CVSS 7.5</span>
+        <h2>Gotenberg has an SSRF deny-list bypass in IsPublicIP via IPv6 6to4 / NAT64 / site-local prefixes</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46377.html">
+        <span class="rk">CVE-2026-46377 · CVSS 7.5</span>
+        <h2>Dasel: Index-out-of-range panic in dasel selector lexer on trailing backslash in quoted string</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46378.html">
+        <span class="rk">CVE-2026-46378 · CVSS 7.5</span>
+        <h2>Dasel: Denial of service in dasel selector lexer due to infinite loop on unterminated regex literal</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-46680.html">
+        <span class="rk">CVE-2026-46680 · CVSS 7.5</span>
+        <h2>containerd user ID handling bypass allows runAsNonRoot evasion</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47243.html">
+        <span class="rk">CVE-2026-47243 · CVSS 7.5</span>
+        <h2>Kata guest escape: runtime-rs guest-root to host-root escape via virtiofs</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-47726.html">
+        <span class="rk">CVE-2026-47726 · CVSS 7.5</span>
+        <h2>nebula-mesh: GET /api/v1/audit-log discloses all entries to any operator</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48020.html">
+        <span class="rk">CVE-2026-48020 · CVSS 7.5</span>
+        <h2>Traefik has a StripPrefix Route-Level Auth Bypass via Path Normalization</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48089.html">
+        <span class="rk">CVE-2026-48089 · CVSS 7.5</span>
+        <h2>DevGuard has improper authorization on public assets</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-48491.html">
+        <span class="rk">CVE-2026-48491 · CVSS 7.5</span>
+        <h2>Traefik: SNICheck ignores wildcard TLSOptions mappings, allowing domain-fronted mTLS bypass</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50141.html">
+        <span class="rk">CVE-2026-50141 · CVSS 7.5</span>
+        <h2>Woodpecker gRPC agent_id metadata can be spoofed- cross-tenant agent impersonation</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50151.html">
+        <span class="rk">CVE-2026-50151 · CVSS 7.5</span>
+        <h2>oras-go blob upload vulnerable to credential forwarding via unvalidated Location header</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52807.html">
+        <span class="rk">CVE-2026-52807 · CVSS 7.5</span>
+        <h2>Gogs has DOM-based XSS via Milestone Name on New Issue Page</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-52844.html">
+        <span class="rk">CVE-2026-52844 · CVSS 7.5</span>
+        <h2>Caddy: Windows `file_server` path authorization bypass via encoded backslash</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-53622.html">
+        <span class="rk">CVE-2026-53622 · CVSS 7.5</span>
+        <h2>Traefik: HTTP/3 mTLS bypass via exact SNI TLSOptions lookup for wildcard and mixed-case hosts</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-54090.html">
+        <span class="rk">CVE-2026-54090 · CVSS 7.5</span>
+        <h2>File Browser has a Command Execution Allowlist Bypass via Shell Metacharacter Injection</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-61549.html">
+        <span class="rk">CVE-2026-61549 · CVSS 7.5</span>
+        <h2>Woodpecker: Privilege escalation via unrestricted serviceAccountName in the Kubernetes backend</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-6970.html">
+        <span class="rk">CVE-2026-6970 · CVSS 7.5</span>
+        <h2>authd: Primary group ID is incorrectly set to value of UID </h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-45738.html">
+        <span class="rk">CVE-2026-45738 · CVSS 7.3</span>
+        <h2>Argo CD: Stored XSS in application link annotations enables developer-to-admin privilege escalation</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-49339.html">
+        <span class="rk">CVE-2026-49339 · CVSS 7.1</span>
+        <h2>gonic: Path Traversal in playlist `id` bypasses ownership check, enabling any user to read/delete other users' playlists</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+
+      <a class="rcard" href="/cve/CVE-2026-50163.html">
+        <span class="rk">CVE-2026-50163 · CVSS 7.1</span>
+        <h2>`oras-go` tar extraction: Hardlink entry with relative Linkname escapes extract dir via process CWD resolution</h2>
+        <div class="stat-row">
+          
+          
+        </div>
+        <span class="rmore">View CVE report →</span>
+      </a>
+</main>
+<footer>
+  &copy; 2026 CyberDudeBivash Pvt. Ltd. · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/contact.html">Contact</a>
+</footer>
+</body>
+</html>
