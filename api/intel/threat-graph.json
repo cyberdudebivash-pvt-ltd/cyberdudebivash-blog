@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-17T16:31:42.084Z",
+  "generated": "2026-07-17T17:01:50.729Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5247,
+    "total_nodes": 5252,
     "actors": 8,
-    "cves": 1071,
-    "campaigns": 465,
+    "cves": 1072,
+    "campaigns": 466,
     "malware": 0,
-    "iocs": 585,
-    "edges": 2262
+    "iocs": 586,
+    "edges": 2264
   },
   "nodes": {
     "actor:lockbit": {
@@ -99441,7 +99441,7 @@
       "attributes": {
         "cvss": 7.8,
         "threat_level": "HIGH",
-        "priority_score": 72,
+        "priority_score": 70,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
@@ -101828,6 +101828,97 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "CVE-2021-44228": {
+      "id": "CVE-2021-44228",
+      "type": "CVE",
+      "name": "CVE lookup that shows the actual fix (KB / package version / Apple train), plus a no-key API. Built partly because NVD's API keeps flaking out",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 78,
+        "exploited": false,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-17",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:tridentstack.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:tridentstack.com": {
+      "id": "ioc:domain:tridentstack.com",
+      "type": "IOC",
+      "name": "tridentstack.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-17"
+      },
+      "connections": []
+    },
+    "SENTINELONE-c709945808231081": {
+      "id": "SENTINELONE-c709945808231081",
+      "type": "Intel",
+      "name": "The Good, the Bad and the Ugly in Cybersecurity – Week 29",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "sentinelone",
+        "product": "Threat Intelligence",
+        "published": "2026-07-17",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-64f82475854ce983": {
+      "id": "REDDIT_CYBER-64f82475854ce983",
+      "type": "Intel",
+      "name": "Need some help from people in tech/cybersecurity. A friend of mine shared some private videos with someone she met online. That person has now stopped responding, and we're concerned about what might happen with the content. The only information we have is the person's Reddit and Telegram",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2021-44228": {
+      "id": "campaign:cve-2021-44228",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2021-44228 | 2 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2021-44228",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -122222,6 +122313,24 @@
       "id": "campaign:cluster-8de5be9a→includes→SECURITYWEEK-ab18113fc3e995ca",
       "source": "campaign:cluster-8de5be9a",
       "target": "SECURITYWEEK-ab18113fc3e995ca",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "CVE-2021-44228→linked_to→ioc:domain:tridentstack.com",
+      "source": "CVE-2021-44228",
+      "target": "ioc:domain:tridentstack.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2021-44228→includes→CVE-2021-44228",
+      "source": "campaign:cve-2021-44228",
+      "target": "CVE-2021-44228",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-17",
