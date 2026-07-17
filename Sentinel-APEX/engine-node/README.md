@@ -79,12 +79,14 @@ live fetches.
 
 ```bash
 cd Sentinel-APEX/engine-node
-node --test        # 23 tests: 18 engine + 5 generator wiring
+node --test        # full suite across all tests/ files in this directory
 ```
 
 Covered: ATT&CK mapping with evidence, cross-language UUID parity, all four
 detection renderers + validators, Suricata generation/refang/SID sequencing,
-the guarded HTML wrapper (including null/malformed items), and a full-post
-render that stays well-formed with the section embedded.
+the guarded HTML wrapper (including null/malformed items), a full-post
+render that stays well-formed with the section embedded, analyst memory +
+threat correlation, and the Sentinel APEX native provider (see
+`../docs/SENTINEL-APEX-PROVIDER.md`).
 
 Run in CI by `.github/workflows/detection-engine-node-ci.yml`.

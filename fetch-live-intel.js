@@ -2,7 +2,7 @@
 /**
  * CYBERDUDEBIVASH SENTINEL APEX — Global Intelligence Engine v5.0
  * HIGH-FREQUENCY MULTI-SOURCE NEAR REAL-TIME INTELLIGENCE ENGINE
- * 27 live sources | Tiered parallel ingestion | Stream-like writes
+ * 28 live sources | Tiered parallel ingestion | Stream-like writes
  * Source health monitoring | Lock mechanism | 5-min cadence
  * © 2026 CYBERDUDEBIVASH PRIVATE LIMITED
  */
@@ -80,6 +80,7 @@ const CFG = {
   nvdApiKey:          process.env.NVD_API_KEY  || '',
   githubToken:        process.env.GITHUB_TOKEN || '',
   otxApiKey:          process.env.OTX_API_KEY  || '',
+  sentinelApexApiKey: process.env.SENTINEL_APEX_API_KEY || '', // optional — endpoints are public
 
   // ── TIER 1: Critical CVE / exploit sources ──────────────────────────
   nvdApi:             'https://services.nvd.nist.gov/rest/json/cves/2.0',
@@ -91,6 +92,15 @@ const CFG = {
   exploitDbRss:       'https://www.exploit-db.com/rss.xml',
   packetstormRss:     'https://rss.packetstormsecurity.com/files/advisories/',
   fullDisclosureRss:  'https://seclists.org/rss/fulldisclosure.rss',
+
+  // CYBERDUDEBIVASH SENTINEL APEX — native ecosystem CTI portal (product/
+  // delivery layer for the same intelligence this repo's own engine feeds;
+  // see Sentinel-APEX/README.md). Not a third-party vendor.
+  sentinelApexLatestUrl:    'https://intel.cyberdudebivash.com/api/v1/intel/latest.json',
+  sentinelApexApexUrl:      'https://intel.cyberdudebivash.com/api/v1/intel/apex.json',
+  sentinelApexAiSummaryUrl: 'https://intel.cyberdudebivash.com/api/v1/intel/ai_summary.json',
+  sentinelApexFeedUrl:      'https://intel.cyberdudebivash.com/api/feed.json',
+  sentinelApexReportsUrl:   'https://intel.cyberdudebivash.com/api/reports/latest.json',
 
   // ── TIER 2: Threat intel blogs + malware feeds ─────────────────────
   bleepingRss:        'https://www.bleepingcomputer.com/feed/',
@@ -842,6 +852,237 @@ async function fetchMSRC() {
   } catch(e) { warn(`MSRC failed: ${e.message}`); return []; }
 }
 
+// ── SOURCE: CYBERDUDEBIVASH SENTINEL APEX — native ecosystem CTI feed ──
+// intel.cyberdudebivash.com is the product-delivery portal for the same
+// Sentinel APEX intelligence ecosystem this repo's own engine feeds (see
+// Sentinel-APEX/README.md) — a first-party structured CTI source, not a
+// third-party vendor. Its exact response shape could not be verified live
+// from this environment (outbound access to the host is blocked by this
+// dev sandbox's network policy — production GitHub Actions runners have
+// normal internet access and are the real validation point going forward).
+// Every field below is therefore read defensively through candidate-key
+// lookups rather than a fixed schema. normalizeSentinelApexRecord() is the
+// single place to update if production logs ever show a field-name
+// mismatch — nothing else in the pipeline assumes a specific shape.
+
+// Reads the first present, non-empty value for any of `keys` from `obj`.
+// A key may use one level of dot-notation for a nested lookup.
+function sapexPick(obj, keys) {
+  if (!obj || typeof obj !== 'object') return undefined;
+  for (const k of keys) {
+    let v;
+    if (k.indexOf('.') !== -1) {
+      const [a, b] = k.split('.');
+      v = obj[a] && obj[a][b];
+    } else {
+      v = obj[k];
+    }
+    if (v !== undefined && v !== null && v !== '') return v;
+  }
+  return undefined;
+}
+function sapexPickArray(obj, keys) {
+  const v = sapexPick(obj, keys);
+  if (Array.isArray(v)) return v;
+  if (typeof v === 'string' && v.trim()) return [v];
+  return [];
+}
+
+// Unwraps whatever envelope shape a Sentinel APEX endpoint responds with:
+// a raw array, a STIX 2.1 bundle ({objects:[...]}), the common {items|
+// data|results|...} wrapper shapes, or (ai_summary.json may describe one
+// summary rather than a list) a single record object.
+function extractSentinelApexRecords(json) {
+  if (!json || typeof json !== 'object') return [];
+  if (Array.isArray(json)) return json;
+  if (Array.isArray(json.objects)) return json.objects; // STIX bundle
+  const wrapperKeys = ['items', 'data', 'results', 'reports', 'records', 'articles', 'intel', 'threats', 'summaries'];
+  for (const k of wrapperKeys) {
+    if (Array.isArray(json[k])) return json[k];
+  }
+  if (sapexPick(json, ['id', 'title', 'name', 'summary', 'headline'])) return [json];
+  return [];
+}
+
+// Maps a native Sentinel APEX MITRE ATT&CK/ATLAS mapping (whatever shape it
+// arrives in) into the same {tactic, technique, sub, framework?, atlas?}
+// shape getMitre() returns, so generatePostHTML() can prefer the real
+// analyst mapping over regex inference through one render path, not two.
+// Returns null when nothing usable is present — caller falls back to
+// getMitre() exactly as it already does for every other source.
+function sapexNativeMitre(raw) {
+  const src = sapexPickArray(raw, ['mitre_attack', 'mitre', 'mitre_tactics', 'mitre_mapping', 'attack_mapping', 'ttps', 'techniques']);
+  if (!src.length) return null;
+  const entries = src.map(t => (typeof t === 'string') ? { technique: t } : t).filter(Boolean);
+  const first = entries.find(t => sapexPick(t, ['technique_id', 'id', 'technique', 'ttp']));
+  if (!first) return null;
+  const techId    = sapexPick(first, ['technique_id', 'id', 'technique', 'ttp']);
+  const techName  = sapexPick(first, ['technique_name', 'name', 'label']);
+  const tactic    = sapexPick(first, ['tactic', 'tactic_name']) || 'Initial Access';
+  const technique = [techId, techName].filter(Boolean).join(' — ');
+  if (!technique) return null;
+  const subEntry = entries.find(t => t !== first && sapexPick(t, ['technique_id', 'id', 'technique']));
+  const sub = subEntry ? [sapexPick(subEntry, ['technique_id', 'id', 'technique']), sapexPick(subEntry, ['technique_name', 'name'])].filter(Boolean).join(' — ') : undefined;
+  const isAtlas = /\bAML\.T/i.test(technique) || /atlas/i.test(String(sapexPick(raw, ['framework']) || ''));
+  return { tactic, technique, sub, ...(isAtlas ? { framework: 'ATLAS', atlas: true } : {}) };
+}
+
+// Best-effort native-category → internal universal-type mapping. Falls back
+// to the existing classifyNews() regex classifier (same as every other
+// source) when the category is absent or unrecognized — never guesses.
+const SAPEX_TYPE_MAP = {
+  cve: 'CVE_REPORT', vulnerability: 'CVE_REPORT', vuln: 'CVE_REPORT',
+  zero_day: 'ZERO_DAY', zeroday: 'ZERO_DAY',
+  ransomware: 'RANSOMWARE',
+  malware: 'MALWARE_REPORT', trojan: 'MALWARE_REPORT',
+  threat_actor: 'THREAT_ACTOR', apt: 'THREAT_ACTOR', actor: 'THREAT_ACTOR',
+  supply_chain: 'SUPPLY_CHAIN',
+  ai_security: 'AI_SECURITY', llm_security: 'AI_SECURITY',
+  data_breach: 'DATA_BREACH', breach: 'DATA_BREACH',
+  advisory: 'ADVISORY', alert: 'ADVISORY',
+  dark_web: 'DARK_WEB', darkweb: 'DARK_WEB',
+  cloud_security: 'CLOUD_SECURITY',
+  detection: 'DETECTION_ENGINEERING',
+};
+
+// Derives a stable, canonical dedup ID: a real CVE ID always wins (so this
+// item correctly merges with NVD/CISA/GitHub records about the same CVE in
+// correlateAndMerge instead of duplicate-publishing), falling back to a
+// hash of the platform's own record id, then the title — mirroring the
+// OTX/RansomWatch/AIIncidentDB fallback convention already in this file.
+function sapexCanonicalId(cves, raw, title) {
+  if (cves.length) return cves[0];
+  const nativeId = sapexPick(raw, ['id', 'uuid', 'report_id', 'guid']);
+  if (nativeId) return 'SENTINELAPEX-' + md5(String(nativeId)).slice(0, 12);
+  if (title) return 'SENTINELAPEX-' + md5(title).slice(0, 12);
+  return null;
+}
+
+let sapexUnknownShapeCount = 0; // Phase 4 observability: records with no usable fields
+
+// Normalizes one raw Sentinel APEX record (any of the 5 endpoint shapes)
+// into this pipeline's internal item schema. Never throws — a record that
+// doesn't resemble intelligence data is logged and skipped, not fabricated.
+function normalizeSentinelApexRecord(raw, endpointKey) {
+  if (!raw || typeof raw !== 'object') return null;
+  const title = String(sapexPick(raw, ['title', 'name', 'headline', 'summary']) || '').slice(0, 200);
+  const desc  = String(sapexPick(raw, ['description', 'summary', 'desc', 'body', 'content', 'analysis']) || '').slice(0, 800);
+  if (!title && !desc) { sapexUnknownShapeCount++; return null; }
+
+  const text = `${title} ${desc}`;
+  const explicitCves = sapexPickArray(raw, ['cves', 'cve_ids'])
+    .concat([sapexPick(raw, ['cve', 'cve_id'])].filter(Boolean))
+    .map(c => String(c).toUpperCase()).filter(c => /^CVE-\d{4}-\d{4,7}$/.test(c));
+  const cves = [...new Set([...explicitCves, ...extractCVEs(text)])];
+
+  const id = sapexCanonicalId(cves, raw, title);
+  if (!id) { sapexUnknownShapeCount++; return null; }
+
+  const sevRaw    = sapexPick(raw, ['cvss', 'cvss_score', 'severity_score', 'score']);
+  const sevLabel  = String(sapexPick(raw, ['severity', 'threat_level', 'priority']) || '').toLowerCase();
+  const sevFromLabel = { critical: 9.5, high: 7.8, medium: 5.5, low: 3.2 }[sevLabel];
+  const cvss = Number.isFinite(Number(sevRaw)) ? Number(sevRaw) : (sevFromLabel || (cves.length ? 7.5 : 6.0));
+
+  const refs = [
+    ...sapexPickArray(raw, ['references', 'refs', 'links', 'sources']).map(r => (typeof r === 'string') ? r : (r && (r.url || r.source_name))),
+    ...sapexPickArray(raw, ['external_references']).map(r => r && r.url),
+    sapexPick(raw, ['url', 'link', 'report_url']),
+  ].filter(Boolean).slice(0, 8);
+
+  const rawIocs = sapexPickArray(raw, ['iocs', 'indicators', 'observables']);
+  const iocs = rawIocs.length
+    ? rawIocs.map(i => {
+        const value = sapexPick(i, ['value', 'indicator', 'pattern']);
+        if (!value) return null;
+        const rawConfidence = Number(sapexPick(i, ['confidence_score', 'confidence']));
+        return {
+          type: String(sapexPick(i, ['type', 'ioc_type']) || 'hash').toLowerCase(),
+          value: String(value).slice(0, 120),
+          confidence_score: Number.isFinite(rawConfidence) ? rawConfidence : 0.75,
+          first_seen: sapexPick(i, ['first_seen', 'created']) || isoNow(),
+          source_count: 1,
+        };
+      }).filter(Boolean).slice(0, 20)
+    : extractIOCs(text, []);
+
+  const nativeType = String(sapexPick(raw, ['type', 'category', 'classification']) || '').toLowerCase().replace(/[\s-]+/g, '_');
+  const type = SAPEX_TYPE_MAP[nativeType] || classifyNews(text);
+
+  const pubRaw    = sapexPick(raw, ['published', 'published_at', 'pubDate', 'created', 'timestamp', 'date', 'first_seen']);
+  const pubDateObj = pubRaw ? new Date(pubRaw) : null;
+  const validDate  = pubDateObj && !isNaN(pubDateObj);
+  const pubDate    = validDate ? pubDateObj.toISOString().slice(0, 10) : isoNow();
+
+  const exploited  = !!sapexPick(raw, ['exploited', 'in_the_wild', 'active_exploitation']) || /exploit|in.the.wild/i.test(text);
+  const cisaKev    = !!sapexPick(raw, ['cisa_kev', 'cisaKev', 'kev_listed']);
+  const ransomware = !!sapexPick(raw, ['ransomware']) || /ransomware/i.test(text) || type === 'RANSOMWARE';
+
+  return {
+    source: 'sentinel_apex', type, id,
+    title: title || `Sentinel APEX Intelligence: ${id}`,
+    desc: desc || title,
+    cvss, refs, pubDate,
+    vendor:  String(sapexPick(raw, ['vendor', 'affected_vendor']) || sapexPickArray(raw, ['vendors'])[0] || 'Unknown Vendor'),
+    product: String(sapexPick(raw, ['product', 'affected_product']) || sapexPickArray(raw, ['products'])[0] || 'Unknown Product'),
+    exploited, cisaKev, ransomware, cves, iocs, sourceCount: 1,
+    daysOld: validDate ? Math.max(0, Math.floor((Date.now() - pubDateObj.getTime()) / 86400000)) : 0,
+    threat_actor: sapexPickArray(raw, ['threat_actor', 'threat_actors', 'actor', 'actors']).map(String),
+    ai_security_tags: type === 'AI_SECURITY' ? ['ai-security', 'sentinel-apex'] : [],
+    mitreNative: sapexNativeMitre(raw),
+  };
+}
+
+async function fetchSentinelApex() {
+  const endpoints = [
+    ['latest',      CFG.sentinelApexLatestUrl],
+    ['apex',        CFG.sentinelApexApexUrl],
+    ['ai_summary',  CFG.sentinelApexAiSummaryUrl],
+    ['feed',        CFG.sentinelApexFeedUrl],
+    ['reports',     CFG.sentinelApexReportsUrl],
+  ];
+  log(`Sentinel APEX: fetching ${endpoints.length} endpoints...`);
+  const headers = CFG.sentinelApexApiKey ? { Authorization: `Bearer ${CFG.sentinelApexApiKey}` } : {};
+  const results = await Promise.allSettled(
+    endpoints.map(([key, url]) => fetchWithRetry(url, { headers }, 2).then(raw => ({ key, raw })))
+  );
+
+  // Cross-endpoint dedup within this one source — feed.json in particular
+  // may be a superset of the other 4, so this prevents Sentinel APEX from
+  // emitting near-duplicate items under its own source key before the item
+  // even reaches the pipeline's own cross-source correlateAndMerge.
+  const seen = new Map();
+  let endpointsOk = 0, rawCount = 0;
+  results.forEach((r, idx) => {
+    const [key] = endpoints[idx];
+    if (r.status !== 'fulfilled') { warn(`Sentinel APEX [${key}] failed: ${r.reason && r.reason.message}`); return; }
+    let json;
+    try { json = JSON.parse(r.value.raw); }
+    catch (e) { warn(`Sentinel APEX [${key}] returned non-JSON response: ${e.message}`); return; }
+    const records = extractSentinelApexRecords(json);
+    rawCount += records.length;
+    if (records.length === 0) { warn(`Sentinel APEX [${key}]: 0 usable records (unrecognized envelope shape).`); return; }
+    endpointsOk++;
+    records.forEach(raw => {
+      let item;
+      try { item = normalizeSentinelApexRecord(raw, key); }
+      catch (e) { warn(`Sentinel APEX [${key}] record normalization error: ${e.message}`); return; }
+      if (!item) return;
+      const existing = seen.get(item.id);
+      seen.set(item.id, existing
+        ? { ...item, refs: [...new Set([...existing.refs, ...item.refs])].slice(0, 8), mitreNative: existing.mitreNative || item.mitreNative }
+        : item);
+    });
+  });
+
+  // One endpoint (or all 5) failing never aborts the pipeline — same
+  // contract as every other source's try/catch-to-[] failure mode.
+  if (endpointsOk === 0) { warn('Sentinel APEX: all endpoints unavailable or unparseable this run.'); return []; }
+  const items = Array.from(seen.values());
+  log(`Sentinel APEX: ${endpointsOk}/${endpoints.length} endpoints ok, ${rawCount} raw records, ${items.length} unique items` +
+    (sapexUnknownShapeCount ? `, ${sapexUnknownShapeCount} skipped (unrecognized shape)` : '') + '.');
+  return items;
+}
+
 // ── TIER 1 SOURCES 13-15: EXPLOIT/VULN DISCLOSURE ────────────────────
 
 async function fetchExploitDB(state) {
@@ -1229,8 +1470,14 @@ function correlateAndMerge(sources) {
       if (!existing) {
         map.set(item.id, { ...item, sourceCount:1, _sources:[item.source] });
       } else {
-        // Winner strategy: cisa_kev > nvd > github_advisories > rss sources
-        const srcRank = { cisa_kev:10, nvd:9, github_advisories:8, cisa_alerts:7, msrc:6 };
+        // Winner strategy: cisa_kev > nvd > github_advisories > sentinel_apex
+        // > cisa_alerts > msrc > rss sources. sentinel_apex sits below the
+        // primary government/vendor sources (it's a correlating CTI
+        // platform, not a ground-truth authority for a given CVE) but above
+        // generic RSS/community signal — the tie-break only decides whose
+        // title/desc/vendor/product win; IOCs/CVEs/refs/exploited/KEV/
+        // mitreNative are unioned below regardless of which side wins.
+        const srcRank = { cisa_kev:10, nvd:9, github_advisories:8, sentinel_apex:7, cisa_alerts:7, msrc:6 };
         const itemRank = srcRank[item.source]||1, exRank = srcRank[existing.source]||1;
         const base = itemRank >= exRank ? { ...existing, ...item } : { ...item, ...existing };
         // Merge enrichment fields
@@ -1239,6 +1486,11 @@ function correlateAndMerge(sources) {
         base.ransomware = existing.ransomware || item.ransomware;
         base.dueDate    = existing.dueDate    || item.dueDate;
         base.reqAction  = existing.reqAction  || item.reqAction;
+        // Preserve a real analyst-provided MITRE mapping across the merge
+        // even when the source that has it loses the rank tie-break —
+        // richer native mapping must never be discarded in favor of the
+        // regex-inferred fallback (getMitre()) computed later at render time.
+        base.mitreNative = existing.mitreNative || item.mitreNative;
         // Merge IOCs (deduplicated)
         const iocMap = new Map();
         [...(existing.iocs||[]), ...(item.iocs||[])].forEach(ioc => {
@@ -2016,7 +2268,13 @@ function genCweAnatomy(item, esc) {
 }
 
 function generatePostHTML(item) {
-  const mitre = getMitre(item);
+  // Prefer a real analyst-provided mapping (currently: Sentinel APEX native
+  // MITRE data) over regex inference. Also populates item._mitre, which the
+  // per-CVE API file writer already reads (writeAPIFiles) but nothing has
+  // ever set — every source's CVE JSON gains a populated `mitre` field as
+  // a side effect, not just Sentinel APEX's.
+  const mitre = item.mitreNative || getMitre(item);
+  item._mitre = mitre;
   const execSummary = genExecutiveSummary(item);
   const bizImpact   = genBusinessImpact(item);
   const attackChain = genAttackChain(item);
@@ -2671,7 +2929,7 @@ function validateAndReport(allItems, generatedCards, state, T0, sourceStats) {
   log('SENTINEL APEX v5.0 — PIPELINE COMPLETE');
   log('═'.repeat(65));
   log(`⏱  Runtime           : ${elapsed}s`);
-  log(`📡 Sources active     : ${sourceCount}/27`);
+  log(`📡 Sources active     : ${sourceCount}/28`);
   log(`📊 Total items        : ${allItems.length}`);
   log(`🔴 CRITICAL           : ${critCount}`);
   log(`🟠 HIGH               : ${highCount}`);
@@ -2723,7 +2981,7 @@ async function main() {
   const T0 = Date.now();
   log('═'.repeat(65));
   log('CYBERDUDEBIVASH SENTINEL APEX v5.0 — HIGH-FREQUENCY INTEL ENGINE');
-  log('27 Sources | Tiered Parallel | Stream-Like Writes | Health Mon.');
+  log('28 Sources | Tiered Parallel | Stream-Like Writes | Health Mon.');
   log(`Run started: ${new Date().toISOString()}`);
   log('═'.repeat(65));
 
@@ -2761,6 +3019,7 @@ async function main() {
       [fetchExploitDB,      'exploitdb'],
       [fetchPacketStorm,    'packetstorm'],
       [fetchFullDisclosure, 'fulldisclosure'],
+      [s => fetchSentinelApex(), 'sentinel_apex'],
     ], state);
 
     // ── PHASE 6: STREAM — write partial results after Tier 1 ──────────
@@ -2770,7 +3029,7 @@ async function main() {
       writeLiveIntel(tier1Items.map(i=>({...i,priority:computePriorityScore(i),threatLevel:threatLevel(computePriorityScore(i))})), state);
       await writeAPIFiles(tier1Items.map(i=>({...i,priority:computePriorityScore(i),threatLevel:threatLevel(computePriorityScore(i))})), state);
     }
-    tier1Batches.forEach((b,idx) => { const k=['nvd','cisa_kev','cisa_alerts','github_advisories','msrc','exploitdb','packetstorm','fulldisclosure'][idx]; if(k) sourceStats[k]={fetched:b.length}; });
+    tier1Batches.forEach((b,idx) => { const k=['nvd','cisa_kev','cisa_alerts','github_advisories','msrc','exploitdb','packetstorm','fulldisclosure','sentinel_apex'][idx]; if(k) sourceStats[k]={fetched:b.length}; });
 
     // ══════════════════════════════════════════════════════════════════
     // TIER 2 — Threat intel blogs + malware (run while Tier 1 publishes)
@@ -2820,12 +3079,12 @@ async function main() {
     ], state);
     tier3Batches.forEach((b,idx) => { const k=['reddit_netsec','reddit_cyber','cert_eu','microsoft_security','wired_security','recorded_future'][idx]; if(k) sourceStats[k]={fetched:b.length}; });
 
-    // ── FULL CORRELATION ACROSS ALL 27 SOURCES ────────────────────────
+    // ── FULL CORRELATION ACROSS ALL 28 SOURCES ────────────────────────
     log('\n── FULL CORRELATION ENGINE ─────────────────────────────────────');
     const allBatches      = [...tier1Batches, ...tier2Batches, ...tier3Batches];
     const correlatedItems = correlateAndMerge(allBatches);
     const activeSources   = allBatches.filter(b=>b.length>0).length;
-    log(`Full corpus: ${correlatedItems.length} items from ${activeSources}/27 sources`);
+    log(`Full corpus: ${correlatedItems.length} items from ${activeSources}/28 sources`);
     const multiSrcCount   = correlatedItems.filter(i=>(i.sourceCount||1)>=2).length;
     if (multiSrcCount > 0) log(`Multi-source corroborated: ${multiSrcCount} items`);
 
@@ -2990,5 +3249,5 @@ if (require.main === module) {
     process.exit(1);
   });
 } else {
-  module.exports = { generatePostHTML, genMultiPlatformDetections, genPriorIntelligence, genStructuredReasoning, genIntelligenceProducts, buildProductApiJSON, genSigma, genYARA, getMitre, stripHtml, decodeEntities };
+  module.exports = { generatePostHTML, genMultiPlatformDetections, genPriorIntelligence, genStructuredReasoning, genIntelligenceProducts, buildProductApiJSON, genSigma, genYARA, getMitre, stripHtml, decodeEntities, correlateAndMerge, extractSentinelApexRecords, normalizeSentinelApexRecord, sapexCanonicalId, sapexNativeMitre, fetchSentinelApex };
 }
