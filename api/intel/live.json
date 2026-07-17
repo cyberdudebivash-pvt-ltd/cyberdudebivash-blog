@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T19:31:38.123Z",
+  "generated": "2026-07-17T20:02:02.235Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -11,7 +11,7 @@
   "s2n_stats": {
     "passed": 96,
     "suppressed": 48,
-    "avg_qs": 0.522
+    "avg_qs": 0.523
   },
   "items": [
     {
@@ -3564,6 +3564,104 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-53598",
+      "title": "Prompty: Arbitrary file read via file reference expansion",
+      "description": "## Summary\nPrompty loaders expanded `${file:...}` references in `.prompty` frontmatter without enforcing that the resolved path stayed within an authorized directory. An attacker-controlled prompt file could use path traversal or an absolute path to cause the host application to read files accessibl",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "prompty",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53598",
+        "CVE-2026-53598"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-wxhm-2mq7-7697",
+        "https://github.com/microsoft/prompty/security/advisories/GHSA-wxhm-2mq7-7697",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53598",
+        "https://github.com/microsoft/prompty/commit/88ac9948d7d37995edbb2f6d36913436626c39e1"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53597",
+      "title": "Prompty: Arbitrary code execution via JavaScript frontmatter in TypeScript loader",
+      "description": "## Summary\nThe TypeScript Prompty loader used `gray-matter` without overriding executable frontmatter engines. `gray-matter` supports JavaScript frontmatter blocks such as `---js` and evaluates them while parsing. An attacker-controlled `.prompty` file could therefore execute arbitrary JavaScript du",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@prompty/core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53597",
+        "CVE-2026-53597"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-c4gh-rv8h-q9vw",
+        "https://github.com/microsoft/prompty/security/advisories/GHSA-c4gh-rv8h-q9vw",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-53597",
+        "https://github.com/microsoft/prompty/commit/c27402da2487075be577f06aa79df627fb9d6853"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-27771",
       "title": "Gitea has insufficient permission checks for Composer package source links",
       "description": "### CVE Description\nGitea versions up to and including 1.26.1 have insufficient permission checks for Composer package source links, which can expose private or internal package source information. ### Summary\nA critical vulnerability has been discovered in Gitea. It was already reported via (securi",
@@ -4241,96 +4339,6 @@
       "ioc_count": 0,
       "refs": [
         "https://intel.cyberdudebivash.com/reports/2026/07/intel--f9c3b6b5b048de72.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-14960",
-      "title": "CVE-2026-14960: Pegatron `Tdelo64.sys` improperly exposes privileged hardware access functionality through the `\\\\.\\TdeI",
-      "description": "CVE-2026-14960: Pegatron `Tdelo64.sys` improperly exposes privileged hardware access functionality through the `\\\\.\\TdeIo` device interf",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-14960"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--91872157ba3a2c07.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-20297",
-      "title": "CVE-2026-20297: In Splunk Enterprise versions below 10.4.1, 10.2.5, 10.0.8, 9.4.13, and 9.3.14, and Splunk Cloud Platfor",
-      "description": "CVE-2026-20297: In Splunk Enterprise versions below 10.4.1, 10.2.5, 10.0.8, 9.4.13, and 9.3.14, and Splunk Cloud Platform versions below",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-20297"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--67b902a60837b371.html"
       ],
       "explanation": {
         "quality": [
