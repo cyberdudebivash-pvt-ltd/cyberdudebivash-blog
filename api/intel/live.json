@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-17T13:01:47.992Z",
+  "generated": "2026-07-17T13:31:39.865Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,13 +7,55 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2351,
+  "total_published": 2354,
   "s2n_stats": {
-    "passed": 85,
-    "suppressed": 10,
-    "avg_qs": 0.551
+    "passed": 94,
+    "suppressed": 41,
+    "avg_qs": 0.511
   },
   "items": [
+    {
+      "id": "CVE-2026-55578",
+      "title": "Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and n",
+      "description": "### Summary\n\nThe terminal feature in Pheditor uses an incomplete character blocklist to sanitize user-supplied commands before passing them to `shell_exec()`. After the fix for GHSA-9643-6xjp-vx57 (which added `$` to the blocklist), the characters `|` (single pipe), `` ` `` (backtick), and the newli",
+      "cvss": 8.8,
+      "final_ps": 54,
+      "quality_score": 0.593,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55578"
+      ],
+      "ioc_count": 2,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "ioc_presence=2 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.593"
+        ],
+        "priority": [
+          "base_ps=54 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -91,6 +133,90 @@
           "+10 ransomware_confirmed",
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54076",
+      "title": "ArcadeDB: Read-only users can mutate database schema (incomplete fix of CVE-2026-44221)",
+      "description": "### Impact\n\nThe fix for CVE-2026-44221 (GHSA-fxc7-fm93-6q77) added an `UPDATE_SCHEMA` authorization check to a single schema-mutating method (`LocalDocumentType.createProperty`). The remaining public schema mutators were left unchecked, so an authenticated identity (including a **read-only API token",
+      "cvss": 8.1,
+      "final_ps": 48,
+      "quality_score": 0.533,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54076",
+        "CVE-2026-44221"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=0d (score=1.00)",
+          "QS=0.533"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54077",
+      "title": "ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users",
+      "description": "### Impact\n\nThe SQL `IMPORT DATABASE` statement did not require administrative privileges and passed its source URL to the importer without validation. Any authenticated user with SQL command access (not only `root`/administrators) could therefore:\n\n- **Server-Side Request Forgery (CWE-918):** cause",
+      "cvss": 7.1,
+      "final_ps": 48,
+      "quality_score": 0.563,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54077"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "ioc_presence=1 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.563"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -179,6 +305,49 @@
         ],
         "priority": [
           "+12 PoC_available",
+          "+8 exploited_in_wild",
+          "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-58644",
+      "title": "CISA Adds Exploited SharePoint RCE Zero-Day CVE-2026-58644 to KEV",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 47,
+      "quality_score": 0.538,
+      "threat_level": "MEDIUM",
+      "type": "ZERO_DAY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-58644"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.537"
+        ],
+        "priority": [
+          "+10 CVSS≥9",
           "+8 exploited_in_wild",
           "+7 zero_day"
         ],
@@ -1091,6 +1260,49 @@
       }
     },
     {
+      "id": "CVE-2026-39808",
+      "title": "CISA Warns of Fortinet FortiSandbox OS Injection Vulnerabilities Exploited in Attacks",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 40,
+      "quality_score": 0.538,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-39808",
+        "CVE-2026-25089"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.537"
+        ],
+        "priority": [
+          "+10 CVSS≥9",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2026-20230",
       "title": "Cisco Patches CVE-2026-20230 in Unified CM as Exploit Code Goes Public",
       "description": "",
@@ -1177,6 +1389,90 @@
         "suppression": null,
         "merge": null
       }
+    },
+    {
+      "id": "SENTINELAPEX-78c8635452d7",
+      "title": "U.S. CISA adds KNX Association KNX Protocol Connection Authorization Option 1 and Oracle flaws to its Known Exploited Vu",
+      "description": "U.S. CISA adds KNX Association KNX Protocol Connection Authorization Option 1 and Oracle flaws to its Known Exploited Vulnerabilities catalog",
+      "cvss": 9.5,
+      "final_ps": 38,
+      "quality_score": 0.507,
+      "threat_level": "CRITICAL",
+      "type": "CLOUD_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 3,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.507"
+        ],
+        "priority": [
+          "+10 CVSS≥9",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
+    },
+    {
+      "id": "SENTINELAPEX-3e775e2f7036",
+      "title": "CISA Warns of Microsoft SharePoint Code Execution Vulnerability Exploited in Attacks",
+      "description": "CISA Warns of Microsoft SharePoint Code Execution Vulnerability Exploited in Attacks",
+      "cvss": 9.5,
+      "final_ps": 38,
+      "quality_score": 0.507,
+      "threat_level": "CRITICAL",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.507"
+        ],
+        "priority": [
+          "+10 CVSS≥9",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
       "id": "CVE-2026-43503",
@@ -2235,7 +2531,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-43456",
@@ -2279,7 +2577,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-55407",
@@ -2323,2054 +2623,47 @@
         ],
         "suppression": null,
         "merge": null
-      }
-    },
-    {
-      "id": "REDDIT_CYBER-634e03182dd384cb",
-      "title": "CISA: Windows BlueHammer flaw now exploited by ransomware gangs",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1ujkotd/cisa_windows_bluehammer_flaw_now_exploited_by/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/pr3-tQ4P5Z6vPJmHIjLQA2It_MwTsvqimFTDkvtRpEw.jpeg?width=640&amp;amp;crop=smart&amp;am",
-      "cvss": 6.5,
-      "final_ps": 33,
-      "quality_score": 0.38,
-      "threat_level": "CRITICAL",
-      "type": "RANSOMWARE",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-06-30",
-      "last_seen": "2026-06-30",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1ujkotd/cisa_windows_bluehammer_flaw_now_exploited_by/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed",
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "REDDIT_NETSEC-ec7428a9c7b06e38",
-      "title": "Extortion group FulcrumSec leaks initial samples from 1.3TB Novo Nordisk data breach following failed $25M ransom demand",
-      "description": "Following a limited incident disclosure by Novo Nordisk on June 11, the cyber extortion group FulcrumSec has claimed responsibility for an extensive network intrusion resulting in the exfiltration of 1.3 TB of data (approximately 700,000",
-      "cvss": 6.5,
-      "final_ps": 33,
-      "quality_score": 0.38,
-      "threat_level": "CRITICAL",
-      "type": "RANSOMWARE",
-      "source": "reddit_netsec",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_netsec"
-      ],
-      "first_seen": "2026-06-17",
-      "last_seen": "2026-06-17",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "reddit_netsec",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 5,
-      "refs": [
-        "https://www.reddit.com/r/netsec/comments/1u85kty/extortion_group_fulcrumsec_leaks_initial_samples/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_netsec)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed",
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-32710",
-      "title": "CVE-2026-32710 MariaDB JSON_SCHEMA_VALID heap buffer overflow leading to RCE",
-      "description": "",
-      "cvss": 8,
-      "final_ps": 33,
-      "quality_score": 0.45,
-      "threat_level": "LOW",
-      "type": "ZERO_DAY",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-05-06",
-      "last_seen": "2026-05-06",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-32710"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1t5tk68/cve202632710_mariadb_json_schema_valid_heap/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": null,
-        "merge": null
       },
       "suppressed": false,
       "suppression_reason": null
     },
     {
-      "id": "REDDIT_CYBER-ff45a34463251100",
-      "title": "Critrical cPanel flaw mass-exploited in &quot;Sorry&quot; ransomware attacks",
-      "description": "&lt;table&gt; &lt;tr&gt;&lt;td&gt; &lt;a href=&quot;https://www.reddit.com/r/cybersecurity/comments/1t2ytwa/critrical_cpanel_flaw_massexploited_in_sorry/&quot;&gt; &lt;img src=&quot;https://external-preview.redd.it/xlI70CSpdXI0Z97IkVMoU--5oQrWus392GJ9lSxXZKA.jpeg?width=640&amp;amp;crop=smart&amp;amp",
-      "cvss": 6.5,
-      "final_ps": 33,
-      "quality_score": 0.38,
-      "threat_level": "CRITICAL",
-      "type": "RANSOMWARE",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-05-03",
-      "last_seen": "2026-05-03",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 7,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1t2ytwa/critrical_cpanel_flaw_massexploited_in_sorry/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed",
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "KREBSONSECURITY-714dfbcd31ec8eff",
-      "title": "Patch Tuesday, April 2026 Edition",
-      "description": "Microsoft today pushed software updates to fix a staggering 167 security vulnerabilities in its Windows operating systems and related software, including a SharePoint Server zero-day and a publicly disclosed weakness in Windows Defender dubbed \"BlueHammer.\" Separately, Google Chrome fixed its fourth",
-      "cvss": 6.5,
-      "priority_score": 58,
-      "threat_level": "MEDIUM",
-      "type": "ZERO_DAY",
-      "source": "krebsonsecurity",
-      "sources_confirmed": 1,
-      "published": "2026-04-14",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "KrebsOnSecurity",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "report_url": null,
-      "refs": [
-        "https://krebsonsecurity.com/2026/04/patch-tuesday-april-2026-edition/"
-      ],
-      "quality_score": 0.45,
-      "final_ps": 33,
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "explanation": {
-        "quality": [
-          "source_weight=0.70 (krebsonsecurity)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      }
-    },
-    {
-      "id": "DARKREADING-357db3c091c4a374",
-      "title": "Unpatched 'PhantomRPC' Flaw in Windows Enables Privilege Escalation",
-      "description": "A researcher discovered five different exploit paths that stem from an architectural weakness in how Windows' Remote Procedure Call (RPC) mechanism handles connections to unavailable services.",
-      "cvss": 6.5,
-      "priority_score": 66,
-      "threat_level": "HIGH",
-      "type": "ZERO_DAY",
-      "source": "darkreading",
-      "sources_confirmed": 1,
-      "published": "2026-04-27",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "darkreading",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "report_url": null,
-      "refs": [
-        "https://www.darkreading.com/vulnerabilities-threats/unpatched-phantomrpc-flaw-windows-privilege-escalation"
-      ],
-      "_addedAt": "2026-04-28T21:26:37.027Z",
-      "quality_score": 0.413,
+      "id": "CVE-2026-44986",
+      "title": "CVE-2026-44986: Penpot is an open-source design tool for design and code collaboration. Prior to 2.14.5, Penpot exposed ",
+      "description": "Penpot is an open-source design tool for design and code collaboration. Prior to 2.14.5, Penpot exposed teams_invitations.clj invitation tokens from create-team-invitations, embedded an existing profile id in auth.clj prepare-register-profile, and had auth.clj register-profile issue a session based ",
+      "cvss": 9.8,
       "final_ps": 32,
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (darkreading)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.413"
-        ],
-        "priority": [
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-54309",
-      "title": "n8n: MCP Browser HTTP Transport Exposes Unauthenticated Browser-Control Sessions",
-      "description": "",
-      "cvss": 10,
-      "final_ps": 31,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
+      "quality_score": 0.478,
+      "threat_level": "HIGH",
       "type": "CVE_REPORT",
-      "source": "github_advisories",
+      "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-16",
-      "last_seen": "2026-06-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "n8n",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54309",
-        "CVE-2026-54309"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-qrx8-25qr-5r7v",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-qrx8-25qr-5r7v",
-        "https://github.com/advisories/GHSA-qrx8-25qr-5r7v"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-54305",
-      "title": "n8n: Cross-Tenant Credential Takeover via Dynamic Credentials EE Endpoints",
-      "description": "",
-      "cvss": 9.9,
-      "final_ps": 31,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-16",
-      "last_seen": "2026-06-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "n8n",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54305",
-        "CVE-2026-54305"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-2j5h-858j-5mpf",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-2j5h-858j-5mpf",
-        "https://github.com/advisories/GHSA-2j5h-858j-5mpf"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-54307",
-      "title": "n8n: Credential Exfiltration via Permission Bypass",
-      "description": "",
-      "cvss": 9.6,
-      "final_ps": 31,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-06-16",
-      "last_seen": "2026-06-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "n8n",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54307",
-        "CVE-2026-54307"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-pmqw-72cg-wx85",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-pmqw-72cg-wx85",
-        "https://github.com/advisories/GHSA-pmqw-72cg-wx85"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-c9db34aa54ed0feb",
-      "title": "Schnieider Electric EcoStruxure Machine Expert HVAC",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-6332"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-07"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-a6da19aea46994a1",
-      "title": "ABB EIBPORT",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2021-22291"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-03"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-9e1cdf218003c206",
-      "title": "Jinan USR IOT Technology Limited (PUSR) USR-W610 RS232/485 to Wi-Fi/Ethernet Converter",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-7786"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-02"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-73f2731ba15421b5",
-      "title": "ABB Busch-Welcome 2 Wire Door Opener Actuator",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-7705"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-04"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-ffe7381d9d8728c3",
-      "title": "Fourth Frontier Frontier X Mobile Application, Frontier X2",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-5768"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-medical-advisories/icsma-26-148-01"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-737d0072e06bb635",
-      "title": "CP Plus 8 Ch. Network Video Recorder",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-6824"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-05"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-a52ba80994ed828f",
-      "title": "XCharge C6",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-9037",
-        "CVE-2026-9038",
-        "CVE-2026-9039"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-08"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-6b629ce27d3928fc",
-      "title": "KMW CCTV Security Cameras",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-5386"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-06"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-023182bc37f9a3f3",
-      "title": "MacGregor Voyage Data Recorder (VDR) G4e",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-28",
-      "last_seen": "2026-05-28",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42941",
-        "CVE-2026-42951",
-        "CVE-2026-44611",
-        "CVE-2026-42929",
-        "CVE-2026-40425"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-148-01"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-dba540151518922d",
-      "title": "CISA Adds Three Known Exploited Vulnerabilities to Catalog",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-27",
-      "last_seen": "2026-05-27",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-8398",
-        "CVE-2026-45321",
-        "CVE-2026-48027"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/alerts/2026/05/27/cisa-adds-three-known-exploited-vulnerabilities-catalog"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-a50232ee58786e54",
-      "title": "CISA Adds One Known Exploited Vulnerability to Catalog",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-26",
-      "last_seen": "2026-05-26",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48172"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/alerts/2026/05/26/cisa-adds-one-known-exploited-vulnerability-catalog"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-5c3549124cf4cb44",
-      "title": "ABB Terra AC",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-26",
-      "last_seen": "2026-05-26",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-5517"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-01"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-7453d9b4c7717aa7",
-      "title": "ABB LVS MConfig",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-26",
-      "last_seen": "2026-05-26",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-9970"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-06"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-28f1466151d49552",
-      "title": "ABB Ability Camera Connect",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-26",
-      "last_seen": "2026-05-26",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-46461",
-        "CVE-2023-47360",
-        "CVE-2023-47359",
-        "CVE-2023-46814",
-        "CVE-2022-41325",
-        "CVE-2020-26664",
-        "CVE-2019-19721",
-        "CVE-2019-13962",
-        "CVE-2019-13615",
-        "CVE-2019-13602",
-        "CVE-2019-5460",
-        "CVE-2019-5459",
-        "CVE-2019-5439",
-        "CVE-2018-11529",
-        "CVE-2017-17670",
-        "CVE-2017-10699",
-        "CVE-2017-9301",
-        "CVE-2017-9300",
-        "CVE-2017-8313",
-        "CVE-2017-8312",
-        "CVE-2017-8311",
-        "CVE-2017-8310"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-05"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-222c7d7b84c2e77f",
-      "title": "Eppendorf BioFlo 320",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-26",
-      "last_seen": "2026-05-26",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-7251"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-medical-advisories/icsma-26-146-01"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-c6a8ec996d80b875",
-      "title": "ABB AbilityTM Zenon Remote Transport Vulnerability",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-26",
-      "last_seen": "2026-05-26",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-8754"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-03"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-9acd78827337e63e",
-      "title": "ABB AC500 V2",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-26",
-      "last_seen": "2026-05-26",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-7745"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-146-02"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-ead48e07821f0249",
-      "title": "CISA Adds One Known Exploited Vulnerability to Catalog",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-22",
-      "last_seen": "2026-05-22",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-9082"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/alerts/2026/05/22/cisa-adds-one-known-exploited-vulnerability-catalog"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-fca2de09c73fe0c1",
-      "title": "ABB B&amp;R Automation Runtime",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-21",
-      "last_seen": "2026-05-21",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-3449",
-        "CVE-2025-3448",
-        "CVE-2025-11498"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-141-04"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-16f6e62bceb413f7",
-      "title": "CISA Adds Two Known Exploited Vulnerabilities to Catalog",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "first_seen": "2026-05-21",
-      "last_seen": "2026-05-21",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-34291",
-        "CVE-2026-34926"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/alerts/2026/05/21/cisa-adds-two-known-exploited-vulnerabilities-catalog"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-e03681b031b511fa",
-      "title": "NSA GRASSMARLIN",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-6807"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-118-01"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-2aa03ee388e74a39",
-      "title": "Milesight Cameras",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-28747",
-        "CVE-2026-27785",
-        "CVE-2026-32644",
-        "CVE-2026-32649",
-        "CVE-2026-20766"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-113-03"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-48be90832034f9ae",
-      "title": "SpiceJet Online Booking System",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-6375",
-        "CVE-2026-6376"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-113-04"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-4bb15ab33ac8ebfa",
-      "title": "Yadea T5 Electric Bicycle",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-70994"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-113-01"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-1b7903ace5a7532d",
-      "title": "Hangzhou Xiongmai Technology Co., Ltd XM530 IP Camera",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-65856"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-113-05"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-ff95e4b72a690d9e",
-      "title": "Carlson Software VASCO-B GNSS Receiver",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-3893"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-113-02"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-9be2e84936113a7f",
-      "title": "Intrado 911 Emergency Gateway (EGW)",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-6074"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/ics-advisories/icsa-26-113-06"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-a8b7c1d19b1e64ab",
-      "title": "CISA Adds Two Known Exploited Vulnerabilities to Catalog",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-1708",
-        "CVE-2026-32202"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/alerts/2026/04/28/cisa-adds-two-known-exploited-vulnerabilities-catalog"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-4357d42794d86a92",
-      "title": "CISA Adds Four Known Exploited Vulnerabilities to Catalog",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-7399",
-        "CVE-2024-57726",
-        "CVE-2024-57728",
-        "CVE-2025-29635"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/alerts/2026/04/24/cisa-adds-four-known-exploited-vulnerabilities-catalog"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-6337d3c7f05b18e2",
-      "title": "FIRESTARTER Backdoor",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-20333",
-        "CVE-2025-20362"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/analysis-reports/ar26-113a"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CISA-0bdc8695f13f628d",
-      "title": "CISA Adds One Known Exploited Vulnerability to Catalog",
-      "description": "",
-      "cvss": 8.5,
-      "final_ps": 31,
-      "quality_score": 0.575,
-      "threat_level": "LOW",
-      "type": "ADVISORY",
-      "source": "cisa_alerts",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "cisa_alerts"
-      ],
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "CISA US-CERT",
-      "product": "Multiple Products",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-39987"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.cisa.gov/news-events/alerts/2026/04/23/cisa-adds-one-known-exploited-vulnerability-catalog"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=1.00 (cisa_alerts)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.575"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "REDDIT_CYBER-a861d9ffbfcf5eeb",
-      "title": "KQL Queries for new Chaotic Eclipse Zero day 'Legacy Hive'",
-      "description": "Literally after July 2026 Patch Tuesday, Chaotic Eclipse dropped a functional zero-day PoC called LegacyHive an arbitrary hive load Elevation of Privilege (EoP) vulnerability targeting the Windows User Profile",
-      "cvss": 6.5,
-      "final_ps": 30,
-      "quality_score": 0.38,
-      "threat_level": "CRITICAL",
-      "type": "ZERO_DAY",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
+        "sentinel_apex"
       ],
       "first_seen": "2026-07-15",
       "last_seen": "2026-07-15",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 5,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1ux652m/kql_queries_for_new_chaotic_eclipse_zero_day/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "REDDIT_CYBER-987261361eb8319f",
-      "title": "Cybersecurity projects",
-      "description": "I haven't seen any tools that does everything from recon to exploitation in web hacking.So i am thinking of creating a web based tool that automates recon and testing. Is it actually possible? If so why haven't i seen many",
-      "cvss": 6.5,
-      "final_ps": 30,
-      "quality_score": 0.38,
-      "threat_level": "HIGH",
-      "type": "ZERO_DAY",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-14",
-      "last_seen": "2026-07-14",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 4,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1uw8mkd/cybersecurity_projects/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-55578",
-      "title": "Pheditor: Incomplete command sanitization in terminal feature allows RCE via pipe operator, backtick substitution, and n",
-      "description": "### Summary The terminal feature in Pheditor uses an incomplete character blocklist to sanitize user-supplied commands before passing them to `shell_exec()`. After the fix for GHSA-9643-6xjp-vx57 (which added `$` to the blocklist), the characters `|` (single pipe), `` ` `` (backtick), and the newlin",
-      "cvss": 8.8,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "composer",
-      "product": "pheditor/pheditor",
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-55578",
-        "CVE-2026-55578"
-      ],
-      "ioc_count": 2,
-      "refs": [
-        "https://github.com/advisories/GHSA-wg4w-wr5q-6vjc",
-        "https://github.com/pheditor/pheditor/security/advisories/GHSA-wg4w-wr5q-6vjc",
-        "https://github.com/pheditor/pheditor/releases/tag/2.0.6",
-        "https://github.com/advisories/GHSA-wg4w-wr5q-6vjc"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54076",
-      "title": "ArcadeDB: Read-only users can mutate database schema (incomplete fix of CVE-2026-44221)",
-      "description": "### Impact The fix for CVE-2026-44221 (GHSA-fxc7-fm93-6q77) added an `UPDATE_SCHEMA` authorization check to a single schema-mutating method (`LocalDocumentType.createProperty`). The remaining public schema mutators were left unchecked, so an authenticated identity (including a **read-only API token*",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "com.arcadedb:arcadedb-engine",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54076",
-        "CVE-2026-54076"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-vg6x-6pg9-6qwg",
-        "https://github.com/ArcadeData/arcadedb/security/advisories/GHSA-vg6x-6pg9-6qwg",
-        "https://github.com/ArcadeData/arcadedb/releases/tag/26.6.1",
-        "https://github.com/advisories/GHSA-vg6x-6pg9-6qwg"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54077",
-      "title": "ArcadeDB: IMPORT DATABASE allows SSRF and arbitrary local file read by authenticated users",
-      "description": "### Impact The SQL `IMPORT DATABASE` statement did not require administrative privileges and passed its source URL to the importer without validation. Any authenticated user with SQL command access (not only `root`/administrators) could therefore: - **Server-Side Request Forgery (CWE-918):** cause t",
-      "cvss": 7.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-16",
-      "last_seen": "2026-07-16",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "com.arcadedb:arcadedb-engine",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54077",
-        "CVE-2026-54077"
+        "CVE-2026-44986"
       ],
       "ioc_count": 1,
-      "refs": [
-        "https://github.com/advisories/GHSA-8w86-m9h8-hvqg",
-        "https://github.com/ArcadeData/arcadedb/security/advisories/GHSA-8w86-m9h8-hvqg",
-        "https://github.com/ArcadeData/arcadedb/releases/tag/26.6.1",
-        "https://github.com/advisories/GHSA-8w86-m9h8-hvqg"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.478"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "+10 CVSS≥9",
+          "+3 supply_chain"
         ],
         "suppression": null,
         "merge": null
@@ -4379,47 +2672,1662 @@
       "suppression_reason": null
     },
     {
-      "id": "SANS_ISC-12347ae6892d2082",
-      "title": "ISC Stormcast For Friday, July 17th, 2026 https://isc.sans.edu/podcastdetail/10012, (Fri, Jul 17th)",
-      "description": "(c) SANS Internet Storm Center. https://isc.sans.edu Creative Commons Attribution-Noncommercial 3.0 United States License.",
-      "cvss": 6.5,
-      "final_ps": 16,
-      "quality_score": 0.39,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sans_isc",
+      "id": "CVE-2026-14266",
+      "title": "7-Zip Vulnerability Exposes Millions of Users to Remote Code Execution Risk",
+      "description": "A newly disclosed vulnerability in 7-Zip, one of the most widely used open-source file archiving tools, could allow remote attackers to execute arbitrary code on affected systems. Tracked as CVE-2026-14266, the flaw stems from improper handling of XZ chunked data and has been addressed in the latest",
+      "cvss": 9.8,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "HIGH",
+      "type": "SUPPLY_CHAIN",
+      "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
-        "sans_isc"
+        "sentinel_apex"
       ],
       "first_seen": "2026-07-17",
       "last_seen": "2026-07-17",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "SANS ISC",
-      "product": "Threat Intelligence",
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
       "due_date": null,
-      "cves": [],
-      "ioc_count": 2,
+      "cves": [
+        "CVE-2026-14266"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-12393",
+      "title": "CVE-2026-12393 - WPS Bookings for WooCommerce < 3.11.7 - Subscriber+ Arbitrary Booking Order Cancellation via IDOR",
+      "description": "CVE ID : CVE-2026-12393\n \n Published : July 17, 2026, 6 a.m. | 59minutes ago\n \n Description : The WPS Bookings for WooCommerce WordPress plugin before 3.11.7 does not verify that a booking order belongs to the requesting user before cancelling it, allowing any authenticated user, such as a Subscribe",
+      "cvss": 9.8,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-12393"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-10525",
+      "title": "CVE-2026-10525 - NEX-Forms < 9.2.3 - Unauthenticated Stored XSS via Form Submission",
+      "description": "CVE ID : CVE-2026-10525\n \n Published : July 17, 2026, 6 a.m. | 59minutes ago\n \n Description : The NEX-Forms WordPress plugin before 9.2.3 does not sanitise and escape some submitted form data before storing it and outputting it back in the admin dashboard, leading to a Stored Cross-Site Scripting vu",
+      "cvss": 9.1,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-10525"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-11961",
+      "title": "CVE-2026-11961 - User Registration & Membership < 5.2.3 - Unauthenticated Privilege Escalation via Unbound members_data ",
+      "description": "CVE ID : CVE-2026-11961\n \n Published : July 17, 2026, 6 a.m. | 59minutes ago\n \n Description : The User Registration & Membership WordPress plugin before 5.2.3 does not validate that the membership tier submitted during public registration is one of the tiers allowed by the registration form before a",
+      "cvss": 9.1,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-11961"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-13402",
+      "title": "CVE-2026-13402 - Royal Elementor Addons < 1.7.1063 - Unauthenticated Private Mega Menu Template Disclosure",
+      "description": "CVE ID : CVE-2026-13402\n \n Published : July 17, 2026, 6 a.m. | 59minutes ago\n \n Description : The Royal Addons for Elementor WordPress plugin before 1.7.1063 does not check the post status of menu items or the templates they reference in one of its REST endpoints, allowing unauthenticated users to r",
+      "cvss": 9.1,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-13402"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-11575",
+      "title": "CVE-2026-11575 - PhonePe Payment Solutions < 3.1.0 - Unauthenticated Payment Bypass via Forged Callback",
+      "description": "CVE ID : CVE-2026-11575\n \n Published : July 17, 2026, 6 a.m. | 59minutes ago\n \n Description : The PhonePe Payment Solutions WordPress plugin before 3.1.0 does not properly verify the authenticity of incoming payment callbacks: the secret used to validate the callback signature is empty on sites conf",
+      "cvss": 9.1,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-11575"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-9810",
+      "title": "CVE-2026-9810 - AI Chatbot & Workflow Automation by AIWU < 1.5.4 - Unauthenticated Privilege Escalation via MCP OAuth",
+      "description": "CVE ID : CVE-2026-9810\n \n Published : July 17, 2026, 6 a.m. | 59minutes ago\n \n Description : The AI Copilot WordPress plugin before 1.5.4 does not bind OAuth access tokens to a WordPress user, and accepts any valid token as an administrator session, allowing unauthenticated attackers who complete th",
+      "cvss": 9.1,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-9810"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-11966",
+      "title": "CVE-2026-11966 - User Registration & Membership < 5.2.3 - Unauthenticated Limited User Deletion via Stripe Subscription ",
+      "description": "CVE ID : CVE-2026-11966\n \n Published : July 17, 2026, 6 a.m. | 59minutes ago\n \n Description : The User Registration & Membership WordPress plugin before 5.2.3 does not perform a capability check for unauthenticated callers on one of its membership payment actions and acts on a caller-supplied user i",
+      "cvss": 9.1,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-11966"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-50454",
+      "title": "Exploit for CVE-2026-50454",
+      "description": "Exploit for CVE-2026-50454",
+      "cvss": 3.2,
+      "final_ps": 29,
+      "quality_score": 0.518,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50454"
+      ],
+      "ioc_count": 0,
       "refs": [
-        "https://isc.sans.edu/diary/rss/33162"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--e07cc94fccaf0bec8a30f8e8.html"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.70 (sans_isc)",
+          "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.55",
           "recency=0d (score=1.00)",
-          "QS=0.390"
+          "QS=0.517"
         ],
         "priority": [
-          "base_ps=16 (no boosts)"
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-50416",
+      "title": "Exploit for CVE-2026-50416",
+      "description": "Exploit for CVE-2026-50416",
+      "cvss": 3.2,
+      "final_ps": 29,
+      "quality_score": 0.518,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50416"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--844e78baf2118c9b634a4b5f.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.517"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-55579",
+      "title": "Pheditor: Hardcoded default password 'admin' with no forced change enables full application compromise",
+      "description": "### Summary\n\nPheditor ships with a hardcoded default password `admin` (SHA-512 hash stored at `pheditor.php:11`). There is no mechanism to force a password change on first login. Any deployment using the default credentials grants an attacker full access to the file editor, file upload, and terminal",
+      "cvss": 9.8,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "HIGH",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55579"
+      ],
+      "ioc_count": 2,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53412",
+      "title": "Zoom Fixes CVE-2026-53412, a Critical Account Takeover Bug",
+      "description": "Zoom warns of a critical Windows flaw, tracked as CVE-2026-53412, that could let attackers take over accounts without authentication. Zoom has fixed a critical Windows vulnerability, tracked as CVE-2026-53412 (CVSS score of 9.8) that could allow unauthenticated attackers to hijack user accounts. The",
+      "cvss": 9.8,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53412"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "SENTINELAPEX-59ac2a980bf5",
+      "title": "Coca-Cola Suspends US Fairlife Production Due to Ransomware Attack",
+      "description": "The company says the incident has not affected product quality and safety, nor Fairlifes Canada production. \n The post Coca-Cola Suspends US Fairlife Production Due to Ransomware Attack appeared first on SecurityWeek .",
+      "cvss": 7.8,
+      "final_ps": 28,
+      "quality_score": 0.448,
+      "threat_level": "HIGH",
+      "type": "RANSOMWARE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 5,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.448"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
+    },
+    {
+      "id": "CVE-2026-54541",
+      "title": "nimiq-primitives: Panic in TrieProof::verify via child_index unwrap on equal-length keys",
+      "description": "### Impact\n\nA malicious peer acting as a state-sync source can crash a syncing node by sending a crafted `TrieChunk` whose proof contains two `TrieProofNode`s with identical keys. `TrieProof::verify()` calls `TrieProofNode::child_index()` (`primitives/src/trie/trie_proof_node.rs:94`), which uncondit",
+      "cvss": 3.7,
+      "final_ps": 28,
+      "quality_score": 0.497,
+      "threat_level": "HIGH",
+      "type": "CRITICAL_INFRASTRUCTURE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54541"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.497"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-50147",
+      "title": "CVE-2026-50147: Metabase is an open-source business intelligence and embedded analytics tool. From 1.57.0 until 1.57.19.",
+      "description": "CVE-2026-50147: Metabase is an open-source business intelligence and embedded analytics tool. From 1.57.0 until 1.57.19.1, 1.58.14.1, 1.",
+      "cvss": 7.8,
+      "final_ps": 27,
+      "quality_score": 0.498,
+      "threat_level": "HIGH",
+      "type": "CRITICAL_INFRASTRUCTURE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50147"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1a8c971ad4d2c374.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "+4 critical_infra",
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-50148",
+      "title": "CVE-2026-50148: Metabase is an open-source business intelligence and embedded analytics tool. From 1.54.0 until 1.54.24,",
+      "description": "CVE-2026-50148: Metabase is an open-source business intelligence and embedded analytics tool. From 1.54.0 until 1.54.24, 1.55.24, 1.56.2",
+      "cvss": 7.8,
+      "final_ps": 27,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CRITICAL_INFRASTRUCTURE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50148"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--0b3036262950ef66.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "+4 critical_infra",
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-15682",
+      "title": "AnyDesk 0-Day Vulnerability Lets Attackers Trigger Denial-of-Service",
+      "description": "A newly disclosed zero-day flaw in AnyDesk, tracked as CVE-2026-15682, allows local attackers to crash affected installations by abusing a core support feature, raising fresh concerns for organizations relying on the remote desktop tool for IT support and access management. The vulnerability resides",
+      "cvss": 4.7,
+      "final_ps": 25,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "ZERO_DAY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-15682"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-45806",
+      "title": "CVE-2026-45806: Penpot is an open-source design tool for design and code collaboration. Prior to 2.15.0, Penpot's remote",
+      "description": "CVE-2026-45806: Penpot is an open-source design tool for design and code collaboration. Prior to 2.15.0, Penpot's remote image import pa",
+      "cvss": 7.8,
+      "final_ps": 23,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45806"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--cd677dc5e8f217e7.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-55242",
+      "title": "CVE-2026-55242: ERPNext is a free and open source Enterprise Resource Planning tool. Prior to 15.111.0 and 16.22.0, an a",
+      "description": "CVE-2026-55242: ERPNext is a free and open source Enterprise Resource Planning tool. Prior to 15.111.0 and 16.22.0, an authenticated use",
+      "cvss": 7.8,
+      "final_ps": 23,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55242"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ede88d7ff9935981.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-60005",
+      "title": "CVE-2026-60005: NGINX Plus and NGINX Open Source have a vulnerability in the ngx_http_slice_module module. When the slic",
+      "description": "CVE-2026-60005: NGINX Plus and NGINX Open Source have a vulnerability in the ngx_http_slice_module module. When the slicedirective and",
+      "cvss": 7.8,
+      "final_ps": 23,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-60005"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--fb8b1ce7edf79337.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-16014",
+      "title": "CVE-2026-16014 code-projects Hospital Bed Management System Login Form sql injection",
+      "description": "CVE-2026-16014 code-projects Hospital Bed Management System Login Form sql injection",
+      "cvss": 3.2,
+      "final_ps": 22,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-16014"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--f05e57aa67508a7faa8275c8.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-45805",
+      "title": "CVE-2026-45805: Penpot is an open-source design tool for design and code collaboration. Prior to 2.15.0, Penpot MCP's mc",
+      "description": "Penpot is an open-source design tool for design and code collaboration. Prior to 2.15.0, Penpot MCP's mcp/packages/server/src/ReplServer.ts bound the ReplServer to 0.0.0.0:4403 and exposed an unauthenticated /execute endpoint that passed the code field to PluginBridge.executePluginTask(), allowing a",
+      "cvss": 8.8,
+      "final_ps": 22,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45805"
+      ],
+      "ioc_count": 2,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-46709",
+      "title": "CVE-2026-46709: Tabby (formerly Terminus) is a highly configurable terminal emulator. Prior to 1.0.234, Tabby inserts dr",
+      "description": "CVE-2026-46709: Tabby (formerly Terminus) is a highly configurable terminal emulator. Prior to 1.0.234, Tabby inserts dropped file paths",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-46709"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--28d9d380e2db1a70.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47158",
+      "title": "CVE-2026-47158: Vaultwarden is a Bitwarden-compatible server written in Rust. Prior to 1.36.0, Vaultwarden's SSO authori",
+      "description": "CVE-2026-47158: Vaultwarden is a Bitwarden-compatible server written in Rust. Prior to 1.36.0, Vaultwarden's SSO authorization flow did",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47158"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--44b1451517977908.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47164",
+      "title": "CVE-2026-47164: Vaultwarden is a Bitwarden-compatible server written in Rust. Prior to 1.36.0, Vaultwarden's SSO login f",
+      "description": "CVE-2026-47164: Vaultwarden is a Bitwarden-compatible server written in Rust. Prior to 1.36.0, Vaultwarden's SSO login flow checked the",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47164"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d1c91ed1dcc5758c.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-61371",
+      "title": "CVE-2026-61371: Microsoft AVML before 0.17.0 could follow a symlink when opening a destination output path on Unix, allo",
+      "description": "CVE-2026-61371: Microsoft AVML before 0.17.0 could follow a symlink when opening a destination output path on Unix, allowing truncation/",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-61371"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--04f2a703c164e291.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2019-25764",
+      "title": "CVE-2019-25764 - ASUS AURA SYNC Driver Privilege Escalation Vulnerability",
+      "description": "CVE ID : CVE-2019-25764\n \n Published : July 17, 2026, 6 a.m. | 59minutes ago\n \n Description : **UNSUPPORTED WHEN ASSIGNED** Exposed IOCTL with Insufficient Access Control in the ASUS AURA SYNC driver allows a local user to bypass the driver's verification and invoke arbitrary IOCTLs, resulting in pr",
+      "cvss": 7.5,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2019-25764"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54540",
+      "title": "Pheditor has an authenticated terminal command whitelist bypass",
+      "description": "### Summary\n\nPheditor 2.0.4 has an authenticated terminal command whitelist bypass.\n\nThe terminal feature checks whether the submitted command starts with one of the configured `TERMINAL_COMMANDS` values, then passes the full command string to `shell_exec()`. Shell command substitution such as `$()`",
+      "cvss": 8.8,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "SOCIAL_ENGINEERING",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54540"
+      ],
+      "ioc_count": 2,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-59950",
+      "title": "MCP Python SDK: WebSocket server transport does not support Host/Origin validation",
+      "description": "### Summary\nIn affected versions, the deprecated WebSocket server transport (`mcp.server.websocket.websocket_server`) accepted the WebSocket handshake without applying any `Host` or `Origin` header validation. The `TransportSecuritySettings` mechanism that the SSE and Streamable HTTP transports use ",
+      "cvss": 7.5,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59950"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-52870",
+      "title": "MCP Python SDK: Experimental task handlers allow any client to access and cancel other clients' tasks",
+      "description": "### Summary\nIn affected versions, the default request handlers installed by the experimental tasks feature (`server.experimental.enable_tasks()`) did not check which session created a task before acting on it. On a server with more than one connected client, any client could observe, read results fr",
+      "cvss": 7.6,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52870"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-52869",
+      "title": "MCP Python SDK: HTTP transports serve session requests without verifying the authenticated principal",
+      "description": "### Summary\nIn affected versions, the SSE and Streamable HTTP server transports routed incoming requests to an existing session based only on the session identifier, without verifying that the request was authenticated as the same principal that created the session. Anyone who learned or guessed a s",
+      "cvss": 7.1,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-16",
+      "last_seen": "2026-07-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52869"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-15759",
+      "title": "CVE-2026-15759 - ChatHelp <= 3.5.1 - Authenticated (Contributor+) Stored Cross-Site Scripting via 'number' and 'group' S",
+      "description": "CVE-2026-15759 - ChatHelp <= 3.5.1 - Authenticated (Contributor+) Stored Cross-Site Scripting via 'number' and 'group' Shortcode Attributes",
+      "cvss": 6.4,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-15759"
+      ],
+      "ioc_count": 9,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-21770",
+      "title": "CVE-2026-21770 - HCL Traveler for Microsoft Outlook (HTMO) is susceptible to DLL hijacking",
+      "description": "CVE-2026-21770 - HCL Traveler for Microsoft Outlook (HTMO) is susceptible to DLL hijacking",
+      "cvss": 6.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-21770"
+      ],
+      "ioc_count": 8,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-60060",
+      "title": "CVE-2026-60060 - Tera Term TTSSH2 Plugin Out-of-Bounds Memory Access Vulnerability",
+      "description": "CVE-2026-60060 - Tera Term TTSSH2 Plugin Out-of-Bounds Memory Access Vulnerability",
+      "cvss": 6.3,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-60060"
+      ],
+      "ioc_count": 5,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-58317",
+      "title": "CVE-2026-58317 - Tera Term TTSSH2 Plugin Unsigned to Signed Conversion Error",
+      "description": "CVE-2026-58317 - Tera Term TTSSH2 Plugin Unsigned to Signed Conversion Error",
+      "cvss": 6.3,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-58317"
+      ],
+      "ioc_count": 6,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-15457",
+      "title": "CVE-2026-15457 - Kirki <= 6.0.13 - Authenticated (Editor+) Path Traversal to Arbitrary Directory Deletion via 'family' P",
+      "description": "CVE-2026-15457 - Kirki <= 6.0.13 - Authenticated (Editor+) Path Traversal to Arbitrary Directory Deletion via 'family' Parameter",
+      "cvss": 4.9,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-15457"
+      ],
+      "ioc_count": 10,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-41993",
+      "title": "CVE-2026-41993 - TXOne Networks SafePortAgent and StellarProtect Improper Access Control Vulnerability",
+      "description": "CVE-2026-41993 - TXOne Networks SafePortAgent and StellarProtect Improper Access Control Vulnerability",
+      "cvss": 4.4,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-41993"
+      ],
+      "ioc_count": 7,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-15379",
+      "title": "CVE-2026-15379 - Arbitrary File Read as SYSTEM in Symantec ITMS",
+      "description": "CVE-2026-15379 - Arbitrary File Read as SYSTEM in Symantec ITMS",
+      "cvss": 5.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-15379"
+      ],
+      "ioc_count": 4,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
     }
   ]
 }
