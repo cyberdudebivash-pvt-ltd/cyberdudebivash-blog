@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-17T14:01:45.939Z",
+  "generated": "2026-07-17T14:28:36.263Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5241,
+    "total_nodes": 5245,
     "actors": 8,
     "cves": 1071,
-    "campaigns": 464,
+    "campaigns": 465,
     "malware": 0,
     "iocs": 585,
-    "edges": 2261
+    "edges": 2262
   },
   "nodes": {
     "actor:lockbit": {
@@ -101718,6 +101718,80 @@
           "confidence": 1
         }
       ]
+    },
+    "SECURITYWEEK-ab18113fc3e995ca": {
+      "id": "SECURITYWEEK-ab18113fc3e995ca",
+      "type": "Intel",
+      "name": "In Other News: Iran Tracks US Military Phones, CrashStealer macOS Malware, CVD Blueprint",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 73,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-17",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-85389304a64ec7b9": {
+      "id": "REDDIT_CYBER-85389304a64ec7b9",
+      "type": "Intel",
+      "name": "can anyone help me solve exploit development challenge.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-7f8ba21524d0eaa8": {
+      "id": "REDDIT_CYBER-7f8ba21524d0eaa8",
+      "type": "Intel",
+      "name": "Difference between SOC layers and SOC analyst tiers",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-17",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-8de5be9a": {
+      "id": "campaign:cluster-8de5be9a",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-17",
+        "last_seen": "2026-07-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-ab18113fc3e995ca",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -122103,6 +122177,15 @@
       "id": "campaign:cve-2023-4346→includes→CVE-2023-4346",
       "source": "campaign:cve-2023-4346",
       "target": "CVE-2023-4346",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-8de5be9a→includes→SECURITYWEEK-ab18113fc3e995ca",
+      "source": "campaign:cluster-8de5be9a",
+      "target": "SECURITYWEEK-ab18113fc3e995ca",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-17",
