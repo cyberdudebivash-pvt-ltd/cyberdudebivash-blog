@@ -157,6 +157,37 @@ class TestFullPipelinePublish(unittest.TestCase):
         self.assertGreater(report["published"], 0)
         self.assertEqual(report["failed"], 0)
 
+    def test_rate_limit_exhaustion_stops_run_without_attempting_remaining_articles(self):
+        token_resp = MagicMock()
+        token_resp.ok = True
+        token_resp.json.return_value = MOCK_TOKEN_RESPONSE
+
+        rate_limited_resp = MagicMock()
+        rate_limited_resp.status_code = 429
+        rate_limited_resp.text = "quota exceeded"
+
+        rss_resp = MagicMock()
+        rss_resp.text = MOCK_RSS
+        rss_resp.raise_for_status = MagicMock()
+
+        # retry_attempts=2 (see _make_config) — both attempts on the FIRST
+        # article are rate limited, exhausting its retries. If the run stops
+        # there as intended, requests.post is never called for the second
+        # discovered article; side_effect having only these 3 entries makes
+        # any further call raise StopIteration and fail the test.
+        with patch("requests.get", return_value=rss_resp):
+            with patch(
+                "requests.post",
+                side_effect=[token_resp, rate_limited_resp, rate_limited_resp],
+            ):
+                with patch("time.sleep"):
+                    report = run_pipeline(self.config, dry_run=False)
+
+        self.assertEqual(report["published"], 0)
+        self.assertEqual(report["failed"], 1)
+        self.assertEqual(len(report["posts"]), 1)
+        self.assertEqual(report["posts"][0]["status"], "rate_limited")
+
     def test_published_articles_tracked_in_state(self):
         token_resp = MagicMock()
         token_resp.ok = True

@@ -5,7 +5,12 @@ Tests for blogger_publisher — OAuth flow, API calls, retry logic.
 import unittest
 from unittest.mock import MagicMock, patch, call
 
-from automation.blogger_publisher import BloggerPublisher, BloggerAuthError, BloggerPublishError
+from automation.blogger_publisher import (
+    BloggerPublisher,
+    BloggerAuthError,
+    BloggerPublishError,
+    BloggerRateLimitError,
+)
 from automation.config import Config
 
 
@@ -115,6 +120,26 @@ class TestBloggerPublish(unittest.TestCase):
                     title="Test", content="<p>x</p>", labels=[]
                 )
         self.assertEqual(result["id"], "post-abc-123")
+
+    def test_rate_limit_exhaustion_raises_rate_limit_error(self):
+        rate_limited = MagicMock()
+        rate_limited.status_code = 429
+
+        with patch("requests.post", return_value=rate_limited):
+            with patch("time.sleep"):
+                with self.assertRaises(BloggerRateLimitError):
+                    self.publisher.publish_post("Title", "<p>x</p>", [])
+
+    def test_rate_limit_error_is_a_publish_error(self):
+        # Subclassing means existing `except BloggerPublishError` callers
+        # keep working unchanged even though a more specific type is raised.
+        rate_limited = MagicMock()
+        rate_limited.status_code = 429
+
+        with patch("requests.post", return_value=rate_limited):
+            with patch("time.sleep"):
+                with self.assertRaises(BloggerPublishError):
+                    self.publisher.publish_post("Title", "<p>x</p>", [])
 
     def test_network_error_retries_and_raises(self):
         import requests as req_lib

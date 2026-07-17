@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .authority_transformer import AuthorityTransformer
-from .blogger_publisher import BloggerPublisher, BloggerPublishError, BloggerAuthError
+from .blogger_publisher import BloggerPublisher, BloggerPublishError, BloggerAuthError, BloggerRateLimitError
 from .config import Config
 from .content_discovery import ContentDiscoveryEngine, DiscoveredArticle, PublicationState
 from .logger import setup_logger
@@ -206,6 +206,26 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             report["failed"] += 1
             report["posts"].append(post_result)
             break  # Auth errors are fatal; stop the run
+
+        except BloggerRateLimitError as e:
+            # Blogger's quota is exhausted for the window, not for this one
+            # article — every remaining article in this run would burn more
+            # calls on a doomed retry (and risk tripping Google's abuse
+            # detection, per the hint in BloggerAuthError above). Record this
+            # article for retry next run and stop instead of working through
+            # the rest of the batch.
+            logger.error(
+                "Rate limit exhausted — stopping run early to avoid burning further quota",
+                extra={"url": article.url, "error": str(e)},
+            )
+            post_result["status"] = "rate_limited"
+            post_result["error"] = str(e)
+            report["errors"].append(str(e))
+            discovery.state.record_failure(article.url, str(e))
+            discovery.state.add_to_retry_queue(article, str(e))
+            report["failed"] += 1
+            report["posts"].append(post_result)
+            break  # Quota exhaustion is effectively fatal for this run
 
         except BloggerPublishError as e:
             logger.error("Publish failed", extra={"url": article.url, "error": str(e)})
