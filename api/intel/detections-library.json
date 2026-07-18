@@ -1,8 +1,27 @@
 {
-  "generated": "2026-07-17T19:35:24.049Z",
+  "generated": "2026-07-18T03:36:11.933Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-53598-pip-prompty",
+      "title": "Prompty: Arbitrary file read via file reference expansion",
+      "url": "/posts/cve-2026-53598-pip-prompty.html",
+      "generated": "2026-07-17T20:02:02.318Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-53598",
+        "CVE-2026-53598"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain crates.io\"; dns.query; content:\"crates.io\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2021-44228-reddit-cyber-threat-intelligence",
       "title": "CVE lookup that shows the actual fix (KB / package version / Apple train), plus a no-key API. Built partly because NVD's API keeps flaking out",
@@ -4158,25 +4177,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.scmp.com/news/china/science/article/3359688/chinese-researchers-find-peephole-any-smartp\"; http.host; content:\"www.scmp.com\"; nocase; http.uri; content:\"/news/china/science/article/3359688/chinese-researchers-find-peephole-any-smartp\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.scmp.com\"; dns.query; content:\"www.scmp.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
-      ]
-    },
-    {
-      "slug": "call-stack-spoofing-via-runtime-pdata-parsing-to-evade-rtlv",
-      "title": "Call Stack Spoofing via Runtime .pdata Parsing to Evade RtlVirtualUnwind",
-      "url": "/posts/call-stack-spoofing-via-runtime-pdata-parsing-to-evade-rtlv.html",
-      "generated": "2026-07-07T12:02:06.263Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Important_Map6928&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Important_Map6928&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://sibouzitoun.tech/articles/sindrikit-v1o3/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"sibouzitoun.tech\"; nocase; http.uri; content:\"/articles/sindrikit-v1o3/&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1ups5hc/call_stack_spoofing_via_runtime_pdata_parsing_to/&q\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1ups5hc/call_stack_spoofing_via_runtime_pdata_parsing_to/&q\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
       ]
     }
   ]
