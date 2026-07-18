@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-18T04:31:30.324Z",
+  "generated": "2026-07-18T05:01:39.903Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,55 +7,13 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2366,
+  "total_published": 2367,
   "s2n_stats": {
     "passed": 96,
-    "suppressed": 45,
+    "suppressed": 44,
     "avg_qs": 0.516
   },
   "items": [
-    {
-      "id": "CVE-2026-53598",
-      "title": "Prompty: Arbitrary file read via file reference expansion",
-      "description": "## Summary\nPrompty loaders expanded `${file:...}` references in `.prompty` frontmatter without enforcing that the resolved path stayed within an authorized directory. An attacker-controlled prompt file could use path traversal or an absolute path to cause the host application to read files accessibl",
-      "cvss": 7.5,
-      "final_ps": 56,
-      "quality_score": 0.563,
-      "threat_level": "MEDIUM",
-      "type": "MALWARE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53598"
-      ],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "ioc_presence=1 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.563"
-        ],
-        "priority": [
-          "+3 supply_chain"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
     {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
@@ -223,6 +181,47 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-55177",
+      "title": "CloudTAK: Authenticated full-read SSRF in the /api/esri* routes — user-controlled URL fetched with no IP-classification ",
+      "description": "# Authenticated full-read SSRF in CloudTAK `/api/esri*` routes — user-controlled URL fetched with no IP-classification guard\n\n## Summary\n\nEvery route in the ESRI helper family (`api/routes/esri.ts`) takes a fully attacker-controlled URL from the request (`POST /api/esri` body `url`, and the `portal`",
+      "cvss": 7.5,
+      "final_ps": 47,
+      "quality_score": 0.533,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55177"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=0d (score=1.00)",
+          "QS=0.533"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4117,6 +4116,49 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-53598",
+      "title": "Prompty: Arbitrary file read via file reference expansion",
+      "description": "## Summary\nPrompty loaders expanded `${file:...}` references in `.prompty` frontmatter without enforcing that the resolved path stayed within an authorized directory. An attacker-controlled prompt file could use path traversal or an absolute path to cause the host application to read files accessibl",
+      "cvss": 7.5,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "MALWARE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53598"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-53597",
       "title": "Prompty: Arbitrary code execution via JavaScript frontmatter in TypeScript loader",
       "description": "## Summary\nThe TypeScript Prompty loader used `gray-matter` without overriding executable frontmatter engines. `gray-matter` supports JavaScript frontmatter blocks such as `---js` and evaluates them while parsing. An attacker-controlled `.prompty` file could therefore execute arbitrary JavaScript du",
@@ -4270,49 +4312,6 @@
       "due_date": null,
       "cves": [
         "CVE-2026-50197"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55177",
-      "title": "CloudTAK: Authenticated full-read SSRF in the /api/esri* routes — user-controlled URL fetched with no IP-classification ",
-      "description": "# Authenticated full-read SSRF in CloudTAK `/api/esri*` routes — user-controlled URL fetched with no IP-classification guard\n\n## Summary\n\nEvery route in the ESRI helper family (`api/routes/esri.ts`) takes a fully attacker-controlled URL from the request (`POST /api/esri` body `url`, and the `portal`",
-      "cvss": 7.5,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55177"
       ],
       "ioc_count": 0,
       "refs": [],
