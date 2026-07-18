@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-18T04:01:54.401Z",
+  "generated": "2026-07-18T04:31:30.280Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5668,
+    "total_nodes": 5670,
     "actors": 8,
     "cves": 1210,
-    "campaigns": 494,
+    "campaigns": 495,
     "malware": 0,
     "iocs": 745,
-    "edges": 2613
+    "edges": 2614
   },
   "nodes": {
     "actor:lockbit": {
@@ -110079,6 +110079,44 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-98ca318b0d8399f0": {
+      "id": "REDDIT_NETSEC-98ca318b0d8399f0",
+      "type": "Intel",
+      "name": "White House launches AI-driven \"Gold Eagle\" clearinghouse to centralize public-private vulnerability coordination",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-18",
+        "type": "CLOUD_SECURITY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-eb81a5fb": {
+      "id": "campaign:cluster-eb81a5fb",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-18",
+        "last_seen": "2026-07-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_NETSEC-98ca318b0d8399f0",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -133632,6 +133670,15 @@
       "id": "campaign:cve-2026-54570→includes→CVE-2026-54570",
       "source": "campaign:cve-2026-54570",
       "target": "CVE-2026-54570",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-eb81a5fb→includes→REDDIT_NETSEC-98ca318b0d8399f0",
+      "source": "campaign:cluster-eb81a5fb",
+      "target": "REDDIT_NETSEC-98ca318b0d8399f0",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-18",

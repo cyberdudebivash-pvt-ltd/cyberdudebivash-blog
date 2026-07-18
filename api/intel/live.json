@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-18T04:01:54.435Z",
+  "generated": "2026-07-18T04:31:30.324Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -10,17 +10,17 @@
   "total_published": 2366,
   "s2n_stats": {
     "passed": 96,
-    "suppressed": 44,
+    "suppressed": 45,
     "avg_qs": 0.516
   },
   "items": [
     {
-      "id": "CVE-2026-53597",
-      "title": "Prompty: Arbitrary code execution via JavaScript frontmatter in TypeScript loader",
-      "description": "## Summary\nThe TypeScript Prompty loader used `gray-matter` without overriding executable frontmatter engines. `gray-matter` supports JavaScript frontmatter blocks such as `---js` and evaluates them while parsing. An attacker-controlled `.prompty` file could therefore execute arbitrary JavaScript du",
+      "id": "CVE-2026-53598",
+      "title": "Prompty: Arbitrary file read via file reference expansion",
+      "description": "## Summary\nPrompty loaders expanded `${file:...}` references in `.prompty` frontmatter without enforcing that the resolved path stayed within an authorized directory. An attacker-controlled prompt file could use path traversal or an absolute path to cause the host application to read files accessibl",
       "cvss": 7.5,
-      "final_ps": 54,
-      "quality_score": 0.533,
+      "final_ps": 56,
+      "quality_score": 0.563,
       "threat_level": "MEDIUM",
       "type": "MALWARE_REPORT",
       "source": "sentinel_apex",
@@ -37,16 +37,17 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-53597"
+        "CVE-2026-53598"
       ],
-      "ioc_count": 0,
+      "ioc_count": 1,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
+          "ioc_presence=1 IOCs",
           "recency=0d (score=1.00)",
-          "QS=0.533"
+          "QS=0.563"
         ],
         "priority": [
           "+3 supply_chain"
@@ -4116,6 +4117,49 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-53597",
+      "title": "Prompty: Arbitrary code execution via JavaScript frontmatter in TypeScript loader",
+      "description": "## Summary\nThe TypeScript Prompty loader used `gray-matter` without overriding executable frontmatter engines. `gray-matter` supports JavaScript frontmatter blocks such as `---js` and evaluates them while parsing. An attacker-controlled `.prompty` file could therefore execute arbitrary JavaScript du",
+      "cvss": 7.5,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "MALWARE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53597"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-27771",
       "title": "Gitea has insufficient permission checks for Composer package source links",
       "description": "### CVE Description\nGitea versions up to and including 1.26.1 have insufficient permission checks for Composer package source links, which can expose private or internal package source information.\n\n### Summary\nA critical vulnerability has been discovered in Gitea. It was already reported via (secur",
@@ -4271,49 +4315,6 @@
         "CVE-2026-55177"
       ],
       "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53598",
-      "title": "Prompty: Arbitrary file read via file reference expansion",
-      "description": "## Summary\nPrompty loaders expanded `${file:...}` references in `.prompty` frontmatter without enforcing that the resolved path stayed within an authorized directory. An attacker-controlled prompt file could use path traversal or an absolute path to cause the host application to read files accessibl",
-      "cvss": 7.5,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "MALWARE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53598"
-      ],
-      "ioc_count": 1,
       "refs": [],
       "explanation": {
         "quality": [
