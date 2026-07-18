@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-18T23:01:36.745Z",
+  "generated": "2026-07-18T23:24:25.661Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 5874,
+    "total_nodes": 5876,
     "actors": 8,
     "cves": 1286,
     "campaigns": 519,
     "malware": 0,
-    "iocs": 769,
-    "edges": 2707
+    "iocs": 770,
+    "edges": 2708
   },
   "nodes": {
     "actor:lockbit": {
@@ -114039,6 +114039,41 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-0a45fddc12c8cc85": {
+      "id": "REDDIT_NETSEC-0a45fddc12c8cc85",
+      "type": "Intel",
+      "name": "Multiple Chinese civic apps share one reward/lottery backend whose signing secret is recoverable",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 39,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-18",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:neurowinter.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:neurowinter.com": {
+      "id": "ioc:domain:neurowinter.com",
+      "type": "IOC",
+      "name": "neurowinter.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-18"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -138440,6 +138475,15 @@
       "target": "SENTINELAPEX-b03d20fd189c",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-18",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-0a45fddc12c8cc85→linked_to→ioc:domain:neurowinter.com",
+      "source": "REDDIT_NETSEC-0a45fddc12c8cc85",
+      "target": "ioc:domain:neurowinter.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-18",
       "sources": []
     }
