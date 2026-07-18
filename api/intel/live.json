@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-18T03:01:41.366Z",
+  "generated": "2026-07-18T03:31:33.449Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -10,7 +10,7 @@
   "total_published": 2366,
   "s2n_stats": {
     "passed": 96,
-    "suppressed": 44,
+    "suppressed": 45,
     "avg_qs": 0.516
   },
   "items": [
@@ -97,12 +97,12 @@
       }
     },
     {
-      "id": "CVE-2026-50197",
-      "title": "Skipper: Incomplete fix for CVE-2026-50197: an oversized body can bypass OPA deny-on-presence Rego policies",
-      "description": "### Summary\n\nA wrong policy can be an open door. \nYou have to check `input.attributes.request.http.truncated_body` in your policy.\n\n### Description\n\nIncomplete fix for CVE-2026-50197: an oversized declared-`Content-Length` body still hands OPA an empty `parsed_body`, so deny-on-presence Rego policie",
-      "cvss": 7.8,
-      "final_ps": 48,
-      "quality_score": 0.533,
+      "id": "CVE-2026-54567",
+      "title": "Flask-Reuploaded: Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of ",
+      "description": "## 1. Header\n\n| Field | Value |\n|---|---|\n| **Title** | Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of CVE-2026-27641) |\n| **Project** | Flask-Reuploaded (`flask_uploads`) |\n| **Affected** | `<= 1.5.0` (latest release; commit `ae31c3f91da40b465c",
+      "cvss": 7.5,
+      "final_ps": 49,
+      "quality_score": 0.563,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -119,19 +119,21 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-50197"
+        "CVE-2026-54567",
+        "CVE-2026-27641"
       ],
-      "ioc_count": 0,
+      "ioc_count": 1,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
+          "ioc_presence=1 IOCs",
           "recency=0d (score=1.00)",
-          "QS=0.533"
+          "QS=0.563"
         ],
         "priority": [
-          "base_ps=48 (no boosts)"
+          "base_ps=49 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4116,6 +4118,49 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-50197",
+      "title": "Skipper: Incomplete fix for CVE-2026-50197: an oversized body can bypass OPA deny-on-presence Rego policies",
+      "description": "### Summary\n\nA wrong policy can be an open door. \nYou have to check `input.attributes.request.http.truncated_body` in your policy.\n\n### Description\n\nIncomplete fix for CVE-2026-50197: an oversized declared-`Content-Length` body still hands OPA an empty `parsed_body`, so deny-on-presence Rego policie",
+      "cvss": 7.8,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50197"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-55177",
       "title": "CloudTAK: Authenticated full-read SSRF in the /api/esri* routes — user-controlled URL fetched with no IP-classification ",
       "description": "# Authenticated full-read SSRF in CloudTAK `/api/esri*` routes — user-controlled URL fetched with no IP-classification guard\n\n## Summary\n\nEvery route in the ESRI helper family (`api/routes/esri.ts`) takes a fully attacker-controlled URL from the request (`POST /api/esri` body `url`, and the `portal`",
@@ -4270,50 +4315,6 @@
         "CVE-2026-27771"
       ],
       "ioc_count": 2,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54567",
-      "title": "Flask-Reuploaded: Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of ",
-      "description": "## 1. Header\n\n| Field | Value |\n|---|---|\n| **Title** | Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of CVE-2026-27641) |\n| **Project** | Flask-Reuploaded (`flask_uploads`) |\n| **Affected** | `<= 1.5.0` (latest release; commit `ae31c3f91da40b465c",
-      "cvss": 7.5,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54567",
-        "CVE-2026-27641"
-      ],
-      "ioc_count": 1,
       "refs": [],
       "explanation": {
         "quality": [

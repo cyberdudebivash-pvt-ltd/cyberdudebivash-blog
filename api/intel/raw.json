@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-18T03:01:41.366Z",
+  "generated": "2026-07-18T03:31:33.449Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 140,
+  "count": 141,
   "items": [
     {
       "id": "SENTINELAPEX-92aa46fed79f",
@@ -147,8 +147,8 @@
       "title": "CISA urges immediate action on actively exploited Fortinet flaws",
       "description": "CISA on Thursday ordered government agencies to prioritize patching two actively exploited vulnerabilities in the Fortinet FortiSandbox threat detection platform. [...]",
       "cvss": 7.8,
-      "final_ps": 69,
-      "quality_score": 0.563,
+      "final_ps": 67,
+      "quality_score": 0.548,
       "threat_level": "HIGH",
       "type": "CLOUD_SECURITY",
       "source": "sentinel_apex",
@@ -171,8 +171,8 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.563"
+          "recency=1d (score=0.85)",
+          "QS=0.548"
         ],
         "priority": [
           "+8 exploited_in_wild"
@@ -357,12 +357,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-50197",
-      "title": "Skipper: Incomplete fix for CVE-2026-50197: an oversized body can bypass OPA deny-on-presence Rego policies",
-      "description": "### Summary\n\nA wrong policy can be an open door. \nYou have to check `input.attributes.request.http.truncated_body` in your policy.\n\n### Description\n\nIncomplete fix for CVE-2026-50197: an oversized declared-`Content-Length` body still hands OPA an empty `parsed_body`, so deny-on-presence Rego policie",
-      "cvss": 7.8,
-      "final_ps": 48,
-      "quality_score": 0.533,
+      "id": "CVE-2026-54567",
+      "title": "Flask-Reuploaded: Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of ",
+      "description": "## 1. Header\n\n| Field | Value |\n|---|---|\n| **Title** | Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of CVE-2026-27641) |\n| **Project** | Flask-Reuploaded (`flask_uploads`) |\n| **Affected** | `<= 1.5.0` (latest release; commit `ae31c3f91da40b465c",
+      "cvss": 7.5,
+      "final_ps": 49,
+      "quality_score": 0.563,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -379,26 +379,36 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-50197"
+        "CVE-2026-54567",
+        "CVE-2026-27641"
       ],
-      "ioc_count": 0,
+      "ioc_count": 1,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
+          "ioc_presence=1 IOCs",
           "recency=0d (score=1.00)",
-          "QS=0.533"
+          "QS=0.563"
         ],
         "priority": [
-          "base_ps=48 (no boosts)"
+          "base_ps=49 (no boosts)"
         ],
         "suppression": null,
         "merge": null
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
+      "iocs": [
+        {
+          "type": "sha1",
+          "value": "ae31c3f91da40b465ca5e8f57d93f063b4553e23",
+          "confidence_score": 0.9,
+          "first_seen": "2026-07-18",
+          "source_count": 1
+        }
+      ]
     },
     {
       "id": "EXPLOITDB-13fc423caf742505",
@@ -4136,6 +4146,50 @@
       "iocs": []
     },
     {
+      "id": "REDDIT_NETSEC-7755e69374528909",
+      "title": "wp2shell: Pre Authentication RCE in WordPress Core",
+      "description": "submitted by /u/Mempodipper [link] [comments]",
+      "cvss": 6.5,
+      "final_ps": 36,
+      "quality_score": 0.325,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "reddit_netsec",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_netsec"
+      ],
+      "first_seen": "2026-07-18",
+      "last_seen": "2026-07-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_netsec",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/netsec/comments/1uzhzbu/wp2shell_pre_authentication_rce_in_wordpress_core/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_netsec)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.325"
+        ],
+        "priority": [
+          "base_ps=36 (no boosts)"
+        ],
+        "suppression": "Quality score below minimum threshold (QS < 0.35)",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Quality score below minimum threshold (QS < 0.35)",
+      "iocs": []
+    },
+    {
       "id": "CISA-6e5951df4ac8152d",
       "title": "ABB B&amp;R Automation Runtime DoS Vulnerability in System Diagnostics Manager (SDM)",
       "description": "",
@@ -5819,6 +5873,50 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-50197",
+      "title": "Skipper: Incomplete fix for CVE-2026-50197: an oversized body can bypass OPA deny-on-presence Rego policies",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50197"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-55177",
       "title": "CloudTAK: Authenticated full-read SSRF in the /api/esri* routes — user-controlled URL fetched with no IP-classification ",
       "description": "",
@@ -5974,51 +6072,6 @@
       "due_date": null,
       "cves": [
         "CVE-2026-27771"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54567",
-      "title": "Flask-Reuploaded: Extension-denylist bypass via case-folding asymmetry in name-override path (incomplete-fix variant of ",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54567",
-        "CVE-2026-27641"
       ],
       "ioc_count": 0,
       "refs": [],
