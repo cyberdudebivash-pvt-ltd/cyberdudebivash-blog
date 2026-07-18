@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-18T00:31:31.883Z",
+  "generated": "2026-07-18T00:53:35.543Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -11,9 +11,52 @@
   "s2n_stats": {
     "passed": 130,
     "suppressed": 53,
-    "avg_qs": 0.516
+    "avg_qs": 0.517
   },
   "items": [
+    {
+      "id": "CVE-2026-52890",
+      "title": "CVE-2026-52890: Wekan is open source kanban built with Meteor. Prior to 9.31, Wekan allows a logged-in board member to i",
+      "description": "Wekan is open source kanban built with Meteor. Prior to 9.31, Wekan allows a logged-in board member to insert an attachment document through the /attachments/insert DDP method with attacker-controlled versions.original.path and versions.original.storage fields. The server/permissions/attachments.js ",
+      "cvss": 9.8,
+      "final_ps": 72,
+      "quality_score": 0.617,
+      "threat_level": "HIGH",
+      "type": "SUPPLY_CHAIN",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52890"
+      ],
+      "ioc_count": 4,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "ioc_presence=4 IOCs",
+          "recency=2d (score=0.65)",
+          "QS=0.617"
+        ],
+        "priority": [
+          "+10 CVSS≥9",
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2023-4346",
       "title": "U.S. CISA adds KNX Association KNX Protocol Connection Authorization Option 1 and Oracle flaws to its Known Exploited Vu",
@@ -98,9 +141,52 @@
       }
     },
     {
-      "id": "CVE-2026-55234",
-      "title": "CVE-2026-55234: Wekan is open source kanban built with Meteor. Prior to 9.37, Wekan DDP update allow rules in server/per",
-      "description": "Wekan is open source kanban built with Meteor. Prior to 9.37, Wekan DDP update allow rules in server/permissions/cards.js, server/permissions/lists.js, and server/permissions/swimlanes.js authorize against the stored source boardId and do not validate a new boardId in the update modifier. Any authen",
+      "id": "CVE-2026-52892",
+      "title": "CVE-2026-52892: Wekan is open source kanban built with Meteor. Prior to 9.32, Wekan REST handlers in server/models/custo",
+      "description": "Wekan is open source kanban built with Meteor. Prior to 9.32, Wekan REST handlers in server/models/customFields.js use read-level Authentication.checkBoardAccess instead of write-level Authentication.checkBoardWriteAccess for mutating custom-field routes. A read-only board member can call POST, PUT,",
+      "cvss": 9.8,
+      "final_ps": 70,
+      "quality_score": 0.588,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52892"
+      ],
+      "ioc_count": 3,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "ioc_presence=3 IOCs",
+          "recency=2d (score=0.65)",
+          "QS=0.588"
+        ],
+        "priority": [
+          "+10 CVSS≥9",
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-53447",
+      "title": "CVE-2026-53447: Wekan is open source kanban built with Meteor. Prior to 9.35, the Wekan cloneBoard Meteor method in mode",
+      "description": "Wekan is open source kanban built with Meteor. Prior to 9.35, the Wekan cloneBoard Meteor method in models/import.js uses caller-supplied sourceBoardId to build a board export through models/exporter.js without invoking canExport() or checking source-board membership. Any authenticated user who know",
       "cvss": 9.8,
       "final_ps": 67,
       "quality_score": 0.528,
@@ -120,93 +206,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-55234"
-      ],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "ioc_presence=1 IOCs",
-          "recency=2d (score=0.65)",
-          "QS=0.527"
-        ],
-        "priority": [
-          "+10 CVSS≥9",
-          "+3 supply_chain"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-52891",
-      "title": "CVE-2026-52891: Wekan is open source kanban built with Meteor. Prior to 9.07, Wekan avatar upload functionality embeds u",
-      "description": "Wekan is open source kanban built with Meteor. Prior to 9.07, Wekan avatar upload functionality embeds user-supplied filenames into paths later passed to child_process.exec() for MIME-type detection. Because models/avatars.js and models/fileValidation.js used a shell command with the avatar filename",
-      "cvss": 9.8,
-      "final_ps": 67,
-      "quality_score": 0.528,
-      "threat_level": "HIGH",
-      "type": "SOCIAL_ENGINEERING",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-52891"
-      ],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "ioc_presence=1 IOCs",
-          "recency=2d (score=0.65)",
-          "QS=0.527"
-        ],
-        "priority": [
-          "+10 CVSS≥9",
-          "+3 supply_chain"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-55652",
-      "title": "CVE-2026-55652: Wekan is open source kanban built with Meteor. Prior to 9.46, header-login with HEADER_LOGIN_TRUSTED_IPS",
-      "description": "Wekan is open source kanban built with Meteor. Prior to 9.46, header-login with HEADER_LOGIN_TRUSTED_IPS uses getRequestIp() in server/lib/headerLoginAuth.js to trust the client-supplied X-Forwarded-For header before the real socket address, allowing an unauthenticated attacker to send HEADER_LOGIN_",
-      "cvss": 9.8,
-      "final_ps": 67,
-      "quality_score": 0.528,
-      "threat_level": "HIGH",
-      "type": "SUPPLY_CHAIN",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55652"
+        "CVE-2026-53447"
       ],
       "ioc_count": 1,
       "refs": [],
@@ -4172,9 +4172,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2025-65720",
-      "title": "CVE-2025-65720: An issue in Open Source GPT Researcher v3.3.7 allows attackers to execute arbitrary commands on a victim",
-      "description": "An issue in Open Source GPT Researcher v3.3.7 allows attackers to execute arbitrary commands on a victim system via user interaction with a crafted HTML page.",
+      "id": "CVE-2026-45313",
+      "title": "CVE-2026-45313: Sandboxie-Plus is an open source sandbox-based isolation software for Windows. Prior to 1.17.6, GuiServe",
+      "description": "Sandboxie-Plus is an open source sandbox-based isolation software for Windows. Prior to 1.17.6, GuiServer::WndHookRegisterSlave in Sandboxie/core/svc/GuiServer.cpp stores attacker-supplied hthread and hproc fields from a GUI_WND_HOOK_REGISTER request without validating that the thread belongs to the",
       "cvss": 9.8,
       "final_ps": 32,
       "quality_score": 0.478,
@@ -4194,7 +4194,51 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2025-65720"
+        "CVE-2026-45313"
+      ],
+      "ioc_count": 2,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9",
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54458",
+      "title": "CVE-2026-54458: WWBN AVideo is an open source video platform. Versions prior to 29.0 contain a stored DOM Cross-Site Scr",
+      "description": "WWBN AVideo is an open source video platform. Versions prior to 29.0 contain a stored DOM Cross-Site Scripting vulnerability in the YPTSocket plugin. Any unauthenticated remote attacker can execute arbitrary JavaScript in the authenticated origin of every administrator currently viewing a page that ",
+      "cvss": 9.6,
+      "final_ps": 32,
+      "quality_score": 0.478,
+      "threat_level": "HIGH",
+      "type": "SUPPLY_CHAIN",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-15",
+      "last_seen": "2026-07-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54458"
       ],
       "ioc_count": 1,
       "refs": [],
@@ -4216,9 +4260,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-53447",
-      "title": "CVE-2026-53447: Wekan is open source kanban built with Meteor. Prior to 9.35, the Wekan cloneBoard Meteor method in mode",
-      "description": "Wekan is open source kanban built with Meteor. Prior to 9.35, the Wekan cloneBoard Meteor method in models/import.js uses caller-supplied sourceBoardId to build a board export through models/exporter.js without invoking canExport() or checking source-board membership. Any authenticated user who know",
+      "id": "CVE-2026-55234",
+      "title": "CVE-2026-55234: Wekan is open source kanban built with Meteor. Prior to 9.37, Wekan DDP update allow rules in server/per",
+      "description": "Wekan is open source kanban built with Meteor. Prior to 9.37, Wekan DDP update allow rules in server/permissions/cards.js, server/permissions/lists.js, and server/permissions/swimlanes.js authorize against the stored source boardId and do not validate a new boardId in the update modifier. Any authen",
       "cvss": 9.8,
       "final_ps": 32,
       "quality_score": 0.478,
@@ -4238,7 +4282,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-53447"
+        "CVE-2026-55234"
       ],
       "ioc_count": 1,
       "refs": [],
@@ -4260,14 +4304,14 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-52890",
-      "title": "CVE-2026-52890: Wekan is open source kanban built with Meteor. Prior to 9.31, Wekan allows a logged-in board member to i",
-      "description": "Wekan is open source kanban built with Meteor. Prior to 9.31, Wekan allows a logged-in board member to insert an attachment document through the /attachments/insert DDP method with attacker-controlled versions.original.path and versions.original.storage fields. The server/permissions/attachments.js ",
+      "id": "CVE-2026-52891",
+      "title": "CVE-2026-52891: Wekan is open source kanban built with Meteor. Prior to 9.07, Wekan avatar upload functionality embeds u",
+      "description": "Wekan is open source kanban built with Meteor. Prior to 9.07, Wekan avatar upload functionality embeds user-supplied filenames into paths later passed to child_process.exec() for MIME-type detection. Because models/avatars.js and models/fileValidation.js used a shell command with the avatar filename",
       "cvss": 9.8,
       "final_ps": 32,
       "quality_score": 0.478,
       "threat_level": "HIGH",
-      "type": "SUPPLY_CHAIN",
+      "type": "SOCIAL_ENGINEERING",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -4282,53 +4326,9 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-52890"
+        "CVE-2026-52891"
       ],
-      "ioc_count": 4,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "+10 CVSS≥9",
-          "+3 supply_chain"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-52892",
-      "title": "CVE-2026-52892: Wekan is open source kanban built with Meteor. Prior to 9.32, Wekan REST handlers in server/models/custo",
-      "description": "Wekan is open source kanban built with Meteor. Prior to 9.32, Wekan REST handlers in server/models/customFields.js use read-level Authentication.checkBoardAccess instead of write-level Authentication.checkBoardWriteAccess for mutating custom-field routes. A read-only board member can call POST, PUT,",
-      "cvss": 9.8,
-      "final_ps": 32,
-      "quality_score": 0.478,
-      "threat_level": "HIGH",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-15",
-      "last_seen": "2026-07-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-52892"
-      ],
-      "ioc_count": 3,
+      "ioc_count": 1,
       "refs": [],
       "explanation": {
         "quality": [
