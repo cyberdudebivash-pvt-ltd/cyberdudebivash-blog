@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-19T17:31:29.475Z",
+  "generated": "2026-07-19T17:54:05.411Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 6097,
+    "total_nodes": 6099,
     "actors": 8,
     "cves": 1366,
-    "campaigns": 534,
+    "campaigns": 535,
     "malware": 0,
     "iocs": 780,
-    "edges": 2740
+    "edges": 2741
   },
   "nodes": {
     "actor:lockbit": {
@@ -109334,7 +109334,7 @@
       "attributes": {
         "cvss": 5.5,
         "threat_level": "LOW",
-        "priority_score": 39,
+        "priority_score": 37,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
@@ -118101,6 +118101,44 @@
       "connections": [
         {
           "target": "SENTINELAPEX-d4f5f7d25cd6",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "REDDIT_CYBER-cd1f31806c51c983": {
+      "id": "REDDIT_CYBER-cd1f31806c51c983",
+      "type": "Intel",
+      "name": "What AI cyber security platforms are spearheading the field.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-19",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-f35c00f4": {
+      "id": "campaign:cluster-f35c00f4",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-19",
+        "last_seen": "2026-07-19",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-cd1f31806c51c983",
           "relationship": "includes",
           "confidence": 1
         }
@@ -142801,6 +142839,15 @@
       "id": "campaign:cluster-e3b32a13→includes→SENTINELAPEX-d4f5f7d25cd6",
       "source": "campaign:cluster-e3b32a13",
       "target": "SENTINELAPEX-d4f5f7d25cd6",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-19",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-f35c00f4→includes→REDDIT_CYBER-cd1f31806c51c983",
+      "source": "campaign:cluster-f35c00f4",
+      "target": "REDDIT_CYBER-cd1f31806c51c983",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-19",
