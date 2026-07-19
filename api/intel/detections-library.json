@@ -1,8 +1,59 @@
 {
-  "generated": "2026-07-19T13:56:34.067Z",
+  "generated": "2026-07-19T19:35:33.715Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "recovering-from-a-malicious-apk-installation-on-cmf-phone-h",
+      "title": "Recovering from a malicious APK installation on CMF Phone. HELP!",
+      "url": "/posts/recovering-from-a-malicious-apk-installation-on-cmf-phone-h.html",
+      "generated": "2026-07-19T18:31:30.684Z",
+      "severity": "MEDIUM",
+      "cves": [],
+      "mitreAttack": [
+        {
+          "id": "T1204.002",
+          "name": "Malicious File",
+          "tactic": "execution",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "sigma": [
+        "title: Office Application Spawning Script Interpreter\nid: 7b3625a2-968e-5066-aac8-746b6dbabe14\nstatus: experimental\ndescription: 'Office Application Spawning Script Interpreter. Evidence basis: l factory reset to wipe the system and remove all malicious files. Avoided restoring from any old \"dirty\" backups;. CYBERDUDEBIVASH SENTINEL APEX Detection Engineering.'\nreferences: []\nauthor: CYBERDUDEBIVASH SENTINEL APEX Detection Engineering\ndate: 2026-07-19\ntags:\n- attack.t1204.002\nlogsource:\n    product: windows\n    category: process_creation\ndetection:\n    selection:\n        ParentImage|endswith:\n            - \\outlook.exe\n            - \\winword.exe\n            - \\excel.exe\n            - \\powerpnt.exe\n        Image|endswith:\n            - \\powershell.exe\n            - \\cmd.exe\n            - \\wscript.exe\n            - \\mshta.exe\n    condition: selection\nfalsepositives:\n    - Legitimate administrative activity\n    - Authorized security testing\nlevel: high"
+      ],
+      "kql": [
+        "DeviceProcessEvents\n| where (InitiatingProcessFolderPath endswith \"\\\\outlook.exe\" or InitiatingProcessFolderPath endswith \"\\\\winword.exe\" or InitiatingProcessFolderPath endswith \"\\\\excel.exe\" or InitiatingProcessFolderPath endswith \"\\\\powerpnt.exe\")\n| where (FolderPath endswith \"\\\\powershell.exe\" or FolderPath endswith \"\\\\cmd.exe\" or FolderPath endswith \"\\\\wscript.exe\" or FolderPath endswith \"\\\\mshta.exe\")\n| project Timestamp, DeviceName, FolderPath, ProcessCommandLine, InitiatingProcessFolderPath"
+      ],
+      "splunk": [
+        "| tstats count from datamodel=Endpoint where nodename=Endpoint.Processes (Processes.parent_process_path=\"*\\outlook.exe\" OR Processes.parent_process_path=\"*\\winword.exe\" OR Processes.parent_process_path=\"*\\excel.exe\" OR Processes.parent_process_path=\"*\\powerpnt.exe\") (Processes.process_path=\"*\\powershell.exe\" OR Processes.process_path=\"*\\cmd.exe\" OR Processes.process_path=\"*\\wscript.exe\" OR Processes.process_path=\"*\\mshta.exe\") by Processes.process_path Processes.parent_process_path _time"
+      ],
+      "osquery": [
+        "SELECT * FROM processes WHERE (path LIKE '%\\powershell.exe' OR path LIKE '%\\cmd.exe' OR path LIKE '%\\wscript.exe' OR path LIKE '%\\mshta.exe');"
+      ],
+      "suricata": []
+    },
+    {
+      "slug": "cve-2026-13473-unknown-vendor-unknown-product",
+      "title": "CVE-2026-13473: IBM Storage Protect Client 8.1.0.0 through 8.1.27.0, 8.1.27.1, and 8.2.0.0 through 8.2.1.0 IBM Storage Protect is vulner",
+      "url": "/posts/cve-2026-13473-unknown-vendor-unknown-product.html",
+      "generated": "2026-07-19T17:54:05.683Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-13473"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 8.1.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 8.1.0.0\"; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert ip $HOME_NET any -> 8.1.27.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 8.1.27.0\"; classtype:trojan-activity; sid:9000002; rev:1;)",
+        "alert ip $HOME_NET any -> 8.1.27.1 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 8.1.27.1\"; classtype:trojan-activity; sid:9000003; rev:1;)",
+        "alert ip $HOME_NET any -> 8.2.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 8.2.0.0\"; classtype:trojan-activity; sid:9000004; rev:1;)",
+        "alert ip $HOME_NET any -> 8.2.1.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 8.2.1.0\"; classtype:trojan-activity; sid:9000005; rev:1;)"
+      ]
+    },
     {
       "slug": "from-50-to-703-expanding-unit-42-s-gameograf-adware-chrome",
       "title": "From 50 to 703: Expanding Unit 42's Gameograf Adware Chrome Extension Campaign",
@@ -4132,46 +4183,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1upxwln/a_rule_mapped_to_mitre_is_not_the_same_as_real/&quo\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1upxwln/a_rule_mapped_to_mitre_is_not_the_same_as_real/&quo\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain socauthority.com\"; dns.query; content:\"socauthority.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "suspected-chinese-espionage-group-used-a-roundcube-exploit-c",
-      "title": "Suspected Chinese espionage group used a Roundcube exploit chain to burrow into universities",
-      "url": "/posts/suspected-chinese-espionage-group-used-a-roundcube-exploit-c.html",
-      "generated": "2026-07-07T13:31:54.853Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/drewchainzz&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/drewchainzz&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://cyberscoop.com/china-espionage-attacks-us-canada-universities-proofpoint/&quot;&gt;[link]&lt\"; http.host; content:\"cyberscoop.com\"; nocase; http.uri; content:\"/china-espionage-attacks-us-canada-universities-proofpoint/&quot\\;&gt\\;[link]&lt\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uput8x/suspected_chinese_espionage_group_used_a/&qu\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uput8x/suspected_chinese_espionage_group_used_a/&qu\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain cyberscoop.com\"; dns.query; content:\"cyberscoop.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "cve-2026-34151-maven-org-xwiki-platform-xwiki-platform-oldcore",
-      "title": "XWiki Platform Old Core: Resource path traversal via /skin/ action endpoint in Jetty 12+",
-      "url": "/posts/cve-2026-34151-maven-org-xwiki-platform-xwiki-platform-oldcore.html",
-      "generated": "2026-07-07T13:02:08.899Z",
-      "severity": "HIGH",
-      "cves": [
-        "CVE-2026-34151",
-        "CVE-2026-34151"
-      ],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://[host]/xwiki/bin/skin/..%252f/..%252f..%252f..%252f..%252f..%252f..%252f..%252fetc/passwd`\"; http.host; content:\"[host]\"; nocase; http.uri; content:\"/xwiki/bin/skin/..%252f/..%252f..%252f..%252f..%252f..%252f..%252f..%252fetc/passwd`\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://[host]/xwiki/bin/skin/..%252f/..%252fWEB-INF/xwiki.cfg`.\"; http.host; content:\"[host]\"; nocase; http.uri; content:\"/xwiki/bin/skin/..%252f/..%252fWEB-INF/xwiki.cfg`.\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)"
       ]
     }
   ]
