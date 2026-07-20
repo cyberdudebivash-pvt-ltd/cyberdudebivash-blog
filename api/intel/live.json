@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-20T19:01:43.870Z",
+  "generated": "2026-07-20T19:31:29.410Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2458,
+  "total_published": 2460,
   "s2n_stats": {
-    "passed": 95,
-    "suppressed": 40,
-    "avg_qs": 0.52
+    "passed": 96,
+    "suppressed": 41,
+    "avg_qs": 0.521
   },
   "items": [
     {
@@ -358,6 +358,47 @@
       }
     },
     {
+      "id": "CVE-2026-53598",
+      "title": "Prompty: Arbitrary file read via file reference expansion",
+      "description": "## Summary\nPrompty loaders expanded `${file:...}` references in `.prompty` frontmatter without enforcing that the resolved path stayed within an authorized directory. An attacker-controlled prompt file could use path traversal or an absolute path to cause the host application to ... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 43,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "MALWARE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53598"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=2d (score=0.65)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=43 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "REDDIT_CYBER-6757d76e18da3c9b",
       "title": "ssh-keysign-pwn: Linux LPE allows unprivileged users to read root-owned files. PoC with SSH server privkey",
       "description": "In short: Patched last night by Linus, so technically not a 0day Yann Horn (Google PZ) proposed a fix six years ago Only hours after Linus patched, Brad Spengler wen",
@@ -476,7 +517,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=2d (score=0.65)",
+          "recency=3d (score=0.65)",
           "QS=0.458"
         ],
         "priority": [
@@ -2512,7 +2553,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-34926",
@@ -3609,6 +3652,104 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-59948",
+      "title": "Composer: Arbitrary file write outside vendor via malicious transitive package name",
+      "description": "## Summary A maliciously crafted package, published on an untrusted third party repository other than Packagist.org or Private Packagist, can cause Composer to write files outside the `vendor/` directory and outside your project, with attacker-controlled content, during a normal `install` or `update",
+      "cvss": 7,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "composer/composer",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59948",
+        "CVE-2026-59948"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-499r-g7pc-vmp9",
+        "https://github.com/composer/composer/security/advisories/GHSA-499r-g7pc-vmp9",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-59948",
+        "https://github.com/composer/composer/commit/502c6c4f699802d9cf464728b3e8a95674f919a0"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-55514",
+      "title": "vLLM denial of service via prompt embeds on M-RoPE models",
+      "description": "### Summary\n_Short summary of the problem. Make the impact and severity as clear as possible. For example: An unsafe deserialization vulnerability allows any unauthenticated user to execute arbitrary code on the server._ Sending a pure prompt embeds payload in a `/v1/completions` request with a mode",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "vllm",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55514",
+        "CVE-2026-55514"
+      ],
+      "ioc_count": 2,
+      "refs": [
+        "https://github.com/advisories/GHSA-33cg-gxv8-3p8g",
+        "https://github.com/vllm-project/vllm/security/advisories/GHSA-33cg-gxv8-3p8g",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-55514",
+        "https://github.com/vllm-project/vllm/pull/45252"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2025-67726",
       "title": "Tornado: Quadratic DoS via Crafted Multipart Parameters",
       "description": "## Summary The `_parseparam` function in Tornado's `httputil.py` is used to parse specific HTTP header values, such as those in `multipart/form-data`. This function uses an inefficient algorithm that repeatedly calls `string.count()` within a nested loop while processing quoted semicolons (e.g., `pa",
@@ -4174,135 +4315,6 @@
       "due_date": null,
       "cves": [
         "CVE-2026-63760"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-12080",
-      "title": "CVE-2026-12080 - Qemu-kvm: qemu-guest-agent: local privilege escalation via symlink attack in guest-ssh-add-authorized-k",
-      "description": "CVE-2026-12080 - Qemu-kvm: qemu-guest-agent: local privilege escalation via symlink attack in guest-ssh-add-authorized-keys",
-      "cvss": 7.8,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-12080"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-64622",
-      "title": "CVE-2026-64622 - Network-AI 5.12.2 through 5.13.3 Missing Authorization via ApprovalInbox",
-      "description": "CVE-2026-64622 - Network-AI 5.12.2 through 5.13.3 Missing Authorization via ApprovalInbox",
-      "cvss": 7.5,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-64622"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53598",
-      "title": "Prompty: Arbitrary file read via file reference expansion",
-      "description": "## Summary\nPrompty loaders expanded `${file:...}` references in `.prompty` frontmatter without enforcing that the resolved path stayed within an authorized directory. An attacker-controlled prompt file could use path traversal or an absolute path to cause the host application to ... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "MALWARE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-17",
-      "last_seen": "2026-07-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53598"
       ],
       "ioc_count": 0,
       "refs": [],

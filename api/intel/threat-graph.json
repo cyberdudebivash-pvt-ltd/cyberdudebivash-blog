@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-20T19:01:43.822Z",
+  "generated": "2026-07-20T19:31:29.361Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 6377,
+    "total_nodes": 6382,
     "actors": 8,
-    "cves": 1448,
+    "cves": 1450,
     "campaigns": 577,
     "malware": 0,
-    "iocs": 782,
-    "edges": 2789
+    "iocs": 784,
+    "edges": 2791
   },
   "nodes": {
     "actor:lockbit": {
@@ -123251,6 +123251,94 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-55514": {
+      "id": "CVE-2026-55514",
+      "type": "CVE",
+      "name": "vLLM denial of service via prompt embeds on M-RoPE models",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "vllm",
+        "published": "2026-07-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:56669c1f293d5c53b6a19ddf2f78802fa9fff2c2",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        }
+      ]
+    },
+    "ioc:sha1:56669c1f293d5c53b6a19ddf2f78802fa9fff2c2": {
+      "id": "ioc:sha1:56669c1f293d5c53b6a19ddf2f78802fa9fff2c2",
+      "type": "IOC",
+      "name": "56669c1f293d5c53b6a19ddf2f78802fa9fff2c2",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-07-20"
+      },
+      "connections": []
+    },
+    "CVE-2026-59948": {
+      "id": "CVE-2026-59948",
+      "type": "CVE",
+      "name": "Composer: Arbitrary file write outside vendor via malicious transitive package name",
+      "attributes": {
+        "cvss": 7,
+        "threat_level": "MEDIUM",
+        "priority_score": 47,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "composer/composer",
+        "published": "2026-07-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:packagist.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:packagist.org": {
+      "id": "ioc:domain:packagist.org",
+      "type": "IOC",
+      "name": "packagist.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-20"
+      },
+      "connections": []
+    },
+    "DARKREADING-e2e964b55e3afee5": {
+      "id": "DARKREADING-e2e964b55e3afee5",
+      "type": "Intel",
+      "name": "CISOs Feel the Heat Over AI Risk",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-07-20",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -148390,6 +148478,24 @@
       "target": "SENTINELAPEX-f3ecaf46ec3e",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-20",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-55514→linked_to→ioc:sha1:56669c1f293d5c53b6a19ddf2f78802fa9fff2c2",
+      "source": "CVE-2026-55514",
+      "target": "ioc:sha1:56669c1f293d5c53b6a19ddf2f78802fa9fff2c2",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-07-20",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-59948→linked_to→ioc:domain:packagist.org",
+      "source": "CVE-2026-59948",
+      "target": "ioc:domain:packagist.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-20",
       "sources": []
     }
