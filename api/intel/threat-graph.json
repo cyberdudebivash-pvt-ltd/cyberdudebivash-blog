@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-20T13:31:28.036Z",
+  "generated": "2026-07-20T14:01:42.311Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 6308,
+    "total_nodes": 6311,
     "actors": 8,
     "cves": 1439,
-    "campaigns": 567,
+    "campaigns": 568,
     "malware": 0,
     "iocs": 781,
-    "edges": 2777
+    "edges": 2778
   },
   "nodes": {
     "actor:lockbit": {
@@ -121985,6 +121985,62 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "THEHACKERNEWS-2c3662414bac5646": {
+      "id": "THEHACKERNEWS-2c3662414bac5646",
+      "type": "Intel",
+      "name": "⚡ Weekly Recap: WordPress RCE, SonicWall 0-Days, AI Service Attacks, SharePoint 0-Day and More",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-07-20",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "DARKREADING-62a5370ff901b9ef": {
+      "id": "DARKREADING-62a5370ff901b9ef",
+      "type": "Intel",
+      "name": "Cybersecurity Keeps Events 'Uneventful'",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-07-20",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-3052c4a7": {
+      "id": "campaign:cluster-3052c4a7",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-20",
+        "last_seen": "2026-07-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "THEHACKERNEWS-2c3662414bac5646",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -147016,6 +147072,15 @@
       "target": "ioc:domain:domain.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-3052c4a7→includes→THEHACKERNEWS-2c3662414bac5646",
+      "source": "campaign:cluster-3052c4a7",
+      "target": "THEHACKERNEWS-2c3662414bac5646",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-20",
       "sources": []
     }
