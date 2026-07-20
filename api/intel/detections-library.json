@@ -1,8 +1,59 @@
 {
-  "generated": "2026-07-20T14:35:16.329Z",
+  "generated": "2026-07-20T19:59:13.849Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-59948-composer-composer-composer",
+      "title": "Composer: Arbitrary file write outside vendor via malicious transitive package name",
+      "url": "/posts/cve-2026-59948-composer-composer-composer.html",
+      "generated": "2026-07-20T19:31:29.474Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-59948",
+        "CVE-2026-59948"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain packagist.org\"; dns.query; content:\"packagist.org\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-55514-pip-vllm",
+      "title": "vLLM denial of service via prompt embeds on M-RoPE models",
+      "url": "/posts/cve-2026-55514-pip-vllm.html",
+      "generated": "2026-07-20T19:31:29.471Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-55514",
+        "CVE-2026-55514"
+      ],
+      "mitreAttack": [
+        {
+          "id": "T1071",
+          "name": "Application Layer Protocol",
+          "tactic": "command-and-control",
+          "confidence": "MEDIUM"
+        },
+        {
+          "id": "T1498",
+          "name": "Network Denial of Service",
+          "tactic": "impact",
+          "confidence": "HIGH"
+        }
+      ],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/vllm-project/vllm/commit/56669c1f293d5c53b6a19ddf2f78802fa9fff2c2),\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/vllm-project/vllm/commit/56669c1f293d5c53b6a19ddf2f78802fa9fff2c2),\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
     {
       "slug": "recovering-from-a-malicious-apk-installation-on-cmf-phone-h",
       "title": "Recovering from a malicious APK installation on CMF Phone. HELP!",
@@ -4144,45 +4195,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/c1rno123&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/c1rno123&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://bogomolov.work/blog/posts/security-you-cant-justify-is-a-vicious-cycle/&quot;&gt;[link]&lt;/\"; http.host; content:\"bogomolov.work\"; nocase; http.uri; content:\"/blog/posts/security-you-cant-justify-is-a-vicious-cycle/&quot\\;&gt\\;[link]&lt\\;/\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "gitlost-a-public-github-issue-can-steer-an-org-s-agentic-wo",
-      "title": "GitLost: a public GitHub issue can steer an org's Agentic Workflow into leaking private repo contents, and a one-word prefix (&quot;Additionally&quot;) bypassed the threat-detection guardrail",
-      "url": "/posts/gitlost-a-public-github-issue-can-steer-an-org-s-agentic-wo.html",
-      "generated": "2026-07-07T15:24:15.538Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Aureliand&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Aureliand&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://noma.security/blog/gitlost-how-we-tricked-githubs-ai-agent-into-leaking-private-repos/&quot;\"; http.host; content:\"noma.security\"; nocase; http.uri; content:\"/blog/gitlost-how-we-tricked-githubs-ai-agent-into-leaking-private-repos/&quot\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1upy3gm/gitlost_a_public_github_issue_can_steer_an_orgs/&qu\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1upy3gm/gitlost_a_public_github_issue_can_steer_an_orgs/&qu\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "a-rule-mapped-to-mitre-is-not-the-same-as-real-coverage",
-      "title": "A rule mapped to MITRE is not the same as real coverage",
-      "url": "/posts/a-rule-mapped-to-mitre-is-not-the-same-as-real-coverage.html",
-      "generated": "2026-07-07T15:24:15.536Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Ok_Attitude9264&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Ok_Attitude9264&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://socauthority.com/blog/mitre-attack-detection/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"socauthority.com\"; nocase; http.uri; content:\"/blog/mitre-attack-detection/&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1upxwln/a_rule_mapped_to_mitre_is_not_the_same_as_real/&quo\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1upxwln/a_rule_mapped_to_mitre_is_not_the_same_as_real/&quo\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain socauthority.com\"; dns.query; content:\"socauthority.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
       ]
     }
   ]
