@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-20T22:01:42.395Z",
+  "generated": "2026-07-20T22:31:32.882Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 6505,
+    "total_nodes": 6509,
     "actors": 8,
     "cves": 1535,
-    "campaigns": 584,
+    "campaigns": 585,
     "malware": 0,
     "iocs": 790,
-    "edges": 2810
+    "edges": 2811
   },
   "nodes": {
     "actor:lockbit": {
@@ -103081,17 +103081,17 @@
     "CVE-2026-62685": {
       "id": "CVE-2026-62685",
       "type": "CVE",
-      "name": "CVE-2026-62685: File Browser is a file managing interface for uploading, deleting, previewing, renaming, and editing files within a spec",
+      "name": "File Browser: Colliding username normalization gives two users the same home directory",
       "attributes": {
-        "cvss": 7.8,
-        "threat_level": "LOW",
-        "priority_score": 40,
+        "cvss": 8.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "Unknown Vendor",
-        "product": "Unknown Product",
-        "published": "2026-07-15",
+        "vendor": "go",
+        "product": "github.com/filebrowser/filebrowser/v2",
+        "published": "2026-07-20",
         "type": "CVE_REPORT"
       },
       "connections": []
@@ -125594,6 +125594,80 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-acb880f7fda3543b": {
+      "id": "BLEEPINGCOMPUTER-acb880f7fda3543b",
+      "type": "Intel",
+      "name": "SonicWall SMA1000 flaws exploited as zero-days to push custom malware",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-20",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-242dc1e266d411d0": {
+      "id": "BLEEPINGCOMPUTER-242dc1e266d411d0",
+      "type": "Intel",
+      "name": "Hackers steal $23.7 million in crypto from Ostium in off-chain attack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-20",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-018c6650d9ee34d8": {
+      "id": "REDDIT_CYBER-018c6650d9ee34d8",
+      "type": "Intel",
+      "name": "Why do we need passwords?",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-20",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-36fafa0e": {
+      "id": "campaign:cluster-36fafa0e",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-20",
+        "last_seen": "2026-07-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-acb880f7fda3543b",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -150922,6 +150996,15 @@
       "target": "ioc:domain:engine.io",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-36fafa0e→includes→BLEEPINGCOMPUTER-acb880f7fda3543b",
+      "source": "campaign:cluster-36fafa0e",
+      "target": "BLEEPINGCOMPUTER-acb880f7fda3543b",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-20",
       "sources": []
     }
