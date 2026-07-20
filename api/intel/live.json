@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-20T07:01:51.948Z",
+  "generated": "2026-07-20T07:31:31.668Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,20 +9,61 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 2415,
   "s2n_stats": {
-    "passed": 110,
-    "suppressed": 52,
+    "passed": 100,
+    "suppressed": 27,
     "avg_qs": 0.517
   },
   "items": [
     {
-      "id": "CVE-2026-12228",
-      "title": "CVE-2026-12228: A stored cross-site scripting (XSS) vulnerability exists in the `POST /api/prompts/share` endpoint of pa",
-      "description": "A stored cross-site scripting (XSS) vulnerability exists in the `POST /api/prompts/share` endpoint of parisneo/lollms (latest version). The endpoint stores attacker-controlled `prompt_content` into `DBDirectMessage.content` without server-side sanitization. When a victim opens th... [Full analysis a",
-      "cvss": 8.7,
-      "final_ps": 51,
-      "quality_score": 0.518,
+      "id": "CVE-2026-42533",
+      "title": "15-Year-Old NGINX Vulnerability Lets Attackers Crash Workers and Achieve Remote Code Execution",
+      "description": "A newly disclosed flaw tracked as CVE-2026-42533 affects nginx&#8217;s script engine and has been silently exploitable since March 2011, when the map directive gained regex support. Security researcher Stan Shaw reported the bug to F5 SIRT, which coordinated a fix released in ngi... [Full analysis a",
+      "cvss": 8.1,
+      "final_ps": 71,
+      "quality_score": 0.593,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42533"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=0d (score=1.00)",
+          "QS=0.593"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-47865",
+      "title": "Medium: Sipeed PicoClaw web.go web_fetch server-side request forgery (CVE-2026-47865)",
+      "description": "CVE-2026-16084 - Sipeed PicoClaw web.go web_fetch server-side request forgery",
+      "cvss": 9.8,
+      "final_ps": 58,
+      "quality_score": 0.468,
       "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -37,19 +78,20 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-12228"
+        "CVE-2026-47865",
+        "CVE-2026-16084"
       ],
       "ioc_count": 0,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
+          "data_confidence=0.65",
           "recency=1d (score=0.85)",
-          "QS=0.518"
+          "QS=0.468"
         ],
         "priority": [
-          "base_ps=51 (no boosts)"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -132,47 +174,6 @@
           "+10 ransomware_confirmed",
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-42533",
-      "title": "Critical NGINX Vulnerability Can Crash Workers and May Allow Remote Code Execution",
-      "description": "F5 has shipped fixes for a critical nginx flaw that lets a remote, unauthenticated attacker trigger a heap buffer overflow in the worker process with crafted HTTP requests. CVE-2026-42533 was patched on July 15 in nginx 1.30.4 (stable) and 1.31.3 (mainline), and in NGINX Plus 37.... [Full analysis a",
-      "cvss": 8.1,
-      "final_ps": 48,
-      "quality_score": 0.533,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-19",
-      "last_seen": "2026-07-19",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42533"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.533"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -269,393 +270,6 @@
       }
     },
     {
-      "id": "CVE-2026-11826",
-      "title": "CVE-2026-11826: OpenPLC_v3 contains a heap-based buffer overflow in the getData() function in webserver/core/modbus_mast",
-      "description": "CVE-2026-11826: OpenPLC_v3 contains a heap-based buffer overflow in the getData() function in webserver/core/modbus_master.cpp. getData(",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.538,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-11826"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--88c44b707de05f5e.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=1.00",
-          "recency=1d (score=0.85)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-47871",
-      "title": "CVE-2026-47871: VMware Avi Load Balancer contains a directory traversal vulnerability. Flaws in file path validation all",
-      "description": "CVE-2026-47871: VMware Avi Load Balancer contains a directory traversal vulnerability. Flaws in file path validation allow malicious, au",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.538,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47871"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--8451d73f864eade5.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=1.00",
-          "recency=1d (score=0.85)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-16117",
-      "title": "CVE-2026-16117: Impact: @fastify/http-proxy versions up to and including 11.5.0 fail to rewrite the request prefix when ",
-      "description": "CVE-2026-16117: Impact: @fastify/http-proxy versions up to and including 11.5.0 fail to rewrite the request prefix when the prefix segme",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.538,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16117"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--9fb07767e0c6f135.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=1.00",
-          "recency=1d (score=0.85)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-47865",
-      "title": "CVE-2026-47865: VMware Avi Load Balancer contains an authentication bypass vulnerability. A malicious user with network ",
-      "description": "CVE-2026-47865: VMware Avi Load Balancer contains an authentication bypass vulnerability. A malicious user with network access may be ab",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.538,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47865"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--4422625de0700ae9.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=1.00",
-          "recency=1d (score=0.85)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-9147",
-      "title": "CVE-2026-9147: uproot dynamically generates Python class source code from ROOT TStreamerInfo records in a file and compi",
-      "description": "CVE-2026-9147: uproot dynamically generates Python class source code from ROOT TStreamerInfo records in a file and compiles it at runti",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.538,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-9147"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--6e5de27959a46c83.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=1.00",
-          "recency=1d (score=0.85)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-47868",
-      "title": "CVE-2026-47868: VMware Avi Load Balancer contains a local privilege escalation vulnerability. A malicious user with loca",
-      "description": "CVE-2026-47868: VMware Avi Load Balancer contains a local privilege escalation vulnerability. A malicious user with local access may be",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.538,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47868"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--444d00853d08b1a8.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=1.00",
-          "recency=1d (score=0.85)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2024-58368",
-      "title": "CVE-2024-58368: SurrealDB versions before 1.1.0 fail to properly parse the ID, DB, and NS headers in HTTP REST API reque",
-      "description": "CVE-2024-58368: SurrealDB versions before 1.1.0 fail to properly parse the ID, DB, and NS headers in HTTP REST API requests containing s",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.538,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-58368"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--32d285a5c36bf622.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=1.00",
-          "recency=1d (score=0.85)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-16084",
-      "title": "CVE-2026-16084: A weakness has been identified in Sipeed PicoClaw up to 0.2.9. This impacts the function web_fetch of th",
-      "description": "CVE-2026-16084: A weakness has been identified in Sipeed PicoClaw up to 0.2.9. This impacts the function web_fetch of the file pkg/tools",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.538,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16084"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d150f3a32fdd2103.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=1.00",
-          "recency=1d (score=0.85)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-47870",
-      "title": "CVE-2026-47870: VMware Avi Load Balancer contains a privilege escalation vulnerability. A malicious authenticated user w",
-      "description": "CVE-2026-47870: VMware Avi Load Balancer contains a privilege escalation vulnerability. A malicious authenticated user with network acce",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.538,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47870"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--891ee7f54c0974d5.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=1.00",
-          "recency=1d (score=0.85)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
       "id": "CVE-2026-58644",
       "title": "CISA Adds Exploited SharePoint RCE Zero-Day CVE-2026-58644 to KEV",
       "description": "",
@@ -693,6 +307,92 @@
           "+10 CVSS≥9",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-16194",
+      "title": "intel--1784424855_CVE-2026-16194_CVE-2026-16195_CVE-2026-1",
+      "description": "intel--1784424855_CVE-2026-16194_CVE-2026-16195_CVE-2026-1",
+      "cvss": 7.5,
+      "final_ps": 46,
+      "quality_score": 0.503,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-16194",
+        "CVE-2026-16195"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784424855_CVE-2026-16194_CVE-2026-16195_CVE-2026-1.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.503"
+        ],
+        "priority": [
+          "base_ps=46 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-47866",
+      "title": "Low Security Vulnerability (CVE-2026-47866)",
+      "description": "CVE-2026-16097",
+      "cvss": 8.3,
+      "final_ps": 45,
+      "quality_score": 0.468,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-18",
+      "last_seen": "2026-07-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47866",
+        "CVE-2026-16097"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=1d (score=0.85)",
+          "QS=0.468"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -1812,170 +1512,6 @@
       }
     },
     {
-      "id": "CVE-2026-16196",
-      "title": "CVE-2026-16196: A weakness has been identified in Sipeed PicoClaw up to 0.2.9. Impacted is the function isPrivateOrRestr",
-      "description": "A weakness has been identified in Sipeed PicoClaw up to 0.2.9. Impacted is the function isPrivateOrRestrictedIP of the file pkg/tools/integration/web.go of the component web_fetch. This manipulation causes server-side request forgery. The attack can be initiated remotely. The exp... [Full analysis a",
-      "cvss": 6.3,
-      "final_ps": 40,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16196"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=1d (score=0.85)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-16194",
-      "title": "CVE-2026-16194: A vulnerability was determined in zhayujie CowAgent up to 2.1.1. This affects the function WebFetch.exec",
-      "description": "A vulnerability was determined in zhayujie CowAgent up to 2.1.1. This affects the function WebFetch.execute of the file agent/tools/web_fetch/web_fetch.py. Executing a manipulation of the argument url can lead to server-side request forgery. The attack may be performed from remot... [Full analysis a",
-      "cvss": 6.3,
-      "final_ps": 40,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16194"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=1d (score=0.85)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-16197",
-      "title": "CVE-2026-16197: A security vulnerability has been detected in Sipeed PicoClaw up to 0.2.9. The affected element is the f",
-      "description": "A security vulnerability has been detected in Sipeed PicoClaw up to 0.2.9. The affected element is the function handleMessageReceive of the file pkg/channels/feishu/feishu_64.go of the component Group Message Handler. Such manipulation leads to missing authorization. The attack c... [Full analysis a",
-      "cvss": 6.3,
-      "final_ps": 40,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16197"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=1d (score=0.85)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-16195",
-      "title": "CVE-2026-16195: A security flaw has been discovered in Sipeed PicoClaw up to 0.2.9. This issue affects the function disp",
-      "description": "A security flaw has been discovered in Sipeed PicoClaw up to 0.2.9. This issue affects the function dispatchIncoming of the file pkg/channels/wecom/wecom.go of the component Group Message Handler. The manipulation results in incorrect authorization. It is possible to launch the a... [Full analysis a",
-      "cvss": 6.3,
-      "final_ps": 40,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16195"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=1d (score=0.85)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
       "id": "CVE-2026-48373",
       "title": "CVE-2026-48373: Acrobat Reader is affected by a Heap-based Buffer Overflow vulnerability that could result in arbitrary ",
       "description": "",
@@ -2270,9 +1806,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-31635",
@@ -2316,9 +1850,49 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
+    },
+    {
+      "id": "CVE-2026-16195",
+      "title": "Low Security Vulnerability (CVE-2026-16195)",
+      "description": "CVE-2026-16201",
+      "cvss": 6.3,
+      "final_ps": 38,
+      "quality_score": 0.428,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-19",
+      "last_seen": "2026-07-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-16195",
+        "CVE-2026-16201"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=1d (score=0.85)",
+          "QS=0.427"
+        ],
+        "priority": [
+          "base_ps=38 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
     },
     {
       "id": "SENTINELAPEX-d25bc0a22163",
@@ -2490,9 +2064,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "SENTINELONE-15720fb2415e1836",
@@ -2625,9 +2197,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-63030",
@@ -2717,9 +2287,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-50148",
@@ -2762,9 +2330,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-15409",
@@ -2809,9 +2375,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-20262",
@@ -2855,9 +2419,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-35273",
@@ -2901,9 +2463,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-42897",
@@ -2947,9 +2507,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-11645",
@@ -3832,10 +3390,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-16095",
-      "title": "CVE-2026-16095: A flaw has been found in Shibby Tomato 1.28 RT-N5x MIPSR2 Build 124. Affected by this issue is the funct",
-      "description": "CVE-2026-16095: A flaw has been found in Shibby Tomato 1.28 RT-N5x MIPSR2 Build 124. Affected by this issue is the function setup_conntr",
-      "cvss": 7.8,
+      "id": "CVE-2026-63858",
+      "title": "intel--1784479886_CVE-2026-63858_CVE-2026-63863_CVE-2026-6",
+      "description": "intel--1784479886_CVE-2026-63858_CVE-2026-63863_CVE-2026-6",
+      "cvss": 7.5,
       "final_ps": 20,
       "quality_score": 0.498,
       "threat_level": "MEDIUM",
@@ -3845,8 +3403,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3854,11 +3412,12 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-16095"
+        "CVE-2026-63858",
+        "CVE-2026-63863"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--df19b6624c88cde9.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784479886_CVE-2026-63858_CVE-2026-63863_CVE-2026-6.html"
       ],
       "explanation": {
         "quality": [
@@ -3877,10 +3436,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2024-58362",
-      "title": "CVE-2024-58362: SurrealDB before 1.5.5 (and 2.0.0-beta before 2.0.0-beta.3) accepts an arbitrary object in the signin an",
-      "description": "CVE-2024-58362: SurrealDB before 1.5.5 (and 2.0.0-beta before 2.0.0-beta.3) accepts an arbitrary object in the signin and signup operati",
-      "cvss": 7.8,
+      "id": "CVE-2026-53368",
+      "title": "intel--1784465905_CVE-2026-53368_CVE-2026-63820_CVE-2026-6",
+      "description": "intel--1784465905_CVE-2026-53368_CVE-2026-63820_CVE-2026-6",
+      "cvss": 7.5,
       "final_ps": 20,
       "quality_score": 0.498,
       "threat_level": "MEDIUM",
@@ -3890,8 +3449,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3899,11 +3458,13 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2024-58362"
+        "CVE-2026-53368",
+        "CVE-2026-63820"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--bb6ee5f0650eef37.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784465830_CVE-2026-53368_CVE-2026-53368_CVE-2026-5.html",
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784465905_CVE-2026-53368_CVE-2026-63820_CVE-2026-6.html"
       ],
       "explanation": {
         "quality": [
@@ -3922,10 +3483,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-16097",
-      "title": "CVE-2026-16097: A vulnerability was found in Shibby Tomato 1.28. This vulnerability affects the function sub_42537C of t",
-      "description": "CVE-2026-16097: A vulnerability was found in Shibby Tomato 1.28. This vulnerability affects the function sub_42537C of the component Sch",
-      "cvss": 7.8,
+      "id": "CVE-2026-16222",
+      "title": "intel--1784454793_CVE-2026-16222_CVE-2026-16224_CVE-2026-5",
+      "description": "intel--1784454793_CVE-2026-16222_CVE-2026-16224_CVE-2026-5",
+      "cvss": 7.5,
       "final_ps": 20,
       "quality_score": 0.498,
       "threat_level": "MEDIUM",
@@ -3935,8 +3496,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3944,11 +3505,13 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-16097"
+        "CVE-2026-16222",
+        "CVE-2026-16224"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--0fac079758974411.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784454684_CVE-2026-16219_CVE-2026-16220_CVE-2026-1.html",
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784454793_CVE-2026-16222_CVE-2026-16224_CVE-2026-5.html"
       ],
       "explanation": {
         "quality": [
@@ -3967,10 +3530,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-47869",
-      "title": "CVE-2026-47869: VMware Avi Load Balancer contains a remote code execution vulnerability. A malicious authenticated user ",
-      "description": "CVE-2026-47869: VMware Avi Load Balancer contains a remote code execution vulnerability. A malicious authenticated user with network acc",
-      "cvss": 7.8,
+      "id": "CVE-2026-16212",
+      "title": "intel--1784442666_CVE-2026-16212_CVE-2026-16213_CVE-2026-1",
+      "description": "intel--1784442666_CVE-2026-16212_CVE-2026-16213_CVE-2026-1",
+      "cvss": 7.5,
       "final_ps": 20,
       "quality_score": 0.498,
       "threat_level": "MEDIUM",
@@ -3980,8 +3543,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3989,11 +3552,12 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-47869"
+        "CVE-2026-16212",
+        "CVE-2026-16213"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--7589a9a76e8ec5e5.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784442666_CVE-2026-16212_CVE-2026-16213_CVE-2026-1.html"
       ],
       "explanation": {
         "quality": [
@@ -4012,10 +3576,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-16158",
-      "title": "CVE-2026-16158: Impact: @fastify/reply-from versions from 8.3.1 up to but not including 12.6.4 build the internal URL ca",
-      "description": "CVE-2026-16158: Impact: @fastify/reply-from versions from 8.3.1 up to but not including 12.6.4 build the internal URL cache key by conca",
-      "cvss": 7.8,
+      "id": "CVE-2025-71390",
+      "title": "intel--1784393579_CVE-2025-71390_CVE-2025-71396_CVE-2025-7",
+      "description": "intel--1784393579_CVE-2025-71390_CVE-2025-71396_CVE-2025-7",
+      "cvss": 7.5,
       "final_ps": 20,
       "quality_score": 0.498,
       "threat_level": "MEDIUM",
@@ -4025,8 +3589,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-18",
-      "last_seen": "2026-07-18",
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4034,11 +3598,60 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
+        "CVE-2025-71390",
+        "CVE-2025-71396"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784393575_CVE-2025-71390_CVE-2025-71390_CVE-2025-7.html",
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784393579_CVE-2025-71390_CVE-2025-71396_CVE-2025-7.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-16082",
+      "title": "intel--1784379417_CVE-2026-16082_CVE-2026-16158_CVE-2026-4",
+      "description": "intel--1784379417_CVE-2026-16082_CVE-2026-16158_CVE-2026-4",
+      "cvss": 7.5,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-16082",
         "CVE-2026-16158"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--19416f7866eec912.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784379343_CVE-2026-16082_CVE-2026-16083_CVE-2026-1.html",
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784379417_CVE-2026-16082_CVE-2026-16158_CVE-2026-4.html"
       ],
       "explanation": {
         "quality": [
@@ -4057,9 +3670,240 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-15631",
-      "title": "CVE-2026-15631: Impact: @fastify/http-proxy versions from 9.4.0 up to and including 11.5.0 fail to validate the resolved",
-      "description": "CVE-2026-15631: Impact: @fastify/http-proxy versions from 9.4.0 up to and including 11.5.0 fail to validate the resolved WebSocket desti",
+      "id": "CVE-2026-16081",
+      "title": "intel--1784379380_CVE-2026-16081_CVE-2026-16083_CVE-2026-1",
+      "description": "intel--1784379380_CVE-2026-16081_CVE-2026-16083_CVE-2026-1",
+      "cvss": 7.5,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-16081",
+        "CVE-2026-16083"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784379380_CVE-2026-16081_CVE-2026-16083_CVE-2026-1.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2025-71393",
+      "title": "intel--1784393639_CVE-2025-71393_CVE-2025-71395_CVE-2025-7",
+      "description": "intel--1784393639_CVE-2025-71393_CVE-2025-71395_CVE-2025-7",
+      "cvss": 7.5,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-71393",
+        "CVE-2025-71395"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784393639_CVE-2025-71393_CVE-2025-71395_CVE-2025-7.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-16121",
+      "title": "intel--1784407613_CVE-2026-16121_CVE-2026-16128_CVE-2026-5",
+      "description": "intel--1784407613_CVE-2026-16121_CVE-2026-16128_CVE-2026-5",
+      "cvss": 7.5,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-16121",
+        "CVE-2026-16128"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784407613_CVE-2026-16121_CVE-2026-16128_CVE-2026-5.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-10130",
+      "title": "intel--1784424849_CVE-2026-10130_CVE-2026-16194_CVE-2026-1",
+      "description": "intel--1784424849_CVE-2026-10130_CVE-2026-16194_CVE-2026-1",
+      "cvss": 7.5,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-10130",
+        "CVE-2026-16194"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784424864_CVE-2026-10130_CVE-2026-16194_CVE-2026-1.html",
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784424849_CVE-2026-10130_CVE-2026-16194_CVE-2026-1.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-63822",
+      "title": "intel--1784465886_CVE-2026-63822_CVE-2026-63829_CVE-2026-6",
+      "description": "intel--1784465886_CVE-2026-63822_CVE-2026-63829_CVE-2026-6",
+      "cvss": 7.5,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-63822",
+        "CVE-2026-63829"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784465886_CVE-2026-63822_CVE-2026-63829_CVE-2026-6.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53565",
+      "title": "High-Severity: Citrix Secure Access and Endpoint Client for Windows Vulnerability Enables Privi (CVE-2026-53565)",
+      "description": "High-Severity: Citrix Secure Access and Endpoint Client for Windows Vulnerability Enables Privi (CVE-2026-53565)",
       "cvss": 7.8,
       "final_ps": 20,
       "quality_score": 0.498,
@@ -4079,11 +3923,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-15631"
+        "CVE-2026-53565"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--33568525606840c8.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784393296_CVE-2026-53565_CVE-2026-53566.html"
       ],
       "explanation": {
         "quality": [
@@ -4102,9 +3946,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-47867",
-      "title": "CVE-2026-47867: VMware Avi Load Balancer contains a remote code execution vulnerability. A malicious user with network a",
-      "description": "CVE-2026-47867: VMware Avi Load Balancer contains a remote code execution vulnerability. A malicious user with network access may be abl",
+      "id": "CVE-2026-53994",
+      "title": "High-Severity Security Vulnerability (CVE-2026-53994)",
+      "description": "High-Severity Security Vulnerability (CVE-2026-53994)",
       "cvss": 7.8,
       "final_ps": 20,
       "quality_score": 0.498,
@@ -4124,11 +3968,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-47867"
+        "CVE-2026-53994"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--4051b1a2add01486.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784407582_CVE-2026-16121_CVE-2026-16128_CVE-2026-5.html"
       ],
       "explanation": {
         "quality": [
@@ -4147,9 +3991,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2024-58366",
-      "title": "CVE-2024-58366: SurrealDB before 1.1.1 contains a format string vulnerability in the rquickjs Exception::throw_type func",
-      "description": "CVE-2024-58366: SurrealDB before 1.1.1 contains a format string vulnerability in the rquickjs Exception::throw_type function when script",
+      "id": "CVE-2026-11826",
+      "title": "CVE-2026-11826: OpenPLC_v3 contains a heap-based buffer overflow in the getData() function in webserver/core/modbus_mast",
+      "description": "CVE-2026-11826: OpenPLC_v3 contains a heap-based buffer overflow in the getData() function in webserver/core/modbus_master.cpp. getData(",
       "cvss": 7.8,
       "final_ps": 20,
       "quality_score": 0.498,
@@ -4169,11 +4013,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2024-58366"
+        "CVE-2026-11826"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--f6d8ddf6e77d6366.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--88c44b707de05f5e.html"
       ],
       "explanation": {
         "quality": [
@@ -4192,9 +4036,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-47866",
-      "title": "CVE-2026-47866: VMware Avi Load Balancer contains an authorization bypass vulnerability. A malicious actor on the networ",
-      "description": "CVE-2026-47866: VMware Avi Load Balancer contains an authorization bypass vulnerability. A malicious actor on the network can access a l",
+      "id": "CVE-2026-47871",
+      "title": "CVE-2026-47871: VMware Avi Load Balancer contains a directory traversal vulnerability. Flaws in file path validation all",
+      "description": "CVE-2026-47871: VMware Avi Load Balancer contains a directory traversal vulnerability. Flaws in file path validation allow malicious, au",
       "cvss": 7.8,
       "final_ps": 20,
       "quality_score": 0.498,
@@ -4214,11 +4058,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-47866"
+        "CVE-2026-47871"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--dcc5c72791d37b3a.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--8451d73f864eade5.html"
       ],
       "explanation": {
         "quality": [
@@ -4237,9 +4081,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-16096",
-      "title": "CVE-2026-16096: A vulnerability has been found in Shibby Tomato 1.28 RT-N5x MIPSR2 Build 124. This affects the function ",
-      "description": "CVE-2026-16096: A vulnerability has been found in Shibby Tomato 1.28 RT-N5x MIPSR2 Build 124. This affects the function sub_40BB50 of th",
+      "id": "CVE-2026-16117",
+      "title": "CVE-2026-16117: Impact: @fastify/http-proxy versions up to and including 11.5.0 fail to rewrite the request prefix when ",
+      "description": "CVE-2026-16117: Impact: @fastify/http-proxy versions up to and including 11.5.0 fail to rewrite the request prefix when the prefix segme",
       "cvss": 7.8,
       "final_ps": 20,
       "quality_score": 0.498,
@@ -4259,11 +4103,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-16096"
+        "CVE-2026-16117"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--eb773b9e7049fdd0.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--9fb07767e0c6f135.html"
       ],
       "explanation": {
         "quality": [
@@ -4282,13 +4126,100 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2023-54366",
-      "title": "CVE-2023-54366: SurrealDB before 1.0.1 sets default table permissions to FULL instead of NONE, allowing SELECT, CREATE, ",
-      "description": "CVE-2023-54366: SurrealDB before 1.0.1 sets default table permissions to FULL instead of NONE, allowing SELECT, CREATE, UPDATE, and DELE",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
+      "id": "CVE-2026-42055",
+      "title": "Critical: 15-Year-Old NGINX Vulnerability Lets Attackers Crash Workers and Achieve Remote (CVE-2026-42055)",
+      "description": "15-Year-Old NGINX Vulnerability Lets Attackers Crash Workers and Achieve Remote Code Execution",
+      "cvss": 8.1,
+      "final_ps": 19,
+      "quality_score": 0.478,
       "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42055"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-16128",
+      "title": "Low: Stored XSS in Direct Messages via Prompt Sharing in parisneo/lollms (CVE-2026-16128)",
+      "description": "CVE-2026-12228 Stored XSS in Direct Messages via Prompt Sharing in parisneo/lollms",
+      "cvss": 7.3,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-18",
+      "last_seen": "2026-07-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-16128",
+        "CVE-2026-12228"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2025-71397",
+      "title": "Low Security Vulnerability (CVE-2025-71397)",
+      "description": "CVE-2026-16126",
+      "cvss": 7.5,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
@@ -4304,21 +4235,108 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2023-54366"
+        "CVE-2025-71397",
+        "CVE-2026-16126"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53496",
+      "title": "ExifReader HEIC/AVIF ISO-BMFF parser throws uncaught RangeError on truncated boxes",
+      "description": "## Summary\n\nExifReader 4.40.0 can throw an uncaught `RangeError: Offset is outside the bounds of the DataView` while parsing crafted HEIC/AVIF files. The file only needs a valid leading `ftyp` box with a HEIC/AVIF major brand followed by a malformed ISO-BMFF box, such as an empty... [Full analysis a",
+      "cvss": 7.8,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-17",
+      "last_seen": "2026-07-17",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53496"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53412",
+      "title": "Medium: Security Affairs newsletter Round 586 by Pierluigi Paganini INTERNATIONAL EDITIO (CVE-2026-53412)",
+      "description": "Medium: Security Affairs newsletter Round 586 by Pierluigi Paganini INTERNATIONAL EDITIO (CVE-2026-53412)",
+      "cvss": 5.5,
+      "final_ps": 18,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-19",
+      "last_seen": "2026-07-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53412"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--7b30485dd3d1167f.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784479685_CVE-2026-53412.html"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.55",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.458"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "base_ps=18 (no boosts)"
         ],
         "suppression": null,
         "merge": null
