@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-21T20:01:38.622Z",
+  "generated": "2026-07-21T20:31:25.727Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 140,
+  "count": 138,
   "items": [
     {
       "id": "SENTINELAPEX-d3e1ed3bb661",
@@ -317,100 +317,6 @@
       "iocs": []
     },
     {
-      "id": "GHSA-78c60da8ea421497",
-      "title": "GitPython: Command Injection via git long-option prefix abbreviation bypass of CVE-2026-42215 blocklist",
-      "description": "## Command injection via long-option prefix abbreviation bypassing `check_unsafe_options` (incomplete fix of CVE-2026-42215 / GHSA-rpm5-65cw-6hj4) **Component:** gitpython-developers/GitPython (PyPI: GitPython)\n**Affected:** all versions carrying the 3.1.47 blocklist fix, through current `main` (ver",
-      "cvss": 8.8,
-      "final_ps": 57,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-21",
-      "last_seen": "2026-07-21",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "GitPython",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-2f96-g7mh-g2hx",
-        "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-2f96-g7mh-g2hx",
-        "https://github.com/gitpython-developers/GitPython/pull/2161",
-        "https://github.com/gitpython-developers/GitPython/commit/56806080c1348749b07daa4a2024ce47b3cad285"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "+3 supply_chain"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "GHSA-50472007a28f36de",
-      "title": "GitPython unsafe clone option gate bypass through joined short options",
-      "description": "`GitPython` version `3.1.50` blocks unsafe `git clone` options such as `--upload-pack`, `-u`, `--config`, and `-c` unless callers explicitly pass `allow_unsafe_options=True`. However, the default unsafe-option gate does not recognize joined short-option forms such as `-u/path/to/helper`. Git itself ",
-      "cvss": 7.5,
-      "final_ps": 54,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-21",
-      "last_seen": "2026-07-21",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "GitPython",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-v396-v7q4-x2qj",
-        "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-v396-v7q4-x2qj",
-        "https://github.com/gitpython-developers/GitPython/pull/2162",
-        "https://github.com/gitpython-developers/GitPython/releases/tag/3.1.51"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "+3 supply_chain"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-50522",
       "title": "Critical SharePoint RCE CVE-2026-50522 Under Active Exploitation After Public PoC",
       "description": "",
@@ -547,6 +453,53 @@
       "iocs": []
     },
     {
+      "id": "GHSA-dbc1e59e00dc30cf",
+      "title": "GitPython: command injection via unguarded Git options in `Repo.archive()`, `git.ls_remote()`, and arbitrary file overwr",
+      "description": "## Summary GitPython spawns the real `git` binary with an argument vector built from caller-supplied values. To prevent argument injection, GitPython maintains denylists of \"unsafe\" Git options (`--upload-pack`, `--receive-pack`, `--exec`, `-c`, `--config`, …) that can be abused to run arbitrary com",
+      "cvss": 8.4,
+      "final_ps": 50,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-21",
+      "last_seen": "2026-07-21",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "GitPython",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-956x-8gvw-wg5v",
+        "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-956x-8gvw-wg5v",
+        "https://github.com/gitpython-developers/GitPython/pull/2163",
+        "https://github.com/gitpython-developers/GitPython/commit/701ce32fe5ba8cb622c0e0342a376a6beb47d738"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=50 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-0257",
       "title": "Hackers Exploiting Palo Altos PAN-OS Vulnerability to Deploy Qilin Ransomware",
       "description": "",
@@ -590,53 +543,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "GHSA-7203aced283575e1",
-      "title": "SVGO removeScripts plugin leaves some executable scripts intact",
-      "description": "### Summary SVGO's removeScripts plugin (disabled by default) removes scripts from the SVG, however executable scripts were left intact in some cases. If a consumer relied on this plugin for sanitization and served them to users, these SVGs could open up doors to XSS. ### Details SVGO has a plugin f",
-      "cvss": 8.2,
-      "final_ps": 49,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-21",
-      "last_seen": "2026-07-21",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "svgo",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-2p49-hgcm-8545",
-        "https://github.com/svg/svgo/security/advisories/GHSA-2p49-hgcm-8545",
-        "https://github.com/svg/svgo/commit/628e3bc7336625a30365d0a9b60185307d852466",
-        "https://github.com/svg/svgo/commit/72a23886b4698b27624b936f3a15a80afd36d75f"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=49 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -4877,6 +4783,206 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-56755",
+      "title": "Gitea: Denial of Service (CPU & Memory Exhaustion) via O(N^2) String Concatenation in Debian Package Upload",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-21",
+      "last_seen": "2026-07-21",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "code.gitea.io/gitea",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-56755",
+        "CVE-2026-56755"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-6hm7-3pwj-22rm",
+        "https://github.com/go-gitea/gitea/security/advisories/GHSA-6hm7-3pwj-22rm",
+        "https://github.com/go-gitea/gitea/pull/38406",
+        "https://github.com/go-gitea/gitea/pull/38426"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-58439",
+      "title": "Gitea: Branch Protection Bypass via PR Retargeting Preserves Stale `official` Approval Flag",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-21",
+      "last_seen": "2026-07-21",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "code.gitea.io/gitea",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-58439",
+        "CVE-2026-58439"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-w5pg-649r-p6gg",
+        "https://github.com/go-gitea/gitea/security/advisories/GHSA-w5pg-649r-p6gg",
+        "https://github.com/go-gitea/gitea/pull/38319",
+        "https://github.com/go-gitea/gitea/pull/38402"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-56654",
+      "title": "Gitea: Privilege Escalation via Access Token Scope Escalation in API",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-21",
+      "last_seen": "2026-07-21",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "code.gitea.io/gitea",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-56654",
+        "CVE-2026-56654"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-683j-3ff6-hh2x",
+        "https://github.com/go-gitea/gitea/security/advisories/GHSA-683j-3ff6-hh2x",
+        "https://github.com/go-gitea/gitea/pull/38406",
+        "https://github.com/go-gitea/gitea/pull/38426"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-28740",
+      "title": "Gitea: Git LFS object reuse allows non-Code access to authorize private source objects",
+      "description": "",
+      "cvss": 7.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-21",
+      "last_seen": "2026-07-21",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "gitea.dev",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-28740",
+        "CVE-2026-28740"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-2m9v-5q2g-58vq",
+        "https://github.com/go-gitea/gitea/security/advisories/GHSA-2m9v-5q2g-58vq",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-28740",
+        "https://github.com/go-gitea/gitea/pull/38050"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-13760",
       "title": "aws-cdk-lib: OS Command Injection in NodejsFunction Docker Bundling",
       "description": "",
@@ -6136,189 +6242,6 @@
         ],
         "priority": [
           "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-63866",
-      "title": "CVE-2026-63866: In the Linux kernel, the following vulnerability has been resolved:\n\nwifi: mt76: mt7996: Clear wcid poin",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-19",
-      "last_seen": "2026-07-19",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-63866"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--f7788a21d245311e.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-63855",
-      "title": "CVE-2026-63855: In the Linux kernel, the following vulnerability has been resolved:\n\ndrm/amdgpu/vcn: set no_user_fence f",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-19",
-      "last_seen": "2026-07-19",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-63855"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--253fc8104dbd4c4f.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-63858",
-      "title": "CVE-2026-63858: In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: nf_tables: add hook tran",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-19",
-      "last_seen": "2026-07-19",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-63858"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--dbc18597d125b1d2.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-59729",
-      "title": "Astro: XSS via unescaped spread attribute names in renderHTMLElement (incomplete fix for CVE-2026-54298)",
-      "description": "",
-      "cvss": 5.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59729",
-        "CVE-2026-54298"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
         ],
         "suppression": null,
         "merge": null
