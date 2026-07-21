@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-21T10:01:37.922Z",
+  "generated": "2026-07-21T10:31:36.795Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 6630,
+    "total_nodes": 6634,
     "actors": 8,
     "cves": 1575,
-    "campaigns": 602,
+    "campaigns": 603,
     "malware": 0,
     "iocs": 795,
-    "edges": 2837
+    "edges": 2838
   },
   "nodes": {
     "actor:lockbit": {
@@ -127897,6 +127897,80 @@
         "type": "DATA_BREACH"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-d013e2e4dfee06e5": {
+      "id": "BLEEPINGCOMPUTER-d013e2e4dfee06e5",
+      "type": "Intel",
+      "name": "Critical Palo Alto VPN bug now exploited by Qilin ransomware gang",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 73,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-21",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-d6de09605df2f4af": {
+      "id": "SECURITYWEEK-d6de09605df2f4af",
+      "type": "Intel",
+      "name": "Meta Paid $78,000 Bounty for Vulnerability Exposing Customer Support Data",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-21",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-933e62f929e28371": {
+      "id": "REDDIT_NETSEC-933e62f929e28371",
+      "type": "Intel",
+      "name": "Leaking internal headers in Flask Ninja with deserialization",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-21",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-80a104a8": {
+      "id": "campaign:cluster-80a104a8",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-21",
+        "last_seen": "2026-07-21",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-d013e2e4dfee06e5",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -153466,6 +153540,15 @@
       "id": "campaign:cluster-a38f9855→includes→BLEEPINGCOMPUTER-f0bd7d214f145997",
       "source": "campaign:cluster-a38f9855",
       "target": "BLEEPINGCOMPUTER-f0bd7d214f145997",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-21",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-80a104a8→includes→BLEEPINGCOMPUTER-d013e2e4dfee06e5",
+      "source": "campaign:cluster-80a104a8",
+      "target": "BLEEPINGCOMPUTER-d013e2e4dfee06e5",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-21",
