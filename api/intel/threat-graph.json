@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-21T22:31:30.522Z",
+  "generated": "2026-07-21T23:01:38.317Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 6975,
+    "total_nodes": 6978,
     "actors": 8,
     "cves": 1733,
-    "campaigns": 648,
+    "campaigns": 649,
     "malware": 0,
     "iocs": 802,
-    "edges": 2904
+    "edges": 2905
   },
   "nodes": {
     "actor:lockbit": {
@@ -134269,6 +134269,62 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "WIRED_SECURITY-4faa8804235202cf": {
+      "id": "WIRED_SECURITY-4faa8804235202cf",
+      "type": "Intel",
+      "name": "OpenAI Models Escaped Containment and Hacked HuggingFace",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "wired_security",
+        "product": "Threat Intelligence",
+        "published": "2026-07-21",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-f1f3cc5aca5d3e2b": {
+      "id": "BLEEPINGCOMPUTER-f1f3cc5aca5d3e2b",
+      "type": "Intel",
+      "name": "FakeGit campaign uses 7,600 GitHub repos to push SmartLoader malware",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-21",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-612582f3": {
+      "id": "campaign:cluster-612582f3",
+      "type": "Campaign",
+      "name": "wired_security Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-21",
+        "last_seen": "2026-07-21",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "WIRED_SECURITY-4faa8804235202cf",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -160443,6 +160499,15 @@
       "target": "ioc:domain:allowed.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-21",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-612582f3→includes→WIRED_SECURITY-4faa8804235202cf",
+      "source": "campaign:cluster-612582f3",
+      "target": "WIRED_SECURITY-4faa8804235202cf",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-21",
       "sources": []
     }
