@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-21T22:01:42.417Z",
+  "generated": "2026-07-21T22:31:30.522Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 6970,
+    "total_nodes": 6975,
     "actors": 8,
     "cves": 1733,
     "campaigns": 648,
     "malware": 0,
-    "iocs": 801,
-    "edges": 2902
+    "iocs": 802,
+    "edges": 2904
   },
   "nodes": {
     "actor:lockbit": {
@@ -16256,7 +16256,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-05-19"
+        "first_seen": "2026-07-21"
       },
       "connections": []
     },
@@ -128731,20 +128731,31 @@
     "CVE-2026-16221": {
       "id": "CVE-2026-16221",
       "type": "CVE",
-      "name": "CVE-2026-16221: Impact: fast-uri versions from 2.3.1 through 4.1.0 (including the 3.x line up to 3.1.3 and the 2.x line up to 2.4.2) do",
+      "name": "fast-uri vulnerable to host confusion via literal backslash authority delimiter",
       "attributes": {
-        "cvss": 7.8,
-        "threat_level": "LOW",
-        "priority_score": 42,
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 46,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "Unknown Vendor",
-        "product": "Unknown Product",
-        "published": "2026-07-19",
+        "vendor": "npm",
+        "product": "fast-uri",
+        "published": "2026-07-21",
         "type": "CVE_REPORT"
       },
-      "connections": []
+      "connections": [
+        {
+          "target": "ioc:domain:evil.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        },
+        {
+          "target": "ioc:domain:allowed.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     },
     "CVE-2026-63833": {
       "id": "CVE-2026-63833",
@@ -134173,6 +134184,89 @@
         "product": "Threat Intelligence",
         "published": "2026-07-21",
         "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-34063de9b99ecb28": {
+      "id": "GHSA-34063de9b99ecb28",
+      "type": "Intel",
+      "name": "sharp inherited vulnerabilities in libvips: CVE-2026-33327, CVE-2026-33328, CVE-2026-35590, CVE-2026-35591",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "sharp",
+        "published": "2026-07-21",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-0a05d221d602f0ea": {
+      "id": "GHSA-0a05d221d602f0ea",
+      "type": "Intel",
+      "name": "GitPython: Environment-variable exfiltration via os.path.expandvars() on Repo.clone_from() URL",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 49,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "gitpython",
+        "published": "2026-07-21",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "ioc:domain:allowed.com": {
+      "id": "ioc:domain:allowed.com",
+      "type": "IOC",
+      "name": "allowed.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-21"
+      },
+      "connections": []
+    },
+    "GHSA-097eadac762f568d": {
+      "id": "GHSA-097eadac762f568d",
+      "type": "Intel",
+      "name": "fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "fast-xml-parser",
+        "published": "2026-07-21",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-d0095fae3f4e1ab6": {
+      "id": "GHSA-d0095fae3f4e1ab6",
+      "type": "Intel",
+      "name": "gRPC-Go: xDS RBAC and HTTP/2 Vulnerabilities",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "google.golang.org/grpc",
+        "published": "2026-07-21",
+        "type": "CVE_REPORT"
       },
       "connections": []
     }
@@ -160331,6 +160425,24 @@
       "target": "CVE-2026-50325",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-21",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-16221→linked_to→ioc:domain:evil.com",
+      "source": "CVE-2026-16221",
+      "target": "ioc:domain:evil.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-21",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-16221→linked_to→ioc:domain:allowed.com",
+      "source": "CVE-2026-16221",
+      "target": "ioc:domain:allowed.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-21",
       "sources": []
     }
