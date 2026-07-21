@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-21T07:31:35.861Z",
+  "generated": "2026-07-21T08:16:45.603Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 6624,
+    "total_nodes": 6627,
     "actors": 8,
     "cves": 1575,
-    "campaigns": 601,
+    "campaigns": 602,
     "malware": 0,
     "iocs": 795,
-    "edges": 2836
+    "edges": 2837
   },
   "nodes": {
     "actor:lockbit": {
@@ -127787,6 +127787,62 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-f0bd7d214f145997": {
+      "id": "BLEEPINGCOMPUTER-f0bd7d214f145997",
+      "type": "Intel",
+      "name": "Windows LegacyHive zero-day flaw gets free, unofficial patches",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-21",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "THEHACKERNEWS-edc5066a82fe0285": {
+      "id": "THEHACKERNEWS-edc5066a82fe0285",
+      "type": "Intel",
+      "name": "New ENCFORGE Ransomware Targets AI Model Files in Langflow RCE Attack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-07-21",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "campaign:cluster-a38f9855": {
+      "id": "campaign:cluster-a38f9855",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-21",
+        "last_seen": "2026-07-21",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-f0bd7d214f145997",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -153347,6 +153403,15 @@
       "id": "campaign:cluster-bb6879b4→includes→SENTINELAPEX-efe6a8a24cfa",
       "source": "campaign:cluster-bb6879b4",
       "target": "SENTINELAPEX-efe6a8a24cfa",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-21",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-a38f9855→includes→BLEEPINGCOMPUTER-f0bd7d214f145997",
+      "source": "campaign:cluster-a38f9855",
+      "target": "BLEEPINGCOMPUTER-f0bd7d214f145997",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-21",
