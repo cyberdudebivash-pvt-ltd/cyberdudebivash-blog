@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-21T18:01:45.729Z",
+  "generated": "2026-07-21T18:31:31.630Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 136,
+  "count": 137,
   "items": [
     {
       "id": "SENTINELAPEX-d3e1ed3bb661",
@@ -105,8 +105,8 @@
       "title": "SonicWall SMA1000 flaws exploited as zero-days to push custom malware",
       "description": "Two recently disclosed SonicWall SMA1000 vulnerabilities were exploited in zero-day attacks for weeks, allowing threat actors to install custom malware on vulnerable VPN appliances. [...]",
       "cvss": 9.5,
-      "final_ps": 96,
-      "quality_score": 0.563,
+      "final_ps": 94,
+      "quality_score": 0.548,
       "threat_level": "CRITICAL",
       "type": "ZERO_DAY",
       "source": "sentinel_apex",
@@ -129,8 +129,8 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.563"
+          "recency=1d (score=0.85)",
+          "QS=0.548"
         ],
         "priority": [
           "+10 CVSS≥9",
@@ -681,39 +681,41 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-29ec936f6037",
-      "title": "Hackers steal $23.7 million in crypto from Ostium in off-chain attack",
-      "description": "The Ostium trading platform announced that an attacker stole $23.75 million from its liquidity provider vault last week, after compromising off-chain infrastructure used to feed prices into the protocol. [...]",
-      "cvss": 7.8,
+      "id": "SECURITYWEEK-adeeaceba09ea03f",
+      "title": "Trump Orders Defense Contractors to Map Software, Suppliers Across Critical Supply Chains",
+      "description": "New executive order calls for end-to-end visibility into defense supply chains, including software dependencies, foreign ownership and cyber-related supplier risks. The post Trump Orders Defense Contractors to Map Software, Suppliers Across Critical Supply Chains appeared first on SecurityWeek .",
+      "cvss": 6.5,
       "final_ps": 47,
-      "quality_score": 0.503,
+      "quality_score": 0.445,
       "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
+      "type": "SUPPLY_CHAIN",
+      "source": "securityweek",
       "sources_confirmed": 1,
       "merged_sources": [
-        "sentinel_apex"
+        "securityweek"
       ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
+      "first_seen": "2026-07-21",
+      "last_seen": "2026-07-21",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
-      "refs": [],
+      "refs": [
+        "https://www.securityweek.com/trump-orders-defense-contractors-to-map-software-suppliers-across-critical-supply-chains/"
+      ],
       "explanation": {
         "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
           "recency=0d (score=1.00)",
-          "QS=0.503"
+          "QS=0.445"
         ],
         "priority": [
-          "base_ps=47 (no boosts)"
+          "+3 supply_chain"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -766,6 +768,48 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-29ec936f6037",
+      "title": "Hackers steal $23.7 million in crypto from Ostium in off-chain attack",
+      "description": "The Ostium trading platform announced that an attacker stole $23.75 million from its liquidity provider vault last week, after compromising off-chain infrastructure used to feed prices into the protocol. [...]",
+      "cvss": 7.8,
+      "final_ps": 45,
+      "quality_score": 0.488,
+      "threat_level": "MEDIUM",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=1d (score=0.85)",
+          "QS=0.488"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -6094,14 +6138,14 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-12590",
-      "title": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement",
+      "id": "CVE-2026-59729",
+      "title": "Astro: XSS via unescaped spread attribute names in renderHTMLElement (incomplete fix for CVE-2026-54298)",
       "description": "",
-      "cvss": 3.7,
+      "cvss": 5.5,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
-      "type": "NEWS_REPORT",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -6116,7 +6160,8 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-12590"
+        "CVE-2026-59729",
+        "CVE-2026-54298"
       ],
       "ioc_count": 0,
       "refs": [],
