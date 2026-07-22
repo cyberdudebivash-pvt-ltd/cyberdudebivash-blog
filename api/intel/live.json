@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-22T15:31:28.476Z",
+  "generated": "2026-07-22T16:01:50.728Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,9 +9,9 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 2599,
   "s2n_stats": {
-    "passed": 94,
+    "passed": 92,
     "suppressed": 41,
-    "avg_qs": 0.515
+    "avg_qs": 0.516
   },
   "items": [
     {
@@ -179,46 +179,6 @@
           "+10 ransomware_confirmed",
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "SENTINELAPEX-fb2c4139697d",
-      "title": "jackson-core: Async parser maxNumberLength bypass via chunked digit accumulation (incomplete fix for GHSA-72hv-8253-57qq",
-      "description": "## Summary\n\nThe fix released in jackson-core `2.18.6` and `2.21.1` for [GHSA-72hv-8253-57qq](https://github.com/FasterXML/jackson-core/security/advisories/GHSA-72hv-8253-57qq) (Number Length Constraint Bypass in Async Parser, published 2026-02-28) is incomplete. The fix commit `b... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 48,
-      "quality_score": 0.533,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-21",
-      "last_seen": "2026-07-21",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "ioc_presence=1 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.532"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2504,9 +2464,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-53595",
@@ -4285,10 +4243,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59765",
-      "title": "Gitea: SSRF via Migration Asset Downloads Bypasses hostmatcher — Reads Internal Files and Cloud Metadata",
-      "description": "### Summary\n\nGitea has robust SSRF protection via `hostmatcher.NewDialContext()` for webhook and migration clone URLs, which validates resolved IPs at the TCP dial level. However, three code paths use raw `http.Get()` (Go's `DefaultClient`) which completely bypasses this protecti... [Full analysis a",
-      "cvss": 5.5,
+      "id": "CVE-2026-59889",
+      "title": "jackson-databind: @JsonView ypassed for @JsonUnwrapped container properties on deserialization",
+      "description": "## Summary\n`UnwrappedPropertyHandler.processUnwrapped()` replays the buffered JSON for a `@JsonUnwrapped` property by iterating its properties and calling `prop.deserializeAndSet()` with **no `prop.visibleInView(ctxt.getActiveView())` guard** — the exact guard `processUnwrappedCr... [Full analysis a",
+      "cvss": 6.5,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
@@ -4307,7 +4265,50 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-59765"
+        "CVE-2026-59889"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-58429",
+      "title": "Gitea: Public-Only Personal access tokens scope bypass in Organization and Permission Endpoints",
+      "description": "### Summary\nA personal access token restricted with the public-only scope can still retrieve private organization membership and organization permission details for its own account through organization-listing endpoints. This bypass breaks the intended guarantee that such tokens ... [Full analysis a",
+      "cvss": 4.9,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-21",
+      "last_seen": "2026-07-21",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-58429"
       ],
       "ioc_count": 0,
       "refs": [],
