@@ -2,10 +2,10 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-07-22T21:12:54.996Z",
+  "generated": "2026-07-22T23:06:34.243Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 12,
+    "published": 14,
     "p1": 0,
     "leadsHeld": 6,
     "analystReports": 0,
@@ -37,19 +37,19 @@
         "error": null
       },
       {
-        "name": "r/MachineLearning",
-        "key": "reddit_ml",
-        "tier": 3,
-        "status": "ok",
-        "items": 25,
-        "error": null
-      },
-      {
         "name": "GitHub Security Advisories",
         "key": "ghsa",
         "tier": 1,
         "status": "ok",
         "items": 60,
+        "error": null
+      },
+      {
+        "name": "r/MachineLearning",
+        "key": "reddit_ml",
+        "tier": 3,
+        "status": "ok",
+        "items": 25,
         "error": null
       },
       {
@@ -61,7 +61,7 @@
         "error": null
       }
     ],
-    "runtimeMs": 2664
+    "runtimeMs": 3900
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,16 +88,16 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 12,
+  "count": 14,
   "items": [
     {
-      "id": "c632de5d174751d7",
-      "title": "n8n: AI Agents Project Viewer Privilege Escalation via run_node_tool",
-      "url": "https://github.com/advisories/GHSA-x5vx-c2c8-m3w9",
+      "id": "d9f1ec5107278f3c",
+      "title": "LiteLLM: MCP Authentication Bypass via OAuth2 Passthrough Fallback",
+      "url": "https://github.com/advisories/GHSA-7488-6r32-c95q",
       "source": "GitHub Security Advisories",
       "tier": 1,
-      "published": "2026-07-22T17:55:55Z",
-      "cve": "CVE-2026-65015",
+      "published": "2026-07-22T22:38:33Z",
+      "cve": "CVE-2026-59822",
       "severity": "high",
       "cvss": null,
       "evidence_label": "VERIFIED_ADVISORY",
@@ -121,8 +121,8 @@
       ],
       "agent_risk": {
         "flags": {
-          "agentic": true,
-          "mcp": false,
+          "agentic": false,
+          "mcp": true,
           "rag": false,
           "tool_use": false,
           "supply_chain": false
@@ -147,14 +147,126 @@
       "has_analyst_report": false
     },
     {
-      "id": "00ffc8e4d0d12177",
-      "title": "Duplicate Advisory:  AI Agents Project Viewer Privilege Escalation via run_node_tool",
-      "url": "https://github.com/advisories/GHSA-w46p-w7w2-fr9g",
+      "id": "865d2aeccd0762cd",
+      "title": "n8n: \"Allowed HTTP Request Domains\" Restriction Bypass via AI Agents MCP Connector",
+      "url": "https://github.com/advisories/GHSA-h44j-f5r5-ph73",
       "source": "GitHub Security Advisories",
       "tier": 1,
-      "published": "2026-07-22T12:32:17Z",
-      "cve": null,
+      "published": "2026-07-22T21:58:31Z",
+      "cve": "CVE-2026-59207",
       "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": true,
+          "mcp": true,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 63,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "42d1b4b8bdf9404b",
+      "title": "n8n: Member-Level Users Can Execute Other Users' MCP Server Trigger Workflows via Missing OAuth Authorization Check",
+      "url": "https://github.com/advisories/GHSA-q5xf-xhwf-cwqf",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-07-22T22:31:01Z",
+      "cve": "CVE-2026-65594",
+      "severity": "medium",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": true,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 50,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "d5bc639577488d63",
+      "title": "n8n: Path-Confinement Bypass in computer-use search_files Allows Reading Files Outside the Base Directory",
+      "url": "https://github.com/advisories/GHSA-pf2q-pxhf-hgmw",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-07-22T22:13:36Z",
+      "cve": null,
+      "severity": "medium",
       "cvss": null,
       "evidence_label": "VERIFIED_ADVISORY",
       "categories": [
@@ -186,8 +298,8 @@
         "level": "elevated"
       },
       "enterprise_impact": {
-        "score": 48,
-        "priority": "P2"
+        "score": 35,
+        "priority": "P3"
       },
       "confidence": {
         "source": "HIGH",
