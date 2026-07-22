@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-22T18:31:30.758Z",
+  "generated": "2026-07-22T19:01:37.076Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 134,
+  "count": 133,
   "items": [
     {
       "id": "SENTINELAPEX-dd25eb27c67e",
@@ -355,6 +355,73 @@
       "iocs": []
     },
     {
+      "id": "REDDIT_NETSEC-84605ce32782e8e1",
+      "title": "I ran a paid bug-bounty-style game against my own multimodal prompt firewall, it didn't make money, so here's the code, ",
+      "description": "Quick bit of context for why this dataset exists. I spent the best part of a year on a startup where the product was an AI guard sitting in front of an LLM, and the pitch to users was \"try and break it.\" Leaderboard, tiered levels, a bit of prize money for anyone who got through. Never turned into a",
+      "cvss": 6.5,
+      "final_ps": 52,
+      "quality_score": 0.465,
+      "threat_level": "MEDIUM",
+      "type": "SUPPLY_CHAIN",
+      "source": "reddit_netsec",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_netsec"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_netsec",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 3,
+      "refs": [
+        "https://www.reddit.com/r/netsec/comments/1v3o5mk/i_ran_a_paid_bugbountystyle_game_against_my_own/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_netsec)",
+          "data_confidence=0.80",
+          "ioc_presence=3 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.465"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
+      "iocs": [
+        {
+          "type": "url",
+          "value": "https://github.com/Josh-blythe/bordair-detector",
+          "confidence_score": 0.82,
+          "first_seen": "2026-07-22",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://github.com/Josh-blythe/bordair-multimodal",
+          "confidence_score": 0.82,
+          "first_seen": "2026-07-22",
+          "source_count": 1
+        },
+        {
+          "type": "url",
+          "value": "https://huggingface.co/Bordair/bordair-detector",
+          "confidence_score": 0.82,
+          "first_seen": "2026-07-22",
+          "source_count": 1
+        }
+      ]
+    },
+    {
       "id": "CVE-2023-27351",
       "title": "CVE-2023-27351: PaperCut NG/MF Improper Authentication Vulnerability — CISA KEV Active Exploitation",
       "description": "",
@@ -487,57 +554,6 @@
       "suppressed": false,
       "suppression_reason": null,
       "iocs": []
-    },
-    {
-      "id": "SENTINELAPEX-fb2c4139697d",
-      "title": "jackson-core: Async parser maxNumberLength bypass via chunked digit accumulation (incomplete fix for GHSA-72hv-8253-57qq",
-      "description": "## Summary\n\nThe fix released in jackson-core `2.18.6` and `2.21.1` for [GHSA-72hv-8253-57qq](https://github.com/FasterXML/jackson-core/security/advisories/GHSA-72hv-8253-57qq) (Number Length Constraint Bypass in Async Parser, published 2026-02-28) is incomplete. The fix commit `b... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 48,
-      "quality_score": 0.533,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-21",
-      "last_seen": "2026-07-21",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "ioc_presence=1 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.532"
-        ],
-        "priority": [
-          "base_ps=48 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": [
-        {
-          "type": "url",
-          "value": "https://github.com/FasterXML/jackson-core/security/advisories/GHSA-72hv-8253-57qq)",
-          "confidence_score": 0.82,
-          "first_seen": "2026-07-22",
-          "source_count": 1
-        }
-      ]
     },
     {
       "id": "EXPLOITDB-13fc423caf742505",
@@ -974,48 +990,6 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-da79238391f8",
-      "title": "FakeGit campaign uses 7,600 GitHub repos to push SmartLoader malware",
-      "description": "A large-scale operation dubbed 'FakeGit' is pushing SmartLoader and StealC malware through 7,600 malicious GitHub repositories that accumulated more than 14 million downloads. [...]",
-      "cvss": 7.8,
-      "final_ps": 47,
-      "quality_score": 0.503,
-      "threat_level": "MEDIUM",
-      "type": "MALWARE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-21",
-      "last_seen": "2026-07-21",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.503"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-58644",
       "title": "CISA Adds Exploited SharePoint RCE Zero-Day CVE-2026-58644 to KEV",
       "description": "",
@@ -1059,6 +1033,48 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-da79238391f8",
+      "title": "FakeGit campaign uses 7,600 GitHub repos to push SmartLoader malware",
+      "description": "A large-scale operation dubbed 'FakeGit' is pushing SmartLoader and StealC malware through 7,600 malicious GitHub repositories that accumulated more than 14 million downloads. [...]",
+      "cvss": 7.8,
+      "final_ps": 45,
+      "quality_score": 0.488,
+      "threat_level": "MEDIUM",
+      "type": "MALWARE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-21",
+      "last_seen": "2026-07-21",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=1d (score=0.85)",
+          "QS=0.488"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -1237,52 +1253,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "REDDIT_CYBER-6757d76e18da3c9b",
-      "title": "ssh-keysign-pwn: Linux LPE allows unprivileged users to read root-owned files. PoC with SSH server privkey",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 42,
-      "quality_score": 0.38,
-      "threat_level": "LOW",
-      "type": "ZERO_DAY",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-05-15",
-      "last_seen": "2026-05-15",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1tdpq0a/sshkeysignpwn_linux_lpe_allows_unprivileged_users/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.380"
-        ],
-        "priority": [
-          "+12 PoC_available",
-          "+8 exploited_in_wild",
-          "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -5888,10 +5858,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59765",
-      "title": "Gitea: SSRF via Migration Asset Downloads Bypasses hostmatcher — Reads Internal Files and Cloud Metadata",
+      "id": "CVE-2026-59889",
+      "title": "jackson-databind: @JsonView ypassed for @JsonUnwrapped container properties on deserialization",
       "description": "",
-      "cvss": 5.5,
+      "cvss": 6.5,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
@@ -5910,7 +5880,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-59765"
+        "CVE-2026-59889"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -5976,12 +5946,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59889",
-      "title": "jackson-databind: @JsonView ypassed for @JsonUnwrapped container properties on deserialization",
+      "id": "SENTINELAPEX-fb2c4139697d",
+      "title": "jackson-core: Async parser maxNumberLength bypass via chunked digit accumulation (incomplete fix for GHSA-72hv-8253-57qq",
       "description": "",
-      "cvss": 6.5,
+      "cvss": 7.8,
       "final_ps": 18,
-      "quality_score": 0.438,
+      "quality_score": 0.448,
       "threat_level": "LOW",
       "type": "NEWS_REPORT",
       "source": "sentinel_apex",
@@ -5997,26 +5967,24 @@
       "vendor": "Unknown Vendor",
       "product": "Unknown Product",
       "due_date": null,
-      "cves": [
-        "CVE-2026-59889"
-      ],
+      "cves": [],
       "ioc_count": 0,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
+          "data_confidence=0.65",
           "recency=0d (score=1.00)",
-          "QS=0.438"
+          "QS=0.448"
         ],
         "priority": [
           "base_ps=18 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null,
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     }
   ]
