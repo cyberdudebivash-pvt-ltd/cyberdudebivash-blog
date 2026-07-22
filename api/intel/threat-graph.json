@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-22T20:31:30.437Z",
+  "generated": "2026-07-22T21:00:13.251Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 7204,
+    "total_nodes": 7210,
     "actors": 8,
     "cves": 1783,
-    "campaigns": 687,
+    "campaigns": 688,
     "malware": 0,
-    "iocs": 805,
-    "edges": 2947
+    "iocs": 806,
+    "edges": 2949
   },
   "nodes": {
     "actor:lockbit": {
@@ -138471,6 +138471,115 @@
         "type": "DATA_BREACH"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-22044bea64860810": {
+      "id": "REDDIT_CYBER-22044bea64860810",
+      "type": "Intel",
+      "name": "Cybersecurity statistics of the week (July 13th - July 19th)",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 82,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-22",
+        "type": "RANSOMWARE"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:www.cybersecstats.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:www.cybersecstats.com": {
+      "id": "ioc:domain:www.cybersecstats.com",
+      "type": "IOC",
+      "name": "www.cybersecstats.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-22"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-23b5e84d58198b4a": {
+      "id": "REDDIT_CYBER-23b5e84d58198b4a",
+      "type": "Intel",
+      "name": "Swiss rail giant Stadler rejects 12.3M ransom demand after cyberattack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-22",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-f4eff8fd61dee97a": {
+      "id": "REDDIT_CYBER-f4eff8fd61dee97a",
+      "type": "Intel",
+      "name": "Transitioning out of cyber",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-22",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-3105f63016dbb1d8": {
+      "id": "REDDIT_CYBER-3105f63016dbb1d8",
+      "type": "Intel",
+      "name": "South Korea discloses data breach impacting diplomats worldwide",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-22",
+        "type": "DATA_BREACH"
+      },
+      "connections": []
+    },
+    "campaign:cluster-d81a78a0": {
+      "id": "campaign:cluster-d81a78a0",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-22",
+        "last_seen": "2026-07-22",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 2 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-22044bea64860810",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -165030,6 +165139,24 @@
       "id": "campaign:cluster-b63a6ad1→includes→SENTINELAPEX-72b0f765c092",
       "source": "campaign:cluster-b63a6ad1",
       "target": "SENTINELAPEX-72b0f765c092",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-22",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_CYBER-22044bea64860810→linked_to→ioc:domain:www.cybersecstats.com",
+      "source": "REDDIT_CYBER-22044bea64860810",
+      "target": "ioc:domain:www.cybersecstats.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-22",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-d81a78a0→includes→REDDIT_CYBER-22044bea64860810",
+      "source": "campaign:cluster-d81a78a0",
+      "target": "REDDIT_CYBER-22044bea64860810",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-22",
