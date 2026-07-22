@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-22T22:10:20.941Z",
+  "generated": "2026-07-22T22:31:26.822Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 200,
+  "count": 197,
   "items": [
     {
       "id": "SENTINELAPEX-dd25eb27c67e",
@@ -1040,53 +1040,6 @@
       "iocs": []
     },
     {
-      "id": "GHSA-db801aa6b4903bb4",
-      "title": "n8n: Bypass \"Allowed HTTP Request Domains\" Credential Restriction in Multiple AI and LLM Nodes",
-      "description": "## Impact The credential \"Allowed HTTP Request Domains\" allowlist was intended to restrict which hosts a credential's secret could be sent to, protecting shared credentials from users who could use but not view them. Several AI/LLM nodes did not enforce this allowlist when a user-supplied base or en",
-      "cvss": 7.5,
-      "final_ps": 50,
-      "quality_score": 0.548,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-22",
-      "last_seen": "2026-07-22",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "n8n",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-64xh-79j6-r5v8",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-64xh-79j6-r5v8",
-        "https://github.com/n8n-io/n8n/commit/f69dfc6dd2178a14ea1624d2e1d403c2e755042f",
-        "https://github.com/n8n-io/n8n/releases/tag/n8n@2.31.5"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.547"
-        ],
-        "priority": [
-          "base_ps=50 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-0257",
       "title": "Hackers Exploiting Palo Altos PAN-OS Vulnerability to Deploy Qilin Ransomware",
       "description": "",
@@ -1133,9 +1086,9 @@
       "iocs": []
     },
     {
-      "id": "GHSA-fc55a801c85f7ae8",
-      "title": "n8n: Send Email Node Arbitrary File Read and SSRF via Nodemailer Content-Object Type Confusion",
-      "description": "## Impact The n8n Send Email node did not enforce that its message fields were strings, so a crafted untrusted non-string value from a workflow expression could be treated by the underlying mail library as a file path or URL. This could allow disclosure of local files on the n8n host. Exploitation r",
+      "id": "GHSA-38bc7828601820b4",
+      "title": "n8n: Prototype Pollution via Dot-Notation Field Names Leads To Instance-Wide Denial of Service",
+      "description": "## Impact The Edit Fields (Set) node assigned output fields through a dot-notation path setter without restricting the field name, so an authenticated user could name a field after an inherited built-in method path and corrupt a shared global in the main Node.js process. Because that global was used",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -1157,8 +1110,8 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-2x35-3fw4-9jr4",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-2x35-3fw4-9jr4",
+        "https://github.com/advisories/GHSA-xwx6-jjhv-84p8",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-xwx6-jjhv-84p8",
         "https://github.com/n8n-io/n8n/commit/f69dfc6dd2178a14ea1624d2e1d403c2e755042f",
         "https://github.com/n8n-io/n8n/releases/tag/n8n@1.123.67"
       ],
@@ -1180,9 +1133,9 @@
       "iocs": []
     },
     {
-      "id": "GHSA-71a461383c9ab9de",
-      "title": "n8n: Authenticated code execution in the n8n Git node",
-      "description": "## Impact Authenticated n8n users with rights to create and execute workflows could achieve code execution on the n8n host. Using the Git node, under the default `git` security settings, by staging a crafted local repository, an attacker could cause `git` to run hooks, executing arbitrary commands a",
+      "id": "GHSA-2bb0c05072c891b1",
+      "title": "n8n: Edit Image Node Format Injection Allows Arbitrary File Write",
+      "description": "## Impact The n8n Edit Image node passed its output format to the underlying image library without validation, so a crafted value could write bytes to a location outside the node's working directory. An authenticated user able to run workflows could use this to write arbitrary files in the n8n insta",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -1204,8 +1157,8 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-rcv6-pvrj-4xcg",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-rcv6-pvrj-4xcg",
+        "https://github.com/advisories/GHSA-xmc9-4f2h-jf9c",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-xmc9-4f2h-jf9c",
         "https://github.com/n8n-io/n8n/commit/f69dfc6dd2178a14ea1624d2e1d403c2e755042f",
         "https://github.com/n8n-io/n8n/releases/tag/n8n@1.123.67"
       ],
@@ -1227,9 +1180,9 @@
       "iocs": []
     },
     {
-      "id": "GHSA-02d9becf69746b30",
-      "title": "n8n: Git Node fetch/pull/pushTags Operations Bypass Sandbox Path Restriction",
-      "description": "## Impact Authenticated n8n users with workflow create/execute rights could use the Git node's fetch, pull, or push-tags operations to bypass the repository-path containment checks that already protected clone and push. By pointing an allowlisted remote configuration value at a local path outside th",
+      "id": "GHSA-3accf5995da4d751",
+      "title": "n8n: Shared-Workflow Editor Can Exfiltrate Credentials via Inline Sub-Workflow JSON",
+      "description": "## Impact n8n's credential-access checks validated only a node's top-level credentials, not credentials referenced inside an Execute Sub-workflow node's inline workflow JSON. A member with editor access to a shared workflow could reference a credential they were not permitted to use inside that inli",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -1251,8 +1204,8 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-gf29-4f56-r2jf",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-gf29-4f56-r2jf",
+        "https://github.com/advisories/GHSA-cj9h-qx8g-pq2g",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-cj9h-qx8g-pq2g",
         "https://github.com/n8n-io/n8n/commit/f69dfc6dd2178a14ea1624d2e1d403c2e755042f",
         "https://github.com/n8n-io/n8n/releases/tag/n8n@1.123.67"
       ],
@@ -1274,9 +1227,9 @@
       "iocs": []
     },
     {
-      "id": "GHSA-dee415b078e549dd",
-      "title": "n8n: Account Takeover via Unverified Email Claim in Token Exchange Embed Login",
-      "description": "## Impact In an n8n instance, when a validly-signed incoming token was matched to a local account by its email claim, the service did not check that the trusted key's permitted role ceiling covered that account, nor that the email claim was verified. As a result, anyone able to obtain a token accept",
+      "id": "GHSA-8bfbd58da4e4e99a",
+      "title": "n8n: Credential Authorization Bypass via Expression in HTTP Request Node `genericAuthType`",
+      "description": "## Impact An authenticated member with edit access to a shared workflow could reference another user's credential in an HTTP Request node while specifying the credential type through an expression. Because the pre-execution permission check compared the unresolved expression instead of the real cred",
       "cvss": 7.5,
       "final_ps": 48,
       "quality_score": 0.548,
@@ -1298,8 +1251,55 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-8342-988q-86cr",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-8342-988q-86cr",
+        "https://github.com/advisories/GHSA-6qc9-mqvw-jg7x",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-6qc9-mqvw-jg7x",
+        "https://github.com/n8n-io/n8n/commit/f69dfc6dd2178a14ea1624d2e1d403c2e755042f",
+        "https://github.com/n8n-io/n8n/releases/tag/n8n@1.123.67"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-0621f3ac366748f1",
+      "title": "n8n: Expression sandbox escape via arrow-function bodies enabling command execution",
+      "description": "## Impact An authenticated user with permission to create or modify workflows could abuse crafted expressions using arrow functions to bypass the expression sandbox, triggering unintended system command execution on the host running n8n. ## Patches The issue has been fixed in n8n versions 2.31.5 and",
+      "cvss": 7.5,
+      "final_ps": 48,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "n8n",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-gv7g-jm28-cr3m",
+        "https://github.com/n8n-io/n8n/security/advisories/GHSA-gv7g-jm28-cr3m",
         "https://github.com/n8n-io/n8n/commit/f69dfc6dd2178a14ea1624d2e1d403c2e755042f",
         "https://github.com/n8n-io/n8n/releases/tag/n8n@2.31.5"
       ],
@@ -2313,138 +2313,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2024-51314",
-      "title": "CVE-2024-51314: The Tenda TX9 V22.03.02.20 firmware has a stack overflow vulnerability in the sub_424CE0 function of the",
-      "description": "The Tenda TX9 V22.03.02.20 firmware has a stack overflow vulnerability in the sub_424CE0 function of the file /goform/setMacFilterCfg.",
-      "cvss": 7.8,
-      "final_ps": 46,
-      "quality_score": 0.518,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-51314"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=1d (score=0.85)",
-          "QS=0.518"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-52656",
-      "title": "CVE-2026-52656: An issue in SJCAM AllWinner Tech products SJ4000-Air V1.4C and before and Whitelabel based v.1.4C and be",
-      "description": "An issue in SJCAM AllWinner Tech products SJ4000-Air V1.4C and before and Whitelabel based v.1.4C and before allows an attacker to execute arbitrary code via a crafted FEX file",
-      "cvss": 7.8,
-      "final_ps": 46,
-      "quality_score": 0.518,
-      "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-52656"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=1d (score=0.85)",
-          "QS=0.518"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-64624",
-      "title": "CVE-2026-64624: FreeRDP before 3.28.0 treats lines beginning with forward slash in RDP files as raw command-line options",
-      "description": "FreeRDP before 3.28.0 treats lines beginning with forward slash in RDP files as raw command-line options, exposing the entire CLI parser surface to untrusted files. Attackers can craft malicious RDP files with /rdp2tcp, /cert:ignore, or /drive options to execute arbitrary command... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 46,
-      "quality_score": 0.518,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-64624"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=1d (score=0.85)",
-          "QS=0.518"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-55833",
       "title": "CVE-2026-55833: Netty is a network application framework for development of protocol servers and clients. Prior to 4.1.1",
       "description": "Netty is a network application framework for development of protocol servers and clients. Prior to 4.1.136.Final and 4.2.16.Final, Netty SPDY header decoding continues inflating zlib-compressed header blocks after the raw header parser has exceeded `maxHeaderSize` and marked the ... [Full analysis a",
@@ -2468,94 +2336,6 @@
       "due_date": null,
       "cves": [
         "CVE-2026-55833"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=1d (score=0.85)",
-          "QS=0.518"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-51031",
-      "title": "CVE-2026-51031: FlareSolverr before version 3.4.7 contains a server-side request forgery (SSRF) vulnerability in the /v1",
-      "description": "FlareSolverr before version 3.4.7 contains a server-side request forgery (SSRF) vulnerability in the /v1 API endpoint. This allows a remote attacker to obtain sensitive information",
-      "cvss": 7.8,
-      "final_ps": 46,
-      "quality_score": 0.518,
-      "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-51031"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=1d (score=0.85)",
-          "QS=0.518"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2024-51316",
-      "title": "CVE-2024-51316: The Tenda TX9 V22.03.02.20 firmware has a denial of service vulnerability in the update_dev_name functio",
-      "description": "The Tenda TX9 V22.03.02.20 firmware has a denial of service vulnerability in the update_dev_name function of the file /goform/SetOnlineDevName",
-      "cvss": 7.8,
-      "final_ps": 46,
-      "quality_score": 0.518,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-51316"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -2781,52 +2561,6 @@
           "data_confidence=0.90",
           "recency=1d (score=0.85)",
           "QS=0.518"
-        ],
-        "priority": [
-          "base_ps=45 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-63108",
-      "title": "CVE-2026-63108: Roo Code through 3.54.0 contains a command injection vulnerability in the auto-approve execute feature t",
-      "description": "CVE-2026-63108: Roo Code through 3.54.0 contains a command injection vulnerability in the auto-approve execute feature that allows attac",
-      "cvss": 7.8,
-      "final_ps": 45,
-      "quality_score": 0.518,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-63108"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--199b31d54238f9c4.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=1.00",
-          "recency=2d (score=0.65)",
-          "QS=0.517"
         ],
         "priority": [
           "base_ps=45 (no boosts)"
@@ -3753,6 +3487,182 @@
       "iocs": []
     },
     {
+      "id": "CVE-2024-51314",
+      "title": "CVE-2024-51314: The Tenda TX9 V22.03.02.20 firmware has a stack overflow vulnerability in the sub_424CE0 function of the",
+      "description": "The Tenda TX9 V22.03.02.20 firmware has a stack overflow vulnerability in the sub_424CE0 function of the file /goform/setMacFilterCfg.",
+      "cvss": 7.8,
+      "final_ps": 44,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2024-51314"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=2d (score=0.65)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=44 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-52656",
+      "title": "CVE-2026-52656: An issue in SJCAM AllWinner Tech products SJ4000-Air V1.4C and before and Whitelabel based v.1.4C and be",
+      "description": "An issue in SJCAM AllWinner Tech products SJ4000-Air V1.4C and before and Whitelabel based v.1.4C and before allows an attacker to execute arbitrary code via a crafted FEX file",
+      "cvss": 7.8,
+      "final_ps": 44,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-52656"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=2d (score=0.65)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=44 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-64624",
+      "title": "CVE-2026-64624: FreeRDP before 3.28.0 treats lines beginning with forward slash in RDP files as raw command-line options",
+      "description": "FreeRDP before 3.28.0 treats lines beginning with forward slash in RDP files as raw command-line options, exposing the entire CLI parser surface to untrusted files. Attackers can craft malicious RDP files with /rdp2tcp, /cert:ignore, or /drive options to execute arbitrary command... [Full analysis a",
+      "cvss": 7.8,
+      "final_ps": 44,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64624"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=2d (score=0.65)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=44 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-51031",
+      "title": "CVE-2026-51031: FlareSolverr before version 3.4.7 contains a server-side request forgery (SSRF) vulnerability in the /v1",
+      "description": "FlareSolverr before version 3.4.7 contains a server-side request forgery (SSRF) vulnerability in the /v1 API endpoint. This allows a remote attacker to obtain sensitive information",
+      "cvss": 7.8,
+      "final_ps": 44,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-51031"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=2d (score=0.65)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=44 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-56452",
       "title": "CVE-2026-56452: Path traversal in the sshd-scp component of Apache MINA SSHD.Apache MINA SSHD is a Java library for clie",
       "description": "Path traversal in the sshd-scp component of Apache MINA SSHD.Apache MINA SSHD is a Java library for client-side and server-side SSH.\n\n\n\n\nThe implementation of receiving files or directories via SCP did not validate filenames in SCP \"C\" or \"D\" commands. A malicious sender could se... [Full analysis a",
@@ -3776,6 +3686,50 @@
       "due_date": null,
       "cves": [
         "CVE-2026-56452"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=2d (score=0.65)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=44 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2024-51316",
+      "title": "CVE-2024-51316: The Tenda TX9 V22.03.02.20 firmware has a denial of service vulnerability in the update_dev_name functio",
+      "description": "The Tenda TX9 V22.03.02.20 firmware has a denial of service vulnerability in the update_dev_name function of the file /goform/SetOnlineDevName",
+      "cvss": 7.8,
+      "final_ps": 44,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2024-51316"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3876,98 +3830,6 @@
         ],
         "priority": [
           "base_ps=44 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-44585",
-      "title": "CVE-2026-44585: Paymenter is a free and open-source webshop solution for management of hosting services. In versions pri",
-      "description": "CVE-2026-44585: Paymenter is a free and open-source webshop solution for management of hosting services. In versions prior to 1.5.0, the",
-      "cvss": 5.5,
-      "final_ps": 44,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44585"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--9667208ae8fbef12.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.80",
-          "recency=2d (score=0.65)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "+3 supply_chain"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-44229",
-      "title": "CVE-2026-44229: RT is an open source, enterprise-grade issue and ticket tracking system. Versions 5.0.0 and 6.0.0 and ab",
-      "description": "CVE-2026-44229: RT is an open source, enterprise-grade issue and ticket tracking system. Versions 5.0.0 and 6.0.0 and above, prior to bo",
-      "cvss": 5.5,
-      "final_ps": 44,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44229"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--b917d3e955f2e62b.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.80",
-          "recency=2d (score=0.65)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "+3 supply_chain"
         ],
         "suppression": null,
         "merge": null
@@ -7080,6 +6942,50 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-50055",
+      "title": "Exploit for CVE-2026-50055 exploit",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 30,
+      "quality_score": 0.538,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-50055"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.537"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-16329",
       "title": "CVE-2026-16329: A vulnerability was identified in D-Link DNS-320 1.0.2. Impacted is an unknown function of the file /pho",
       "description": "",
@@ -7191,50 +7097,6 @@
       "due_date": null,
       "cves": [
         "CVE-2026-16331"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-50055",
-      "title": "Exploit for CVE-2026-50055 exploit",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 30,
-      "quality_score": 0.538,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-22",
-      "last_seen": "2026-07-22",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-50055"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -7388,51 +7250,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-64625",
-      "title": "CVE-2026-64625: AVideo before 29.0 contains an incomplete fix for CVE-2026-45578 where execAsync() re-wraps escaped comm",
-      "description": "",
-      "cvss": 9.8,
-      "final_ps": 29,
-      "quality_score": 0.478,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-64625",
-        "CVE-2026-45578"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-15900",
       "title": "CVE-2026-15900: Use after free in GPU in Google Chrome on Android prior to 150.0.7871.128 allowed a remote attacker to p",
       "description": "",
@@ -7544,6 +7361,51 @@
       "due_date": null,
       "cves": [
         "CVE-2026-15902"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-64625",
+      "title": "CVE-2026-64625: AVideo before 29.0 contains an incomplete fix for CVE-2026-45578 where execAsync() re-wraps escaped comm",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 29,
+      "quality_score": 0.478,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64625",
+        "CVE-2026-45578"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -7925,97 +7787,43 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-65016",
-      "title": "n8n: SSO Instance-Role Provisioning Allows Privilege Escalation to Instance Owner",
+      "id": "CVE-2026-44230",
+      "title": "CVE-2026-44230: RT is an open source, enterprise-grade issue and ticket tracking system. Versions 5.0.4 up to (but not i",
       "description": "",
-      "cvss": 7.5,
+      "cvss": 5.5,
       "final_ps": 21,
-      "quality_score": 0.523,
+      "quality_score": 0.458,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
-      "source": "github_advisories",
+      "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
-        "github_advisories"
+        "sentinel_apex"
       ],
-      "first_seen": "2026-07-22",
-      "last_seen": "2026-07-22",
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "npm",
-      "product": "n8n",
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-65016",
-        "CVE-2026-65016"
+        "CVE-2026-44230"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-35q8-9mj6-wjmf",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-35q8-9mj6-wjmf",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-65016",
-        "https://github.com/n8n-io/n8n/releases/tag/n8n@1.123.64"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--de5f4cb862607ab3.html"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.458"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-65591",
-      "title": "n8n: Legacy Expression Evaluator Sanitizer Bypass Leads to Authenticated Code Execution",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-22",
-      "last_seen": "2026-07-22",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "n8n",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-65591",
-        "CVE-2026-65591"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-pm35-fqvh-cq5g",
-        "https://github.com/n8n-io/n8n/security/advisories/GHSA-pm35-fqvh-cq5g",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-65591",
-        "https://github.com/n8n-io/n8n/releases/tag/n8n@1.123.64"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
+          "+3 supply_chain"
         ],
         "suppression": null,
         "merge": null
@@ -8059,50 +7867,6 @@
           "data_confidence=0.55",
           "recency=0d (score=1.00)",
           "QS=0.458"
-        ],
-        "priority": [
-          "+3 supply_chain"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-55219",
-      "title": "CVE-2026-55219: Paymenter is a free and open-source webshop solution for management of hosting services. In versions pri",
-      "description": "",
-      "cvss": 5.5,
-      "final_ps": 21,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55219"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
         ],
         "priority": [
           "+3 supply_chain"
@@ -8159,8 +7923,52 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-44230",
-      "title": "CVE-2026-44230: RT is an open source, enterprise-grade issue and ticket tracking system. Versions 5.0.4 up to (but not i",
+      "id": "CVE-2026-55219",
+      "title": "CVE-2026-55219: Paymenter is a free and open-source webshop solution for management of hosting services. In versions pri",
+      "description": "",
+      "cvss": 5.5,
+      "final_ps": 21,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55219"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-44585",
+      "title": "CVE-2026-44585: Paymenter is a free and open-source webshop solution for management of hosting services. In versions pri",
       "description": "",
       "cvss": 5.5,
       "final_ps": 21,
@@ -8181,11 +7989,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-44230"
+        "CVE-2026-44585"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--de5f4cb862607ab3.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--9667208ae8fbef12.html"
       ],
       "explanation": {
         "quality": [
@@ -8196,6 +8004,98 @@
         ],
         "priority": [
           "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-44229",
+      "title": "CVE-2026-44229: RT is an open source, enterprise-grade issue and ticket tracking system. Versions 5.0.0 and 6.0.0 and ab",
+      "description": "",
+      "cvss": 5.5,
+      "final_ps": 21,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44229"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--b917d3e955f2e62b.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-63108",
+      "title": "CVE-2026-63108: Roo Code through 3.54.0 contains a command injection vulnerability in the auto-approve execute feature t",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-20",
+      "last_seen": "2026-07-20",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-63108"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--199b31d54238f9c4.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -8809,50 +8709,6 @@
         "CVE-2026-12617",
         "CVE-2026-13204",
         "CVE-2026-13321"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-64626",
-      "title": "CVE-2026-64626: AVideo versions from commit 0dbadbca through latest master contain a server-side request forgery vulnera",
-      "description": "",
-      "cvss": 6.4,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-20",
-      "last_seen": "2026-07-20",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-64626"
       ],
       "ioc_count": 0,
       "refs": [],
