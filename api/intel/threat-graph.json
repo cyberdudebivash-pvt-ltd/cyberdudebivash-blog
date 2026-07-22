@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-22T14:31:44.039Z",
+  "generated": "2026-07-22T15:00:48.949Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 7180,
+    "total_nodes": 7184,
     "actors": 8,
-    "cves": 1777,
-    "campaigns": 685,
+    "cves": 1778,
+    "campaigns": 686,
     "malware": 0,
-    "iocs": 804,
-    "edges": 2943
+    "iocs": 805,
+    "edges": 2946
   },
   "nodes": {
     "actor:lockbit": {
@@ -28960,7 +28960,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-05-22"
+        "first_seen": "2026-07-22"
       },
       "connections": []
     },
@@ -134621,7 +134621,7 @@
       "attributes": {
         "cvss": 7.8,
         "threat_level": "MEDIUM",
-        "priority_score": 59,
+        "priority_score": 57,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": true,
@@ -138031,6 +138031,84 @@
         "type": "AI_SECURITY"
       },
       "connections": []
+    },
+    "CVE-2026-4986": {
+      "id": "CVE-2026-4986",
+      "type": "CVE",
+      "name": "I was reporter #11 for a WPForms PayPal webhook vulnerability (CVE-2026-4986)",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-22",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:1.10.0.5",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        },
+        {
+          "target": "ioc:domain:blog.himanshuanand.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:ipv4:1.10.0.5": {
+      "id": "ioc:ipv4:1.10.0.5",
+      "type": "IOC",
+      "name": "1.10.0.5",
+      "attributes": {
+        "ioc_type": "ipv4",
+        "confidence": 0.88,
+        "first_seen": "2026-07-22"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-04024584ee26ca50": {
+      "id": "SECURITYWEEK-04024584ee26ca50",
+      "type": "Intel",
+      "name": "Palo Alto Networks to Acquire Observability Platform Provider Embrace",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-22",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-4986": {
+      "id": "campaign:cve-2026-4986",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-22",
+        "last_seen": "2026-07-22",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-4986 | 3 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-4986",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -164554,6 +164632,33 @@
       "id": "campaign:cluster-0a21c441→includes→SENTINELAPEX-0ec786dd40ae",
       "source": "campaign:cluster-0a21c441",
       "target": "SENTINELAPEX-0ec786dd40ae",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-22",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-4986→linked_to→ioc:ipv4:1.10.0.5",
+      "source": "CVE-2026-4986",
+      "target": "ioc:ipv4:1.10.0.5",
+      "relationship": "linked_to",
+      "confidence": 0.88,
+      "first_seen": "2026-07-22",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-4986→linked_to→ioc:domain:blog.himanshuanand.com",
+      "source": "CVE-2026-4986",
+      "target": "ioc:domain:blog.himanshuanand.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-22",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-4986→includes→CVE-2026-4986",
+      "source": "campaign:cve-2026-4986",
+      "target": "CVE-2026-4986",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-22",
