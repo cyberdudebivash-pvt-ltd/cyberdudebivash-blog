@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-23T18:31:37.011Z",
+  "generated": "2026-07-23T18:44:02.835Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 7668,
+    "total_nodes": 7671,
     "actors": 8,
     "cves": 1978,
-    "campaigns": 757,
+    "campaigns": 758,
     "malware": 0,
     "iocs": 813,
-    "edges": 3031
+    "edges": 3032
   },
   "nodes": {
     "actor:lockbit": {
@@ -146986,6 +146986,62 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "THEHACKERNEWS-f7b510082714108e": {
+      "id": "THEHACKERNEWS-f7b510082714108e",
+      "type": "Intel",
+      "name": "Russian Espionage Group Exploited Zimbra Zero-Day to Steal Mail and 2FA Codes",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-07-23",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "REDDIT_NETSEC-f406187c0530fcfd": {
+      "id": "REDDIT_NETSEC-f406187c0530fcfd",
+      "type": "Intel",
+      "name": "Thailand's Ministry of Finance targeted with an AI agent running with approval prompts disabled",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-23",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-0b53098f": {
+      "id": "campaign:cluster-0b53098f",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-23",
+        "last_seen": "2026-07-23",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "THEHACKERNEWS-f7b510082714108e",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -174301,6 +174357,15 @@
       "id": "campaign:cluster-b59e881c→includes→SENTINELAPEX-2ee271ce8aa7",
       "source": "campaign:cluster-b59e881c",
       "target": "SENTINELAPEX-2ee271ce8aa7",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-23",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-0b53098f→includes→THEHACKERNEWS-f7b510082714108e",
+      "source": "campaign:cluster-0b53098f",
+      "target": "THEHACKERNEWS-f7b510082714108e",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-23",
