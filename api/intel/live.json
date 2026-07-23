@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-23T19:31:47.161Z",
+  "generated": "2026-07-23T20:01:37.482Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,9 +9,9 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 2631,
   "s2n_stats": {
-    "passed": 90,
-    "suppressed": 43,
-    "avg_qs": 0.522
+    "passed": 91,
+    "suppressed": 44,
+    "avg_qs": 0.523
   },
   "items": [
     {
@@ -357,6 +357,48 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-59938",
+      "title": "pypdf: Possible large memory usage for wrong image dimensions",
+      "description": "### Impact\n\nAn attacker who uses this vulnerability can craft a PDF which leads to large memory usage. This requires loading images where the declared size values are much too large compared to the actual data.\n\n### Patches\n\nThis has been fixed in [pypdf==6.14.0](https://github.c... [Full analysis a",
+      "cvss": 5.5,
+      "final_ps": 42,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-23",
+      "last_seen": "2026-07-23",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59938"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "ioc_presence=1 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2503,7 +2545,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-16445",
@@ -3196,6 +3240,55 @@
         ],
         "priority": [
           "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47219",
+      "title": "find-my-way: DDoS with HTTP2",
+      "description": "### Impact\nRemotely triggerable DoS in find-my-way when it is used with Node's HTTP/2 server. The short version is that `lookup()` passes `req.method` into `find()`, and `find()` indexes `this.trees[method]`. Since `this.trees` is a normal object, HTTP/2 method values like constructor, `toString`, o",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-23",
+      "last_seen": "2026-07-23",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "find-my-way",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47219",
+        "CVE-2026-47219"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-c96f-x56v-gq3h",
+        "https://github.com/delvedor/find-my-way/security/advisories/GHSA-c96f-x56v-gq3h",
+        "https://github.com/delvedor/find-my-way/pull/434",
+        "https://github.com/delvedor/find-my-way/commit/cfe3fd6168b5ac1594c0820fb83fce251a533fc1"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4200,52 +4293,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59937",
-      "title": "pypdf: Possible long runtimes for repeated malformed cross-reference entries",
-      "description": "### Impact\n\nAn attacker who uses this vulnerability can craft a PDF which leads to long runtimes. This requires cross-reference streams with repeated malformed cross-reference streams.\n\n### Patches\n\nThis has been fixed in [pypdf==6.14.0](https://github.com/py-pdf/pypdf/releases/t... [Full analysis a",
-      "cvss": 5.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-23",
-      "last_seen": "2026-07-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59937"
-      ],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-65759",
-      "title": "CVE-2026-65759 Joomla Extension - joomshaper.com - unauthenticated payment/order forgery in Easy Store extension 1.0.0-2",
-      "description": "CVE-2026-65759 Joomla Extension - joomshaper.com - unauthenticated payment/order forgery in Easy Store extension 1.0.0-2.0.1",
+      "id": "CVE-2026-65760",
+      "title": "CVE-2026-65760 Joomla Extension - joomshaper.com - cross-customer order and personal information disclosure in Easy Stor",
+      "description": "CVE-2026-65760 Joomla Extension - joomshaper.com - cross-customer order and personal information disclosure in Easy Store extension 1.0.0-2.0.1",
       "cvss": 3.2,
       "final_ps": 18,
       "quality_score": 0.458,
@@ -4265,11 +4315,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-65759"
+        "CVE-2026-65760"
       ],
       "ioc_count": 1,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--af71d14979cb6ae0faef8a72.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--7fd26f032a3705205d80d79f.html"
       ],
       "explanation": {
         "quality": [
@@ -4277,49 +4327,6 @@
           "data_confidence=0.55",
           "recency=0d (score=1.00)",
           "QS=0.458"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59938",
-      "title": "pypdf: Possible large memory usage for wrong image dimensions",
-      "description": "### Impact\n\nAn attacker who uses this vulnerability can craft a PDF which leads to large memory usage. This requires loading images where the declared size values are much too large compared to the actual data.\n\n### Patches\n\nThis has been fixed in [pypdf==6.14.0](https://github.c... [Full analysis a",
-      "cvss": 5.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-23",
-      "last_seen": "2026-07-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59938"
-      ],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
         ],
         "priority": [
           "base_ps=18 (no boosts)"
