@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-23T07:31:32.151Z",
+  "generated": "2026-07-23T08:01:37.801Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 7539,
+    "total_nodes": 7540,
     "actors": 8,
     "cves": 1938,
     "campaigns": 736,
     "malware": 0,
-    "iocs": 812,
-    "edges": 3005
+    "iocs": 813,
+    "edges": 3006
   },
   "nodes": {
     "actor:lockbit": {
@@ -110493,18 +110493,18 @@
     "CVE-2026-63030": {
       "id": "CVE-2026-63030",
       "type": "CVE",
-      "name": "WordPress Core Pre-Auth RCE Chain Exploited in the Wild",
+      "name": "WP2Shell: Hands-On Lab Reproducing the Pre-Auth WordPress Core RCE",
       "attributes": {
-        "cvss": 9.8,
+        "cvss": 8,
         "threat_level": "HIGH",
-        "priority_score": 71,
+        "priority_score": 67,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "Unknown Vendor",
-        "product": "Unknown Product",
-        "published": "2026-07-22",
-        "type": "AI_SECURITY"
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-23",
+        "type": "CVE_REPORT"
       },
       "connections": [
         {
@@ -110531,6 +110531,11 @@
           "target": "ioc:indicator:CVE-2026-15903",
           "relationship": "linked_to",
           "confidence": 1
+        },
+        {
+          "target": "ioc:domain:learn.uphack.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
         }
       ]
     },
@@ -113057,14 +113062,14 @@
     "campaign:cve-2026-63030": {
       "id": "campaign:cve-2026-63030",
       "type": "Campaign",
-      "name": "Unknown Unknown Exploitation Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
       "attributes": {
         "severity": "HIGH",
         "item_count": 1,
-        "first_seen": "2026-07-22",
-        "last_seen": "2026-07-22",
+        "first_seen": "2026-07-23",
+        "last_seen": "2026-07-23",
         "confidence": 0.9,
-        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 2 related CVEs: CVE-2026-63030, CVE-2026-60137 | 1 item(s) confirmed exploited in the wild"
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 2 related CVEs: CVE-2026-63030, CVE-2026-60137 | 2 shared IOC(s) across items"
       },
       "connections": [
         {
@@ -137831,7 +137836,7 @@
       "attributes": {
         "cvss": 7.8,
         "threat_level": "MEDIUM",
-        "priority_score": 64,
+        "priority_score": 62,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
@@ -144604,6 +144609,17 @@
           "confidence": 0.75
         }
       ]
+    },
+    "ioc:domain:learn.uphack.io": {
+      "id": "ioc:domain:learn.uphack.io",
+      "type": "IOC",
+      "name": "learn.uphack.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-23"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -171685,6 +171701,15 @@
       "id": "REDDIT_CYBER-0cee640f24c73499→linked_to→ioc:domain:www.securityweek.com",
       "source": "REDDIT_CYBER-0cee640f24c73499",
       "target": "ioc:domain:www.securityweek.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-23",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-63030→linked_to→ioc:domain:learn.uphack.io",
+      "source": "CVE-2026-63030",
+      "target": "ioc:domain:learn.uphack.io",
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-07-23",
