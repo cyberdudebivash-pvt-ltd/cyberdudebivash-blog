@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-23T11:31:31.414Z",
+  "generated": "2026-07-23T11:54:55.699Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2614,
+  "total_published": 2615,
   "s2n_stats": {
     "passed": 91,
-    "suppressed": 43,
+    "suppressed": 42,
     "avg_qs": 0.515
   },
   "items": [
@@ -4153,54 +4153,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-15448",
-      "title": "CVE-2026-15448 Tickera <= 3.6.0.1 - Authenticated (Staff+) SQL Injection via 'tc_order_status_filter' Parameter",
-      "description": "CVE-2026-15448 Tickera <= 3.6.0.1 - Authenticated (Staff+) SQL Injection via 'tc_order_status_filter' Parameter",
-      "cvss": 3.2,
-      "final_ps": 18,
-      "quality_score": 0.458,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-23",
-      "last_seen": "2026-07-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15448"
-      ],
-      "ioc_count": 1,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--899fbd9c4315b02c090be85a.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.55",
-          "recency=0d (score=1.00)",
-          "QS=0.458"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-64648",
-      "title": "Next.js: Cache confusion of response bodies for requests with bodies",
-      "description": "## Impact\n\nA server-side `fetch` with a request body may return a cached **response** body from a different request to the same URL but different body. Confidential data in the `POST`'s **response** body would then leak to unauthorized requests. Though the request itself will not... [Full analysis a",
+      "id": "CVE-2026-64646",
+      "title": "Next.js: Unbounded Server Action payload in Edge runtime",
+      "description": "## Impact\n\nRequests targeting Next.js applications using App Router with at least one Server Action can lead to excessive memory consumption if that Server Actions uses the Edge runtime\n\n## Workarounds\n\nIf you cannot upgrade, ensure your hosting provider limits the request's body... [Full analysis a",
       "cvss": 5.5,
       "final_ps": 18,
       "quality_score": 0.438,
@@ -4220,7 +4175,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-64648"
+        "CVE-2026-64646"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4241,9 +4196,52 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-64647",
-      "title": "Next.js: Cache confusion of response bodies for requests with bodies containing invalid UTF-8 byte sequences",
-      "description": "## Impact\n\nA server-side `fetch` with a request body may return a cached **response** body from a different request to the same URL but different body. Confidential data in the `POST`'s **response** body would then leak to unauthorized requests. Though the request itself will not... [Full analysis a",
+      "id": "CVE-2026-64644",
+      "title": "Next.js: Denial of Service in the Image Optimization API using SVGs",
+      "description": "### Impact\n\nWhen self-hosting Next.js with the default image loader, the Image Optimization API can optimize remotely hosted images if configured (not enabled by default). If those images contain malicious content, they can cause CPU exhaustion in  `/_next/image` endpoints.\n\n- If... [Full analysis a",
+      "cvss": 5.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "MALWARE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64644"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-64643",
+      "title": "Next.js: Unauthenticated disclosure of internal Server Function endpoints",
+      "description": "## Impact\n\nIn Next.js applications using App Router, Server Actions (`use server`) or `use cache` endpoints can be disclosed bypassing any authentication on the pages where these endpoints are usually used.\n\nServer Action IDs can be disclosed to unauthenticated users via publicly... [Full analysis a",
       "cvss": 5.5,
       "final_ps": 18,
       "quality_score": 0.438,
@@ -4263,7 +4261,7 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-64647"
+        "CVE-2026-64643"
       ],
       "ioc_count": 0,
       "refs": [],

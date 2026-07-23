@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-23T11:31:31.361Z",
+  "generated": "2026-07-23T11:54:55.643Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 7563,
+    "total_nodes": 7565,
     "actors": 8,
     "cves": 1939,
-    "campaigns": 741,
+    "campaigns": 742,
     "malware": 0,
     "iocs": 813,
-    "edges": 3011
+    "edges": 3012
   },
   "nodes": {
     "actor:lockbit": {
@@ -139400,9 +139400,9 @@
       "type": "CVE",
       "name": "Exploit for CVE-2026-64600",
       "attributes": {
-        "cvss": 3.2,
-        "threat_level": "LOW",
-        "priority_score": 44,
+        "cvss": 8,
+        "threat_level": "MEDIUM",
+        "priority_score": 60,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
@@ -145044,6 +145044,44 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-4abb815b3da62982": {
+      "id": "REDDIT_CYBER-4abb815b3da62982",
+      "type": "Intel",
+      "name": "I feel like I jumped to cybersecurity too early",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-23",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-64600": {
+      "id": "campaign:cve-2026-64600",
+      "type": "Campaign",
+      "name": "Unknown Unknown Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-23",
+        "last_seen": "2026-07-23",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-64600 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-64600",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -172179,6 +172217,15 @@
       "id": "campaign:cluster-64090b8c→includes→SENTINELAPEX-0c30452c7acb",
       "source": "campaign:cluster-64090b8c",
       "target": "SENTINELAPEX-0c30452c7acb",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-23",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-64600→includes→CVE-2026-64600",
+      "source": "campaign:cve-2026-64600",
+      "target": "CVE-2026-64600",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-23",
