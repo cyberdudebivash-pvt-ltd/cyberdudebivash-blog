@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-23T08:01:37.801Z",
+  "generated": "2026-07-23T08:31:35.381Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 7540,
+    "total_nodes": 7542,
     "actors": 8,
     "cves": 1938,
-    "campaigns": 736,
+    "campaigns": 737,
     "malware": 0,
     "iocs": 813,
-    "edges": 3006
+    "edges": 3007
   },
   "nodes": {
     "actor:lockbit": {
@@ -128823,7 +128823,7 @@
       "attributes": {
         "cvss": 7.8,
         "threat_level": "LOW",
-        "priority_score": 42,
+        "priority_score": 40,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
@@ -144620,6 +144620,44 @@
         "first_seen": "2026-07-23"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-ac789352ae80c168": {
+      "id": "BLEEPINGCOMPUTER-ac789352ae80c168",
+      "type": "Intel",
+      "name": "Check Point warns of SmartConsole zero-day exploited in attacks",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-23",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-de5ba096": {
+      "id": "campaign:cluster-de5ba096",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-23",
+        "last_seen": "2026-07-23",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-ac789352ae80c168",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -171712,6 +171750,15 @@
       "target": "ioc:domain:learn.uphack.io",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-23",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-de5ba096→includes→BLEEPINGCOMPUTER-ac789352ae80c168",
+      "source": "campaign:cluster-de5ba096",
+      "target": "BLEEPINGCOMPUTER-ac789352ae80c168",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-23",
       "sources": []
     }
