@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-23T00:31:31.265Z",
+  "generated": "2026-07-23T01:01:44.892Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 7380,
+    "total_nodes": 7383,
     "actors": 8,
     "cves": 1863,
-    "campaigns": 713,
+    "campaigns": 714,
     "malware": 0,
     "iocs": 810,
-    "edges": 2978
+    "edges": 2979
   },
   "nodes": {
     "actor:lockbit": {
@@ -141686,6 +141686,62 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "DARKREADING-796f16ba87422102": {
+      "id": "DARKREADING-796f16ba87422102",
+      "type": "Intel",
+      "name": "Ransomware Attack Puts a Chill On Japanese Frozen-Food Chain",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 60,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-07-23",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-88ba58d5d1f4a95a": {
+      "id": "REDDIT_CYBER-88ba58d5d1f4a95a",
+      "type": "Intel",
+      "name": "Getting started",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-23",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-e6d34a33": {
+      "id": "campaign:cluster-e6d34a33",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-23",
+        "last_seen": "2026-07-23",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "DARKREADING-796f16ba87422102",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -168527,6 +168583,15 @@
       "relationship": "linked_to",
       "confidence": 0.75,
       "first_seen": "2026-07-22",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-e6d34a33→includes→DARKREADING-796f16ba87422102",
+      "source": "campaign:cluster-e6d34a33",
+      "target": "DARKREADING-796f16ba87422102",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-23",
       "sources": []
     }
   ]
