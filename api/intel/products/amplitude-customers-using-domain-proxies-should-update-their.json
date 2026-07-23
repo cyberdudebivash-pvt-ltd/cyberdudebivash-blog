@@ -1,0 +1,61 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "FULLDIS-ef0c3d2006946a86",
+  "title": "Amplitude customers using domain proxies should update their configuration immediately.",
+  "generated": "2026-07-23T02:31:30.390Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "SecLists",
+  "product": "Multiple Targets",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "api2[.]amplitude[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain api2.amplitude.com\"; dns.query; content:\"api2.amplitude.com\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: SecLists Multiple Targets.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "1 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor SecLists has been targeted in 11 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Multiple Targets has been targeted in 11 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: amplitude-customers-using-domain-proxies-should-update-their (3 shared entities), new-release-ufonet-v2-0-r3dst4r (2 shared entities), xsser-v-1-9-bl4ck-swarm-released (2 shared entities), notcve-registry-index-public-records-of-vulnerabilities-th (2 shared entities), a-project-is-publishing-full-analyses-of-ai-discovered-0-day (2 shared entities)"
+  ],
+  "source": null,
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
