@@ -1,0 +1,68 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "GHSA-7d68e749cafa5212",
+  "title": "js-yaml: Exponential parsing time in flow collections leads to denial of service",
+  "generated": "2026-07-24T17:01:42.086Z",
+  "severity": "HIGH",
+  "cvss": 7.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "npm",
+  "product": "js-yaml",
+  "mitre_attack": [
+    {
+      "id": "T1498",
+      "name": "Network Denial of Service",
+      "tactic": "impact",
+      "confidence": "HIGH"
+    }
+  ],
+  "iocs": [
+    {
+      "value": "hxxps://github[.]com/nodeca/js-yaml/blob/master/src/parser/parser[.]ts),",
+      "type": "url",
+      "confidence": 0.82
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/nodeca/js-yaml/blob/master/src/parser/parser.ts),\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/nodeca/js-yaml/blob/master/src/parser/parser.ts),\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: npm js-yaml.",
+      "CVSS base score of 7.5 assigned by an authoritative source.",
+      "1 indicator(s) of compromise extracted from source reporting.",
+      "1 MITRE ATT&CK technique(s) evidenced in the source material."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as high (CVSS 7.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor npm has been targeted in 31 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product js-yaml has been targeted in 2 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: js-yaml-exponential-parsing-time-in-flow-collections-leads (4 shared entities)"
+  ],
+  "source": null,
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}

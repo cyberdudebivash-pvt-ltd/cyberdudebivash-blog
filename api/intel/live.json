@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-24T16:31:33.004Z",
+  "generated": "2026-07-24T17:01:41.731Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2670,
+  "total_published": 2673,
   "s2n_stats": {
-    "passed": 103,
-    "suppressed": 59,
-    "avg_qs": 0.528
+    "passed": 102,
+    "suppressed": 30,
+    "avg_qs": 0.527
   },
   "items": [
     {
@@ -3333,43 +3333,47 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-16519",
-      "title": "CVE-2026-16519 - GeoVision GV-IP Device Utility DLL Search Order Hijacking Vulnerability",
-      "description": "CVE-2026-16519 - GeoVision GV-IP Device Utility DLL Search Order Hijacking Vulnerability",
-      "cvss": 3.2,
-      "final_ps": 22,
-      "quality_score": 0.458,
-      "threat_level": "LOW",
+      "id": "CVE-2026-55607",
+      "title": "Claude Code: Sandbox Escape via Git Worktree Path Confusion Allows Unsandboxed Code Execution",
+      "description": "Claude Code's worktree handling allowed creation of worktrees named \".git\" and navigation to worktrees outside the sandbox context, enabling git directory confusion attacks. By exploiting symlink manipulation and git fsmonitor execution during worktree operations, an attacker could overwrite files i",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
-      "source": "sentinel_apex",
+      "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
-        "sentinel_apex"
+        "github_advisories"
       ],
       "first_seen": "2026-07-24",
       "last_seen": "2026-07-24",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "npm",
+      "product": "@anthropic-ai/claude-code",
       "due_date": null,
       "cves": [
-        "CVE-2026-16519"
+        "CVE-2026-55607",
+        "CVE-2026-55607"
       ],
-      "ioc_count": 0,
+      "ioc_count": 1,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ec5b9640b796ec42da3e3c6e.html"
+        "https://github.com/advisories/GHSA-7835-87q9-rgvv",
+        "https://github.com/anthropics/claude-code/security/advisories/GHSA-7835-87q9-rgvv",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-55607",
+        "https://github.com/anthropics/claude-code/releases/tag/v2.1.163"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.55",
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.458"
+          "QS=0.523"
         ],
         "priority": [
-          "+4 critical_infra"
+          "base_ps=21 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3378,9 +3382,58 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59867",
-      "title": "Microsoft Kiota: Generation-time SSRF + remote/local file inclusion via unrestricted $ref",
-      "description": "## Summary Microsoft Kiota resolved OpenAPI `$ref`s by fetching remote `http(s)` URLs and reading local files\n(including absolute / out-of-tree paths), inlining the referenced schema into the generated client.\nRunning `kiota generate` on a spec whose `$ref` pointed at an attacker/internal URL or an ",
+      "id": "CVE-2026-15074",
+      "title": "@fastify/static vulnerable to route guard bypass via path traversal",
+      "description": "### Impact `@fastify/static` is vulnerable to a bypass of route-based middleware and guards via non-leading `..` and `%2E%2E` path segments. `find-my-way` does not normalize `..` when matching routes, so a request such as `/foo/../deep/secret.txt` matches the static plugin's catch-all instead of the",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@fastify/static",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-15074",
+        "CVE-2026-15074"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-83w8-p2f5-377r",
+        "https://github.com/fastify/fastify-static/security/advisories/GHSA-83w8-p2f5-377r",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-15074",
+        "https://github.com/fastify/fastify-static/commit/db4276f846ba56b21f93768cd6636ee5e2fc58b1"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-59219",
+      "title": "Open WebUI: Realtime endpoints accept Redis-revoked JWTs after signout/backchannel logout",
+      "description": "## Summary With Redis configured, Open WebUI supports JWT revocation: `POST /api/v1/auths/signout` (per-token `jti`) and OIDC back-channel logout (per-user `revoked_at`) record revocations in Redis, and HTTP auth (`get_current_user`) rejects revoked tokens with 401. The realtime authentication surfa",
       "cvss": 7.1,
       "final_ps": 21,
       "quality_score": 0.523,
@@ -3396,19 +3449,19 @@
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "nuget",
-      "product": "Microsoft.OpenApi.Kiota",
+      "vendor": "pip",
+      "product": "open-webui",
       "due_date": null,
       "cves": [
-        "CVE-2026-59867",
-        "CVE-2026-59867"
+        "CVE-2026-59219",
+        "CVE-2026-59219"
       ],
       "ioc_count": 1,
       "refs": [
-        "https://github.com/advisories/GHSA-rg4h-fpcp-2qm8",
-        "https://github.com/microsoft/kiota/security/advisories/GHSA-rg4h-fpcp-2qm8",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-59867",
-        "https://github.com/microsoft/kiota/pull/7888"
+        "https://github.com/advisories/GHSA-855v-hq7w-jmjw",
+        "https://github.com/open-webui/open-webui/security/advisories/GHSA-855v-hq7w-jmjw",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-59219",
+        "https://github.com/open-webui/open-webui/commit/33b91bd8ae8a100a5a306c91441a7d0b422c4cde"
       ],
       "explanation": {
         "quality": [
@@ -3427,108 +3480,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59866",
-      "title": "Microsoft Kiota: Arbitrary file write + code-injection via x-ms-kiota-info clientClassName and clientNamespaceName",
-      "description": "### Summary Microsoft Kiota emitted the `x-ms-kiota-info` extension's `clientClassName` or `clientNamespaceName` value\n**raw**, with no identifier or path sanitization, as **both** the generated client's class/namespace name\n**and** part of the generated output path. When `kiota generate` is run **w",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "nuget",
-      "product": "Microsoft.OpenApi.Kiota",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59866",
-        "CVE-2026-59866"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4vv7-jj25-4gh6",
-        "https://github.com/microsoft/kiota/security/advisories/GHSA-4vv7-jj25-4gh6",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-59866",
-        "https://github.com/microsoft/kiota/pull/7884"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59863",
-      "title": "Microsoft Kiota Workspace-config poisoning: out-of-repo file write + generation-time SSRF",
-      "description": "### Summary Microsoft Kiota honors a poisoned `.kiota/workspace.json` — the workspace configuration that Kiota's\ndocumented team workflow has developers commit to their repository — **unvalidated** on\n`kiota client generate` / `kiota plugin generate`. A repository (or pull request) containing a mali",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "nuget",
-      "product": "Microsoft.OpenApi.Kiota",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59863",
-        "CVE-2026-59863"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4rj6-vrwv-wr8m",
-        "https://github.com/microsoft/kiota/security/advisories/GHSA-4rj6-vrwv-wr8m",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-59863",
-        "https://github.com/microsoft/kiota/pull/7885"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-57516",
-      "title": "Ray: Arbitrary code execution via ray.data.read_webdataset default decoder: pickle.loads(value) and torch.load(weights_o",
-      "description": "## Summary `ray.data.read_webdataset(paths=...)` is a `@PublicAPI(stability=\"alpha\")`\nreader for WebDataset-format TAR files. Its default `decoder=True` invokes\n`_default_decoder` on every sample's keys, which routes file extension to a\ndecoder by extension. Two of those branches deserialize attacke",
-      "cvss": 8.8,
+      "id": "CVE-2026-59214",
+      "title": "Open WebUI: Stored web worker XSS via Pyodide",
+      "description": "**Title:** Same-origin Pyodide code execution allows server-side RCE via a shared chat ### Summary Open WebUI runs client-side Python (Pyodide) in a same-origin web worker. Through Pyodide's JavaScript API (`pyodide.http.pyfetch`, or the `js` module which exposes the page's `fetch` / `XMLHttpRequest",
+      "cvss": 7.3,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -3544,18 +3499,18 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "pip",
-      "product": "ray",
+      "product": "open-webui",
       "due_date": null,
       "cves": [
-        "CVE-2026-57516",
-        "CVE-2026-57516"
+        "CVE-2026-59214",
+        "CVE-2026-59214"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-hhrp-gw25-jr43",
-        "https://github.com/ray-project/ray/security/advisories/GHSA-hhrp-gw25-jr43",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-57516",
-        "https://github.com/ray-project/ray/pull/63469"
+        "https://github.com/advisories/GHSA-4r2p-27mh-5m22",
+        "https://github.com/open-webui/open-webui/security/advisories/GHSA-4r2p-27mh-5m22",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-59214",
+        "https://github.com/advisories/GHSA-4r2p-27mh-5m22"
       ],
       "explanation": {
         "quality": [
@@ -3574,206 +3529,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59859",
-      "title": "Microsoft Kiota: Code Generation Literal Injection in Kiota PHP Generator",
-      "description": "# Impact The Kiota PHP code generator is vulnerable to a code generation literal injection attack. The generator embeds string values from OpenAPI fields (e.g. `description`, default values, and property names) directly into PHP double-quoted string literals without properly escaping the `$` charact",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "nuget",
-      "product": "Microsoft.OpenApi.Kiota",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59859",
-        "CVE-2026-59859"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-jqwh-526h-c92j",
-        "https://github.com/microsoft/kiota/security/advisories/GHSA-jqwh-526h-c92j",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-59859",
-        "https://github.com/microsoft/kiota/pull/7863"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59862",
-      "title": "Microsoft Kiota: Code Generation Literal Injection in Kiota Python Generator",
-      "description": "Code Generation Literal Injection in Kiota Python Generator Leads to Arbitrary Code Execution at Import Time. The Kiota Python code generator is vulnerable to a code generation literal injection issue when processing malicious or untrusted OpenAPI specifications. Specifically, attacker-controlled en",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "nuget",
-      "product": "Microsoft.OpenAPI.Kiota",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59862",
-        "CVE-2026-59862"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7f3j-j7jj-r3vr",
-        "https://github.com/microsoft/kiota/security/advisories/GHSA-7f3j-j7jj-r3vr",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-59862",
-        "https://github.com/microsoft/kiota/releases/tag/v1.32.0"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59861",
-      "title": "Microsoft Kiota: Code Generation Literal Injection in Kiota Ruby Generator",
-      "description": "Code Generation Literal Injection in Kiota Ruby Generator Leads to Arbitrary Code Execution # Impact The Kiota Ruby code generator is vulnerable to a code generation literal injection attack. The generator embeds string values from OpenAPI default fields and property names directly into Ruby double-",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "nuget",
-      "product": "Microsoft.OpenAPI.Kiota",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59861",
-        "CVE-2026-59861"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-xg2h-5xr2-29jw",
-        "https://github.com/microsoft/kiota/security/advisories/GHSA-xg2h-5xr2-29jw",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-59861",
-        "https://github.com/microsoft/kiota/pull/7746"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59860",
-      "title": "Microsoft Kiota: XML Doc-Comment Newline Breakout Code Injection",
-      "description": "### Summary Kiota versions **prior to 1.32.3** are affected by a code-generation injection vulnerability in the C# XML documentation-comment sink (the `description`, `externalDocs` label, and `externalDocs` link fields emitted as `/// …` comments). When text from an OpenAPI description is written in",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "nuget",
-      "product": "Microsoft.OpenApi.Kiota",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59860",
-        "CVE-2026-59860"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-3hrf-2gc2-mx32",
-        "https://github.com/microsoft/kiota/security/advisories/GHSA-3hrf-2gc2-mx32",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-59860",
-        "https://github.com/microsoft/kiota/pull/7831"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59939",
-      "title": "httplib2: Decompression Bomb Denial of Service via Unbounded gzip/deflate Response Handling",
-      "description": "### Summary The `httplib2` HTTP client library performs unbounded decompression of HTTP response bodies encoded with `Content-Encoding: gzip` or `deflate`. A malicious or compromised HTTP server can return a small compressed payload (approximately 150 KB) that expands to an arbitrarily large size in",
-      "cvss": 7.5,
+      "id": "CVE-2026-59714",
+      "title": "Open WebUI: Cross-channel message overwrite via chat completion API (single-model and multimodel message_ids)",
+      "description": "## Summary Any authenticated user can overwrite the content of a message in a channel they do not belong to (including private and DM channels) by sending a chat completion request with a `channel:`-prefixed `chat_id` and a target `message_id`. The `channel:` path routes pipeline output through `_ma",
+      "cvss": 7.1,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "MEDIUM",
@@ -3789,18 +3548,18 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "pip",
-      "product": "httplib2",
+      "product": "open-webui",
       "due_date": null,
       "cves": [
-        "CVE-2026-59939",
-        "CVE-2026-59939"
+        "CVE-2026-59714",
+        "CVE-2026-59714"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-j5g9-f88f-gfj3",
-        "https://github.com/httplib2/httplib2/security/advisories/GHSA-j5g9-f88f-gfj3",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-59939",
-        "https://github.com/httplib2/httplib2/commit/87581ad6cf752fe3da2090c59058261d2d00a427"
+        "https://github.com/advisories/GHSA-x2ff-v5v8-m75m",
+        "https://github.com/open-webui/open-webui/security/advisories/GHSA-x2ff-v5v8-m75m",
+        "https://github.com/open-webui/open-webui/commit/33e4e0dcc43afcca80f9c635d762cdc76c768ba9",
+        "https://github.com/open-webui/open-webui/commit/ac3449cac91e62b08a7c28e54fcd044d14dea791"
       ],
       "explanation": {
         "quality": [
@@ -3819,12 +3578,12 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-55685",
-      "title": "React Router: Unauthenticated Denial of Service via Inefficient Route Matching",
-      "description": "This is a follow up to https://github.com/remix-run/react-router/security/advisories/GHSA-8x6r-g9mw-2r78 that covers additional reported scenarios in which the manifest endpoint could be accessed via unauthenticated targeted requests that would put heavy load on the server and slow down response tim",
+      "id": "GHSA-7d68e749cafa5212",
+      "title": "js-yaml: Exponential parsing time in flow collections leads to denial of service",
+      "description": "### Summary\nParsing a small YAML document can take exponential time. An application that calls `load()` or `loadAll()` on untrusted input can be hung by a payload under 200 bytes. ### Details\nWhen an entry in a flow sequence turns out to be a `key: value` pair, the parser rewinds and parses that ent",
       "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "final_ps": 20,
+      "quality_score": 0.493,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "github_advisories",
@@ -3838,186 +3597,36 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "npm",
-      "product": "react-router",
+      "product": "js-yaml",
       "due_date": null,
-      "cves": [
-        "CVE-2026-55685",
-        "CVE-2026-55685"
-      ],
+      "cves": [],
       "ioc_count": 1,
       "refs": [
-        "https://github.com/advisories/GHSA-chx6-hx7r-mcp5",
-        "https://github.com/remix-run/react-router/security/advisories/GHSA-chx6-hx7r-mcp5",
-        "https://github.com/remix-run/react-router/pull/15186",
-        "https://github.com/remix-run/react-router/commit/09e6020d1950e54f361f7ad00938ecd4dde60929"
+        "https://github.com/advisories/GHSA-pm4m-ph32-ghv5",
+        "https://github.com/nodeca/js-yaml/security/advisories/GHSA-pm4m-ph32-ghv5",
+        "https://github.com/nodeca/js-yaml/commit/3e5240f9cbe645ce5afb58524954a13c8539c853",
+        "https://github.com/nodeca/js-yaml/releases/tag/5.2.2"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.95 (github_advisories)",
           "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.523"
+          "QS=0.493"
         ],
         "priority": [
-          "base_ps=21 (no boosts)"
+          "base_ps=20 (no boosts)"
         ],
-        "suppression": null,
+        "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
       },
-      "suppressed": false,
-      "suppression_reason": null
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
-      "id": "CVE-2026-54673",
-      "title": "electron-updater: Cross-origin redirect leaks `PRIVATE-TOKEN` and mixed-case `Authorization` credentials in `builder-uti",
-      "description": "## Summary In `electron-builder`'s `builder-util-runtime` package, the HTTP redirect handler (`HttpExecutor.prepareRedirectUrlOptions`) only stripped a credential header whose key string matched exactly lowercase `\"authorization\"`. Other credential-bearing headers — most notably `PRIVATE-TOKEN` (use",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "builder-util-runtime",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54673",
-        "CVE-2026-54673"
-      ],
-      "ioc_count": 1,
-      "refs": [
-        "https://github.com/advisories/GHSA-p2f4-r6v6-j797",
-        "https://github.com/electron-userland/electron-builder/security/advisories/GHSA-p2f4-r6v6-j797",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-54673",
-        "https://github.com/electron-userland/electron-builder/pull/9834"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55575",
-      "title": "LiquidJS: `pop` filter bypasses `memoryLimit` accounting that its array-filter siblings enforce",
-      "description": "# `pop` filter bypasses `memoryLimit` accounting that its array-filter siblings enforce **CWE**: CWE-770 (Allocation of Resources Without Limits or Throttling) — sibling class of GHSA-8xx9-69p8-7jp3 and GHSA-2546-xv4c-mc8g, applied to `memoryLimit` instead of `renderLimit` ## Summary The `pop` array",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "liquidjs",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55575",
-        "CVE-2026-55575"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-g357-x5c3-c72p",
-        "https://github.com/harttle/liquidjs/security/advisories/GHSA-g357-x5c3-c72p",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-55575",
-        "https://github.com/harttle/liquidjs/pull/907"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54672",
-      "title": "electron-updater: Uncontrolled search path elements within `AppImage` built by `app-builder-lib`",
-      "description": "### Summary `AppImage` targets built by `app-builder-lib` could use an empty path component when setting the `LD_LIBRARY_PATH` environment variable at runtime. This causes the current working directory to be added to the dynamic linker search path, which may allow an attacker to execute arbitrary co",
-      "cvss": 7.8,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "app-builder-lib",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54672",
-        "CVE-2026-54672"
-      ],
-      "ioc_count": 1,
-      "refs": [
-        "https://github.com/advisories/GHSA-7g7r-gx96-252g",
-        "https://github.com/electron-userland/electron-builder/security/advisories/GHSA-7g7r-gx96-252g",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-54672",
-        "https://github.com/electron-userland/electron-builder/commit/01b8ba979d1db44543e18d07b4ad94953deb10ea"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-12688",
-      "title": "CVE-2026-12688 - ProfileGrid < 5.9.9.7 - Unauthenticated Payment Bypass and Forced Group Membership via PayPal IPN Forge",
-      "description": "CVE-2026-12688 - ProfileGrid < 5.9.9.7 - Unauthenticated Payment Bypass and Forced Group Membership via PayPal IPN Forgery",
+      "id": "CVE-2026-64830",
+      "title": "CVE-2026-64830: FFmpeg versions 2.1 through 8.1.2 contains a heap buffer overflow vulnerability in the VobSub subtitle d",
+      "description": "CVE-2026-64830: FFmpeg versions 2.1 through 8.1.2 contains a heap buffer overflow vulnerability in the VobSub subtitle demuxer that allo",
       "cvss": 7.8,
       "final_ps": 20,
       "quality_score": 0.498,
@@ -4028,8 +3637,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4037,11 +3646,596 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-12688"
+        "CVE-2026-64830"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--de9b4be3daef4748.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-64831",
+      "title": "CVE-2026-64831: FFmpeg versions 8.0 through 8.1.2 contains a stack buffer overflow vulnerability in the Vulkan HEVC hard",
+      "description": "CVE-2026-64831: FFmpeg versions 8.0 through 8.1.2 contains a stack buffer overflow vulnerability in the Vulkan HEVC hardware decoder tha",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64831"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--c7624771d68bbc44.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-65013",
+      "title": "CVE-2026-65013: Onlook through 0.2.32, fixed in commit 423e2e9, contains a broken object level authorization vulnerabili",
+      "description": "CVE-2026-65013: Onlook through 0.2.32, fixed in commit 423e2e9, contains a broken object level authorization vulnerability that allows a",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-65013"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--cf5eb2817d1b325f.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-64832",
+      "title": "CVE-2026-64832: FFmpeg versions 4.4 through 8.1.2 contain a double-free vulnerability in the NVIDIA NVDEC hardware decod",
+      "description": "CVE-2026-64832: FFmpeg versions 4.4 through 8.1.2 contain a double-free vulnerability in the NVIDIA NVDEC hardware decoder within libavc",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64832"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--dd045f2e20bf3a06.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-64833",
+      "title": "CVE-2026-64833: FFmpeg versions 0.7.1 through 8.1.2 contain an out-of-bounds read vulnerability in the S/PDIF muxer that",
+      "description": "CVE-2026-64833: FFmpeg versions 0.7.1 through 8.1.2 contain an out-of-bounds read vulnerability in the S/PDIF muxer that allows attacker",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64833"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--3369272b11db0c40.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-64834",
+      "title": "CVE-2026-64834: FFmpeg versions 0.6.3 through 8.1.2 contain an infinite loop vulnerability in the RTP/ASF demuxer within",
+      "description": "CVE-2026-64834: FFmpeg versions 0.6.3 through 8.1.2 contain an infinite loop vulnerability in the RTP/ASF demuxer within libavformat/rtp",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64834"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--f20538ad729b182a.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-64835",
+      "title": "CVE-2026-64835: FFmpeg versions 4.4 through 8.1.2 contain an out-of-bounds memory access vulnerability in the ADX audio ",
+      "description": "CVE-2026-64835: FFmpeg versions 4.4 through 8.1.2 contain an out-of-bounds memory access vulnerability in the ADX audio decoder within l",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64835"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--adc205500b2730fb.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-13059",
+      "title": "CVE-2026-13059: An authenticated user with low privileges may be able to perform unauthorized reads and writes on data p",
+      "description": "CVE-2026-13059: An authenticated user with low privileges may be able to perform unauthorized reads and writes on data protected by role",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-13059"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d6526d31a4c62263.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-13072",
+      "title": "CVE-2026-13072: When compute mode is enabled on a standalone mongod instance, insufficient validation of externally sour",
+      "description": "CVE-2026-13072: When compute mode is enabled on a standalone mongod instance, insufficient validation of externally sourced BSON data du",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-13072"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--6b000a241c4f2717.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-13077",
+      "title": "CVE-2026-13077: A missing bounds check in the BSON CodeWScope element accessors allows an attacker to trigger an out-of-",
+      "description": "CVE-2026-13077: A missing bounds check in the BSON CodeWScope element accessors allows an attacker to trigger an out-of-bounds heap read",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-13077"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--dfd4c51c71c7c2c8.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-13078",
+      "title": "CVE-2026-13078: A vulnerability was discovered in MongoDB Server where the server-side MozJS scripting engine unconditio",
+      "description": "CVE-2026-13078: A vulnerability was discovered in MongoDB Server where the server-side MozJS scripting engine unconditionally registered",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-13078"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--463c80b92e01a5cd.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-14881",
+      "title": "CVE-2026-14881: When importing connections in Compass it is possible to override some connection options that are otherw",
+      "description": "CVE-2026-14881: When importing connections in Compass it is possible to override some connection options that are otherwise can't be cha",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-14881"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--74896b4de8238355.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-64829",
+      "title": "CVE-2026-64829: Question2Answer through 1.8.8 contains a session invalidation vulnerability that allows attackers with a",
+      "description": "CVE-2026-64829: Question2Answer through 1.8.8 contains a session invalidation vulnerability that allows attackers with a previously obta",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64829"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--2edde2b469cb0e54.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.498"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-40714",
+      "title": "CVE-2026-40714: Dell PowerProtect Data Manager, versions prior to 20.2.0.0, contain(s) an Improper Input Validation vuln",
+      "description": "CVE-2026-40714: Dell PowerProtect Data Manager, versions prior to 20.2.0.0, contain(s) an Improper Input Validation vulnerability. A hig",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.498,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-40714"
       ],
       "ioc_count": 1,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--9537c79c3e24bb7b.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--153fa974941d1c8f.html"
       ],
       "explanation": {
         "quality": [
@@ -4060,9 +4254,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-12877",
-      "title": "CVE-2026-12877 - Software Issue Manager < 5.1.0 - Unauthenticated SQL Injection via Search Parameter",
-      "description": "CVE-2026-12877 - Software Issue Manager < 5.1.0 - Unauthenticated SQL Injection via Search Parameter",
+      "id": "CVE-2026-46738",
+      "title": "CVE-2026-46738: Dell PowerProtect Data Manager, versions prior to 20.2.0.0, contain(s) an Improper Input Validation vuln",
+      "description": "CVE-2026-46738: Dell PowerProtect Data Manager, versions prior to 20.2.0.0, contain(s) an Improper Input Validation vulnerability in the",
       "cvss": 7.8,
       "final_ps": 20,
       "quality_score": 0.498,
@@ -4073,8 +4267,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4082,11 +4276,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-12877"
+        "CVE-2026-46738"
       ],
-      "ioc_count": 0,
+      "ioc_count": 1,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--49404d4eb72224e9.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d79385f067cb3a85.html"
       ],
       "explanation": {
         "quality": [
@@ -4105,9 +4299,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-14172",
-      "title": "CVE-2026-14172 - Rapid7 InsightVM, Nexpose, and Insight Agent Local Privilege Escalation via Unvalidated Executable Invo",
-      "description": "CVE-2026-14172 - Rapid7 InsightVM, Nexpose, and Insight Agent Local Privilege Escalation via Unvalidated Executable Invocation",
+      "id": "CVE-2026-49499",
+      "title": "CVE-2026-49499: Dell PowerProtect Data Manager, versions prior to 20.2.0.0, contain(s) a Generation of Incorrect Securit",
+      "description": "CVE-2026-49499: Dell PowerProtect Data Manager, versions prior to 20.2.0.0, contain(s) a Generation of Incorrect Security Tokens vulnera",
       "cvss": 7.8,
       "final_ps": 20,
       "quality_score": 0.498,
@@ -4118,8 +4312,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
+      "first_seen": "2026-07-22",
+      "last_seen": "2026-07-22",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4127,243 +4321,11 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-14172"
+        "CVE-2026-49499"
       ],
-      "ioc_count": 0,
+      "ioc_count": 1,
       "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--3d6c456fdcc6c67c.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-28698",
-      "title": "intel--1784856937_CVE-2026-28698_CVE-2026-42933_CVE-2026-4",
-      "description": "intel--1784856937_CVE-2026-28698_CVE-2026-42933_CVE-2026-4",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-28698",
-        "CVE-2026-42933"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784856937_CVE-2026-28698_CVE-2026-42933_CVE-2026-4.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-16756",
-      "title": "intel--1784840365_CVE-2026-16756_CVE-2026-25800_CVE-2026-4",
-      "description": "intel--1784840365_CVE-2026-16756_CVE-2026-25800_CVE-2026-4",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16756",
-        "CVE-2026-25800"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784840365_CVE-2026-16756_CVE-2026-25800_CVE-2026-4.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-15212",
-      "title": "intel--1784840474_CVE-2026-15212_CVE-2026-47669_CVE-2026-4",
-      "description": "intel--1784840474_CVE-2026-15212_CVE-2026-47669_CVE-2026-4",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15212",
-        "CVE-2026-47669"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784840312_CVE-2026-15212_CVE-2026-47722_CVE-2026-6.html",
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784840474_CVE-2026-15212_CVE-2026-47669_CVE-2026-4.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-15037",
-      "title": "intel--1784813305_CVE-2026-15037_CVE-2026-65907_CVE-2026-6",
-      "description": "intel--1784813305_CVE-2026-15037_CVE-2026-65907_CVE-2026-6",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15037",
-        "CVE-2026-65907"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784813317_CVE-2026-15037_CVE-2026-65896_CVE-2026-6.html",
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784813305_CVE-2026-15037_CVE-2026-65907_CVE-2026-6.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-15017",
-      "title": "intel--1784802066_CVE-2026-15017_CVE-2026-56121_CVE-2026-6",
-      "description": "intel--1784802066_CVE-2026-15017_CVE-2026-56121_CVE-2026-6",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15017",
-        "CVE-2026-56121"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784802066_CVE-2026-15017_CVE-2026-56121_CVE-2026-6.html"
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--0ba38cca8d6416d1.html"
       ],
       "explanation": {
         "quality": [
