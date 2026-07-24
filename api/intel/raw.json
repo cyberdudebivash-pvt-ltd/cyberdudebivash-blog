@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-24T18:01:46.860Z",
+  "generated": "2026-07-24T18:31:30.368Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 161,
+  "count": 162,
   "items": [
     {
       "id": "SENTINELAPEX-7073192d3b13",
@@ -272,9 +272,9 @@
       "title": "Chaos ransomware deploys browser-based msaRAT to evade network detection",
       "description": "Cisco Talos uncovered msaRAT, a Chaos ransomware RAT that hides C2 traffic by routing it through Chrome or Edge using the Chrome DevTools Protocol. Cisco Talos disclosed msaRAT, a Rust-based remote access trojan attributed to the Chaos ransomware group that routes its entire comm... [Full analysis a",
       "cvss": 7.8,
-      "final_ps": 66,
-      "quality_score": 0.503,
-      "threat_level": "HIGH",
+      "final_ps": 64,
+      "quality_score": 0.488,
+      "threat_level": "MEDIUM",
       "type": "RANSOMWARE",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
@@ -296,8 +296,8 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.503"
+          "recency=1d (score=0.85)",
+          "QS=0.488"
         ],
         "priority": [
           "+10 ransomware_confirmed"
@@ -844,50 +844,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59214",
-      "title": "Open WebUI: Stored web worker XSS via Pyodide",
-      "description": "**Title:** Same-origin Pyodide code execution allows server-side RCE via a shared chat\n\n### Summary\n\nOpen WebUI runs client-side Python (Pyodide) in a same-origin web worker. Through Pyodide's JavaScript API (`pyodide.http.pyfetch`, or the `js` module which exposes the page's `fe... [Full analysis a",
-      "cvss": 7.3,
-      "final_ps": 47,
-      "quality_score": 0.533,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59214"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=0d (score=1.00)",
-          "QS=0.533"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-58644",
       "title": "CISA Adds Exploited SharePoint RCE Zero-Day CVE-2026-58644 to KEV",
       "description": "",
@@ -1152,6 +1108,50 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-59220",
+      "title": "Open WebUI: ReDoS in skill-mention regexes causes whole-instance DoS on default config",
+      "description": "## Summary\nTwo regexes in `backend/open_webui/utils/middleware.py` that parse `<$skillId|label>` skill-mention tags backtrack in O(n²) on input that contains `<$` followed by a long run with no closing `>`. Both run synchronously, on the asyncio event loop, on **every** chat comp... [Full analysis a",
+      "cvss": 6.5,
+      "final_ps": 43,
+      "quality_score": 0.493,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59220"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=43 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-42980",
       "title": "Public PoC Released for Windows NT OS Kernel Privilege Escalation Vulnerability",
       "description": "",
@@ -1280,50 +1280,6 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "BLEEPINGCOMPUTER-31be0c581789e0de",
-      "title": "Hackers hijack hotel Wi-Fi DNS to steal Microsoft 365 accounts",
-      "description": "Hackers are changing the DNS settings on Wi-Fi devices at hotels and conference centers to redirect users to fake Microsoft 365 login pages. [...]",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.45,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "bleepingcomputer",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "bleepingcomputer"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "BleepingComputer",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/security/hackers-hijack-hotel-wi-fi-dns-to-steal-microsoft-365-accounts/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.450"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -5411,6 +5367,50 @@
       "iocs": []
     },
     {
+      "id": "REDDIT_CYBER-95c8545da7ceb29d",
+      "title": "Coalfire Experience?",
+      "description": "Experiences working for coalfire? They offered me and I wanted to know how the WLB is, etc. currently working for public accounting so it can’t get much worse I hope submitted by /u/Psychological_Carpet [link] [comments]",
+      "cvss": 6.5,
+      "final_ps": 38,
+      "quality_score": 0.375,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1v5ir5j/coalfire_experience/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.375"
+        ],
+        "priority": [
+          "base_ps=38 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "CVE-2025-66376",
       "title": "Russian hackers exploit unpatched Zimbra servers to steal emails",
       "description": "",
@@ -5453,6 +5453,50 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "REDDIT_CYBER-69d36d0fd0147251",
+      "title": "Hackers hijack hotel Wi-Fi DNS to steal Microsoft 365 accounts",
+      "description": "submitted by /u/kazu-qt [link] [comments]",
+      "cvss": 6.5,
+      "final_ps": 36,
+      "quality_score": 0.325,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1v5j72h/hackers_hijack_hotel_wifi_dns_to_steal_microsoft/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.325"
+        ],
+        "priority": [
+          "base_ps=36 (no boosts)"
+        ],
+        "suppression": "Quality score below minimum threshold (QS < 0.35)",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Quality score below minimum threshold (QS < 0.35)",
       "iocs": []
     },
     {
@@ -6900,6 +6944,50 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-59214",
+      "title": "Open WebUI: Stored web worker XSS via Pyodide",
+      "description": "",
+      "cvss": 7.3,
+      "final_ps": 19,
+      "quality_score": 0.478,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59214"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=19 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-59216",
       "title": "Open WebUI: Cross-user code-interpreter and tool execution via unvalidated Socket.IO event-caller session_id",
       "description": "",
@@ -7023,50 +7111,6 @@
         ],
         "priority": [
           "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-59220",
-      "title": "Open WebUI: ReDoS in skill-mention regexes causes whole-instance DoS on default config",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59220"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
         ],
         "suppression": null,
         "merge": null
