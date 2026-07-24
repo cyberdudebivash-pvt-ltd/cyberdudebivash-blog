@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-24T16:02:56.817Z",
+  "generated": "2026-07-24T16:31:33.004Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2669,
+  "total_published": 2670,
   "s2n_stats": {
-    "passed": 101,
-    "suppressed": 58,
-    "avg_qs": 0.526
+    "passed": 103,
+    "suppressed": 59,
+    "avg_qs": 0.528
   },
   "items": [
     {
@@ -275,6 +275,47 @@
       }
     },
     {
+      "id": "CVE-2026-47219",
+      "title": "find-my-way: DDoS with HTTP2",
+      "description": "### Impact\nRemotely triggerable DoS in find-my-way when it is used with Node's HTTP/2 server.\n\nThe short version is that `lookup()` passes `req.method` into `find()`, and `find()` indexes `this.trees[method]`. Since `this.trees` is a normal object, HTTP/2 method values like const... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 47,
+      "quality_score": 0.533,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-23",
+      "last_seen": "2026-07-23",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47219"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=0d (score=1.00)",
+          "QS=0.533"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2026-58644",
       "title": "CISA Adds Exploited SharePoint RCE Zero-Day CVE-2026-58644 to KEV",
       "description": "",
@@ -424,6 +465,47 @@
       "due_date": null,
       "cves": [
         "CVE-2026-59933"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=1d (score=0.85)",
+          "QS=0.518"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-59932",
+      "title": "PHPSpreadsheet: Gnumeric reader unbounded gzip expansion causes memory exhaustion",
+      "description": "## Summary\n\nPhpSpreadsheet's Gnumeric reader reads attacker-supplied `.gnumeric` files into memory and, when the file starts with gzip magic bytes, calls `gzdecode()` on the full compressed contents without enforcing a decompressed-size limit. A very small compressed `.gnumeric` ... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 45,
+      "quality_score": 0.518,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-23",
+      "last_seen": "2026-07-23",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59932"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -2191,7 +2273,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-3891",
@@ -2233,7 +2317,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-48373",
@@ -3292,6 +3378,153 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-59867",
+      "title": "Microsoft Kiota: Generation-time SSRF + remote/local file inclusion via unrestricted $ref",
+      "description": "## Summary Microsoft Kiota resolved OpenAPI `$ref`s by fetching remote `http(s)` URLs and reading local files\n(including absolute / out-of-tree paths), inlining the referenced schema into the generated client.\nRunning `kiota generate` on a spec whose `$ref` pointed at an attacker/internal URL or an ",
+      "cvss": 7.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "nuget",
+      "product": "Microsoft.OpenApi.Kiota",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59867",
+        "CVE-2026-59867"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-rg4h-fpcp-2qm8",
+        "https://github.com/microsoft/kiota/security/advisories/GHSA-rg4h-fpcp-2qm8",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-59867",
+        "https://github.com/microsoft/kiota/pull/7888"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-59866",
+      "title": "Microsoft Kiota: Arbitrary file write + code-injection via x-ms-kiota-info clientClassName and clientNamespaceName",
+      "description": "### Summary Microsoft Kiota emitted the `x-ms-kiota-info` extension's `clientClassName` or `clientNamespaceName` value\n**raw**, with no identifier or path sanitization, as **both** the generated client's class/namespace name\n**and** part of the generated output path. When `kiota generate` is run **w",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "nuget",
+      "product": "Microsoft.OpenApi.Kiota",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59866",
+        "CVE-2026-59866"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4vv7-jj25-4gh6",
+        "https://github.com/microsoft/kiota/security/advisories/GHSA-4vv7-jj25-4gh6",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-59866",
+        "https://github.com/microsoft/kiota/pull/7884"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-59863",
+      "title": "Microsoft Kiota Workspace-config poisoning: out-of-repo file write + generation-time SSRF",
+      "description": "### Summary Microsoft Kiota honors a poisoned `.kiota/workspace.json` — the workspace configuration that Kiota's\ndocumented team workflow has developers commit to their repository — **unvalidated** on\n`kiota client generate` / `kiota plugin generate`. A repository (or pull request) containing a mali",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "nuget",
+      "product": "Microsoft.OpenApi.Kiota",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59863",
+        "CVE-2026-59863"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4rj6-vrwv-wr8m",
+        "https://github.com/microsoft/kiota/security/advisories/GHSA-4rj6-vrwv-wr8m",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-59863",
+        "https://github.com/microsoft/kiota/pull/7885"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-57516",
       "title": "Ray: Arbitrary code execution via ray.data.read_webdataset default decoder: pickle.loads(value) and torch.load(weights_o",
       "description": "## Summary `ray.data.read_webdataset(paths=...)` is a `@PublicAPI(stability=\"alpha\")`\nreader for WebDataset-format TAR files. Its default `decoder=True` invokes\n`_default_decoder` on every sample's keys, which routes file extension to a\ndecoder by extension. Two of those branches deserialize attacke",
@@ -4141,230 +4374,6 @@
         ],
         "priority": [
           "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-6390",
-      "title": "intel--1784788349_CVE-2026-6390_CVE-2026-64600_CVE-2026-71",
-      "description": "intel--1784788349_CVE-2026-6390_CVE-2026-64600_CVE-2026-71",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-6390",
-        "CVE-2026-64600"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784788349_CVE-2026-6390_CVE-2026-64600_CVE-2026-71.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2024-58023",
-      "title": "intel--1784801991_CVE-2024-58023_CVE-2024-58330_CVE-2026-1",
-      "description": "intel--1784801991_CVE-2024-58023_CVE-2024-58330_CVE-2026-1",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-58023",
-        "CVE-2024-58330"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784801991_CVE-2024-58023_CVE-2024-58330_CVE-2026-1.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-15448",
-      "title": "intel--1784802040_CVE-2026-15448_CVE-2026-56121_CVE-2026-6",
-      "description": "intel--1784802040_CVE-2026-15448_CVE-2026-56121_CVE-2026-6",
-      "cvss": 7.5,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15448",
-        "CVE-2026-56121"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1784802040_CVE-2026-15448_CVE-2026-56121_CVE-2026-6.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-47219",
-      "title": "find-my-way: DDoS with HTTP2",
-      "description": "### Impact\nRemotely triggerable DoS in find-my-way when it is used with Node's HTTP/2 server.\n\nThe short version is that `lookup()` passes `req.method` into `find()`, and `find()` indexes `this.trees[method]`. Since `this.trees` is a normal object, HTTP/2 method values like const... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-23",
-      "last_seen": "2026-07-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47219"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59932",
-      "title": "PHPSpreadsheet: Gnumeric reader unbounded gzip expansion causes memory exhaustion",
-      "description": "## Summary\n\nPhpSpreadsheet's Gnumeric reader reads attacker-supplied `.gnumeric` files into memory and, when the file starts with gzip magic bytes, calls `gzdecode()` on the full compressed contents without enforcing a decompressed-size limit. A very small compressed `.gnumeric` ... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-23",
-      "last_seen": "2026-07-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59932"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
         ],
         "suppression": null,
         "merge": null
