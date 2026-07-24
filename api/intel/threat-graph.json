@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-24T19:01:41.096Z",
+  "generated": "2026-07-24T19:31:30.649Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 8194,
+    "total_nodes": 8196,
     "actors": 8,
     "cves": 2211,
-    "campaigns": 826,
+    "campaigns": 827,
     "malware": 0,
     "iocs": 830,
-    "edges": 3170
+    "edges": 3171
   },
   "nodes": {
     "actor:lockbit": {
@@ -156860,6 +156860,44 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-5cbc8c730184ad6a": {
+      "id": "BLEEPINGCOMPUTER-5cbc8c730184ad6a",
+      "type": "Intel",
+      "name": "Hermes AI agent used to automate attack on Thai Finance Ministry",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-24",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-f40e5898": {
+      "id": "campaign:cluster-f40e5898",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-24",
+        "last_seen": "2026-07-24",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-5cbc8c730184ad6a",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -185426,6 +185464,15 @@
       "id": "campaign:cluster-0c8f0441→includes→SENTINELAPEX-9eeb97820834",
       "source": "campaign:cluster-0c8f0441",
       "target": "SENTINELAPEX-9eeb97820834",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-24",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-f40e5898→includes→BLEEPINGCOMPUTER-5cbc8c730184ad6a",
+      "source": "campaign:cluster-f40e5898",
+      "target": "BLEEPINGCOMPUTER-5cbc8c730184ad6a",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-24",
