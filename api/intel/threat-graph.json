@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-24T14:19:57.844Z",
+  "generated": "2026-07-24T14:31:30.632Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 8041,
+    "total_nodes": 8042,
     "actors": 8,
     "cves": 2156,
     "campaigns": 799,
     "malware": 0,
     "iocs": 825,
-    "edges": 3099
+    "edges": 3100
   },
   "nodes": {
     "actor:lockbit": {
@@ -1074,6 +1074,11 @@
         {
           "target": "campaign:cluster-af9325ae",
           "relationship": "executes",
+          "confidence": 0.85
+        },
+        {
+          "target": "SECURITYWEEK-f920a19395a517d5",
+          "relationship": "exploits",
           "confidence": 0.85
         }
       ],
@@ -153847,6 +153852,24 @@
         "type": "DATA_BREACH"
       },
       "connections": []
+    },
+    "SECURITYWEEK-f920a19395a517d5": {
+      "id": "SECURITYWEEK-f920a19395a517d5",
+      "type": "Intel",
+      "name": "In Other News: Dolphin X AI-Powered Malware, Car Anti-Theft Device Hack, 400 Linux Kernel Flaws",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-24",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -181776,6 +181799,15 @@
       "target": "SENTINELAPEX-27c4aab50bf3",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-24",
+      "sources": []
+    },
+    {
+      "id": "actor:russia-nexus-ransomware→exploits→SECURITYWEEK-f920a19395a517d5",
+      "source": "actor:russia-nexus-ransomware",
+      "target": "SECURITYWEEK-f920a19395a517d5",
+      "relationship": "exploits",
+      "confidence": 0.85,
       "first_seen": "2026-07-24",
       "sources": []
     }
