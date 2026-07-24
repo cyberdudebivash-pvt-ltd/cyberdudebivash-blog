@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-24T14:01:38.080Z",
+  "generated": "2026-07-24T14:19:57.894Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2654,
+  "total_published": 2657,
   "s2n_stats": {
-    "passed": 101,
-    "suppressed": 57,
-    "avg_qs": 0.524
+    "passed": 103,
+    "suppressed": 59,
+    "avg_qs": 0.526
   },
   "items": [
     {
@@ -298,6 +298,88 @@
       "due_date": null,
       "cves": [
         "CVE-2026-59936"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=0d (score=1.00)",
+          "QS=0.533"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-59933",
+      "title": "PHPSpreadsheet: XLS/OLE sector-chain self-loop causes memory exhaustion",
+      "description": "## Summary\n\nPhpSpreadsheet's OLE reader follows sector chains from attacker-controlled XLS/OLE metadata without detecting cycles or enforcing a maximum chain length. A tiny malformed `.xls`/OLE file can set the small-block depot sector chain to point back to itself. During normal... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 47,
+      "quality_score": 0.533,
+      "threat_level": "MEDIUM",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-23",
+      "last_seen": "2026-07-23",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59933"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.90",
+          "recency=0d (score=1.00)",
+          "QS=0.533"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-59932",
+      "title": "PHPSpreadsheet: Gnumeric reader unbounded gzip expansion causes memory exhaustion",
+      "description": "## Summary\n\nPhpSpreadsheet's Gnumeric reader reads attacker-supplied `.gnumeric` files into memory and, when the file starts with gzip magic bytes, calls `gzdecode()` on the full compressed contents without enforcing a decompressed-size limit. A very small compressed `.gnumeric` ... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 47,
+      "quality_score": 0.533,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-23",
+      "last_seen": "2026-07-23",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59932"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -2191,7 +2273,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-3891",
@@ -2233,7 +2317,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-48373",
@@ -3292,6 +3378,153 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-55685",
+      "title": "React Router: Unauthenticated Denial of Service via Inefficient Route Matching",
+      "description": "This is a follow up to https://github.com/remix-run/react-router/security/advisories/GHSA-8x6r-g9mw-2r78 that covers additional reported scenarios in which the manifest endpoint could be accessed via unauthenticated targeted requests that would put heavy load on the server and slow down response tim",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "react-router",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55685",
+        "CVE-2026-55685"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-chx6-hx7r-mcp5",
+        "https://github.com/remix-run/react-router/security/advisories/GHSA-chx6-hx7r-mcp5",
+        "https://github.com/remix-run/react-router/pull/15186",
+        "https://github.com/remix-run/react-router/commit/09e6020d1950e54f361f7ad00938ecd4dde60929"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54673",
+      "title": "electron-updater: Cross-origin redirect leaks `PRIVATE-TOKEN` and mixed-case `Authorization` credentials in `builder-uti",
+      "description": "## Summary In `electron-builder`'s `builder-util-runtime` package, the HTTP redirect handler (`HttpExecutor.prepareRedirectUrlOptions`) only stripped a credential header whose key string matched exactly lowercase `\"authorization\"`. Other credential-bearing headers — most notably `PRIVATE-TOKEN` (use",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "builder-util-runtime",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54673",
+        "CVE-2026-54673"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-p2f4-r6v6-j797",
+        "https://github.com/electron-userland/electron-builder/security/advisories/GHSA-p2f4-r6v6-j797",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-54673",
+        "https://github.com/electron-userland/electron-builder/pull/9834"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-55575",
+      "title": "LiquidJS: `pop` filter bypasses `memoryLimit` accounting that its array-filter siblings enforce",
+      "description": "# `pop` filter bypasses `memoryLimit` accounting that its array-filter siblings enforce **CWE**: CWE-770 (Allocation of Resources Without Limits or Throttling) — sibling class of GHSA-8xx9-69p8-7jp3 and GHSA-2546-xv4c-mc8g, applied to `memoryLimit` instead of `renderLimit` ## Summary The `pop` array",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "liquidjs",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55575",
+        "CVE-2026-55575"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-g357-x5c3-c72p",
+        "https://github.com/harttle/liquidjs/security/advisories/GHSA-g357-x5c3-c72p",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-55575",
+        "https://github.com/harttle/liquidjs/pull/907"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-54672",
       "title": "electron-updater: Uncontrolled search path elements within `AppImage` built by `app-builder-lib`",
       "description": "### Summary `AppImage` targets built by `app-builder-lib` could use an empty path component when setting the `LD_LIBRARY_PATH` environment variable at runtime. This causes the current working directory to be added to the dynamic linker search path, which may allow an attacker to execute arbitrary co",
@@ -4112,225 +4345,6 @@
         ],
         "priority": [
           "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-16607",
-      "title": "CVE-2026-16607: A vulnerability in Fujitsu Software Linux openFT andFujitsu Software Oracle Solaris openFT before versio",
-      "description": "CVE-2026-16607: A vulnerability in Fujitsu Software Linux openFT andFujitsu Software Oracle Solaris openFT before version12.1D00 allow",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-22",
-      "last_seen": "2026-07-22",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16607"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d09b1ca5246c2a54.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48029",
-      "title": "CVE-2026-48029: libheif is a HEIF and AVIF file format decoder and encoder. Versions 1.19.0 through 1.21.2 have a heap O",
-      "description": "CVE-2026-48029: libheif is a HEIF and AVIF file format decoder and encoder. Versions 1.19.0 through 1.21.2 have a heap OOB read in Image",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-22",
-      "last_seen": "2026-07-22",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48029"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--988749ede149d44b.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-15663",
-      "title": "CVE-2026-15663 Ninja Forms <= 3.14.9 - Authenticated (Administrator+) SQL Injection via Import File 'settings' Key",
-      "description": "CVE-2026-15663 Ninja Forms <= 3.14.9 - Authenticated (Administrator+) SQL Injection via Import File 'settings' Key",
-      "cvss": 8.8,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15663"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59933",
-      "title": "PHPSpreadsheet: XLS/OLE sector-chain self-loop causes memory exhaustion",
-      "description": "## Summary\n\nPhpSpreadsheet's OLE reader follows sector chains from attacker-controlled XLS/OLE metadata without detecting cycles or enforcing a maximum chain length. A tiny malformed `.xls`/OLE file can set the small-block depot sector chain to point back to itself. During normal... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-23",
-      "last_seen": "2026-07-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59933"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59932",
-      "title": "PHPSpreadsheet: Gnumeric reader unbounded gzip expansion causes memory exhaustion",
-      "description": "## Summary\n\nPhpSpreadsheet's Gnumeric reader reads attacker-supplied `.gnumeric` files into memory and, when the file starts with gzip magic bytes, calls `gzdecode()` on the full compressed contents without enforcing a decompressed-size limit. A very small compressed `.gnumeric` ... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 19,
-      "quality_score": 0.478,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-23",
-      "last_seen": "2026-07-23",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59932"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.478"
-        ],
-        "priority": [
-          "base_ps=19 (no boosts)"
         ],
         "suppression": null,
         "merge": null
