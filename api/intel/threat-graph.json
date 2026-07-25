@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-25T08:31:34.763Z",
+  "generated": "2026-07-25T09:01:39.158Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 8440,
+    "total_nodes": 8442,
     "actors": 8,
     "cves": 2281,
-    "campaigns": 844,
+    "campaigns": 845,
     "malware": 0,
     "iocs": 836,
-    "edges": 3197
+    "edges": 3198
   },
   "nodes": {
     "actor:lockbit": {
@@ -142819,7 +142819,7 @@
       "attributes": {
         "cvss": 9.1,
         "threat_level": "HIGH",
-        "priority_score": 67,
+        "priority_score": 65,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
@@ -153623,7 +153623,7 @@
       "attributes": {
         "cvss": 5.5,
         "threat_level": "HIGH",
-        "priority_score": 71,
+        "priority_score": 69,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
@@ -161336,6 +161336,44 @@
         "type": "AI_SECURITY"
       },
       "connections": []
+    },
+    "THEHACKERNEWS-43eae0afa2e64013": {
+      "id": "THEHACKERNEWS-43eae0afa2e64013",
+      "type": "Intel",
+      "name": "Researcher Publishes GitLab RCE PoC Letting Authenticated Users Run Commands as Git",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-07-25",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-867eb3e3": {
+      "id": "campaign:cluster-867eb3e3",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-25",
+        "last_seen": "2026-07-25",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "THEHACKERNEWS-43eae0afa2e64013",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -190145,6 +190183,15 @@
       "id": "campaign:cluster-eabd0e34→includes→SENTINELAPEX-5b02878869e6",
       "source": "campaign:cluster-eabd0e34",
       "target": "SENTINELAPEX-5b02878869e6",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-25",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-867eb3e3→includes→THEHACKERNEWS-43eae0afa2e64013",
+      "source": "campaign:cluster-867eb3e3",
+      "target": "THEHACKERNEWS-43eae0afa2e64013",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-25",
