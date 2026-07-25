@@ -2,14 +2,14 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-07-25T20:55:09.404Z",
+  "generated": "2026-07-25T22:57:38.049Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 11,
+    "published": 3,
     "p1": 0,
-    "leadsHeld": 6,
+    "leadsHeld": 5,
     "analystReports": 0,
-    "sourcesOk": 5,
+    "sourcesOk": 4,
     "sourcesTotal": 6,
     "sourceHealth": [
       {
@@ -37,14 +37,6 @@
         "error": null
       },
       {
-        "name": "arXiv cs.CR (LLM security)",
-        "key": "arxiv_sec",
-        "tier": 2,
-        "status": "ok",
-        "items": 30,
-        "error": null
-      },
-      {
         "name": "GitHub Security Advisories",
         "key": "ghsa",
         "tier": 1,
@@ -59,9 +51,17 @@
         "status": "ok",
         "items": 25,
         "error": null
+      },
+      {
+        "name": "arXiv cs.CR (LLM security)",
+        "key": "arxiv_sec",
+        "tier": 2,
+        "status": "degraded",
+        "items": 0,
+        "error": "This operation was aborted"
       }
     ],
-    "runtimeMs": 964
+    "runtimeMs": 15078
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,7 +88,7 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 11,
+  "count": 3,
   "items": [
     {
       "id": "7cfa931cbd175eb2",
@@ -255,454 +255,6 @@
       "detection": {
         "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
         "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "13f5334d86fc634a",
-      "title": "Twin Agent: Context Residual Compression for Privilege Separated Agents",
-      "url": "https://arxiv.org/abs/2607.19595v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-07-21T21:47:52Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "prompt_injection",
-          "label": "Prompt Injection"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM01",
-          "name": "Prompt Injection"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0051",
-          "name": "LLM Prompt Injection"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": false,
-          "tool_use": true,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
-        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "21ce50f057e4a6cc",
-      "title": "Trusted Credentials, Untrusted Behavior: Benchmarking LLM-Agent Security in High-Performance Computing",
-      "url": "https://arxiv.org/abs/2607.18485v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-07-20T20:16:02Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "prompt_injection",
-          "label": "Prompt Injection"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM01",
-          "name": "Prompt Injection"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0051",
-          "name": "LLM Prompt Injection"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": true,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
-        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "5f27ef693da5b54a",
-      "title": "HALLMARK: Diagnosing Three Failure Modes in LLM Citation Verifiers",
-      "url": "https://arxiv.org/abs/2607.18360v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-07-20T13:21:27Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": true,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "d1a6d3503ae56db2",
-      "title": "Refusal is Not Safety! Benchmarking Latent Safety Risks of LLM-Driven Content Humorization",
-      "url": "https://arxiv.org/abs/2607.15977v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-07-17T14:09:01Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "prompt_injection",
-          "label": "Prompt Injection"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM01",
-          "name": "Prompt Injection"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0051",
-          "name": "LLM Prompt Injection"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": true,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
-        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "fd95b46fde70fafc",
-      "title": "CPInj: Uncovering Prompt Injection Risks in Textual Collaborative Prompt Optimization",
-      "url": "https://arxiv.org/abs/2607.18622v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-07-21T01:44:59Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "prompt_injection",
-          "label": "Prompt Injection"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM01",
-          "name": "Prompt Injection"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0051",
-          "name": "LLM Prompt Injection"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "standard"
-      },
-      "enterprise_impact": {
-        "score": 10,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
-        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "2d1776ee6c444d3c",
-      "title": "JailMeter: An Evidence-Based Evaluation Framework for Jailbreak Attacks on Large Language Models",
-      "url": "https://arxiv.org/abs/2607.19424v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-07-20T12:38:49Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "prompt_injection",
-          "label": "Prompt Injection"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM01",
-          "name": "Prompt Injection"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0051",
-          "name": "LLM Prompt Injection"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "standard"
-      },
-      "enterprise_impact": {
-        "score": 10,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
-        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "d7ef72d44e305649",
-      "title": "How Jailbreak Attacks Inform Safety Alignment: A Defender-Centric, Shapley-Based Evaluation of Jailbreak Contributions",
-      "url": "https://arxiv.org/abs/2607.17152v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-07-19T09:18:35Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "prompt_injection",
-          "label": "Prompt Injection"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM01",
-          "name": "Prompt Injection"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0051",
-          "name": "LLM Prompt Injection"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "standard"
-      },
-      "enterprise_impact": {
-        "score": 10,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
-        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "0df52d3494e8d56c",
-      "title": "How Do You Choose Your AI Component? An Interview Study of Secure AI Integration in Practice",
-      "url": "https://arxiv.org/abs/2607.16660v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-07-18T06:30:12Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "sensitive_disclosure",
-          "label": "Sensitive Information Disclosure"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0057",
-          "name": "LLM Data Leakage"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "standard"
-      },
-      "enterprise_impact": {
-        "score": 0,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "DLP on LLM responses for secrets/PII patterns; alert on repeated boundary-probing queries.",
-        "hunt": "Look for membership-inference / extraction query cadences against model or embedding APIs."
       },
       "has_analyst_report": false
     }
