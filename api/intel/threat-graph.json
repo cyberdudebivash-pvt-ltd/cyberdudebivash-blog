@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-25T10:08:56.466Z",
+  "generated": "2026-07-25T10:31:34.516Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 8450,
+    "total_nodes": 8451,
     "actors": 8,
     "cves": 2281,
     "campaigns": 845,
     "malware": 0,
     "iocs": 836,
-    "edges": 3198
+    "edges": 3199
   },
   "nodes": {
     "actor:lockbit": {
@@ -44594,7 +44594,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-07-19"
+        "first_seen": "2026-07-25"
       },
       "connections": []
     },
@@ -161518,6 +161518,30 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-6d56434c72e67901": {
+      "id": "REDDIT_NETSEC-6d56434c72e67901",
+      "type": "Intel",
+      "name": "A featured Chrome extension \"Planet Search\" (2M installs) routes every query to the nextgeeker[.]com hijacker network",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 40,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-25",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:malext.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -190338,6 +190362,15 @@
       "target": "THEHACKERNEWS-43eae0afa2e64013",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-25",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-6d56434c72e67901→linked_to→ioc:domain:malext.io",
+      "source": "REDDIT_NETSEC-6d56434c72e67901",
+      "target": "ioc:domain:malext.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-25",
       "sources": []
     }
