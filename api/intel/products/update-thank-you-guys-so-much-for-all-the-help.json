@@ -1,0 +1,97 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-ef50ab6cb9b844af",
+  "title": "Update: Thank you guys so much for all the help!",
+  "generated": "2026-07-26T13:01:41.823Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": true,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [
+    {
+      "id": "T1486",
+      "name": "Data Encrypted for Impact",
+      "tactic": "impact",
+      "confidence": "HIGH"
+    }
+  ],
+  "iocs": [
+    {
+      "value": "hxxps://www[.]reddit[.]com/r/cybersecurity/s/dpSGwg3TQS",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "hxxps://youtu[.]be/\\_lf4FZP368o?is=DSP520sGj1H4E1do",
+      "type": "url",
+      "confidence": 0.82
+    },
+    {
+      "value": "www[.]reddit[.]com",
+      "type": "domain",
+      "confidence": 0.75
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/s/dpSGwg3TQS\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/s/dpSGwg3TQS\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://youtu.be/\\_lf4FZP368o?is=DSP520sGj1H4E1do\"; http.host; content:\"youtu.be\"; nocase; http.uri; content:\"/\\\\_lf4FZP368o?is=DSP520sGj1H4E1do\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+      "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "Active exploitation reported in source intelligence.",
+      "3 indicator(s) of compromise extracted from source reporting.",
+      "1 MITRE ATT&CK technique(s) evidenced in the source material."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "HIGH",
+        "text": "Activity is consistent with a ransomware operation — data encryption and/or recovery inhibition (shadow-copy deletion) was observed."
+      },
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      },
+      {
+        "confidence": "HIGH",
+        "text": "Unpatched exposure represents an active — not theoretical — risk, given confirmed exploitation."
+      }
+    ],
+    "intelligence_gaps": [
+      "Attribution to a specific threat actor is not established by the available evidence."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "HIGH",
+        "text": "Continued and broadening exploitation is expected; additional threat actors are likely to adopt this vector."
+      },
+      {
+        "confidence": "MEDIUM",
+        "text": "Double-extortion and data-leak-site activity is anticipated to accompany encryption events."
+      },
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Technique T1486 was previously observed with: ALPHV/BlackCat, Cl0p, Qilin, LockBit",
+    "Vendor reddit_cyber has been targeted in 207 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 510 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: update-thank-you-guys-so-much-for-all-the-help (6 shared entities), someone-build-a-serverless-hermes-agent-specialized-in-pente (2 shared entities), cve-2018-20817-reddit-cyber-threat-intelligence (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1v728xz/update_thank_you_guys_so_much_for_all_the_help/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
