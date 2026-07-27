@@ -1,3 +1,8 @@
+> ⚠ **Superseded** — see `prompts/README.md`. Canonical equivalent:
+> `Sentinel-APEX/prompts/report-prompt.md` with `audience_priority: executive`
+> (see `Sentinel-APEX/prompts/master-prompt.md`'s Report Type Taxonomy table
+> for the cadence-report row).
+
 # REPORT TYPE — MONTHLY THREAT LANDSCAPE
 
 **Version:** 1.0 · **Layer 3** · Inherits Constitution + Production Workflow

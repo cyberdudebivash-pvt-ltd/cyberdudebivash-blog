@@ -1,3 +1,11 @@
+> ⚠ **Superseded** — see `prompts/README.md` and
+> `Sentinel-APEX/eios/layer-04-quality-gates.md` /
+> `Sentinel-APEX/eios/layer-10-commercial-readiness.md`. This file's
+> "Automated failure detectors" (hype language, unsupported numeric claims)
+> were genuinely new and have been implemented as an executable gate in
+> `Sentinel-APEX/engine/sentinel_engine/quality.py` — the rest of this
+> checklist is covered by `Sentinel-APEX/quality/quality-gate.md`.
+
 # SENTINEL APEX™ — EDITORIAL QA & PUBLICATION GATE
 
 **Version:** 1.0

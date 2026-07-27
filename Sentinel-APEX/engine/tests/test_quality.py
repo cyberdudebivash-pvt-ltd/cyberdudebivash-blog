@@ -232,3 +232,47 @@ def test_corpus_gate_ioc_reuse_is_a_warning_not_a_block():
     result = gate_corpus({"report-a.txt": a, "report-b.txt": a})
     reuse = [f for f in result.findings if f.gate == "corpus-ioc-reuse"]
     assert reuse and all(f.severity == "warn" for f in reuse)
+
+
+# --------------------------------------------------------------------------
+# EIOS v2 addition (absorbed from deprecated root prompts/20-editorial-qa.md)
+# --------------------------------------------------------------------------
+
+def test_gate_hype_language_flags_superlatives():
+    bad = MINIMAL_GOOD.replace(
+        "Actors exploited a flaw.", "Actors exploited a flaw in an unprecedented attack.",
+    )
+    result = gate_report(parse_report(bad))
+    assert any(f.gate == "hype-language" for f in result.findings)
+
+
+def test_gate_hype_language_clean_report_has_no_findings():
+    result = gate_report(parse_report(MINIMAL_GOOD))
+    assert not any(f.gate == "hype-language" for f in result.findings)
+
+
+def test_gate_hype_language_flags_uncited_active_exploitation():
+    bad = MINIMAL_GOOD.replace(
+        "Confirmed by vendor advisory.",
+        "Confirmed by vendor advisory. This flaw is actively exploited.",
+    )
+    result = gate_report(parse_report(bad))
+    assert any(f.gate == "hype-language" for f in result.findings)
+
+
+def test_gate_hype_language_allows_active_exploitation_with_kev_citation():
+    bad = MINIMAL_GOOD.replace(
+        "Confirmed by vendor advisory.",
+        "Confirmed by vendor advisory. This flaw is actively exploited per CISA KEV.",
+    )
+    result = gate_report(parse_report(bad))
+    assert not any(f.gate == "hype-language" for f in result.findings)
+
+
+def test_gate_hype_language_is_a_warning_not_a_block():
+    bad = MINIMAL_GOOD.replace(
+        "Actors exploited a flaw.", "Actors exploited a flaw in a catastrophic attack.",
+    )
+    result = gate_report(parse_report(bad))
+    hype = [f for f in result.findings if f.gate == "hype-language"]
+    assert hype and all(f.severity == "warn" for f in hype)

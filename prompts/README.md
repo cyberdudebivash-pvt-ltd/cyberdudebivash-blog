@@ -1,5 +1,32 @@
 # SENTINEL APEX™ — Intelligence Prompt Architecture
 
+> ## ⚠ SUPERSEDED — canonical system is now `Sentinel-APEX/prompts/` + `Sentinel-APEX/eios/`
+>
+> This directory and `Sentinel-APEX/prompts/` were added in the same commit
+> (`9e78e93`) as two independent, redundant prompt architectures — neither
+> aware of the other. Both existed unwired to any live code path. Consolidated
+> onto one canonical system per the repository's Single Source of Truth
+> principle (`CLAUDE.md`): **`Sentinel-APEX/prompts/` (drafting instructions)
+> + `Sentinel-APEX/eios/` (governance) is now the only system to load or
+> extend.**
+>
+> **Correction to this file's own claim below:** "The optional LLM analyst
+> stage (`ai-security-intel.yml`) is where these prompts are loaded directly"
+> is **not accurate** — verified by grep, `ai-security-intel-engine.js` loads
+> `Sentinel-APEX/prompts/ai-security-master-prompt.md`, not any file in this
+> directory. Nothing in this repository has ever loaded `00-constitution.md`,
+> `10-production-workflow.md`, `20-editorial-qa.md`, `reports/*.md`, or
+> `industry/industry-intelligence.md` at runtime. Kept for reference, not
+> deleted, per the Deprecation Instead of Deletion policy — do not write new
+> reports against it and do not extend it. See
+> `Sentinel-APEX/eios/README.md` for the current system, and
+> `Sentinel-APEX/eios/layer-04-quality-gates.md`'s hype-language gate for the
+> one genuinely new idea this directory had (`20-editorial-qa.md`'s
+> "Automated failure detectors") that has been absorbed into the canonical
+> engine.
+
+---
+
 A **layered, versioned** prompt system for producing premium enterprise threat
 intelligence. This replaces the idea of one monolithic prompt with composable
 layers, so every report inherits the same standards while each intelligence

@@ -1,3 +1,7 @@
+> ⚠ **Superseded** — see `prompts/README.md`. Canonical equivalent:
+> `Sentinel-APEX/prompts/malware-prompt.md` (explicitly covers ransomware
+> strains).
+
 # REPORT TYPE — RANSOMWARE INTELLIGENCE
 
 **Version:** 1.0 · **Layer 3** · Inherits Constitution + Production Workflow

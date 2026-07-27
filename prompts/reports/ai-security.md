@@ -1,3 +1,6 @@
+> ⚠ **Superseded** — see `prompts/README.md`. Canonical equivalent:
+> `Sentinel-APEX/prompts/ai-security-master-prompt.md`.
+
 # REPORT TYPE — AI / LLM SECURITY INTELLIGENCE
 
 **Version:** 1.0 · **Layer 3** · Inherits Constitution + Production Workflow

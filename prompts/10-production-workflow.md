@@ -1,3 +1,9 @@
+> ⚠ **Superseded** — see `prompts/README.md` and
+> `Sentinel-APEX/eios/layer-02-intelligence-governance.md` /
+> `Sentinel-APEX/pipeline/WORKFLOW.md`. The prioritization rubric below is
+> preserved here for reference; `Sentinel-APEX/prompts/cve-prompt.md` covers
+> the same CVSS+EPSS+KEV+exposure model in the canonical system.
+
 # SENTINEL APEX™ — PRODUCTION WORKFLOW
 
 **Version:** 1.0

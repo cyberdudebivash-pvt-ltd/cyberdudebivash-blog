@@ -1,3 +1,6 @@
+> ⚠ **Superseded** — see `prompts/README.md`. Canonical equivalent:
+> `Sentinel-APEX/templates/executive/executive-brief.md` (EIOS Layer 5).
+
 # REPORT TYPE — EXECUTIVE BRIEFING
 
 **Version:** 1.0 · **Layer 3** · Inherits Constitution + Production Workflow

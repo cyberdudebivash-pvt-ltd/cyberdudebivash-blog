@@ -1,3 +1,11 @@
+> ⚠ **Superseded** — see `prompts/README.md`. Unlike the other files in this
+> directory, this one has **no canonical equivalent yet** — Sentinel-APEX has
+> no sector/industry-overlay concept today (only free-text "Affected
+> Industries" in the report structure). Marked superseded for consistency,
+> not because a replacement exists; if a real industry-overlay need arises,
+> port this file's content into a new `Sentinel-APEX/prompts/` layer rather
+> than reactivating this one.
+
 # INDUSTRY INTELLIGENCE OVERLAY
 
 **Version:** 1.0 · **Layer 4 (optional)** · Applied *on top of* any Report-Type

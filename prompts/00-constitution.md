@@ -1,3 +1,8 @@
+> ⚠ **Superseded** — see `prompts/README.md` and
+> `Sentinel-APEX/eios/layer-01-executive-mission.md` /
+> `layer-07-confidence-model.md`. Kept for reference; do not use this file's
+> six-dimension confidence model for new reports.
+
 # SENTINEL APEX™ — ENTERPRISE INTELLIGENCE CONSTITUTION
 
 **Version:** 1.0

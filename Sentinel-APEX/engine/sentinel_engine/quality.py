@@ -40,6 +40,21 @@ DETECTION_SECTION_FRAGMENTS = (
     "Chronicle", "Cortex XDR", "Defender XDR", "Detection Opportunities",
 )
 
+# Absorbed from the deprecated root prompts/20-editorial-qa.md "Automated
+# failure detectors" — hype language and unsubstantiated absolute-exploitation
+# claims are analytical defects (they mislead a reader into overestimating
+# severity), not style preferences. See _gate_hype_language.
+HYPE_WORDS = (
+    "unprecedented", "catastrophic", "devastating", "the worst ever",
+    "the biggest ever", "never seen before", "game-changing", "game changer",
+    "apocalyptic", "doomsday", "nightmare scenario",
+)
+_RE_ABSOLUTE_EXPLOITATION = re.compile(
+    r"\b(actively exploited|exploited in the wild|widespread exploitation)\b",
+    re.IGNORECASE,
+)
+_RE_KEV_OR_CITATION = re.compile(r"\bKEV\b|\bCISA\b|https?://|\[\d+\]", re.IGNORECASE)
+
 _RE_CONFIDENCE = re.compile(r"\((LOW|MEDIUM|HIGH)\s+CONFIDENCE\)")
 _RE_ASSESSMENT = re.compile(
     r"\b(assess(?:ed|ment)?|likely|estimated|probably|we believe|suggests)\b",
@@ -63,6 +78,7 @@ def gate_report(report: ParsedReport) -> GateResult:
     findings += _gate_empty_detection(report)
     findings += _gate_confidence(report)
     findings += _gate_content_integrity(report)
+    findings += _gate_hype_language(report)
     return GateResult(findings=findings)
 
 
@@ -316,6 +332,35 @@ def _gate_stix(report: ParsedReport) -> list[GateFinding]:
                         "stix", "block",
                         f"STIX bundle objects[{i}] missing required field: {required}",
                     ))
+    return findings
+
+
+def _gate_hype_language(report: ParsedReport) -> list[GateFinding]:
+    """Flag superlative/hype language and unsubstantiated absolute-exploitation
+    claims. Both are heuristic text-pattern checks — capable of a false
+    positive (e.g. a report quoting a vendor's own hyperbolic language for
+    critique), so both are 'warn', prompting review rather than blocking."""
+    findings = []
+    body = "\n".join(report.sections.values())
+    lower = body.lower()
+    for word in HYPE_WORDS:
+        if word in lower:
+            findings.append(GateFinding(
+                "hype-language", "warn",
+                f"unsupported superlative language: {word!r} — attribute it to "
+                "a quoted source or remove it",
+            ))
+
+    for section_name in ("Verified Facts", "Technical Analysis"):
+        section = report.section(section_name)
+        if section and _RE_ABSOLUTE_EXPLOITATION.search(section) \
+                and not _RE_KEV_OR_CITATION.search(section):
+            findings.append(GateFinding(
+                "hype-language", "warn",
+                f"'{section_name}' asserts active/in-the-wild exploitation with "
+                "no CISA KEV listing or citation in the same section — cite a "
+                "source or soften to the honest exploitation status",
+            ))
     return findings
 
 
