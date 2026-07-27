@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-27T13:01:40.508Z",
+  "generated": "2026-07-27T13:31:27.184Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 181,
+  "count": 177,
   "items": [
     {
       "id": "SENTINELAPEX-5b1b1014512a",
@@ -41,6 +41,51 @@
           "data_confidence=0.90",
           "recency=0d (score=1.00)",
           "QS=0.563"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SECURITYWEEK-d3f5aa813adae10c",
+      "title": "PTC Windchill Vulnerability Exploited in Ransomware Campaign",
+      "description": "The critical unsafe deserialization flaw allows attackers to execute arbitrary code remotely, without authentication. The post PTC Windchill Vulnerability Exploited in Ransomware Campaign appeared first on SecurityWeek .",
+      "cvss": 6.5,
+      "final_ps": 82,
+      "quality_score": 0.505,
+      "threat_level": "HIGH",
+      "type": "RANSOMWARE",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/ptc-windchill-vulnerability-exploited-in-ransomware-campaign/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.505"
         ],
         "priority": [
           "+10 ransomware_confirmed",
@@ -1226,6 +1271,52 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-27577",
+      "title": "n8n Sandbox Escape Lets Workflow Editors Run OS Commands as the n8n Process",
+      "description": "n8n has patched a high-severity expression-sandbox escape that could let an authenticated workflow editor execute operating-system commands on the server running the automation platform. Security Joes found the flaw while probing n8n's February fix for CVE-2026-27577 for another bypass. The affected",
+      "cvss": 8,
+      "final_ps": 46,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "thehackernews",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "thehackernews"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "The Hacker News",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-27577"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://thehackernews.com/2026/07/n8n-sandbox-escape-lets-workflow.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=46 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "SENTINELAPEX-22bdb914fd8f",
       "title": "PyPI Blocks New File Uploads on 14-Day-Old Releases to Prevent Package Poisoning Attacks",
       "description": "PyPI has introduced a new security measure that prevents users from uploading new files to package releases that are more than 14 days old. This change aims to stop attackers from adding malicious files to trusted Python package versions after compromising a maintainer&#8217;s pu... [Full analysis a",
@@ -1862,94 +1953,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-16756",
-      "title": "Smithy-RS: Allocation of resources without limits in the default aws-smithy-http-server serve() path allows unauthentica",
-      "description": "## Summary\nSmithy-RS is a Rust code generation and runtime framework that generates HTTP clients and servers from Smithy interface definitions, powering the AWS SDK for Rust and custom service implementations. An issue exists where, under certain circumstances, allocation of reso... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 43,
-      "quality_score": 0.498,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16756"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=2d (score=0.65)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=43 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-16796",
-      "title": "AWS Bedrock AgentCore: Improper neutralization of argument delimiters in the Python SDK install_packages()",
-      "description": "### Summary\n\nThe AWS Bedrock AgentCore Python SDK (bedrock-agentcore) provides tools for building AI agents, including a Code Interpreter client that installs Python packages into a managed sandbox. An issue exists where, under certain circumstances, improper neutralization of ar... [Full analysis a",
-      "cvss": 7.3,
-      "final_ps": 43,
-      "quality_score": 0.498,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16796"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.90",
-          "recency=2d (score=0.65)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=43 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
       "id": "SENTINELAPEX-1288117ee302",
       "title": "Quasar: Prototype pollution in the extend() utility",
       "description": "### Summary\n\n`quasar@2.20.1`, the latest published version at the time of testing, appears to be vulnerable to prototype pollution through the public `extend()` utility exported from the package root.\n\nWhen `extend(true, target, source)` is used for a deep merge, attacker-control... [Full analysis a",
@@ -2120,50 +2123,6 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "SECURITYWEEK-dd2dfdfcdc500dff",
-      "title": "MedusaHVNC Malware Uses Hidden Windows Desktops to Evade Detection",
-      "description": "The malware-as-a-service operation launches legitimate browsers on an invisible desktop, giving attackers persistent and covert remote access to compromised Windows systems. The post MedusaHVNC Malware Uses Hidden Windows Desktops to Evade Detection appeared first on SecurityWeek .",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.445,
-      "threat_level": "LOW",
-      "type": "MALWARE_REPORT",
-      "source": "securityweek",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "securityweek"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "SecurityWeek",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.securityweek.com/medusahvnc-malware-uses-hidden-windows-desktops-to-evade-detection/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.70 (securityweek)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.445"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -5985,138 +5944,6 @@
       "iocs": []
     },
     {
-      "id": "REDDIT_CYBER-beb688f6b9e133a6",
-      "title": "I’m stuck between options",
-      "description": "Hello, I’ve been in cybersecurity for a few months and while trying different Linux distros on a VM from Kali to Arch to even Parrot OS I find myself stuck on a option I’m hoping some people can give insight on I have a 64 GB USB drive I have laying around and I’m looking into different options of L",
-      "cvss": 6.5,
-      "final_ps": 38,
-      "quality_score": 0.375,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1v7wkap/im_stuck_between_options/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.375"
-        ],
-        "priority": [
-          "base_ps=38 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "REDDIT_CYBER-3ae9839daf4c2e00",
-      "title": "I Have CPTS, BSCP and CWES. Is CWEE Worth It Too?",
-      "description": "I currently hold the CPTS, BSCP and CWES certifications. Do you think it’s worth pursuing CWEE as well? I’m honestly worried about spending more money on a certification that may not be as widely recognised, especially since it’s even more expensive. Will CWEE add anything meaningful to my resume or",
-      "cvss": 6.5,
-      "final_ps": 38,
-      "quality_score": 0.375,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1v7zpld/i_have_cpts_bscp_and_cwes_is_cwee_worth_it_too/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.375"
-        ],
-        "priority": [
-          "base_ps=38 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "REDDIT_CYBER-5ac7e8cec1077006",
-      "title": "path to proficiency",
-      "description": "Hello All, I'm currently trying to decide which path is best to build solid hands-on and practical knowledge I've been using tryhackme and hackthebox - I'm already in tech with 6 years of experience not cyber. I'm considering switching to Cyberdefender but would like advise on the best platform to l",
-      "cvss": 6.5,
-      "final_ps": 38,
-      "quality_score": 0.375,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1v7zo45/path_to_proficiency/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.375"
-        ],
-        "priority": [
-          "base_ps=38 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-16723",
       "title": "Fastjson 1.x RCE Vulnerability Targeted in Attacks With No Patched Available",
       "description": "",
@@ -7799,21 +7626,21 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-64535",
-      "title": "CVE-2026-64535 - nvmet-tcp: Fix potential UAF when ddgst mismatch",
+      "id": "CVE-2026-16756",
+      "title": "Smithy-RS: Allocation of resources without limits in the default aws-smithy-http-server serve() path allows unauthentica",
       "description": "",
-      "cvss": 5.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
+      "cvss": 7.5,
+      "final_ps": 19,
+      "quality_score": 0.478,
       "threat_level": "LOW",
-      "type": "CVE_REPORT",
+      "type": "NEWS_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -7821,19 +7648,19 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-64535"
+        "CVE-2026-16756"
       ],
       "ioc_count": 0,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
+          "data_confidence=0.65",
           "recency=0d (score=1.00)",
-          "QS=0.438"
+          "QS=0.478"
         ],
         "priority": [
-          "base_ps=18 (no boosts)"
+          "base_ps=19 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -7843,21 +7670,21 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-64536",
-      "title": "CVE-2026-64536 - staging: rtl8723bs: fix OOB reads in is_ap_in_tkip() IE loop",
+      "id": "CVE-2026-16796",
+      "title": "AWS Bedrock AgentCore: Improper neutralization of argument delimiters in the Python SDK install_packages()",
       "description": "",
-      "cvss": 5.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
+      "cvss": 7.3,
+      "final_ps": 19,
+      "quality_score": 0.478,
       "threat_level": "LOW",
-      "type": "CVE_REPORT",
+      "type": "NEWS_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -7865,63 +7692,19 @@
       "product": "Unknown Product",
       "due_date": null,
       "cves": [
-        "CVE-2026-64536"
+        "CVE-2026-16796"
       ],
       "ioc_count": 0,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
+          "data_confidence=0.65",
           "recency=0d (score=1.00)",
-          "QS=0.438"
+          "QS=0.478"
         ],
         "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-64534",
-      "title": "CVE-2026-64534 - nvmet-tcp: check INIT_FAILED before nvmet_req_uninit in digest error path",
-      "description": "",
-      "cvss": 5.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-64534"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
+          "base_ps=19 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -7998,6 +7781,50 @@
       "due_date": null,
       "cves": [
         "CVE-2026-64533"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-64535",
+      "title": "CVE-2026-64535 - nvmet-tcp: Fix potential UAF when ddgst mismatch",
+      "description": "",
+      "cvss": 5.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Unknown Vendor",
+      "product": "Unknown Product",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64535"
       ],
       "ioc_count": 0,
       "refs": [],

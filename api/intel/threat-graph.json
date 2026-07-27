@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-27T13:01:40.446Z",
+  "generated": "2026-07-27T13:31:27.110Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9048,
+    "total_nodes": 9051,
     "actors": 8,
-    "cves": 2478,
-    "campaigns": 910,
+    "cves": 2479,
+    "campaigns": 911,
     "malware": 0,
     "iocs": 849,
-    "edges": 3316
+    "edges": 3317
   },
   "nodes": {
     "actor:lockbit": {
@@ -172603,6 +172603,62 @@
           "confidence": 1
         }
       ]
+    },
+    "SECURITYWEEK-d3f5aa813adae10c": {
+      "id": "SECURITYWEEK-d3f5aa813adae10c",
+      "type": "Intel",
+      "name": "PTC Windchill Vulnerability Exploited in Ransomware Campaign",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 73,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-27",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "CVE-2026-27577": {
+      "id": "CVE-2026-27577",
+      "type": "CVE",
+      "name": "n8n Sandbox Escape Lets Workflow Editors Run OS Commands as the n8n Process",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-07-27",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-2df50e88": {
+      "id": "campaign:cluster-2df50e88",
+      "type": "Campaign",
+      "name": "Multi-Vector Ransomware Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-27",
+        "last_seen": "2026-07-27",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-d3f5aa813adae10c",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -202483,6 +202539,15 @@
       "id": "campaign:cve-2026-65894→includes→CVE-2026-65894",
       "source": "campaign:cve-2026-65894",
       "target": "CVE-2026-65894",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-27",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-2df50e88→includes→SECURITYWEEK-d3f5aa813adae10c",
+      "source": "campaign:cluster-2df50e88",
+      "target": "SECURITYWEEK-d3f5aa813adae10c",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-27",
