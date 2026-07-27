@@ -2358,13 +2358,18 @@ function generatePostHTML(item) {
 <meta property="og:url" content="${CFG.baseUrl}/posts/${escHtml(slug)}.html">
 <meta property="og:description" content="${escHtml(metaDesc)}">
 <meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
+<meta property="og:locale" content="en_US">
 <meta property="og:image" content="${CFG.baseUrl}/og-image.png">
+<meta property="og:image:secure_url" content="${CFG.baseUrl}/og-image.png">
+<meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${escHtml(metaTitle)}">
 <meta property="article:published_time" content="${today}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escHtml(metaTitle)}">
 <meta name="twitter:description" content="${escHtml(metaDesc)}">
 <meta name="twitter:image" content="${CFG.baseUrl}/og-image.png">
+<meta name="twitter:image:alt" content="${escHtml(metaTitle)}">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
