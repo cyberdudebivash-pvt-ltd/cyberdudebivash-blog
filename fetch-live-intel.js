@@ -2302,6 +2302,14 @@ function generatePostHTML(item) {
   // Control chars in titles break JSON-LD parsing (raw newlines are illegal in JSON strings)
   const safeTitle = String(item.title||'').replace(/[\u0000-\u001F\u007F]/g,' ').replace(/\s+/g,' ').trim();
   const metaTitle = `${safeTitle} | CYBERDUDEBIVASH SENTINEL APEX`;
+  // Per-post branded social card (severity badge, CVE ID, CVSS, headline) —
+  // api/og.js validates/sanitizes every param server-side (regex-checks cve,
+  // range-checks cvss, strips emoji/control chars from title/type), so raw
+  // values are passed through untouched here rather than re-validated. Used
+  // escHtml()-wrapped in HTML attributes below, but raw in the JSON-LD block
+  // — script-tag content isn't HTML-entity-decoded, so escHtml would corrupt
+  // the query string's "&" separators into literal "&amp;" text there.
+  const ogImageUrl = `${CFG.baseUrl}/api/og?title=${encodeURIComponent(safeTitle)}&severity=${encodeURIComponent(sevLabel)}&cve=${encodeURIComponent(item.id||'')}&cvss=${encodeURIComponent(cvss)}&type=${encodeURIComponent(typeLabel)}`;
   const isCVEItem = /^CVE-/i.test(item.id);
   const cleanDescText = stripHtml(item.desc||'')
     .replace(/```[\s\S]*?```/g,' ')
@@ -2359,8 +2367,8 @@ function generatePostHTML(item) {
 <meta property="og:description" content="${escHtml(metaDesc)}">
 <meta property="og:site_name" content="CYBERDUDEBIVASH SENTINEL APEX">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="${CFG.baseUrl}/og-image.png">
-<meta property="og:image:secure_url" content="${CFG.baseUrl}/og-image.png">
+<meta property="og:image" content="${escHtml(ogImageUrl)}">
+<meta property="og:image:secure_url" content="${escHtml(ogImageUrl)}">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="${escHtml(metaTitle)}">
@@ -2368,7 +2376,7 @@ function generatePostHTML(item) {
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escHtml(metaTitle)}">
 <meta name="twitter:description" content="${escHtml(metaDesc)}">
-<meta name="twitter:image" content="${CFG.baseUrl}/og-image.png">
+<meta name="twitter:image" content="${escHtml(ogImageUrl)}">
 <meta name="twitter:image:alt" content="${escHtml(metaTitle)}">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -2379,7 +2387,7 @@ function generatePostHTML(item) {
 <link rel="canonical" href="${CFG.baseUrl}/posts/${escHtml(slug)}.html">
 <link rel="alternate" type="application/rss+xml" title="CYBERDUDEBIVASH SENTINEL APEX" href="${CFG.baseUrl}/rss.xml">
 <title>${escHtml(metaTitle)}</title>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"${escHtml(safeTitle)}","description":"${escHtml(metaDesc)}","image":"${CFG.baseUrl}/og-image.png","datePublished":"${today}","dateModified":"${today}","author":{"@type":"Organization","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"${CFG.baseUrl}"},"publisher":{"@type":"Organization","name":"CYBERDUDEBIVASH"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"${escHtml(safeTitle)}","description":"${escHtml(metaDesc)}","image":"${ogImageUrl}","datePublished":"${today}","dateModified":"${today}","author":{"@type":"Organization","name":"CYBERDUDEBIVASH SENTINEL APEX","url":"${CFG.baseUrl}"},"publisher":{"@type":"Organization","name":"CYBERDUDEBIVASH"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"CYBERDUDEBIVASH SENTINEL APEX","item":"${CFG.baseUrl}/"},{"@type":"ListItem","position":2,"name":"Intelligence Reports","item":"${CFG.baseUrl}/"},{"@type":"ListItem","position":3,"name":"${escHtml(safeTitle.slice(0,120))}","item":"${CFG.baseUrl}/posts/${slug}.html"}]}</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
