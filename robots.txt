@@ -19,21 +19,58 @@ Disallow: /check-index-ga4.html
 Disallow: /admin-dashboard.html
 Disallow: /admin-payments.html
 
+# Block internal governance/strategy documentation from all crawlers
+# (not customer-facing; excluded from deployment itself via .vercelignore,
+# this is defense-in-depth for any cached/CDN copy or crawler that ignores
+# deployment-level access controls)
+User-agent: *
+Disallow: /CLAUDE.md
+Disallow: /Sentinel-APEX/
+Disallow: /eito/
+Disallow: /platform/
+Disallow: /prompts/
+Disallow: /BUSINESS-TRANSFORMATION-ROADMAP-2026.md
+Disallow: /AUDIT-REPORT-2026-05-28.md
+Disallow: /OPERATIONS.md
+
 # Allow major search engines full access
 User-agent: Googlebot
 Allow: /
 Disallow: /check-index-ga4.html
 Disallow: /admin-dashboard.html
 Disallow: /admin-payments.html
+Disallow: /CLAUDE.md
+Disallow: /Sentinel-APEX/
+Disallow: /eito/
+Disallow: /platform/
+Disallow: /prompts/
+Disallow: /BUSINESS-TRANSFORMATION-ROADMAP-2026.md
+Disallow: /AUDIT-REPORT-2026-05-28.md
+Disallow: /OPERATIONS.md
 
 User-agent: Bingbot
 Allow: /
+Disallow: /CLAUDE.md
+Disallow: /Sentinel-APEX/
+Disallow: /eito/
+Disallow: /platform/
+Disallow: /prompts/
 
 User-agent: DuckDuckBot
 Allow: /
+Disallow: /CLAUDE.md
+Disallow: /Sentinel-APEX/
+Disallow: /eito/
+Disallow: /platform/
+Disallow: /prompts/
 
 User-agent: Slurp
 Allow: /
+Disallow: /CLAUDE.md
+Disallow: /Sentinel-APEX/
+Disallow: /eito/
+Disallow: /platform/
+Disallow: /prompts/
 
 # Block AI training scrapers (protect proprietary threat intel)
 User-agent: GPTBot
