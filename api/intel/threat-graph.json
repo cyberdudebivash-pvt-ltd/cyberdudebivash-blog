@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-27T17:31:28.710Z",
+  "generated": "2026-07-27T18:01:42.135Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9079,
+    "total_nodes": 9087,
     "actors": 8,
-    "cves": 2486,
-    "campaigns": 913,
+    "cves": 2487,
+    "campaigns": 914,
     "malware": 0,
-    "iocs": 849,
-    "edges": 3322
+    "iocs": 850,
+    "edges": 3326
   },
   "nodes": {
     "actor:lockbit": {
@@ -1191,6 +1191,16 @@
         },
         {
           "target": "SENTINELAPEX-0e1f0a92430c",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "SENTINELAPEX-bc63989790dd",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "SENTINELAPEX-1e4b6e50e6c8",
           "relationship": "exploits",
           "confidence": 0.85
         }
@@ -173183,6 +173193,151 @@
         "type": "MALWARE_REPORT"
       },
       "connections": []
+    },
+    "DARKREADING-eb9b373b7100467b": {
+      "id": "DARKREADING-eb9b373b7100467b",
+      "type": "Intel",
+      "name": "Adversaries Don't Need a Zero-Day — They Read Your Rulebook",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-07-27",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-6272bb9a492f": {
+      "id": "SENTINELAPEX-6272bb9a492f",
+      "type": "Intel",
+      "name": "Coca-Cola confirms data theft in Fairlife ransomware attack",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 59,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-27",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-71801bf60f25": {
+      "id": "SENTINELAPEX-71801bf60f25",
+      "type": "Intel",
+      "name": "27th July  Threat Intelligence Report",
+      "attributes": {
+        "cvss": 9.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 51,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-27",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-bc63989790dd": {
+      "id": "SENTINELAPEX-bc63989790dd",
+      "type": "Intel",
+      "name": "Sextortion scammers are exploiting ShinyHunters data leaks",
+      "attributes": {
+        "cvss": 3.2,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-27",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-1e4b6e50e6c8": {
+      "id": "SENTINELAPEX-1e4b6e50e6c8",
+      "type": "Intel",
+      "name": "Ernst & Young data breach claimed by ShinyHunters extortion gang",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-27",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "CVE-2023-37465": {
+      "id": "CVE-2023-37465",
+      "type": "CVE",
+      "name": "org.xwiki.contrib:discussions-server has Cross-Site Request Forgery (CSRF) issue that makes it possible to delete messages",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 40,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "Unknown Vendor",
+        "product": "Unknown Product",
+        "published": "2026-07-27",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:jira.xwiki.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:jira.xwiki.org": {
+      "id": "ioc:domain:jira.xwiki.org",
+      "type": "IOC",
+      "name": "jira.xwiki.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-27"
+      },
+      "connections": []
+    },
+    "campaign:cluster-159e68ee": {
+      "id": "campaign:cluster-159e68ee",
+      "type": "Campaign",
+      "name": "darkreading Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-27",
+        "last_seen": "2026-07-27",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "DARKREADING-eb9b373b7100467b",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -203119,6 +203274,42 @@
       "target": "ioc:domain:malext.io",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-27",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→SENTINELAPEX-bc63989790dd",
+      "source": "actor:shinyhunters",
+      "target": "SENTINELAPEX-bc63989790dd",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-07-27",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→SENTINELAPEX-1e4b6e50e6c8",
+      "source": "actor:shinyhunters",
+      "target": "SENTINELAPEX-1e4b6e50e6c8",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-07-27",
+      "sources": []
+    },
+    {
+      "id": "CVE-2023-37465→linked_to→ioc:domain:jira.xwiki.org",
+      "source": "CVE-2023-37465",
+      "target": "ioc:domain:jira.xwiki.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-27",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-159e68ee→includes→DARKREADING-eb9b373b7100467b",
+      "source": "campaign:cluster-159e68ee",
+      "target": "DARKREADING-eb9b373b7100467b",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-27",
       "sources": []
     }
