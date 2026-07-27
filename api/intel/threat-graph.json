@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-27T16:31:27.928Z",
+  "generated": "2026-07-27T17:02:08.437Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9076,
+    "total_nodes": 9077,
     "actors": 8,
     "cves": 2486,
     "campaigns": 913,
     "malware": 0,
     "iocs": 849,
-    "edges": 3321
+    "edges": 3322
   },
   "nodes": {
     "actor:lockbit": {
@@ -44754,7 +44754,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-07-25"
+        "first_seen": "2026-07-27"
       },
       "connections": []
     },
@@ -173123,6 +173123,30 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_NETSEC-ed050f761a0e70ca": {
+      "id": "REDDIT_NETSEC-ed050f761a0e70ca",
+      "type": "Intel",
+      "name": "BrainDrain: A Chrome extension that collects your AI prompts without you ever opening it and has 100k users, 9 AI platforms",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 40,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-27",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:malext.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
     }
   },
   "edges": [
@@ -203050,6 +203074,15 @@
       "target": "CVE-2026-65008",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-27",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-ed050f761a0e70ca→linked_to→ioc:domain:malext.io",
+      "source": "REDDIT_NETSEC-ed050f761a0e70ca",
+      "target": "ioc:domain:malext.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-27",
       "sources": []
     }
