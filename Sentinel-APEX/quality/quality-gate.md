@@ -27,6 +27,8 @@ Every intelligence product MUST pass this gate before moving from
 - [ ] CVSS scores/vectors match the authoritative source (NVD/vendor)
 - [ ] EPSS and CISA KEV status are current-as-of the report date and dated
 - [ ] CWE / CAPEC / D3FEND references (where used) are valid
+- [ ] If SSVC is used for prioritization, the decision points (Exploitation, Exposure, Utility, Safety/Mission Impact) are stated explicitly, not just the resulting action
+- [ ] If a STIX bundle is included, it is valid STIX 2.1 JSON
 
 ## 4. IOC Discipline
 - [ ] Every IOC is in exactly one category (Confirmed / Observed / Historical / Behavioral / Derived / Hypothetical)

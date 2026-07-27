@@ -142,6 +142,35 @@ Never stop at describing the event.
 Explain the implications.
 
 ==========================================================
+REPORT TYPE TAXONOMY
+==========================================================
+
+Every report is produced under one of the four structural `report_type`
+front-matter values defined in `report-prompt.md`
+(`campaign` | `incident` | `actor-profile` | `sector-threat`). The
+subject-matter categories below are classification tags layered on top of
+that structural type — they select which task prompt to load and which
+section emphasis applies. They do not add new front-matter values, new file
+locations, or a fifth structural type.
+
+| Subject-matter category | Task prompt to load | Typical structural `report_type` |
+|---|---|---|
+| CVE / vulnerability / zero-day / exploit | `cve-prompt.md` | incident or campaign |
+| Malware / ransomware / botnet family | `malware-prompt.md` | campaign or actor-profile |
+| Threat actor / APT / nation-state | `report-prompt.md` | actor-profile |
+| Incident / data breach | `report-prompt.md` | incident |
+| Supply chain / cloud / identity / email / phishing / credential theft | `report-prompt.md` | incident or sector-threat |
+| AI security / LLM / prompt injection / agentic AI | `report-prompt.md` (or `ai-security-master-prompt.md` for the automated AI Security Division pipeline) | campaign or sector-threat |
+| Industry / sector / dark web / emerging threat landscape | `report-prompt.md` | sector-threat |
+| Executive briefing / weekly / monthly / quarterly / annual digest | `report-prompt.md`, `audience_priority: executive` | sector-threat |
+| Detection engineering / threat hunting / IOC / YARA / Sigma / ATT&CK-focused | `report-prompt.md` or `malware-prompt.md`, `audience_priority: hunting` | campaign or incident |
+
+Never invent a fifth structural `report_type`. If a report spans multiple
+categories (e.g., a ransomware campaign exploiting a fresh CVE), load both
+task prompts' section emphasis and pick the structural type matching the
+report's primary subject.
+
+==========================================================
 REPORT STRUCTURE
 ==========================================================
 
@@ -223,6 +252,8 @@ Whenever possible include:
 - CVSS
 - EPSS
 - CISA KEV
+- SSVC (Stakeholder-Specific Vulnerability Categorization) decision points,
+  where a vulnerability prioritization call is made
 - CVE references
 - YARA
 - Sigma
@@ -246,6 +277,33 @@ Whenever possible include:
 - Operational security mistakes
 - Detection opportunities
 - Defensive gaps
+- STIX 2.1 / TAXII representation for IOCs and detection content, where a
+  machine-readable exchange format is requested
+
+==========================================================
+NAMED DETECTION PLATFORM COVERAGE
+==========================================================
+
+The REPORT STRUCTURE detection sections (25–30) are platform categories, not
+single products. Within them, use the concrete product or query language the
+evidence actually supports:
+
+- Microsoft Sentinel KQL — also Microsoft Defender XDR, Defender for
+  Endpoint, and Defender for Identity queries when the telemetry source
+  differs
+- Elastic Detection — EQL, and ES|QL where the source supports the newer
+  syntax
+- CrowdStrike Hunting — Falcon Query Language (FQL)
+- Defender XDR Queries — Advanced Hunting KQL scoped to Defender tables
+- Cortex XDR Guidance — Palo Alto Cortex XDR / XSIAM query syntax
+- Chronicle Queries — Google Chronicle YARA-L 2.0
+- IBM QRadar AQL, where the operator's environment is QRadar-based
+- SentinelOne Deep Visibility queries, where the operator's environment is
+  SentinelOne-based
+
+Name a concrete product only when the query syntax is actually tailored to
+it. A generic Sigma or KQL rule mislabeled as a named product is a detection
+content defect (see quality gate).
 
 ==========================================================
 IOC REQUIREMENTS

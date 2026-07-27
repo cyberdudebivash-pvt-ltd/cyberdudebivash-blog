@@ -23,7 +23,7 @@ The operator provides:
 |---|---|---|
 | `source_material` | YES | Full text of the source article(s) or advisory |
 | `source_urls` | YES | Canonical URLs for the References section |
-| `report_type` | NO | `campaign` \| `incident` \| `actor-profile` \| `sector-threat` (default: infer) |
+| `report_type` | NO | `campaign` \| `incident` \| `actor-profile` \| `sector-threat` (default: infer). For subject-matter classification (CVE, malware, APT, AI security, etc.), see `master-prompt.md` § Report Type Taxonomy. |
 | `audience_priority` | NO | `executive` \| `soc` \| `dfir` \| `hunting` (default: balanced) |
 | `known_context` | NO | Prior Sentinel APEX reporting on the same actor/campaign for correlation |
 
