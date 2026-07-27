@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-27T15:02:00.464Z",
+  "generated": "2026-07-27T15:22:32.122Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9061,
+    "total_nodes": 9063,
     "actors": 8,
     "cves": 2480,
     "campaigns": 912,
     "malware": 0,
     "iocs": 849,
-    "edges": 3318
+    "edges": 3319
   },
   "nodes": {
     "actor:lockbit": {
@@ -1181,6 +1181,11 @@
         },
         {
           "target": "BLEEPINGCOMPUTER-92ff7404d9b186e7",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "BLEEPINGCOMPUTER-2972402d057c91dc",
           "relationship": "exploits",
           "confidence": 0.85
         }
@@ -172841,6 +172846,42 @@
           "confidence": 1
         }
       ]
+    },
+    "REDDIT_NETSEC-bac42896ae2b2e43": {
+      "id": "REDDIT_NETSEC-bac42896ae2b2e43",
+      "type": "Intel",
+      "name": "Exploiting Volvo/Eicher’s fleet management platform to gain control over all users and vehicles",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-27",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-2972402d057c91dc": {
+      "id": "BLEEPINGCOMPUTER-2972402d057c91dc",
+      "type": "Intel",
+      "name": "Ernst & Young data breach claimed by ShinyHunters extortion gang",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-27",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -202741,6 +202782,15 @@
       "target": "SENTINELAPEX-68f4683bf7e1",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-27",
+      "sources": []
+    },
+    {
+      "id": "actor:shinyhunters→exploits→BLEEPINGCOMPUTER-2972402d057c91dc",
+      "source": "actor:shinyhunters",
+      "target": "BLEEPINGCOMPUTER-2972402d057c91dc",
+      "relationship": "exploits",
+      "confidence": 0.85,
       "first_seen": "2026-07-27",
       "sources": []
     }
