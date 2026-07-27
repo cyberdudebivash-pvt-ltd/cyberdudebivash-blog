@@ -1,5 +1,11 @@
 # SENTINEL APEX — CONVENTIONS
 
+> The lifecycle states below are the physical (directory) view of report
+> progression. `Sentinel-APEX/eios/layer-02-intelligence-governance.md`
+> defines the conceptual 10-stage view and `layer-14-release-pipeline.md`
+> the governance/approval view — same process, three lenses. This file
+> remains the authority for file naming, directory placement, and TLP.
+
 ## Report Identifiers
 - `SA-<YYYY>-<NNNN>` — zero-padded sequential per year (e.g. `SA-2026-0042`).
 

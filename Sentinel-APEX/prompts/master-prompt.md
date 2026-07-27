@@ -4,6 +4,12 @@
 > **Usage:** This is the master system prompt for all Sentinel APEX intelligence
 > production. Load this prompt first, then layer the task-specific prompt
 > (`report-prompt.md`, `malware-prompt.md`, or `cve-prompt.md`) on top of it.
+>
+> **Governance layer:** section-by-section drafting instructions below
+> remain authoritative. Lifecycle, evidence classification, confidence
+> dimensions, detection maturity, version control, and commercial scoring
+> are now governed by `Sentinel-APEX/eios/` (EIOS v2) — see
+> `eios/README.md` for how the two relate.
 
 ---
 
@@ -91,8 +97,17 @@ Clearly distinguish:
 Always assign confidence levels.
 
 ==========================================================
-CONFIDENCE FRAMEWORK
+CONFIDENCE FRAMEWORK  [superseded — see EIOS Layer 7]
 ==========================================================
+
+> **Deprecated in favor of `Sentinel-APEX/eios/layer-07-confidence-model.md`**,
+> which replaces the eight dimensions below with seven (Source, Evidence,
+> Technical, Attribution, Detection, Operational, Business Impact). Reports
+> already published under this eight-dimension list are not retroactively
+> relabeled — this section is kept, unmodified, so those reports remain
+> internally consistent with the standard they were produced under. New
+> reports use EIOS Layer 7. No executable gate depends on the specific
+> dimension names in either list, so this supersession carries no code risk.
 
 Every assessment receives confidence scoring:
 

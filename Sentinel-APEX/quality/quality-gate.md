@@ -4,10 +4,16 @@ Every intelligence product MUST pass this gate before moving from
 `reports/drafts/` to `reports/final/`. A single failed item blocks promotion.
 
 > **Executable enforcement:** the machine-checkable subset of this gate
-> (structure, ATT&CK validity, IOC defanging, Sigma rule validity, confidence
-> labeling, scraper-noise leakage, cross-report duplication) runs as code in
-> `../engine/` — `python3 cli.py gate <report...>` exits non-zero on any
-> blocking finding. Run it before manual review, not instead of it.
+> (structure, ATT&CK validity, IOC defanging, Sigma rule validity, YARA rule
+> validity, STIX bundle structure, empty detection sections, confidence
+> labeling, scraper-noise leakage, cross-report duplication, cross-report
+> indicator reuse) runs as code in `../engine/` —
+> `python3 cli.py gate <report...>` exits non-zero on any blocking finding.
+> Run it before manual review, not instead of it. Full gate documentation,
+> including what this revision added and why, is in
+> `../eios/layer-04-quality-gates.md`. This gate is the correctness half of
+> publication readiness — `../eios/layer-10-commercial-readiness.md` covers
+> the companion commercial/value scoring engine (`scoring.py`).
 
 ## 1. Evidence Integrity
 - [ ] Every statement in **Verified Facts** is directly supported by a cited source

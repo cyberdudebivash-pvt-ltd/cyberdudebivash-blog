@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sentinel_engine.quality import gate_corpus, gate_report, validate_sigma
+from sentinel_engine.quality import gate_corpus, gate_report, validate_sigma, validate_yara
 from sentinel_engine.report_parser import parse_report
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -138,3 +138,97 @@ def test_corpus_gate_clean_on_distinct_reports():
     })
     # different sigma rules -> no identical-rule block
     assert not any(f.severity == "block" for f in result.findings)
+
+
+# --------------------------------------------------------------------------
+# EIOS Layer 4 additions: YARA, STIX, empty-detection, corpus IOC reuse
+# --------------------------------------------------------------------------
+
+VALID_YARA = """
+rule Example_Loader_Stage1
+{
+    meta:
+        author = "CyberDudeBivash Sentinel APEX"
+        description = "Detects stage-1 loader strings"
+        date = "2026-07-01"
+        reference = "https://example.com/advisory"
+        confidence = "MEDIUM"
+        tlp = "TLP:CLEAR"
+    strings:
+        $s1 = "malicious_marker_string"
+        $s2 = { 4D 5A 90 00 }
+    condition:
+        any of them
+}
+"""
+
+
+def test_validate_yara_accepts_valid_rule():
+    assert validate_yara(VALID_YARA) == []
+
+
+def test_validate_yara_flags_missing_meta_and_undefined_string():
+    bad = VALID_YARA.replace('tlp = "TLP:CLEAR"', "").replace(
+        "any of them", "$s1 and $undefined_ref"
+    )
+    problems = validate_yara(bad)
+    assert any("tlp" in p for p in problems)
+    assert any("undefined_ref" in p for p in problems)
+
+
+def test_validate_yara_flags_unbalanced_braces():
+    bad = VALID_YARA.rstrip().rstrip("}")
+    problems = validate_yara(bad)
+    assert any("braces" in p for p in problems)
+
+
+def test_gate_report_blocks_on_broken_yara_section():
+    broken = VALID_YARA.replace('author = "CyberDudeBivash Sentinel APEX"', "")
+    report_text = MINIMAL_GOOD + "\n► YARA Rules\n" + broken
+    result = gate_report(parse_report(report_text))
+    assert any(f.gate == "yara" for f in result.blocks)
+
+
+def test_gate_report_passes_with_valid_yara_section():
+    report_text = MINIMAL_GOOD + "\n► YARA Rules\n" + VALID_YARA
+    result = gate_report(parse_report(report_text))
+    assert not any(f.gate == "yara" for f in result.blocks)
+
+
+def test_gate_empty_detection_section_blocks():
+    report_text = MINIMAL_GOOD + "\n► Sigma Rules\n► References\nsee above\n"
+    result = gate_report(parse_report(report_text))
+    assert any(f.gate == "empty-detection" for f in result.blocks)
+
+
+def test_gate_stix_valid_bundle_passes():
+    bundle = ('{"type": "bundle", "id": "bundle--x", "objects": '
+              '[{"type": "indicator", "id": "indicator--1", "spec_version": "2.1"}]}')
+    report_text = MINIMAL_GOOD + "\n► STIX\n" + bundle
+    result = gate_report(parse_report(report_text))
+    assert not any(f.gate == "stix" for f in result.blocks)
+
+
+def test_gate_stix_invalid_bundle_blocks():
+    bundle = '{"type": "not-a-bundle", "objects": []}'
+    report_text = MINIMAL_GOOD + "\n► STIX\n" + bundle
+    result = gate_report(parse_report(report_text))
+    assert any(f.gate == "stix" for f in result.blocks)
+
+
+def test_gate_stix_absent_section_is_a_noop():
+    result = gate_report(parse_report(MINIMAL_GOOD))
+    assert not any(f.gate == "stix" for f in result.findings)
+
+
+def test_corpus_gate_flags_ioc_reused_across_reports():
+    a = parse_report(MINIMAL_GOOD)
+    result = gate_corpus({"report-a.txt": a, "report-b.txt": a})
+    assert any(f.gate == "corpus-ioc-reuse" for f in result.findings)
+
+
+def test_corpus_gate_ioc_reuse_is_a_warning_not_a_block():
+    a = parse_report(MINIMAL_GOOD)
+    result = gate_corpus({"report-a.txt": a, "report-b.txt": a})
+    reuse = [f for f in result.findings if f.gate == "corpus-ioc-reuse"]
+    assert reuse and all(f.severity == "warn" for f in reuse)

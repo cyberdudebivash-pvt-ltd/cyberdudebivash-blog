@@ -3,6 +3,12 @@
 The recommended AI workflow for turning raw source material into
 enterprise-grade, published intelligence products.
 
+> This is the operational (file-system/command) view of the pipeline.
+> `Sentinel-APEX/eios/layer-02-intelligence-governance.md` and
+> `layer-14-release-pipeline.md` give the conceptual and governance/approval
+> views of the same 8 stages, broken into finer-grained sub-stages and named
+> approval gates respectively — see either for the mapping table.
+
 ```
 ┌─────────────┐   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
 │ 1. COLLECT  │──▶│ 2. NORMALIZE │──▶│ 3. ENRICH    │──▶│ 4. DRAFT     │

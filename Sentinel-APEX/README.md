@@ -14,15 +14,22 @@ It operates under the governance defined in the repository-root `CLAUDE.md`
 
 ```
 Sentinel-APEX/
+├── eios/               Enterprise Intelligence Operating System (v2) — the
+│                       14-layer governance architecture: mission, lifecycle,
+│                       object model, quality gates, confidence model, version
+│                       control, API schema. Start at eios/README.md.
 ├── engine/             Intelligence Engine (Phase 2) — tested Python package:
 │                       normalization, IOC/ATT&CK extraction, NVD/EPSS/KEV
 │                       enrichment, knowledge graph, executable quality gates,
-│                       multi-platform Detection Engine (Phase 3)
+│                       intelligence scoring/commercial tiering, multi-platform
+│                       Detection Engine (Phase 3)
 ├── engine-node/        Node port of the Detection Engine, wired into the live
 │                       generator (fetch-live-intel.js) to emit Sigma/KQL/
 │                       Splunk/OSQuery + Suricata in every report
 ├── prompts/            System + task prompts (load master first)
-│   ├── master-prompt.md    Core identity, structure, confidence framework
+│   ├── master-prompt.md    Core identity, structure, section-by-section
+│   │                       drafting instructions (governed by eios/ for
+│   │                       lifecycle/evidence/confidence/version control)
 │   ├── report-prompt.md    General intelligence report task prompt
 │   ├── malware-prompt.md   Malware family / sample report task prompt
 │   └── cve-prompt.md       CVE / vulnerability report task prompt
@@ -33,7 +40,7 @@ Sentinel-APEX/
 ├── intelligence/       Reusable per-entity intelligence
 │   ├── cves/  malware/  apt/  ransomware/  phishing/
 ├── templates/          Audience-specific output variants
-│   ├── executive/  soc/  ir/  hunting/
+│   ├── executive/  soc/  ir/  hunting/  board/  detection-engineer/
 ├── sigma/  yara/  kql/  suricata/  osquery/   Detection content library
 ├── images/             Report graphics / diagrams
 ├── scripts/            Automation helpers
@@ -61,7 +68,9 @@ Sentinel-APEX/
    `templates/`.
 7. **SEO + interlink**, then **publish** to `reports/published/` and distribute.
 
-Full detail: `pipeline/WORKFLOW.md`.
+Full detail: `pipeline/WORKFLOW.md`. Governance context for every step above
+(evidence classification, object model, confidence dimensions, version
+metadata, commercial scoring): `eios/README.md`.
 
 ## Core Principles
 

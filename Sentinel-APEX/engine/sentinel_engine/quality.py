@@ -12,6 +12,8 @@ import re
 
 import yaml
 
+import json
+
 from .attack_mapper import extract_technique_ids, is_valid_technique_id
 from .ioc_extractor import DEFAULT_ALLOWLIST, extract_iocs
 from .models import GateFinding, GateResult, IOCType
@@ -28,6 +30,15 @@ REQUIRED_SECTIONS = (
 
 SIGMA_REQUIRED_KEYS = ("title", "id", "description", "logsource", "detection", "level")
 SIGMA_LEVELS = ("informational", "low", "medium", "high", "critical")
+
+YARA_REQUIRED_META = ("author", "description", "date", "reference", "confidence", "tlp")
+
+# Detection-format sections that imply coverage — a present-but-empty one of
+# these is worse than an omitted one (EIOS Layer 4).
+DETECTION_SECTION_FRAGMENTS = (
+    "Sigma", "YARA", "Suricata", "Splunk", "Sentinel KQL", "Elastic Detection",
+    "Chronicle", "Cortex XDR", "Defender XDR", "Detection Opportunities",
+)
 
 _RE_CONFIDENCE = re.compile(r"\((LOW|MEDIUM|HIGH)\s+CONFIDENCE\)")
 _RE_ASSESSMENT = re.compile(
@@ -47,6 +58,9 @@ def gate_report(report: ParsedReport) -> GateResult:
     findings += _gate_attack(report)
     findings += _gate_ioc_defanging(report)
     findings += _gate_sigma(report)
+    findings += _gate_yara(report)
+    findings += _gate_stix(report)
+    findings += _gate_empty_detection(report)
     findings += _gate_confidence(report)
     findings += _gate_content_integrity(report)
     return GateResult(findings=findings)
@@ -202,6 +216,122 @@ def _sigma_ref_matches(ref: str, selection: str) -> bool:
     return ref.endswith("*") and selection.startswith(ref[:-1])
 
 
+def _gate_yara(report: ParsedReport) -> list[GateFinding]:
+    section = report.section("YARA")
+    if not section:
+        return []  # a YARA rule is not mandatory for every report type
+    return [
+        GateFinding("yara", "block", msg) for msg in validate_yara(section)
+    ]
+
+
+def validate_yara(section_text: str) -> list[str]:
+    """Structurally validate one YARA rule; returns a list of problems (empty
+    = valid). This is a structural check only — the repo has no YARA-compiling
+    dependency (`yara-python`), so it cannot replace `yarac`. It catches the
+    same class of authoring defects `validate_sigma` catches for Sigma:
+    missing required fields and condition references to undefined strings.
+    """
+    problems: list[str] = []
+    m = re.search(r"\brule\s+\w+\s*\{", section_text)
+    if not m:
+        return ["YARA section present but no 'rule <name> {' declaration found"]
+    body = section_text[m.start():]
+
+    if body.count("{") == 0 or body.count("{") != body.count("}"):
+        problems.append("YARA rule braces are not balanced")
+        return problems  # further structural parsing would be unreliable
+
+    meta_match = re.search(
+        r"\bmeta\s*:(.*?)(?=\bstrings\s*:|\bcondition\s*:)", body,
+        re.IGNORECASE | re.DOTALL,
+    )
+    if not meta_match:
+        problems.append("YARA rule missing a meta: block")
+    else:
+        meta_body = meta_match.group(1)
+        for required in YARA_REQUIRED_META:
+            if not re.search(rf"\b{required}\s*=", meta_body, re.IGNORECASE):
+                problems.append(f"YARA rule meta: block missing required field: {required}")
+
+    condition_match = re.search(
+        r"\bcondition\s*:(.*)\}\s*$", body, re.IGNORECASE | re.DOTALL,
+    )
+    if not condition_match:
+        problems.append("YARA rule missing a condition: block")
+    else:
+        condition = condition_match.group(1).strip()
+        if not condition:
+            problems.append("YARA rule condition: block is empty")
+        else:
+            strings_match = re.search(
+                r"\bstrings\s*:(.*?)\bcondition\s*:", body,
+                re.IGNORECASE | re.DOTALL,
+            )
+            defined = set(
+                re.findall(r"(\$[A-Za-z_]\w*)\s*=", strings_match.group(1))
+            ) if strings_match else set()
+            for ref in set(re.findall(r"\$[A-Za-z_]\w*\*?", condition)):
+                base = ref.rstrip("*")
+                if ref in defined or base in defined:
+                    continue
+                if ref.endswith("*") and any(d.startswith(base) for d in defined):
+                    continue
+                problems.append(f"YARA condition references undefined string: {ref}")
+
+    return problems
+
+
+def _gate_stix(report: ParsedReport) -> list[GateFinding]:
+    """Optional STIX 2.1 bundle validation — structural, not full schema.
+
+    Only runs if a section fragment-matching "STIX" is present at all, so
+    reports that don't emit STIX are entirely unaffected.
+    """
+    section = report.section("STIX")
+    if not section.strip():
+        return []
+    m = re.search(r"\{.*\}", section, re.DOTALL)
+    if not m:
+        return [GateFinding("stix", "block", "STIX section present but contains no JSON bundle")]
+    try:
+        bundle = json.loads(m.group(0))
+    except json.JSONDecodeError as exc:
+        return [GateFinding("stix", "block", f"STIX bundle is not valid JSON: {exc}")]
+
+    findings: list[GateFinding] = []
+    if not isinstance(bundle, dict) or bundle.get("type") != "bundle":
+        findings.append(GateFinding("stix", "block", "STIX object is not a bundle (type != 'bundle')"))
+    objects = bundle.get("objects") if isinstance(bundle, dict) else None
+    if not isinstance(objects, list) or not objects:
+        findings.append(GateFinding("stix", "block", "STIX bundle has no objects[] array"))
+    else:
+        for i, obj in enumerate(objects):
+            if not isinstance(obj, dict):
+                findings.append(GateFinding("stix", "block", f"STIX bundle objects[{i}] is not an object"))
+                continue
+            for required in ("type", "id", "spec_version"):
+                if required not in obj:
+                    findings.append(GateFinding(
+                        "stix", "block",
+                        f"STIX bundle objects[{i}] missing required field: {required}",
+                    ))
+    return findings
+
+
+def _gate_empty_detection(report: ParsedReport) -> list[GateFinding]:
+    """A detection-format section header with no body implies coverage that
+    does not exist — worse than omitting the section entirely."""
+    findings = []
+    for fragment in DETECTION_SECTION_FRAGMENTS:
+        if report.has_section(fragment) and not report.section(fragment).strip():
+            findings.append(GateFinding(
+                "empty-detection", "block",
+                f"section '{fragment}' is present but empty — omit it or populate it",
+            ))
+    return findings
+
+
 def _gate_confidence(report: ParsedReport) -> list[GateFinding]:
     findings = []
     body = "\n".join(report.sections.values())
@@ -283,6 +413,35 @@ def gate_corpus(reports: dict[str, ParsedReport]) -> GateResult:
                 f"identical Sigma rule ({title!r}) published in "
                 f"{len(holders)} reports: {', '.join(holders)} — "
                 "detections must be derived from each report's evidence",
+            ))
+
+    # same indicator reused across unrelated reports (EIOS Layer 4). Each
+    # report's own IOC section is already deduplicated at extraction time
+    # (extract_iocs() dedupes by key before returning), so this can only
+    # fire across DIFFERENT reports — flagged warn, not block, because
+    # legitimate campaign-correlated infrastructure reuse is common and
+    # exactly what Layer 9's knowledge graph exists to surface; this gate
+    # only asks the analyst to confirm the reuse is a real correlation,
+    # not a copy-paste artifact.
+    ioc_holders: dict[tuple, list[str]] = {}
+    for name in names:
+        section = reports[name].section("IOC Intelligence")
+        if not section:
+            continue
+        masked = (
+            section.replace("[.]", ".").replace("(.)", ".")
+            .replace("hxxp", "http").replace("[:]", ":").replace("[@]", "@")
+        )
+        for ioc in extract_iocs(masked, include_context=False):
+            ioc_holders.setdefault(ioc.key(), []).append(name)
+    for key, holders in sorted(ioc_holders.items()):
+        distinct = sorted(set(holders))
+        if len(distinct) > 1:
+            findings.append(GateFinding(
+                "corpus-ioc-reuse", "warn",
+                f"indicator {key[1]!r} ({key[0]}) appears in {len(distinct)} "
+                f"reports: {', '.join(distinct)} — confirm this is a known "
+                "correlated campaign, not accidental reuse",
             ))
 
     # near-duplicate operational sections across reports

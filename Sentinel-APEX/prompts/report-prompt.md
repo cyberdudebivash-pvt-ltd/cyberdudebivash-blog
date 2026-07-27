@@ -81,6 +81,9 @@ sources: []
 ---
 ```
 
+- Version-control fields (`version`, `last_updated`, `supersedes`,
+  `review_status`, `analyst`, `reviewer`, `change_log`) are additive to the
+  block above — see `Sentinel-APEX/eios/layer-08-report-version-control.md`.
 - Executive Summary: maximum 250 words, readable by a non-technical board
   member, states the "so what" in the first sentence.
 - Executive Risk Snapshot: single table — Severity, Exploitation Status,
