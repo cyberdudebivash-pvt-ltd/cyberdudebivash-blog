@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-27T20:31:26.683Z",
+  "generated": "2026-07-27T21:01:41.407Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9097,
+    "total_nodes": 9100,
     "actors": 8,
     "cves": 2487,
     "campaigns": 914,
     "malware": 0,
     "iocs": 850,
-    "edges": 3326
+    "edges": 3327
   },
   "nodes": {
     "actor:lockbit": {
@@ -54,6 +54,11 @@
         },
         {
           "target": "REDDIT_CYBER-52a68877eba89423",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "DARKREADING-694c3716af6ccf73",
           "relationship": "exploits",
           "confidence": 0.85
         }
@@ -173518,6 +173523,60 @@
         "type": "SUPPLY_CHAIN"
       },
       "connections": []
+    },
+    "BLEEPINGCOMPUTER-2d0169c1a76d1323": {
+      "id": "BLEEPINGCOMPUTER-2d0169c1a76d1323",
+      "type": "Intel",
+      "name": "New Certighost PoC exploit lets attackers hijack Windows domains",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-27",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "DARKREADING-694c3716af6ccf73": {
+      "id": "DARKREADING-694c3716af6ccf73",
+      "type": "Intel",
+      "name": "FBI: Breaking Affiliate Trust Sped Along LockBit's Takedown",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 53,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-07-27",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "WIRED_SECURITY-2e812dd047e11dce": {
+      "id": "WIRED_SECURITY-2e812dd047e11dce",
+      "type": "Intel",
+      "name": "DHS Official Resigns, Citing ‘War on Immigrants’",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "wired_security",
+        "product": "Threat Intelligence",
+        "published": "2026-07-27",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -203490,6 +203549,15 @@
       "target": "DARKREADING-eb9b373b7100467b",
       "relationship": "includes",
       "confidence": 1,
+      "first_seen": "2026-07-27",
+      "sources": []
+    },
+    {
+      "id": "actor:lockbit→exploits→DARKREADING-694c3716af6ccf73",
+      "source": "actor:lockbit",
+      "target": "DARKREADING-694c3716af6ccf73",
+      "relationship": "exploits",
+      "confidence": 0.85,
       "first_seen": "2026-07-27",
       "sources": []
     }
