@@ -35,6 +35,8 @@ LEXICON: dict[str, tuple[str, tuple[str, ...]]] = {
     "Akira": ("malware", ()),
     "RansomHub": ("malware", ()),
     "Qilin": ("malware", ()),
+    "BianLian": ("malware", ()),
+    "Jasmin": ("malware", ()),
     "Emotet": ("malware", ()),
     "Qakbot": ("malware", ("QBot",)),
     "Cobalt Strike": ("tool", ()),
@@ -58,6 +60,8 @@ LEXICON: dict[str, tuple[str, tuple[str, ...]]] = {
     "SonicWall": ("vendor", ()),
     "MOVEit": ("product", ("MOVEit Transfer",)),
     "ScreenConnect": ("product", ("ConnectWise ScreenConnect",)),
+    "JetBrains": ("vendor", ()),
+    "TeamCity": ("product", ("TeamCity On-Premises",)),
 }
 
 

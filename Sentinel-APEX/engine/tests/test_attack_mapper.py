@@ -97,6 +97,19 @@ def test_negation_does_not_suppress_unrelated_techniques_in_the_same_document():
     assert "T1486" not in ids
 
 
+def test_msiexec_maps_to_t1218_007():
+    # Found producing SA-2026-0003 (JetBrains TeamCity, CVE-2024-27198/27199):
+    # msiexec was the confirmed LOLBin in Trend Micro's own observed attack
+    # chain, but T1218.007 had no curated entry or lexicon pattern at all —
+    # unlike its sibling T1218.005 (Mshta), which did.
+    mappings = map_techniques(
+        "cmd.exe invoked msiexec to silently install a remotely hosted MSI package."
+    )
+    ids = _ids(mappings)
+    assert "T1218.007" in ids
+    assert is_valid_technique_id("T1218.007")
+
+
 def test_hedge_in_one_markdown_table_row_does_not_suppress_a_clean_citation_in_another():
     # The real bug found in SA-2026-0001 (GIKEP v1): a multi-row markdown
     # table has no sentence-ending punctuation between rows, so the whole

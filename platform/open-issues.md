@@ -507,5 +507,75 @@ Both found by actually running a second, independently-sourced report
 live-queried) through the exact same real pipeline — not by re-inspecting
 the first report differently.
 
+**Update (GIEP v1) — a third report, one true positive confirmed, one new
+false-positive mechanism found, two coverage gaps fixed additively:**
+
+SA-2026-0003 (CVE-2024-27198/CVE-2024-27199, JetBrains TeamCity) is the
+first report where genuine ransomware impact — not just campaign
+association — was independently confirmed via primary-source vendor
+telemetry (Trend Micro's own observed process tree, naming ransomware
+strain "Jasmin"). Running it through `map_techniques()` mapped T1486 from
+that confirmed-impact sentence, correctly this time: a real positive,
+included in the published report for contrast with the two prior
+incorrect mappings above. Not every T1486 mapping this platform produces
+is wrong — this is the first evidenced case of the mapper getting a
+ransomware-impact claim right, and it's recorded here for the same reason
+the incorrect ones are: this issue should track the mapper's actual
+precision, not just its failures.
+
+A third, distinct false-positive mechanism was found in the same run,
+different from both prior ones:
+
+- **A report's own analyst-authored ATT&CK Mapping table can supply the
+  false-positive text.** SA-2026-0003's table uses "Command and Control"
+  as the **Tactic** column label for its T1105 row — standard ATT&CK
+  terminology, not a claim that a C2 channel was used. `_LEXICON`'s
+  `c2|command-and-control|beacon(?:ing)?` pattern matched that label text
+  anyway and mapped T1071 (Application Layer Protocol) with no supporting
+  evidence anywhere in the report. Unlike the first two findings (a hedge
+  sentence with no cue word; a true association-fact conflated with an
+  impact-fact), this one is self-referential: the mapper has no way to
+  distinguish a document's own structural output (a table header/label) from
+  prose making an evidentiary claim, because it scans the full report text
+  indiscriminately. **Not fixed** — same reasoning as the other findings in
+  this issue: one example, a change to shared extraction logic, needs a
+  designed approach (most plausibly: exclude the "MITRE ATT&CK Mapping"
+  section's own table cells from the text handed to `map_techniques()`
+  during graph ingestion, since that section is this platform's own output,
+  not source evidence) before it's safe to build. The published report
+  documents the divergence explicitly and excludes T1071 from its own
+  table; the graph's `report:sa-2026-0003 → technique:t1071` edge should be
+  read accordingly.
+
+Two narrower, purely additive gaps *were* fixed in this pass, distinguished
+from the finding above by carrying no regression risk (new lookup entries,
+zero changes to existing matching logic or existing reports' output):
+
+- `attack_mapper.py KNOWN_TECHNIQUES` had T1218 (System Binary Proxy
+  Execution) and its Mshta sub-technique (T1218.005) curated, but not
+  T1218.007 (Msiexec) — despite `msiexec` being the exact LOLBin in this
+  report's own verified attack chain. Added the technique entry and a
+  `msiexec` lexicon pattern; 1 new regression test
+  (`test_msiexec_maps_to_t1218_007`).
+- `entities.py::LEXICON` had no entry for JetBrains, TeamCity, BianLian, or
+  Jasmin — all four real, independently-verified entities central to this
+  report — the same class of gap Issue 9's original SharePoint finding
+  already named ("extending the lexicon is low-risk... flagged as a
+  Recommendation, not attempted"). Added all four (JetBrains as vendor,
+  TeamCity as product with "TeamCity On-Premises" as an alias, BianLian and
+  Jasmin as malware, matching the existing convention of curating
+  ransomware-strain names under the malware type rather than threat_actor).
+  This module had zero test coverage before this change; added
+  `tests/test_entities.py` (5 tests) covering the existing lexicon/alias
+  behavior plus these four additions specifically — not full retroactive
+  coverage of the whole file, which is a larger, separate task.
+
+Net effect on this specific report: `cli.py gate` dropped its only WARN
+(the T1218.007 uncurated-ID notice) after the fix, and `cli.py certify`
+moved from CERTIFIED WITH CONDITIONS (both prior reports' result) to
+**CERTIFIED** outright — the first report this platform has produced to
+reach that verdict. Engine suite: 150 passed (was 144; +6 net: +1
+attack_mapper, +5 entities).
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
