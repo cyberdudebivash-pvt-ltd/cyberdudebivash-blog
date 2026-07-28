@@ -95,3 +95,23 @@ def test_negation_does_not_suppress_unrelated_techniques_in_the_same_document():
     ids = _ids(map_techniques(text))
     assert "T1059.001" in ids
     assert "T1486" not in ids
+
+
+def test_hedge_in_one_markdown_table_row_does_not_suppress_a_clean_citation_in_another():
+    # The real bug found in SA-2026-0001 (GIKEP v1): a multi-row markdown
+    # table has no sentence-ending punctuation between rows, so the whole
+    # table was being treated as one giant "clause" -- a hedge word in ANY
+    # row (here, T1606's "not explicitly confirmed") suppressed T1190's
+    # citation even though T1190's own row is fully, cleanly supported with
+    # no hedge at all.
+    text = (
+        "| Technique | Name | Tactic | Confidence | Evidence |\n"
+        "|---|---|---|---|---|\n"
+        "| T1190 | Exploit Public-Facing Application | Initial Access | HIGH |"
+        " Unauthenticated RCE against an internet-facing endpoint |\n"
+        "| T1606 | Forge Web Credentials | Persistence | MEDIUM |"
+        " Analyst assessment; not explicitly confirmed as observed in this campaign |\n"
+    )
+    ids = _ids(map_techniques(text))
+    assert "T1190" in ids
+    assert "T1606" not in ids
