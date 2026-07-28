@@ -1,0 +1,75 @@
+name: "💾 SENTINEL APEX — Customer Data Backup"
+
+# Runs scripts/backup-customer-data.js (GEORP v1 Phase 3) on a daily
+# schedule, uploading the encrypted snapshot as a GitHub Actions artifact.
+# This is a first safety net using only infrastructure this repo already
+# relies on (14 other scheduled/triggered workflows) -- NOT a long-term
+# archival solution. GitHub Actions artifacts expire (retention-days
+# below); where this snapshot should live durably and long-term is a
+# separate infrastructure decision requiring explicit approval, not made
+# here. See RUNBOOKS.md "Backup & Restore" for the full picture.
+#
+# Requires three GitHub Actions repository secrets, NONE of which are
+# configured yet as of this workflow's introduction (verified: no existing
+# workflow in this repo references them -- they exist today only as Vercel
+# environment variables, a different secret store from GitHub Actions
+# secrets):
+#   - UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN — same values
+#     already set in Vercel (see OPERATIONS.md section 2).
+#   - BACKUP_ENCRYPTION_KEY — NEW. Generate with:
+#       node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+#     Store the generated key somewhere durable OUTSIDE this repo too —
+#     losing it makes every existing backup permanently unrecoverable.
+# Until all three are set, this workflow runs, detects they're missing,
+# and exits cleanly with a visible warning (not a failure) rather than
+# erroring confusingly on every scheduled run.
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 03:00 UTC daily
+  workflow_dispatch:
+
+jobs:
+  backup:
+    name: "Backup Customer Data"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "📥 Checkout"
+        uses: actions/checkout@v4
+
+      - name: "🟢 Set up Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "🔍 Check required secrets are configured"
+        id: preflight
+        env:
+          HAS_REDIS_URL: ${{ secrets.UPSTASH_REDIS_REST_URL != '' }}
+          HAS_REDIS_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN != '' }}
+          HAS_BACKUP_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY != '' }}
+        run: |
+          if [ "$HAS_REDIS_URL" = "true" ] && [ "$HAS_REDIS_TOKEN" = "true" ] && [ "$HAS_BACKUP_KEY" = "true" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Customer data backup skipped — one or more required secrets (UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN, BACKUP_ENCRYPTION_KEY) are not configured as GitHub Actions repository secrets. See RUNBOOKS.md 'Backup & Restore' to activate."
+          fi
+
+      - name: "💾 Run backup"
+        if: steps.preflight.outputs.ready == 'true'
+        env:
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          BACKUP_ENCRYPTION_KEY: ${{ secrets.BACKUP_ENCRYPTION_KEY }}
+        run: node scripts/backup-customer-data.js backups/customer-data.enc
+
+      - name: "📤 Upload encrypted snapshot as artifact"
+        if: steps.preflight.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: customer-data-backup-${{ github.run_id }}
+          path: backups/customer-data.enc
+          retention-days: 90

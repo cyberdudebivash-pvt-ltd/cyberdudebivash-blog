@@ -33,6 +33,11 @@ const redis = {
   incr:   key           => redisCmd('INCR', key),
   expire: (key, ttl)    => redisCmd('EXPIRE', key, String(ttl)),
   ttl:    key           => redisCmd('TTL', key),
+  // KEYS, not SCAN: simple and sufficient at this platform's current key
+  // count (registered users, not millions of keys). Revisit with
+  // cursor-based SCAN if the keyspace grows large enough for KEYS's
+  // single-pass cost to matter -- not needed at today's scale.
+  keys:   pattern       => redisCmd('KEYS', pattern),
 
   // Hashes
   hget:   (key, field)       => redisCmd('HGET', key, field),
