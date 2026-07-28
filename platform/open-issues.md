@@ -123,5 +123,43 @@ Not fixed in this pass — both are new-scope decisions (gate taxonomy vs.
 authoring convention) surfaced by, but distinct from, the marker-mismatch
 fix itself.
 
+## Issue 5 — The existing Markdown-to-HTML converter cannot render real Sentinel-APEX reports (tested, not assumed)
+
+Before committing to a full pipeline-unification effort (`report-experience-audit.md`
+Phase 1/Stage 3), tested the specific proof-of-concept that document's
+"Recommended Next Sprint" proposed: render SA-2026-0001's actual Markdown
+through the one Markdown→HTML converter that already exists in this repo,
+`mdToSafeHtml()` in `generate-cve-pages.js:37-71`. Result: **not viable
+as-is** — verified by actually running it, not by inspecting the code:
+
+1. **Every Markdown table is destroyed.** All 5 pipe-tables in the report
+   (Verified Facts, Related CVEs, MITRE Mapping, Confidence Assessment,
+   etc.) flatten into a single unreadable line of literal `|`-delimited
+   text — `mdToSafeHtml()` has no table handling at all.
+2. **The Sigma YAML code fence causes cascading corruption.** The converter's
+   inline-code regex (`` `([^`]+)` ``) is written for single backticks; it
+   has no concept of a triple-backtick fence. Confirmed empirically: it
+   greedily pairs the fence's 3rd backtick with whatever backtick appears
+   *next* in the entire document, swallowing the full YAML block into one
+   scrambled `<code>` span — and desyncs backtick-pairing for legitimate
+   inline code (e.g. `` `w3wp.exe` ``) in every section *after* the fence,
+   which end up with `<code>`/`</code>` boundaries around the wrong words
+   entirely. Verified: 20 opening and 20 closing tags (so the HTML doesn't
+   break outright), but the content each tag wraps is semantically wrong
+   from the Sigma section onward.
+
+Basic inline handling (`**bold**`, standalone `` `code` `` outside a table
+or fence, `#`-`######` headings, `-`/`*` bullets) converts correctly — the
+converter just was never built for tables or fenced code blocks, both of
+which real analyst reports use throughout.
+
+**Conclusion**: a minimal Pipeline B → HTML path needs either a real
+Markdown library (something that handles GFM tables and fenced code blocks
+correctly — a new dependency decision, not one to make unilaterally here)
+or purpose-built table/fence handling added to `mdToSafeHtml()`. Reusing
+the existing converter unmodified, which looked like the cheapest path, is
+now a tested dead end rather than an assumption — this is exactly the
+outcome a proof-of-concept is supposed to produce. Not fixed in this pass.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
