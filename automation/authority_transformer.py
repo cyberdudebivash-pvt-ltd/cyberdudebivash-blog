@@ -1661,7 +1661,8 @@ class AuthorityTransformer:
         article.summary = _sanitize_summary(article.summary)
 
         # Generate core content — try LLM providers, fall back to template
-        llm_result = call_llm(self.config, _build_analyst_prompt(article))
+        llm_attempts: list = []
+        llm_result = call_llm(self.config, _build_analyst_prompt(article), attempts=llm_attempts)
         if llm_result:
             body_content, content_source = llm_result
         else:
@@ -1701,6 +1702,7 @@ class AuthorityTransformer:
             "source_url": article.url,
             "content_hash": article.content_hash,
             "content_source": content_source,
+            "llm_attempts": llm_attempts,
         }
 
     def _build_blogger_title(self, article: DiscoveredArticle) -> str:

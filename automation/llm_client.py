@@ -48,18 +48,32 @@ _PROVIDERS = [
 ]
 
 
-def call_llm(config: Config, prompt: str, max_tokens: int = 3000) -> Optional[tuple[str, str]]:
+def call_llm(
+    config: Config,
+    prompt: str,
+    max_tokens: int = 3000,
+    attempts: Optional[list] = None,
+) -> Optional[tuple[str, str]]:
     """
     Try each configured LLM provider in priority order.
     Returns (content, provider_name) on first success, or None if all fail.
+
+    If `attempts` is provided, every provider considered is appended to it as
+    {"provider": name, "ok": bool, "error": str | None} — including providers
+    skipped for having no API key configured. This lets a caller persist
+    *why* a run fell back to the template (no key vs. rate limit vs. other
+    API failure) instead of only recording *that* it did, which the run
+    report previously had no way to distinguish.
     """
     for provider in _PROVIDERS:
+        name = provider["name"]
         api_key = getattr(config, provider["key_attr"], "")
         if not api_key:
+            if attempts is not None:
+                attempts.append({"provider": name, "ok": False, "error": "no_api_key"})
             continue
 
         model = getattr(config, provider["model_attr"], "")
-        name = provider["name"]
 
         try:
             if provider.get("is_anthropic"):
@@ -79,13 +93,20 @@ def call_llm(config: Config, prompt: str, max_tokens: int = 3000) -> Optional[tu
                     "LLM call succeeded",
                     extra={"provider": name, "model": model, "chars": len(content)},
                 )
+                if attempts is not None:
+                    attempts.append({"provider": name, "ok": True, "error": None})
                 return content, name
+
+            if attempts is not None:
+                attempts.append({"provider": name, "ok": False, "error": "empty_response"})
 
         except Exception as e:
             logger.warning(
                 "LLM provider failed, trying next",
                 extra={"provider": name, "error": str(e)},
             )
+            if attempts is not None:
+                attempts.append({"provider": name, "ok": False, "error": str(e)[:200]})
             continue
 
     logger.info("No LLM provider available — using template fallback")

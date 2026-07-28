@@ -8,11 +8,11 @@ wishlist. Principle, stated because one real tension below tests it:
 
 | Function | Mechanism | Cadence |
 |---|---|---|
-| Multi-source content ingestion, dedup, correlation | `fetch-live-intel.js` | Every 5 minutes (`sentinel-apex.yml`) |
+| Multi-source content ingestion, dedup, correlation | `fetch-live-intel.js` | Every 30 minutes (`sentinel-apex.yml` cron `0,30 * * * *`) |
 | IOC normalization | `fetch-live-intel.js` (live pipeline) + `ioc_extractor.py` (offline, on-demand) | Live: continuous. Offline: manual invocation |
-| Detection generation (Sigma/KQL/Splunk/OSQuery/Suricata) | `engine-node`'s Detection Engine, wired into `fetch-live-intel.js` | Every 5 minutes, same cadence as ingestion |
+| Detection generation (Sigma/KQL/Splunk/OSQuery/Suricata) | `engine-node`'s Detection Engine, wired into `fetch-live-intel.js` | Every 30 minutes, same cadence as ingestion |
 | Metadata enrichment (CVSS/EPSS/KEV) | Live: `fetch-live-intel.js`. Offline: `enrichment.py` | Live: continuous. Offline: manual/on-demand |
-| Publication (posts, RSS, sitemap) | `blogger-syndication.yml`, `generate-rss.yml`, `sentinel-apex.yml` | Every 5–15 minutes, throttled by `vercel-ignore-build.sh` for deploy-quota reasons |
+| Publication (posts, RSS, sitemap) | `blogger-syndication.yml` (every 2h), `generate-rss.yml` (every 6h), `sentinel-apex.yml` (every 30 min) | See each workflow's own cron; throttled by `vercel-ignore-build.sh` for deploy-quota reasons |
 | AI security intelligence collection | `ai-security-intel.yml` → `ai-security-intel-engine.js` | Scheduled |
 | Freshness checking | `freshness-check.yml` | Scheduled |
 | CVE page generation | `cve-pages.yml` | Scheduled |
@@ -46,6 +46,27 @@ EIOS Layer 4 gate should be a decision someone made on purpose, not an
 artifact of the two systems having been built separately and never
 cross-checked — which is exactly the pattern found twice already this
 session in other subsystems.
+
+## Actual cadence is governed by more than the committed cron (GTIOC v1)
+
+The cron expressions above are what's committed to this repository, but
+they are not the whole story. Live GitHub Actions history for both
+`sentinel-apex.yml` (2,931 total runs) and `blogger-syndication.yml`
+(8,182 total runs) shows every run's `event` field, and the dominant
+pattern for both is `workflow_dispatch` firing with clockwork regularity
+at (almost exactly) the same interval as the workflow's own declared
+cron — 30 minutes for `sentinel-apex.yml`, 2 hours for
+`blogger-syndication.yml` — interleaved with the native `schedule` trigger
+firing independently and less predictably (GitHub's own scheduler is
+documented to delay scheduled runs under load, which this external
+dispatch likely exists to compensate for). The result: actual publishing
+cadence is the union of two independent triggers, not just the one visible
+in the workflow file, and nothing in this repository documents what the
+external dispatcher is or where it's configured. Worth knowing before
+concluding "it runs every N minutes" from the YAML alone, and worth the
+platform owner documenting the external mechanism somewhere so a future
+engineer doesn't have to rediscover it from Actions history the way this
+audit did.
 
 ---
 *CyberDudeBivash® Sentinel APEX — Automation Inventory*
