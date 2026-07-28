@@ -25,7 +25,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: sentinel-apex-pipeline
+  group: main-content-writers
   cancel-in-progress: false
 
 jobs:
@@ -153,7 +153,7 @@ jobs:
             git push origin main && echo "✅ Push succeeded (attempt $i)" && break
             if [ $i -lt 3 ]; then
               echo "⚠️ Push attempt $i failed — rebasing..."
-              git pull --rebase origin main
+              git pull --rebase origin main || { echo "⚠️ Rebase conflict — aborting cleanly, will retry"; git rebase --abort 2>/dev/null || true; }
               sleep $((i * 3))
             else
               echo "❌ Push failed after 3 attempts" && exit 1
