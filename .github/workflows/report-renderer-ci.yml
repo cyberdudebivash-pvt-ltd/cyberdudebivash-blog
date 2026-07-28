@@ -1,0 +1,42 @@
+name: "📄 SENTINEL APEX — Report Renderer CI"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Sentinel-APEX/renderer/**'
+      - 'Sentinel-APEX/reports/**'
+      - 'package.json'
+      - '.github/workflows/report-renderer-ci.yml'
+  pull_request:
+    paths:
+      - 'Sentinel-APEX/renderer/**'
+      - 'Sentinel-APEX/reports/**'
+      - 'package.json'
+      - '.github/workflows/report-renderer-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  node-renderer-tests:
+    name: "Report Renderer — Real Report Validation"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: "📥 Checkout"
+        uses: actions/checkout@v4
+
+      - name: "🟢 Set up Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "📦 Install dependencies"
+        run: npm ci --no-audit --no-fund
+
+      - name: "🔬 Syntax-check the renderer"
+        run: node -c Sentinel-APEX/renderer/report-renderer.js
+
+      - name: "🧪 Run renderer tests (validated against real SA-2026-0001 reports)"
+        working-directory: Sentinel-APEX/renderer
+        run: node --test
