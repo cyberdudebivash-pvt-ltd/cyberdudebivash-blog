@@ -28,6 +28,17 @@ REQUIRED_SECTIONS = (
     "IOC Intelligence",
 )
 
+# Real hand-authored reports (Sentinel-APEX/reports/drafts/) use different,
+# equally valid section names for the same analytical content — see
+# platform/open-issues.md Issue 4. A required section is satisfied by any of
+# its aliases; this is a naming-taxonomy accommodation, not a loosened check
+# — "Attack Chain" was verified (by reading the actual section content, not
+# assumed from the name) to contain the step-by-step technical exploitation
+# mechanics "Technical Analysis" requires.
+SECTION_ALIASES: dict[str, tuple[str, ...]] = {
+    "Technical Analysis": ("Technical Analysis", "Attack Chain"),
+}
+
 SIGMA_REQUIRED_KEYS = ("title", "id", "description", "logsource", "detection", "level")
 SIGMA_LEVELS = ("informational", "low", "medium", "high", "critical")
 
@@ -85,7 +96,8 @@ def gate_report(report: ParsedReport) -> GateResult:
 def _gate_structure(report: ParsedReport) -> list[GateFinding]:
     findings = []
     for section in REQUIRED_SECTIONS:
-        if not report.has_section(section):
+        aliases = SECTION_ALIASES.get(section, (section,))
+        if not any(report.has_section(alias) for alias in aliases):
             findings.append(GateFinding(
                 "structure", "block", f"required section missing: {section}"
             ))

@@ -10,7 +10,11 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 
+import yaml
+
 SEVERITIES = ("LOW", "MEDIUM", "HIGH", "CRITICAL")
+
+_RE_FRONT_MATTER = re.compile(r"\A---\s*\n(.*?\n)---\s*\n", re.DOTALL)
 
 # Recognizes two section-marker conventions: the legacy `►`-prefixed style
 # used by older published-page dumps (see tests/fixtures/INTEL-REPORT-*.txt),
@@ -31,6 +35,7 @@ class ParsedReport:
     sections: dict[str, str] = field(default_factory=dict)
     sigma_yaml: str = ""
     raw: str = ""
+    metadata: dict = field(default_factory=dict)
 
     def section(self, name_fragment: str) -> str:
         """Fetch a section by case-insensitive fragment of its heading."""
@@ -45,17 +50,40 @@ class ParsedReport:
         return any(frag in name.lower() for name in self.sections)
 
 
-def parse_report(text: str) -> ParsedReport:
-    report = ParsedReport(raw=text)
-    report.title = _extract_title(text)
-    report.severity = _extract_severity(text)
+def _extract_front_matter(text: str) -> tuple[dict, str]:
+    """Splits a leading YAML front-matter block (--- ... ---) from the rest
+    of the text, same convention as Sentinel-APEX/renderer/report-renderer.js.
+    The legacy `►`-based page-dump fixtures have no front matter at all, so
+    absence (or malformed YAML) is not an error — metadata just stays empty
+    and the full text is treated as the body, same as before this existed."""
+    m = _RE_FRONT_MATTER.match(text)
+    if not m:
+        return {}, text
+    try:
+        parsed = yaml.safe_load(m.group(1))
+    except yaml.YAMLError:
+        return {}, text
+    if not isinstance(parsed, dict):
+        return {}, text
+    return parsed, text[m.end():]
 
-    matches = list(_RE_SECTION.finditer(text))
+
+def parse_report(text: str) -> ParsedReport:
+    metadata, body = _extract_front_matter(text)
+    report = ParsedReport(raw=text, metadata=metadata)
+    # Front matter, when present, is the authoritative source — it's
+    # authored deliberately, not inferred from prose. Fall back to the
+    # text-scanning extractors for the legacy format, which has neither.
+    report.title = str(metadata.get("title") or "") or _extract_title(body)
+    fm_severity = str(metadata.get("severity") or "").upper()
+    report.severity = fm_severity if fm_severity in SEVERITIES else _extract_severity(body)
+
+    matches = list(_RE_SECTION.finditer(body))
     for i, m in enumerate(matches):
         name = m.group(1).strip()
         start = m.end()
-        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
-        report.sections[name] = text[start:end].strip()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(body)
+        report.sections[name] = body[start:end].strip()
 
     sigma_section = report.section("Sigma")
     if sigma_section:

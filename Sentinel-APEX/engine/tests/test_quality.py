@@ -44,6 +44,22 @@ def test_missing_sections_block():
     assert not result.passed
 
 
+def test_technical_analysis_alias_attack_chain_satisfies_the_requirement():
+    # Real hand-authored reports use "Attack Chain" for this content (see
+    # platform/open-issues.md Issue 4) — verified by content, not just name,
+    # that it covers the same step-by-step exploitation mechanics.
+    variant = MINIMAL_GOOD.replace("► Technical Analysis", "► Attack Chain")
+    result = gate_report(parse_report(variant))
+    assert result.passed, [f.message for f in result.blocks]
+
+
+def test_technical_analysis_still_required_when_no_alias_present():
+    # The alias must not silently disable the requirement altogether.
+    stripped = MINIMAL_GOOD.replace("► Technical Analysis", "► Something Else Entirely")
+    result = gate_report(parse_report(stripped))
+    assert any("Technical Analysis" in f.message for f in result.blocks)
+
+
 def test_live_ioc_in_ioc_section_blocks():
     bad = MINIMAL_GOOD.replace(
         "hxxp://evil[.]example-c2[.]top/payload and 45[.]61[.]136[.]39",

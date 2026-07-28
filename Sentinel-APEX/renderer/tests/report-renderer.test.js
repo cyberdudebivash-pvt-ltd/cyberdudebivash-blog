@@ -5,11 +5,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { parseReport, toHTMLDocument, section, renderMarkdown } = require('../report-renderer');
 
-const REPORTS_DIR = path.join(__dirname, '..', '..', 'reports', 'drafts');
+const REPORTS_ROOT = path.join(__dirname, '..', '..', 'reports');
+// The full report was published (EIPP v1) and moved drafts/ -> published/;
+// the executive-brief variant hasn't gone through its own publish action
+// yet, so it's still in drafts/ — each read from its own current location.
 const FULL_REPORT = fs.readFileSync(
-  path.join(REPORTS_DIR, 'SA-2026-0001-sharepoint-cve-2026-50522-active-exploitation.md'), 'utf8');
+  path.join(REPORTS_ROOT, 'published', 'SA-2026-0001-sharepoint-cve-2026-50522-active-exploitation.md'), 'utf8');
 const EXEC_BRIEF = fs.readFileSync(
-  path.join(REPORTS_DIR, 'SA-2026-0001-EXEC-sharepoint-cve-2026-50522.md'), 'utf8');
+  path.join(REPORTS_ROOT, 'drafts', 'SA-2026-0001-EXEC-sharepoint-cve-2026-50522.md'), 'utf8');
 
 // ── real report: full technical report (24 sections, front matter with
 // nested arrays, one embedded code fence, six tables) ──────────────────────

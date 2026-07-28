@@ -119,9 +119,26 @@ never fixable before because the gate couldn't parse the report at all:
    finds nothing. Needs either a severity field in front matter that the
    parser reads directly, or a broader in-text pattern.
 
-Not fixed in this pass — both are new-scope decisions (gate taxonomy vs.
-authoring convention) surfaced by, but distinct from, the marker-mismatch
-fix itself.
+**Resolved (EIPP v1)**, since first real publication required a genuine
+pass, not a bypass:
+
+1. Verified "Attack Chain"'s actual content (step-by-step exploitation
+   mechanics: initial access → execution → credential access), confirmed
+   it satisfies "Technical Analysis" in substance, and added it as a
+   documented alias in `quality.py`'s `SECTION_ALIASES` — the requirement
+   is still enforced (tested: a report with neither name still blocks),
+   just no longer name-literal.
+2. `report_parser.py` now also parses YAML front matter (mirroring
+   `Sentinel-APEX/renderer/report-renderer.js`'s approach) and prefers a
+   `severity:` field there over the old bare-line text scan, which stays
+   as a fallback for the legacy format. SA-2026-0001 didn't have a
+   `severity` field at all — added `severity: "CRITICAL"` to its front
+   matter, an honest addition directly supported by data already in the
+   same report (CVSS 9.8, and the title's own "Critical").
+
+`cli.py gate` now returns **PASS** for SA-2026-0001 (two non-blocking WARNs
+about ATT&CK IDs to manually verify — expected, not a defect). 6 new
+regression tests added (`test_report_parser.py`, `test_quality.py`).
 
 ## Issue 5 — The existing Markdown-to-HTML converter cannot render real Sentinel-APEX reports (tested, not assumed)
 
