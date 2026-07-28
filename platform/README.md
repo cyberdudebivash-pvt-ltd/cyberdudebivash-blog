@@ -34,6 +34,7 @@ CLAUDE.md                          Repository-wide constitution (all code, all c
 │   └── EITO (eito/)               Task execution methodology — how to execute
 │
 ├── Report templates               Sentinel-APEX/templates/
+├── Report authoring               Sentinel-APEX/giaap/ (GIAAP), EIOS Layer 13 (editorial style)
 ├── Quality gates                  Sentinel-APEX/quality/, engine/sentinel_engine/quality.py
 ├── Detection standards            EIOS Layer 6
 ├── Knowledge models               EIOS Layer 3 (+ this doc's two additions)

@@ -46,6 +46,7 @@ DOMAIN_FOR_GATE: dict[str, str] = {
     "confidence": "Evidence Quality",
     "content-integrity": "Evidence Quality",
     "hype-language": "Evidence Quality",
+    "reference-completeness": "Evidence Quality",
     "ioc-defanging": "Detection Quality",
     "sigma": "Detection Quality",
     "yara": "Detection Quality",

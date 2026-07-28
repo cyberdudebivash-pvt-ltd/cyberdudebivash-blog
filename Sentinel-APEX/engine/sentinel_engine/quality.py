@@ -88,6 +88,7 @@ def gate_report(report: ParsedReport) -> GateResult:
     findings += _gate_stix(report)
     findings += _gate_empty_detection(report)
     findings += _gate_confidence(report)
+    findings += _gate_reference_completeness(report)
     findings += _gate_content_integrity(report)
     findings += _gate_hype_language(report)
     return GateResult(findings=findings)
@@ -399,6 +400,52 @@ def _gate_confidence(report: ParsedReport) -> list[GateFinding]:
             "confidence", "block",
             "report makes assessments but carries no confidence labels",
         ))
+    return findings
+
+
+def _normalize_url(text: str) -> str:
+    """Strip every http(s):// scheme occurrence (not just a leading one —
+    this runs against both a single URL and a whole References-section body
+    containing many embedded URLs) and a single trailing slash, so scheme
+    and trailing-slash variants of the same URL compare equal. Not a full
+    URL parser — just enough to avoid false positives from those two common
+    variations."""
+    stripped = re.sub(r"https?://", "", text.strip(), flags=re.IGNORECASE)
+    return stripped.rstrip("/")
+
+
+def _gate_reference_completeness(report: ParsedReport) -> list[GateFinding]:
+    """Every source declared in front-matter metadata must be visible to the
+    reader in the rendered References section — a source known to the
+    platform but never surfaced in the published text is exactly as opaque
+    to a reader as one that was never checked at all (GIAAP v1, following
+    from the SA-2026-0001 review that found two narratively-cited sources,
+    watchTowr and Defused, with no corresponding reference entry).
+
+    This catches the mechanically-checkable half of that finding: declared
+    metadata sources missing from the visible References. It does not (and
+    cannot reliably) catch a bare name mentioned only in prose with no
+    metadata entry at all — that half is a manual authoring discipline,
+    not an automatable gate; see eios/layer-13-editorial-style-guide.md's
+    "Unresolved Reference" tag convention.
+    """
+    findings = []
+    sources = report.metadata.get("sources") or []
+    if not isinstance(sources, list) or not sources:
+        return findings
+
+    references_body = report.section("References")
+    normalized_references = _normalize_url(references_body)
+
+    for url in sources:
+        if not isinstance(url, str) or not url.strip():
+            continue
+        if _normalize_url(url) not in normalized_references:
+            findings.append(GateFinding(
+                "reference-completeness", "warn",
+                f"source declared in front matter is not visible in the "
+                f"References section: {url}",
+            ))
     return findings
 
 
