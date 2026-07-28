@@ -26,7 +26,7 @@ wishlist. Principle, stated because one real tension below tests it:
 | Function | Status |
 |---|---|
 | `Sentinel-APEX/prompts/` report drafting | Manual/session-driven — no automated pipeline calls `master-prompt.md` for general reports |
-| `knowledge_graph.py::ingest()` (offline graph) | Requires manual invocation; the *live* graph (`api/_lib/threat-graph.js`) updates automatically but is a separate system — see `open-issues.md` |
+| `knowledge_graph.py::ingest()` (offline graph) | Requires manual invocation (`cli.py graph`, added GIKEP v1, is the entry point — not wired to the publish step itself); the *live* graph (`api/_lib/threat-graph.js`) updates automatically but is a separate system — see `open-issues.md` |
 | Report version bump / change_log entry (EIOS Layer 8) | Manual convention, no tooling generates it |
 | Changelog generation for `prompts/*.md` / `eios/*.md` themselves | Manual — the "Changelog" sections in root `/prompts/` files were hand-maintained, not generated |
 
