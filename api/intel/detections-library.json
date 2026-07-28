@@ -1,8 +1,27 @@
 {
-  "generated": "2026-07-28T11:20:59.470Z",
+  "generated": "2026-07-28T14:03:14.877Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2013-4786-reddit-netsec-threat-intelligence",
+      "title": "How We Hacked Thousands of Data Centers in Minutes Using a 20-Year-Old Vulnerability",
+      "url": "/posts/cve-2013-4786-reddit-netsec-threat-intelligence.html",
+      "generated": "2026-07-28T13:31:41.685Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2013-4786"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://lavahq.io/bmcradar\"; http.host; content:\"lavahq.io\"; nocase; http.uri; content:\"/bmcradar\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain lavahq.io\"; dns.query; content:\"lavahq.io\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)"
+      ]
+    },
     {
       "slug": "pocumentary-an-agent-friendly-tool-for-recording-pocs",
       "title": "PoCumentary, an agent-friendly tool for recording PoCs",
@@ -4191,32 +4210,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1urrw3w/suspected_russian_threat_actor_impersonates/&quot;&\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1urrw3w/suspected_russian_threat_actor_impersonates/&quot\\;&\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain hybrid-analysis.blogspot.com\"; dns.query; content:\"hybrid-analysis.blogspot.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "micronaut-doesn-t-set-a-maximum-redirect-count-for-its-http",
-      "title": "Micronaut doesn't set a maximum redirect count for its HTTP Client, enabling infinite loop DoS",
-      "url": "/posts/micronaut-doesn-t-set-a-maximum-redirect-count-for-its-http.html",
-      "generated": "2026-07-09T14:02:01.174Z",
-      "severity": "HIGH",
-      "cves": [],
-      "mitreAttack": [
-        {
-          "id": "T1498",
-          "name": "Network Denial of Service",
-          "tactic": "impact",
-          "confidence": "HIGH"
-        }
-      ],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/micronaut-projects/micronaut-core/releases/v5.0.1)\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/micronaut-projects/micronaut-core/releases/v5.0.1)\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/micronaut-projects/micronaut-core/releases/v4.10.24)\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/micronaut-projects/micronaut-core/releases/v4.10.24)\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/micronaut-projects/micronaut-core/releases/v3.10.7)\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/micronaut-projects/micronaut-core/releases/v3.10.7)\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/micronaut-projects/micronaut-core/commit/6e88a972718d6e1521c5b3bb7766451798dba4e3\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/micronaut-projects/micronaut-core/commit/6e88a972718d6e1521c5b3bb7766451798dba4e3\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
       ]
     }
   ]
