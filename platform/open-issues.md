@@ -464,5 +464,48 @@ more than one report.
 graph this platform has ever produced — 10 entities, 9 relations, built by
 actually running `cli.py graph` against the real report, not asserted.
 
+**Update (GIPPP v1) — a second report tested whether these findings
+generalize, and surfaced two more, distinct from the first three:**
+
+- **T1486 keyword-conflation reproduces via a different mechanism.**
+  SA-2026-0002 (CVE-2026-0257, Palo Alto Networks PAN-OS) truthfully reports
+  a CISA-confirmed fact: this CVE's KEV entry carries
+  `knownRansomwareCampaignUse: Known`. Writing that fact plainly ("CISA's
+  KEV catalog... flags this CVE with `knownRansomwareCampaignUse: Known`")
+  contains no negation cue — because it isn't negated, it's a true,
+  confirmed positive — and `_LEXICON`'s `ransomware|encrypt...` pattern maps
+  T1486 (Data Encrypted for Impact) from it anyway. This is a different root
+  cause than SA-2026-0001's hedge-without-cue-word gap: here the mapper
+  conflates "this vulnerability is associated with actors who separately
+  conduct ransomware operations" (an actor/campaign-linkage fact, which is
+  what CISA's flag actually means) with "ransomware encryption was directly
+  observed in this exploitation chain" (what T1486 actually claims). Two
+  reports, two different sentence shapes, both mapping T1486 incorrectly —
+  stronger evidence the keyword pattern itself is imprecise, but for two
+  unrelated reasons, meaning no single narrow fix (more cue words, or a
+  smarter clause check) addresses both. Still not patched, now with twice
+  the evidence for why any fix needs to be more structural than the
+  current phrase-pattern approach.
+- **`entities.py::extract_entities()` has no negation awareness at all** —
+  unlike `attack_mapper.py`, which has `_is_negated()`/`_clause_span()`.
+  SA-2026-0002 explicitly names "Qilin" only to flag it as an unverified,
+  no-supporting-reference claim from this platform's own aggregator
+  (`[Unresolved Reference]`, Intelligence Gaps) — and `extract_entities()`
+  extracted it into the knowledge graph as a confirmed `malware` entity
+  anyway (`Sentinel-APEX/knowledge-graph.json`, `malware:qilin`, tagged to
+  `SA-2026-0002`), with nothing in the graph distinguishing "this report
+  confirmed this entity" from "this report explicitly rejected this
+  entity." Not fixed here — the same reasoning as the other findings in
+  this issue: one example, a change to a shared extraction path, needs more
+  evidence and a designed approach (most plausibly: teach the graph
+  ingestion path to skip entities whose only textual context is inside an
+  `[Unresolved Reference]`/`[Intelligence Gap]`-tagged span) before it's
+  safe to build.
+
+Both found by actually running a second, independently-sourced report
+(NVD + FIRST.org EPSS + CISA KEV + the vendor's own advisory, all
+live-queried) through the exact same real pipeline — not by re-inspecting
+the first report differently.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
