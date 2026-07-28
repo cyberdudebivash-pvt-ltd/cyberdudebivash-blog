@@ -7,38 +7,46 @@ unilateral consolidation calls (`Sentinel-APEX/prompts/` vs. root
 revenue-bearing code without explicit sign-off. That is the difference
 between this entry and the two prior ones.
 
-## Issue 1 — Two independent knowledge-graph / scoring engines
+## Issue 1 — Independently-evolved parallel implementations (Python offline engine vs. live JS product)
 
-**Found while researching EIPS Layer 2/3.**
+**Found while researching EIPS Layer 2/3; the pattern recurred twice more
+during EIOS-X v1/GIOP v1 and is formalized here as one recurring
+architectural theme, not four unrelated issues.**
 
-| | `Sentinel-APEX/engine/sentinel_engine/` | `api/_lib/` |
+| | `Sentinel-APEX/engine/sentinel_engine/` (Python, offline) | `api/_lib/` + `fetch-live-intel.js` (JS, live) |
 |---|---|---|
 | Graph | `knowledge_graph.py` — entities + relation triples, JSON-persisted | `threat-graph.js` (656 lines) — "Threat Actor Graph Engine v2.0," CVE→Actor→Campaign→IOC, 4-factor confidence attribution formula |
 | Scoring | `scoring.py` — 9 weighted dimensions, 0–100, deterministic, FREE/PRO/ENTERPRISE tiering | `threat-scorer.js` (303 lines) — "AI Threat Scoring Engine v2.0," 7 weighted normalized features, 0–100, explicit `reasoning[]` per score |
-| Runtime status | Offline tooling — no CI wires it automatically | **Live** — `threat-scorer.js` is required by `api/_lib/intel.js` (a live endpoint) and `api/_lib/enrichment-pipeline.js` |
-| Cross-references | Zero — confirmed by grep in both directions | Zero |
+| Normalization | `models.py:NormalizedDoc`, produced by `normalizer.normalize()` | ad hoc `item` object reshaped by `normalizeToUniversalSchema()` in `fetch-live-intel.js` |
+| Entity aliasing | `entities.py:LEXICON` — canonical name → aliases tuple | `threat-graph.js` — per-actor objects each carrying their own `aliases: [...]` |
+| Runtime status | Offline tooling — no CI wires it automatically | **Live** — `threat-scorer.js` is required by `api/_lib/intel.js` (a live endpoint) and `api/_lib/enrichment-pipeline.js`; the rest feed the live bot pipeline |
+| Cross-references | Zero — confirmed by grep in both directions, all four rows | Zero |
 
-Both engines independently arrived at the same design philosophy
-(explicit weighted formula, auditable, no black-box scoring) without
-sharing a line of code. Neither is wrong on its own terms; the risk is
-drift — a scoring change made in one will never be reflected in the other,
-and a customer asking "why did this get an Enterprise-tier score in one
-place and a different number in the api response" has no single answer to
-give them.
+### EIF v1 Phase 11 — formal convergence classification
 
-**Why this wasn't touched**: `threat-scorer.js` sits behind a live, paid API
-endpoint. Consolidating it is a functional-behavior change to revenue
-infrastructure, not a documentation edit — a fundamentally different risk
-class from the `/prompts/` cleanup. It needs an explicit decision on which
-formula is canonical (or whether both are intentionally kept for different
-audiences — offline analyst tooling vs. live API scoring at different
-latency/data-freshness budgets, which would be a legitimate reason to keep
-both, unlike the `/prompts/` case where neither was live).
+Evaluated each row against "keep, merge, deprecate, or leave separate with
+justification" (not a decision made unilaterally where one doesn't belong
+to engineering):
 
-**Recommendation, not action**: decide canonical ownership, then either (a)
-have the offline engine call the live scorer's logic (or vice versa) via a
-shared formula definition, or (b) explicitly document why two are
-intentional and keep this table as the record of that decision.
+| Pairing | Classification | Justification |
+|---|---|---|
+| **Scoring** (`scoring.py` / `threat-scorer.js`) | **Leave separate — pending executive decision** | `threat-scorer.js` sits behind a live, paid API endpoint. A customer asking "why did this get a different score in two places" has no single answer today — that's a real drift risk, not a hypothetical one, and the fix is a functional change to revenue infrastructure. Requires a decision on canonical ownership before any merge; not resolved here. |
+| **Graph** (`knowledge_graph.py` / `threat-graph.js`) | **Leave separate — pending executive decision** | Same reasoning as Scoring, same live/offline split, same blocking dependency on the same decision — this is one decision, not two. |
+| **Normalization schema** (`NormalizedDoc` / `normalizeToUniversalSchema()`) | **Leave separate — justified, no decision needed** | No shared consumer: the Python shape only feeds `pipeline.py`/`quality.py`/the certification framework; the JS shape only feeds the live bot's rendering. Unlike Scoring, there is no customer-visible symptom of the two shapes disagreeing — nothing compares them side by side or presents both to the same customer. Unifying two internal data shapes with no interoperability requirement would be consolidation for its own sake, which Phase 11 explicitly rules out ("do not merge systems solely for aesthetic reasons"). |
+| **Entity aliasing** (`entities.py:LEXICON` / `threat-graph.js` aliases) | **Leave separate — justified, no decision needed** | Same reasoning as Normalization: different pipelines, different consumers, no cross-need, no customer-visible inconsistency today. |
+| **Detection generation** (`detection_builder.py`/`sigma_builder.py` / `engine-node/detection-engine.js`) | **Leave separate — justified, not actually a duplication problem** | Confirmed (GIOP v1 audit) this is a *deliberate* parity port — same technique registry, same four-plus-one output formats (Sigma/KQL/Splunk/OSQuery/Suricata), built specifically because the live bot runs on a 5-minute cadence and can't shell out to Python per cycle. This is the documented, justified pattern for maintaining one piece of logic in two runtimes — closer to how `report_parser.py` and `report-renderer.js` mirror the same section-marker convention on purpose. Flagging this as equivalent to Scoring's drift risk would be wrong; it's listed here only to close the question explicitly, not because it needs action. |
+
+**Net effect of this classification**: two of five pairings (Scoring,
+Graph — genuinely one decision) remain blocked on executive sign-off,
+unchanged after five sprints of surfacing them. Three of five (Normalization,
+Entity aliasing, Detection generation) are resolved *as findings* — each
+has an explicit, defensible "why this is fine as two" answer now on record,
+rather than sitting as an open question repeated in every future audit.
+
+**Recommendation, not action**: decide canonical ownership for Scoring/Graph,
+then either (a) have the offline engine call the live scorer's logic (or
+vice versa) via a shared formula definition, or (b) explicitly document why
+two are intentional and keep this table as the record of that decision.
 
 ## Issue 2 — `industry-intelligence.md` has no home
 
