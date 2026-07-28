@@ -27,8 +27,16 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: "📦 Install dependencies"
+      - name: "🟢 Set up Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "📦 Install Python dependencies"
         run: pip install pyyaml pytest
+
+      - name: "📦 Install Node dependencies"
+        run: npm ci --no-audit --no-fund
 
       - name: "🧪 Run engine test suite (offline)"
         working-directory: Sentinel-APEX/engine
