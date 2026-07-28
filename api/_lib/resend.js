@@ -7,10 +7,20 @@
 
 const RESEND_API_KEY    = process.env.RESEND_API_KEY    || '';
 const RESEND_AUDIENCE_ID = process.env.RESEND_AUDIENCE_ID || '';
+const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL ||
+  'CYBERDUDEBIVASH SENTINEL APEX <noreply@cyberdudebivash.com>';
 const RESEND_BASE       = 'https://api.resend.com';
 
 function configured() {
   return Boolean(RESEND_API_KEY && RESEND_AUDIENCE_ID);
+}
+
+/** True if transactional sending is possible — only needs the API key,
+ * unlike configured() above which also requires an audience for the
+ * newsletter's contact-management feature. Two independent capabilities
+ * that happen to share one API key. */
+function canSendEmail() {
+  return Boolean(RESEND_API_KEY);
 }
 
 async function resendRequest(method, path, body) {
@@ -37,4 +47,16 @@ async function addContact(email, firstName) {
   });
 }
 
-module.exports = { configured, addContact };
+/** Send a single transactional email. Does not touch the audience/contacts
+ * feature — independent of RESEND_AUDIENCE_ID. */
+async function sendEmail({ to, subject, html, text }) {
+  return resendRequest('POST', '/emails', {
+    from: RESEND_FROM_EMAIL,
+    to,
+    subject,
+    html,
+    text,
+  });
+}
+
+module.exports = { configured, canSendEmail, addContact, sendEmail };
