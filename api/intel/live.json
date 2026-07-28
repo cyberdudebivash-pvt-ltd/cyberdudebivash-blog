@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-28T21:01:52.588Z",
+  "generated": "2026-07-28T21:31:36.186Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -10,8 +10,8 @@
   "total_published": 2864,
   "s2n_stats": {
     "passed": 97,
-    "suppressed": 30,
-    "avg_qs": 0.527
+    "suppressed": 39,
+    "avg_qs": 0.525
   },
   "items": [
     {
@@ -312,6 +312,47 @@
           "+10 CVSS≥9",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54632",
+      "title": "SIPSorcery: Malformed UDP packet on the RTP/ICE socket can remotely terminate a media session (DoS)",
+      "description": "### Impact\n\nA single malformed inbound UDP packet on the RTP/ICE socket can remotely terminate an active RTP or WebRTC media session. The packet receive handler indexes packet (and STUN attribute) bytes without sufficient length checks and throws, and the UDP receive loop convert... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 45,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54632"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2236,7 +2277,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-15901",
@@ -3737,6 +3780,153 @@
       "suppression_reason": "Single-source item with no CVE IDs or IOCs"
     },
     {
+      "id": "CVE-2026-54691",
+      "title": "datamodel-code-generator vulnerable to SSRF via --url: no host/IP validation, follows redirects",
+      "description": "### Summary `datamodel-code-generator`'s built-in HTTP fetcher (`http.get_body`) issues an `httpx.GET` against any URL passed to `--url` (or reached via a redirect chain) with **no allow-list, no deny-list, no IP/host validation, and `follow_redirects=True`**. Loopback addresses, RFC1918 ranges, lin",
+      "cvss": 8.2,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "datamodel-code-generator",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54691",
+        "CVE-2026-54691"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-rfr2-mq9m-x2qx",
+        "https://github.com/koxudaxi/datamodel-code-generator/security/advisories/GHSA-rfr2-mq9m-x2qx",
+        "https://github.com/koxudaxi/datamodel-code-generator/commit/5fdba4a09f2d7a9996a504975b7ef7d63e3715bb",
+        "https://github.com/koxudaxi/datamodel-code-generator/releases/tag/0.61.0"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-55390",
+      "title": "datamodel-code-generator vulnerable to arbitrary local file read via XSD `schemaLocation` (`xs:include`/`xs:import`) pat",
+      "description": "### Summary When generating models from an XML Schema (`--input-file-type xmlschema`), `datamodel-code-generator` resolves ` `, ` `, ` `, and ` ` `schemaLocation` attributes against the source directory and reads the target with no restriction to the input/base directory. An attacker who controls th",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "datamodel-code-generator",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55390",
+        "CVE-2026-55390"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-442q-2j6p-642g",
+        "https://github.com/koxudaxi/datamodel-code-generator/security/advisories/GHSA-442q-2j6p-642g",
+        "https://github.com/koxudaxi/datamodel-code-generator/commit/d2d5cecd9fd3a2a6dbf148bf0740b83a11fc6820",
+        "https://github.com/koxudaxi/datamodel-code-generator/releases/tag/0.62.0"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-32203",
+      "title": "Microsoft Security Advisory CVE-2026-32203 – .NET and Visual Studio Denial of Service Vulnerability",
+      "description": "## Executive Summary: Microsoft is releasing this security advisory to provide information about a vulnerability in System.Security.Cryptography.Xml. This advisory also provides guidance on what developers can do to update their applications to remove this vulnerability. A vulnerability exists in En",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 2,
+      "merged_sources": [
+        "github_advisories",
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "nuget",
+      "product": "System.Security.Cryptography.Xml",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-32203"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-6588-8gv4-xfgh",
+        "https://github.com/dotnet/runtime/security/advisories/GHSA-6588-8gv4-xfgh",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-32203",
+        "https://github.com/dotnet/runtime/issues/126891"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-50570",
       "title": "Fission: Incomplete capability denylist in Environment/Function PodSpec validation allows tenant-added CAP_SYS_TIME and ",
       "description": "Fission v1.24.0 added PodSpec safety validation for tenant-facing Environment and Function CRDs (`ValidatePodSpecSafety` / `ValidateContainerSafety` admission webhook + `sanitizeContainerSecurityContext` executor merge layer), but the\ncapability check was implemented as a fixed **denylist of six Lin",
@@ -4128,209 +4318,14 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-55771",
-      "title": "Cedar-Java has policy injection, type confusion, and incorrect equality comparison vulnerabilities",
-      "description": "### Summary CedarJava is an open source Java implementation of the Cedar policy language, used for fine-grained authorization decisions. Under certain circumstances, it could lead to incorrect equality comparisons. ### Impact **`EntityIdentifier.equals()` has inverted null/self branches** The `Entit",
-      "cvss": 8.8,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "com.cedarpolicy:cedar-java",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55771",
-        "CVE-2026-55771"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4r9r-4425-74p7",
-        "https://github.com/cedar-policy/cedar-java/security/advisories/GHSA-4r9r-4425-74p7",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-55771",
-        "https://github.com/advisories/GHSA-4r9r-4425-74p7"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-61609",
-      "title": "Pterodactyl's shared global rate-limit key on login and 2FA checkpoint enables unauthenticated panel-wide authentication",
-      "description": "### Summary\nThe `authentication` rate limiter used for the login and two-factor checkpoint endpoints applies a single global bucket shared by every client, instead of keying per IP or per account. An unauthenticated attacker sending ~10 requests per minute from one IP exhausts the shared bucket and ",
-      "cvss": 7.5,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "composer",
-      "product": "pterodactyl/panel",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-61609",
-        "CVE-2026-61609"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-xvc3-826v-xf47",
-        "https://github.com/pterodactyl/panel/security/advisories/GHSA-xvc3-826v-xf47",
-        "https://github.com/advisories/GHSA-xvc3-826v-xf47"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54545",
-      "title": "@wakaru/cli arbitrary file write during bundle unpack",
-      "description": "### Impact `@wakaru/cli` is vulnerable to arbitrary file write when unpacking a crafted JavaScript bundle with `--unpack`. Bundle-controlled module filenames were sanitized before writing extracted modules to the output directory. A crafted filename containing overlapping path traversal characters, ",
-      "cvss": 7.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "@wakaru/cli",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54545",
-        "CVE-2026-54545"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7wpj-vvmv-pgm8",
-        "https://github.com/pionxzh/wakaru/security/advisories/GHSA-7wpj-vvmv-pgm8",
-        "https://github.com/pionxzh/wakaru/commit/1d30383b20a6f768786b8ada2f1b0945de13c316",
-        "https://github.com/pionxzh/wakaru/releases/tag/v1.4.0"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-43910",
-      "title": "java-client Allows Network Pivot via Unvalidated directConnect Redirect in AppiumCommandExecutor",
-      "description": "## Summary When `directConnect(true)` is enabled, appium/java-client unconditionally\naccepts `directConnectHost`, `directConnectPort`, and `directConnectPath`\nfrom the server's NEW_SESSION response and silently redirects all subsequent\nsession traffic to the attacker-specified endpoint — with no all",
-      "cvss": 8.2,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "maven",
-      "product": "io.appium:java-client",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-43910",
-        "CVE-2026-43910"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-28f5-38xr-jh2w",
-        "https://github.com/appium/java-client/security/advisories/GHSA-28f5-38xr-jh2w",
-        "https://github.com/appium/java-client/pull/2408",
-        "https://github.com/appium/java-client/commit/2b9cd442b9dbf56ccc6f1e83aeeb411c0ec230c9"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54632",
-      "title": "SIPSorcery: Malformed UDP packet on the RTP/ICE socket can remotely terminate a media session (DoS)",
-      "description": "### Impact\n\nA single malformed inbound UDP packet on the RTP/ICE socket can remotely terminate an active RTP or WebRTC media session. The packet receive handler indexes packet (and STUN attribute) bytes without sufficient length checks and throws, and the UDP receive loop convert... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
+      "id": "CVE-2026-52888",
+      "title": "NocoBase: Sensitive Data Exposure via SQL Blacklist Bypass",
+      "description": "# Security Vulnerability Report: Sensitive Data Exposure via SQL Blacklist Bypass\n\n## Summary\n\nThe `checkSQL()` function in `plugin-collection-sql` implements a **keyword-based blacklist** to prevent dangerous SQL queries from being executed through the SQL Collection feature. Ho... [Full analysis a",
+      "cvss": 6.8,
+      "final_ps": 15,
+      "quality_score": 0.378,
+      "threat_level": "LOW",
+      "type": "INCIDENT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -4345,19 +4340,19 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-54632"
+        "CVE-2026-52888"
       ],
       "ioc_count": 0,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
+          "data_confidence=0.15",
           "recency=0d (score=1.00)",
-          "QS=0.417"
+          "QS=0.378"
         ],
         "priority": [
-          "base_ps=17 (no boosts)"
+          "base_ps=15 (no boosts)"
         ],
         "suppression": null,
         "merge": null
