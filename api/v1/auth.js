@@ -18,7 +18,8 @@ const {
   authenticate, respond, apiError, successResponse, corsHeaders,
   generateApiKey, hashKey, RATE_LIMITS,
 } = require('../_lib/middleware');
-const sec = require('../_lib/security');
+const sec    = require('../_lib/security');
+const resend = require('../_lib/resend');
 
 /* ─── Allowed fields for register (Phase 2 whitelist) ─────────── */
 const REGISTER_FIELDS = ['email', 'name', 'plan'];
@@ -30,6 +31,48 @@ function daysAgo(n) {
   const d = new Date();
   d.setDate(d.getDate() - n);
   return d.toISOString().slice(0,10).replace(/-/g,'');
+}
+
+/* ─── Registration welcome email content ───────────────────────
+   Kept alongside the handler that owns this specific email, not in
+   resend.js (a generic REST client with no content of its own). */
+function buildWelcomeEmail({ name, apiKey, tier, rateLimit, dashboardUrl, docsUrl, upgradeUrl }) {
+  const greeting = name ? `Hi ${name},` : 'Hi,';
+  const subject  = 'Your CYBERDUDEBIVASH Sentinel APEX API key';
+  const text = [
+    `${greeting}`,
+    '',
+    `Your Sentinel APEX API key has been created on the ${tier.toUpperCase()} tier (${rateLimit} requests/day).`,
+    '',
+    `API key: ${apiKey}`,
+    'Store this securely — it will not be shown again, including in this email thread if you reply to it.',
+    '',
+    `Authenticate requests with: Authorization: Bearer ${apiKey}`,
+    '',
+    `Dashboard: ${dashboardUrl}`,
+    `API documentation: ${docsUrl}`,
+    `Upgrade plans: ${upgradeUrl}`,
+    '',
+    'Questions? Reply to this email or contact bivash@cyberdudebivash.com.',
+    '',
+    '— CYBERDUDEBIVASH Sentinel APEX',
+  ].join('\n');
+  const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a">
+<p>${greeting}</p>
+<p>Your Sentinel APEX API key has been created on the <strong>${tier.toUpperCase()}</strong> tier
+(${rateLimit} requests/day).</p>
+<p style="background:#f4f4f5;border:1px solid #e4e4e7;border-radius:8px;padding:12px 16px;font-family:monospace;font-size:14px;word-break:break-all">${apiKey}</p>
+<p><strong>Store this securely — it will not be shown again</strong>, including in this email thread if you reply to it.</p>
+<p>Authenticate requests with:<br><code>Authorization: Bearer ${apiKey}</code></p>
+<p>
+<a href="${dashboardUrl}">Dashboard</a> ·
+<a href="${docsUrl}">API documentation</a> ·
+<a href="${upgradeUrl}">Upgrade plans</a>
+</p>
+<p>Questions? Reply to this email or contact <a href="mailto:bivash@cyberdudebivash.com">bivash@cyberdudebivash.com</a>.</p>
+<p>— CYBERDUDEBIVASH Sentinel APEX</p>
+</div>`;
+  return { subject, text, html };
 }
 
 /* ─── Main Router ─────────────────────────────────────────────── */
@@ -158,6 +201,18 @@ async function handleRegister(req, res) {
     await redis.incr(`analytics:registrations:${now.slice(0,10)}`).catch(() => {});
 
     const RATE_MAP = { free: 100, pro: 5000, enterprise: 999999 };
+    const dashboardUrl = 'https://blog.cyberdudebivash.in/api-dashboard.html';
+    const docsUrl      = 'https://blog.cyberdudebivash.in/api.html';
+    const upgradeUrl   = 'https://blog.cyberdudebivash.in/pricing.html';
+
+    if (resend.canSendEmail()) {
+      const welcome = buildWelcomeEmail({
+        name, apiKey, tier: activeTier,
+        rateLimit: RATE_MAP[activeTier] || 100,
+        dashboardUrl, docsUrl, upgradeUrl,
+      });
+      await resend.sendEmail({ to: email, ...welcome }).catch(() => {});
+    }
 
     return respond(res, 201, {
       success: true,
@@ -174,9 +229,9 @@ async function handleRegister(req, res) {
       api_key:       apiKey,
       rate_limit:    { requests_per_day: RATE_MAP[activeTier] || 100, tier: activeTier },
       usage:         { endpoint: `Authorization: Bearer ${apiKey}` },
-      upgrade_url:   'https://blog.cyberdudebivash.in/pricing.html',
-      dashboard_url: 'https://blog.cyberdudebivash.in/api-dashboard.html',
-      docs_url:      'https://blog.cyberdudebivash.in/api.html',
+      upgrade_url:   upgradeUrl,
+      dashboard_url: dashboardUrl,
+      docs_url:      docsUrl,
       meta: {
         platform:  'CYBERDUDEBIVASH SENTINEL APEX v4.0',
         timestamp: now,
@@ -301,3 +356,7 @@ async function handleUsage(req, res) {
     return apiError(res, 500, 'USAGE_ERROR', sec.safeError(e, 'Usage data unavailable. Please retry.'));
   }
 }
+
+/* Named export for direct unit testing — the default export stays the
+ * router, unchanged, for every existing consumer (vercel.json routing). */
+module.exports.buildWelcomeEmail = buildWelcomeEmail;

@@ -621,5 +621,38 @@ Recorded here, per this file's own precedent (Issue 1's "pending
 executive decision" pairings), so the finding isn't lost before that
 decision is made.
 
+## Issue 11 — Registration welcome email: built and tested, held pending activation sign-off (GECTP v1)
+
+Closes the gap GCGMP v1 found: `api/_lib/resend.js` supported only
+`addContact()` (the newsletter audience), so a user who closed the tab
+after registering had no way to recover their API key — nothing emailed
+it anywhere. Implemented additively: `resend.js` gained `sendEmail()`
+(generic transactional send via Resend's `/emails` endpoint) and
+`canSendEmail()` (true whenever `RESEND_API_KEY` is set, independent of
+`RESEND_AUDIENCE_ID` — `configured()` itself is untouched and still
+requires both, exactly as before, for the newsletter feature). `auth.js`
+gained `buildWelcomeEmail()` and a call site in `handleRegister()` that
+sends the new user's API key, tier, rate limit, and the same
+dashboard/docs/upgrade URLs already in the JSON response — awaited but
+error-swallowed (`.catch(() => {})`), matching this same function's
+existing best-effort pattern for its analytics counters, so a Resend
+outage can never fail a registration. 6 new tests
+(`tests-js/registration-welcome-email.test.js`): `canSendEmail()`'s
+independence from `configured()`, `sendEmail()`'s request shape, and
+`buildWelcomeEmail()`'s content (API key present in both html/text,
+name-present vs. anonymous greeting, all three URLs and the tier/rate
+limit rendered). Full root JS suite: 50 passed (was 44).
+
+**Deliberately not yet merged to `main`.** Everything above is implemented
+and tested on the feature branch only. Merging to `main` is the step that
+activates it in production — from that point, every real registration
+would trigger a real, automatic email to a real address under this
+company's brand, with no per-instance human review. That is a
+customer-communication/business-policy activation, not a pure engineering
+one, so it is held pending explicit owner sign-off rather than merged
+unilaterally alongside the rest of this session's changes. If approved,
+merging `claude/cti-platform-standards-f64l5x` into `main` is sufficient —
+no further code change is needed to activate it.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
