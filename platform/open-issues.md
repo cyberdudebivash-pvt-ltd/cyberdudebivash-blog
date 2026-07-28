@@ -227,5 +227,46 @@ the existing converter unmodified, which looked like the cheapest path, is
 now a tested dead end rather than an assumption — this is exactly the
 outcome a proof-of-concept is supposed to produce. Not fixed in this pass.
 
+## Issue 6 — Template-fallback detection content is category-generic, not vulnerability-specific (read the code, not just the stats)
+
+Prior audits established *that* ~98% of Blogger-syndication posts use the
+template fallback rather than an LLM (GTIOC v1). Reading `_template_enhance()`
+(`automation/authority_transformer.py:634-1646`) end to end shows *what that
+actually means* for content quality — more nuanced than "lower quality":
+
+- **Executive Summary / Technical Analysis are genuinely per-article** —
+  they directly quote `article.summary` and any extracted CVE/CVSS.
+- **MITRE ATT&CK mapping, Sigma rule, the 5 SIEM queries, hunt queries, and
+  SOC playbook are selected from exactly 8 mutually-exclusive category
+  buckets** (`is_ot` / `is_ransomware` / `is_apt` / `is_cve` / `is_ato` /
+  `is_extension` / `is_supply_chain` / generic else, lines 673-1057). Within
+  the `is_cve` bucket — the one most NVD/KEV-sourced posts hit, per the
+  source-priority ordering in `content_discovery.py` — the Sigma rule and
+  SIEM queries detect a fixed "path traversal + web shell" pattern
+  (`../`, `%2e%2e`, `cmd.exe`, `/etc/passwd`) regardless of the specific
+  CVE's actual vulnerability class. A deserialization CVE and an
+  unrelated auth-bypass CVE both get the identical detection logic; only
+  the CVE ID string and severity are substituted in.
+- This is exactly the failure mode the LLM prompt (`_build_analyst_prompt`,
+  lines 540-627) explicitly guards against — "Sigma rules must be specific
+  to the attack technique described... not template placeholders" — so the
+  platform's own design already recognizes the difference; the fallback
+  path just can't clear that bar the way the LLM path is instructed to.
+- **Existing, real mitigation, not absent**: the Sigma rule is emitted with
+  `status: experimental`, and the SIEM query block already carries "VALIDATE
+  FIELD NAMES AGAINST YOUR ENVIRONMENT BEFORE DEPLOYING." Readers aren't
+  told these are ready-to-deploy as-is — but the detection *logic*, not
+  just field names, may not match the actual vulnerability.
+
+**Not fixed in this pass** — properly fixing this means classifying by
+vulnerability mechanism (CWE class: deserialization/SSRF/auth-bypass/RCE/…)
+instead of the current 8 broad categories, which means new per-class
+Sigma/SIEM content and materially more branching in an already
+1000+-line function. That's a bigger-scoped change than this sprint's two
+fixes, though `tests/test_authority_transformer.py` already has 56 tests
+(several targeting `_template_enhance()` directly) to build on, so it
+isn't starting from zero coverage. Flagged as the most evidence-justified
+candidate for a dedicated future sprint, not attempted here.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
