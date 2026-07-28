@@ -35,6 +35,14 @@ Usage (from Sentinel-APEX/engine/):
       shipped publication artifacts through all five certification domains
       and prints a Release Governance Markdown record. Exit 0 if CERTIFIED
       or CERTIFIED WITH CONDITIONS, 1 if NOT CERTIFIED.
+
+  python3 cli.py graph <report.md> --id REPORT-ID [--graph kg.json]
+      GIKEP v1: ingest one already-published, quality-gated report
+      (Sentinel-APEX/reports/published/) into the knowledge graph.
+      `run`/`score` already do this for the pre-publication pipeline's own
+      NormalizedDoc; this is the equivalent for a final, hand-authored
+      report file, which had no path into the graph before. Prints any
+      prior context the graph already had, then the graph's stats as JSON.
 """
 
 from __future__ import annotations
@@ -54,6 +62,7 @@ from sentinel_engine.ioc_extractor import IOCType  # noqa: E402
 from sentinel_engine.knowledge_graph import KnowledgeGraph  # noqa: E402
 from sentinel_engine.models import SourceDocument  # noqa: E402
 from sentinel_engine.normalizer import normalize  # noqa: E402
+from sentinel_engine.report_ingest import normalize_report  # noqa: E402
 
 
 def cmd_normalize(args: argparse.Namespace) -> int:
@@ -141,6 +150,22 @@ def cmd_score(args: argparse.Namespace) -> int:
     return 0 if result.score.eligible else 2
 
 
+def cmd_graph(args: argparse.Namespace) -> int:
+    report = report_parser.parse_report(Path(args.report).read_text(errors="replace"))
+    doc = normalize_report(report)
+    graph = KnowledgeGraph.load(args.graph) if args.graph else KnowledgeGraph()
+    prior = graph.prior_context(doc)
+    graph.ingest(doc, args.id)
+    if args.graph:
+        graph.save(args.graph)
+    if prior:
+        print("== prior context ==")
+        for note in prior:
+            print(f"  - {note}")
+    print(json.dumps(graph.stats(), indent=2))
+    return 0
+
+
 def cmd_certify(args: argparse.Namespace) -> int:
     cert = certification.certify(
         args.report, html_path=args.html or None,
@@ -189,6 +214,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--enrich", action="store_true")
     p.add_argument("--threshold", type=int, default=60)
     p.set_defaults(func=cmd_score)
+
+    p = sub.add_parser("graph", help="ingest a published report into the knowledge graph")
+    p.add_argument("report")
+    p.add_argument("--id", required=True)
+    p.add_argument("--graph", default="")
+    p.set_defaults(func=cmd_graph)
 
     p = sub.add_parser("certify", help="run the EICF v1 certification framework on one report")
     p.add_argument("report")

@@ -156,7 +156,16 @@ _RE_TECHNIQUE_ID = re.compile(r"\bT\d{4}(?:\.\d{3})?\b")
 # positive finding. _is_negated() scopes a negation search to the sentence
 # enclosing the match, so a negation elsewhere in the document doesn't
 # suppress an unrelated, genuinely positive statement.
-_RE_SENTENCE_BOUNDARY = re.compile(r"[.!?](?:\s|$)|\n\s*\n")
+#
+# A markdown table row is also its own clause boundary, not just `.!?` and
+# blank lines: a multi-row table (e.g. a MITRE ATT&CK Mapping table) has no
+# terminal punctuation between rows, so without this a hedge word in ANY
+# row's Evidence cell ("not explicitly confirmed") silently suppressed every
+# OTHER technique ID cited elsewhere in the same table, including ones with
+# a fully clean, unhedged citation of their own — found running a real
+# published report (SA-2026-0001) through the knowledge graph for the first
+# time (GIKEP v1). GFM table rows reliably end in a trailing ` |`.
+_RE_SENTENCE_BOUNDARY = re.compile(r"[.!?](?:\s|$)|\n\s*\n|\|[ \t]*\n")
 _RE_NEGATION_CUE = re.compile(
     r"\b(?:no|not|none|never|without|lacks?|absent|ruled out|rejected)\b|n't\b",
     re.IGNORECASE,
