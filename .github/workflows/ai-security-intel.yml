@@ -24,7 +24,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: sentinel-apex-aisec
+  group: main-content-writers
   cancel-in-progress: false
 
 jobs:
@@ -92,5 +92,5 @@ jobs:
           git commit -m "SENTINEL APEX AI-SEC: ${STATS} [$(date -u '+%Y-%m-%dT%H:%M:%SZ')] [skip ci]" || { echo "nothing to commit"; exit 0; }
           for i in 1 2 3 4; do
             if git push origin HEAD; then echo "✅ pushed"; break; fi
-            echo "push failed, retrying in $((2**i))s"; git pull --rebase origin "$(git rev-parse --abbrev-ref HEAD)" || true; sleep $((2**i))
+            echo "push failed, retrying in $((2**i))s"; git pull --rebase origin "$(git rev-parse --abbrev-ref HEAD)" || { echo "⚠️ Rebase conflict — aborting cleanly, will retry"; git rebase --abort 2>/dev/null || true; }; sleep $((2**i))
           done
