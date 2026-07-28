@@ -11,6 +11,8 @@
  *   6. linkActorsToCampaigns             → campaign nodes wired into graph
  *   6b. linkCorrelatedCampaigns          → co_occurs_with edges between
  *                                          campaigns sharing a CVE (GEPMO v1)
+ *   6c. linkCorrelatedCVEs               → co_occurs_with edges between CVEs
+ *                                          sharing a campaign (GCDOM v1)
  *   7. Pass 2: computeActorAttribution   → with campaign context (final)
  *   8. computeNormalizedScore per item   → with final actor + campaign context
  *   9. generateExplanation per item      → human-readable _explanation block
@@ -225,6 +227,57 @@ function linkActorsToCampaignsGraph(graph, campaigns) {
 ═══════════════════════════════════════════════════════════════════════ */
 const MAX_CAMPAIGNS_PER_CVE_FOR_CORRELATION = 20;
 
+/* ═══════════════════════════════════════════════════════════════════════
+   CVE CORRELATION (Issue 8 continuation, GCDOM v1)
+   Same gap as campaign correlation, other direction: two CVE nodes that
+   are both included by the same campaign were never linked to each other
+   either -- every edge remains hierarchical, none symmetric. This adds one
+   new, purely additive 'co_occurs_with' edge between any two CVE nodes that
+   share an including Campaign, computed entirely from existing
+   Campaign->CVE 'includes' edges already in the graph. No existing node or
+   edge is read differently or modified.
+   Real data check at filing time (api/intel/threat-graph.json): 265
+   campaigns have at least one Campaign->CVE edge; 28 of those include more
+   than one CVE (max observed: 5) and so produce correlation edges here.
+═══════════════════════════════════════════════════════════════════════ */
+const MAX_CVES_PER_CAMPAIGN_FOR_CORRELATION = 20;
+
+function linkCorrelatedCVEs(graph) {
+  const campaignToCVEs = new Map(); // campaignId -> Set(cveId)
+
+  for (const edge of (graph.edges || [])) {
+    if (edge.relationship !== 'includes') continue;
+    const source = graph.nodes[edge.source];
+    const target = graph.nodes[edge.target];
+    if (!source || source.type !== 'Campaign') continue;
+    if (!target || target.type !== 'CVE') continue;
+
+    if (!campaignToCVEs.has(edge.source)) campaignToCVEs.set(edge.source, new Set());
+    campaignToCVEs.get(edge.source).add(edge.target);
+  }
+
+  let newEdgeCount = 0;
+  for (const [campaignId, cveSet] of campaignToCVEs.entries()) {
+    const cveIds = [...cveSet].sort();
+    if (cveIds.length < 2) continue;
+    if (cveIds.length > MAX_CVES_PER_CAMPAIGN_FOR_CORRELATION) {
+      console.warn(`[GRAPH] Skipping CVE correlation for ${campaignId} — ${cveIds.length} CVEs exceeds cap of ${MAX_CVES_PER_CAMPAIGN_FOR_CORRELATION}`);
+      continue;
+    }
+    for (let i = 0; i < cveIds.length; i++) {
+      for (let j = i + 1; j < cveIds.length; j++) {
+        const before = graph.edges.length;
+        addEdge(graph, cveIds[i], cveIds[j], 'co_occurs_with', 0.7, {
+          sources: [`shared campaign: ${campaignId}`],
+        });
+        if (graph.edges.length > before) newEdgeCount++;
+      }
+    }
+  }
+
+  return newEdgeCount;
+}
+
 function linkCorrelatedCampaigns(graph) {
   const cveToCampaigns = new Map(); // cveId -> Set(campaignId)
 
@@ -320,6 +373,10 @@ function runEnrichmentPipeline(intelItems) {
   // ── STEP 6b: Correlate campaigns that share a CVE ────────────────────
   const correlationEdges = linkCorrelatedCampaigns(graph);
   log(`Step 6b — Campaign correlation: ${correlationEdges} co_occurs_with edge(s) added`);
+
+  // ── STEP 6c: Correlate CVEs that share a campaign ────────────────────
+  const cveCorrelationEdges = linkCorrelatedCVEs(graph);
+  log(`Step 6c — CVE correlation: ${cveCorrelationEdges} co_occurs_with edge(s) added`);
 
   // ── STEP 7: Pass 2 actor attribution (with campaign context) ─────────
   const pass2Attribution = new Map();
@@ -590,4 +647,5 @@ module.exports = {
   filterForEnterprise,
   linkActorsToCampaignsGraph,
   linkCorrelatedCampaigns,
+  linkCorrelatedCVEs,
 };
