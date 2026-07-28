@@ -9,7 +9,11 @@ Every intelligence product MUST pass this gate before moving from
 > labeling, scraper-noise leakage, cross-report duplication, cross-report
 > indicator reuse) runs as code in `../engine/` —
 > `python3 cli.py gate <report...>` exits non-zero on any blocking finding.
-> Run it before manual review, not instead of it. Full gate documentation,
+> Run it before manual review, not instead of it. `python3 cli.py certify
+> <report.md>` runs this gate plus rendering and publication validation
+> together and emits a scorecard + Release Governance record (EICF v1;
+> `../eios/layer-14-release-pipeline.md`) — the same underlying checks, one
+> certification pass. Full gate documentation,
 > including what this revision added and why, is in
 > `../eios/layer-04-quality-gates.md`. This gate is the correctness half of
 > publication readiness — `../eios/layer-10-commercial-readiness.md` covers

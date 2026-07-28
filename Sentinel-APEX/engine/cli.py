@@ -27,6 +27,14 @@ Usage (from Sentinel-APEX/engine/):
       Run the full pipeline and print the intelligence score (10 dimensions,
       overall publication score, tier, eligibility) as JSON. Exit 0 if
       publish-eligible, 2 if held below threshold.
+
+  python3 cli.py certify <report.md> [--html published.html] [--sitemap sitemap.xml]
+                         [--index index.html] [--node node]
+      Enterprise Intelligence Certification Framework (EICF v1): runs the
+      quality gate, the canonical renderer, and (if --html is given) the
+      shipped publication artifacts through all five certification domains
+      and prints a Release Governance Markdown record. Exit 0 if CERTIFIED
+      or CERTIFIED WITH CONDITIONS, 1 if NOT CERTIFIED.
 """
 
 from __future__ import annotations
@@ -39,7 +47,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from sentinel_engine import pipeline, quality, report_parser  # noqa: E402
+from sentinel_engine import certification, pipeline, quality, report_parser  # noqa: E402
 from sentinel_engine.detection_builder import build_all  # noqa: E402
 from sentinel_engine.enrichment import Enricher  # noqa: E402
 from sentinel_engine.ioc_extractor import IOCType  # noqa: E402
@@ -133,6 +141,16 @@ def cmd_score(args: argparse.Namespace) -> int:
     return 0 if result.score.eligible else 2
 
 
+def cmd_certify(args: argparse.Namespace) -> int:
+    cert = certification.certify(
+        args.report, html_path=args.html or None,
+        sitemap_path=args.sitemap or None, index_path=args.index or None,
+        node_bin=args.node,
+    )
+    print(certification.render_release_governance_markdown(cert))
+    return 1 if cert.decision == "NOT CERTIFIED" else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -171,6 +189,14 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--enrich", action="store_true")
     p.add_argument("--threshold", type=int, default=60)
     p.set_defaults(func=cmd_score)
+
+    p = sub.add_parser("certify", help="run the EICF v1 certification framework on one report")
+    p.add_argument("report")
+    p.add_argument("--html", default="", help="path to the already-published HTML page, if any")
+    p.add_argument("--sitemap", default="", help="path to sitemap.xml, for the Publication Quality domain")
+    p.add_argument("--index", default="", help="path to index.html, for the Publication Quality domain")
+    p.add_argument("--node", default="node", help="node binary to invoke for the Rendering Quality domain")
+    p.set_defaults(func=cmd_certify)
 
     args = parser.parse_args(argv)
     return args.func(args)

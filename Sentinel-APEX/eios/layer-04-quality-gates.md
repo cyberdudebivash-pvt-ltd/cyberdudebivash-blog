@@ -25,6 +25,7 @@ It is not a checklist for a human to eyeball; it is code with tests
 | Executive Summary is a verbatim copy of the analysis opening | `_gate_content_integrity` | warn |
 | Identical Sigma rule published across unrelated reports | `gate_corpus` | block |
 | Near-duplicate ATT&CK/IOC/Hunting sections across reports (≥80% shingle similarity) | `gate_corpus` | warn |
+| Same indicator reused across unrelated reports | `gate_corpus` | warn |
 
 ## Gates added by this EIOS revision
 
@@ -37,10 +38,18 @@ code, to avoid a parallel validator:
 |---|---|---|---|
 | YARA rule present but invalid (unbalanced braces, missing required sections/meta fields) | `_gate_yara` | block | `malware-prompt.md` and `docs/CONVENTIONS.md` both *require* YARA meta fields (`author`, `description`, `date`, `reference`, `confidence`, `tlp`), but nothing checked them — Sigma had `validate_sigma`, YARA had nothing. |
 | Detection section header present but body empty/whitespace-only | `_gate_empty_detection` | block | A heading with no content is worse than an omitted section — it implies coverage that isn't there. |
-| Same IOC value appears in two different IOC categories within one report | `_gate_ioc_consistency` | block | `docs/CONVENTIONS.md` requires exactly one category per indicator; nothing enforced "exactly one." |
 | STIX bundle present but structurally invalid (not a `bundle` object, missing `objects[]`, or an object missing `type`/`id`/`spec_version`) | `_gate_stix` | block | STIX/TAXII was added as an optional output in the v1 update (`master-prompt.md` § Technical Depth) with no validation. This is a **structural** check, not full STIX 2.1 schema validation — no new dependency was added to keep `dependencies: {}` in `package.json` and the Python engine's minimal `pyyaml`+`pytest` footprint intact. Full schema validation is a documented future increment if STIX output volume justifies a dedicated library. |
 | Superlative/hype language (`unprecedented`, `catastrophic`, ...) | `_gate_hype_language` | warn | Absorbed from the deprecated root `prompts/20-editorial-qa.md`'s "Automated failure detectors" during the `/prompts/` consolidation — this was a genuinely new, never-implemented check. `warn`, not `block`: a heuristic word match can false-positive on a report quoting a source's own hyperbolic language for critique. |
 | "Actively exploited" / "in the wild" claim with no CISA KEV or citation in the same section | `_gate_hype_language` | warn | Same absorption. `warn` for the same reason — the citation-proximity check is heuristic, not a guarantee the claim is actually uncited. |
+
+The "duplicate indicators" ask above is satisfied by `gate_corpus`'s existing
+cross-report IOC-reuse check (first table) — a per-report, cross-category
+consistency check (e.g. the same value marked both "Confirmed" and
+"Historical") would need the `IOC` model to carry a category field, which it
+does not; this table previously and incorrectly claimed such a gate
+(`_gate_ioc_consistency`) existed. Corrected here rather than left stale —
+building that model change is a new feature, out of scope for a
+certification-of-what-exists pass (EICF v1).
 
 All four are additive functions appended to `gate_report()`'s call list in
 `quality.py`, following the exact pattern of the existing gates (small,
