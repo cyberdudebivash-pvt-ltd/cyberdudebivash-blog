@@ -268,5 +268,32 @@ fixes, though `tests/test_authority_transformer.py` already has 56 tests
 isn't starting from zero coverage. Flagged as the most evidence-justified
 candidate for a dedicated future sprint, not attempted here.
 
+**Addendum (GCTIX v1) — verified against live output, and the LLM path
+doesn't fully close this either.** Fetched two real published posts (one
+per path, both real `blogger_url` values from `logs/run-*.json`, not
+guessed) to check the code-reading conclusion above against what a
+customer actually sees:
+
+- **Template** (`CVE-2026-14490`): exactly as the code predicts — Sigma
+  title says "CVE-2026-14490 Payload and Web Shell Activity," but the
+  selection logic is the same fixed `../`, `%2e%2e`, `cmd.exe`,
+  `/etc/passwd` set every `is_cve` post gets. The CVE ID appears only in
+  the label, never in the detection logic itself.
+- **LLM** (`CVE-2026-16585`, groq): genuinely better in the ways the
+  prompt asks for — it correctly names the real vulnerable component (a
+  WordPress plugin's `delete_sticker` function) and maps a single, correct
+  technique (T1204) instead of the template's padded five. But its own
+  generated Sigma rule is still just `c-uri: '*../*'` with no correlation
+  to that specific endpoint — better than the template's cross-post
+  duplication, but not the fully vulnerability-specific rule its own
+  narrative just described.
+
+Net effect: raising LLM adoption (the GTIOC v1 finding) would reduce how
+often the *same* generic rule repeats verbatim across unrelated CVEs, but
+wouldn't by itself make generated detection logic correlate to the
+specific finding — that gap exists on both paths, just more severely on
+the template one. Doesn't change the "not attempted here" conclusion
+above; narrows what the eventual fix needs to cover.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
