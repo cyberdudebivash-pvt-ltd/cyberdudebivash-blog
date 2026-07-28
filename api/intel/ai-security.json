@@ -2,10 +2,10 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-07-28T21:10:31.476Z",
+  "generated": "2026-07-28T23:02:27.296Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 10,
+    "published": 9,
     "p1": 0,
     "leadsHeld": 3,
     "analystReports": 0,
@@ -21,11 +21,11 @@
         "error": "HTTP 429"
       },
       {
-        "name": "arXiv cs.CR (LLM security)",
-        "key": "arxiv_sec",
-        "tier": 2,
+        "name": "NVD (prompt injection)",
+        "key": "nvd_pi",
+        "tier": 1,
         "status": "ok",
-        "items": 30,
+        "items": 40,
         "error": null
       },
       {
@@ -37,6 +37,14 @@
         "error": null
       },
       {
+        "name": "NVD (AI/LLM keyword)",
+        "key": "nvd_ai",
+        "tier": 1,
+        "status": "ok",
+        "items": 40,
+        "error": null
+      },
+      {
         "name": "r/MachineLearning",
         "key": "reddit_ml",
         "tier": 3,
@@ -45,23 +53,15 @@
         "error": null
       },
       {
-        "name": "NVD (prompt injection)",
-        "key": "nvd_pi",
-        "tier": 1,
+        "name": "arXiv cs.CR (LLM security)",
+        "key": "arxiv_sec",
+        "tier": 2,
         "status": "ok",
-        "items": 40,
-        "error": null
-      },
-      {
-        "name": "NVD (AI/LLM keyword)",
-        "key": "nvd_ai",
-        "tier": 1,
-        "status": "ok",
-        "items": 40,
+        "items": 30,
         "error": null
       }
     ],
-    "runtimeMs": 14302
+    "runtimeMs": 9057
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,7 +88,7 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 10,
+  "count": 9,
   "items": [
     {
       "id": "9795e8c2c020b198",
@@ -179,62 +179,6 @@
         "flags": {
           "agentic": true,
           "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 63,
-        "priority": "P2"
-      },
-      "confidence": {
-        "source": "HIGH",
-        "evidence": "HIGH",
-        "overall": "HIGH",
-        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "2578baa94aab2aee",
-      "title": "AWS API MCP Server Security Policy Bypass via Startup Initialization Failure",
-      "url": "https://github.com/advisories/GHSA-29w2-fq35-v728",
-      "source": "GitHub Security Advisories",
-      "tier": 1,
-      "published": "2026-07-24T22:33:19Z",
-      "cve": "CVE-2026-16584",
-      "severity": "high",
-      "cvss": null,
-      "evidence_label": "VERIFIED_ADVISORY",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": true,
           "rag": false,
           "tool_use": false,
           "supply_chain": false
