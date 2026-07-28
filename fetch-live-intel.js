@@ -2412,7 +2412,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
       <tr><td>Source(s)</td><td>${srcBadges}</td></tr>
     </tbody></table>
     ${cveIds.length>0?`<h2 class="sh"><span>🔴</span> CVE Reference</h2><table class="tbl"><thead><tr><th>CVE ID</th><th>Reference</th><th>Score</th></tr></thead><tbody>${cveRows||`<tr><td style="font-family:var(--mono);color:var(--apex-cyan)">${escHtml(item.id)}</td><td><a href="https://nvd.nist.gov/vuln/detail/${escHtml(item.id)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">NVD →</a></td><td>CVSS ${cvss}</td></tr>`}</tbody></table>`:''}
-    ${iocRows?`<h2 class="sh"><span>🏷️</span> Indicators of Compromise — Enriched IOC Feed</h2><p class="bp">Normalized IOCs with confidence scoring. Block immediately across all enforcement points. <strong>SOC Pro subscribers</strong> receive enriched IOC bundles with full attribution and STIX/TAXII feeds.</p><table class="tbl"><thead><tr><th>Indicator Value</th><th>Type</th><th>Confidence</th><th>First Seen</th></tr></thead><tbody>${iocRows}</tbody></table>`:''}
+    ${iocRows?`<h2 class="sh"><span>🏷️</span> Indicators of Compromise — Enriched IOC Feed</h2><p class="bp">Normalized IOCs with confidence scoring. Block immediately across all enforcement points. <strong>SOC Pro subscribers</strong> receive enriched IOC bundles with full attribution and STIX 2.1 feeds.</p><table class="tbl"><thead><tr><th>Indicator Value</th><th>Type</th><th>Confidence</th><th>First Seen</th></tr></thead><tbody>${iocRows}</tbody></table>`:''}
     ${showDetection?`<h2 class="sh"><span>🔍</span> Detection Rules — Sigma (SIEM)</h2><p class="bp">Deploy to Splunk, Elastic, Microsoft Sentinel, or QRadar. SOC Pro subscribers receive pre-compiled SIEM-native query packs updated with each pipeline run.</p><div class="code-block"><span class="code-lbl">Sigma YAML</span>${escHtml(sigma)}</div>
     <h2 class="sh"><span>📡</span> Detection Rules — YARA (Endpoint)</h2><p class="bp">Deploy to endpoint detection platforms. Enterprise subscribers receive tuned, FP-validated YARA rule packs.</p><div class="code-block"><span class="code-lbl">YARA</span>${escHtml(yara)}</div>`:''}
     ${showDetection?multiDetections:''}
@@ -2712,7 +2712,7 @@ async function writeAPIFiles(allItems, state) {
       ...apiMeta, endpoint: '/api/intel/iocs.json',
       description: 'Enriched IOC feed with confidence scoring',
       count: iocMap.size,
-      note: 'Pro/Enterprise subscribers receive STIX 2.1 and TAXII feeds',
+      note: 'Pro/Enterprise subscribers receive STIX 2.1 feeds',
       items: Array.from(iocMap.values()).sort((a,b)=>(b.confidence_score||0)-(a.confidence_score||0)).slice(0,200),
     }, null, 2), 'utf8');
 
