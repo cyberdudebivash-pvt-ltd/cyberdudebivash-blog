@@ -577,5 +577,49 @@ moved from CERTIFIED WITH CONDITIONS (both prior reports' result) to
 reach that verdict. Engine suite: 150 passed (was 144; +6 net: +1
 attack_mapper, +5 entities).
 
+## Issue 10 — "API Starter" is priced above "SOC Professional" despite having strictly fewer features (GCGMP v1)
+
+Found while verifying `pricing.html` directly for the commercial growth
+review, not assumed from prior session summaries. Confirmed in three
+independent places, not just one: the rendered `pricing.html` feature
+grid, the page's own `PLANS` JS object, and `api/_lib/payment-utils.js` —
+the backend's actual charge amount and, per `docs/PRICING.md`, the sole
+canonical source of truth. All three agree: Starter ₹2,499/$29, Pro (“SOC
+Pro”) ₹1,499/$18, Enterprise ₹4,999/$60. This is **not** a stale-fallback
+bug of the kind `docs/PRICING.md` was written to catch — every copy is
+internally consistent with the documented canonical value.
+
+The problem is the canonical value itself, relative to what each tier
+includes. Pro's feature list (`pricing.html:686-712`) is a strict superset
+of Starter's (`pricing.html:659-684`): 50 vs. 10 threat items/request, full
+CVE descriptions vs. CVSS-only, a complete IOC feed vs. none, 25,000 vs.
+5,000 API calls/day, Sigma+Yara detection rules vs. none, IOC
+type/confidence filters vs. none. A rational buyer comparing the two tiers
+side by side gets strictly more for 40% less money by choosing the
+cheaper-looking-but-actually-pricier "Pro" over "Starter."
+
+`docs/PRICING.md`'s own incident record explains a plausible mechanism,
+not a fix: on 2026-07-17, Pro was correctly dropped from $49 to $18
+everywhere it was hardcoded, following a documented, verified direction
+(`OPERATIONS.md`, `AUDIT-REPORT-2026-05-28.md`). That incident's scope was
+"does every copy of Pro's price match the new canonical $18" — it was not,
+and by its own text was never intended to be, "does Pro's new price still
+make sense relative to Starter's unchanged $29." Nothing in this
+repository indicates the resulting order (Starter > Pro) was itself a
+deliberate packaging decision versus an unexamined side effect of a
+price cut scoped narrowly to one tier.
+
+**Not fixed here, deliberately** — unlike this issue's engine-code
+neighbors, this is not a code defect to patch: the code correctly and
+consistently implements the documented canonical value in every location
+`docs/PRICING.md` requires. Changing `PLANS.starter.amount` or
+`PLANS.pro.amount` is a live pricing change on revenue-bearing production
+infrastructure, and which of the two tiers should move (or whether the
+current order is in fact intentional for reasons not recorded here) is a
+business decision outside engineering's authority to make unilaterally.
+Recorded here, per this file's own precedent (Issue 1's "pending
+executive decision" pairings), so the finding isn't lost before that
+decision is made.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
