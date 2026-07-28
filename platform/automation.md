@@ -18,14 +18,14 @@ wishlist. Principle, stated because one real tension below tests it:
 | CVE page generation | `cve-pages.yml` | Scheduled |
 | Dependency/secret security audit | `security-audit.yml` | On `api/**` push + weekly |
 | Production smoke test + pricing integrity | `smoke-test.yml` | On non-doc push to `main` |
-| Engine test suites | `intelligence-engine-ci.yml`, `detection-engine-node-ci.yml` | On push to their respective paths |
+| Engine test suites (path-scoped, fast feedback) | `intelligence-engine-ci.yml`, `detection-engine-node-ci.yml`, `report-renderer-ci.yml` | On push to their respective paths |
+| Full assurance pass: all 4 suites + `cli.py gate` + `cli.py certify` (EICF v1) across every published report | `scripts/assure.sh` (ECAP v1), wired into CI by `continuous-assurance.yml` | On push/PR touching `Sentinel-APEX/**`, `tests-js/**`, `fetch-live-intel.js`; on demand locally or via `workflow_dispatch` |
 
 ## Not automated (by design or by gap)
 
 | Function | Status |
 |---|---|
 | `Sentinel-APEX/prompts/` report drafting | Manual/session-driven — no automated pipeline calls `master-prompt.md` for general reports |
-| `cli.py gate` (EIOS Layer 4 quality gate) | Callable, never auto-invoked by any CI workflow — confirmed by direct search |
 | `knowledge_graph.py::ingest()` (offline graph) | Requires manual invocation; the *live* graph (`api/_lib/threat-graph.js`) updates automatically but is a separate system — see `open-issues.md` |
 | Report version bump / change_log entry (EIOS Layer 8) | Manual convention, no tooling generates it |
 | Changelog generation for `prompts/*.md` / `eios/*.md` themselves | Manual — the "Changelog" sections in root `/prompts/` files were hand-maintained, not generated |
