@@ -341,6 +341,18 @@ covers the detection block only, not these two sections.
 
 ## Issue 8 — The live knowledge graph's correlation layer covers ~2% of its own content (GCTIKF v1)
 
+**Status update (GEPMO v1):** the "no edge type connects two entities of
+the same kind" finding below is now partially addressed —
+`linkCorrelatedCampaigns()` (`api/_lib/enrichment-pipeline.js`, called as
+pipeline Step 6b) adds a new `co_occurs_with` edge between Campaign nodes
+that share an included CVE, computed additively from existing
+Campaign→CVE data. This closes the Campaign↔Campaign gap specifically.
+Still open: no CVE↔CVE or Actor↔Actor edges exist, actor-attribution
+coverage is still ~2%/~1% (this fix doesn't touch attribution, only
+campaign-to-campaign correlation), and the Malware node type remains
+fully unpopulated. First-ever tests for this file:
+`tests-js/campaign-correlation.test.js`.
+
 Distinct from Issue 1's architectural question (should the offline Python
 graph and the live `api/_lib/threat-graph.js` merge) — this is about what's
 actually *inside* the live graph today. Read the real, current
