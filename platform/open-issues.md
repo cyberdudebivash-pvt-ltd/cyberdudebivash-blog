@@ -396,5 +396,73 @@ removed or modified, no new external data needed) — but that's a decision
 for a dedicated sprint with room to test against the real 9,315-node graph
 first, not appended here.
 
+## Issue 9 — SA-2026-0001 had never been ingested into the offline knowledge graph; running it for the first time found a real ATT&CK mapper defect (GIKEP v1)
+
+Distinct from Issue 8 (the live JS `api/_lib/threat-graph.js`) — this is
+the offline Python engine's own `knowledge_graph.py`. `KnowledgeGraph()` was
+never constructed anywhere except `cli.py run`/`score`, both of which only
+ever build a `NormalizedDoc` from the pre-publication automated pipeline
+(`normalizer.py`). Nothing connected the graph to a report once it reached
+`Sentinel-APEX/reports/published/` — so SA-2026-0001, the one report that
+has actually passed the quality gate, had never once been ingested.
+
+**Fixed**: `report_ingest.py` (new) adapts a `ParsedReport` into a
+`NormalizedDoc` by composing the existing extractors unchanged, and
+`cli.py graph` is the new entry point. Running it for real against
+SA-2026-0001 surfaced a genuine, previously-undiscovered defect in
+`attack_mapper.py`, not a defect in the new adapter: `_RE_SENTENCE_BOUNDARY`
+didn't recognize a markdown table row as a clause boundary, so a multi-row
+table with no terminal punctuation between rows (a MITRE ATT&CK Mapping
+table, this platform's own standard structure for that section) was
+treated as one giant sentence — a hedge word in any row's Evidence cell
+suppressed every technique ID cited elsewhere in the same table, including
+ones with a fully clean citation of their own (T1190 in SA-2026-0001,
+suppressed by T1606's row containing "not explicitly confirmed" three rows
+down). **Fixed** by adding a trailing-pipe-then-newline as an additional
+clause boundary; 1 new regression test, all 13 existing `attack_mapper`
+tests still pass unchanged.
+
+**Not fixed — documented, needs more evidence than one report provides**:
+two further real false positives, same run, deliberately left alone rather
+than patched into shared production logic on n=1 evidence:
+
+- A second "ransomware" mention in SA-2026-0001's Future Outlook section
+  ("(c) any confirmed ransomware or data-theft impact tied to this specific
+  access vector") contains no negation-cue word of its own (the report's
+  *first* ransomware mention, "No source... describes ransomware...", is
+  correctly suppressed) — so T1486 still gets mapped via this second,
+  hedged-but-uncued sentence. `_is_negated()`'s cue-word list would need to
+  recognize forward-looking/monitoring phrasing generally, not just one
+  found phrase, to fix this safely.
+- "ASP.NET" (mentioned as the credential-theft mechanism throughout the
+  report) is misclassified as a domain IOC — it's shaped like one
+  (`word.tld`). `DEFAULT_ALLOWLIST` (`ioc_extractor.py`) is documented as
+  citation/reference infrastructure specifically, not "technology names
+  that happen to look like domains" — a different, open-ended category
+  that would need its own list rather than an ad hoc addition to one
+  scoped for something else.
+
+Also confirmed, not a defect: the embedded Sigma rule's own
+`falsepositives:`/`selection_child:` fields were producing four *more*
+spurious technique matches (T1053.005, T1059.001, T1059.003, T1218.005) —
+a detection rule's own selection criteria legitimately names exactly the
+keywords the mapper looks for. Fixed in `report_ingest.py` by excluding
+fenced code blocks before extraction, not in `attack_mapper.py` itself,
+since this is specific to feeding it a document that contains embedded
+detection logic — something no caller had ever done before this adapter.
+
+Separately: `entities.py::LEXICON` has no `SharePoint` product entry —
+SA-2026-0001's own central subject extracts zero product entities; only
+"Microsoft" (vendor) is recognized. `Entity.type`'s docstring already
+anticipates `sector`/`country` types that the lexicon has no entries for
+at all. Extending the lexicon is low-risk (additive, no existing behavior
+changed) and flagged as a Recommendation, not attempted here — determining
+which products/sectors are worth curating deserves its own pass across
+more than one report.
+
+`Sentinel-APEX/knowledge-graph.json` (new) is the first real, persisted
+graph this platform has ever produced — 10 entities, 9 relations, built by
+actually running `cli.py graph` against the real report, not asserted.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
