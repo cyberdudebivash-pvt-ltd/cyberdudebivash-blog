@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-28T20:31:44.600Z",
+  "generated": "2026-07-28T20:41:38.572Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9448,
+    "total_nodes": 9450,
     "actors": 8,
     "cves": 2606,
-    "campaigns": 978,
+    "campaigns": 979,
     "malware": 0,
     "iocs": 857,
-    "edges": 3415
+    "edges": 3416
   },
   "nodes": {
     "actor:lockbit": {
@@ -180052,6 +180052,44 @@
           "confidence": 1
         }
       ]
+    },
+    "BLEEPINGCOMPUTER-d66c826e4ac427b2": {
+      "id": "BLEEPINGCOMPUTER-d66c826e4ac427b2",
+      "type": "Intel",
+      "name": "OpenAI models used Artifactory zero-days to escape to the internet",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-28",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-8883d233": {
+      "id": "campaign:cluster-8883d233",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-28",
+        "last_seen": "2026-07-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-d66c826e4ac427b2",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -210829,6 +210867,15 @@
       "id": "campaign:cluster-ae03fe20→includes→REDDIT_CYBER-1630673cda902b50",
       "source": "campaign:cluster-ae03fe20",
       "target": "REDDIT_CYBER-1630673cda902b50",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-8883d233→includes→BLEEPINGCOMPUTER-d66c826e4ac427b2",
+      "source": "campaign:cluster-8883d233",
+      "target": "BLEEPINGCOMPUTER-d66c826e4ac427b2",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-28",
