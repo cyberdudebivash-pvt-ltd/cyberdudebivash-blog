@@ -73,3 +73,23 @@ for (const file of MARKETING_FILES_MUST_NOT_SAY_STALE_PRICE) {
     assert.ok(!stale.test(src), `${file} still pairs "SOC Pro" with $49 somewhere`);
   });
 }
+
+/* ─── enterprise.html tier-name collision guard ───────────────────────── */
+/* Found and fixed directly (not caught by any existing test): enterprise.html
+   named its own $299/mo tier "Enterprise" — colliding with pricing.html's
+   canonical $60/mo Enterprise API tier. Renamed to "Enterprise Managed" /
+   "Enterprise Managed+" (two different products, not a price conflict).
+   Nothing previously guarded enterprise.html at all; this prevents the same
+   collision class from silently reappearing. */
+
+test('enterprise.html has no tier named exactly "Enterprise" (would collide with pricing.html\'s $60/mo Enterprise tier)', () => {
+  const src = readFile('enterprise.html');
+  const tierNames = [...src.matchAll(/<div class="tier-name">([^<]+)<\/div>/g)].map(m => m[1].trim());
+  assert.ok(tierNames.length > 0, 'expected at least one <div class="tier-name"> in enterprise.html');
+  assert.ok(
+    !tierNames.includes('Enterprise'),
+    `enterprise.html has a bare "Enterprise" tier name (found: ${JSON.stringify(tierNames)}) — ` +
+    'this collides with pricing.html\'s $60/mo Enterprise tier; use a disambiguated name ' +
+    '(e.g. "Enterprise Managed") if this is a different product, or match the canonical price if not.'
+  );
+});
