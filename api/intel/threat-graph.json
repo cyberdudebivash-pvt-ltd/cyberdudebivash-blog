@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-27T23:31:36.288Z",
+  "generated": "2026-07-28T00:00:14.282Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9221,
+    "total_nodes": 9223,
     "actors": 8,
     "cves": 2545,
-    "campaigns": 931,
+    "campaigns": 932,
     "malware": 0,
     "iocs": 854,
-    "edges": 3354
+    "edges": 3355
   },
   "nodes": {
     "actor:lockbit": {
@@ -175817,6 +175817,44 @@
           "confidence": 1
         }
       ]
+    },
+    "BLEEPINGCOMPUTER-5e606b4313aff052": {
+      "id": "BLEEPINGCOMPUTER-5e606b4313aff052",
+      "type": "Intel",
+      "name": "Hackers target US firms in FastJson RCE zero-day attacks",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 74,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-27",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-a07486ec": {
+      "id": "campaign:cluster-a07486ec",
+      "type": "Campaign",
+      "name": "BleepingComputer Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-27",
+        "last_seen": "2026-07-27",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "BLEEPINGCOMPUTER-5e606b4313aff052",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -206042,6 +206080,15 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-27",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-a07486ec→includes→BLEEPINGCOMPUTER-5e606b4313aff052",
+      "source": "campaign:cluster-a07486ec",
+      "target": "BLEEPINGCOMPUTER-5e606b4313aff052",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-28",
       "sources": []
     }
   ]
