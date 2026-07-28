@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-28T14:01:47.911Z",
+  "generated": "2026-07-28T14:31:46.600Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2834,
+  "total_published": 2836,
   "s2n_stats": {
-    "passed": 98,
-    "suppressed": 39,
-    "avg_qs": 0.514
+    "passed": 99,
+    "suppressed": 38,
+    "avg_qs": 0.516
   },
   "items": [
     {
@@ -571,6 +571,47 @@
         "priority": [
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-16756",
+      "title": "Smithy-RS: Allocation of resources without limits in the default aws-smithy-http-server serve() path allows unauthentica",
+      "description": "## Summary\nSmithy-RS is a Rust code generation and runtime framework that generates HTTP clients and servers from Smithy interface definitions, powering the AWS SDK for Rust and custom service implementations. An issue exists where, under certain circumstances, allocation of reso... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 41,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-24",
+      "last_seen": "2026-07-24",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-16756"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=3d (score=0.65)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2234,7 +2275,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2022-30190",
@@ -2584,6 +2627,55 @@
         "priority": [
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-43983",
+      "title": "Pocket ID: OIDC refresh token flow bypasses authorization revocation, account disabling, and group restrictions",
+      "description": "# OIDC Refresh Token Flow Bypasses Authorization Revocation, Account Disabling, and Group Restrictions ## Summary The `createTokenFromRefreshToken` function (oidc_service.go:451) validates the refresh token's cryptographic integrity but does not re-validate the user's current authorization state bef",
+      "cvss": 7.5,
+      "final_ps": 33,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/pocket-id/pocket-id/backend",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-43983",
+        "CVE-2026-43983"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-w6p7-2fxx-4f44",
+        "https://github.com/pocket-id/pocket-id/security/advisories/GHSA-w6p7-2fxx-4f44",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-43983",
+        "https://github.com/pocket-id/pocket-id/commit/978ac87deffec58beaccd15aead975e91b94c8a5"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "+12 PoC_available"
         ],
         "suppression": null,
         "merge": null
@@ -3474,6 +3566,104 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-43910",
+      "title": "java-client Allows Network Pivot via Unvalidated directConnect Redirect in AppiumCommandExecutor",
+      "description": "## Summary When `directConnect(true)` is enabled, appium/java-client unconditionally\naccepts `directConnectHost`, `directConnectPort`, and `directConnectPath`\nfrom the server's NEW_SESSION response and silently redirects all subsequent\nsession traffic to the attacker-specified endpoint — with no all",
+      "cvss": 8.2,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "io.appium:java-client",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-43910",
+        "CVE-2026-43910"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-28f5-38xr-jh2w",
+        "https://github.com/appium/java-client/security/advisories/GHSA-28f5-38xr-jh2w",
+        "https://github.com/appium/java-client/pull/2408",
+        "https://github.com/appium/java-client/commit/2b9cd442b9dbf56ccc6f1e83aeeb411c0ec230c9"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-45293",
+      "title": "WordPress Coding Standards (WordPressCS) contains an arbitrary code execution vulnerability",
+      "description": "### Impact WordPress Coding Standards (WordPressCS) versions before 3.4.1 contain an arbitrary code execution vulnerability in the `WordPress.WP.EnqueuedResourceParameters` sniff. As a result, running PHPCS with WordPressCS over untrusted PHP code, for example, in a CI pipeline that lints pull reque",
+      "cvss": 8.6,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "wp-coding-standards/wpcs",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-45293",
+        "CVE-2026-45293"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-3pwp-g2mj-5p3v",
+        "https://github.com/WordPress/WordPress-Coding-Standards/security/advisories/GHSA-3pwp-g2mj-5p3v",
+        "https://github.com/WordPress/WordPress-Coding-Standards/pull/2771",
+        "https://github.com/WordPress/WordPress-Coding-Standards/commit/a29048d0bbef5cf25d42349c74e4072d3cbc8325"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2025-59178",
       "title": "CVE-2025-59178: Ericsson Packet Core Controller (PCC) versions prior to 1.39 contain an Exposure of Sensitive System Inf",
       "description": "CVE-2025-59178: Ericsson Packet Core Controller (PCC) versions prior to 1.39 contain an Exposure of Sensitive System Information vulnera",
@@ -4120,178 +4310,6 @@
       "cves": [
         "CVE-2026-59686",
         "CVE-2026-59690"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-14169",
-      "title": "CVE-2026-14169 - ads-tec Industrial IT: Account lockout via non-atomic user creation",
-      "description": "CVE-2026-14169 - ads-tec Industrial IT: Account lockout via non-atomic user creation",
-      "cvss": 8.1,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-14169"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-14516",
-      "title": "CVE-2026-14516 - Online Scheduling and Appointment Booking System <= 27.5 - Unauthenticated SQL Injection",
-      "description": "CVE-2026-14516 - Online Scheduling and Appointment Booking System <= 27.5 - Unauthenticated SQL Injection",
-      "cvss": 7.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-14516"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59764",
-      "title": "CVE-2026-59764 - ELECOM Wireless LAN Routers and Access Points OS Command Injection Vulnerability",
-      "description": "CVE-2026-59764 - ELECOM Wireless LAN Routers and Access Points OS Command Injection Vulnerability",
-      "cvss": 7.2,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59764"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-16756",
-      "title": "Smithy-RS: Allocation of resources without limits in the default aws-smithy-http-server serve() path allows unauthentica",
-      "description": "## Summary\nSmithy-RS is a Rust code generation and runtime framework that generates HTTP clients and servers from Smithy interface definitions, powering the AWS SDK for Rust and custom service implementations. An issue exists where, under certain circumstances, allocation of reso... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16756"
       ],
       "ioc_count": 0,
       "refs": [],
