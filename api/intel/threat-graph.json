@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-28T13:01:42.287Z",
+  "generated": "2026-07-28T13:31:41.506Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9355,
+    "total_nodes": 9364,
     "actors": 8,
-    "cves": 2573,
-    "campaigns": 961,
+    "cves": 2576,
+    "campaigns": 964,
     "malware": 0,
-    "iocs": 855,
-    "edges": 3388
+    "iocs": 856,
+    "edges": 3392
   },
   "nodes": {
     "actor:lockbit": {
@@ -177374,18 +177374,18 @@
     "CVE-2026-53264": {
       "id": "CVE-2026-53264",
       "type": "CVE",
-      "name": "AI-Assisted Research Uncovers Linux Kernel Zero-Day Enabling Root Privilege Escalation",
+      "name": "Researcher Says AI Helped Develop Linux Traffic-Control Race Into Root Exploit",
       "attributes": {
         "cvss": 7.8,
         "threat_level": "MEDIUM",
-        "priority_score": 54,
-        "exploited": false,
+        "priority_score": 64,
+        "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
         "vendor": "",
         "product": "",
         "published": "2026-07-28",
-        "type": "ZERO_DAY"
+        "type": "CVE_REPORT"
       },
       "connections": []
     },
@@ -178299,6 +178299,173 @@
       "connections": [
         {
           "target": "SENTINELAPEX-265e99130865",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "CVE-2013-4786": {
+      "id": "CVE-2013-4786",
+      "type": "CVE",
+      "name": "How We Hacked Thousands of Data Centers in Minutes Using a 20-Year-Old Vulnerability",
+      "attributes": {
+        "cvss": 8,
+        "threat_level": "HIGH",
+        "priority_score": 67,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-28",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:lavahq.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:lavahq.io": {
+      "id": "ioc:domain:lavahq.io",
+      "type": "IOC",
+      "name": "lavahq.io",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-28"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-94d0c3d60209": {
+      "id": "SENTINELAPEX-94d0c3d60209",
+      "type": "Intel",
+      "name": "LegacyHive Exploitation Chain Bypasses Windows Security Even With July 2026 Patches Installed",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "",
+        "product": "",
+        "published": "2026-07-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-15025": {
+      "id": "CVE-2026-15025",
+      "type": "CVE",
+      "name": "Low Security Vulnerability (CVE-2026-15025)",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "",
+        "product": "",
+        "published": "2026-07-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-13440": {
+      "id": "CVE-2026-13440",
+      "type": "CVE",
+      "name": "Low Security Vulnerability (CVE-2026-13440)",
+      "attributes": {
+        "cvss": 7.2,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "",
+        "product": "",
+        "published": "2026-07-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "SECURITYWEEK-acab34f46394a66a": {
+      "id": "SECURITYWEEK-acab34f46394a66a",
+      "type": "Intel",
+      "name": "OT Security Startup Frenos Raises $1.52 Million",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 38,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-28",
+        "type": "CRITICAL_INFRASTRUCTURE"
+      },
+      "connections": []
+    },
+    "campaign:cve-2013-4786": {
+      "id": "campaign:cve-2013-4786",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-28",
+        "last_seen": "2026-07-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2013-4786 | 2 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2013-4786",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-53264": {
+      "id": "campaign:cve-2026-53264",
+      "type": "Campaign",
+      "name": "Multi-Vendor Platform Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-28",
+        "last_seen": "2026-07-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-53264 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-53264",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-205f2d6e": {
+      "id": "campaign:cluster-205f2d6e",
+      "type": "Campaign",
+      "name": "Multi-Vendor Platform Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-28",
+        "last_seen": "2026-07-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-94d0c3d60209",
           "relationship": "includes",
           "confidence": 1
         }
@@ -208831,6 +208998,42 @@
       "id": "campaign:cluster-1d2ac937→includes→SENTINELAPEX-265e99130865",
       "source": "campaign:cluster-1d2ac937",
       "target": "SENTINELAPEX-265e99130865",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "CVE-2013-4786→linked_to→ioc:domain:lavahq.io",
+      "source": "CVE-2013-4786",
+      "target": "ioc:domain:lavahq.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2013-4786→includes→CVE-2013-4786",
+      "source": "campaign:cve-2013-4786",
+      "target": "CVE-2013-4786",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-53264→includes→CVE-2026-53264",
+      "source": "campaign:cve-2026-53264",
+      "target": "CVE-2026-53264",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-205f2d6e→includes→SENTINELAPEX-94d0c3d60209",
+      "source": "campaign:cluster-205f2d6e",
+      "target": "SENTINELAPEX-94d0c3d60209",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-28",
