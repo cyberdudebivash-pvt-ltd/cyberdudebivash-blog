@@ -43,3 +43,55 @@ def test_id_validation():
 
 def test_extract_technique_ids():
     assert extract_technique_ids("uses T1055 then T1041.") == ["T1041", "T1055"]
+
+
+def test_negated_ransomware_mention_does_not_map():
+    text = (
+        "No source used in this report describes ransomware, encryption, or any "
+        "impact-tactic behavior tied to this campaign."
+    )
+    assert map_techniques(text) == []
+
+
+def test_hedged_attribution_sentence_does_not_falsely_map_impact():
+    # The real false positive found producing SA-2026-0001: a sentence about
+    # attribution being unresolved, with no genuine ransomware/encryption
+    # content anywhere, must not map T1486 at any confidence.
+    text = (
+        "Any confirmed ransomware or data-theft impact tied to this campaign has "
+        "not been publicly reported, and attribution to a specific actor remains "
+        "unknown at this time."
+    )
+    assert "T1486" not in _ids(map_techniques(text))
+
+
+def test_negation_after_the_keyword_in_the_same_sentence_is_still_caught():
+    text = "The actor has not been observed deploying ransomware or encrypting files in this campaign."
+    assert map_techniques(text) == []
+
+
+def test_explicit_technique_id_citation_negated_by_rejection_does_not_map():
+    text = "T1486 (Data Encrypted for Impact) was considered and rejected as no ransomware activity was observed."
+    assert "T1486" not in _ids(map_techniques(text))
+
+
+def test_genuine_positive_after_an_earlier_negated_mention_still_maps():
+    # A negation elsewhere in the document must not suppress a real, later
+    # finding — the guard is sentence-scoped, not document-wide.
+    text = (
+        "Early triage found no ransomware or encrypted files on the initial host. "
+        "Three days later, the actor pivoted and ransomware encrypted files across "
+        "the finance file server."
+    )
+    ids = _ids(map_techniques(text))
+    assert "T1486" in ids
+
+
+def test_negation_does_not_suppress_unrelated_techniques_in_the_same_document():
+    text = (
+        "No ransomware was deployed in this incident. Separately, the actor used "
+        "encoded PowerShell for execution."
+    )
+    ids = _ids(map_techniques(text))
+    assert "T1059.001" in ids
+    assert "T1486" not in ids

@@ -72,6 +72,15 @@ _RE_SHA256 = re.compile(r"\b[a-f0-9]{64}\b", re.IGNORECASE)
 _RE_CVE = re.compile(r"\bCVE-\d{4}-\d{4,7}\b", re.IGNORECASE)
 _RE_REGKEY = re.compile(r"\bHK(?:LM|CU|CR|U|EY_[A-Z_]+)\\[^\s,;\"']+", re.IGNORECASE)
 
+# A standalone "Sources:" / "References:" line (optionally an ATX heading or
+# bold) marks the start of a citation list. URLs after this point are the
+# analyst's own reference material, not indicators observed in the wild —
+# without this, every cited news article becomes a false-positive IOC.
+_RE_CITATION_MARKER = re.compile(
+    r"^[ \t]*#{0,6}[ \t]*\*{0,2}[ \t]*(?:sources?|references?)[ \t]*:?[ \t]*\*{0,2}[ \t]*$",
+    re.IGNORECASE | re.MULTILINE,
+)
+
 
 def refang(text: str) -> str:
     """Convert defanged notation back to its live form (for analysis only)."""
@@ -112,6 +121,9 @@ def extract_iocs(
     live = refang(text)
     found: dict[tuple, IOC] = {}
 
+    citation_marker = _RE_CITATION_MARKER.search(live)
+    citation_start = citation_marker.start() if citation_marker else None
+
     def _add(value: str, ioc_type: IOCType, match: re.Match) -> None:
         ioc = IOC(
             value=value,
@@ -140,6 +152,8 @@ def extract_iocs(
         host = host.split(":")[0].lower()
         url_spans.append((m.start(), m.end()))
         if host in allow or _strip_www(host) in allow:
+            continue
+        if citation_start is not None and m.start() >= citation_start:
             continue
         _add(url, IOCType.URL, m)
 

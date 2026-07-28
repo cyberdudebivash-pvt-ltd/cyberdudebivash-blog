@@ -150,6 +150,33 @@ _LEXICON: list[tuple[str, str, Confidence]] = [
 
 _RE_TECHNIQUE_ID = re.compile(r"\bT\d{4}(?:\.\d{3})?\b")
 
+# Keyword-proximity matching has no grasp of grammar: "no confirmed ransomware
+# impact", "has not been observed deploying ransomware", and "T1486 ... was
+# considered and rejected" all contain the same bare keywords as a genuine
+# positive finding. _is_negated() scopes a negation search to the sentence
+# enclosing the match, so a negation elsewhere in the document doesn't
+# suppress an unrelated, genuinely positive statement.
+_RE_SENTENCE_BOUNDARY = re.compile(r"[.!?](?:\s|$)|\n\s*\n")
+_RE_NEGATION_CUE = re.compile(
+    r"\b(?:no|not|none|never|without|lacks?|absent|ruled out|rejected)\b|n't\b",
+    re.IGNORECASE,
+)
+
+
+def _clause_span(text: str, pos: int) -> tuple[int, int]:
+    """Start/end offsets of the sentence in `text` that contains `pos`."""
+    start = 0
+    for b in _RE_SENTENCE_BOUNDARY.finditer(text, 0, pos):
+        start = b.end()
+    end_match = _RE_SENTENCE_BOUNDARY.search(text, pos)
+    end = end_match.start() if end_match else len(text)
+    return start, end
+
+
+def _is_negated(text: str, match: re.Match) -> bool:
+    start, end = _clause_span(text, match.start())
+    return bool(_RE_NEGATION_CUE.search(text[start:end]))
+
 
 def is_valid_technique_id(technique_id: str) -> bool:
     """Format-valid AND present in the curated Enterprise subset."""
@@ -168,12 +195,16 @@ def map_techniques(text: str) -> list[TechniqueMapping]:
     for pattern, tid, confidence in _LEXICON:
         if tid in mappings:
             continue
-        m = re.search(pattern, text, re.IGNORECASE)
-        if not m:
+        match = None
+        for m in re.finditer(pattern, text, re.IGNORECASE):
+            if not _is_negated(text, m):
+                match = m
+                break
+        if match is None:
             continue
         name, tactic = KNOWN_TECHNIQUES[tid]
-        start = max(0, m.start() - 50)
-        evidence = " ".join(text[start : m.end() + 50].split())
+        start = max(0, match.start() - 50)
+        evidence = " ".join(text[start : match.end() + 50].split())
         mappings[tid] = TechniqueMapping(
             technique_id=tid,
             name=name,
@@ -182,9 +213,16 @@ def map_techniques(text: str) -> list[TechniqueMapping]:
             confidence=confidence,
         )
 
-    # Explicit technique IDs cited in the source are high-confidence evidence.
+    # Explicit technique IDs cited in the source are high-confidence evidence
+    # — unless the citation itself is negated ("T1486 ... was ... rejected").
     for tid in extract_technique_ids(text):
         if tid in mappings or tid not in KNOWN_TECHNIQUES:
+            continue
+        cited = next(
+            (m for m in _RE_TECHNIQUE_ID.finditer(text) if m.group(0) == tid),
+            None,
+        )
+        if cited is not None and _is_negated(text, cited):
             continue
         name, tactic = KNOWN_TECHNIQUES[tid]
         mappings[tid] = TechniqueMapping(
