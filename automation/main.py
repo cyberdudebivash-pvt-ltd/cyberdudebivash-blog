@@ -36,6 +36,27 @@ def _write_run_report(report: dict, logs_dir: str) -> None:
     logger.info("Run report written", extra={"path": str(path)})
 
 
+def _requeue_unattempted(
+    remaining: list[DiscoveredArticle],
+    state: PublicationState,
+    reason: str,
+) -> int:
+    """Queue articles that were discovered but never attempted this run
+    because a fatal error (auth or rate-limit) stopped the pipeline early.
+
+    Without this, only the one article that triggered the error was ever
+    queued for retry — every other not-yet-attempted article in the batch
+    depended on being rediscovered from its original source next run, which
+    isn't guaranteed for sources with a small rolling window (e.g. RSS
+    feeds). Log analysis across all historical runs showed this early-break
+    path is common (roughly 1 in 5 runs overall, effectively every run in
+    the most recent week), so the gap was worth closing rather than noting.
+    """
+    for article in remaining:
+        state.add_to_retry_queue(article, f"not attempted — pipeline stopped early: {reason}")
+    return len(remaining)
+
+
 def run_health_check(config: Config) -> bool:
     """Verify all external dependencies are reachable."""
     logger.info("Running health check")
@@ -65,6 +86,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         "published": 0,
         "failed": 0,
         "skipped": 0,
+        "requeued": 0,
         "posts": [],
         "errors": [],
     }
@@ -123,7 +145,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         return report
 
     # --- Transform and Publish ---
-    for article in articles:
+    for idx, article in enumerate(articles):
         post_result = {
             "source_url": article.url,
             "title": article.title,
@@ -205,6 +227,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             discovery.state.record_failure(article.url, str(e))
             report["failed"] += 1
             report["posts"].append(post_result)
+            report["requeued"] += _requeue_unattempted(articles[idx + 1:], discovery.state, str(e))
             break  # Auth errors are fatal; stop the run
 
         except BloggerRateLimitError as e:
@@ -225,6 +248,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             discovery.state.add_to_retry_queue(article, str(e))
             report["failed"] += 1
             report["posts"].append(post_result)
+            report["requeued"] += _requeue_unattempted(articles[idx + 1:], discovery.state, str(e))
             break  # Quota exhaustion is effectively fatal for this run
 
         except BloggerPublishError as e:
