@@ -13,6 +13,9 @@
  *                                          campaigns sharing a CVE (GEPMO v1)
  *   6c. linkCorrelatedCVEs               → co_occurs_with edges between CVEs
  *                                          sharing a campaign (GCDOM v1)
+ *   6d. linkCorrelatedActors             → co_occurs_with edges between
+ *                                          actors sharing a CVE or campaign
+ *                                          (GPEP v1)
  *   7. Pass 2: computeActorAttribution   → with campaign context (final)
  *   8. computeNormalizedScore per item   → with final actor + campaign context
  *   9. generateExplanation per item      → human-readable _explanation block
@@ -278,6 +281,79 @@ function linkCorrelatedCVEs(graph) {
   return newEdgeCount;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   ACTOR CORRELATION (Issue 8 continuation, GPEP v1)
+   Same gap, third direction: two ThreatActor nodes that both exploit the
+   same CVE, or both executed the same Campaign, were never linked to each
+   other -- "which actors share an initial-access vector or campaign" is a
+   real CTI question (if actor A's TTPs are observed, should actor B's also
+   be a concern?), not just structural completeness. Computed entirely from
+   existing Actor->CVE 'exploits' and Actor->Campaign 'executes' edges. No
+   existing node or edge is read differently or modified.
+   Real data check at filing time (api/intel/threat-graph.json): only 6-8
+   of the graph's 8 curated ThreatActor nodes have any exploits/executes
+   edge at all (matches Issue 8's original ~2%/~1% attribution-coverage
+   finding) -- of those, 20 of 35 actor-linked CVEs are shared by 2+ actors
+   (20 pairs), and 3 of 20 actor-linked campaigns are shared by 2+ actors
+   (5 pairs). A small labeled sample, but the correlation logic itself is
+   sound and gets more valuable as actor curation grows, same reasoning as
+   the two correlation functions above.
+   If a pair shares both a CVE and a Campaign, only one edge is recorded
+   (whichever basis is found first) -- addEdge()'s existing idempotent
+   dedup on (source,target,relationship) means a second call for the same
+   pair is a no-op; this matches the same limitation the two functions
+   above already have, not a new inconsistency.
+═══════════════════════════════════════════════════════════════════════ */
+const MAX_ACTORS_PER_SHARED_ITEM_FOR_CORRELATION = 20;
+
+function linkCorrelatedActors(graph) {
+  const cveToActors = new Map();      // cveId -> Set(actorId)
+  const campaignToActors = new Map(); // campaignId -> Set(actorId)
+
+  for (const edge of (graph.edges || [])) {
+    const source = graph.nodes[edge.source];
+    if (!source || source.type !== 'ThreatActor') continue;
+
+    if (edge.relationship === 'exploits') {
+      const target = graph.nodes[edge.target];
+      if (!target || target.type !== 'CVE') continue;
+      if (!cveToActors.has(edge.target)) cveToActors.set(edge.target, new Set());
+      cveToActors.get(edge.target).add(edge.source);
+    } else if (edge.relationship === 'executes') {
+      const target = graph.nodes[edge.target];
+      if (!target || target.type !== 'Campaign') continue;
+      if (!campaignToActors.has(edge.target)) campaignToActors.set(edge.target, new Set());
+      campaignToActors.get(edge.target).add(edge.source);
+    }
+  }
+
+  let newEdgeCount = 0;
+  const correlate = (itemToActors, describeItem) => {
+    for (const [itemId, actorSet] of itemToActors.entries()) {
+      const actorIds = [...actorSet].sort();
+      if (actorIds.length < 2) continue;
+      if (actorIds.length > MAX_ACTORS_PER_SHARED_ITEM_FOR_CORRELATION) {
+        console.warn(`[GRAPH] Skipping actor correlation for ${itemId} — ${actorIds.length} actors exceeds cap of ${MAX_ACTORS_PER_SHARED_ITEM_FOR_CORRELATION}`);
+        continue;
+      }
+      for (let i = 0; i < actorIds.length; i++) {
+        for (let j = i + 1; j < actorIds.length; j++) {
+          const before = graph.edges.length;
+          addEdge(graph, actorIds[i], actorIds[j], 'co_occurs_with', 0.7, {
+            sources: [describeItem(itemId)],
+          });
+          if (graph.edges.length > before) newEdgeCount++;
+        }
+      }
+    }
+  };
+
+  correlate(cveToActors, id => `shared CVE: ${id}`);
+  correlate(campaignToActors, id => `shared campaign: ${id}`);
+
+  return newEdgeCount;
+}
+
 function linkCorrelatedCampaigns(graph) {
   const cveToCampaigns = new Map(); // cveId -> Set(campaignId)
 
@@ -377,6 +453,10 @@ function runEnrichmentPipeline(intelItems) {
   // ── STEP 6c: Correlate CVEs that share a campaign ────────────────────
   const cveCorrelationEdges = linkCorrelatedCVEs(graph);
   log(`Step 6c — CVE correlation: ${cveCorrelationEdges} co_occurs_with edge(s) added`);
+
+  // ── STEP 6d: Correlate actors sharing a CVE or campaign ──────────────
+  const actorCorrelationEdges = linkCorrelatedActors(graph);
+  log(`Step 6d — Actor correlation: ${actorCorrelationEdges} co_occurs_with edge(s) added`);
 
   // ── STEP 7: Pass 2 actor attribution (with campaign context) ─────────
   const pass2Attribution = new Map();
@@ -648,4 +728,5 @@ module.exports = {
   linkActorsToCampaignsGraph,
   linkCorrelatedCampaigns,
   linkCorrelatedCVEs,
+  linkCorrelatedActors,
 };
