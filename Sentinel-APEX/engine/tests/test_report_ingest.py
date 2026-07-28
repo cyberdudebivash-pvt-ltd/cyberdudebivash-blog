@@ -6,10 +6,15 @@ from sentinel_engine.report_parser import parse_report
 
 REPORTS_ROOT = Path(__file__).parent.parent.parent / "reports"
 REAL_REPORT = REPORTS_ROOT / "published" / "SA-2026-0001-sharepoint-cve-2026-50522-active-exploitation.md"
+REAL_REPORT_0003 = REPORTS_ROOT / "published" / "SA-2026-0003-teamcity-cve-2024-27198-27199-auth-bypass.md"
 
 
 def _real_report():
     return parse_report(REAL_REPORT.read_text())
+
+
+def _real_report_0003():
+    return parse_report(REAL_REPORT_0003.read_text())
 
 
 def test_normalize_report_extracts_the_real_cves():
@@ -55,6 +60,25 @@ def test_normalize_report_title_and_published_come_from_front_matter():
     doc = normalize_report(_real_report())
     assert "SharePoint" in doc.title
     assert doc.published == "2026-07-27"
+
+
+def test_normalize_report_excludes_attack_table_tactic_label_false_positive():
+    # SA-2026-0003's own MITRE ATT&CK Mapping table states "Command and
+    # Control" as the Tactic label for its T1105 row -- standard ATT&CK
+    # vocabulary, not a claim that a C2 channel was used. Before
+    # _blank_tactic_labels, this matched _LEXICON's c2/command-and-control
+    # pattern and produced a false T1071 mapping with no supporting evidence
+    # anywhere in the report (platform/open-issues.md Issue 9).
+    ids = {t.technique_id for t in normalize_report(_real_report_0003()).techniques}
+    assert "T1071" not in ids
+
+
+def test_normalize_report_still_maps_the_genuine_sa_2026_0003_techniques():
+    # The tactic-label fix must not cost the report's real, correctly-cited
+    # techniques -- including T1105 itself, cited via the same table row the
+    # false T1071 positive came from (the ID column is untouched).
+    ids = {t.technique_id for t in normalize_report(_real_report_0003()).techniques}
+    assert {"T1190", "T1059.003", "T1105", "T1486", "T1027"}.issubset(ids)
 
 
 def test_real_report_can_be_ingested_into_the_knowledge_graph(tmp_path):
