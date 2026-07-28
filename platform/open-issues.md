@@ -776,5 +776,45 @@ This entry was left saying "not yet merged" for one full sprint after the
 merge actually happened — a documentation-staleness gap in its own right,
 caught while re-reading this file for GPEP v1 rather than assumed current.
 
+## Issue 12 — Fixes accumulate on the feature branch and don't reach production (GEORP v1)
+
+Verified live, not assumed: `GET https://blog.cyberdudebivash.in/api/v1/billing?action=plans`
+still returns Starter at the pre-fix amount (2499), not the reordered 999.
+The Issue 10 fix (GCDOM v1) is merged and tested on
+`claude/cti-platform-standards-f64l5x` but was never merged to `main`, so
+it never deployed — the customer-facing pricing defect it addresses is
+still live in production today, three sprints after the fix was written.
+The same is true of every other GCDOM v1/GPEP v1/GEORP v1 fix except the
+one (Issue 11, the welcome email) that received an explicit, isolated
+merge-to-`main` decision.
+
+**Not resolved here, deliberately** — merging accumulated feature-branch
+work to `main` is exactly the kind of production-deployment decision this
+platform's own governance requires explicit sign-off for, same reasoning
+as Issue 11 before it was approved. Recorded as a genuine operational risk
+(a real, live, evidenced defect sitting unfixed in production despite the
+fix existing) rather than acted on unilaterally. See the Executive Decision
+Register in this sprint's report.
+
+## Issue 13 — Customer data had no backup or restore path (GEORP v1)
+
+Closes the gap GPEP v1 found: registered API keys, tier assignments, and
+the payment audit log existed only in Redis, with no export mechanism
+anywhere in the codebase. `scripts/backup-customer-data.js` and
+`scripts/restore-customer-data.js` (AES-256-GCM encrypted, using Node's
+built-in `crypto` — no new dependency) plus a scheduled
+`.github/workflows/backup-customer-data.yml` close this, using only
+infrastructure already in place (the existing Redis connection, GitHub
+Actions). 15 new tests.
+
+**Not yet active** — same "built, tested, held pending activation"
+pattern as Issue 11: three GitHub Actions secrets
+(`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`,
+`BACKUP_ENCRYPTION_KEY`) need provisioning by someone with repo-secrets
+access before backups actually start running. See `RUNBOOKS.md` "Backup &
+Restore" for the exact activation steps and the honest limitations (90-day
+GitHub Actions artifact retention is a safety net, not long-term archival;
+no restore has been rehearsed against a real Redis instance yet).
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
