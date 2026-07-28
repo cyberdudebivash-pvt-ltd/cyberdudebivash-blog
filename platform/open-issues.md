@@ -50,9 +50,19 @@ two are intentional and keep this table as the record of that decision.
 
 ## Issue 2 — `industry-intelligence.md` has no home
 
-Noted in `extensibility.md` — the one idea from the deprecated `/prompts/`
-directory with no canonical replacement. Low stakes (nothing depends on it
-today); listed here so it doesn't get silently lost.
+**Resolved as a finding (GCDOM v1)** — re-checked `extensibility.md`'s "Add a
+customer-specific / industry overlay" section directly rather than assuming
+this was still open: it already documents a complete, actionable plan (port
+target `Sentinel-APEX/prompts/industry-overlay.md`, an explicit requirement
+to reconcile the old content against the canonical evidence/confidence
+taxonomy before use, and an explicit warning not to reactivate the
+deprecated file directly). Nothing today actually consumes an industry
+overlay (`extensibility.md`'s own words: "Not yet implemented anywhere
+real"), so building that file now would be speculative content with no
+current consumer to validate it against — the same "don't design for
+hypothetical future requirements" reasoning this platform applies elsewhere.
+No further action needed unless/until an industry overlay becomes a real
+requirement, at which point `extensibility.md`'s plan is the one to follow.
 
 ## Issue 3 — Three real defects found producing the platform's first report (SA-2026-0001)
 
@@ -227,6 +237,43 @@ the existing converter unmodified, which looked like the cheapest path, is
 now a tested dead end rather than an assumption — this is exactly the
 outcome a proof-of-concept is supposed to produce. Not fixed in this pass.
 
+**Resolved, in two unrelated ways (GCDOM v1):**
+
+1. **The real fix already existed and this entry was simply never updated
+   to say so.** `Sentinel-APEX/renderer/report-renderer.js` (EIRE v1) added
+   `marked` + `js-yaml` as dependencies and built a proper canonical
+   renderer — exactly the "new dependency" option this entry left open —
+   with a custom `Renderer.html` override that neutralizes embedded raw
+   HTML, validated against real report content including the exact
+   cascading inline-`<code>` corruption documented above. That work was
+   real and already shipped; this issue's text just never got a closing
+   note pointing back to it. Documentation debt, not a product gap.
+2. **`mdToSafeHtml()` itself was fixed anyway (GCDOM v1)** — additive table
+   and fenced-code-block handling, since it serves its own distinct, real,
+   *deployed* consumer: `generate-cve-pages.js`'s auto-generated CVE
+   description pages (`/cve/*.html`), unrelated to full-report rendering.
+   Fenced blocks are now extracted before the inline single-backtick regex
+   runs (root cause of the desync), and GFM pipe-tables render as real
+   `<table>` elements. 5 new tests including a real-data check against
+   SA-2026-0001's actual Sigma fence. `generate-cve-pages.js` also gained a
+   `require.main === module` guard so it stays safely testable without
+   triggering its file-writing side effects.
+
+**A much bigger finding surfaced while checking whether reports were
+actually reachable by a real visitor**: of the 3 certified reports, only
+SA-2026-0001 had ever actually been run through `publish-report.js` — SA-
+2026-0002 and SA-2026-0003 existed only as reviewed Markdown, invisible to
+any customer despite being certified. Fixed: ran the existing, tested
+publisher for both (`intelligence/sa-2026-0002-cve-2026-0257.html`,
+`intelligence/sa-2026-0003-cve-2024-27198.html`); built
+`intelligence/index.html` (didn't exist — the main nav's "Intelligence
+Reports" link hardcoded a direct link to SA-2026-0001 specifically, with no
+way to discover the other two); updated that nav link and `sitemap.xml`
+accordingly. This was the actual highest-value fix in this entire session —
+a platform whose core differentiated content asset is invisible to
+customers has approximately zero commercial value from that asset,
+regardless of how correct its rendering pipeline is.
+
 ## Issue 6 — Template-fallback detection content is category-generic, not vulnerability-specific (read the code, not just the stats)
 
 **Status update (GEIOM v1):** the confidence-framing gap noted below is now
@@ -396,6 +443,18 @@ removed or modified, no new external data needed) — but that's a decision
 for a dedicated sprint with room to test against the real 9,315-node graph
 first, not appended here.
 
+**Partially fixed (GCDOM v1)**: implemented exactly the smallest well-scoped
+fix identified above, plus its mirror image. `linkCorrelatedCVEs()`
+(`api/_lib/enrichment-pipeline.js`, pipeline Step 6c) adds a `co_occurs_with`
+edge between CVE nodes that share an including Campaign, computed
+additively from existing Campaign→CVE data — same pattern as
+`linkCorrelatedCampaigns()`, same defensive per-relationship cap. Real data
+check at filing time: 265 campaigns have at least one Campaign→CVE edge; 28
+of those include more than one CVE (max observed: 5). 6 new tests
+(`tests-js/cve-correlation.test.js`). Still open: no Actor↔Actor edges, and
+the Malware node type remains fully unpopulated — unchanged from the
+original finding.
+
 ## Issue 9 — SA-2026-0001 had never been ingested into the offline knowledge graph; running it for the first time found a real ATT&CK mapper defect (GIKEP v1)
 
 Distinct from Issue 8 (the live JS `api/_lib/threat-graph.js`) — this is
@@ -547,6 +606,24 @@ different from both prior ones:
   table; the graph's `report:sa-2026-0003 → technique:t1071` edge should be
   read accordingly.
 
+  **Fixed (GCDOM v1)**, using exactly the approach identified above, scoped
+  narrowly: `report_ingest.py` now builds a second text variant used only
+  for `map_techniques()` (IOC/CVE/entity extraction keep reading the
+  original, unmodified text — out of scope, unaffected), blanking the 14
+  official MITRE ATT&CK Enterprise tactic names when they appear as a
+  pipe-bounded table cell inside a section whose name matches
+  `att&ck`/`mitre`. Checking the real collision surface (not just this one
+  report) found this mechanism is broader than the single observed
+  instance: "Lateral Movement" (`T1021`), "Privilege Escalation" (`T1068`),
+  and "Exfiltration" (`T1041`, via the `exfiltrat` substring) are the same
+  latent trap, not yet observed in a published report but closed by the
+  same fix rather than left for a fourth occurrence. The Technique ID and
+  Evidence columns are untouched, so the explicit-citation pass (which is
+  how T1105 gets correctly mapped from this exact table row) is unaffected.
+  2 new tests confirm both properties against the real SA-2026-0003 report:
+  T1071 no longer maps, and {T1190, T1059.003, T1105, T1486, T1027} still
+  all do.
+
 Two narrower, purely additive gaps *were* fixed in this pass, distinguished
 from the finding above by carrying no regression risk (new lookup entries,
 zero changes to existing matching logic or existing reports' output):
@@ -620,6 +697,24 @@ business decision outside engineering's authority to make unilaterally.
 Recorded here, per this file's own precedent (Issue 1's "pending
 executive decision" pairings), so the finding isn't lost before that
 decision is made.
+
+**Resolved (GCDOM v1)** — explicit decision obtained: reorder by lowering
+Starter, not by raising Pro, in line with a stated direction toward
+aggressive, transparent, affordable global pricing as a competitive
+differentiator (this platform has public self-serve pricing where
+Recorded Future and GreyNoise do not). `PLANS.starter.amount` moved
+₹2,499/$29 → ₹999/$12 — below Pro's ₹1,499/$18. Every location
+`docs/PRICING.md`'s own discipline requires was updated together:
+`api/_lib/payment-utils.js` (canonical), `payment-flow.js` and
+`pricing.html`'s client-side fallbacks, `pricing.html`'s rendered card,
+`api-dashboard.html`'s tier card, and `docs/PRICING.md` itself.
+`tests-js/pricing-consistency.test.js` now also asserts the tier-ordering
+*invariant* directly (`starter < pro < enterprise`), not just each tier's
+absolute value, plus dedicated Starter-fallback and Starter-card regression
+tests mirroring the existing Pro ones. See `docs/PRICING.md`'s new
+"Pricing change (2026-07-28)" section for the full record, including the
+noted, unresolved tension with `BUSINESS-TRANSFORMATION-ROADMAP-2026.md`'s
+separate proposal to raise Pro to $79/mo instead.
 
 ## Issue 11 — Registration welcome email: built and tested, held pending activation sign-off (GECTP v1)
 
