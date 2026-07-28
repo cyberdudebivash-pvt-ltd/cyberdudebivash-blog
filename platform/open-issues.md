@@ -339,5 +339,50 @@ than a labeling fix. Documented so it isn't mistaken for something this
 sprint already addressed, since Issue 6's confidence-disclosure fix (above)
 covers the detection block only, not these two sections.
 
+## Issue 8 — The live knowledge graph's correlation layer covers ~2% of its own content (GCTIKF v1)
+
+Distinct from Issue 1's architectural question (should the offline Python
+graph and the live `api/_lib/threat-graph.js` merge) — this is about what's
+actually *inside* the live graph today. Read the real, current
+`api/intel/threat-graph.json` directly (9,315 nodes, 3,378 edges, 208,006
+lines) rather than the code that builds it, then checked the code
+(`api/_lib/threat-graph.js`) to confirm what the data showed:
+
+- **Node types**: 8 ThreatActor, 2,554 CVE, 954 Campaign, 4,945 Intel, 854
+  IOC — and 0 Malware, despite `Malware` being a fully-supported node type
+  in the schema (`normalizeNodeId`, `computeStats` both handle it). Nothing
+  in the current ingestion path ever creates one, even though actor
+  descriptions reference specific malware variants in free text (e.g.
+  LockBit's own node description mentions "LockBit 3.0 (Black)").
+- **Actor attribution covers a small fraction of the graph.** Only 20 of
+  954 Campaign nodes (2.1%) and 35 of 2,554 CVE nodes (1.4%) have any
+  inbound edge from one of the 8 curated ThreatActor nodes. The 8 actors
+  themselves are genuinely well-researched (real aliases, TTPs with valid
+  ATT&CK IDs, CISA/DOJ/Mandiant citations) — this isn't a quality problem
+  with what exists, it's a coverage problem with how little of the graph
+  it reaches.
+- **No edge type connects two entities of the same kind.** All 3,378 edges
+  are exactly one of four relationships — `linked_to` (Intel→IOC, CVE→IOC),
+  `includes` (Campaign→Intel, Campaign→CVE), `exploits` (Actor→Intel,
+  Actor→CVE), `executes` (Actor→Campaign) — every one hierarchical/
+  membership, none symmetric. There is no Campaign↔Campaign,
+  CVE↔CVE, or Actor↔Actor edge anywhere. "Campaign correlation" in the
+  sense GCTIKF v1 Phase 4 asks about (shared infrastructure, shared TTPs,
+  shared victimology across campaigns) isn't representable in the current
+  schema at all — two campaigns that happen to share a CVE aren't linked
+  to each other, only independently to that CVE.
+
+**Not fixed in this pass.** `api/_lib/threat-graph.js` regenerates
+`api/intel/threat-graph.json` on the live ~30-minute ingestion cycle and
+feeds `getGraphForTier()` (paid-tier-gated), making it exactly the kind of
+shared, revenue-adjacent infrastructure Issue 1 already flags for extra
+caution — a same-run code change would take effect on production data on
+the next bot cycle with no review window. The smallest well-scoped fix
+worth considering next: an additive `co_occurs_with`-style edge computed
+purely from existing Campaign→CVE `includes` data (no new node/edge
+removed or modified, no new external data needed) — but that's a decision
+for a dedicated sprint with room to test against the real 9,315-node graph
+first, not appended here.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
