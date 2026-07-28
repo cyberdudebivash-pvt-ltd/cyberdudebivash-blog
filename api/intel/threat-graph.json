@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-28T17:31:40.182Z",
+  "generated": "2026-07-28T17:51:12.438Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9429,
+    "total_nodes": 9431,
     "actors": 8,
     "cves": 2604,
-    "campaigns": 975,
+    "campaigns": 976,
     "malware": 0,
     "iocs": 857,
-    "edges": 3408
+    "edges": 3410
   },
   "nodes": {
     "actor:lockbit": {
@@ -12642,7 +12642,7 @@
       "attributes": {
         "ioc_type": "domain",
         "confidence": 0.75,
-        "first_seen": "2026-06-05"
+        "first_seen": "2026-07-28"
       },
       "connections": []
     },
@@ -179628,14 +179628,14 @@
       "attributes": {
         "cvss": 7.5,
         "threat_level": "LOW",
-        "priority_score": 38,
+        "priority_score": 43,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "pip",
-        "product": "pytonapi",
+        "vendor": "",
+        "product": "",
         "published": "2026-07-28",
-        "type": "CVE_REPORT"
+        "type": "NEWS_REPORT"
       },
       "connections": []
     },
@@ -179678,6 +179678,50 @@
       "connections": [
         {
           "target": "SENTINELAPEX-cdb6d8c871f0",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "REDDIT_NETSEC-e49d1ed22f7c1166": {
+      "id": "REDDIT_NETSEC-e49d1ed22f7c1166",
+      "type": "Intel",
+      "name": "Flying Eagle Android RAT: TLS Certificate Pivots, Panel Fingerprints, and 170 Servers Across Hong Kong ASNs",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 60,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-07-28",
+        "type": "MALWARE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:hunt.io",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "campaign:cluster-d4cd42ec": {
+      "id": "campaign:cluster-d4cd42ec",
+      "type": "Campaign",
+      "name": "reddit_netsec Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-28",
+        "last_seen": "2026-07-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 2 shared IOC(s) across items | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_NETSEC-e49d1ed22f7c1166",
           "relationship": "includes",
           "confidence": 1
         }
@@ -210396,6 +210440,24 @@
       "id": "campaign:cluster-ed11d68f→includes→SENTINELAPEX-cdb6d8c871f0",
       "source": "campaign:cluster-ed11d68f",
       "target": "SENTINELAPEX-cdb6d8c871f0",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "REDDIT_NETSEC-e49d1ed22f7c1166→linked_to→ioc:domain:hunt.io",
+      "source": "REDDIT_NETSEC-e49d1ed22f7c1166",
+      "target": "ioc:domain:hunt.io",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-d4cd42ec→includes→REDDIT_NETSEC-e49d1ed22f7c1166",
+      "source": "campaign:cluster-d4cd42ec",
+      "target": "REDDIT_NETSEC-e49d1ed22f7c1166",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-28",
