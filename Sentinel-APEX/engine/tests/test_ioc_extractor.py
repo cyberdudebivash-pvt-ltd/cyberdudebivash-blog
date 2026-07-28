@@ -119,3 +119,22 @@ def test_bare_word_sources_in_prose_is_not_treated_as_marker():
     )
     iocs = extract_iocs(text)
     assert "https://evil-payload-drop.xyz/stage2.bin" in _values(iocs, IOCType.URL)
+
+
+def test_tech_name_asp_net_not_classified_as_domain():
+    # platform/open-issues.md Issue 9: "ASP.NET" (the credential-theft
+    # mechanism named throughout SA-2026-0001) is shaped like a domain
+    # (word.tld, and "net" is a real, accepted TLD) and was misclassified
+    # as one before TECH_NAME_ALLOWLIST existed.
+    text = "Credentials were harvested from the ASP.NET machine key configuration."
+    iocs = extract_iocs(text)
+    assert "asp.net" not in _values(iocs, IOCType.DOMAIN)
+
+
+def test_tech_name_allowlist_does_not_suppress_a_real_dot_net_domain():
+    # TECH_NAME_ALLOWLIST must be narrowly scoped to the exact confirmed
+    # string, not to the .net TLD generally -- a genuinely malicious .net
+    # domain must still extract correctly.
+    text = "The payload beacons to evil-c2-panel.net every 60 seconds."
+    iocs = extract_iocs(text)
+    assert "evil-c2-panel.net" in _values(iocs, IOCType.DOMAIN)
