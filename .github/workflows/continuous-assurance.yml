@@ -1,0 +1,57 @@
+name: "🛡️ SENTINEL APEX — Continuous Assurance"
+
+# Runs scripts/assure.sh (ECAP v1) — the same orchestration entry point a
+# developer runs locally before pushing. This is additive alongside, not a
+# replacement for, the existing path-scoped workflows
+# (intelligence-engine-ci.yml, report-renderer-ci.yml,
+# detection-engine-node-ci.yml), which stay fast and narrowly triggered for
+# quick per-area feedback. This workflow is the comprehensive pass: every
+# suite plus the quality gate and EICF v1 certification together, which
+# nothing previously ran in CI at all.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Sentinel-APEX/**'
+      - 'tests-js/**'
+      - 'fetch-live-intel.js'
+      - 'scripts/assure.sh'
+      - '.github/workflows/continuous-assurance.yml'
+  pull_request:
+    paths:
+      - 'Sentinel-APEX/**'
+      - 'tests-js/**'
+      - 'fetch-live-intel.js'
+      - 'scripts/assure.sh'
+      - '.github/workflows/continuous-assurance.yml'
+  workflow_dispatch:
+
+jobs:
+  assure:
+    name: "Full Assurance Pass"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: "📥 Checkout"
+        uses: actions/checkout@v4
+
+      - name: "🐍 Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: "🟢 Set up Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "📦 Install Python dependencies"
+        run: pip install pyyaml pytest
+
+      - name: "📦 Install Node dependencies"
+        run: npm ci --no-audit --no-fund
+
+      - name: "🛡️ Run scripts/assure.sh (all stages)"
+        run: bash scripts/assure.sh
