@@ -2,23 +2,31 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-07-28T14:12:03.620Z",
+  "generated": "2026-07-28T17:37:13.868Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
     "published": 10,
     "p1": 0,
-    "leadsHeld": 3,
+    "leadsHeld": 1,
     "analystReports": 0,
-    "sourcesOk": 4,
+    "sourcesOk": 5,
     "sourcesTotal": 6,
     "sourceHealth": [
       {
-        "name": "r/netsec",
-        "key": "reddit_ns",
+        "name": "r/MachineLearning",
+        "key": "reddit_ml",
         "tier": 3,
         "status": "degraded",
         "items": 0,
         "error": "HTTP 429"
+      },
+      {
+        "name": "NVD (prompt injection)",
+        "key": "nvd_pi",
+        "tier": 1,
+        "status": "ok",
+        "items": 40,
+        "error": null
       },
       {
         "name": "arXiv cs.CR (LLM security)",
@@ -26,6 +34,14 @@
         "tier": 2,
         "status": "ok",
         "items": 30,
+        "error": null
+      },
+      {
+        "name": "r/netsec",
+        "key": "reddit_ns",
+        "tier": 3,
+        "status": "ok",
+        "items": 25,
         "error": null
       },
       {
@@ -37,31 +53,15 @@
         "error": null
       },
       {
-        "name": "r/MachineLearning",
-        "key": "reddit_ml",
-        "tier": 3,
-        "status": "ok",
-        "items": 25,
-        "error": null
-      },
-      {
-        "name": "NVD (prompt injection)",
-        "key": "nvd_pi",
+        "name": "NVD (AI/LLM keyword)",
+        "key": "nvd_ai",
         "tier": 1,
         "status": "ok",
         "items": 40,
         "error": null
-      },
-      {
-        "name": "NVD (AI/LLM keyword)",
-        "key": "nvd_ai",
-        "tier": 1,
-        "status": "degraded",
-        "items": 0,
-        "error": "This operation was aborted"
       }
     ],
-    "runtimeMs": 15081
+    "runtimeMs": 1203
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -90,6 +90,62 @@
   },
   "count": 10,
   "items": [
+    {
+      "id": "9795e8c2c020b198",
+      "title": "GitHub MCP Server has Nil Pointer Dereference DoS in completion/complete Handler",
+      "url": "https://github.com/advisories/GHSA-w4q6-qw23-4rg7",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-07-28T14:35:10Z",
+      "cve": "CVE-2026-47427",
+      "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": true,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 63,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
     {
       "id": "7cfa931cbd175eb2",
       "title": "AWS Bedrock AgentCore: Improper neutralization of argument delimiters in the Python SDK install_packages()",
@@ -194,62 +250,6 @@
         "evidence": "HIGH",
         "overall": "HIGH",
         "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "14ce20e9ae9217bb",
-      "title": " Budibase: Chat-Link Handoff Identity Confusion (Same-Tenant Account-Link CSRF)",
-      "url": "https://github.com/advisories/GHSA-pvcr-8mvp-w8qr",
-      "source": "GitHub Security Advisories",
-      "tier": 1,
-      "published": "2026-07-24T21:42:51Z",
-      "cve": null,
-      "severity": "high",
-      "cvss": null,
-      "evidence_label": "VERIFIED_ADVISORY",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": true,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 48,
-        "priority": "P2"
-      },
-      "confidence": {
-        "source": "HIGH",
-        "evidence": "MODERATE",
-        "overall": "HIGH",
-        "rationale": "Authoritative source (GitHub Security Advisories)."
       },
       "corroboration": 1,
       "detection": {
