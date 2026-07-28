@@ -455,6 +455,25 @@ of those include more than one CVE (max observed: 5). 6 new tests
 the Malware node type remains fully unpopulated — unchanged from the
 original finding.
 
+**Further fixed (GPEP v1)**: `linkCorrelatedActors()` (pipeline Step 6d)
+closes the Actor↔Actor gap — a `co_occurs_with` edge between two
+ThreatActor nodes that share an `exploits`→CVE or `executes`→Campaign edge,
+computed additively from existing data, same defensive cap pattern. This is
+a genuinely useful CTI question ("if actor A's TTPs are observed, should
+actor B's also be a concern?"), not just structural completeness for its
+own sake. Real data check: only 6-8 of the graph's 8 curated ThreatActor
+nodes have any exploits/executes edge at all (consistent with this issue's
+original ~2%/~1% attribution-coverage finding) — of those, 20 of 35
+actor-linked CVEs are shared by 2+ actors (20 pairs), and 3 of 20
+actor-linked campaigns are shared by 2+ actors (5 pairs). A small labeled
+sample today, but the correlation logic is sound and grows more valuable as
+actor curation grows. 7 new tests (`tests-js/actor-correlation.test.js`).
+Still open, unchanged: the Malware node type remains fully unpopulated —
+that needs new entity-extraction work (parsing malware names out of actor
+free-text descriptions), a materially larger and riskier change than
+wiring an edge from data that already exists structurally, correctly left
+as a Strategic Investment rather than attempted here.
+
 ## Issue 9 — SA-2026-0001 had never been ingested into the offline knowledge graph; running it for the first time found a real ATT&CK mapper defect (GIKEP v1)
 
 Distinct from Issue 8 (the live JS `api/_lib/threat-graph.js`) — this is
@@ -500,6 +519,16 @@ than patched into shared production logic on n=1 evidence:
   that happen to look like domains" — a different, open-ended category
   that would need its own list rather than an ad hoc addition to one
   scoped for something else.
+
+  **Fixed (GPEP v1)**: added `TECH_NAME_ALLOWLIST`, a new set distinct from
+  `DEFAULT_ALLOWLIST` that always applies regardless of what allowlist a
+  caller supplies (unlike `DEFAULT_ALLOWLIST`, which callers can legitimately
+  override — "ASP.NET is not a domain" isn't a citation policy, it's a fact).
+  Seeded with only the one confirmed real case, not a speculative list. 2 new
+  tests, including one confirming a genuinely malicious `.net` domain still
+  extracts correctly (the fix is scoped to the exact string, not the TLD).
+  Verified against the real SA-2026-0001 report directly: zero domain IOCs
+  extracted post-fix, where "asp.net" was previously one of them.
 
 Also confirmed, not a defect: the embedded Sigma rule's own
 `falsepositives:`/`selection_child:` fields were producing four *more*
@@ -738,16 +767,14 @@ independence from `configured()`, `sendEmail()`'s request shape, and
 name-present vs. anonymous greeting, all three URLs and the tier/rate
 limit rendered). Full root JS suite: 50 passed (was 44).
 
-**Deliberately not yet merged to `main`.** Everything above is implemented
-and tested on the feature branch only. Merging to `main` is the step that
-activates it in production — from that point, every real registration
-would trigger a real, automatic email to a real address under this
-company's brand, with no per-instance human review. That is a
-customer-communication/business-policy activation, not a pure engineering
-one, so it is held pending explicit owner sign-off rather than merged
-unilaterally alongside the rest of this session's changes. If approved,
-merging `claude/cti-platform-standards-f64l5x` into `main` is sufficient —
-no further code change is needed to activate it.
+**Resolved (GCDOM v1) — merged and active in production.** Explicit owner
+sign-off was obtained; `claude/cti-platform-standards-f64l5x` was merged
+into `main` in isolation from that session's other, not-yet-reviewed
+changes, verified passing (50/50 JS suite) at the merged commit before
+push. Every real registration now sends the welcome email described above.
+This entry was left saying "not yet merged" for one full sprint after the
+merge actually happened — a documentation-staleness gap in its own right,
+caught while re-reading this file for GPEP v1 rather than assumed current.
 
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
