@@ -292,3 +292,70 @@ def test_gate_hype_language_is_a_warning_not_a_block():
     result = gate_report(parse_report(bad))
     hype = [f for f in result.findings if f.gate == "hype-language"]
     assert hype and all(f.severity == "warn" for f in hype)
+
+
+# --------------------------------------------------------------------------
+# _gate_reference_completeness (GIAAP v1) — a source declared in front-matter
+# metadata must be visible to the reader in the rendered References section,
+# following from the SA-2026-0001 review that found a declared source (the
+# live NVD REST API endpoint) missing from that report's visible references.
+# --------------------------------------------------------------------------
+
+_REPORT_WITH_FRONT_MATTER = """---
+title: "Test Report"
+severity: "HIGH"
+sources:
+  - "https://example.com/primary-advisory"
+  - "https://nvd.nist.gov/vuln/detail/CVE-2099-0001"
+---
+
+## Executive Summary
+A flaw was found. We assess with elevated risk (HIGH CONFIDENCE).
+
+## References
+1. Primary Advisory. https://example.com/primary-advisory
+2. CVE-2099-0001. NVD. https://nvd.nist.gov/vuln/detail/CVE-2099-0001
+"""
+
+
+def test_gate_reference_completeness_passes_when_all_sources_cited():
+    result = gate_report(parse_report(_REPORT_WITH_FRONT_MATTER))
+    assert not any(f.gate == "reference-completeness" for f in result.findings)
+
+
+def test_gate_reference_completeness_flags_source_missing_from_references():
+    missing_one = _REPORT_WITH_FRONT_MATTER.replace(
+        '2. CVE-2099-0001. NVD. https://nvd.nist.gov/vuln/detail/CVE-2099-0001\n', "",
+    )
+    result = gate_report(parse_report(missing_one))
+    findings = [f for f in result.findings if f.gate == "reference-completeness"]
+    assert len(findings) == 1
+    assert "nvd.nist.gov" in findings[0].message
+    assert findings[0].severity == "warn"
+
+
+def test_gate_reference_completeness_is_a_warning_not_a_block():
+    # This fixture is deliberately minimal and trips the unrelated
+    # "structure" gate (missing sections other tests don't need) — this
+    # test only asserts on reference-completeness's own severity, not the
+    # whole report's pass/fail.
+    missing_one = _REPORT_WITH_FRONT_MATTER.replace(
+        '2. CVE-2099-0001. NVD. https://nvd.nist.gov/vuln/detail/CVE-2099-0001\n', "",
+    )
+    result = gate_report(parse_report(missing_one))
+    findings = [f for f in result.findings if f.gate == "reference-completeness"]
+    assert findings and all(f.severity == "warn" for f in findings)
+
+
+def test_gate_reference_completeness_noop_when_no_sources_declared():
+    result = gate_report(parse_report(MINIMAL_GOOD))
+    assert not any(f.gate == "reference-completeness" for f in result.findings)
+
+
+def test_gate_reference_completeness_tolerates_scheme_and_trailing_slash_variance():
+    variant = _REPORT_WITH_FRONT_MATTER.replace(
+        "https://nvd.nist.gov/vuln/detail/CVE-2099-0001\n",
+        "http://nvd.nist.gov/vuln/detail/CVE-2099-0001/\n",
+    )
+    result = gate_report(parse_report(variant))
+    assert not any(f.gate == "reference-completeness" for f in result.findings)

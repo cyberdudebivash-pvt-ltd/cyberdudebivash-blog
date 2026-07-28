@@ -146,6 +146,10 @@ def test_certify_real_report_with_stubbed_clean_rendering_and_no_publication():
     # Verified via `cli.py gate`: 0 blocks, exactly 2 [attack] warns.
     assert cert.domains["Intelligence Quality"].verdict == NEEDS_REVIEW
     assert len(cert.domains["Intelligence Quality"].warnings) == 2
+    # GIAAP v1's reference-completeness gate (Evidence Quality domain) found
+    # and this report fixed a real gap: the live NVD REST API endpoint was
+    # declared as a front-matter source but never surfaced in the rendered
+    # References section (report version 1.1 added reference 7 to close it).
     assert cert.domains["Evidence Quality"].verdict == PASS
     assert cert.domains["Detection Quality"].verdict == PASS
     assert cert.domains["Rendering Quality"].verdict == PASS
