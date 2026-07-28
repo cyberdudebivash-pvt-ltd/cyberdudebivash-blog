@@ -162,6 +162,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             post_result["blogger_title"] = transformed["title"]
             post_result["labels"] = transformed["labels"]
             post_result["content_source"] = transformed["content_source"]
+            post_result["llm_attempts"] = transformed.get("llm_attempts", [])
 
             if dry_run:
                 logger.info(

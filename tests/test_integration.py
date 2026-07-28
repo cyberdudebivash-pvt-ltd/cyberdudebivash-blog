@@ -157,6 +157,44 @@ class TestFullPipelinePublish(unittest.TestCase):
         self.assertGreater(report["published"], 0)
         self.assertEqual(report["failed"], 0)
 
+    def test_llm_attempts_reaches_the_persisted_report(self):
+        # Real production evidence (GPOCIP v1) showed llm_attempts was None
+        # on every post despite authority_transformer.transform() correctly
+        # returning it — main.py never copied it from transformed into
+        # post_result, a wiring gap that unit tests on call_llm() and
+        # _requeue_unattempted() in isolation couldn't catch, since neither
+        # exercises the real run_pipeline() -> transform() -> post_result
+        # path. This runs the actual pipeline end to end instead.
+        token_resp = MagicMock()
+        token_resp.ok = True
+        token_resp.json.return_value = MOCK_TOKEN_RESPONSE
+
+        post_resp = MagicMock()
+        post_resp.status_code = 200
+        post_resp.raise_for_status = MagicMock()
+        post_resp.json.return_value = MOCK_BLOGGER_POST
+
+        rss_resp = MagicMock()
+        rss_resp.text = MOCK_RSS
+        rss_resp.raise_for_status = MagicMock()
+
+        with patch("requests.get", return_value=rss_resp):
+            with patch("requests.post", side_effect=[token_resp, post_resp, post_resp]):
+                with patch("time.sleep"):
+                    report = run_pipeline(self.config, dry_run=False)
+
+        self.assertGreater(len(report["posts"]), 0)
+        for post in report["posts"]:
+            self.assertIn("llm_attempts", post)
+            self.assertIsInstance(post["llm_attempts"], list)
+            self.assertGreater(len(post["llm_attempts"]), 0)
+            # No API key configured (see _make_config) — every provider
+            # attempt must be recorded as a no_api_key skip, not silently
+            # dropped.
+            for attempt in post["llm_attempts"]:
+                self.assertEqual(attempt["error"], "no_api_key")
+                self.assertFalse(attempt["ok"])
+
     def test_rate_limit_exhaustion_stops_run_without_attempting_remaining_articles(self):
         token_resp = MagicMock()
         token_resp.ok = True
