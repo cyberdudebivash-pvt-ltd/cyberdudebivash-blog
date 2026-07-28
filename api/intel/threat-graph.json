@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-28T22:03:31.903Z",
+  "generated": "2026-07-28T22:31:43.362Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9471,
+    "total_nodes": 9475,
     "actors": 8,
-    "cves": 2621,
+    "cves": 2624,
     "campaigns": 980,
     "malware": 0,
-    "iocs": 857,
-    "edges": 3420
+    "iocs": 858,
+    "edges": 3421
   },
   "nodes": {
     "actor:lockbit": {
@@ -180488,6 +180488,77 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-54639": {
+      "id": "CVE-2026-54639",
+      "type": "CVE",
+      "name": "Style Dictionary - Prototype Pollution in convertTokenData utility function",
+      "attributes": {
+        "cvss": 8.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 57,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "style-dictionary",
+        "published": "2026-07-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:styledictionary.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:styledictionary.com": {
+      "id": "ioc:domain:styledictionary.com",
+      "type": "IOC",
+      "name": "styledictionary.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-07-28"
+      },
+      "connections": []
+    },
+    "CVE-2026-54650": {
+      "id": "CVE-2026-54650",
+      "type": "CVE",
+      "name": "openhole-server vulnerable to path traversal via URL-decoded request path",
+      "attributes": {
+        "cvss": 8.6,
+        "threat_level": "MEDIUM",
+        "priority_score": 47,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/bablilayoub/openhole",
+        "published": "2026-07-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-54638": {
+      "id": "CVE-2026-54638",
+      "type": "CVE",
+      "name": "td has pre-auth denial of service via unbounded memory allocation in proto.UnencryptedMessage.Decode",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/gotd/td",
+        "published": "2026-07-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -211312,6 +211383,15 @@
       "target": "ioc:ipv4:169.254.169.254",
       "relationship": "linked_to",
       "confidence": 0.88,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-54639→linked_to→ioc:domain:styledictionary.com",
+      "source": "CVE-2026-54639",
+      "target": "ioc:domain:styledictionary.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
       "first_seen": "2026-07-28",
       "sources": []
     }
