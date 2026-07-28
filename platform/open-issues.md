@@ -88,10 +88,51 @@ through the machinery.
    aren't meant to be premium-tier by design — which one is true is a
    product decision, not an engineering one, and is not resolved here.
 
-None of these were fixed in this pass — (1) and (2) are core engine files
-(`ioc_extractor.py`, `attack_mapper.py`) other future reports depend on, and
-(3) is a product-tiering policy question. All three are flagged, not
-patched, pending an explicit decision on scope and priority.
+**Resolved (EIOS-X v1 sprint)** — (1) and (2) fixed at root cause; (3) remains
+open, a product-tiering policy question, not an engineering one.
+
+1. `ioc_extractor.py` now detects a "Sources:"/"References:" marker line
+   (`_RE_CITATION_MARKER` — recognizes bare, ATX-heading, and bold-heading
+   forms) and excludes any URL match at or after that position from IOC
+   extraction. Scoped narrowly to URLs, matching the documented defect;
+   domains embedded in excluded URLs were already excluded from separate
+   domain extraction via the existing `url_spans` mechanism, so no
+   additional change was needed there. Verified: the three real citation
+   domains from SA-2026-0001's own "Sources:" list (thehackernews.com,
+   helpnetsecurity.com, securityweek.com) no longer extract as IOCs or
+   generate Suricata rules; a genuine malicious URL earlier in the same
+   document, and in documents with no citation marker at all, still
+   extracts correctly (backward compatible). 5 new regression tests in
+   `test_ioc_extractor.py` (14 total in that file).
+2. `attack_mapper.py`'s keyword-proximity matching had no concept of
+   negation — reproduced directly against SA-2026-0001's own published text
+   (its retrospective note that T1486 "was considered and rejected" *itself*
+   contains "ransomware"/"encryption" and re-triggered a HIGH CONFIDENCE
+   T1486 mapping when fed back through `map_techniques()`). Root cause was
+   broader than the one reported keyword: any negated mention anywhere in
+   the `_LEXICON` ("no ransomware," "has not been observed deploying
+   ransomware," explicit citations like "T1486 ... was ... rejected") still
+   matched as a confident positive. Fixed generally, not per-keyword: a
+   sentence-scoped negation guard (`_is_negated` — searches the clause
+   containing the match, bounded by the nearest sentence boundaries on
+   either side, so a negation elsewhere in the document can't suppress an
+   unrelated genuine finding) now applies to both the lexicon loop and the
+   explicit-technique-ID citation loop. The lexicon loop was changed from
+   `re.search` (first match only) to `re.finditer`, skipping negated
+   occurrences so a genuine *later* positive mention in the same document
+   still maps correctly. Verified end-to-end with `cli.py run` against a
+   reconstruction of the original SharePoint/CVE-2026-50522 source material
+   (hedged attribution language, negated ransomware mention, real citation
+   list): output now maps only the two genuine techniques (T1059.001,
+   T1190), zero false T1486. 6 new regression tests in
+   `test_attack_mapper.py` (12 total in that file), including a check that
+   an unrelated genuine technique elsewhere in a document with an
+   unconnected negation is still correctly mapped.
+
+Both fixes are additive guards layered onto the existing extraction/mapping
+logic — no existing signature, return shape, or passing test changed. Full
+engine suite: 114 passed (was 103; +11 net: +5 ioc_extractor, +6
+attack_mapper).
 
 ## Issue 4 — Quality gate's required-section taxonomy doesn't match template naming (found while fixing the `►`/`##` marker mismatch)
 

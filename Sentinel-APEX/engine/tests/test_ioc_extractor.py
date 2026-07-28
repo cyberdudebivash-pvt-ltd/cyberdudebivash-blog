@@ -63,3 +63,59 @@ def test_cve_and_registry_extraction():
 def test_filenames_not_domains():
     iocs = extract_iocs("see report.txt and setup.exe for details")
     assert not _values(iocs, IOCType.DOMAIN)
+
+
+def test_citation_urls_after_sources_marker_excluded():
+    text = (
+        "CVE-2026-99999 is actively exploited using a dropper hosted at "
+        "https://evil-payload-drop.xyz/stage2.bin.\n\n"
+        "Sources:\n"
+        "- https://thehackernews.com/2026/07/example-vuln-exploited.html\n"
+        "- https://www.helpnetsecurity.com/2026/07/22/example-vuln/\n"
+        "- https://www.securityweek.com/example-vuln-exploited-wave/\n"
+    )
+    iocs = extract_iocs(text)
+    urls = _values(iocs, IOCType.URL)
+    assert urls == {"https://evil-payload-drop.xyz/stage2.bin"}
+    assert "CVE-2026-99999" in _values(iocs, IOCType.CVE)
+
+
+def test_citation_urls_after_references_heading_excluded():
+    text = (
+        "Payload retrieved from https://bad-domain.top/x.bin during initial access.\n\n"
+        "## References\n"
+        "- https://www.bleepingcomputer.com/news/security/example/\n"
+    )
+    iocs = extract_iocs(text)
+    urls = _values(iocs, IOCType.URL)
+    assert urls == {"https://bad-domain.top/x.bin"}
+
+
+def test_malicious_url_before_marker_still_extracted():
+    text = (
+        "The malware retrieves its second stage from https://evil-payload-drop.xyz/s2.bin.\n\n"
+        "References:\n"
+        "- https://thehackernews.com/2026/07/example.html\n"
+    )
+    iocs = extract_iocs(text)
+    assert _values(iocs, IOCType.URL) == {"https://evil-payload-drop.xyz/s2.bin"}
+
+
+def test_no_citation_marker_all_urls_still_extracted():
+    text = (
+        "Malware stages from https://evil-payload-drop.xyz/stage2.bin and beacons to "
+        "https://185.220.101.45/gate.php every 60 seconds."
+    )
+    iocs = extract_iocs(text)
+    urls = _values(iocs, IOCType.URL)
+    assert "https://evil-payload-drop.xyz/stage2.bin" in urls
+    assert "https://185.220.101.45/gate.php" in urls
+
+
+def test_bare_word_sources_in_prose_is_not_treated_as_marker():
+    text = (
+        "Related sources and context indicate this campaign reuses infrastructure "
+        "from https://evil-payload-drop.xyz/stage2.bin.\n"
+    )
+    iocs = extract_iocs(text)
+    assert "https://evil-payload-drop.xyz/stage2.bin" in _values(iocs, IOCType.URL)
