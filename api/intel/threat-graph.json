@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-28T20:01:35.906Z",
+  "generated": "2026-07-28T20:31:44.600Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9443,
+    "total_nodes": 9448,
     "actors": 8,
-    "cves": 2604,
-    "campaigns": 977,
+    "cves": 2606,
+    "campaigns": 978,
     "malware": 0,
     "iocs": 857,
-    "edges": 3414
+    "edges": 3415
   },
   "nodes": {
     "actor:lockbit": {
@@ -179960,6 +179960,98 @@
         "type": "NEWS_REPORT"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-1630673cda902b50": {
+      "id": "REDDIT_CYBER-1630673cda902b50",
+      "type": "Intel",
+      "name": "What do you do with CVEs you can't fix? Auditor wants proof they're 'not exploitable'",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-28",
+        "type": "SOCIAL_ENGINEERING"
+      },
+      "connections": []
+    },
+    "CVE-2026-50570": {
+      "id": "CVE-2026-50570",
+      "type": "CVE",
+      "name": "Fission: Incomplete capability denylist in Environment/Function PodSpec validation allows tenant-added CAP_SYS_TIME and cross-tenant node wall-clock corruption",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 47,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/fission/fission",
+        "published": "2026-07-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-50567": {
+      "id": "CVE-2026-50567",
+      "type": "CVE",
+      "name": " Fission: Zip Slip in pkg/utils/zip.go:Unarchive allows fetcher to write outside the destination directory",
+      "attributes": {
+        "cvss": 7.7,
+        "threat_level": "LOW",
+        "priority_score": 43,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/fission/fission",
+        "published": "2026-07-28",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "DARKREADING-15644d591348f487": {
+      "id": "DARKREADING-15644d591348f487",
+      "type": "Intel",
+      "name": "Stronger AI Safety Requires Peeking Inside the 'Black Box'",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "LOW",
+        "priority_score": 42,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "darkreading",
+        "product": "Threat Intelligence",
+        "published": "2026-07-28",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-ae03fe20": {
+      "id": "campaign:cluster-ae03fe20",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-28",
+        "last_seen": "2026-07-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-1630673cda902b50",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -210728,6 +210820,15 @@
       "id": "campaign:cluster-f8b98024→includes→SENTINELAPEX-1fa6060a73ac",
       "source": "campaign:cluster-f8b98024",
       "target": "SENTINELAPEX-1fa6060a73ac",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-ae03fe20→includes→REDDIT_CYBER-1630673cda902b50",
+      "source": "campaign:cluster-ae03fe20",
+      "target": "REDDIT_CYBER-1630673cda902b50",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-28",
