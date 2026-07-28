@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-28T15:31:30.340Z",
+  "generated": "2026-07-28T16:02:01.225Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,9 +9,9 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 2844,
   "s2n_stats": {
-    "passed": 98,
-    "suppressed": 36,
-    "avg_qs": 0.521
+    "passed": 97,
+    "suppressed": 6,
+    "avg_qs": 0.523
   },
   "items": [
     {
@@ -357,48 +357,6 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2023-37465",
-      "title": "org.xwiki.contrib:discussions-server has Cross-Site Request Forgery (CSRF) issue that makes it possible to delete messag",
-      "description": "### Impact\nIt's possible to forge a request to delete a message. \n\n### Patches\nThe problem has been patched in version 2.0-rc-1 of Discussion Extension.\n\n### Workarounds\nThere's no easy workaround except upgrading.\n\n### References\nhttps://jira.xwiki.org/browse/DISCUSSION-22\n\n### ... [Full analysis a",
-      "cvss": 6.5,
-      "final_ps": 44,
-      "quality_score": 0.493,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2023-37465"
-      ],
-      "ioc_count": 2,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.40",
-          "ioc_presence=2 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=44 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2278,9 +2236,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-15901",
@@ -3515,6 +3471,55 @@
         ],
         "priority": [
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54593",
+      "title": "Pterodactyl's improper JWT scoping allows subuser to upload files when not explicitly granted `file.create` permissions",
+      "description": "### Summary\nA privilege escalation vulnerability exists in the Wings /upload/file endpoint due to insufficient validation of panel-signed JWTs. Wings accepts any valid panel-signed JWT containing `server_uuid`, `user_uuid`, and `unique_id`, regardless of the token’s intended purpose. Because the Pan",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "pterodactyl/panel",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54593",
+        "CVE-2026-54593"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-8r6w-3qq5-4p4r",
+        "https://github.com/pterodactyl/panel/security/advisories/GHSA-8r6w-3qq5-4p4r",
+        "https://github.com/pterodactyl/panel/pull/5636",
+        "https://github.com/pterodactyl/panel/commit/7ffcd636310bb72b54bac3280d2a15e727feded7"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
         ],
         "suppression": null,
         "merge": null
