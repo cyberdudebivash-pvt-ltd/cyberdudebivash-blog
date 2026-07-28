@@ -93,5 +93,35 @@ None of these were fixed in this pass — (1) and (2) are core engine files
 (3) is a product-tiering policy question. All three are flagged, not
 patched, pending an explicit decision on scope and priority.
 
+## Issue 4 — Quality gate's required-section taxonomy doesn't match template naming (found while fixing the `►`/`##` marker mismatch)
+
+`report_parser.py`'s `_RE_SECTION` was fixed (IXP v1 Stage 2) to recognize
+`##` ATX headings, not just the legacy `►` marker — `parse_report()` now
+correctly finds all 24 sections in SA-2026-0001 instead of zero. Running
+`cli.py gate` against that report for the first time with real parsing now
+surfaces two **new, legitimate, previously-invisible** findings that were
+never fixable before because the gate couldn't parse the report at all:
+
+1. **`BLOCK [structure] required section missing: Technical Analysis`** —
+   `quality.py`'s required-section list expects a section literally named
+   "Technical Analysis." SA-2026-0001 (and the `executive-brief.md` template
+   it's derived from) uses "Strategic Assessment," "Attack Chain," "Kill
+   Chain Analysis," etc. instead — different, arguably more precise names
+   for the same analytical content. Whether the gate's taxonomy should
+   accept these as equivalents, or whether report authors should conform to
+   the gate's exact section names, is a product/process decision, not
+   something to resolve by silently loosening the gate or renaming a
+   published report's sections.
+2. **`BLOCK [structure] severity missing or invalid: ''`** — `_extract_severity()`
+   looks for a bare line containing exactly `LOW`/`MEDIUM`/`HIGH`/`CRITICAL`
+   (a convention from the old `►`-based page-dump format). SA-2026-0001
+   states severity in prose and YAML front matter instead, so extraction
+   finds nothing. Needs either a severity field in front matter that the
+   parser reads directly, or a broader in-text pattern.
+
+Not fixed in this pass — both are new-scope decisions (gate taxonomy vs.
+authoring convention) surfaced by, but distinct from, the marker-mismatch
+fix itself.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

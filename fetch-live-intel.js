@@ -1022,8 +1022,15 @@ function normalizeSentinelApexRecord(raw, endpointKey) {
     title: title || `Sentinel APEX Intelligence: ${id}`,
     desc: desc || title,
     cvss, refs, pubDate,
-    vendor:  String(sapexPick(raw, ['vendor', 'affected_vendor']) || sapexPickArray(raw, ['vendors'])[0] || 'Unknown Vendor'),
-    product: String(sapexPick(raw, ['product', 'affected_product']) || sapexPickArray(raw, ['products'])[0] || 'Unknown Product'),
+    // Leave blank rather than a literal "Unknown Vendor"/"Unknown Product"
+    // string — every live consumer (genExecutiveSummary, genBusinessImpact,
+    // genAttackChain, genCommentary, genPlaybook) already has its own
+    // graceful `item.vendor||'the affected vendor'`-style fallback, and the
+    // API output layer (writeAPIFiles) already normalizes to '' for the same
+    // reason. A literal "Unknown Vendor" string is truthy, so it silently
+    // defeated all of that existing fallback logic instead of triggering it.
+    vendor:  String(sapexPick(raw, ['vendor', 'affected_vendor']) || sapexPickArray(raw, ['vendors'])[0] || ''),
+    product: String(sapexPick(raw, ['product', 'affected_product']) || sapexPickArray(raw, ['products'])[0] || ''),
     exploited, cisaKev, ransomware, cves, iocs, sourceCount: 1,
     daysOld: validDate ? Math.max(0, Math.floor((Date.now() - pubDateObj.getTime()) / 86400000)) : 0,
     threat_actor: sapexPickArray(raw, ['threat_actor', 'threat_actors', 'actor', 'actors']).map(String),
@@ -1583,109 +1590,6 @@ function getMitre(item) {
   return { tactic:'Initial Access', technique:'T1190 — Exploit Public-Facing Application', sub:'T1203 — Exploitation for Client Execution' };
 }
 
-// ── PHASE 6: CTI WRITER v5.3 ────────────────────────────────────────────
-
-function genExecutiveSummary(item) {
-  const vendor=item.vendor||'the affected vendor', product=item.product||'the affected product';
-  const cvss=item.cvss||7.0, tl=item.threatLevel||'HIGH';
-  const srcList = (item._sources||[item.source]).join(', ');
-  // Exploitation status is stated ONLY from verifiable signals (KEV / reported
-  // exploitation). Absent those, we say so plainly rather than asserting a
-  // probability we cannot source — analyst-grade honesty over engagement.
-  const exploitLine = item.cisaKev
-    ? 'CISA has confirmed active exploitation in the wild (listed in the Known Exploited Vulnerabilities catalog).'
-    : item.exploited
-    ? 'Active exploitation has been reported in the wild — prioritize accordingly.'
-    : 'No confirmed in-the-wild exploitation at the time of writing; prioritize on exposure, privilege, and CVSS.';
-  const ransomLine = item.ransomware ? ' Source reporting associates this with known ransomware activity.' : '';
-  return `This report analyzes ${item.id} affecting ${vendor} ${product} (CVSS ${cvss}, ${tl} severity). ${exploitLine}${ransomLine} Corroborated across ${item.sourceCount||1} source(s): ${srcList}. Verify all specifics against the primary sources linked below before acting.`;
-}
-
-function genBusinessImpact(item) {
-  const product=item.product||'affected product', vendor=item.vendor||'vendor';
-  const cvss=item.cvss||7.0;
-  const impacts = [];
-  if (cvss>=9.0||item.cisaKev) impacts.push('Complete system compromise possible — treat as active incident');
-  if (item.ransomware) impacts.push('Ransomware deployment risk — offline backup integrity verification required immediately');
-  if (item.exploited) impacts.push('Threat actors actively targeting this vulnerability — attack window is open now');
-  if (/rce|remote code/i.test((item.desc||'')+(item.title||''))) impacts.push('Remote code execution — full server takeover without authentication possible');
-  if (/priv|escalation|lpe|eop/i.test((item.desc||'')+(item.title||''))) impacts.push('Privilege escalation — local attacker can become SYSTEM/root');
-  if (/auth bypass|unauthenticated/i.test((item.desc||'')+(item.title||''))) impacts.push('Authentication bypass — all access controls circumvented');
-  if (/data breach|exfiltrat/i.test((item.desc||'')+(item.title||''))) impacts.push('Data exfiltration risk — customer and sensitive data at risk');
-  if (/supply chain/i.test((item.desc||'')+(item.title||''))) impacts.push('Supply chain compromise — downstream customers may be affected');
-  const industries = item.affected_industries||[];
-  if (industries.length) impacts.push(`Sectors at elevated risk: ${industries.join(', ')}`);
-  if (!impacts.length) impacts.push(`${vendor} ${product} users face material security risk requiring immediate remediation`);
-  return impacts;
-}
-
-function genAttackChain(item) {
-  const t = ((item.desc||'')+(item.title||'')).toLowerCase();
-  const chain = [];
-  chain.push({ phase:'Reconnaissance', detail:`Attacker identifies exposed ${item.product||'target'} instances via Shodan, Censys, or targeted scanning`, tactic:'TA0043' });
-  if (/unauthenticated|no auth|auth bypass/i.test(t)) {
-    chain.push({ phase:'Initial Access', detail:'Unauthenticated exploitation — no credentials required. Single HTTP request sufficient', tactic:'T1190' });
-  } else if (/phishing|email|attachment/i.test(t)) {
-    chain.push({ phase:'Initial Access', detail:`Spear-phishing with malicious attachment or link targeting ${item.vendor||'vendor'} users`, tactic:'T1566' });
-  } else {
-    chain.push({ phase:'Initial Access', detail:`Exploitation of ${item.id} in ${item.vendor||'vendor'} ${item.product||'product'}`, tactic:'T1190' });
-  }
-  if (/rce|remote code|code execution/i.test(t)) chain.push({ phase:'Execution', detail:'Remote code execution achieved — attacker runs arbitrary commands on target system', tactic:'T1203' });
-  if (/escalation|lpe|eop|priv/i.test(t)) chain.push({ phase:'Privilege Escalation', detail:'Local privilege escalation to SYSTEM/root for full control', tactic:'T1068' });
-  chain.push({ phase:'Persistence', detail:'Backdoor, scheduled task, or new admin account created for persistent access', tactic:'T1053' });
-  if (item.ransomware) {
-    chain.push({ phase:'Lateral Movement', detail:'Credential harvesting and network spread using Mimikatz, BloodHound, or living-off-the-land techniques', tactic:'T1550' });
-    chain.push({ phase:'Impact', detail:'Data encrypted with double-extortion — exfiltration before encryption. Ransomware demand issued', tactic:'T1486' });
-  } else if (item.type==='DATA_BREACH') {
-    chain.push({ phase:'Collection', detail:'Sensitive data harvested from databases, file shares, and cloud storage', tactic:'T1005' });
-    chain.push({ phase:'Exfiltration', detail:'Data exfiltrated via encrypted C2 channel to attacker-controlled infrastructure', tactic:'T1041' });
-  } else {
-    chain.push({ phase:'Command & Control', detail:'Attacker establishes persistent C2 channel using HTTPS or DNS tunneling', tactic:'T1071' });
-    chain.push({ phase:'Impact / Objectives', detail:'Intellectual property theft, espionage, cryptomining, or preparation for future attack stage', tactic:'T1657' });
-  }
-  return chain;
-}
-
-function genCommentary(item) {
-  const vendor=item.vendor||'the affected vendor', product=item.product||'the affected product', cvss=item.cvss||7.0;
-  const urgency = cvss>=9.5?'MAXIMUM':cvss>=9.0?'CRITICAL':cvss>=8.0?'HIGH':'ELEVATED';
-  const typeCommentary = {
-    CVE_REPORT:`This ${cvss>=9?'critical':'high-severity'} vulnerability in ${vendor} ${product} (CVSS ${cvss}) represents a significant attack surface. SENTINEL APEX assesses exploitation to be technically feasible with moderate effort.`,
-    ZERO_DAY:`This zero-day vulnerability is being actively exploited before a vendor patch is available. SENTINEL APEX intelligence shows unpatched vulnerabilities are consistently weaponized within 24-72 hours of public disclosure. Nation-state APT groups and ransomware operators race to weaponize newly disclosed zero-days.`,
-    RANSOMWARE:`SENTINEL APEX is tracking active ransomware campaign activity. Modern ransomware operations are double-extortion campaigns combining data theft with encryption. Incident response readiness, offline backups, and network segmentation are non-negotiable defensive requirements.`,
-    MALWARE_REPORT:`Active malware campaign infrastructure has been identified and confirmed. This campaign is using live distribution infrastructure currently serving payloads. The IOCs in this report should be blocked immediately across all security controls — firewall, proxy, EDR, and email gateway.`,
-    DATA_BREACH:`A data breach or significant data exposure event has been identified. SENTINEL APEX recommends immediate assessment of third-party data sharing relationships. Credential stuffing attacks typically follow major breach disclosures within 48-72 hours.`,
-    THREAT_ACTOR:`Nation-state or APT actor activity has been observed. State-sponsored cyber operations have dramatically increased in targeting critical infrastructure, defense supply chains, and financial systems. TTPs include living-off-the-land techniques, supply chain compromise, and persistence through legitimate tooling.`,
-    AI_SECURITY:`AI and machine learning security vulnerabilities represent an emerging attack surface that most organizations are unprepared to defend. SENTINEL APEX tracks AI security threats including prompt injection, model poisoning, and AI-assisted cyberattacks. Reference OWASP LLM Top 10 and MITRE ATLAS for defensive controls.`,
-    DARK_WEB:`SENTINEL APEX dark web monitoring has detected significant underground activity related to this intelligence item. Dark web intelligence provides early warning of emerging threats before they materialize in enterprise environments. Immediate threat hunting is recommended.`,
-    SUPPLY_CHAIN:`Supply chain attacks represent some of the highest-impact threat vectors — a single compromise can cascade across thousands of downstream victims. SENTINEL APEX recommends immediate software bill of materials (SBOM) analysis and dependency audit.`,
-    NEWS_REPORT:`SENTINEL APEX is monitoring this developing security event. Analysts are tracking indicators, attribution signals, and potential downstream impact.`,
-  };
-  const base = typeCommentary[item.type]||typeCommentary['NEWS_REPORT'];
-  const kevNote = item.cisaKev ? `\n\nCISA KNOWN EXPLOITED VULNERABILITY: Added to KEV catalog confirming active exploitation. ${item.dueDate?`Federal agencies must remediate by ${item.dueDate}.`:'All organizations must patch immediately.'} Required action: ${item.reqAction||'Apply vendor patch immediately.'}` : '';
-  const rsNote  = item.ransomware ? `\n\nRANSOMWARE CORRELATION: Ransomware-as-a-service groups have been observed using this attack vector.` : '';
-  const multiSrc = (item.sourceCount||1)>=2 ? `\n\nMULTI-SOURCE CORROBORATION: This intelligence has been confirmed across ${item.sourceCount} independent sources, elevating confidence rating to HIGH.` : '';
-  const urgencyNote = `\n\nSENTINEL APEX URGENCY: ${urgency}. Score: ${item.priority||0}/100 ${item.threatLevel||'HIGH'}. ${item.exploited?'Active exploitation confirmed — treat as active incident requiring immediate response.':'Patch before exploitation activity begins.'}`;
-  return base+kevNote+rsNote+multiSrc+urgencyNote;
-}
-
-function genPlaybook(item) {
-  const p = item.product||'affected product', v = item.vendor||'vendor';
-  const steps = [
-    `IMMEDIATE (0-1hr): Identify all instances of ${p} in your environment via CMDB/asset inventory`,
-    `IMMEDIATE (0-1hr): Apply ${v} vendor patch — no maintenance window exception for ${item.threatLevel||'HIGH'} threats`,
-    `IMMEDIATE (1-2hr): If no patch available: implement WAF rules, ACLs, or network-level compensating controls`,
-    `SHORT-TERM (2-4hr): Deploy Sigma detection rule to SIEM — validate alert generation in test environment`,
-    `SHORT-TERM (4-8hr): Threat hunt for indicators of prior exploitation using IOCs from this report`,
-    `SHORT-TERM (8-24hr): Review access logs for exploitation attempts matching attack chain patterns above`,
-    item.cisaKev?`MANDATORY: CISA KEV listed — federal agencies patch by ${item.dueDate||'required date'}. All organizations treat as priority-1`:null,
-    item.ransomware?`RANSOMWARE: Verify offline backup integrity. Isolate any systems showing ransomware indicators. Contact IR retainer immediately`:null,
-    `LONG-TERM: Add to vulnerability management program. Track patch compliance metrics.`,
-    `LONG-TERM: Update threat model to include ${item.type||'this threat category'} attack scenarios`,
-  ].filter(Boolean);
-  return steps;
-}
-
 // ── PHASE 6: TYPE-SPECIFIC INTELLIGENCE SECTION GENERATORS ───────────────
 function genAISecSection(item, escHtml) {
   const t = ((item.title||'')+(item.desc||'')).toLowerCase();
@@ -1755,10 +1659,11 @@ function genDarkWebSection(item, escHtml) {
 function genSigma(item) {
   const safeName = (item.id||'unknown').replace(/[^a-zA-Z0-9_-]/g,'_');
   const cves = item.cves||(item.id?.startsWith('CVE')?[item.id]:[]);
-  return `title: ${item.id} Exploitation Attempt — ${item.vendor} ${item.product}
+  const vendor = item.vendor||'the affected vendor', product = item.product||'the affected product';
+  return `title: ${item.id} Exploitation Attempt — ${vendor} ${product}
 id: ${md5(item.id+'sigma')}-${md5(item.title||'').slice(0,4)}
 status: experimental
-description: Detects exploitation of ${item.id} in ${item.vendor} ${item.product}. Priority: ${item.threatLevel||'HIGH'}. Score: ${item.priority||0}/100
+description: Detects exploitation of ${item.id} in ${vendor} ${product}. Priority: ${item.threatLevel||'HIGH'}. Score: ${item.priority||0}/100
 author: CYBERDUDEBIVASH SENTINEL APEX v4.0 (bivash@cyberdudebivash.com)
 date: ${isoNow()}
 references:\n    - https://nvd.nist.gov/vuln/detail/${item.id}\n    - https://blog.cyberdudebivash.in/
@@ -1922,9 +1827,10 @@ function buildProductApiJSON(item, mem = analystMemory) {
 function genYARA(item) {
   const n = (item.id||'unknown').replace(/[^a-zA-Z0-9_]/g,'_');
   const p = (item.product||'unknown').replace(/[^a-zA-Z0-9_]/g,'_').slice(0,40);
+  const vendor = item.vendor||'the affected vendor', product = item.product||'the affected product';
   return `rule ${n}_Exploitation {
     meta:
-        description = "Detects artifacts related to ${item.id} exploitation in ${item.vendor} ${item.product}"
+        description = "Detects artifacts related to ${item.id} exploitation in ${vendor} ${product}"
         author      = "CYBERDUDEBIVASH SENTINEL APEX v4.0"
         date        = "${isoNow()}"
         severity    = "${(item.cvss||0) >= 9 ? 'CRITICAL' : 'HIGH'}"
@@ -1940,7 +1846,11 @@ function genYARA(item) {
 
 // ── PHASE 7: ADVANCED COMMENTARY (Executive Summary + Business Impact) ─
 function genExecutiveSummary(item) {
-  const vendor=item.vendor||'the affected vendor', product=item.product||'the affected product';
+  // Avoid stuttering ("the affected vendor the affected product") when both
+  // are unknown — a single honest clause reads better than two concatenated
+  // fallback phrases.
+  const vendorProduct = item.vendor && item.product ? `${item.vendor} ${item.product}`
+    : item.vendor || item.product || 'a system not yet identified in available sources';
   const cvss=item.cvss||7.0, tl=item.threatLevel||'HIGH';
   const srcList = (item._sources||[item.source]).join(', ');
   // Exploitation status is stated ONLY from verifiable signals (KEV / reported
@@ -1952,7 +1862,7 @@ function genExecutiveSummary(item) {
     ? 'Active exploitation has been reported in the wild — prioritize accordingly.'
     : 'No confirmed in-the-wild exploitation at the time of writing; prioritize on exposure, privilege, and CVSS.';
   const ransomLine = item.ransomware ? ' Source reporting associates this with known ransomware activity.' : '';
-  return `This report analyzes ${item.id} affecting ${vendor} ${product} (CVSS ${cvss}, ${tl} severity). ${exploitLine}${ransomLine} Corroborated across ${item.sourceCount||1} source(s): ${srcList}. Verify all specifics against the primary sources linked below before acting.`;
+  return `This report analyzes ${item.id} affecting ${vendorProduct} (CVSS ${cvss}, ${tl} severity). ${exploitLine}${ransomLine} Corroborated across ${item.sourceCount||1} source(s): ${srcList}. Verify all specifics against the primary sources linked below before acting.`;
 }
 
 function genBusinessImpact(item) {
@@ -2297,6 +2207,7 @@ function generatePostHTML(item) {
   const score = item.priority||0;
   const typeLabels = { CVE_REPORT:'🔴 CVE ANALYSIS', ZERO_DAY:'💀 ZERO-DAY', RANSOMWARE:'🏴 RANSOMWARE', MALWARE_REPORT:'🦠 MALWARE', DATA_BREACH:'⚠️ DATA BREACH', THREAT_ACTOR:'🎯 THREAT ACTOR', AI_SECURITY:'🤖 AI SECURITY', NEWS_REPORT:'📡 INTEL', ADVISORY:'🛡️ ADVISORY' };
   const typeLabel = typeLabels[item.type]||'⚡ INTEL';
+  const vendorProductLabel = [item.vendor, item.product].filter(Boolean).join(' ');
   const slug = slugify(item.id.startsWith('CVE')?`${item.id}-${item.vendor}-${item.product}`:item.title.slice(0,60));
   const intelligenceProducts = genIntelligenceProducts(item, escHtml, slug);
   // Control chars in titles break JSON-LD parsing (raw newlines are illegal in JSON strings)
@@ -2453,7 +2364,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
 <body>
 <canvas id="mc"></canvas>
 <div class="ticker"><div class="ticker-inner">
-  <span class="ticker-item">⚡ ${escHtml(item.id)} — ${escHtml(item.vendor)} ${escHtml(item.product)} — Score ${score}/100 ${tl}</span>
+  <span class="ticker-item">⚡ ${escHtml(item.id)}${vendorProductLabel?` — ${escHtml(vendorProductLabel)}`:''} — Score ${score}/100 ${tl}</span>
   <span class="ticker-item">🛡️ CYBERDUDEBIVASH SENTINEL APEX — 24/7 Global Threat Intelligence v4.0</span>
   <span class="ticker-item">⚠️ ${item.cisaKev?'CISA KEV CONFIRMED — ACTIVE EXPLOITATION':item.exploited?'ACTIVE EXPLOITATION DETECTED':'HIGH-PRIORITY SECURITY ADVISORY'}</span>
   <span class="ticker-item">⚡ ${escHtml(item.id)} — CVSS ${cvss} — ${(item.sourceCount||1)} Source(s) Confirmed</span>
@@ -2553,8 +2464,8 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
       <div class="threat-badge">${tl} — ${score}/100</div>
       <div style="margin-top:12px">
         <div class="vrow"><span class="vk">ID</span><span class="vv" style="color:var(--apex-cyan);font-family:monospace;font-size:11px">${escHtml(item.id)}</span></div>
-        <div class="vrow"><span class="vk">Vendor</span><span class="vv">${escHtml(item.vendor)}</span></div>
-        <div class="vrow"><span class="vk">Product</span><span class="vv">${escHtml(item.product)}</span></div>
+        ${item.vendor?`<div class="vrow"><span class="vk">Vendor</span><span class="vv">${escHtml(item.vendor)}</span></div>`:''}
+        ${item.product?`<div class="vrow"><span class="vk">Product</span><span class="vv">${escHtml(item.product)}</span></div>`:''}
         <div class="vrow"><span class="vk">Type</span><span class="vv">${escHtml(typeLabel)}</span></div>
         <div class="vrow"><span class="vk">Exploited</span><span class="vv" style="color:${item.exploited?'var(--apex-red)':'var(--apex-green)'}">${item.exploited?'✓ Confirmed':'Monitoring'}</span></div>
         <div class="vrow"><span class="vk">CISA KEV</span><span class="vv" style="color:${item.cisaKev?'var(--apex-red)':'var(--apex-muted)'}">${item.cisaKev?'⚠️ Listed':'Not Listed'}</span></div>

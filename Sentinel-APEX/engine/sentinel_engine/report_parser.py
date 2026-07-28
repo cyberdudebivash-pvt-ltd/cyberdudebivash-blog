@@ -12,7 +12,14 @@ from dataclasses import dataclass, field
 
 SEVERITIES = ("LOW", "MEDIUM", "HIGH", "CRITICAL")
 
-_RE_SECTION = re.compile(r"^►\s*(.+?)\s*$", re.MULTILINE)
+# Recognizes two section-marker conventions: the legacy `►`-prefixed style
+# used by older published-page dumps (see tests/fixtures/INTEL-REPORT-*.txt),
+# and the `##` ATX-style headings actually used by hand-authored reports in
+# Sentinel-APEX/reports/drafts/ (e.g. SA-2026-0001). `##` only — not `#`
+# (the document title lives in YAML front matter, not a level-1 heading) or
+# `###`+ (sub-headings stay nested inside their parent section's body rather
+# than becoming their own top-level section).
+_RE_SECTION = re.compile(r"^(?:►|##)\s+(.+?)\s*$", re.MULTILINE)
 _RE_DATE_LINE = re.compile(r"^[A-Z][a-z]+ \d{1,2}, \d{4}$")
 _RE_SIGMA_START = re.compile(r"^title:\s*\S", re.MULTILINE)
 
