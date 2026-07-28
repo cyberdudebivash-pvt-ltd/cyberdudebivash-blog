@@ -113,6 +113,59 @@ class TestTemplateEnhancement(unittest.TestCase):
         self.assertIn("Reflects known patterns for this threat category", html)
         self.assertIn("not unique correlation against this specific article", html)
 
+    # GCTIMP v1 finding: is_ot/is_ato/is_ai used bare "x " substring checks
+    # ("ot " in text / "ato " in text / "ai " in text) instead of word
+    # boundaries, so they false-positived on any word merely ending in
+    # those letters — "not", "hot", "robot", "NATO", "Dubai" — cascading
+    # into wrong severity, wrong regulatory citations ($500K/hr OT downtime
+    # or GDPR/PCI-DSS ATO language), and wrong MITRE/Sigma/SOC content for
+    # completely unrelated articles. Fixed with \b-bounded regex.
+
+    def test_common_word_not_does_not_trigger_ot_classification(self):
+        article = _make_article(
+            title="Vendor Confirms Issue Has Not Been Fully Resolved",
+            summary="The vendor stated the flaw has not affected most customers and a hotfix is not yet available.",
+            labels=["Vulnerabilities"],
+        )
+        html = _template_enhance(article, self.config)
+        self.assertNotIn("Operational technology and industrial control system targeting", html)
+
+    def test_nato_mention_does_not_trigger_account_takeover_classification(self):
+        article = _make_article(
+            title="NATO Cyber Command Warns of Espionage Campaign",
+            summary="NATO member states are advised to review network defenses following new reconnaissance activity.",
+            labels=["Nation-State"],
+        )
+        html = _template_enhance(article, self.config)
+        self.assertNotIn("Credential stuffing operations rely on the reuse", html)
+
+    def test_dubai_mention_does_not_trigger_ai_security_section(self):
+        article = _make_article(
+            title="Data Breach Disclosed by Firm Based in Dubai",
+            summary="A firm headquartered in Dubai disclosed a breach affecting customer records.",
+            labels=["Data Breach"],
+        )
+        html = _template_enhance(article, self.config)
+        self.assertNotIn("AI Security Impact", html)
+
+    def test_standalone_ot_abbreviation_still_triggers_ot_classification(self):
+        article = _make_article(
+            title="OT Network Compromise Disrupts Manufacturing Plant",
+            summary="Attackers gained access to the OT environment via an exposed HMI interface.",
+            labels=["OT/ICS"],
+        )
+        html = _template_enhance(article, self.config)
+        self.assertIn("Operational technology and industrial control system targeting", html)
+
+    def test_standalone_ato_abbreviation_still_triggers_account_takeover_classification(self):
+        article = _make_article(
+            title="Retailer Hit by Large-Scale ATO Fraud Ring",
+            summary="Investigators linked the ATO incidents to a credential stuffing campaign.",
+            labels=["Fraud"],
+        )
+        html = _template_enhance(article, self.config)
+        self.assertIn("Credential stuffing operations rely on the reuse", html)
+
     def test_ai_section_when_ai_labels(self):
         article = _make_article(
             title="LLM Prompt Injection Attack",

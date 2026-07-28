@@ -642,14 +642,17 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 
     text = (article.title + " " + article.summary).lower()
     is_ransomware = "ransomware" in text
-    is_ai = "ai " in text or "llm" in text or "prompt injection" in text or "owasp" in text or "large language model" in text or "generative ai" in text
+    # Standalone-abbreviation checks use \b word boundaries, not bare "x " substrings —
+    # "ai "/"ot "/"ato " as plain substrings false-positive on "Dubai "/"Mumbai ",
+    # "not "/"hot "/"robot "/every other word ending in -ot, and "NATO " respectively.
+    is_ai = bool(re.search(r"\bai\b", text)) or "llm" in text or "prompt injection" in text or "owasp" in text or "large language model" in text or "generative ai" in text
     is_apt = "apt" in text or "nation-state" in text or "nation state" in text or "state-sponsored" in text or "volt typhoon" in text or "lazarus" in text or "apt28" in text
     is_cve = bool(cves) or "vulnerability" in text or "cve" in text
     is_patch = "patch" in text or "update" in text or "cisa" in text or "kev" in text
     # "critical infrastructure" deliberately excluded — too broad, triggers on APT/ransomware reports
-    is_ot = "ot " in text or "ics" in text or "scada" in text or "plc" in text or "operational technology" in text or "industrial control" in text or "hmi" in text or "historian" in text or "modbus" in text or "dnp3" in text or "ethernet/ip" in text or "s7comm" in text or "food processing" in text or "water treatment" in text or "energy sector" in text or "oil and gas" in text or "power grid" in text or "manufacturing plant" in text
+    is_ot = bool(re.search(r"\bot\b", text)) or "ics" in text or "scada" in text or "plc" in text or "operational technology" in text or "industrial control" in text or "hmi" in text or "historian" in text or "modbus" in text or "dnp3" in text or "ethernet/ip" in text or "s7comm" in text or "food processing" in text or "water treatment" in text or "energy sector" in text or "oil and gas" in text or "power grid" in text or "manufacturing plant" in text
     is_supply_chain = "supply chain" in text or "software supply" in text or "dependency" in text or "npm" in text or "pypi" in text or "open source" in text or "package" in text
-    is_ato = "credential stuffing" in text or "account takeover" in text or "ato " in text or "combo list" in text or "brute force" in text or "password spray" in text
+    is_ato = "credential stuffing" in text or "account takeover" in text or bool(re.search(r"\bato\b", text)) or "combo list" in text or "brute force" in text or "password spray" in text
     is_extension = "browser extension" in text or "chrome extension" in text or "firefox addon" in text or "web store" in text or "extension id" in text
 
     # Severity determination
