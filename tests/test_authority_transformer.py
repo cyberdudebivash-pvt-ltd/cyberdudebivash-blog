@@ -100,6 +100,19 @@ class TestTemplateEnhancement(unittest.TestCase):
         html = _template_enhance(article, self.config)
         self.assertIn("T1", html)
 
+    def test_category_derived_disclosure_present(self):
+        # GEIOM v1 finding: unlike the Threat Classification and Predictive
+        # Intelligence sections (which already carry real HIGH/MEDIUM/LOW
+        # CONFIDENCE labels), the MITRE/Sigma/SIEM/hunt/SOC block is selected
+        # from one of 8 fixed category buckets (platform/open-issues.md
+        # Issue 6) with no confidence framing at all. This disclosure makes
+        # that explicit instead of presenting category-derived guidance with
+        # the same unqualified certainty as the article-specific sections.
+        article = _make_article()
+        html = _template_enhance(article, self.config)
+        self.assertIn("Reflects known patterns for this threat category", html)
+        self.assertIn("not unique correlation against this specific article", html)
+
     def test_ai_section_when_ai_labels(self):
         article = _make_article(
             title="LLM Prompt Injection Attack",

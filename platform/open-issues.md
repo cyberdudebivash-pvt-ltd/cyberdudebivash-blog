@@ -229,6 +229,19 @@ outcome a proof-of-concept is supposed to produce. Not fixed in this pass.
 
 ## Issue 6 — Template-fallback detection content is category-generic, not vulnerability-specific (read the code, not just the stats)
 
+**Status update (GEIOM v1):** the confidence-framing gap noted below is now
+partially addressed — the MITRE ATT&CK Mapping section (and, by its own
+text, the Sigma/SIEM/hunt/SOC content that follows it) now carries an
+explicit "Reflects known patterns for this threat category (MEDIUM
+CONFIDENCE) — not unique correlation against this specific article's
+details" disclosure, matching the confidence-labeling convention the same
+function already uses elsewhere (exploitability, attribution, predictive
+intelligence). This is a labeling fix, not a detection-logic fix — the
+underlying category-generic Sigma/SIEM content described below is
+unchanged; readers are now told plainly what kind of guidance they're
+looking at. The CWE-specific reclassification described as "not fixed in
+this pass" remains not fixed.
+
 Prior audits established *that* ~98% of Blogger-syndication posts use the
 template fallback rather than an LLM (GTIOC v1). Reading `_template_enhance()`
 (`automation/authority_transformer.py:634-1646`) end to end shows *what that
@@ -294,6 +307,37 @@ wouldn't by itself make generated detection logic correlate to the
 specific finding — that gap exists on both paths, just more severely on
 the template one. Doesn't change the "not attempted here" conclusion
 above; narrows what the eventual fix needs to cover.
+
+## Issue 7 — Template narrative sections are truncated source text, not original synthesis (GEIOM v1 Phase 2)
+
+Issue 6 covers whether the template's *detection* content is original.
+This is the narrower, distinct question of whether its *narrative*
+content is: Executive Summary is `article.summary[:350].rstrip('.')` plus
+one fixed templated sentence; Technical Analysis is `article.summary[:800]`
+verbatim (`automation/authority_transformer.py:1484,1528`). For the ~90%
+of posts on the template path, the reader-facing "analysis" in these two
+sections is the source feed's own summary text, truncated at a fixed
+character count — not correlation, timeline reconstruction, or synthesis
+across sources.
+
+This is not a fabrication problem — nothing is invented, and the source is
+the article itself, not a misattributed one — so it doesn't carry Issue
+6's detection-deployment risk. But it does mean the honest answer to "what
+does this section add beyond the source article" is, for most posts:
+severity/CVSS extraction and category labeling, not original analytical
+value. The real differentiation (per GCTIX v1's own Phase 6 framing —
+"what would make a customer choose Sentinel APEX instead of reading the
+original advisory") on the template path is structure and packaging
+(severity scoring, MITRE labeling, Sigma/SIEM starting points, SEO/schema),
+not novel correlation.
+
+**Not fixed in this pass.** Genuine narrative synthesis needs either real
+LLM analysis (already gated behind the provider-availability question
+GTIOC v1 raised — most runs don't get one) or new summarization logic
+distinct from truncation, and either is a larger content-strategy decision
+than a labeling fix. Documented so it isn't mistaken for something this
+sprint already addressed, since Issue 6's confidence-disclosure fix (above)
+covers the detection block only, not these two sections.
 
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

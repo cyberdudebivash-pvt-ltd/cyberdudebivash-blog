@@ -1535,6 +1535,7 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 {_sh("MITRE ATT&CK Mapping", "#a855f7")}
 <div style="background:#0d0014;border:1px solid #a855f733;border-radius:6px;padding:14px 16px">
 <div style="color:#7c3aed;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9632; MITRE ATT&amp;CK ENTERPRISE TECHNIQUES</div>
+<div style="color:#64748b;font-size:11px;font-style:italic;margin-bottom:10px">Reflects known patterns for this threat category (MEDIUM CONFIDENCE) &mdash; not unique correlation against this specific article's details. The same framing applies to the Sigma rule, SIEM queries, hunting queries, and SOC playbook below.</div>
 {mitre_html}
 </div>
 
