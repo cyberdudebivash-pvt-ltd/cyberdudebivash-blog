@@ -153,4 +153,92 @@ function toHTMLDocument(model) {
   return parts.join('\n\n');
 }
 
-module.exports = { parseReport, toHTMLDocument, section, renderMarkdown };
+// ── EICF v1: rendering-quality certification check ─────────────────────────
+// Reuses parseReport()/toHTMLDocument() above — this never re-parses
+// Markdown itself. Exists to give Sentinel-APEX/engine's certification.py
+// (Python) a stable, scriptable verdict on whether a specific report renders
+// correctly, generalizing the exact regression class Issue 5 documented
+// (tables/fenced code silently destroyed) to any future report, not just the
+// two fixed fixtures report-renderer.test.js already pins.
+
+// GFM only requires one or more dashes per column in the delimiter row
+// (":-", "--", "---" are all valid) — matching marked's own leniency here,
+// not an arbitrary stricter convention, avoids false "table destroyed"
+// verdicts on reports that use a shorter separator style.
+const RE_TABLE_SEPARATOR = /^[ \t]*\|?[ \t]*:?-+:?[ \t]*(\|[ \t]*:?-+:?[ \t]*)+\|?[ \t]*$/gm;
+const RE_FENCE_LINE = /^```/gm;
+
+function countMarkdownTables(rawMarkdown) {
+  return (String(rawMarkdown || '').match(RE_TABLE_SEPARATOR) || []).length;
+}
+
+function countFencedCodeBlocks(rawMarkdown) {
+  const fenceLines = (String(rawMarkdown || '').match(RE_FENCE_LINE) || []).length;
+  return Math.floor(fenceLines / 2);
+}
+
+function checkRendering(text) {
+  let model;
+  try {
+    model = parseReport(text);
+  } catch (e) {
+    return {
+      ok: false, issues: [`parseReport threw: ${e.message}`], warnings: [],
+      sectionCount: 0, tableCount: { markdown: 0, rendered: 0 },
+      codeBlockCount: { markdown: 0, rendered: 0 },
+    };
+  }
+
+  let html;
+  try {
+    html = toHTMLDocument(model);
+  } catch (e) {
+    return {
+      ok: false, issues: [`toHTMLDocument threw: ${e.message}`], warnings: [],
+      sectionCount: model.sections.length, tableCount: { markdown: 0, rendered: 0 },
+      codeBlockCount: { markdown: 0, rendered: 0 },
+    };
+  }
+
+  const issues = [];
+  const warnings = [];
+
+  if (model.sections.length === 0 && !model.preamble.rawMarkdown.trim()) {
+    issues.push('report has no sections and no preamble content — nothing to render');
+  }
+
+  if (/^##[ \t]/m.test(html)) {
+    issues.push("raw '##' heading marker leaked into rendered HTML — a section boundary failed to parse");
+  }
+
+  const rawBody = [model.preamble.rawMarkdown, ...model.sections.map(s => s.rawMarkdown)].join('\n');
+  const mdTables = countMarkdownTables(rawBody);
+  const renderedTables = (html.match(/<table class="tbl">/g) || []).length;
+  if (mdTables !== renderedTables) {
+    issues.push(`table count mismatch: ${mdTables} table(s) in source Markdown, ${renderedTables} rendered — a table was likely flattened or misparsed`);
+  }
+
+  const mdFences = countFencedCodeBlocks(rawBody);
+  const renderedFences = (html.match(/<div class="code-block-wrap">/g) || []).length;
+  if (mdFences !== renderedFences) {
+    issues.push(`fenced code block count mismatch: ${mdFences} in source Markdown, ${renderedFences} rendered`);
+  }
+
+  if (/<script[ >]/i.test(rawBody) && /<script[ >]/i.test(html)) {
+    issues.push('a literal <script> tag in the source survived unescaped into rendered HTML');
+  }
+
+  return {
+    ok: issues.length === 0,
+    issues,
+    warnings,
+    sectionCount: model.sections.length,
+    tableCount: { markdown: mdTables, rendered: renderedTables },
+    codeBlockCount: { markdown: mdFences, rendered: renderedFences },
+  };
+}
+
+module.exports = {
+  parseReport, toHTMLDocument, section, renderMarkdown,
+  checkRendering, countMarkdownTables, countFencedCodeBlocks,
+};

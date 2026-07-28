@@ -16,7 +16,9 @@ report through directories without also updating its `review_status`
 | Detection Review | *(part of Stage 5 — Quality Gates, detection-specific)* | `detection-review` |
 | Intelligence Review | *(part of Stage 5 — Quality Gates, analytical-discipline-specific)* | `intelligence-review` |
 | Editorial Review | *(part of Stage 5, plus Layer 13)* | `editorial-review` |
+| Rendering Validation | *(new — see EICF v1 below)* | *(no dedicated status — folds into Certification)* |
 | Executive Approval | *(new — no current WORKFLOW.md equivalent)* | `executive-approval` |
+| Certification | *(new — see EICF v1 below)* | *(no dedicated status — the gate immediately before Publication)* |
 | Publication | Stage 8 — Publish & Distribute | `published` |
 | Continuous Monitoring | *(new — see Layer 11)* | `published` (unchanged; monitoring doesn't change status) |
 | Update or Retirement | *(new — archive/ on supersession)* | new report: `draft`; old report: archived, `review_status` frozen at whatever it was |
@@ -38,6 +40,40 @@ threshold (Layer 5's Board Summary criteria). Not every report needs this
 gate — a routine CVE advisory does not — but the pipeline should make the
 decision to skip it explicit (`review_status` jumping straight from
 `editorial-review` to `published`) rather than silently absent.
+
+## Rendering Validation and Certification — EICF v1
+
+Two more genuinely new stages, added when the Enterprise Intelligence
+Certification Framework (EICF v1) formalized what "passed quality gate"
+actually needs to mean once a canonical renderer (Layer 4 predates
+`Sentinel-APEX/renderer/`; see `platform/open-issues.md` Issue 5) and a
+first real publication (`SA-2026-0001`) both existed to certify against.
+
+**Rendering Validation** did not exist as a named stage before because
+nothing rendered a report for a reader before EIRE v1 — Layer 4's quality
+gate audits *content*, never whether that content actually turns into
+correct HTML (tables intact, fenced code intact, no raw heading markers
+leaking through). It is not its own human review step; it is a mechanical
+check (`Sentinel-APEX/renderer/certify-rendering.js`) that runs as part of
+Certification below, named separately here for the same reason Technical/
+Detection/Intelligence Review are named separately: so a rendering failure
+reads as "rendering failed," not an undifferentiated gate failure.
+
+**Certification** is the single gate that actually produces a scorecard:
+`python3 cli.py certify <report.md> [--html --sitemap --index]`
+(`Sentinel-APEX/engine/sentinel_engine/certification.py`) composes the
+existing quality gate (Technical/Detection/Intelligence Review, bucketed
+into Intelligence/Evidence/Detection Quality domains), the rendering check
+above, and — when the report is already live — a Publication Quality check
+against the shipped HTML/sitemap/index files. It re-implements none of
+these; it buckets their existing findings into a qualitative Pass / Needs
+Review / Fail / Not Applicable scorecard per domain and emits a Release
+Governance Markdown record (Executive Summary through Certification
+Decision). A report with any domain at Fail is **NOT CERTIFIED** — the
+`review_status` progression above must not reach `published` until
+re-certified. "Not Applicable" (e.g. Publication Quality before a report
+has ever been published) is not a failure; it means that domain was not yet
+checkable, not that it passed.
 
 ## Retirement
 
