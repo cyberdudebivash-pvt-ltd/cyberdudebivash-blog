@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-28T18:03:36.704Z",
+  "generated": "2026-07-28T18:31:29.409Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9431,
+    "total_nodes": 9437,
     "actors": 8,
     "cves": 2604,
-    "campaigns": 976,
+    "campaigns": 977,
     "malware": 0,
     "iocs": 857,
-    "edges": 3410
+    "edges": 3414
   },
   "nodes": {
     "actor:lockbit": {
@@ -348,6 +348,11 @@
           "target": "SENTINELAPEX-88d51c8a21b6",
           "relationship": "exploits",
           "confidence": 0.85
+        },
+        {
+          "target": "SENTINELAPEX-9bd1fae87248",
+          "relationship": "exploits",
+          "confidence": 0.85
         }
       ],
       "attributes": {
@@ -603,6 +608,11 @@
         },
         {
           "target": "SENTINELAPEX-88d51c8a21b6",
+          "relationship": "exploits",
+          "confidence": 0.85
+        },
+        {
+          "target": "SENTINELAPEX-9bd1fae87248",
           "relationship": "exploits",
           "confidence": 0.85
         }
@@ -179726,6 +179736,122 @@
           "confidence": 1
         }
       ]
+    },
+    "SENTINELAPEX-1fa6060a73ac": {
+      "id": "SENTINELAPEX-1fa6060a73ac",
+      "type": "Intel",
+      "name": "vBulletin fixes critical pre-auth RCE flaw with public exploit",
+      "attributes": {
+        "cvss": 9.5,
+        "threat_level": "HIGH",
+        "priority_score": 71,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "",
+        "product": "",
+        "published": "2026-07-28",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-2cc507a801ad6256": {
+      "id": "BLEEPINGCOMPUTER-2cc507a801ad6256",
+      "type": "Intel",
+      "name": "vBulletin fixes critical pre-auth RCE flaw with public exploit",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 58,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-07-28",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-9bd1fae87248": {
+      "id": "SENTINELAPEX-9bd1fae87248",
+      "type": "Intel",
+      "name": "JetBrains Urging Customers to Patch Critical TeamCity Flaw that Enables OS Command Execution",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "",
+        "product": "",
+        "published": "2026-07-28",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-70e63804ee48": {
+      "id": "SENTINELAPEX-70e63804ee48",
+      "type": "Intel",
+      "name": "Is Your SSO Protected Against Modern Credential Attacks?",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "LOW",
+        "priority_score": 44,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "",
+        "product": "",
+        "published": "2026-07-28",
+        "type": "AI_SECURITY"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-a1e602c883c1": {
+      "id": "SENTINELAPEX-a1e602c883c1",
+      "type": "Intel",
+      "name": "@novu/application-generic: `validateUrlSsrf` permits CGNAT (100.64.0.0/10) destinations — affects Workflow HTTP request step + Webhook filter condition",
+      "attributes": {
+        "cvss": 5.5,
+        "threat_level": "LOW",
+        "priority_score": 35,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "",
+        "product": "",
+        "published": "2026-07-28",
+        "type": "NEWS_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:ipv4:100.64.0.0",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        }
+      ]
+    },
+    "campaign:cluster-f8b98024": {
+      "id": "campaign:cluster-f8b98024",
+      "type": "Campaign",
+      "name": "Multi-Vendor Platform Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-28",
+        "last_seen": "2026-07-28",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-1fa6060a73ac",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -210458,6 +210584,42 @@
       "id": "campaign:cluster-d4cd42ec→includes→REDDIT_NETSEC-e49d1ed22f7c1166",
       "source": "campaign:cluster-d4cd42ec",
       "target": "REDDIT_NETSEC-e49d1ed22f7c1166",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "actor:apt41→exploits→SENTINELAPEX-9bd1fae87248",
+      "source": "actor:apt41",
+      "target": "SENTINELAPEX-9bd1fae87248",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "actor:cl0p→exploits→SENTINELAPEX-9bd1fae87248",
+      "source": "actor:cl0p",
+      "target": "SENTINELAPEX-9bd1fae87248",
+      "relationship": "exploits",
+      "confidence": 0.85,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "SENTINELAPEX-a1e602c883c1→linked_to→ioc:ipv4:100.64.0.0",
+      "source": "SENTINELAPEX-a1e602c883c1",
+      "target": "ioc:ipv4:100.64.0.0",
+      "relationship": "linked_to",
+      "confidence": 0.88,
+      "first_seen": "2026-07-28",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-f8b98024→includes→SENTINELAPEX-1fa6060a73ac",
+      "source": "campaign:cluster-f8b98024",
+      "target": "SENTINELAPEX-1fa6060a73ac",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-28",
