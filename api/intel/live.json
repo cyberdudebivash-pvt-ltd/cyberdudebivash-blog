@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-29T18:03:35.096Z",
+  "generated": "2026-07-29T18:31:33.560Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,11 +9,54 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 2900,
   "s2n_stats": {
-    "passed": 96,
+    "passed": 101,
     "suppressed": 56,
-    "avg_qs": 0.514
+    "avg_qs": 0.513
   },
   "items": [
+    {
+      "id": "CVE-2026-66066",
+      "title": "Critical Rails Flaw Could Let Unauthenticated Attackers Read Server Files via Image Uploads",
+      "description": "Ruby on Rails has released fixes for a critical Active Storage vulnerability that could let unauthenticated attackers read arbitrary files from application servers through crafted image uploads. Tracked as CVE-2026-66066 (CVSS score: 9.5), the flaw can expose the Rails process environment and secret",
+      "cvss": 8,
+      "final_ps": 69,
+      "quality_score": 0.538,
+      "threat_level": "HIGH",
+      "type": "AI_SECURITY",
+      "source": "thehackernews",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "thehackernews"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "The Hacker News",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-66066"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://thehackernews.com/2026/07/critical-rails-flaw-could-let.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.537"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2026-50522",
       "title": "Critical SharePoint RCE CVE-2026-50522 Under Active Exploitation After Public PoC",
@@ -312,6 +355,46 @@
           "+10 CVSS≥9",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "SENTINELAPEX-b317b4816614",
+      "title": "netfoil: Incorrect block responses could lead to localhost traffic",
+      "description": "### Summary\n`0.0.0.0` was used instead of NXDOMAIN for block responses. On Linux, which is the target platform for netfoil, the `0.0.0.0` is sent to localhost rather than just dropped.\n\n### Impact\nUnintended traffic could be sent to localhost. Impact depends on running services a... [Full analysis a",
+      "cvss": 7.8,
+      "final_ps": 46,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "ioc_presence=1 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=46 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -1306,6 +1389,88 @@
       }
     },
     {
+      "id": "CVE-2026-54704",
+      "title": "OpenTelemetry Java Instrumentation: JDBC Auto-Instrumentation Logging Clear-Text Passwords",
+      "description": "OpenTelemetry Java Instrumentation JDBC auto-instrumentation may fail to sanitize passwords in SQL CONNECT statements when the password is double-quoted. As a result, clear-text database passwords can be added to trace span attributes and exported to observability backends.",
+      "cvss": 6.5,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54704"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54705",
+      "title": "mathlive's Lack of Escaping of HTML allows for XSS",
+      "description": "### Summary\n\nDespite the 0.104.0 patch escaping attribute-bearing constructs (`\\htmlData`, `\\href`), text-content reflection was missed. The `\\text{}`, `\\mbox{}` commands accept arbitrary characters in their body and emit them raw and unescaped into both the HTML markup and the M... [Full analysis a",
+      "cvss": 6.3,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54705"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2026-12495",
       "title": "CVE-2026-12495: Denial-of-service (DoS) vulnerability due to a stack buffer overflow in the http_gdpr_decrypt function o",
       "description": "",
@@ -2108,7 +2273,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-9198",
@@ -2150,7 +2317,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-13233",
@@ -2192,7 +2361,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2022-30190",
@@ -2236,7 +2407,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-15901",
@@ -3084,6 +3257,92 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-59726",
+      "title": "Critical Ruflo MCP Bridge Flaw Lets Attackers Execute Commands and Hijack AI Agents",
+      "description": "A critical security flaw in the open-source AI orchestration platform Ruflo has been disclosed, allowing unauthenticated attackers to execute arbitrary commands and fully compromise AI agent environments. Assigned a maximum CVSS base score of 10.0, the vulnerability (tracked as C... [Full analysis a",
+      "cvss": 9.8,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "HIGH",
+      "type": "SUPPLY_CHAIN",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59726"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54680",
+      "title": "Logging operator has Fluentd configuration injection that allows remote code execution",
+      "description": "### Summary\n\nThe Fluentd configuration renderer in Logging operator writes strings from CRDs such as `Flow` directly into `fluent.conf` without escaping them. As a result, a user who can create `Flow` resources can inject Fluentd configuration by providing values that contain new... [Full analysis a",
+      "cvss": 9.9,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54680"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-47876",
       "title": "Broadcom Patches Critical VMware ESXi Vulnerability Enabling Host Code Execution",
       "description": "Broadcom patched a critical VMware ESXi VM escape flaw (CVE-2026-47876) that could let attackers run code on the host from a compromised virtual machine. Broadcom has released patches to address five vulnerabilities affecting VMware ESXi, vCenter, Workstation, and Fusion, includi... [Full analysis a",
@@ -3731,6 +3990,92 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-10702",
+      "title": "Hackers Can Hijack Tor Browser Users Through a Single Malicious Web Page",
+      "description": "A single malicious webpage is enough to compromise Tor Browser users running an unpatched build, following newly disclosed research into CVE-2026-10702. The flaw, a high-severity Firefox JavaScript engine bug, was successfully exploited against Tor Browser by researchers at Nebul... [Full analysis a",
+      "cvss": 4.3,
+      "final_ps": 26,
+      "quality_score": 0.438,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-10702"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.15",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-65094",
+      "title": "NVIDIA BlueField Vulnerability Enables Code Execution Attacks",
+      "description": "NVIDIA has disclosed a serious vulnerability affecting its BlueField DPUs and ConnectX networking platforms that could allow attackers to execute code on affected systems if successfully exploited. This vulnerability, tracked as CVE-2026-65094, impacts the VIRTIO-Net component an... [Full analysis a",
+      "cvss": 5.5,
+      "final_ps": 26,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-65094"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.15",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-54727",
       "title": "proot-distro has a Container Isolation Bypass via Crafted Restore Archive",
       "description": "## Affected Component - **Package:** proot-distro\n- **Affected command:** `restore`\n- **Attack surface:** Host-side Termux CLI processing a user-supplied backup archive\n- **Vulnerability type:** Container Isolation Bypass / Cross-Container Read and Write --- ## Affected Versions | Component | Versio",
@@ -3962,348 +4307,6 @@
         ],
         "priority": [
           "+4 critical_infra"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-14270",
-      "title": "CVE-2026-14270 - Extra Checkout Options (addon for Extra Product Options & Add-Ons for WooCommerce) <= 2.3.2 - Missing A",
-      "description": "CVE-2026-14270 - Extra Checkout Options (addon for Extra Product Options & Add-Ons for WooCommerce) <= 2.3.2 - Missing Authorization to Authenticated (Subscriber+) Arbitrary File Upload in eco_save_settings",
-      "cvss": 8.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-14270"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-65884",
-      "title": "CVE-2026-65884 - Joomla Extension - balbooa.com - Privilege Escalation in Gridbox < 2.20.2",
-      "description": "CVE-2026-65884 - Joomla Extension - balbooa.com - Privilege Escalation in Gridbox < 2.20.2",
-      "cvss": 7.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-65884"
-      ],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-44944",
-      "title": "CVE-2026-44944 - iscsiuio control-socket authentication bypass in open-iscsi",
-      "description": "CVE-2026-44944 - iscsiuio control-socket authentication bypass in open-iscsi",
-      "cvss": 7.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44944"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54653",
-      "title": "`datamodel-code-generator` vulnerable to code injection in via attacker-controlled `default_factory` schema field",
-      "description": "### Summary\n\n`datamodel-code-generator` is vulnerable to code injection when generating Python models from an attacker-controlled JSON Schema, OpenAPI, YAML, JSON, Avro, Protobuf, or XSD schema. When a property carries a `\"default_factory\"` key, its value is interpolated verbatim... [Full analysis a",
-      "cvss": 8.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54653"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54654",
-      "title": "`datamodel-code-generator` vulnerable to code injection via unescaped carriage return in `--extra-template-data` `commen",
-      "description": "### Summary\n\n`datamodel-code-generator` is vulnerable to code injection when a developer passes an `--extra-template-data` file whose `comment` value contains a literal `\\r` (carriage return). The `comment` variable is rendered into a Python `#` comment in six built-in templates ... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54654"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "SENTINELAPEX-b317b4816614",
-      "title": "netfoil: Incorrect block responses could lead to localhost traffic",
-      "description": "### Summary\n`0.0.0.0` was used instead of NXDOMAIN for block responses. On Linux, which is the target platform for netfoil, the `0.0.0.0` is sent to localhost rather than just dropped.\n\n### Impact\nUnintended traffic could be sent to localhost. Impact depends on running services a... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 15,
-      "quality_score": 0.387,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.387"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-54704",
-      "title": "OpenTelemetry Java Instrumentation: JDBC Auto-Instrumentation Logging Clear-Text Passwords",
-      "description": "OpenTelemetry Java Instrumentation JDBC auto-instrumentation may fail to sanitize passwords in SQL CONNECT statements when the password is double-quoted. As a result, clear-text database passwords can be added to trace span attributes and exported to observability backends.",
-      "cvss": 6.5,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54704"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54705",
-      "title": "mathlive's Lack of Escaping of HTML allows for XSS",
-      "description": "### Summary\n\nDespite the 0.104.0 patch escaping attribute-bearing constructs (`\\htmlData`, `\\href`), text-content reflection was missed. The `\\text{}`, `\\mbox{}` commands accept arbitrary characters in their body and emit them raw and unescaped into both the HTML markup and the M... [Full analysis a",
-      "cvss": 6.3,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54705"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
         ],
         "suppression": null,
         "merge": null
