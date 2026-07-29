@@ -20,6 +20,22 @@
 `drafts/` → (quality gate) → `final/` → (publish) → `published/`.
 Superseded versions move to `archive/` with the date appended.
 
+**Documentation-vs-practice gap, recorded not silently fixed (GCIEP v1,
+2026-07-29)**: this 4-stage lifecycle has never actually been followed.
+Git history shows SA-2026-0001 was renamed directly from `drafts/` to
+`published/` (never touched `final/`, despite its own publication commit
+message claiming otherwise); SA-2026-0002 and SA-2026-0003 were added
+directly to `published/` and never existed under `drafts/` or `final/` in
+git at all. `Sentinel-APEX/reports/final/` has contained only `.gitkeep`
+since the initial scaffolding commit. No `archive/` directory exists
+anywhere in the repository — no report has ever been superseded. This is
+recorded as an open executive decision (see
+`Sentinel-APEX/eios/sentinel-intelligence-standard.md` and the GCIEP v1
+Intelligence Excellence Report's "Remaining Executive Decisions"): either
+start actually using `final/`/`archive/` for future reports, or simplify
+this documented lifecycle to the 2-stage `drafts/` → `published/` reality
+and retire the unused stages. Neither option is chosen here.
+
 ## TLP
 Default `TLP:CLEAR` for published media products. Mark higher restriction
 explicitly and do not publish restricted material to the blog.

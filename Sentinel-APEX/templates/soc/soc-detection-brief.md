@@ -5,10 +5,19 @@ date: "<YYYY-MM-DD>"
 tlp: "TLP:CLEAR"
 audience: "soc"
 attack_ids: []
+overall_confidence: "<VERY LOW|LOW|MEDIUM|HIGH|VERY HIGH>"
 detection_confidence: "<VERY LOW|LOW|MEDIUM|HIGH|VERY HIGH>"
 ---
 
 # SOC Detection Brief
+
+**`overall_confidence` added (GCIEP v1)** for consistency with every other
+template's front matter — `detection_confidence` stays as this template's
+own, narrower confidence-in-the-detection-content-specifically field; the
+two are not redundant (a report can have high overall confidence in the
+underlying finding while its detection rule is still experimental, or vice
+versa) but every template must carry `overall_confidence` at minimum. See
+`Sentinel-APEX/eios/sentinel-intelligence-standard.md`.
 
 ## SOC Action Box
 > **Detect:** <what to look for now>

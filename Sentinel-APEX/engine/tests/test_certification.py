@@ -71,7 +71,23 @@ def test_bucketing_groups_findings_into_correct_domains():
     buckets = certification._bucket_gate_findings(findings)
     assert buckets["Intelligence Quality"].verdict == FAIL
     assert buckets["Detection Quality"].verdict == FAIL
-    assert buckets["Evidence Quality"].verdict == NEEDS_REVIEW
+    # hype-language moved to its own Editorial Quality domain (GCIEP v1) -
+    # it's a tone/style concern, not an evidence-integrity one.
+    assert buckets["Editorial Quality"].verdict == NEEDS_REVIEW
+    assert buckets["Evidence Quality"].verdict == PASS
+
+
+def test_editorial_quality_is_a_real_certification_domain():
+    # GCIEP v1: the 9-stage editorial workflow this program reviews had no
+    # certification domain for Editorial Review at all before this.
+    assert "Editorial Quality" in certification.ALL_DOMAINS
+    assert certification.DOMAIN_FOR_GATE["hype-language"] == "Editorial Quality"
+
+
+def test_release_governance_markdown_includes_editorial_findings():
+    cert = certify(str(REAL_REPORT), _rendering_check=_stub_rendering_ok)
+    md = render_release_governance_markdown(cert)
+    assert "## Editorial Findings" in md
 
 
 def test_unmapped_gate_tag_fails_open_into_intelligence_quality():
@@ -192,6 +208,25 @@ def test_release_governance_markdown_contains_all_required_sections():
         assert f"## {heading}" in doc, f"missing section: {heading}"
     assert "SA-2026-0001" in doc
     assert "CERTIFIED WITH CONDITIONS" in doc
+
+
+def test_certify_real_report_now_produces_a_real_quantitative_score():
+    # GTIEP v1 / platform/open-issues.md Issue 3 item 3: certify() previously
+    # had no way to score a hand-authored report at all.
+    cert = certify(str(REAL_REPORT), _rendering_check=_stub_rendering_ok)
+    assert cert.score is not None
+    assert 0 <= cert.score.overall <= 100
+    assert cert.score.tier in ("BLOCKED", "FREE", "PRO", "ENTERPRISE")
+
+
+def test_release_governance_markdown_reports_the_real_score_not_the_old_refusal():
+    cert = certify(str(REAL_REPORT), _rendering_check=_stub_rendering_ok)
+    md = render_release_governance_markdown(cert)
+    assert "Quantitative score (GTIEP v1 quality framework)" in md
+    assert f"{cert.score.overall}/100" in md
+    # The old, pre-GTIEP-v1 blanket refusal must not still be produced
+    # when a real score is available.
+    assert "No quantitative commercial/tier score is presented here" not in md
 
 
 def test_release_governance_markdown_never_throws_on_a_failing_report():
