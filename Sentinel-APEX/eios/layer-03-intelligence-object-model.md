@@ -29,6 +29,23 @@ ingest.
 
 ## Gap: Threat Actor and Malware Family need richer fields than `Entity`
 
+**Correction (GTIEP v1 audit, 2026-07-29):** this gap is real for the
+*Python engine's* `Entity` model specifically, but was previously stated
+here without qualification, which read as "no richer Threat Actor
+representation exists anywhere in the platform" — that part is false. The
+**live JS graph** (`api/_lib/threat-graph.js`, `THREAT_ACTOR_DB`) already
+has exactly the richer fields described below — `aliases[]`, `category`,
+`motivation`, `sophistication`, `origin`, `target_sectors[]`,
+`target_regions[]`, `ttps[]`, `known_cves[]`, `refs[]` — for 8 curated,
+real actors (LockBit, APT41, Cl0p, Volt Typhoon, Salt Typhoon, PhantomCore,
+ShinyHunters, a Russia-nexus cluster). It does not close the gap
+described below: it's a curated set of 8, not a general extraction
+pipeline, and it lives in the live JS side, not the Python `models.py`
+this section is about — the two remain unconverged, consistent with
+`platform/open-issues.md` Issue 1's canonical-ownership pattern. The point
+is narrower than it reads below: `Entity` (Python) is minimal; a richer
+Threat Actor representation is not universally absent from the platform.
+
 `Entity` today is intentionally minimal (name + type discriminator +
 free-text context) — sufficient for extraction and graph relationships, not
 for structured fields like an actor's known aliases, motivation, or
@@ -49,14 +66,25 @@ options when a report needs those fields:
 ## Specified, not yet implemented in code
 
 These objects are named in the report structure and templates today only as
-prose sections, not as structured types. The schema below is what a future
-`models.py` extension should implement when an API or dashboard needs to
-query them directly (see Layer 12). Treat this as the contract to build
-against, not as a description of existing code.
+prose sections, not as structured types **in the Python engine**. The
+schema below is what a future `models.py` extension should implement when
+an API or dashboard needs to query them directly (see Layer 12). Treat
+this as the contract to build against, not as a description of existing
+code — **with one confirmed exception, corrected below (GTIEP v1 audit,
+2026-07-29): Campaign was listed here as prose-only. It is not.**
+`api/_lib/campaign-engine.js` is a real, live, 573-line weighted-clustering
+implementation (`cluster_score = ioc_overlap*0.35 + cve_match*0.25 +
+time_proximity*0.20 + text_similarity*0.20`) persisting a real
+`campaigns.json` with `campaign_id`/`name`/`item_count`/`confidence`/
+`severity`/`reasoning[]`/`threat_actors[]` — a superset of the fields
+proposed below. This was a documentation gap, not a product gap: the row
+is left in this table (rather than deleted) so the field-level contract
+below stays visible, but it must not be read as "not yet implemented" —
+the remaining gap is convergence with the Python side, not existence.
 
 | Object | Key fields | Today's prose home |
 |---|---|---|
-| **Campaign** | `name`, `actors[]`, `first_seen`, `last_seen`, `victims[]`, `techniques[]`, `related_cves[]`, `malware_families[]` | master-prompt.md § Campaign Overview |
+| **Campaign** — **already implemented live, see correction above** | `name`, `actors[]`, `first_seen`, `last_seen`, `victims[]`, `techniques[]`, `related_cves[]`, `malware_families[]` | `api/_lib/campaign-engine.js` (live JS); master-prompt.md § Campaign Overview (prose, Python-engine side only) |
 | **Incident** | `incident_id`, `campaign_or_actor`, `victim`, `date`, `impact`, `status` | master-prompt.md § Timeline of Events |
 | **Victim** | `sector`, `geography`, `confirmation_status` (confirmed\|alleged), `source` | master-prompt.md § Victimology |
 | **Organization** | `name`, `sector`, `role` (victim\|vendor\|researcher\|customer), `first_seen` | Currently folded into `Victim` (as victim) or the report's Affected Products/Vendors prose (as vendor) — added by EIPS v4 § Canonical Knowledge Model as its own type because "vendor disclosing a flaw" and "victim of exploitation" are different roles the same organization can hold across reports, which `Victim` alone can't represent |
