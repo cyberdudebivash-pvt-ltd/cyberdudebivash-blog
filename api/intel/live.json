@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-29T00:01:55.209Z",
+  "generated": "2026-07-29T00:31:24.573Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -10,7 +10,7 @@
   "total_published": 2869,
   "s2n_stats": {
     "passed": 100,
-    "suppressed": 37,
+    "suppressed": 38,
     "avg_qs": 0.52
   },
   "items": [
@@ -275,10 +275,10 @@
       }
     },
     {
-      "id": "CVE-2026-50570",
-      "title": "Fission: Incomplete capability denylist in Environment/Function PodSpec validation allows tenant-added CAP_SYS_TIME and ",
-      "description": "Fission v1.24.0 added PodSpec safety validation for tenant-facing Environment and Function CRDs (`ValidatePodSpecSafety` / `ValidateContainerSafety` admission webhook + `sanitizeContainerSecurityContext` executor merge layer), but the\ncapability check was implemented as a fixed *... [Full analysis a",
-      "cvss": 8.5,
+      "id": "CVE-2026-54603",
+      "title": "OAuth2::Client#request: Protocol-relative redirect Location overrides authority, leaking bearer Authorization to attacke",
+      "description": "## Summary\n\nWhen an application uses `OAuth2::Client` (typically via an `OAuth2::AccessToken`) and the configured authorization server returns a redirect whose `Location` header is a protocol-relative URI of the form `//attacker.example/leak`, `OAuth2::Client#request` resolves th... [Full analysis a",
+      "cvss": 8.6,
       "final_ps": 47,
       "quality_score": 0.473,
       "threat_level": "MEDIUM",
@@ -297,48 +297,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-50570"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=0d (score=1.00)",
-          "QS=0.473"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-54609",
-      "title": "QTINeon has unauthenticated relay-to-host amplification via unbounded RECONNECT_REQUEST forwarding",
-      "description": "### Impact\nThe relay's reconnect handler forwards every `RECONNECT_REQUEST` to the host without deduplication or a size cap on the `pendingReconnects` map, unlike the connect flow which guards against this with `maxPendingConnections`. An unauthenticated attacker who knows a vali... [Full analysis a",
-      "cvss": 8.6,
-      "final_ps": 47,
-      "quality_score": 0.473,
-      "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54609"
+        "CVE-2026-54603"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -394,6 +353,47 @@
           "+10 CVSS≥9",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-32203",
+      "title": "Microsoft Security Advisory CVE-2026-32203 – .NET and Visual Studio Denial of Service Vulnerability",
+      "description": "## Executive Summary: \n\nMicrosoft is releasing this security advisory to provide information about a vulnerability in System.Security.Cryptography.Xml. This advisory also provides guidance on what developers can do to update their applications to remove this vulnerability.\n\nA vul... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 45,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-32203"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4252,10 +4252,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-54603",
-      "title": "OAuth2::Client#request: Protocol-relative redirect Location overrides authority, leaking bearer Authorization to attacke",
-      "description": "## Summary\n\nWhen an application uses `OAuth2::Client` (typically via an `OAuth2::AccessToken`) and the configured authorization server returns a redirect whose `Location` header is a protocol-relative URI of the form `//attacker.example/leak`, `OAuth2::Client#request` resolves th... [Full analysis a",
-      "cvss": 8.6,
+      "id": "CVE-2026-50567",
+      "title": "Fission: Zip Slip in pkg/utils/zip.go:Unarchive allows fetcher to write outside the destination directory",
+      "description": "`Unarchive` in `pkg/utils/zip.go` joined each archive entry name with the destination directory via `filepath.Join` and wrote the result without checking whether the resolved path stayed under the destination. A zip entry named\n  `../../tmp/evil` therefore landed at `/tmp/evil`. ... [Full analysis a",
+      "cvss": 7.7,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "MEDIUM",
@@ -4274,7 +4274,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-54603"
+        "CVE-2026-50567"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4295,14 +4295,14 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-32203",
-      "title": "Microsoft Security Advisory CVE-2026-32203 – .NET and Visual Studio Denial of Service Vulnerability",
-      "description": "## Executive Summary: \n\nMicrosoft is releasing this security advisory to provide information about a vulnerability in System.Security.Cryptography.Xml. This advisory also provides guidance on what developers can do to update their applications to remove this vulnerability.\n\nA vul... [Full analysis a",
+      "id": "CVE-2026-54635",
+      "title": "pytonapi has a Webhook Custom Path Authentication Bypass",
+      "description": "## Webhook Custom Path Authentication Bypass in pytonapi\n\n### Summary\n\n`TonapiWebhookDispatcher` in pytonapi 2.2.0 fails to validate the `Authorization` header when a webhook handler is registered with the documented `path=` argument. During `setup()`, bearer tokens are stored on... [Full analysis a",
       "cvss": 7.5,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
+      "type": "NEWS_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -4317,7 +4317,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-32203"
+        "CVE-2026-54635"
       ],
       "ioc_count": 0,
       "refs": [],
