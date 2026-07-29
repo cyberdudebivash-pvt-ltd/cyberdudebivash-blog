@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-29T20:31:27.259Z",
+  "generated": "2026-07-29T21:01:40.461Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 154,
+  "count": 155,
   "items": [
     {
       "id": "SENTINELAPEX-5c7197fa7f4d",
@@ -681,57 +681,6 @@
       "suppressed": false,
       "suppression_reason": null,
       "iocs": []
-    },
-    {
-      "id": "SENTINELAPEX-b317b4816614",
-      "title": "netfoil: Incorrect block responses could lead to localhost traffic",
-      "description": "### Summary\n`0.0.0.0` was used instead of NXDOMAIN for block responses. On Linux, which is the target platform for netfoil, the `0.0.0.0` is sent to localhost rather than just dropped.\n\n### Impact\nUnintended traffic could be sent to localhost. Impact depends on running services a... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 46,
-      "quality_score": 0.473,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "ioc_presence=1 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.473"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": [
-        {
-          "type": "ipv4",
-          "value": "0.0.0.0",
-          "confidence_score": 0.88,
-          "first_seen": "2026-07-29",
-          "source_count": 1
-        }
-      ]
     },
     {
       "id": "CVE-2026-53359",
@@ -1990,6 +1939,50 @@
         "priority": [
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-54704",
+      "title": "OpenTelemetry Java Instrumentation: JDBC Auto-Instrumentation Logging Clear-Text Passwords",
+      "description": "OpenTelemetry Java Instrumentation JDBC auto-instrumentation may fail to sanitize passwords in SQL CONNECT statements when the password is double-quoted. As a result, clear-text database passwords can be added to trace span attributes and exported to observability backends.",
+      "cvss": 6.5,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54704"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3266,6 +3259,50 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "BLEEPINGCOMPUTER-f18fa2fa84f7c458",
+      "title": "Anthropic confirms Claude is down worldwide",
+      "description": "[...]",
+      "cvss": 6.5,
+      "final_ps": 39,
+      "quality_score": 0.4,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/artificial-intelligence/anthropic-confirms-claude-is-down-worldwide/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.400"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -6794,50 +6831,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-54704",
-      "title": "OpenTelemetry Java Instrumentation: JDBC Auto-Instrumentation Logging Clear-Text Passwords",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54704"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-54705",
       "title": "mathlive's Lack of Escaping of HTML allows for XSS",
       "description": "",
@@ -6879,6 +6872,48 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-b317b4816614",
+      "title": "netfoil: Incorrect block responses could lead to localhost traffic",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 15,
+      "quality_score": 0.387,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.387"
+        ],
+        "priority": [
+          "base_ps=15 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     }
   ]
