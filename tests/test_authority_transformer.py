@@ -209,10 +209,32 @@ class TestAuthorityTransformer(unittest.TestCase):
     def test_transform_returns_required_keys(self):
         article = _make_article()
         result = self.transformer.transform(article)
-        required_keys = ["title", "content", "labels", "meta_title", "meta_description",
+        required_keys = ["title", "content", "labels", "image_url", "meta_title", "meta_description",
                          "keywords", "source_url", "content_hash", "content_source"]
         for key in required_keys:
             self.assertIn(key, result, f"Missing key: {key}")
+
+    def test_image_url_matches_the_dynamic_og_contract(self):
+        # ESPMP v1: this is the value main.py passes to
+        # publisher.publish_post(image_url=...), which reaches Blogger's
+        # real Post.images field — must carry the real CVE/severity from
+        # the article, not a placeholder.
+        article = _make_article()  # title: "CVE-2026-9999 ... CVSS 9.8"
+        result = self.transformer.transform(article)
+        self.assertTrue(result["image_url"].startswith(f"{self.config.source_base_url}/api/og?"))
+        from urllib.parse import urlparse, parse_qs
+        q = parse_qs(urlparse(result["image_url"]).query)
+        self.assertEqual(q["cve"], ["CVE-2026-9999"])
+        self.assertEqual(q["severity"], ["CRITICAL"])  # CVSS 9.8 -> CRITICAL per _derive_severity
+        self.assertIn("title", q)
+
+    def test_image_url_omits_cve_when_none_present(self):
+        article = _make_article(title="General threat landscape roundup", summary="No specific CVE here.")
+        result = self.transformer.transform(article)
+        from urllib.parse import urlparse, parse_qs
+        q = parse_qs(urlparse(result["image_url"]).query)
+        self.assertNotIn("cve", q)
+        self.assertEqual(q["severity"], ["HIGH"])  # default when no CVSS is known
 
     def test_content_contains_cta_blocks(self):
         article = _make_article()
@@ -335,6 +357,45 @@ class TestAuthorityTransformer(unittest.TestCase):
         self.assertTrue(all(c == c.upper() for c in ids), f"Non-uppercase CVE IDs: {ids}")
         self.assertIn("CVE-2026-1234", ids)
         self.assertIn("CVE-2025-9999", ids)
+
+
+class TestBuildDynamicOgImageUrl(unittest.TestCase):
+    """_build_dynamic_og_image_url — must mirror api/og.js's query contract exactly."""
+
+    def setUp(self):
+        self.config = Config()
+
+    def test_includes_cve_and_cvss_when_given(self):
+        from automation.authority_transformer import _build_dynamic_og_image_url
+        url = _build_dynamic_og_image_url(
+            self.config, title="Critical Windows RCE", severity="CRITICAL",
+            cve_id="CVE-2026-9999", cvss="9.8", type_label="Vulnerabilities",
+        )
+        from urllib.parse import urlparse, parse_qs
+        q = parse_qs(urlparse(url).query)
+        self.assertEqual(q["cve"], ["CVE-2026-9999"])
+        self.assertEqual(q["cvss"], ["9.8"])
+        self.assertEqual(q["severity"], ["CRITICAL"])
+        self.assertEqual(q["type"], ["Vulnerabilities"])
+
+    def test_omits_cve_and_cvss_when_falsy(self):
+        from automation.authority_transformer import _build_dynamic_og_image_url
+        url = _build_dynamic_og_image_url(
+            self.config, title="General Advisory", severity=None,
+            cve_id="", cvss=None, type_label="Threat Intel",
+        )
+        from urllib.parse import urlparse, parse_qs
+        q = parse_qs(urlparse(url).query)
+        self.assertNotIn("cve", q)
+        self.assertNotIn("cvss", q)
+        self.assertEqual(q["severity"], ["HIGH"])  # falsy severity defaults to HIGH, same as api/og.js itself
+
+    def test_url_targets_the_real_api_og_endpoint(self):
+        from automation.authority_transformer import _build_dynamic_og_image_url
+        url = _build_dynamic_og_image_url(
+            self.config, title="T", severity="HIGH", cve_id="", cvss=None, type_label="X",
+        )
+        self.assertEqual(url.split("?")[0], f"{self.config.source_base_url}/api/og")
 
 
 class TestRiskCommandCenter(unittest.TestCase):

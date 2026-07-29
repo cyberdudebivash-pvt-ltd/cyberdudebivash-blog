@@ -178,6 +178,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                     content=transformed["content"],
                     labels=transformed["labels"],
                     is_draft=False,
+                    image_url=transformed.get("image_url"),
                 )
 
                 blogger_post_id = blogger_post["id"]

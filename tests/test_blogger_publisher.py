@@ -160,6 +160,32 @@ class TestBloggerPublish(unittest.TestCase):
             _, kwargs = mock_post.call_args
             self.assertEqual(kwargs["params"]["isDraft"], "false")
 
+    def test_image_url_sent_via_real_images_field_when_provided(self):
+        # Verified against the live Blogger API v3 discovery schema
+        # (blogger.googleapis.com/$discovery/rest?version=v3): Post.images
+        # is a real, non-readOnly field shaped [{url: string}] — this is
+        # the one metadata channel Blogger's API actually exposes for a
+        # branded social card (searchDescription/og-tag/twitter-card fields
+        # do not exist on the resource at all).
+        with patch("requests.post", return_value=self._mock_publish_success()) as mock_post:
+            self.publisher.publish_post(
+                "Title", "<p>x</p>", [],
+                image_url="https://blog.cyberdudebivash.in/api/og?title=Test&severity=HIGH&type=CVE_REPORT",
+            )
+            _, kwargs = mock_post.call_args
+            self.assertEqual(
+                kwargs["json"]["images"],
+                [{"url": "https://blog.cyberdudebivash.in/api/og?title=Test&severity=HIGH&type=CVE_REPORT"}],
+            )
+
+    def test_image_url_omitted_from_payload_when_not_provided(self):
+        # Backward compatible: existing callers that don't pass image_url
+        # must produce byte-identical payloads to before this change.
+        with patch("requests.post", return_value=self._mock_publish_success()) as mock_post:
+            self.publisher.publish_post("Title", "<p>x</p>", [])
+            _, kwargs = mock_post.call_args
+            self.assertNotIn("images", kwargs["json"])
+
     def test_health_check_passes(self):
         mock_resp = MagicMock()
         mock_resp.ok = True

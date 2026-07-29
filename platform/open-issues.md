@@ -851,5 +851,104 @@ Restore" for the exact activation steps and the honest limitations (90-day
 GitHub Actions artifact retention is a safety net, not long-term archival;
 no restore has been rehearsed against a real Redis instance yet).
 
+## Issue 14 — Ten independent parallel implementations across the social-preview/SEO/metadata surface (ESPMP v1)
+
+Found via a dedicated Phase 1 architecture audit
+(`platform/social-preview-metadata-audit.md`) commissioned by a production
+task to make published reports produce premium social previews, with
+Sentinel APEX as SSOT for metadata and Blogger reduced to a publishing
+destination only. The audit is the full record; this entry tracks the
+findings against this file's own issue-log convention and what has and
+hasn't been resolved.
+
+Ten duplicate/parallel implementations confirmed by direct grep + line-level
+inspection: RSS generation (`fetch-live-intel.js` vs. `generate-rss.js`,
+both scheduled, both write `rss.xml`), sitemap generation (`fetch-live-intel.js`
+vs. `generate-cve-pages.js`, with `intelligence/*.html` reports reaching
+neither), search-index generation (live `fetch-live-intel.js` path vs. an
+orphaned `generate-search-index.py` wired into no workflow), Markdown/HTML
+rendering (canonical `report-renderer.js` vs. hand-rolled `mdToSafeHtml()`
+in `generate-cve-pages.js` — already tracked as Issue 5, not duplicated
+here), `slugify()` (near-identical copies in `fetch-live-intel.js` and
+`publish-report.js`), title-building (4 independent "title + brand suffix"
+implementations, 4 different suffix strings), meta-description building (4
+independent implementations, one fully disconnected from output), hero/OG
+image generation (3 unrelated systems: satori/resvg via `api/og.js`,
+hand-rolled Python SVG, one static PNG — used inconsistently even within
+the Vercel-side pipeline), JSON-LD (up to 9-10 co-existing schema blocks
+possible on a single Blogger post, plus client-side `seo-engine.js`
+re-injecting a second, less-accurate copy on top of already server-rendered
+Sentinel-APEX pages), and dead code (`automation/seo_optimizer.py`'s
+`og_tags`/`twitter_card`/`meta_title`/`meta_description`/`keywords` computed
+every run, zero consumers).
+
+**Resolved (ESPMP v1 sprint)** — the additive, low-blast-radius subset the
+audit staged for immediate action, not the full 13-phase spec:
+
+1. New canonical `Sentinel-APEX/renderer/metadata-engine.js` — SSOT for
+   title/description/OG/Twitter/JSON-LD generation, extracted and
+   generalized from the most complete of the existing implementations
+   (`fetch-live-intel.js`'s CVE-aware description branching,
+   `publish-report.js`'s OG/Twitter tag set) rather than inventing new
+   rules. Platform-independent by design (plain input object in, plain
+   metadata object out — no file I/O, no page assembly), matching the
+   spec's "reusable by future publishing targets" requirement and
+   `report-renderer.js`'s own precedent of separating model-building from
+   rendering. Not yet adopted by the three existing live generators (see
+   "not resolved" below) — this sprint proves it out via three new/fixed
+   call sites instead. 21 tests, all real-data-validated against the
+   published SA-2026-0001 report.
+2. `intelligence/index.html` had no `og:image`/`twitter:image` at all
+   (verified directly) — fixed with the dynamic `api/og.js` card,
+   locally invoked and confirmed to render a real 200 PNG for the exact
+   query string used (not assumed to work).
+3. `generate-cve-pages.js` (the highest-volume auto-generated page type)
+   had zero Twitter Card tags and used only the static `og-image.png` —
+   both fixed: full Twitter Card block added, and the dynamic per-CVE
+   `api/og.js` card wired in (same proven pattern as the other two live
+   generators, exported `renderPage()` for direct testability, 5 new
+   tests against a real `api/intel/cve/*.json`-shaped fixture).
+4. `generate-intelligence-hub.js`'s shared `renderShell()` — used by all 7
+   hub page types (vendor/timeline/collections/detections/threat, plus
+   per-vendor and per-collection detail pages) — used only the static
+   image. One function edit (reusing the `eyebrow` field already passed
+   at every call site as the per-section image label) now gives every hub
+   page type its own branded card with zero call-site changes. 3 new
+   tests.
+5. Blogger's hero image was purely implicit (an inline SVG as the first
+   body element, relying on Blogger's own image-sniffing) and never used
+   the branded `api/og.js` card at all. `publish_post()` now sends it
+   explicitly via the Blogger Post resource's real, writable `images`
+   field — verified against the live API discovery schema before writing
+   any code (see `platform/social-preview-metadata-audit.md`'s
+   "Correction" note: a `searchDescription`-based first draft of this fix
+   was checked against the real schema and found not to exist, before
+   being implemented, not after). 7 new tests across
+   `test_authority_transformer.py`/`test_blogger_publisher.py`, including
+   direct coverage of the new `_build_dynamic_og_image_url()` helper.
+
+**Not resolved — explicitly staged for a future sprint**, per the audit's
+own Architecture Preservation Rule reasoning (add, don't replace; bigger
+evidence bar for architectural change):
+
+- Rewriting the 5 `blogger-theme/*.xml` templates so Blogger's own
+  auto-generated `<head>` tags (title suffix, meta description, JSON-LD)
+  read Sentinel-APEX-computed values instead of theme defaults — the
+  largest blast radius in the whole audit (renders every historical post
+  today) and the only route to closing the meta-description/OG-tag gap
+  that the real Blogger API cannot close on its own.
+- De-duplicating RSS and sitemap generation (2 independent live/scheduled
+  generators each) — a canonical-ownership decision, not a refactor, same
+  category as Issue 1's Scoring/Graph pairings.
+- Consolidating the 9-10-block JSON-LD sprawl on Blogger posts.
+- `mdToSafeHtml()` → `report-renderer.js` migration for `cve/*.html` —
+  already tracked as Issue 5, unchanged by this entry.
+- `automation/seo_optimizer.py`'s dead `og_tags`/`twitter_card`/
+  `meta_title`/`meta_description`/`keywords` — left in place with a
+  comment explaining why they're unreachable from Blogger (no matching
+  API field), for a possible future non-Blogger publishing target. Not
+  deleted: no functional harm in leaving them, and removing working code
+  with no bug to fix would be scope creep beyond this issue.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
