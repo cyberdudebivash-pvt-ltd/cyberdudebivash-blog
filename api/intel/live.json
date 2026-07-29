@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-28T12:31:29.144Z",
+  "generated": "2026-07-29T15:31:42.361Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,13 +7,54 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2824,
+  "total_published": 2894,
   "s2n_stats": {
-    "passed": 99,
-    "suppressed": 41,
-    "avg_qs": 0.525
+    "passed": 103,
+    "suppressed": 35,
+    "avg_qs": 0.508
   },
   "items": [
+    {
+      "id": "CVE-2026-54639",
+      "title": "Style Dictionary - Prototype Pollution in convertTokenData utility function",
+      "description": "### Impact\nPrototype pollution.\nA malicious user can create a token array `[{ key: '{__proto__.foo}', value: 'malicious' }]`, when processed by `convertTokenData()` utility function, it will pollute the Object.prototype globally where `{}.foo` will equal `{ key: '{__proto__.foo}'... [Full analysis a",
+      "cvss": 8.8,
+      "final_ps": 56,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54639"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2026-50522",
       "title": "Critical SharePoint RCE CVE-2026-50522 Under Active Exploitation After Public PoC",
@@ -318,6 +359,170 @@
       }
     },
     {
+      "id": "CVE-2026-54654",
+      "title": "`datamodel-code-generator` vulnerable to code injection via unescaped carriage return in `--extra-template-data` `commen",
+      "description": "### Summary\n\n`datamodel-code-generator` is vulnerable to code injection when a developer passes an `--extra-template-data` file whose `comment` value contains a literal `\\r` (carriage return). The `comment` variable is rendered into a Python `#` comment in six built-in templates ... [Full analysis a",
+      "cvss": 7.8,
+      "final_ps": 45,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54654"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54638",
+      "title": "td has pre-auth denial of service via unbounded memory allocation in proto.UnencryptedMessage.Decode",
+      "description": "### Impact\n\nA remote, unauthenticated attacker can cause excessive memory allocation (and resulting CPU / GC pressure, potentially OOM termination) by sending a crafted unencrypted MTProto packet.\n\n`(*proto.UnencryptedMessage).Decode` read an attacker-controlled 32-bit `dataLen` ... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 45,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54638"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54719",
+      "title": "goshs: File-based .goshs ACL authorization bypass via the ?bulk zip-download route (unauthenticated read; residual of GH",
+      "description": "GHSA-wvhv-qcqf-f3cx fixed the per-folder .goshs ACL bypass on the state-changing routes (PUT/POST upload/?mkdir/?delete) and added recursive ACL resolution, and its description states the read/list path correctly enforces .goshs. That premise does not hold for the ?bulk zip-downl... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 45,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54719"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-55389",
+      "title": "datamodel-code-generator vulnerable to arbitrary local file read via JSON-Schema `$ref` (`file://` and `../` traversal),",
+      "description": "### Summary\n\n`datamodel-code-generator` resolves JSON-Schema `$ref` targets that point at the local filesystem without restricting them to the input/base directory and without honoring the remote-reference security control. In the default configuration, an attacker who controls a... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 45,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55389"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2026-53359",
       "title": "Januscape (CVE-2026-53359): 16 year old Critical Linux KVM Guest-to-Host Escape, PoC Public",
       "description": "",
@@ -357,48 +562,6 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2023-37465",
-      "title": "org.xwiki.contrib:discussions-server has Cross-Site Request Forgery (CSRF) issue that makes it possible to delete messag",
-      "description": "### Impact\nIt's possible to forge a request to delete a message. \n\n### Patches\nThe problem has been patched in version 2.0-rc-1 of Discussion Extension.\n\n### Workarounds\nThere's no easy workaround except upgrading.\n\n### References\nhttps://jira.xwiki.org/browse/DISCUSSION-22\n\n### ... [Full analysis a",
-      "cvss": 6.5,
-      "final_ps": 44,
-      "quality_score": 0.493,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2023-37465"
-      ],
-      "ioc_count": 2,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.40",
-          "ioc_presence=2 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=44 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -571,47 +734,6 @@
         "priority": [
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-16756",
-      "title": "Smithy-RS: Allocation of resources without limits in the default aws-smithy-http-server serve() path allows unauthentica",
-      "description": "## Summary\nSmithy-RS is a Rust code generation and runtime framework that generates HTTP clients and servers from Smithy interface definitions, powering the AWS SDK for Rust and custom service implementations. An issue exists where, under certain circumstances, allocation of reso... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 41,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-24",
-      "last_seen": "2026-07-24",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16756"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -1389,6 +1511,48 @@
       }
     },
     {
+      "id": "CVE-2026-66063",
+      "title": "goshs has a Path Traversal issue",
+      "description": "## Summary\n\nThe multipart upload filename fix splits on the path separator but never rejects dot-dot, allowing a write outside the served tree.\n\n## Finding (Medium): upload filename escapes the served tree (residual of CVE-2026-35393)\n\nThe multipart filename fix (updown.go lines ... [Full analysis a",
+      "cvss": 6.5,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-66063",
+        "CVE-2026-35393"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2026-12495",
       "title": "CVE-2026-12495: Denial-of-service (DoS) vulnerability due to a stack buffer overflow in the http_gdpr_decrypt function o",
       "description": "",
@@ -2107,7 +2271,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-58138",
@@ -2149,7 +2315,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-29059",
@@ -2191,7 +2359,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-9198",
@@ -2233,7 +2403,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-13233",
@@ -2635,6 +2807,55 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-43983",
+      "title": "Pocket ID: OIDC refresh token flow bypasses authorization revocation, account disabling, and group restrictions",
+      "description": "# OIDC Refresh Token Flow Bypasses Authorization Revocation, Account Disabling, and Group Restrictions ## Summary The `createTokenFromRefreshToken` function (oidc_service.go:451) validates the refresh token's cryptographic integrity but does not re-validate the user's current authorization state bef",
+      "cvss": 7.5,
+      "final_ps": 33,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/pocket-id/pocket-id/backend",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-43983",
+        "CVE-2026-43983"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-w6p7-2fxx-4f44",
+        "https://github.com/pocket-id/pocket-id/security/advisories/GHSA-w6p7-2fxx-4f44",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-43983",
+        "https://github.com/pocket-id/pocket-id/commit/978ac87deffec58beaccd15aead975e91b94c8a5"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "+12 PoC_available"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-65894",
       "title": "CVE-2026-65894: This vulnerability exists in CP PLUS EZ-P21 IP Camera due to improper authentication of HTTP endpoints. ",
       "description": "This vulnerability exists in CP PLUS EZ-P21 IP Camera due to improper authentication of HTTP endpoints. A remote attacker could exploit this vulnerability by conducting brute-force attacks against HTTP endpoint on the targeted device.\n\n\n\nSuccessful exploitation of this vulnerabil... [Full analysis a",
@@ -2983,12 +3204,102 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-65617",
-      "title": "CVE-2026-65617 - Potential remote code execution on an Artifactory package service container.",
-      "description": "CVE-2026-65617 - Potential remote code execution on an Artifactory package service container.",
-      "cvss": 9.8,
-      "final_ps": 29,
-      "quality_score": 0.478,
+      "id": "CVE-2026-61511",
+      "title": "Exploit for CVE-2026-61511 exploit",
+      "description": "Exploit for CVE-2026-61511 exploit",
+      "cvss": 7.8,
+      "final_ps": 28,
+      "quality_score": 0.497,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-61511"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--f7067791f791788f.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.497"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53921",
+      "title": "Exploit for CVE-2026-53921 exploit",
+      "description": "Exploit for CVE-2026-53921 exploit",
+      "cvss": 7.8,
+      "final_ps": 28,
+      "quality_score": 0.497,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53921"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--f0cb83d5a062edfd.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.497"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-65883",
+      "title": "CVE-2026-65883 - Joomla Extension - aimy-extensions.com - RCE via PHP object injection in Aimy Captcha-Less Form Guard 1",
+      "description": "CVE-2026-65883 - Joomla Extension - aimy-extensions.com - RCE via PHP object injection in Aimy Captcha-Less Form Guard 18.0 - 20.0",
+      "cvss": 9.5,
+      "final_ps": 27,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -2996,25 +3307,25 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-65617"
+        "CVE-2026-65883"
       ],
-      "ioc_count": 0,
+      "ioc_count": 1,
       "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.65",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.478"
+          "QS=0.417"
         ],
         "priority": [
           "+10 CVSS≥9"
@@ -3026,201 +3337,21 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-39875",
-      "title": "Exploit for CVE-2026-39875 exploit",
-      "description": "Exploit for CVE-2026-39875 exploit",
-      "cvss": 7.8,
-      "final_ps": 28,
-      "quality_score": 0.497,
-      "threat_level": "HIGH",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-39875"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--03a85601b8eb3a2d.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.497"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-40000",
-      "title": "Exploit for CVE-2026-40000 exploit",
-      "description": "Exploit for CVE-2026-40000 exploit",
-      "cvss": 7.8,
-      "final_ps": 28,
-      "quality_score": 0.497,
-      "threat_level": "HIGH",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-40000"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--83cae7f64ade7def.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.497"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-65008",
-      "title": "Exploit for CVE-2026-65008 exploit",
-      "description": "Exploit for CVE-2026-65008 exploit",
-      "cvss": 7.8,
-      "final_ps": 28,
-      "quality_score": 0.497,
-      "threat_level": "HIGH",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-65008"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--dfbb798ad0993917.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.497"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-64600",
-      "title": "Exploit for CVE-2026-64600",
-      "description": "Exploit for CVE-2026-64600",
-      "cvss": 3.2,
-      "final_ps": 26,
-      "quality_score": 0.458,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-64600"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--4de93230f8483a53756bb49c.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.458"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53264",
-      "title": "AI-Assisted Research Uncovers Linux Kernel Zero-Day Enabling Root Privilege Escalation",
-      "description": "A serious Linux kernel zero-day vulnerability capable of local privilege escalation (LPE) has been uncovered by security researchers, underscoring both the growing role of artificial intelligence in vulnerability research and the persistent security risks within complex kernel su... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 24,
+      "id": "CVE-2026-65943",
+      "title": "CVE-2026-65943 - Joomla Extension - rolandd.com - Unauthenticated directory creation RO CSVI < 9.11.0",
+      "description": "CVE-2026-65943 - Joomla Extension - rolandd.com - Unauthenticated directory creation RO CSVI < 9.11.0",
+      "cvss": 9.1,
+      "final_ps": 27,
       "quality_score": 0.418,
       "threat_level": "MEDIUM",
-      "type": "ZERO_DAY",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3228,7 +3359,50 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-53264"
+        "CVE-2026-65943"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-58150",
+      "title": "CVE-2026-58150 - Apache Traffic Server: HTTP/2 requests with Transfer-Encoding are not rejected, allowing request smuggl",
+      "description": "CVE ID : CVE-2026-58150\n \n Published : July 29, 2026, 7:30 a.m. | 33minutes ago\n \n Description : Apache Traffic Server does not reject Transfer-Encoding in HTTP/2 requests, allowing downgrade request smuggling.\n\nThis issue affects Apache Traffic Server: from 8.0.0 through 8.1.9, ... [Full analysis a",
+      "cvss": 10,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-58150"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3240,7 +3414,7 @@
           "QS=0.417"
         ],
         "priority": [
-          "+7 zero_day"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -3249,21 +3423,21 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2025-59178",
-      "title": "CVE-2025-59178: Ericsson Packet Core Controller (PCC) versions prior to 1.39 contain an Exposure of Sensitive System Inf",
-      "description": "CVE-2025-59178: Ericsson Packet Core Controller (PCC) versions prior to 1.39 contain an Exposure of Sensitive System Information vulnera",
-      "cvss": 5.5,
-      "final_ps": 20,
-      "quality_score": 0.398,
+      "id": "CVE-2026-57834",
+      "title": "CVE-2026-57834 - Apache Traffic Server: Malformed chunked message body allows request smuggling",
+      "description": "CVE ID : CVE-2026-57834\n \n Published : July 29, 2026, 7:25 a.m. | 38minutes ago\n \n Description : Apache Traffic Server allows request smuggling if chunked messages are malformed.\n\nThis issue affects Apache Traffic Server: from 8.0.0 through 8.1.9, from 9.0.0 through 9.2.14, from ... [Full analysis a",
+      "cvss": 10,
+      "final_ps": 27,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
-      "type": "CRITICAL_INFRASTRUCTURE",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3271,21 +3445,19 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2025-59178"
+        "CVE-2026-57834"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--8b2689f1cca2846d.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.398"
+          "QS=0.417"
         ],
         "priority": [
-          "+4 critical_infra"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -3294,21 +3466,21 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2025-59181",
-      "title": "CVE-2025-59181: Ericsson Packet Core Controller (PCC) versions prior to 1.39 contain a directory traversal vulnerability",
-      "description": "CVE-2025-59181: Ericsson Packet Core Controller (PCC) versions prior to 1.39 contain a directory traversal vulnerability in Configuratio",
-      "cvss": 5.5,
-      "final_ps": 20,
-      "quality_score": 0.398,
+      "id": "CVE-2026-33267",
+      "title": "CVE-2026-33267 - Apache Traffic Server: Untrusted @ headers can spoof ATS internal metadata",
+      "description": "CVE ID : CVE-2026-33267\n \n Published : July 29, 2026, 7:21 a.m. | 42minutes ago\n \n Description : Improper Input Validation vulnerability in Apache Traffic Server.\n\nThis issue affects Apache Traffic Server: from 9.2.0 through 9.2.14, from 10.1.0 through 10.1.3.\n\nUsers are recommen... [Full analysis a",
+      "cvss": 10,
+      "final_ps": 27,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
-      "type": "CRITICAL_INFRASTRUCTURE",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3316,21 +3488,19 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2025-59181"
+        "CVE-2026-33267"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--22894920b469327e.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.398"
+          "QS=0.417"
         ],
         "priority": [
-          "+4 critical_infra"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -3339,21 +3509,21 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2025-59180",
-      "title": "CVE-2025-59180: Ericsson Packet Core Controller (PCC) versions prior to 1.38 contain a hardcoded credential vulnerabilit",
-      "description": "CVE-2025-59180: Ericsson Packet Core Controller (PCC) versions prior to 1.38 contain a hardcoded credential vulnerability in the alarm s",
-      "cvss": 5.5,
-      "final_ps": 20,
-      "quality_score": 0.398,
+      "id": "CVE-2026-58155",
+      "title": "CVE-2026-58155 - Apache Traffic Server: Header-name length truncation enables header aliasing and request smuggling",
+      "description": "CVE-2026-58155 - Apache Traffic Server: Header-name length truncation enables header aliasing and request smuggling",
+      "cvss": 9.3,
+      "final_ps": 27,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
-      "type": "CRITICAL_INFRASTRUCTURE",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3361,21 +3531,19 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2025-59180"
+        "CVE-2026-58155"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d8445832f334e422.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.398"
+          "QS=0.417"
         ],
         "priority": [
-          "+4 critical_infra"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -3384,12 +3552,12 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2025-15662",
-      "title": "CVE-2025-15662: The Printcart Web to Print Product Designer for WooCommerce WordPress plugin before 2.5.3 does not restr",
-      "description": "CVE-2025-15662: The Printcart Web to Print Product Designer for WooCommerce WordPress plugin before 2.5.3 does not restrict a user-suppl",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
+      "id": "CVE-2026-41920",
+      "title": "CVE-2026-41920 - Apache Traffic Server: SNI to Host header matching policy is not properly enforced",
+      "description": "CVE ID : CVE-2026-41920\n \n Published : July 29, 2026, 7:18 a.m. | 45minutes ago\n \n Description : Improper Access Control vulnerability in Apache Traffic Server.\n\nThis issue affects Apache Traffic Server: from 9.0.0 through 9.1.14, from 10.0.0 through 10.1.3.\n\nUsers are recommende... [Full analysis a",
+      "cvss": 9.3,
+      "final_ps": 27,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -3397,30 +3565,28 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2025-15662"
+        "CVE-2026-41920"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d0dde721124531f3.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -3429,12 +3595,98 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-13332",
-      "title": "CVE-2026-13332: The Masteriyo LMS  WordPress plugin before 2.3.1 does not correctly verify authorization on an unauthent",
-      "description": "CVE-2026-13332: The Masteriyo LMS  WordPress plugin before 2.3.1 does not correctly verify authorization on an unauthenticated AJAX acti",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
+      "id": "CVE-2026-18072",
+      "title": "Low Phishing (CVE-2026-18072)",
+      "description": "CVE-2026-18072",
+      "cvss": 9.8,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "SOCIAL_ENGINEERING",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-18072"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54658",
+      "title": "@hypequery/clickhouse has SQL Injection in parameter escaping that allows arbitrary SQL execution",
+      "description": "### Impact\n A SQL injection vulnerability exists in the `escapeValue()` function used for parameter substitution. Attackers who can control parameter values can inject arbitrary SQL by using a trailing backslash to escape the closing quote.\n\nWho is impacted: All users of @hypeque... [Full analysis a",
+      "cvss": 9.8,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54658"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-63077",
+      "title": "Medium: JetBrains Urging Customers to Patch Critical TeamCity Flaw that Enables OS Comma (CVE-2026-63077)",
+      "description": "JetBrains Urging Customers to Patch Critical TeamCity Flaw that Enables OS Command Execution",
+      "cvss": 9.8,
+      "final_ps": 27,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -3442,30 +3694,28 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-13332"
+        "CVE-2026-63077"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--e4087c307626b6cc.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -3474,12 +3724,55 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-13597",
-      "title": "CVE-2026-13597: The  WordPress plugin through 1.3 does not properly validate WeChat webhook requests, as its signature c",
-      "description": "CVE-2026-13597: The  WordPress plugin through 1.3 does not properly validate WeChat webhook requests, as its signature check alwa",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
+      "id": "CVE-2026-64863",
+      "title": "goshs --no-delete WebDAV MOVE bypass allows file deletion/overwrite",
+      "description": "## Summary\n\nThe WebDAV mode-flag guard added to fix GHSA-3whc-qvhv-xqjp still does not enforce `--no-delete` on the WebDAV `MOVE` verb. `MOVE` deletes the source file (rename removes it from its original path), and with `Overwrite: T` it additionally performs an explicit `RemoveA... [Full analysis a",
+      "cvss": 9.1,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-64863"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-62325",
+      "title": "goshs SFTP authentication bypass via empty password (incomplete fix of CVE-2026-40884)",
+      "description": "## Summary\n\nStart goshs v2.1.3 with `-b 'admin:' -sftp`. No `-fkf`. SFTP accepts connections without password. CVE-2026-40884 blocks the empty-username variant (`-b ':pass'`). The empty-password variant bypasses that fix.\n\n## CVE-2026-40884\n\n**CVE-2026-40884** (GHSA-c29w-qq4m-2gc... [Full analysis a",
+      "cvss": 9.1,
+      "final_ps": 27,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -3487,30 +3780,29 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-13597"
+        "CVE-2026-62325",
+        "CVE-2026-40884"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--77dc6beec82daa80.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -3519,12 +3811,12 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-14289",
-      "title": "CVE-2026-14289: The FacturaONE para WooCommerce con VeriFactu WordPress plugin before 5.37 does not authenticate one of ",
-      "description": "CVE-2026-14289: The FacturaONE para WooCommerce con VeriFactu WordPress plugin before 5.37 does not authenticate one of its request hand",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
+      "id": "CVE-2026-65880",
+      "title": "Medium: Joomla Extension - joomshaper.com - Unauthenticated remote code execution in Bal (CVE-2026-65880)",
+      "description": "CVE-2026-65880 - Joomla Extension - joomshaper.com - Unauthenticated remote code execution in Balbooa Forms < 2.4.3",
+      "cvss": 9.5,
+      "final_ps": 27,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -3532,30 +3824,28 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-14289"
+        "CVE-2026-65880"
       ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--1d9dabc425a61d2e.html"
-      ],
+      "ioc_count": 1,
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -3564,12 +3854,12 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-9830",
-      "title": "CVE-2026-9830: The bookingpress-appointment-booking-pro WordPress plugin before 5.7.3 does not correctly invoke its REST",
-      "description": "CVE-2026-9830: The bookingpress-appointment-booking-pro WordPress plugin before 5.7.3 does not correctly invoke its REST permission cal",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
+      "id": "CVE-2026-50736",
+      "title": "Medium: pglogical Privilege Escalation via Default Expression Execution (CVE-2026-50736)",
+      "description": "CVE-2026-50737 - pglogical Privilege Escalation via Default Expression Execution",
+      "cvss": 9.5,
+      "final_ps": 27,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -3577,30 +3867,29 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-9830"
+        "CVE-2026-50736",
+        "CVE-2026-50737"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--5058ebef15722c09.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -3609,12 +3898,158 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-13152",
-      "title": "CVE-2026-13152: The Custom Fields Account Registration For Woocommerce WordPress plugin before 1.4 does not prevent its ",
-      "description": "CVE-2026-13152: The Custom Fields Account Registration For Woocommerce WordPress plugin before 1.4 does not prevent its custom registrat",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
+      "id": "CVE-2026-49755",
+      "title": "Req vulnerable to unbounded archive/compression extraction triggered by response content-type",
+      "description": "### Summary Req's default response pipeline auto-decodes archive and compressed bodies based on the server-supplied `content-type` (or URL extension) and materialises the full decompressed contents in memory with no size cap. An attacker who controls (or can redirect a victim into) an HTTP endpoint ",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "erlang",
+      "product": "req",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49755",
+        "CVE-2026-49755"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-655f-mp8p-96gv",
+        "https://github.com/wojtekmach/req/security/advisories/GHSA-655f-mp8p-96gv",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49755",
+        "https://github.com/wojtekmach/req/commit/84977e5b1a83f26e749d55ad06e3625464af4e8d"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54078",
+      "title": "veraPDF Validation XXE via Rich Text",
+      "description": "## Summary **Description**\nAn XML External Entity Injection (CWE-611) vulnerability in veraPDF allows a remote attacker to read arbitrary files on the server file system and perform Server-Side Request Forgery by submitting a crafted PDF containing a malicious rich-text (/RC or /RV) entry. This affe",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "org.verapdf:validation-model",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54078",
+        "CVE-2026-54078"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-3jh7-wm29-q568",
+        "https://github.com/veraPDF/veraPDF-validation/security/advisories/GHSA-3jh7-wm29-q568",
+        "https://github.com/advisories/GHSA-3jh7-wm29-q568"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54079",
+      "title": "veraPDF Validation XXE via XFA",
+      "description": "## Summary **Description**\nAn XML External Entity Injection (CWE-611) vulnerability in veraPDF allows a remote attacker to read arbitrary files on the server file system and perform Server-Side Request Forgery by submitting a crafted PDF containing a malicious XFA stream. This affects all current ve",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "org.verapdf:validation-model",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54079",
+        "CVE-2026-54079"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-36mm-w85j-3q2j",
+        "https://github.com/veraPDF/veraPDF-validation/security/advisories/GHSA-36mm-w85j-3q2j",
+        "https://github.com/veraPDF/veraPDF-validation/pull/730",
+        "https://github.com/veraPDF/veraPDF-validation/commit/94caa46c1a594512247fbd46c808edae39469542"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-14270",
+      "title": "CVE-2026-14270 - Extra Checkout Options (addon for Extra Product Options & Add-Ons for WooCommerce) <= 2.3.2 - Missing A",
+      "description": "CVE-2026-14270 - Extra Checkout Options (addon for Extra Product Options & Add-Ons for WooCommerce) <= 2.3.2 - Missing Authorization to Authenticated (Subscriber+) Arbitrary File Upload in eco_save_settings",
+      "cvss": 8.8,
+      "final_ps": 17,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -3622,30 +4057,28 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-13152"
+        "CVE-2026-14270"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ca1a775b88f46898.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "base_ps=17 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3654,12 +4087,12 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-12255",
-      "title": "CVE-2026-12255: The MainWP Child  WordPress plugin before 6.1.2 does not verify the requester's identity in its site-reg",
-      "description": "CVE-2026-12255: The MainWP Child  WordPress plugin before 6.1.2 does not verify the requester's identity in its site-registration reques",
+      "id": "CVE-2026-65884",
+      "title": "CVE-2026-65884 - Joomla Extension - balbooa.com - Privilege Escalation in Gridbox < 2.20.2",
+      "description": "CVE-2026-65884 - Joomla Extension - balbooa.com - Privilege Escalation in Gridbox < 2.20.2",
       "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
+      "final_ps": 17,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -3667,30 +4100,28 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-12255"
+        "CVE-2026-65884"
       ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--aac6db3fb97ad3b9.html"
-      ],
+      "ioc_count": 1,
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "base_ps=17 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3699,12 +4130,12 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-13714",
-      "title": "CVE-2026-13714: The Realtyna Organic IDX plugin + WPL Real Estate WordPress plugin before 5.3.0 does not validate the ty",
-      "description": "CVE-2026-13714: The Realtyna Organic IDX plugin + WPL Real Estate WordPress plugin before 5.3.0 does not validate the type of uploaded f",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
+      "id": "CVE-2026-33385",
+      "title": "CVE-2026-33385 - Blind SQL Injection in Quick.CMS",
+      "description": "CVE-2026-33385 - Blind SQL Injection in Quick.CMS",
+      "cvss": 8.8,
+      "final_ps": 17,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -3712,30 +4143,28 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-13714"
+        "CVE-2026-33385"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--96e1efb385fc1691.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "base_ps=17 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3744,43 +4173,41 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-12394",
-      "title": "CVE-2026-12394: The MemberGlut  WordPress plugin before 1.1.5 does not validate the role chosen during front-end registr",
-      "description": "CVE-2026-12394: The MemberGlut  WordPress plugin before 1.1.5 does not validate the role chosen during front-end registration, allowing",
+      "id": "CVE-2026-44943",
+      "title": "CVE-2026-44943 - remote limited file-write as root via discovery in open-iscsi",
+      "description": "CVE-2026-44943 - remote limited file-write as root via discovery in open-iscsi",
       "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-12394"
+        "CVE-2026-44943"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--0573e39367fbc209.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "base_ps=17 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3789,43 +4216,41 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-14837",
-      "title": "CVE-2026-14837: Multiple Lenze products are affected by an improper signature verification vulnerability in the SSH enab",
-      "description": "CVE-2026-14837: Multiple Lenze products are affected by an improper signature verification vulnerability in the SSH enablement mechanism",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
+      "id": "CVE-2026-44944",
+      "title": "CVE-2026-44944 - iscsiuio control-socket authentication bypass in open-iscsi",
+      "description": "CVE-2026-44944 - iscsiuio control-socket authentication bypass in open-iscsi",
+      "cvss": 7.5,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-14837"
+        "CVE-2026-44944"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--7fcbe253b169869c.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
+          "base_ps=17 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3834,493 +4259,41 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-12493",
-      "title": "CVE-2026-12493: The Clover Payment Gateway by Zaytech for WooCommerce WordPress plugin before 1.3.6 does not verify that",
-      "description": "CVE-2026-12493: The Clover Payment Gateway by Zaytech for WooCommerce WordPress plugin before 1.3.6 does not verify that an approved ext",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
+      "id": "CVE-2026-54653",
+      "title": "`datamodel-code-generator` vulnerable to code injection in via attacker-controlled `default_factory` schema field",
+      "description": "### Summary\n\n`datamodel-code-generator` is vulnerable to code injection when generating Python models from an attacker-controlled JSON Schema, OpenAPI, YAML, JSON, Avro, Protobuf, or XSD schema. When a property carries a `\"default_factory\"` key, its value is interpolated verbatim... [Full analysis a",
+      "cvss": 8.8,
+      "final_ps": 17,
+      "quality_score": 0.418,
       "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
+      "type": "NEWS_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-12493"
+        "CVE-2026-54653"
       ],
       "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--0cbdaf9f8467e13d.html"
-      ],
+      "refs": [],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
+          "data_confidence=0.35",
           "recency=0d (score=1.00)",
-          "QS=0.498"
+          "QS=0.417"
         ],
         "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-14235",
-      "title": "CVE-2026-14235: The Download Manager WordPress plugin before 3.3.62 does not bind its temporary download token to the re",
-      "description": "CVE-2026-14235: The Download Manager WordPress plugin before 3.3.62 does not bind its temporary download token to the requesting session",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-14235"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--06baa9b8104bc5aa.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-13726",
-      "title": "CVE-2026-13726: The MPG  WordPress plugin before 4.1.8 does not sanitise and escape a parameter before reflecting it bac",
-      "description": "CVE-2026-13726: The MPG  WordPress plugin before 4.1.8 does not sanitise and escape a parameter before reflecting it back in the respons",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-13726"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--867ba2ca56f3bb94.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-15962",
-      "title": "CVE-2026-15962: The Fluent Forms Pro Add On Pack plugin for WordPress is vulnerable to PHP Object Injection in all versi",
-      "description": "CVE-2026-15962: The Fluent Forms Pro Add On Pack plugin for WordPress is vulnerable to PHP Object Injection in all versions up to, and i",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-26",
-      "last_seen": "2026-07-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15962"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--c51ea8d1fa8f0a2f.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-17497",
-      "title": "CVE-2026-17497: NoteGen before 0.32.0 grants the Tauri shell plugin shell:allow-execute capability for bash, python, and",
-      "description": "CVE-2026-17497: NoteGen before 0.32.0 grants the Tauri shell plugin shell:allow-execute capability for bash, python, and python3 with ar",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-26",
-      "last_seen": "2026-07-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-17497"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--58a4d292dc0d6800.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-17496",
-      "title": "CVE-2026-17496: NoteGen before 0.32.0 renders AI chat responses with markdown-it configured with html:true and injects t",
-      "description": "CVE-2026-17496: NoteGen before 0.32.0 renders AI chat responses with markdown-it configured with html:true and injects the result into t",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-26",
-      "last_seen": "2026-07-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-17496"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--7ce1152c06c10aad.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-64530",
-      "title": "CVE-2026-64530: In the Linux kernel, the following vulnerability has been resolved:\n\nnet/sched: cls_api: Handle TC_ACT_C",
-      "description": "CVE-2026-64530: In the Linux kernel, the following vulnerability has been resolved:\n\nnet/sched: cls_api: Handle TC_ACT_CONSUMED in tcf_q",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-26",
-      "last_seen": "2026-07-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-64530"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--984945f7a4a46934.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2024-14040",
-      "title": "CVE-2024-14040: In the Linux kernel, the following vulnerability has been resolved:\n\nnet: nexthop: Increase weight to u1",
-      "description": "CVE-2024-14040: In the Linux kernel, the following vulnerability has been resolved:\n\nnet: nexthop: Increase weight to u16\n\nIn CLOS netwo",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-26",
-      "last_seen": "2026-07-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-14040"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--bbc579e9f47d06da.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-63720",
-      "title": "CVE-2026-63720: datamodel-code-generator prior to version 0.70.0 contains a code injection vulnerability that allows att",
-      "description": "CVE-2026-63720: datamodel-code-generator prior to version 0.70.0 contains a code injection vulnerability that allows attackers who contr",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-26",
-      "last_seen": "2026-07-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-63720"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--15819cdca95ebf5c.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-57989",
-      "title": "CVE-2026-57989: Origin validation error in Microsoft Edge (Chromium-based) allows an unauthorized attacker to disclose i",
-      "description": "CVE-2026-57989: Origin validation error in Microsoft Edge (Chromium-based) allows an unauthorized attacker to disclose information over",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-26",
-      "last_seen": "2026-07-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-57989"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--dfbc20c5c1ed384d.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-57990",
-      "title": "CVE-2026-57990: Files or directories accessible to external parties in Microsoft Edge (Chromium-based) allows an unautho",
-      "description": "CVE-2026-57990: Files or directories accessible to external parties in Microsoft Edge (Chromium-based) allows an unauthorized attacker t",
-      "cvss": 7.8,
-      "final_ps": 20,
-      "quality_score": 0.498,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-26",
-      "last_seen": "2026-07-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "Unknown Vendor",
-      "product": "Unknown Product",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-57990"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--ad239d20ace14447.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.498"
-        ],
-        "priority": [
-          "base_ps=20 (no boosts)"
+          "base_ps=17 (no boosts)"
         ],
         "suppression": null,
         "merge": null

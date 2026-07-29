@@ -2,12 +2,12 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-07-28T10:38:06.651Z",
+  "generated": "2026-07-29T14:14:17.386Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
     "published": 10,
     "p1": 0,
-    "leadsHeld": 3,
+    "leadsHeld": 4,
     "analystReports": 0,
     "sourcesOk": 4,
     "sourcesTotal": 6,
@@ -29,19 +29,19 @@
         "error": null
       },
       {
-        "name": "r/MachineLearning",
-        "key": "reddit_ml",
-        "tier": 3,
-        "status": "ok",
-        "items": 25,
-        "error": null
-      },
-      {
         "name": "GitHub Security Advisories",
         "key": "ghsa",
         "tier": 1,
         "status": "ok",
         "items": 60,
+        "error": null
+      },
+      {
+        "name": "r/MachineLearning",
+        "key": "reddit_ml",
+        "tier": 3,
+        "status": "ok",
+        "items": 25,
         "error": null
       },
       {
@@ -61,7 +61,7 @@
         "error": "This operation was aborted"
       }
     ],
-    "runtimeMs": 15083
+    "runtimeMs": 15080
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -90,6 +90,62 @@
   },
   "count": 10,
   "items": [
+    {
+      "id": "9795e8c2c020b198",
+      "title": "GitHub MCP Server has Nil Pointer Dereference DoS in completion/complete Handler",
+      "url": "https://github.com/advisories/GHSA-w4q6-qw23-4rg7",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-07-28T14:35:10Z",
+      "cve": "CVE-2026-47427",
+      "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": true,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 63,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
     {
       "id": "7cfa931cbd175eb2",
       "title": "AWS Bedrock AgentCore: Improper neutralization of argument delimiters in the Python SDK install_packages()",
@@ -147,16 +203,16 @@
       "has_analyst_report": false
     },
     {
-      "id": "2578baa94aab2aee",
-      "title": "AWS API MCP Server Security Policy Bypass via Startup Initialization Failure",
-      "url": "https://github.com/advisories/GHSA-29w2-fq35-v728",
-      "source": "GitHub Security Advisories",
-      "tier": 1,
-      "published": "2026-07-24T22:33:19Z",
-      "cve": "CVE-2026-16584",
-      "severity": "high",
+      "id": "26fc3dad75bf874a",
+      "title": "Hybrid Analysis for Secure MCP Tool Use in LLM Agents",
+      "url": "https://arxiv.org/abs/2607.25297v1",
+      "source": "arXiv cs.CR (LLM security)",
+      "tier": 2,
+      "published": "2026-07-28T05:17:34Z",
+      "cve": null,
+      "severity": null,
       "cvss": null,
-      "evidence_label": "VERIFIED_ADVISORY",
+      "evidence_label": "PUBLISHED_RESEARCH",
       "categories": [
         {
           "id": "agent_tool",
@@ -179,21 +235,21 @@
         "flags": {
           "agentic": false,
           "mcp": true,
-          "rag": false,
-          "tool_use": false,
+          "rag": true,
+          "tool_use": true,
           "supply_chain": false
         },
-        "level": "elevated"
+        "level": "high"
       },
       "enterprise_impact": {
-        "score": 63,
-        "priority": "P2"
+        "score": 30,
+        "priority": "P3"
       },
       "confidence": {
-        "source": "HIGH",
-        "evidence": "HIGH",
-        "overall": "HIGH",
-        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+        "source": "MODERATE",
+        "evidence": "LOW",
+        "overall": "LOW",
+        "rationale": "Research source; 1 corroborating source(s)."
       },
       "corroboration": 1,
       "detection": {
@@ -203,16 +259,16 @@
       "has_analyst_report": false
     },
     {
-      "id": "14ce20e9ae9217bb",
-      "title": " Budibase: Chat-Link Handoff Identity Confusion (Same-Tenant Account-Link CSRF)",
-      "url": "https://github.com/advisories/GHSA-pvcr-8mvp-w8qr",
-      "source": "GitHub Security Advisories",
-      "tier": 1,
-      "published": "2026-07-24T21:42:51Z",
+      "id": "27e61a929c276beb",
+      "title": "ALIBI: Adaptive Agentic Attacks on LLM-Based Vulnerability Detectors via Adversarial Code Comments",
+      "url": "https://arxiv.org/abs/2607.24964v1",
+      "source": "arXiv cs.CR (LLM security)",
+      "tier": 2,
+      "published": "2026-07-27T18:13:28Z",
       "cve": null,
-      "severity": "high",
+      "severity": null,
       "cvss": null,
-      "evidence_label": "VERIFIED_ADVISORY",
+      "evidence_label": "PUBLISHED_RESEARCH",
       "categories": [
         {
           "id": "agent_tool",
@@ -242,14 +298,14 @@
         "level": "elevated"
       },
       "enterprise_impact": {
-        "score": 48,
-        "priority": "P2"
+        "score": 20,
+        "priority": "P3"
       },
       "confidence": {
-        "source": "HIGH",
-        "evidence": "MODERATE",
-        "overall": "HIGH",
-        "rationale": "Authoritative source (GitHub Security Advisories)."
+        "source": "MODERATE",
+        "evidence": "LOW",
+        "overall": "LOW",
+        "rationale": "Research source; 1 corroborating source(s)."
       },
       "corroboration": 1,
       "detection": {
@@ -541,62 +597,6 @@
           "mcp": false,
           "rag": true,
           "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
-        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "13f5334d86fc634a",
-      "title": "Twin Agent: Context Residual Compression for Privilege Separated Agents",
-      "url": "https://arxiv.org/abs/2607.19595v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-07-21T21:47:52Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "prompt_injection",
-          "label": "Prompt Injection"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM01",
-          "name": "Prompt Injection"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0051",
-          "name": "LLM Prompt Injection"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": false,
-          "tool_use": true,
           "supply_chain": false
         },
         "level": "elevated"
