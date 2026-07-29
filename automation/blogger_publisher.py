@@ -122,10 +122,21 @@ class BloggerPublisher:
         content: str,
         labels: list[str],
         is_draft: bool = False,
+        image_url: Optional[str] = None,
     ) -> dict:
         """
         Create a new Blogger post with retry logic.
         Returns the created post object from the Blogger API.
+
+        image_url, when given, is sent via the Post resource's real
+        "images" field (verified against the Blogger API v3 discovery
+        schema: images: [{url: string}], not read-only, not excluded from
+        insert) so the post has an explicit, Sentinel-APEX-branded social
+        card instead of relying only on Blogger's own first-image-in-body
+        heuristic (which _assemble_html()'s inline SVG thumbnail exists
+        for). Blogger's own Posts resource has no equivalent field for
+        meta description/OG/Twitter tags — that gap is a platform
+        limitation, not something this method can wire around.
         """
         payload = {
             "kind": "blogger#post",
@@ -133,6 +144,8 @@ class BloggerPublisher:
             "content": content,
             "labels": labels,
         }
+        if image_url:
+            payload["images"] = [{"url": image_url}]
 
         url = f"{BLOGGER_API_BASE}/blogs/{self.config.blogger_blog_id}/posts"
         params = {"isDraft": "true" if is_draft else "false", "fetchBody": "false"}

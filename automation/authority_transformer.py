@@ -10,6 +10,7 @@ import json
 import re
 from datetime import datetime, timezone
 from typing import Optional
+from urllib.parse import urlencode
 
 from .category_mapper import primary_category
 from .config import Config
@@ -94,6 +95,23 @@ def _get_palette(labels: list) -> dict:
 # Produces a 1200×630 branded banner embedded as a data URI <img> tag.
 # This becomes data:post.firstImageUrl in Blogger — fixes missing thumbnails.
 # ─────────────────────────────────────────────────────────────────────────────
+
+def _build_dynamic_og_image_url(config: Config, title: str, severity: Optional[str],
+                                 cve_id: str, cvss: Optional[str], type_label: str) -> str:
+    """Same satori/resvg-rendered card the Vercel-side generators use
+    (api/og.js) — mirrors its documented query contract exactly (title,
+    severity, cve, cvss, type; see api/og.js's own docstring) rather than
+    inventing a parallel image system. A parity port, not a duplication:
+    Python can't require() the Node module, so the query-string contract is
+    the shared interface, matching how detection-engine.js/sigma_builder.py
+    mirror each other elsewhere in this repo."""
+    params = {"title": title, "severity": severity or "HIGH", "type": type_label}
+    if cve_id:
+        params["cve"] = cve_id
+    if cvss:
+        params["cvss"] = cvss
+    return f"{config.source_base_url}/api/og?{urlencode(params)}"
+
 
 def _generate_svg_thumbnail(title: str, labels: list, cvss: Optional[str] = None) -> str:
     """Return an <img> tag with the SVG banner as a data URI."""
@@ -1682,6 +1700,21 @@ class AuthorityTransformer:
             published_at=article.published_at,
         )
 
+        # Dynamic per-article social card (ESPMP v1). Computed independently
+        # from _assemble_html()'s own cves/cvss extraction (same pattern
+        # already used elsewhere in this file — see seo_data above, which
+        # also re-derives cves/cvss on the same text) because this value
+        # needs to reach main.py's publish_post() call directly, not just
+        # the embedded HTML body.
+        _cves_for_image = _extract_cve_ids(article.title + " " + article.summary)
+        _cvss_for_image = _extract_cvss(article.title + " " + article.summary)
+        _severity_for_image, _ = _derive_severity(article, _cvss_for_image)
+        image_url = _build_dynamic_og_image_url(
+            self.config, title=article.title, severity=_severity_for_image,
+            cve_id=_cves_for_image[0] if _cves_for_image else "", cvss=_cvss_for_image,
+            type_label=primary_category(article.labels) or "THREAT INTEL",
+        )
+
         # Build full HTML
         html = self._assemble_html(article, body_content, seo_data)
 
@@ -1700,6 +1733,15 @@ class AuthorityTransformer:
             "title": self._build_blogger_title(article),
             "content": html,
             "labels": blogger_labels,
+            "image_url": image_url,
+            # meta_title/meta_description/keywords below have no Blogger API
+            # home: verified against the real Posts v3 schema (the
+            # blogger.googleapis.com discovery document) that no
+            # searchDescription/metaTitle/keywords field exists on that
+            # resource, so unlike image_url above these cannot reach Blogger
+            # through publish_post(). Left computed (not removed) for a
+            # future non-Blogger publishing target — do not "fix" this by
+            # inventing a Blogger field that doesn't exist.
             "meta_title": seo_data["meta_title"],
             "meta_description": seo_data["meta_description"],
             "keywords": seo_data["keywords"],
