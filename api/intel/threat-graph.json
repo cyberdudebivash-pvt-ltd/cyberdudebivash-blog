@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-29T16:17:31.775Z",
+  "generated": "2026-07-29T16:31:31.344Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9682,
+    "total_nodes": 9686,
     "actors": 8,
-    "cves": 2705,
-    "campaigns": 1007,
+    "cves": 2706,
+    "campaigns": 1008,
     "malware": 0,
     "iocs": 862,
-    "edges": 3515
+    "edges": 3516
   },
   "nodes": {
     "actor:lockbit": {
@@ -184658,6 +184658,80 @@
         "type": "AI_SECURITY"
       },
       "connections": []
+    },
+    "SENTINELAPEX-dca9ffe29d1e": {
+      "id": "SENTINELAPEX-dca9ffe29d1e",
+      "type": "Intel",
+      "name": "WP2Shell WordPress Exploit Technical Analysis and Real Attack Data",
+      "attributes": {
+        "cvss": 9.5,
+        "threat_level": "HIGH",
+        "priority_score": 71,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "",
+        "product": "",
+        "published": "2026-07-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-55651": {
+      "id": "CVE-2026-55651",
+      "type": "CVE",
+      "name": "Easy!Appointments Vulnerable to Appointments Takeover via Excessive Data Exposure",
+      "attributes": {
+        "cvss": 7.1,
+        "threat_level": "LOW",
+        "priority_score": 41,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "alextselegidis/easyappointments",
+        "published": "2026-07-29",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "SENTINELAPEX-e711d30af278": {
+      "id": "SENTINELAPEX-e711d30af278",
+      "type": "Intel",
+      "name": "intel--ff0548caf38764ac3c2c5731",
+      "attributes": {
+        "cvss": 6,
+        "threat_level": "LOW",
+        "priority_score": 36,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "",
+        "product": "",
+        "published": "2026-07-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-1738c9ff": {
+      "id": "campaign:cluster-1738c9ff",
+      "type": "Campaign",
+      "name": "Multi-Vendor Platform Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-29",
+        "last_seen": "2026-07-29",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SENTINELAPEX-dca9ffe29d1e",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -216453,6 +216527,15 @@
       "sources": [
         "shared campaign: campaign:cve-2026-65943-and-cve-2026-65946"
       ]
+    },
+    {
+      "id": "campaign:cluster-1738c9ff→includes→SENTINELAPEX-dca9ffe29d1e",
+      "source": "campaign:cluster-1738c9ff",
+      "target": "SENTINELAPEX-dca9ffe29d1e",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-29",
+      "sources": []
     }
   ]
 }

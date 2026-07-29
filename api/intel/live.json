@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-29T16:17:31.840Z",
+  "generated": "2026-07-29T16:31:31.404Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2895,
+  "total_published": 2896,
   "s2n_stats": {
     "passed": 106,
-    "suppressed": 33,
-    "avg_qs": 0.509
+    "suppressed": 37,
+    "avg_qs": 0.51
   },
   "items": [
     {
@@ -4077,6 +4077,55 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-55651",
+      "title": "Easy!Appointments Vulnerable to Appointments Takeover via Excessive Data Exposure",
+      "description": "### Summary\nAn Excessive Data Exposure vulnerability in the customers search endpoint allows an authenticated user to obtain appointment hashes belonging to other users.\nUsing these hashes, an attacker can modify or delete appointments of other providers, resulting in an Appointments Takeover. ### D",
+      "cvss": 7.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "composer",
+      "product": "alextselegidis/easyappointments",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55651",
+        "CVE-2026-55651"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4vmm-5qvc-w5p7",
+        "https://github.com/alextselegidis/easyappointments/security/advisories/GHSA-4vmm-5qvc-w5p7",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-55651",
+        "https://github.com/alextselegidis/easyappointments/commit/ebbe41130dafa58b0716426c56c8cfd4c22dbceb"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-50559",
       "title": "Quarkus: Authentication/Authorization Bypass via Advanced Path Normalization Vulnerabilities",
       "description": "Quarkus HTTP path-based authorization policies can be bypassed using encoded semicolons (%3B) to smuggle matrix parameters past the security layer, and using encoded slashes (%2F) or backslashes (%5C) to access protected static resources. This is a distinct issue from CVE-2026-39852, which addressed",
@@ -4264,49 +4313,6 @@
         ],
         "priority": [
           "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54639",
-      "title": "Style Dictionary - Prototype Pollution in convertTokenData utility function",
-      "description": "### Impact\nPrototype pollution.\nA malicious user can create a token array `[{ key: '{__proto__.foo}', value: 'malicious' }]`, when processed by `convertTokenData()` utility function, it will pollute the Object.prototype globally where `{}.foo` will equal `{ key: '{__proto__.foo}'... [Full analysis a",
-      "cvss": 8.8,
-      "final_ps": 21,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54639"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+4 critical_infra"
         ],
         "suppression": null,
         "merge": null
