@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-29T08:31:41.387Z",
+  "generated": "2026-07-29T09:01:51.118Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9560,
+    "total_nodes": 9563,
     "actors": 8,
     "cves": 2645,
-    "campaigns": 994,
+    "campaigns": 995,
     "malware": 0,
     "iocs": 859,
-    "edges": 3494
+    "edges": 3495
   },
   "nodes": {
     "actor:lockbit": {
@@ -182411,6 +182411,62 @@
           "confidence": 0.75
         }
       ]
+    },
+    "SECURITYWEEK-49ac3496bf7ae147": {
+      "id": "SECURITYWEEK-49ac3496bf7ae147",
+      "type": "Intel",
+      "name": "JFrog Zero-Days Exploited in OpenAI-Hugging Face Hack",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecurityWeek",
+        "product": "Threat Intelligence",
+        "published": "2026-07-29",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "WIRED_SECURITY-0fba3c77f85879d9": {
+      "id": "WIRED_SECURITY-0fba3c77f85879d9",
+      "type": "Intel",
+      "name": "ICE’s New Detention Center Contracts Declare State Laws ‘Shall Not Apply’",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 45,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "wired_security",
+        "product": "Threat Intelligence",
+        "published": "2026-07-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-5467735e": {
+      "id": "campaign:cluster-5467735e",
+      "type": "Campaign",
+      "name": "SecurityWeek Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-07-29",
+        "last_seen": "2026-07-29",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "SECURITYWEEK-49ac3496bf7ae147",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -214013,6 +214069,15 @@
       "target": "ioc:domain:joomshaper.com",
       "relationship": "linked_to",
       "confidence": 0.75,
+      "first_seen": "2026-07-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-5467735e→includes→SECURITYWEEK-49ac3496bf7ae147",
+      "source": "campaign:cluster-5467735e",
+      "target": "SECURITYWEEK-49ac3496bf7ae147",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-07-29",
       "sources": []
     }
