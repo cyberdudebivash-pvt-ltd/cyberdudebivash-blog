@@ -1,0 +1,60 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "GHSA-a7ef8f54f7bdefd1",
+  "title": "netfoil: Incorrect block responses could lead to localhost traffic",
+  "generated": "2026-07-29T17:31:38.755Z",
+  "severity": "HIGH",
+  "cvss": 7.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "go",
+  "product": "github.com/tinfoil-factory/netfoil",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "0[.]0[.]0[.]0",
+      "type": "ipv4",
+      "confidence": 0.88
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert ip $HOME_NET any -> 0.0.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 0.0.0.0\"; classtype:trojan-activity; sid:9000001; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: go github.com/tinfoil-factory/netfoil.",
+      "CVSS base score of 7.5 assigned by an authoritative source.",
+      "1 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as high (CVSS 7.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor go has been targeted in 52 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: netfoil-incorrect-block-responses-could-lead-to-localhost-t (3 shared entities)"
+  ],
+  "source": null,
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
