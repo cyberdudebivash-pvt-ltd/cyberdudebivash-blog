@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-29T04:31:44.795Z",
+  "generated": "2026-07-29T05:01:54.636Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9528,
+    "total_nodes": 9530,
     "actors": 8,
     "cves": 2635,
-    "campaigns": 990,
+    "campaigns": 991,
     "malware": 0,
     "iocs": 858,
-    "edges": 3431
+    "edges": 3432
   },
   "nodes": {
     "actor:lockbit": {
@@ -181533,6 +181533,44 @@
         "type": "SUPPLY_CHAIN"
       },
       "connections": []
+    },
+    "REDDIT_CYBER-2ffad2c16ea3d34f": {
+      "id": "REDDIT_CYBER-2ffad2c16ea3d34f",
+      "type": "Intel",
+      "name": "Our biggest AI security issue wasn't prompt leakage. It was what people built afterward.",
+      "attributes": {
+        "cvss": 6.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 62,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-07-29",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-8b1477ff": {
+      "id": "campaign:cluster-8b1477ff",
+      "type": "Campaign",
+      "name": "reddit_cyber Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-07-29",
+        "last_seen": "2026-07-29",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "REDDIT_CYBER-2ffad2c16ea3d34f",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -212454,6 +212492,15 @@
       "id": "campaign:cve-2025-68686→includes→CVE-2025-68686",
       "source": "campaign:cve-2025-68686",
       "target": "CVE-2025-68686",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-07-29",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-8b1477ff→includes→REDDIT_CYBER-2ffad2c16ea3d34f",
+      "source": "campaign:cluster-8b1477ff",
+      "target": "REDDIT_CYBER-2ffad2c16ea3d34f",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-07-29",
