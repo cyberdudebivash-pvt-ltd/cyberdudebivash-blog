@@ -108,6 +108,37 @@ through the machinery.
 **Resolved (EIOS-X v1 sprint)** — (1) and (2) fixed at root cause; (3) remains
 open, a product-tiering policy question, not an engineering one.
 
+**Mechanism fixed, policy question still open (GTIEP v1)** —
+`Sentinel-APEX/engine/sentinel_engine/report_ingest.py`'s new
+`build_pipeline_result()` is the first thing that can score a
+hand-authored report at all (there was no `PipelineResult` for one
+before this — `certification.py` could only refuse to give a number, it
+had nothing to compute one from). `scoring.py` also gained
+`_embedded_detection_formats()`, which scans a report's own prose for a
+real, structurally-valid embedded Sigma/YARA/KQL/Suricata rule (via
+`quality.py`'s own validators) and credits it in `detection_value` —
+closing the specific complaint above about an independently-verified
+Sigma rule being invisible to the score. Verified directly, all 3 real
+published reports, via `certify()`'s new `.score` field:
+
+| Report | Overall | Tier |
+|---|---|---|
+| SA-2026-0001 | 38/100 | BLOCKED |
+| SA-2026-0002 | 37/100 | BLOCKED |
+| SA-2026-0003 | 48/100 | BLOCKED |
+
+All three remain BLOCKED under the unchanged `DEFAULT_THRESHOLD = 60` —
+this is not a regression from the previously-cited 43/100 (that number was
+never produced by a reusable, tested code path; this is the first
+reproducible one) and it is **not** claimed here as evidence the threshold
+is wrong. Three data points now exist where one existed before, which
+makes the original question sharper, not answered: does a
+hand-authored, low-public-IOC-count, high-analytical-depth report need a
+different bar than automated-pipeline content, or is 60 the right premium
+line regardless of shape? Still a product decision, not resolved here —
+recorded honestly as three BLOCKED scores rather than silently improved
+or omitted.
+
 1. `ioc_extractor.py` now detects a "Sources:"/"References:" marker line
    (`_RE_CITATION_MARKER` — recognizes bare, ATX-heading, and bold-heading
    forms) and excludes any URL match at or after that position from IOC
@@ -949,6 +980,85 @@ evidence bar for architectural change):
   API field), for a possible future non-Blogger publishing target. Not
   deleted: no functional harm in leaving them, and removing working code
   with no bug to fix would be scope creep beyond this issue.
+
+## Issue 15 — Stale governance docs and scattered parallel systems across the intelligence-report standard (GTIEP v1)
+
+Found via a dedicated Phase 1 audit (`platform/gtiep-v1-audit.md`)
+commissioned by a production task asking this platform's reports to
+compete structurally with 10 named commercial CTI vendors. Full audit and
+staged plan live in that document and `platform/gtiep-v1-competitive-analysis.md`;
+this entry tracks it against this file's own issue-log convention.
+
+**Two confirmed cases of this platform's own governance documentation
+being wrong, not just stale** — a materially worse problem than
+staleness, since "Reuse Before Build" depends on the map being accurate:
+`Sentinel-APEX/eios/layer-03-intelligence-object-model.md` claimed Threat
+Actor profiles "need richer fields than `Entity`" and Campaign was
+"specified, not yet implemented in code." Both false: `api/_lib/threat-graph.js`
+already has 8 fully-attributed real actors, and `api/_lib/campaign-engine.js`
+is a full 573-line weighted-clustering engine, live, with a persisted
+`campaigns.json`. **Resolved** — Layer 3 corrected in place with explicit
+"Correction (GTIEP v1 audit)" notes rather than silently rewritten,
+matching this file's own precedent for surfacing documentation debt
+honestly (see Issue 11's history).
+
+**Three "scattered parallel systems" findings, same category as Issue 1,
+not yet consolidated:**
+- Report structure: a 5-section code-enforced gate, a 60-section
+  documented-but-uncomputed taxonomy, and ~24 sections actually used in
+  real reports — three layers that don't fully agree.
+- Operational Intelligence by role: `authority_transformer.py`'s
+  Executive Decision Center (CEO/Board/CISO/SOC/DevSecOps/Cloud) and EIOS
+  Layer 5's audience templates (Executive/SOC/Hunter/IR/Board/Detection-
+  Engineer) are two independent 6-role systems that don't match each
+  other or GTIEP's proposed role list.
+- Confidence: a 3-level code enum (LOW/MEDIUM/HIGH) vs. a 5-level prose
+  scale (VERY LOW→VERY HIGH) used everywhere else, plus a real, practiced
+  4-tag evidentiary convention vs. a richer, fully-specified-but-never-used
+  9-category Provenance model (`eios/layer-02`).
+
+**Not resolved this sprint, deliberately** — each is a canonical-ownership
+or consolidation decision (which system wins), the same category Issue 1
+already established requires an explicit decision rather than an
+opportunistic same-sprint merge.
+
+**Resolved this sprint (GTIEP v1), the additive/low-risk subset:**
+1. The two stale-documentation corrections above.
+2. `capabilities.md`'s "Detection Generation (Sigma/YARA/KQL/Suricata/
+   OSQuery)" row corrected — YARA is validated-only, there is no
+   YARA-*generating* code anywhere.
+3. `platform/gtiep-v1-competitive-analysis.md` — sourced research (not
+   recalled from memory) against all 10 named vendors' real public
+   report structure, including two corrections to the vendor list itself
+   (Google TI ≈ Mandiant post-2022-acquisition; Secureworks CTU → Sophos
+   X-Ops post-February-2025-acquisition, confirmed directly, not assumed).
+4. `scoring.py` extended from 9 to 14 dimensions (additive, existing 9
+   unchanged, weights rebalanced to still sum to 1.0) — see the dedicated
+   Issue 3 item 3 update above for the mechanism/policy-question detail.
+5. Six new sections added to `master-prompt.md`'s taxonomy (Key Findings,
+   CVE Analysis, CWE Analysis, CAPEC Mapping, Exploit Analysis, Geographic
+   Impact) — confirmed absent at every layer before this change. Added to
+   the taxonomy and to `scoring.py`'s new `report_structure`
+   scoring dimension, deliberately **not** to `quality.py`'s hard-gated
+   `REQUIRED_SECTIONS`, which would have retroactively failed all 3
+   already-certified published reports.
+6. `Sentinel-APEX/templates/threat-actor/threat-actor-profile.md` +
+   `Sentinel-APEX/renderer/threat-actor-profile.js` — the first of
+   GTIEP v1's 21 proposed subject-type templates actually built, sourced
+   directly from the 8 real curated actor records in `THREAT_ACTOR_DB`
+   rather than invented content. Closes the "Threat Actor Analysis" report-
+   structure gap and the template-library gap in one move.
+
+**Explicitly staged for a future sprint**, per `platform/gtiep-v1-audit.md`'s
+own staged plan: the other ~18 subject-type templates; consolidating the
+three scattered-parallel-systems findings above; Detection Library as a
+persisted, browsable rule asset (today's `sigma/`, `yara/`, etc. directories
+are empty `.gitkeep` stubs); populating rich Malware profiles and any
+Country Intelligence; detection-format expansion to CrowdStrike/Defender
+XDR/Cortex XDR in the Sentinel-APEX pipeline specifically (the separate
+Blogger pipeline already has 5 SIEM formats, Sentinel-APEX pipeline has a
+different 5); producing a commercial-packaging document for SA-2026-0002/
+0003 matching SA-2026-0001's existing precedent.
 
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
