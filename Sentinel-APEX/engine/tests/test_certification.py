@@ -194,6 +194,25 @@ def test_release_governance_markdown_contains_all_required_sections():
     assert "CERTIFIED WITH CONDITIONS" in doc
 
 
+def test_certify_real_report_now_produces_a_real_quantitative_score():
+    # GTIEP v1 / platform/open-issues.md Issue 3 item 3: certify() previously
+    # had no way to score a hand-authored report at all.
+    cert = certify(str(REAL_REPORT), _rendering_check=_stub_rendering_ok)
+    assert cert.score is not None
+    assert 0 <= cert.score.overall <= 100
+    assert cert.score.tier in ("BLOCKED", "FREE", "PRO", "ENTERPRISE")
+
+
+def test_release_governance_markdown_reports_the_real_score_not_the_old_refusal():
+    cert = certify(str(REAL_REPORT), _rendering_check=_stub_rendering_ok)
+    md = render_release_governance_markdown(cert)
+    assert "Quantitative score (GTIEP v1 quality framework)" in md
+    assert f"{cert.score.overall}/100" in md
+    # The old, pre-GTIEP-v1 blanket refusal must not still be produced
+    # when a real score is available.
+    assert "No quantitative commercial/tier score is presented here" not in md
+
+
 def test_release_governance_markdown_never_throws_on_a_failing_report():
     cert = certify(str(REAL_REPORT), _rendering_check=_stub_rendering_fail)
     doc = render_release_governance_markdown(cert)

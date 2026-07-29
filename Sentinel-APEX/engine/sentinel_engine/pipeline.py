@@ -34,6 +34,13 @@ class PipelineResult:
     draft_markdown: str = ""
     gate: GateResult = field(default_factory=GateResult)
     score: IntelligenceScore | None = None
+    # Section name -> body, for a hand-authored (Markdown-sectioned) report.
+    # Left empty for this automated pipeline (never set below) — populated
+    # only by report_ingest.py's build_pipeline_result() for published
+    # analyst reports. scoring.py's GTIEP v1 dimensions read this and
+    # degrade to a documented neutral default when it's empty, so this
+    # addition changes nothing about how automated reports score.
+    raw_sections: dict[str, str] = field(default_factory=dict)
 
 
 def run(

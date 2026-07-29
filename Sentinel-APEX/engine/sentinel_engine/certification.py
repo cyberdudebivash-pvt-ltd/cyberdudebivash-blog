@@ -28,7 +28,9 @@ from pathlib import Path
 
 from .models import GateFinding
 from .quality import gate_corpus, gate_report
+from .report_ingest import build_pipeline_result
 from .report_parser import ParsedReport, parse_report
+from .scoring import IntelligenceScore
 
 PASS = "Pass"
 NEEDS_REVIEW = "Needs Review"
@@ -195,6 +197,12 @@ class CertificationReport:
     severity: str
     domains: dict[str, DomainVerdict]
     decision: str  # CERTIFIED | CERTIFIED WITH CONDITIONS | NOT CERTIFIED
+    # GTIEP v1: a hand-authored report now has a real, computable score
+    # (report_ingest.build_pipeline_result -> scoring.score), resolving
+    # platform/open-issues.md Issue 3 item 3. Optional/None only as a
+    # defensive default if certify() is ever called on something that
+    # somehow can't be scored — not expected in normal operation.
+    score: IntelligenceScore | None = None
 
 
 def _overall_decision(verdicts: list[str]) -> str:
@@ -250,10 +258,17 @@ def certify(report_path: str, html_path: str | None = None,
 
     decision = _overall_decision([domains[d].verdict for d in ALL_DOMAINS])
 
+    # GTIEP v1: build_pipeline_result() is the first thing that can score a
+    # hand-authored report at all (see report_ingest.py's docstring) — this
+    # re-parses front matter/sections already read above, not re-reading
+    # the file a second time, so the cost is a pure-function re-derivation,
+    # not new I/O.
+    pipeline_result = build_pipeline_result(report)
+
     return CertificationReport(
         report_id=str(report.metadata.get("report_id") or Path(report_path).stem),
         title=report.title, severity=report.severity,
-        domains=domains, decision=decision,
+        domains=domains, decision=decision, score=pipeline_result.score,
     )
 
 
@@ -372,23 +387,40 @@ def _commercial_assessment(cert: CertificationReport) -> str:
                 "passed structural validation, supporting detection-pack "
                 "and MSSP delivery channels."
             )
-    lines.append(
-        "No quantitative commercial/tier score is presented here. "
-        "`scoring.py` (EIOS Layer 10) computes that score from an "
-        "automated-pipeline `PipelineResult`, which this hand-authored "
-        "report does not have — see `platform/open-issues.md` Issue 3 "
-        "item 3. Forcing a number through a model not designed for this "
-        "report's shape would misrepresent it; this is a documented, "
-        "open product decision, not resolved by this certification pass."
-    )
+    if cert.score is not None:
+        s = cert.score
+        lines.append(
+            f"Quantitative score (GTIEP v1 quality framework): **{s.overall}/100**, "
+            f"tier **{s.tier}** (threshold {s.threshold}, "
+            f"{'eligible' if s.eligible else 'not eligible'})."
+        )
+        lines.append(
+            "This is the first time a hand-authored report has had a real, "
+            "reproducible score — see `Sentinel-APEX/engine/sentinel_engine/"
+            "report_ingest.py`'s `build_pipeline_result()` and "
+            "`platform/open-issues.md` Issue 3 item 3. Whether the current "
+            "threshold and weighting are the *right* bar for this report's "
+            "shape (low public-IOC-count, high analytical depth) remains "
+            "an open product-tiering question this score does not by "
+            "itself resolve — it only makes the question answerable with "
+            "real, per-dimension data instead of no data at all."
+        )
+    else:
+        lines.append(
+            "No quantitative commercial/tier score could be computed for "
+            "this report — see `platform/open-issues.md` Issue 3 item 3."
+        )
     return "\n".join(f"- {line}" for line in lines)
 
 
 def _known_limitations(cert: CertificationReport) -> str:
     lines = [
-        "- Commercial/tier scoring is qualitative only for hand-authored "
-        "reports (see Commercial Assessment above; `platform/open-issues.md` "
-        "Issue 3 item 3 is the tracked, open product decision).",
+        "- Commercial/tier scoring for hand-authored reports is now "
+        "quantitative (GTIEP v1), but the threshold/weighting was tuned "
+        "against automated-pipeline content originally — whether it's the "
+        "right bar for this report shape is still an open product "
+        "question (see Commercial Assessment above; "
+        "`platform/open-issues.md` Issue 3 item 3).",
         "- Rendering Quality requires a working `node` runtime in the "
         "certifying environment; if the check could not run at all, its "
         "verdict is \"Not Applicable,\" not a false pass or fail.",

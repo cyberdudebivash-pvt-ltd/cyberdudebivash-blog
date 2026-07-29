@@ -29,7 +29,10 @@ from .attack_mapper import map_techniques
 from .entities import extract_entities
 from .ioc_extractor import extract_cves, extract_iocs
 from .models import NormalizedDoc
+from .pipeline import PipelineResult
+from .quality import gate_report
 from .report_parser import ParsedReport
+from .scoring import DEFAULT_THRESHOLD, score
 
 # Fenced code/YAML blocks (e.g. an embedded Sigma rule) describe detection
 # logic, not analyst-asserted evidence: a rule's own `falsepositives:` or
@@ -110,3 +113,30 @@ def normalize_report(report: ParsedReport) -> NormalizedDoc:
         techniques=map_techniques(text_for_techniques),
         entities=extract_entities(text),
     )
+
+
+def build_pipeline_result(report: ParsedReport, threshold: int = DEFAULT_THRESHOLD) -> PipelineResult:
+    """A hand-authored report has never had a scoreable PipelineResult before
+    this (GTIEP v1) — `certification.py`'s commercial assessment explicitly
+    refuses to produce a number for hand-authored reports because none
+    existed (`platform/open-issues.md` Issue 3 item 3). This builds one:
+    `normalized` via `normalize_report()` above (unchanged), `gate` via the
+    same `gate_report()` the CLI's `gate` subcommand already runs, and
+    `raw_sections=report.sections` so `scoring.py`'s GTIEP v1 dimensions
+    (report structure, defensive guidance, embedded detection content, ...)
+    have real data instead of degrading to their neutral defaults.
+    `enrichments`/`prior_context`/`sigma_rules` stay at their empty
+    defaults — a hand-authored report's evidence for those lives in its own
+    prose, not in engine-computed artifacts, and inventing fake ones here
+    would be exactly the fabrication this platform's content governance
+    prohibits."""
+    doc = normalize_report(report)
+    gate = gate_report(report)
+    result = PipelineResult(
+        report_id=str(report.metadata.get("report_id") or ""),
+        normalized=doc,
+        gate=gate,
+        raw_sections=dict(report.sections),
+    )
+    result.score = score(result, threshold=threshold, gate=gate)
+    return result
