@@ -1,0 +1,69 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-933f2e0bee01f56d",
+  "title": "Hugging Face built an interactive replay of the OAl agent that breached them",
+  "generated": "2026-07-29T19:31:27.491Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": true,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://x[.]com/i/status/2082241780792115626",
+      "type": "url",
+      "confidence": 0.82
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://x.com/i/status/2082241780792115626\"; http.host; content:\"x.com\"; nocase; http.uri; content:\"/i/status/2082241780792115626\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "Active exploitation reported in source intelligence.",
+      "1 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      },
+      {
+        "confidence": "HIGH",
+        "text": "Unpatched exposure represents an active — not theoretical — risk, given confirmed exploitation."
+      }
+    ],
+    "intelligence_gaps": [
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "HIGH",
+        "text": "Continued and broadening exploitation is expected; additional threat actors are likely to adopt this vector."
+      },
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 225 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 560 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: hugging-face-built-an-interactive-replay-of-the-oal-agent-th (3 shared entities), only-1-of-ai-discovered-vulnerabilities-have-actually-been (2 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1va3mes/hugging_face_built_an_interactive_replay_of_the/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
