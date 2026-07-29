@@ -1,8 +1,59 @@
 {
-  "generated": "2026-07-29T14:34:09.691Z",
+  "generated": "2026-07-29T19:47:39.053Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "hugging-face-built-an-interactive-replay-of-the-oal-agent-th",
+      "title": "Hugging Face built an interactive replay of the OAl agent that breached them",
+      "url": "/posts/hugging-face-built-an-interactive-replay-of-the-oal-agent-th.html",
+      "generated": "2026-07-29T19:31:27.491Z",
+      "severity": "MEDIUM",
+      "cves": [],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://x.com/i/status/2082241780792115626\"; http.host; content:\"x.com\"; nocase; http.uri; content:\"/i/status/2082241780792115626\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "netfoil-incorrect-block-responses-could-lead-to-localhost-t",
+      "title": "netfoil: Incorrect block responses could lead to localhost traffic",
+      "url": "/posts/netfoil-incorrect-block-responses-could-lead-to-localhost-t.html",
+      "generated": "2026-07-29T17:31:38.755Z",
+      "severity": "HIGH",
+      "cves": [],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 0.0.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 0.0.0.0\"; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-54727-pip-proot-distro",
+      "title": "proot-distro has a Container Isolation Bypass via Crafted Restore Archive",
+      "url": "/posts/cve-2026-54727-pip-proot-distro.html",
+      "generated": "2026-07-29T17:01:52.609Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-54727",
+        "CVE-2026-54727"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://packages-cf.termux.dev/apt/termux-main\"; http.host; content:\"packages-cf.termux.dev\"; nocase; http.uri; content:\"/apt/termux-main\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-54639-npm-style-dictionary",
       "title": "Style Dictionary - Prototype Pollution in convertTokenData utility function",
@@ -4151,71 +4202,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1usj25u/new_research_why_no_single_ai_agent_harness_\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1usj25u/new_research_why_no_single_ai_agent_harness_\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain arxiv.org\"; dns.query; content:\"arxiv.org\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "network-of-200-github-repositories-used-for-malware-infectio",
-      "title": "Network of 200 GitHub Repositories Used for Malware Infection",
-      "url": "/posts/network-of-200-github-repositories-used-for-malware-infectio.html",
-      "generated": "2026-07-10T08:02:01.619Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [
-        {
-          "id": "T1059.001",
-          "name": "PowerShell",
-          "tactic": "execution",
-          "confidence": "HIGH"
-        }
-      ],
-      "sigma": [
-        "title: Suspicious Encoded PowerShell Invocation\nid: 180ec008-0df2-59e2-a4d6-7b0797640f02\nstatus: experimental\ndescription: 'Suspicious Encoded PowerShell Invocation. Evidence basis: or Malware Infection. A Go module is used to load PowerShell code that fetches a resolver from public dead dro. CYBERDUDEBIVASH SENTINEL APEX Detection Engineering.'\nreferences: []\nauthor: CYBERDUDEBIVASH SENTINEL APEX Detection Engineering\ndate: 2026-07-10\ntags:\n- attack.t1059.001\nlogsource:\n    product: windows\n    category: process_creation\ndetection:\n    selection:\n        Image|endswith: \\powershell.exe\n        CommandLine|contains:\n            - '-EncodedCommand'\n            - '-enc '\n            - FromBase64String\n    condition: selection\nfalsepositives:\n    - Legitimate administrative activity\n    - Authorized security testing\nlevel: high"
-      ],
-      "kql": [
-        "DeviceProcessEvents\n| where FolderPath endswith \"\\\\powershell.exe\"\n| where (ProcessCommandLine contains \"-EncodedCommand\" or ProcessCommandLine contains \"-enc \" or ProcessCommandLine contains \"FromBase64String\")\n| project Timestamp, DeviceName, FolderPath, ProcessCommandLine, InitiatingProcessFolderPath"
-      ],
-      "splunk": [
-        "| tstats count from datamodel=Endpoint where nodename=Endpoint.Processes Processes.process_path=\"*\\powershell.exe\" (Processes.process=\"*-EncodedCommand*\" OR Processes.process=\"*-enc *\" OR Processes.process=\"*FromBase64String*\") by Processes.process_path Processes.parent_process_path _time"
-      ],
-      "osquery": [
-        "SELECT * FROM processes WHERE path LIKE '%\\powershell.exe' AND (cmdline LIKE '%-EncodedCommand%' OR cmdline LIKE '%-enc %' OR cmdline LIKE '%FromBase64String%');"
-      ],
-      "suricata": []
-    },
-    {
-      "slug": "need-help-with-my-project",
-      "title": "Need help with my project",
-      "url": "/posts/need-help-with-my-project.html",
-      "generated": "2026-07-10T06:02:02.620Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Sea_Requirement8393&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Sea_Requirement8393&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1usebug/need_help_with_my_project/&quot;&gt;[link]&l\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1usebug/need_help_with_my_project/&quot\\;&gt\\;[link]&l\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1usebug/need_help_with_my_project/&quot;&gt;[comment\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1usebug/need_help_with_my_project/&quot\\;&gt\\;[comment\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "isc-stormcast-for-friday-july-10th-2026-https-isc-sans-e",
-      "title": "ISC Stormcast For Friday, July 10th, 2026 https://isc.sans.edu/podcastdetail/10002, (Fri, Jul 10th)",
-      "url": "/posts/isc-stormcast-for-friday-july-10th-2026-https-isc-sans-e.html",
-      "generated": "2026-07-10T02:01:57.946Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://isc.sans.edu/podcastdetail/10002,\"; http.host; content:\"isc.sans.edu\"; nocase; http.uri; content:\"/podcastdetail/10002,\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://isc.sans.edu\"; http.host; content:\"isc.sans.edu\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)"
       ]
     }
   ]
