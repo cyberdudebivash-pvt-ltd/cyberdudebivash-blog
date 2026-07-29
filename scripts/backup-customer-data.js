@@ -1,0 +1,155 @@
+#!/usr/bin/env node
+/**
+ * SENTINEL APEX — Customer Data Backup (GEORP v1 / Phase 3)
+ *
+ * Snapshots the Redis-held customer data that has no other durable copy.
+ * Unlike posts/reports (git-versioned, durable by construction), registered
+ * API keys, tier assignments, and the payment audit log exist ONLY in
+ * Redis (Upstash), with no export path before this script existed
+ * (platform/open-issues.md, GPEP v1 finding). Encrypts before writing
+ * anywhere the snapshot might land (a local file, a CI artifact), since it
+ * contains customer emails and API key hashes.
+ *
+ * Usage:
+ *   BACKUP_ENCRYPTION_KEY=<64-hex-char key> node scripts/backup-customer-data.js [outputPath]
+ *
+ * Requires UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN (existing env
+ * vars, already used throughout api/_lib/redis.js -- no new external
+ * resource) and BACKUP_ENCRYPTION_KEY (NEW -- must be provisioned by a
+ * human with repo-secrets access before this can run in production; see
+ * RUNBOOKS.md "Backup & Restore").
+ *
+ * Deliberately does NOT upload anywhere beyond the local filesystem --
+ * where the encrypted output should durably live long-term (S3/GCS/other)
+ * is an infrastructure decision requiring explicit approval, not made
+ * here. The scheduled workflow (.github/workflows/backup-customer-data.yml)
+ * uses only GitHub's own existing Actions artifact storage as a first
+ * safety net, not a long-term archival solution -- see that workflow's own
+ * comments and RUNBOOKS.md for the gap this leaves.
+ */
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
+// The Redis key patterns that hold data with no other durable copy.
+// Deliberately excludes payment:ip_rate:* (self-expiring fraud counters)
+// and analytics:registrations:* (regenerable aggregate stats) -- backing
+// those up would bloat every snapshot with data that doesn't need
+// recovery.
+const KEY_PATTERNS = ['user:key:*', 'user:email:*', 'user:id:*', 'user:pending:tier:*'];
+const SCHEMA_VERSION = 1;
+
+/** Build a structured snapshot from already-fetched key/value pairs. Pure
+ *  -- no I/O, so this is directly unit-testable without live Redis. */
+function buildSnapshot({ hashes, strings, auditLog }) {
+  return {
+    schemaVersion: SCHEMA_VERSION,
+    createdAt: new Date().toISOString(),
+    hashes,   // { [key]: { field: value, ... }, ... }  (user:key:*)
+    strings,  // { [key]: value, ... }                  (user:email:*, user:id:*, user:pending:tier:*)
+    auditLog, // [ [member, score], ... ]                (audit:payment:log)
+  };
+}
+
+function _requireValidKey(keyHex) {
+  if (!/^[0-9a-f]{64}$/i.test(keyHex || '')) {
+    throw new Error('BACKUP_ENCRYPTION_KEY must be a 64-character hex string (32 bytes / AES-256)');
+  }
+}
+
+/** AES-256-GCM encrypt. Returns "iv:authTag:ciphertext", all hex -- a
+ *  single flat string, easy to store as a plain-text file. */
+function encryptSnapshot(snapshot, keyHex) {
+  _requireValidKey(keyHex);
+  const key = Buffer.from(keyHex, 'hex');
+  const iv = crypto.randomBytes(12); // 96-bit IV, standard for GCM
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  const plaintext = Buffer.from(JSON.stringify(snapshot), 'utf8');
+  const ciphertext = Buffer.concat([cipher.update(plaintext), cipher.final()]);
+  const authTag = cipher.getAuthTag();
+  return [iv.toString('hex'), authTag.toString('hex'), ciphertext.toString('hex')].join(':');
+}
+
+/** Inverse of encryptSnapshot(). Throws if the auth tag doesn't verify --
+ *  tampered or corrupted input is rejected, not silently accepted. */
+function decryptSnapshot(encrypted, keyHex) {
+  _requireValidKey(keyHex);
+  const parts = String(encrypted).split(':');
+  if (parts.length !== 3) {
+    throw new Error('Malformed encrypted snapshot (expected iv:authTag:ciphertext)');
+  }
+  const [ivHex, tagHex, dataHex] = parts;
+  const key = Buffer.from(keyHex, 'hex');
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(ivHex, 'hex'));
+  decipher.setAuthTag(Buffer.from(tagHex, 'hex'));
+  const plaintext = Buffer.concat([decipher.update(Buffer.from(dataHex, 'hex')), decipher.final()]);
+  return JSON.parse(plaintext.toString('utf8'));
+}
+
+/** Fetch all data for the configured key patterns from a live redis
+ *  client. Isolated from encryption/file-writing so it's the only piece
+ *  that actually needs a connection -- takes `redis` as a parameter so
+ *  tests can pass a fake client instead of talking to real Upstash. */
+async function fetchAll(redis) {
+  const hashes = {};
+  const strings = {};
+
+  for (const pattern of KEY_PATTERNS) {
+    const keys = (await redis.keys(pattern)) || [];
+    for (const key of keys) {
+      if (key.startsWith('user:key:')) {
+        hashes[key] = await redis.hgetall(key);
+      } else {
+        strings[key] = await redis.get(key);
+      }
+    }
+  }
+
+  let auditLog = [];
+  try {
+    auditLog = (await redis.zrevrange('audit:payment:log', 0, -1, true)) || [];
+  } catch (_) {
+    // Best-effort -- a missing/unreadable audit log must not block backing
+    // up the higher-priority user records above.
+  }
+
+  return { hashes, strings, auditLog };
+}
+
+async function main() {
+  const outputPath = process.argv[2] ||
+    path.join(__dirname, '..', 'backups', `customer-data-${new Date().toISOString().replace(/[:.]/g, '-')}.enc`);
+  const encryptionKey = process.env.BACKUP_ENCRYPTION_KEY;
+  if (!encryptionKey) {
+    console.error('[BACKUP] BACKUP_ENCRYPTION_KEY is not set. Refusing to write an unencrypted backup of customer data.');
+    console.error('[BACKUP] See RUNBOOKS.md "Backup & Restore" for how to provision this secret.');
+    process.exit(1);
+    return;
+  }
+
+  const redis = require('../api/_lib/redis');
+  const data = await fetchAll(redis);
+  const snapshot = buildSnapshot(data);
+  const encrypted = encryptSnapshot(snapshot, encryptionKey);
+
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, encrypted, 'utf8');
+
+  console.log(`[BACKUP] Snapshot written: ${outputPath}`);
+  console.log(`[BACKUP] ${Object.keys(snapshot.hashes).length} user record(s), ${Object.keys(snapshot.strings).length} lookup key(s), ${snapshot.auditLog.length} audit entries.`);
+}
+
+// Guards the live-Redis side effect behind require.main so this file stays
+// safely requirable for unit testing encryptSnapshot/decryptSnapshot/
+// buildSnapshot/fetchAll (the restore script also requires this module for
+// decryptSnapshot) without triggering a real backup run.
+if (require.main === module) {
+  main().catch(err => {
+    console.error('[BACKUP] Failed:', err.message);
+    process.exit(1);
+  });
+}
+
+module.exports = { buildSnapshot, encryptSnapshot, decryptSnapshot, fetchAll, KEY_PATTERNS, SCHEMA_VERSION };

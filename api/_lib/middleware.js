@@ -21,6 +21,18 @@ function today() {
   return new Date().toISOString().slice(0, 10).replace(/-/g, '');
 }
 
+// Best-effort, non-blocking observability for authenticate()'s three
+// failure paths -- previously zero visibility into failed auth attempts
+// at this platform's single shared authentication chokepoint (GEORP v1
+// Phase 5). Mirrors the exact analytics:registrations:* counter pattern
+// already established in auth.js's handleRegister(): a running total plus
+// a per-day bucket, both fire-and-forget so a Redis hiccup here can never
+// affect the actual auth decision already made by the caller.
+function recordAuthFailure(reason) {
+  redis.incr(`analytics:auth_failures:${reason}:total`).catch(() => {});
+  redis.incr(`analytics:auth_failures:${reason}:${today()}`).catch(() => {});
+}
+
 function corsHeaders() {
   return {
     'Access-Control-Allow-Origin':  '*',
@@ -77,6 +89,7 @@ async function authenticate(req, res) {
 
   const rawKey = extractApiKey(req);
   if (!rawKey || !rawKey.startsWith('sentinel_')) {
+    recordAuthFailure('unauthorized');
     apiError(res, 401, 'UNAUTHORIZED', 'API key required. Pass via Authorization: Bearer <key> or X-API-Key header. Get yours at https://blog.cyberdudebivash.in/api-dashboard.html');
     return null;
   }
@@ -88,6 +101,7 @@ async function authenticate(req, res) {
   try {
     const raw = await redis.hgetall(userKey);
     if (!raw || !Array.isArray(raw) || raw.length === 0) {
+      recordAuthFailure('invalid_key');
       apiError(res, 401, 'INVALID_KEY', 'API key not found or revoked. Visit https://blog.cyberdudebivash.in/api-dashboard.html to manage your keys.');
       return null;
     }
@@ -114,6 +128,7 @@ async function authenticate(req, res) {
     if (used === 1) await redis.expire(rateKey, 86400); // expire at end of day
 
     if (used > limit) {
+      recordAuthFailure('rate_limited');
       apiError(res, 429, 'RATE_LIMIT_EXCEEDED',
         `Rate limit reached: ${limit} requests/day for ${tier} tier. Upgrade at https://blog.cyberdudebivash.in/pricing.html`,
         {
@@ -202,6 +217,7 @@ module.exports = {
   hashKey,
   RATE_LIMITS,
   TIERS,
+  recordAuthFailure,
   // Re-export security helpers so routers only need one import
   guardRequest:        sec.guardRequest,
   globalIpRateLimit:   sec.globalIpRateLimit,

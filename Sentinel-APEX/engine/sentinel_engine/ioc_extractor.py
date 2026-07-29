@@ -40,6 +40,20 @@ DEFAULT_ALLOWLIST = {
     "schema.org",
 }
 
+# Real technology/product names shaped like a domain (word.tld) but never an
+# indicator when they appear in report prose -- a different, open-ended
+# category from DEFAULT_ALLOWLIST's citation/reference infrastructure, which
+# a caller can legitimately override via extract_iocs()'s `allowlist`
+# parameter. This one always applies regardless of what allowlist is
+# passed, since "ASP.NET is not a domain" is a fact about the world, not a
+# citation policy. Seeded with the one real, evidenced case
+# (platform/open-issues.md Issue 9: "ASP.NET," the credential-theft
+# mechanism named throughout SA-2026-0001, misclassified as a domain IOC) --
+# extend only with confirmed real instances, not a speculative list.
+TECH_NAME_ALLOWLIST = {
+    "asp.net",
+}
+
 # TLDs accepted for bare-domain extraction. Deliberately restrictive to keep
 # filenames ("report.txt") and code identifiers out of the IOC set.
 _TLDS = (
@@ -171,6 +185,8 @@ def extract_iocs(
         if any(s <= m.start() and m.end() <= e for s, e in url_spans):
             continue
         domain = m.group(1).lower()
+        if domain in TECH_NAME_ALLOWLIST:
+            continue
         if domain in allow or _strip_www(domain) in allow:
             continue
         # skip if it's the host part of an extracted email

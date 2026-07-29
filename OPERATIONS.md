@@ -6,7 +6,9 @@ waiting on environment configuration. Activating them is the single highest-
 leverage revenue action available today: the code path exists and is verified;
 it just needs credentials set in Vercel.
 
-Last verified: 2026-07-05.
+Last verified: 2026-07-05. Section 2.2's Stripe warning updated 2026-07-28
+(GEORP v1) — see that section for what changed. For incident/outage
+procedures (not covered here), see `RUNBOOKS.md`.
 
 ---
 
@@ -93,11 +95,30 @@ Verify each processor responds configured (endpoints are already live at
 `/api/v1/billing`). Then confirm the **price actually charged matches the price
 displayed** ($18/mo SOC Pro after the pricing-consistency fix).
 
-> ⚠️ **Known mismatch to check:** `api/_lib/stripe.js` documents
-> `STRIPE_PRICE_PRO` as "monthly $49", but the site now displays **$18/mo**.
-> If Stripe is activated, create/point `STRIPE_PRICE_PRO` at an **$18** price
-> object, or the customer is shown $18 and charged $49 — a chargeback and
-> trust risk. Razorpay (INR ₹1,499 ≈ $18) is the canonical price.
+> **Update (2026-07-28, GEORP v1):** the code-level $49/$18 mismatch this
+> warning originally flagged is fixed — `api/_lib/stripe.js`'s own header
+> comment now correctly states the canonical amount (₹1,499/≈$18) and
+> explicitly warns that a code change here cannot confirm what the live
+> Stripe dashboard Price object actually points at. That residual risk is
+> real and current, and now applies to **three** tiers, not just Pro:
+> Starter was also repriced (₹2,499/$29 → ₹999/$12, `docs/PRICING.md`,
+> GCDOM v1) and has never had a Stripe Price object created for it at any
+> price. **Before ever activating Stripe live**, verify all three —
+> `STRIPE_PRICE_STARTER` ($12), `STRIPE_PRICE_PRO` ($18),
+> `STRIPE_PRICE_ENTERPRISE` ($60) — against `api/_lib/payment-utils.js`'s
+> `PLANS` directly in the Stripe dashboard. Razorpay (INR-denominated,
+> matching `PLANS` directly) remains the canonical, verified-in-production
+> processor.
+>
+> **Separately (verified live, 2026-07-28):** `GET
+> /api/v1/billing?action=plans` on the actual production site still
+> returns Starter at the *old* price (2499), not the reordered ₹999. The
+> Starter/Pro reorder fix (`platform/open-issues.md` Issue 10, GCDOM v1) is
+> merged and tested on `claude/cti-platform-standards-f64l5x` but was never
+> merged to `main`, so it has not deployed — the customer-facing pricing
+> defect that fix addresses is still live today. This is a real gap in the
+> deployment cadence, not just a historical note: fixes are accumulating on
+> a feature branch across multiple sprints without reaching production.
 
 ---
 

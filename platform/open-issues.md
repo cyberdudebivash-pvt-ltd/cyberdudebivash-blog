@@ -50,9 +50,19 @@ two are intentional and keep this table as the record of that decision.
 
 ## Issue 2 — `industry-intelligence.md` has no home
 
-Noted in `extensibility.md` — the one idea from the deprecated `/prompts/`
-directory with no canonical replacement. Low stakes (nothing depends on it
-today); listed here so it doesn't get silently lost.
+**Resolved as a finding (GCDOM v1)** — re-checked `extensibility.md`'s "Add a
+customer-specific / industry overlay" section directly rather than assuming
+this was still open: it already documents a complete, actionable plan (port
+target `Sentinel-APEX/prompts/industry-overlay.md`, an explicit requirement
+to reconcile the old content against the canonical evidence/confidence
+taxonomy before use, and an explicit warning not to reactivate the
+deprecated file directly). Nothing today actually consumes an industry
+overlay (`extensibility.md`'s own words: "Not yet implemented anywhere
+real"), so building that file now would be speculative content with no
+current consumer to validate it against — the same "don't design for
+hypothetical future requirements" reasoning this platform applies elsewhere.
+No further action needed unless/until an industry overlay becomes a real
+requirement, at which point `extensibility.md`'s plan is the one to follow.
 
 ## Issue 3 — Three real defects found producing the platform's first report (SA-2026-0001)
 
@@ -227,6 +237,43 @@ the existing converter unmodified, which looked like the cheapest path, is
 now a tested dead end rather than an assumption — this is exactly the
 outcome a proof-of-concept is supposed to produce. Not fixed in this pass.
 
+**Resolved, in two unrelated ways (GCDOM v1):**
+
+1. **The real fix already existed and this entry was simply never updated
+   to say so.** `Sentinel-APEX/renderer/report-renderer.js` (EIRE v1) added
+   `marked` + `js-yaml` as dependencies and built a proper canonical
+   renderer — exactly the "new dependency" option this entry left open —
+   with a custom `Renderer.html` override that neutralizes embedded raw
+   HTML, validated against real report content including the exact
+   cascading inline-`<code>` corruption documented above. That work was
+   real and already shipped; this issue's text just never got a closing
+   note pointing back to it. Documentation debt, not a product gap.
+2. **`mdToSafeHtml()` itself was fixed anyway (GCDOM v1)** — additive table
+   and fenced-code-block handling, since it serves its own distinct, real,
+   *deployed* consumer: `generate-cve-pages.js`'s auto-generated CVE
+   description pages (`/cve/*.html`), unrelated to full-report rendering.
+   Fenced blocks are now extracted before the inline single-backtick regex
+   runs (root cause of the desync), and GFM pipe-tables render as real
+   `<table>` elements. 5 new tests including a real-data check against
+   SA-2026-0001's actual Sigma fence. `generate-cve-pages.js` also gained a
+   `require.main === module` guard so it stays safely testable without
+   triggering its file-writing side effects.
+
+**A much bigger finding surfaced while checking whether reports were
+actually reachable by a real visitor**: of the 3 certified reports, only
+SA-2026-0001 had ever actually been run through `publish-report.js` — SA-
+2026-0002 and SA-2026-0003 existed only as reviewed Markdown, invisible to
+any customer despite being certified. Fixed: ran the existing, tested
+publisher for both (`intelligence/sa-2026-0002-cve-2026-0257.html`,
+`intelligence/sa-2026-0003-cve-2024-27198.html`); built
+`intelligence/index.html` (didn't exist — the main nav's "Intelligence
+Reports" link hardcoded a direct link to SA-2026-0001 specifically, with no
+way to discover the other two); updated that nav link and `sitemap.xml`
+accordingly. This was the actual highest-value fix in this entire session —
+a platform whose core differentiated content asset is invisible to
+customers has approximately zero commercial value from that asset,
+regardless of how correct its rendering pipeline is.
+
 ## Issue 6 — Template-fallback detection content is category-generic, not vulnerability-specific (read the code, not just the stats)
 
 **Status update (GEIOM v1):** the confidence-framing gap noted below is now
@@ -396,6 +443,37 @@ removed or modified, no new external data needed) — but that's a decision
 for a dedicated sprint with room to test against the real 9,315-node graph
 first, not appended here.
 
+**Partially fixed (GCDOM v1)**: implemented exactly the smallest well-scoped
+fix identified above, plus its mirror image. `linkCorrelatedCVEs()`
+(`api/_lib/enrichment-pipeline.js`, pipeline Step 6c) adds a `co_occurs_with`
+edge between CVE nodes that share an including Campaign, computed
+additively from existing Campaign→CVE data — same pattern as
+`linkCorrelatedCampaigns()`, same defensive per-relationship cap. Real data
+check at filing time: 265 campaigns have at least one Campaign→CVE edge; 28
+of those include more than one CVE (max observed: 5). 6 new tests
+(`tests-js/cve-correlation.test.js`). Still open: no Actor↔Actor edges, and
+the Malware node type remains fully unpopulated — unchanged from the
+original finding.
+
+**Further fixed (GPEP v1)**: `linkCorrelatedActors()` (pipeline Step 6d)
+closes the Actor↔Actor gap — a `co_occurs_with` edge between two
+ThreatActor nodes that share an `exploits`→CVE or `executes`→Campaign edge,
+computed additively from existing data, same defensive cap pattern. This is
+a genuinely useful CTI question ("if actor A's TTPs are observed, should
+actor B's also be a concern?"), not just structural completeness for its
+own sake. Real data check: only 6-8 of the graph's 8 curated ThreatActor
+nodes have any exploits/executes edge at all (consistent with this issue's
+original ~2%/~1% attribution-coverage finding) — of those, 20 of 35
+actor-linked CVEs are shared by 2+ actors (20 pairs), and 3 of 20
+actor-linked campaigns are shared by 2+ actors (5 pairs). A small labeled
+sample today, but the correlation logic is sound and grows more valuable as
+actor curation grows. 7 new tests (`tests-js/actor-correlation.test.js`).
+Still open, unchanged: the Malware node type remains fully unpopulated —
+that needs new entity-extraction work (parsing malware names out of actor
+free-text descriptions), a materially larger and riskier change than
+wiring an edge from data that already exists structurally, correctly left
+as a Strategic Investment rather than attempted here.
+
 ## Issue 9 — SA-2026-0001 had never been ingested into the offline knowledge graph; running it for the first time found a real ATT&CK mapper defect (GIKEP v1)
 
 Distinct from Issue 8 (the live JS `api/_lib/threat-graph.js`) — this is
@@ -441,6 +519,16 @@ than patched into shared production logic on n=1 evidence:
   that happen to look like domains" — a different, open-ended category
   that would need its own list rather than an ad hoc addition to one
   scoped for something else.
+
+  **Fixed (GPEP v1)**: added `TECH_NAME_ALLOWLIST`, a new set distinct from
+  `DEFAULT_ALLOWLIST` that always applies regardless of what allowlist a
+  caller supplies (unlike `DEFAULT_ALLOWLIST`, which callers can legitimately
+  override — "ASP.NET is not a domain" isn't a citation policy, it's a fact).
+  Seeded with only the one confirmed real case, not a speculative list. 2 new
+  tests, including one confirming a genuinely malicious `.net` domain still
+  extracts correctly (the fix is scoped to the exact string, not the TLD).
+  Verified against the real SA-2026-0001 report directly: zero domain IOCs
+  extracted post-fix, where "asp.net" was previously one of them.
 
 Also confirmed, not a defect: the embedded Sigma rule's own
 `falsepositives:`/`selection_child:` fields were producing four *more*
@@ -547,6 +635,24 @@ different from both prior ones:
   table; the graph's `report:sa-2026-0003 → technique:t1071` edge should be
   read accordingly.
 
+  **Fixed (GCDOM v1)**, using exactly the approach identified above, scoped
+  narrowly: `report_ingest.py` now builds a second text variant used only
+  for `map_techniques()` (IOC/CVE/entity extraction keep reading the
+  original, unmodified text — out of scope, unaffected), blanking the 14
+  official MITRE ATT&CK Enterprise tactic names when they appear as a
+  pipe-bounded table cell inside a section whose name matches
+  `att&ck`/`mitre`. Checking the real collision surface (not just this one
+  report) found this mechanism is broader than the single observed
+  instance: "Lateral Movement" (`T1021`), "Privilege Escalation" (`T1068`),
+  and "Exfiltration" (`T1041`, via the `exfiltrat` substring) are the same
+  latent trap, not yet observed in a published report but closed by the
+  same fix rather than left for a fourth occurrence. The Technique ID and
+  Evidence columns are untouched, so the explicit-citation pass (which is
+  how T1105 gets correctly mapped from this exact table row) is unaffected.
+  2 new tests confirm both properties against the real SA-2026-0003 report:
+  T1071 no longer maps, and {T1190, T1059.003, T1105, T1486, T1027} still
+  all do.
+
 Two narrower, purely additive gaps *were* fixed in this pass, distinguished
 from the finding above by carrying no regression risk (new lookup entries,
 zero changes to existing matching logic or existing reports' output):
@@ -621,6 +727,24 @@ Recorded here, per this file's own precedent (Issue 1's "pending
 executive decision" pairings), so the finding isn't lost before that
 decision is made.
 
+**Resolved (GCDOM v1)** — explicit decision obtained: reorder by lowering
+Starter, not by raising Pro, in line with a stated direction toward
+aggressive, transparent, affordable global pricing as a competitive
+differentiator (this platform has public self-serve pricing where
+Recorded Future and GreyNoise do not). `PLANS.starter.amount` moved
+₹2,499/$29 → ₹999/$12 — below Pro's ₹1,499/$18. Every location
+`docs/PRICING.md`'s own discipline requires was updated together:
+`api/_lib/payment-utils.js` (canonical), `payment-flow.js` and
+`pricing.html`'s client-side fallbacks, `pricing.html`'s rendered card,
+`api-dashboard.html`'s tier card, and `docs/PRICING.md` itself.
+`tests-js/pricing-consistency.test.js` now also asserts the tier-ordering
+*invariant* directly (`starter < pro < enterprise`), not just each tier's
+absolute value, plus dedicated Starter-fallback and Starter-card regression
+tests mirroring the existing Pro ones. See `docs/PRICING.md`'s new
+"Pricing change (2026-07-28)" section for the full record, including the
+noted, unresolved tension with `BUSINESS-TRANSFORMATION-ROADMAP-2026.md`'s
+separate proposal to raise Pro to $79/mo instead.
+
 ## Issue 11 — Registration welcome email: built and tested, held pending activation sign-off (GECTP v1)
 
 Closes the gap GCGMP v1 found: `api/_lib/resend.js` supported only
@@ -643,16 +767,54 @@ independence from `configured()`, `sendEmail()`'s request shape, and
 name-present vs. anonymous greeting, all three URLs and the tier/rate
 limit rendered). Full root JS suite: 50 passed (was 44).
 
-**Deliberately not yet merged to `main`.** Everything above is implemented
-and tested on the feature branch only. Merging to `main` is the step that
-activates it in production — from that point, every real registration
-would trigger a real, automatic email to a real address under this
-company's brand, with no per-instance human review. That is a
-customer-communication/business-policy activation, not a pure engineering
-one, so it is held pending explicit owner sign-off rather than merged
-unilaterally alongside the rest of this session's changes. If approved,
-merging `claude/cti-platform-standards-f64l5x` into `main` is sufficient —
-no further code change is needed to activate it.
+**Resolved (GCDOM v1) — merged and active in production.** Explicit owner
+sign-off was obtained; `claude/cti-platform-standards-f64l5x` was merged
+into `main` in isolation from that session's other, not-yet-reviewed
+changes, verified passing (50/50 JS suite) at the merged commit before
+push. Every real registration now sends the welcome email described above.
+This entry was left saying "not yet merged" for one full sprint after the
+merge actually happened — a documentation-staleness gap in its own right,
+caught while re-reading this file for GPEP v1 rather than assumed current.
+
+## Issue 12 — Fixes accumulate on the feature branch and don't reach production (GEORP v1)
+
+Verified live, not assumed: `GET https://blog.cyberdudebivash.in/api/v1/billing?action=plans`
+still returns Starter at the pre-fix amount (2499), not the reordered 999.
+The Issue 10 fix (GCDOM v1) is merged and tested on
+`claude/cti-platform-standards-f64l5x` but was never merged to `main`, so
+it never deployed — the customer-facing pricing defect it addresses is
+still live in production today, three sprints after the fix was written.
+The same is true of every other GCDOM v1/GPEP v1/GEORP v1 fix except the
+one (Issue 11, the welcome email) that received an explicit, isolated
+merge-to-`main` decision.
+
+**Not resolved here, deliberately** — merging accumulated feature-branch
+work to `main` is exactly the kind of production-deployment decision this
+platform's own governance requires explicit sign-off for, same reasoning
+as Issue 11 before it was approved. Recorded as a genuine operational risk
+(a real, live, evidenced defect sitting unfixed in production despite the
+fix existing) rather than acted on unilaterally. See the Executive Decision
+Register in this sprint's report.
+
+## Issue 13 — Customer data had no backup or restore path (GEORP v1)
+
+Closes the gap GPEP v1 found: registered API keys, tier assignments, and
+the payment audit log existed only in Redis, with no export mechanism
+anywhere in the codebase. `scripts/backup-customer-data.js` and
+`scripts/restore-customer-data.js` (AES-256-GCM encrypted, using Node's
+built-in `crypto` — no new dependency) plus a scheduled
+`.github/workflows/backup-customer-data.yml` close this, using only
+infrastructure already in place (the existing Redis connection, GitHub
+Actions). 15 new tests.
+
+**Not yet active** — same "built, tested, held pending activation"
+pattern as Issue 11: three GitHub Actions secrets
+(`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`,
+`BACKUP_ENCRYPTION_KEY`) need provisioning by someone with repo-secrets
+access before backups actually start running. See `RUNBOOKS.md` "Backup &
+Restore" for the exact activation steps and the honest limitations (90-day
+GitHub Actions artifact retention is a safety net, not long-term archival;
+no restore has been rehearsed against a real Redis instance yet).
 
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

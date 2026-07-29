@@ -10,7 +10,7 @@ regression test below.
 
 | Tier | Amount | Currency |
 |---|---|---|
-| Starter | 2,499 | INR |
+| Starter | 999 | INR (≈$12) |
 | Pro ("SOC Pro") | 1,499 | INR (≈$18) |
 | Enterprise | 4,999 | INR (≈$60) — self-serve API tier only; the separate white-label/SLA "Enterprise Platform" offering is custom-quoted, not a fixed price |
 
@@ -66,6 +66,43 @@ the repository except the one line that was wrong.
   constants in the same change, and expect
   `tests-js/pricing-consistency.test.js`'s marketing-surface checks to
   need updating too if any copy quotes the old number by name.
+
+## Pricing change (2026-07-28) — Starter reordered below Pro
+
+The 2026-07-17 incident above fixed every stale *copy* of Pro's price, but
+never examined whether the resulting order still made sense: Starter
+(₹2,499/$29) ended up priced **above** Pro (₹1,499/$18) despite Pro being a
+strict feature superset (50 vs. 10 threat items/request, full CVE
+descriptions vs. CVSS-only, a complete IOC feed vs. none, 25,000 vs. 5,000
+API calls/day, Sigma+Yara rules vs. none) — a rational buyer got strictly
+more for 40% less by choosing the cheaper-looking-but-actually-pricier
+"Pro" tier. Recorded as `platform/open-issues.md` Issue 10 and left
+unresolved pending an explicit pricing decision, since changing either
+tier's amount is a change to real, revenue-bearing production
+infrastructure.
+
+**Resolved**: reordered by lowering Starter to ₹999/$12 (below Pro), not by
+raising Pro. Every location this file's own discipline requires was updated
+together in one change: `api/_lib/payment-utils.js` (`PLANS.starter`,
+canonical), `payment-flow.js` and `pricing.html`'s client-side fallback
+constants, `pricing.html`'s rendered plan-price card, and
+`api-dashboard.html`'s tier-price card. `tests-js/pricing-consistency.test.js`
+now also asserts the *relationship* between tiers directly
+(`PLANS.starter.amount < PLANS.pro.amount < PLANS.enterprise.amount`), not
+just each one's absolute value — this specific failure mode (every copy
+internally consistent, but the canonical value itself economically
+incoherent) wouldn't have been caught by the 2026-07-17 remediation's
+copy-drift tests alone.
+
+**Known tension, not resolved here**: `BUSINESS-TRANSFORMATION-ROADMAP-2026.md`
+(§2.2, dated 2026-06-22) separately proposes raising Pro to $79/mo as part
+of a larger re-tier. That would also fix the ordering, but in the opposite
+direction — and cuts against a since-stated goal of aggressive, transparent,
+globally affordable self-serve pricing as a differentiator against
+competitors with no public pricing or enterprise-quote-only models. Which
+direction is correct for Pro specifically is an open pricing-strategy
+decision, not resolved by this change; this change only fixes the ordering
+using the cheaper tier.
 
 ## Known open item outside this codebase
 

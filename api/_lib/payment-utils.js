@@ -12,12 +12,12 @@ const PLANS = {
   starter: {
     tier:        'starter',
     label:       'API Starter',
-    amount:      2499,
+    amount:      999,
     currency:    'INR',
     period:      'month',
     rateLimit:   5000,
     description: 'Starter tier — 5,000 API calls/day, weekly intel digest, single API key',
-    upiNote:     'Transfer ₹2,499 to the UPI ID below. Include your intent ID in remarks.',
+    upiNote:     'Transfer ₹999 to the UPI ID below. Include your intent ID in remarks.',
   },
   pro: {
     tier:        'pro',
