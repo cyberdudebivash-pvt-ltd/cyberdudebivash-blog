@@ -796,6 +796,31 @@ as Issue 11 before it was approved. Recorded as a genuine operational risk
 fix existing) rather than acted on unilaterally. See the Executive Decision
 Register in this sprint's report.
 
+**Resolved — explicit sign-off obtained, merged, and live-verified.**
+15 commits merged from `claude/cti-platform-standards-f64l5x` into `main`
+(commit `43f138b`), full test suite + `assure.sh` passing against the
+merged state before push. Deployed and confirmed live via direct HTTP
+verification (not inferred from git state) within ~80 seconds of push,
+materially faster than the ~10-13 minute build time `OPERATIONS.md`
+documents:
+
+- `GET /api/v1/billing?action=plans` returns Starter=999 (was 2499) —
+  Issue 10's fix is live.
+- `pricing.html`'s rendered HTML contains `data-inr="999"` — the frontend
+  reflects it too, not just the API.
+- `faq.html`, all 3 `/intelligence/*.html` reports, and the
+  `/intelligence` index all return 200 — Issue 5's publication gap is
+  closed live, not just on-branch.
+- `docs/PRICING.md`, `RUNBOOKS.md`, `OPERATIONS.md`, `marketing/*`, and
+  `platform/*` now all return 404 — the live exposure this issue's own
+  prior entries only fixed in code now actually applies in production.
+
+This is the general fix for the pattern, not just this one instance —
+every fix recorded elsewhere in this file as "on the feature branch" as of
+2026-07-29 is, as of this merge, live in production. Individual issue
+entries above are not being retroactively edited to say so one by one;
+this note is the record for all of them at once.
+
 ## Issue 13 — Customer data had no backup or restore path (GEORP v1)
 
 Closes the gap GPEP v1 found: registered API keys, tier assignments, and
@@ -806,6 +831,14 @@ built-in `crypto` — no new dependency) plus a scheduled
 `.github/workflows/backup-customer-data.yml` close this, using only
 infrastructure already in place (the existing Redis connection, GitHub
 Actions). 15 new tests.
+
+**Code merged to `main` 2026-07-29 along with everything else — still not
+active.** Merging the code and activating the capability are different
+events: the scheduled workflow will run on its normal cadence now that
+it's on `main`, detect the 3 required secrets are unprovisioned exactly as
+designed, and post a visible warning without failing. No backup has
+actually run yet. Provisioning the secrets remains a separate, standing
+decision — see the Executive Decision Register.
 
 **Not yet active** — same "built, tested, held pending activation"
 pattern as Issue 11: three GitHub Actions secrets
