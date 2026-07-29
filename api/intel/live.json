@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-29T15:01:53.032Z",
+  "generated": "2026-07-29T15:31:42.361Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,11 +9,52 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 2894,
   "s2n_stats": {
-    "passed": 100,
-    "suppressed": 33,
-    "avg_qs": 0.514
+    "passed": 103,
+    "suppressed": 35,
+    "avg_qs": 0.508
   },
   "items": [
+    {
+      "id": "CVE-2026-54639",
+      "title": "Style Dictionary - Prototype Pollution in convertTokenData utility function",
+      "description": "### Impact\nPrototype pollution.\nA malicious user can create a token array `[{ key: '{__proto__.foo}', value: 'malicious' }]`, when processed by `convertTokenData()` utility function, it will pollute the Object.prototype globally where `{}.foo` will equal `{ key: '{__proto__.foo}'... [Full analysis a",
+      "cvss": 8.8,
+      "final_ps": 56,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54639"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2026-50522",
       "title": "Critical SharePoint RCE CVE-2026-50522 Under Active Exploitation After Public PoC",
@@ -359,6 +400,47 @@
       }
     },
     {
+      "id": "CVE-2026-54638",
+      "title": "td has pre-auth denial of service via unbounded memory allocation in proto.UnencryptedMessage.Decode",
+      "description": "### Impact\n\nA remote, unauthenticated attacker can cause excessive memory allocation (and resulting CPU / GC pressure, potentially OOM termination) by sending a crafted unencrypted MTProto packet.\n\n`(*proto.UnencryptedMessage).Decode` read an attacker-controlled 32-bit `dataLen` ... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 45,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54638"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2026-54719",
       "title": "goshs: File-based .goshs ACL authorization bypass via the ?bulk zip-download route (unauthenticated read; residual of GH",
       "description": "GHSA-wvhv-qcqf-f3cx fixed the per-folder .goshs ACL bypass on the state-changing routes (PUT/POST upload/?mkdir/?delete) and added recursive ACL resolution, and its description states the read/list path correctly enforces .goshs. That premise does not hold for the ?bulk zip-downl... [Full analysis a",
@@ -382,6 +464,47 @@
       "due_date": null,
       "cves": [
         "CVE-2026-54719"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-55389",
+      "title": "datamodel-code-generator vulnerable to arbitrary local file read via JSON-Schema `$ref` (`file://` and `../` traversal),",
+      "description": "### Summary\n\n`datamodel-code-generator` resolves JSON-Schema `$ref` targets that point at the local filesystem without restricting them to the input/base directory and without honoring the remote-reference security control. In the default configuration, an attacker who controls a... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 45,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55389"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -2148,7 +2271,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-58138",
@@ -2190,7 +2315,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-29059",
@@ -2232,7 +2359,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-9198",
@@ -3165,6 +3294,92 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-65883",
+      "title": "CVE-2026-65883 - Joomla Extension - aimy-extensions.com - RCE via PHP object injection in Aimy Captcha-Less Form Guard 1",
+      "description": "CVE-2026-65883 - Joomla Extension - aimy-extensions.com - RCE via PHP object injection in Aimy Captcha-Less Form Guard 18.0 - 20.0",
+      "cvss": 9.5,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-65883"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-65943",
+      "title": "CVE-2026-65943 - Joomla Extension - rolandd.com - Unauthenticated directory creation RO CSVI < 9.11.0",
+      "description": "CVE-2026-65943 - Joomla Extension - rolandd.com - Unauthenticated directory creation RO CSVI < 9.11.0",
+      "cvss": 9.1,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-65943"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-58150",
       "title": "CVE-2026-58150 - Apache Traffic Server: HTTP/2 requests with Transfer-Encoding are not rejected, allowing request smuggl",
       "description": "CVE ID : CVE-2026-58150\n \n Published : July 29, 2026, 7:30 a.m. | 33minutes ago\n \n Description : Apache Traffic Server does not reject Transfer-Encoding in HTTP/2 requests, allowing downgrade request smuggling.\n\nThis issue affects Apache Traffic Server: from 8.0.0 through 8.1.9, ... [Full analysis a",
@@ -3683,579 +3898,167 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-54666",
-      "title": "swagger-typescript-api vulnerable to code injection via unescaped OpenAPI path strings in generated method bodies",
-      "description": "### Summary `swagger-typescript-api` interpolates OpenAPI path strings (the keys of the `paths` object, e.g. `/users/{id}`) directly into a JavaScript template literal inside the body of every generated API method, without escaping. A spec path containing `${ … }` survives `parseRouteName`'s `{x}` /",
-      "cvss": 8.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "swagger-typescript-api",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54666",
-        "CVE-2026-54666"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-w284-33mx-6g9v",
-        "https://github.com/acacode/swagger-typescript-api/security/advisories/GHSA-w284-33mx-6g9v",
-        "https://github.com/acacode/swagger-typescript-api/pull/1779",
-        "https://github.com/acacode/swagger-typescript-api/commit/306d59acb8ffbb00f953f807b97234b21f51d9de"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54664",
-      "title": "swagger-typescript-api vulnerable to code injection via unescaped enum string values",
-      "description": "### Summary `swagger-typescript-api` interpolates `components.schemas.*.enum[i]` string values into the body of generated TypeScript `enum` declarations without escaping. A malicious enum value can close the enclosing string literal, terminate the enum body, and inject a bare-block IIFE that execute",
-      "cvss": 8.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "swagger-typescript-api",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54664",
-        "CVE-2026-54664"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-5f94-x226-ccpm",
-        "https://github.com/acacode/swagger-typescript-api/security/advisories/GHSA-5f94-x226-ccpm",
-        "https://github.com/acacode/swagger-typescript-api/pull/1779",
-        "https://github.com/acacode/swagger-typescript-api/commit/306d59acb8ffbb00f953f807b97234b21f51d9de"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54661",
-      "title": "swagger-typescript-api vulnerable to code injection via unescaped `servers[0].url` in axios http-client template",
-      "description": "### Summary `swagger-typescript-api` interpolates `servers[0].url` directly into a TypeScript string literal inside the `HttpClient` constructor body of the generated **axios** client (`templates/base/http-clients/axios-http-client.ejs:71`), without any escaping. A malicious URL containing a `\"` clo",
-      "cvss": 8.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "swagger-typescript-api",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54661",
-        "CVE-2026-54661"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-38c3-wv3c-v3xj",
-        "https://github.com/acacode/swagger-typescript-api/security/advisories/GHSA-38c3-wv3c-v3xj",
-        "https://github.com/acacode/swagger-typescript-api/pull/1779",
-        "https://github.com/acacode/swagger-typescript-api/commit/306d59acb8ffbb00f953f807b97234b21f51d9de"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54662",
-      "title": "swagger-typescript-api vulnerable to code injection via unescaped `servers[0].url` in fetch http-client template",
-      "description": "### Summary `swagger-typescript-api` interpolates `servers[0].url` directly into a TypeScript class-body field initializer of the generated **fetch** `HttpClient` (`templates/base/http-clients/fetch-http-client.ejs:75`), without any escaping. A malicious URL containing a `\"` closes the string litera",
-      "cvss": 8.3,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "swagger-typescript-api",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54662",
-        "CVE-2026-54662"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-hqj5-cw9f-rx67",
-        "https://github.com/acacode/swagger-typescript-api/security/advisories/GHSA-hqj5-cw9f-rx67",
-        "https://github.com/acacode/swagger-typescript-api/pull/1779",
-        "https://github.com/acacode/swagger-typescript-api/commit/306d59acb8ffbb00f953f807b97234b21f51d9de"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54660",
-      "title": "swagger-typescript-api vulnerable to authorization-token exfiltration via spec `$ref`",
-      "description": "### Summary When the developer supplies an `--authorizationToken` (commonly required to fetch a private spec behind authentication), `swagger-typescript-api` attaches that token to the `Authorization` header of **every** subsequent HTTP request it makes while resolving external `$ref` URLs in the sp",
-      "cvss": 7.4,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "swagger-typescript-api",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54660",
-        "CVE-2026-54660"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-h754-fxp7-88wx",
-        "https://github.com/acacode/swagger-typescript-api/security/advisories/GHSA-h754-fxp7-88wx",
-        "https://github.com/acacode/swagger-typescript-api/pull/1779",
-        "https://github.com/acacode/swagger-typescript-api/commit/306d59acb8ffbb00f953f807b97234b21f51d9de"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54639",
-      "title": "Style Dictionary - Prototype Pollution in convertTokenData utility function",
-      "description": "### Impact\nPrototype pollution.\nA malicious user can create a token array `[{ key: '{__proto__.foo}', value: 'malicious' }]`, when processed by `convertTokenData()` utility function, it will pollute the Object.prototype globally where `{}.foo` will equal `{ key: '{__proto__.foo}'... [Full analysis a",
-      "cvss": 8.8,
-      "final_ps": 21,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54639"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+4 critical_infra"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59550",
-      "title": "CVE-2026-59550: Unauthenticated SQL Injection in AWP Classifieds <= 4.4.7 versions.",
-      "description": "CVE-2026-59550: Unauthenticated SQL Injection in AWP Classifieds <= 4.4.7 versions.",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59550"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--5d72e2b254a6d494.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59551",
-      "title": "CVE-2026-59551: Subscriber SQL Injection in rtMedia for WordPress, BuddyPress and bbPress <= 4.7.10 versions.",
-      "description": "CVE-2026-59551: Subscriber SQL Injection in rtMedia for WordPress, BuddyPress and bbPress <= 4.7.10 versions.",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59551"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--28d7fe911bef5145.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59549",
-      "title": "CVE-2026-59549: Unauthenticated SQL Injection in rtMedia for WordPress, BuddyPress and bbPress <= 4.7.10 versions.",
-      "description": "CVE-2026-59549: Unauthenticated SQL Injection in rtMedia for WordPress, BuddyPress and bbPress <= 4.7.10 versions.",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59549"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--c2f777ec76929c0a.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59537",
-      "title": "CVE-2026-59537: Administrator SQL Injection in Sender  Newsletter, SMS and Email Marketing Automation for WooCommerce <=",
-      "description": "CVE-2026-59537: Administrator SQL Injection in Sender  Newsletter, SMS and Email Marketing Automation for WooCommerce <= 2.10.22 versio",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59537"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--9fed66f4d32608a4.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59539",
-      "title": "CVE-2026-59539: Subscriber Insecure Direct Object References (IDOR) in Paid Member Subscriptions <= 3.0.7 versions.",
-      "description": "CVE-2026-59539: Subscriber Insecure Direct Object References (IDOR) in Paid Member Subscriptions <= 3.0.7 versions.",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59539"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--fa7316ac34e0a13a.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-59548",
-      "title": "CVE-2026-59548: Unauthenticated Sensitive Data Exposure in Byteflows Travel &amp; Hotel Booking <= 1.0.0 versions.",
-      "description": "CVE-2026-59548: Unauthenticated Sensitive Data Exposure in Byteflows Travel &amp; Hotel Booking <= 1.0.0 versions.",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59548"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--2b108540bb78f3e2.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54638",
-      "title": "td has pre-auth denial of service via unbounded memory allocation in proto.UnencryptedMessage.Decode",
-      "description": "### Impact\n\nA remote, unauthenticated attacker can cause excessive memory allocation (and resulting CPU / GC pressure, potentially OOM termination) by sending a crafted unencrypted MTProto packet.\n\n`(*proto.UnencryptedMessage).Decode` read an attacker-controlled 32-bit `dataLen` ... [Full analysis a",
+      "id": "CVE-2026-49755",
+      "title": "Req vulnerable to unbounded archive/compression extraction triggered by response content-type",
+      "description": "### Summary Req's default response pipeline auto-decodes archive and compressed bodies based on the server-supplied `content-type` (or URL extension) and materialises the full decompressed contents in memory with no size cap. An attacker who controls (or can redirect a victim into) an HTTP endpoint ",
       "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "erlang",
+      "product": "req",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-49755",
+        "CVE-2026-49755"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-655f-mp8p-96gv",
+        "https://github.com/wojtekmach/req/security/advisories/GHSA-655f-mp8p-96gv",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-49755",
+        "https://github.com/wojtekmach/req/commit/84977e5b1a83f26e749d55ad06e3625464af4e8d"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54078",
+      "title": "veraPDF Validation XXE via Rich Text",
+      "description": "## Summary **Description**\nAn XML External Entity Injection (CWE-611) vulnerability in veraPDF allows a remote attacker to read arbitrary files on the server file system and perform Server-Side Request Forgery by submitting a crafted PDF containing a malicious rich-text (/RC or /RV) entry. This affe",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "org.verapdf:validation-model",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54078",
+        "CVE-2026-54078"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-3jh7-wm29-q568",
+        "https://github.com/veraPDF/veraPDF-validation/security/advisories/GHSA-3jh7-wm29-q568",
+        "https://github.com/advisories/GHSA-3jh7-wm29-q568"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54079",
+      "title": "veraPDF Validation XXE via XFA",
+      "description": "## Summary **Description**\nAn XML External Entity Injection (CWE-611) vulnerability in veraPDF allows a remote attacker to read arbitrary files on the server file system and perform Server-Side Request Forgery by submitting a crafted PDF containing a malicious XFA stream. This affects all current ve",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "org.verapdf:validation-model",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54079",
+        "CVE-2026-54079"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-36mm-w85j-3q2j",
+        "https://github.com/veraPDF/veraPDF-validation/security/advisories/GHSA-36mm-w85j-3q2j",
+        "https://github.com/veraPDF/veraPDF-validation/pull/730",
+        "https://github.com/veraPDF/veraPDF-validation/commit/94caa46c1a594512247fbd46c808edae39469542"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-14270",
+      "title": "CVE-2026-14270 - Extra Checkout Options (addon for Extra Product Options & Add-Ons for WooCommerce) <= 2.3.2 - Missing A",
+      "description": "CVE-2026-14270 - Extra Checkout Options (addon for Extra Product Options & Add-Ons for WooCommerce) <= 2.3.2 - Missing Authorization to Authenticated (Subscriber+) Arbitrary File Upload in eco_save_settings",
+      "cvss": 8.8,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4263,7 +4066,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-54638"
+        "CVE-2026-14270"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4284,10 +4087,182 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-55389",
-      "title": "datamodel-code-generator vulnerable to arbitrary local file read via JSON-Schema `$ref` (`file://` and `../` traversal),",
-      "description": "### Summary\n\n`datamodel-code-generator` resolves JSON-Schema `$ref` targets that point at the local filesystem without restricting them to the input/base directory and without honoring the remote-reference security control. In the default configuration, an attacker who controls a... [Full analysis a",
+      "id": "CVE-2026-65884",
+      "title": "CVE-2026-65884 - Joomla Extension - balbooa.com - Privilege Escalation in Gridbox < 2.20.2",
+      "description": "CVE-2026-65884 - Joomla Extension - balbooa.com - Privilege Escalation in Gridbox < 2.20.2",
+      "cvss": 7.8,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-65884"
+      ],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-33385",
+      "title": "CVE-2026-33385 - Blind SQL Injection in Quick.CMS",
+      "description": "CVE-2026-33385 - Blind SQL Injection in Quick.CMS",
+      "cvss": 8.8,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-33385"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-44943",
+      "title": "CVE-2026-44943 - remote limited file-write as root via discovery in open-iscsi",
+      "description": "CVE-2026-44943 - remote limited file-write as root via discovery in open-iscsi",
+      "cvss": 7.8,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44943"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-44944",
+      "title": "CVE-2026-44944 - iscsiuio control-socket authentication bypass in open-iscsi",
+      "description": "CVE-2026-44944 - iscsiuio control-socket authentication bypass in open-iscsi",
       "cvss": 7.5,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44944"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54653",
+      "title": "`datamodel-code-generator` vulnerable to code injection in via attacker-controlled `default_factory` schema field",
+      "description": "### Summary\n\n`datamodel-code-generator` is vulnerable to code injection when generating Python models from an attacker-controlled JSON Schema, OpenAPI, YAML, JSON, Avro, Protobuf, or XSD schema. When a property carries a `\"default_factory\"` key, its value is interpolated verbatim... [Full analysis a",
+      "cvss": 8.8,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "MEDIUM",
@@ -4306,7 +4281,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-55389"
+        "CVE-2026-54653"
       ],
       "ioc_count": 0,
       "refs": [],
