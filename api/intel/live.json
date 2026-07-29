@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-29T18:31:33.560Z",
+  "generated": "2026-07-29T19:01:37.732Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,56 +7,13 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2900,
+  "total_published": 2901,
   "s2n_stats": {
-    "passed": 101,
-    "suppressed": 56,
-    "avg_qs": 0.513
+    "passed": 96,
+    "suppressed": 58,
+    "avg_qs": 0.515
   },
   "items": [
-    {
-      "id": "CVE-2026-66066",
-      "title": "Critical Rails Flaw Could Let Unauthenticated Attackers Read Server Files via Image Uploads",
-      "description": "Ruby on Rails has released fixes for a critical Active Storage vulnerability that could let unauthenticated attackers read arbitrary files from application servers through crafted image uploads. Tracked as CVE-2026-66066 (CVSS score: 9.5), the flaw can expose the Rails process environment and secret",
-      "cvss": 8,
-      "final_ps": 69,
-      "quality_score": 0.538,
-      "threat_level": "HIGH",
-      "type": "AI_SECURITY",
-      "source": "thehackernews",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "thehackernews"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "The Hacker News",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-66066"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://thehackernews.com/2026/07/critical-rails-flaw-could-let.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (thehackernews)",
-          "data_confidence=1.00",
-          "recency=0d (score=1.00)",
-          "QS=0.537"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
     {
       "id": "CVE-2026-50522",
       "title": "Critical SharePoint RCE CVE-2026-50522 Under Active Exploitation After Public PoC",
@@ -355,46 +312,6 @@
           "+10 CVSS≥9",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "SENTINELAPEX-b317b4816614",
-      "title": "netfoil: Incorrect block responses could lead to localhost traffic",
-      "description": "### Summary\n`0.0.0.0` was used instead of NXDOMAIN for block responses. On Linux, which is the target platform for netfoil, the `0.0.0.0` is sent to localhost rather than just dropped.\n\n### Impact\nUnintended traffic could be sent to localhost. Impact depends on running services a... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 46,
-      "quality_score": 0.473,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "ioc_presence=1 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.473"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -1389,88 +1306,6 @@
       }
     },
     {
-      "id": "CVE-2026-54704",
-      "title": "OpenTelemetry Java Instrumentation: JDBC Auto-Instrumentation Logging Clear-Text Passwords",
-      "description": "OpenTelemetry Java Instrumentation JDBC auto-instrumentation may fail to sanitize passwords in SQL CONNECT statements when the password is double-quoted. As a result, clear-text database passwords can be added to trace span attributes and exported to observability backends.",
-      "cvss": 6.5,
-      "final_ps": 40,
-      "quality_score": 0.433,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54704"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.40",
-          "recency=0d (score=1.00)",
-          "QS=0.432"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-54705",
-      "title": "mathlive's Lack of Escaping of HTML allows for XSS",
-      "description": "### Summary\n\nDespite the 0.104.0 patch escaping attribute-bearing constructs (`\\htmlData`, `\\href`), text-content reflection was missed. The `\\text{}`, `\\mbox{}` commands accept arbitrary characters in their body and emit them raw and unescaped into both the HTML markup and the M... [Full analysis a",
-      "cvss": 6.3,
-      "final_ps": 40,
-      "quality_score": 0.433,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54705"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.40",
-          "recency=0d (score=1.00)",
-          "QS=0.432"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
       "id": "CVE-2026-12495",
       "title": "CVE-2026-12495: Denial-of-service (DoS) vulnerability due to a stack buffer overflow in the http_gdpr_decrypt function o",
       "description": "",
@@ -2273,9 +2108,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-9198",
@@ -2317,9 +2150,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-13233",
@@ -2361,9 +2192,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2022-30190",
@@ -2407,9 +2236,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-15901",
@@ -3246,6 +3073,51 @@
           "data_confidence=0.45",
           "recency=0d (score=1.00)",
           "QS=0.497"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-66066",
+      "title": "Critical Rails Flaw Could Let Unauthenticated Attackers Read Server Files via Image Uploads",
+      "description": "Ruby on Rails has released fixes for a critical Active Storage vulnerability that could let unauthenticated attackers read arbitrary files from application servers through crafted image uploads. Tracked as CVE-2026-66066 (CVSS score: 9.5), the flaw can expose the Rails process environment and secret",
+      "cvss": 8,
+      "final_ps": 27,
+      "quality_score": 0.483,
+      "threat_level": "HIGH",
+      "type": "AI_SECURITY",
+      "source": "thehackernews",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "thehackernews"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "The Hacker News",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-66066"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://thehackernews.com/2026/07/critical-rails-flaw-could-let.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.483"
         ],
         "priority": [
           "+8 exploited_in_wild"
@@ -4307,6 +4179,133 @@
         ],
         "priority": [
           "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "SENTINELAPEX-b317b4816614",
+      "title": "netfoil: Incorrect block responses could lead to localhost traffic",
+      "description": "### Summary\n`0.0.0.0` was used instead of NXDOMAIN for block responses. On Linux, which is the target platform for netfoil, the `0.0.0.0` is sent to localhost rather than just dropped.\n\n### Impact\nUnintended traffic could be sent to localhost. Impact depends on running services a... [Full analysis a",
+      "cvss": 7.8,
+      "final_ps": 15,
+      "quality_score": 0.387,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 1,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.387"
+        ],
+        "priority": [
+          "base_ps=15 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
+    },
+    {
+      "id": "CVE-2026-54704",
+      "title": "OpenTelemetry Java Instrumentation: JDBC Auto-Instrumentation Logging Clear-Text Passwords",
+      "description": "OpenTelemetry Java Instrumentation JDBC auto-instrumentation may fail to sanitize passwords in SQL CONNECT statements when the password is double-quoted. As a result, clear-text database passwords can be added to trace span attributes and exported to observability backends.",
+      "cvss": 6.5,
+      "final_ps": 15,
+      "quality_score": 0.378,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54704"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.15",
+          "recency=0d (score=1.00)",
+          "QS=0.378"
+        ],
+        "priority": [
+          "base_ps=15 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-54705",
+      "title": "mathlive's Lack of Escaping of HTML allows for XSS",
+      "description": "### Summary\n\nDespite the 0.104.0 patch escaping attribute-bearing constructs (`\\htmlData`, `\\href`), text-content reflection was missed. The `\\text{}`, `\\mbox{}` commands accept arbitrary characters in their body and emit them raw and unescaped into both the HTML markup and the M... [Full analysis a",
+      "cvss": 6.3,
+      "final_ps": 15,
+      "quality_score": 0.378,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54705"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.15",
+          "recency=0d (score=1.00)",
+          "QS=0.378"
+        ],
+        "priority": [
+          "base_ps=15 (no boosts)"
         ],
         "suppression": null,
         "merge": null
