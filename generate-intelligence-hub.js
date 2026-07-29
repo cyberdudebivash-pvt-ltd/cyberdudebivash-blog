@@ -25,6 +25,7 @@ const {
   buildVendorIndex, buildTimeline, buildCollections, buildDetectionLibrary,
   articlesMatching,
 } = require('./api/_lib/intelligence-hub');
+const { buildDynamicOgImageUrl } = require('./Sentinel-APEX/renderer/metadata-engine');
 
 const ROOT = __dirname;
 const BASE_URL = 'https://blog.cyberdudebivash.in';
@@ -63,6 +64,13 @@ function severityColor(sev) {
 
 function renderShell({ path: urlPath, title, description, eyebrow, h1, lede, bodyHtml, jsonLd, activeHref }) {
   const canonical = `${BASE_URL}${urlPath}`;
+  // All 7 hub page types funnel through here, so this one call covers all
+  // of them — previously every hub page shared the single static
+  // og-image.png regardless of section (platform/social-preview-metadata-audit.md
+  // root cause #4). `eyebrow` is already a clean per-section label
+  // ("Vendor Intelligence", "Timeline", ...), reused as-is rather than
+  // adding a new per-call-site parameter.
+  const dynamicImage = buildDynamicOgImageUrl({ baseUrl: BASE_URL, title, type: eyebrow });
   const nav = [
     ['/', 'Reports'], ['/research', 'Research'], ['/detections', 'Detections'],
     ['/vendor/', 'Vendors'], ['/timeline/', 'Timeline'], ['/collections/', 'Collections'],
@@ -90,11 +98,19 @@ function renderShell({ path: urlPath, title, description, eyebrow, h1, lede, bod
 <meta property="og:type" content="website">
 <meta property="og:url" content="${canonical}">
 <meta property="og:site_name" content="${BRAND}">
-<meta property="og:image" content="${BASE_URL}/og-image.png">
+<meta property="og:image" content="${dynamicImage}">
+<meta property="og:image:secure_url" content="${dynamicImage}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(title)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
-<meta name="twitter:image" content="${BASE_URL}/og-image.png">
+<meta name="twitter:image" content="${dynamicImage}">
+<meta name="twitter:image:alt" content="${esc(title)}">
+<meta name="twitter:site" content="@cyberdudebivash">
+<meta name="twitter:creator" content="@cyberdudebivash">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
 <link rel="canonical" href="${canonical}">
 <title>${esc(title)}</title>
@@ -497,4 +513,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { main };
+module.exports = { main, renderShell };
