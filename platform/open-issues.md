@@ -30,23 +30,22 @@ to engineering):
 
 | Pairing | Classification | Justification |
 |---|---|---|
-| **Scoring** (`scoring.py` / `threat-scorer.js`) | **Leave separate — pending executive decision** | `threat-scorer.js` sits behind a live, paid API endpoint. A customer asking "why did this get a different score in two places" has no single answer today — that's a real drift risk, not a hypothetical one, and the fix is a functional change to revenue infrastructure. Requires a decision on canonical ownership before any merge; not resolved here. |
-| **Graph** (`knowledge_graph.py` / `threat-graph.js`) | **Leave separate — pending executive decision** | Same reasoning as Scoring, same live/offline split, same blocking dependency on the same decision — this is one decision, not two. |
+| **Scoring** (`scoring.py` / `threat-scorer.js`) | **Canonical ownership decided (2026-07-29): `threat-scorer.js` (live JS) is canonical** | `threat-scorer.js` sits behind a live, paid API endpoint — it's what a real customer actually sees, so it's the one that should be authoritative. `scoring.py` should eventually call into the live formula rather than maintain a parallel implementation. **The refactor itself is not attempted yet** — this decision unblocks scoping it, it isn't the scoping work. |
+| **Graph** (`knowledge_graph.py` / `threat-graph.js`) | **Canonical ownership decided (2026-07-29): `threat-graph.js` (live JS) is canonical** | Same reasoning and same decision as Scoring — made together, per this table's own note below that it's one decision, not two. Same caveat: refactor not yet attempted, decision only. |
 | **Normalization schema** (`NormalizedDoc` / `normalizeToUniversalSchema()`) | **Leave separate — justified, no decision needed** | No shared consumer: the Python shape only feeds `pipeline.py`/`quality.py`/the certification framework; the JS shape only feeds the live bot's rendering. Unlike Scoring, there is no customer-visible symptom of the two shapes disagreeing — nothing compares them side by side or presents both to the same customer. Unifying two internal data shapes with no interoperability requirement would be consolidation for its own sake, which Phase 11 explicitly rules out ("do not merge systems solely for aesthetic reasons"). |
 | **Entity aliasing** (`entities.py:LEXICON` / `threat-graph.js` aliases) | **Leave separate — justified, no decision needed** | Same reasoning as Normalization: different pipelines, different consumers, no cross-need, no customer-visible inconsistency today. |
 | **Detection generation** (`detection_builder.py`/`sigma_builder.py` / `engine-node/detection-engine.js`) | **Leave separate — justified, not actually a duplication problem** | Confirmed (GIOP v1 audit) this is a *deliberate* parity port — same technique registry, same four-plus-one output formats (Sigma/KQL/Splunk/OSQuery/Suricata), built specifically because the live bot runs on a 5-minute cadence and can't shell out to Python per cycle. This is the documented, justified pattern for maintaining one piece of logic in two runtimes — closer to how `report_parser.py` and `report-renderer.js` mirror the same section-marker convention on purpose. Flagging this as equivalent to Scoring's drift risk would be wrong; it's listed here only to close the question explicitly, not because it needs action. |
 
-**Net effect of this classification**: two of five pairings (Scoring,
-Graph — genuinely one decision) remain blocked on executive sign-off,
-unchanged after five sprints of surfacing them. Three of five (Normalization,
-Entity aliasing, Detection generation) are resolved *as findings* — each
-has an explicit, defensible "why this is fine as two" answer now on record,
-rather than sitting as an open question repeated in every future audit.
-
-**Recommendation, not action**: decide canonical ownership for Scoring/Graph,
-then either (a) have the offline engine call the live scorer's logic (or
-vice versa) via a shared formula definition, or (b) explicitly document why
-two are intentional and keep this table as the record of that decision.
+**Net effect of this classification**: **Update (2026-07-29)** — the
+Scoring/Graph canonical-ownership decision that blocked two of five
+pairings for five sprints has been made: live JS is canonical for both.
+All five of five pairings are now resolved *as findings/decisions* — three
+(Normalization, Entity aliasing, Detection generation) as "justified,
+intentional, no action needed," and Scoring/Graph as "canonical ownership
+assigned, refactor not yet scoped." The refactor itself — offline Python
+calling into the live JS formulas instead of maintaining parallel logic —
+remains future work, tracked as a Strategic Investment, not attempted in
+this pass.
 
 ## Issue 2 — `industry-intelligence.md` has no home
 
@@ -740,10 +739,13 @@ Recorded Future and GreyNoise do not). `PLANS.starter.amount` moved
 `tests-js/pricing-consistency.test.js` now also asserts the tier-ordering
 *invariant* directly (`starter < pro < enterprise`), not just each tier's
 absolute value, plus dedicated Starter-fallback and Starter-card regression
-tests mirroring the existing Pro ones. See `docs/PRICING.md`'s new
-"Pricing change (2026-07-28)" section for the full record, including the
-noted, unresolved tension with `BUSINESS-TRANSFORMATION-ROADMAP-2026.md`'s
-separate proposal to raise Pro to $79/mo instead.
+tests mirroring the existing Pro ones. See `docs/PRICING.md`'s
+"Pricing change (2026-07-28)" section for the full record.
+
+**Roadmap tension resolved (2026-07-29)**: explicit decision to keep Pro
+at $18, not move toward `BUSINESS-TRANSFORMATION-ROADMAP-2026.md`'s $79
+proposal — see `docs/PRICING.md`'s updated record for the reasoning
+(preserves the affordable-pricing competitive differentiator).
 
 ## Issue 11 — Registration welcome email: built and tested, held pending activation sign-off (GECTP v1)
 

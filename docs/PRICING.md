@@ -94,15 +94,17 @@ internally consistent, but the canonical value itself economically
 incoherent) wouldn't have been caught by the 2026-07-17 remediation's
 copy-drift tests alone.
 
-**Known tension, not resolved here**: `BUSINESS-TRANSFORMATION-ROADMAP-2026.md`
-(§2.2, dated 2026-06-22) separately proposes raising Pro to $79/mo as part
-of a larger re-tier. That would also fix the ordering, but in the opposite
-direction — and cuts against a since-stated goal of aggressive, transparent,
-globally affordable self-serve pricing as a differentiator against
-competitors with no public pricing or enterprise-quote-only models. Which
-direction is correct for Pro specifically is an open pricing-strategy
-decision, not resolved by this change; this change only fixes the ordering
-using the cheaper tier.
+**Resolved (2026-07-29)**: `BUSINESS-TRANSFORMATION-ROADMAP-2026.md`
+(§2.2, dated 2026-06-22) separately proposed raising Pro to $79/mo as part
+of a larger re-tier. Explicit decision: **Pro stays at ₹1,499/$18/mo** —
+the roadmap's $79 proposal is not adopted. Reasoning: the affordable,
+transparent, self-serve pricing this platform already has is a real,
+verified differentiator against competitors with no public pricing
+(GreyNoise) or enterprise-quote-only models (Recorded Future), per the
+sourced competitive review — raising Pro 4.4x would give that up. The
+roadmap document is left as-is (a dated planning snapshot, not rewritten to
+match this decision) and should be read accordingly by anyone consulting
+it going forward: its pricing proposal is superseded, not current.
 
 ## Known open item outside this codebase
 
