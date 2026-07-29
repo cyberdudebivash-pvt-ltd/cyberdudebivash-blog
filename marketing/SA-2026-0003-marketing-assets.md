@@ -56,7 +56,7 @@ T1190, T1059.003, T1105, T1486, T1027 — each tied to a specific fact in the at
 We also documented what we *didn't* map: `msiexec` is the exact LOLBin here, but T1218.007 isn't in our curated technique set yet — we said so explicitly instead of forcing an uncurated ID. Transparency over false precision.
 
 **5/**
-If you're running TeamCity and haven't patched CVE-2024-27198/27199 — this is a same-day priority. Full report + Sigma/SIEM detection guidance: https://blog.cyberdudebivash.in/intelligence/sa-2026-0003-cve-2024-27198.html
+If you're running TeamCity and haven't patched CVE-2024-27198/27199 — this is a same-day priority. Full report + behavioral detection and hunting guidance: https://blog.cyberdudebivash.in/intelligence/sa-2026-0003-cve-2024-27198.html
 
 ---
 
@@ -77,8 +77,8 @@ MITRE ATT&CK mapping is backed by cited evidence — including a confirmed
 Jasmin ransomware deployment where file encryption was directly observed via
 vendor telemetry, not inferred from a threat-actor association.
 
-Read the full report — attack chain, ATT&CK mapping, Sigma detection rules,
-and hunting guidance: https://blog.cyberdudebivash.in/intelligence/sa-2026-0003-cve-2024-27198.html
+Read the full report — attack chain, ATT&CK mapping, and threat-hunting
+guidance: https://blog.cyberdudebivash.in/intelligence/sa-2026-0003-cve-2024-27198.html
 
 Running TeamCity? Verify you're patched against both CVEs before anything
 else this week.
@@ -94,8 +94,8 @@ else this week.
 Published our third analyst intelligence report, covering CVE-2024-27198 /
 CVE-2024-27199 (JetBrains TeamCity authentication bypass and path traversal).
 First report in this program to achieve unconditional certification. Covers
-the full attack chain, evidence-cited MITRE ATT&CK mapping, Sigma/SIEM
-detection rules, and threat hunting guidance for two independently confirmed
+the full attack chain, evidence-cited MITRE ATT&CK mapping, and behavioral
+detection and threat hunting guidance for two independently confirmed
 ransomware campaigns exploiting this vulnerability chain.
 
 → https://blog.cyberdudebivash.in/intelligence/sa-2026-0003-cve-2024-27198.html

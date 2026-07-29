@@ -3,7 +3,8 @@ title: "<Threat Actor Name> — Threat Actor Profile"
 report_id: "SA-TA-<YYYY>-<NNNN>"
 date: "<YYYY-MM-DD>"
 tlp: "TLP:CLEAR"
-audience: "soc,ciso,threat-hunter"
+audience: "soc"
+attack_ids: []
 overall_confidence: "<VERY LOW|LOW|MEDIUM|HIGH|VERY HIGH>"
 ---
 
@@ -19,6 +20,16 @@ actor that already has a curated entry; extend the curated entry instead
 (Reuse Before Build). This closes report structure's "Threat Actor
 Analysis" gap (`platform/gtiep-v1-audit.md` item 1) with real data, not a
 fabricated example.
+
+**Front matter, corrected (GCIEP v1)**: `audience` was originally a
+comma-joined multi-value string (`"soc,ciso,threat-hunter"`), inconsistent
+with every other template's single-value convention (`"executive"`,
+`"soc"`, `"dfir"`, `"hunting"` — see `Sentinel-APEX/eios/sentinel-intelligence-standard.md`).
+Set to `"soc"` — a SOC analyst is this template's primary, most direct
+consumer; CISO/threat-hunter relevance is served by body content, not a
+second schema value. `attack_ids: []` added to match the two other
+ATT&CK-heavy templates (`soc-detection-brief.md`, `threat-hunting-playbook.md`)
+that already promote technique IDs to front matter.
 
 ## Executive Summary
 <One paragraph: who this actor is, what they do, why a reader should care

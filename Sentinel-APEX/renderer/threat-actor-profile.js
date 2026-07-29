@@ -59,13 +59,17 @@ function buildThreatActorProfileMarkdown(actorEntry, opts = {}) {
   ).join('\n');
 
   const sources = (a.refs || []).map((url) => `- ${escMd(url)}`).join('\n') || '<none curated>';
+  const attackIdsYaml = (a.ttps || []).length
+    ? `\n${(a.ttps || []).map((id) => `  - "${escMd(id)}"`).join('\n')}`
+    : ' []';
 
   return `---
 title: "${escMd(name)} — Threat Actor Profile"
 report_id: "${escMd(reportId)}"
 date: "${todayISO()}"
 tlp: "TLP:CLEAR"
-audience: "soc,ciso,threat-hunter"
+audience: "soc"
+attack_ids:${attackIdsYaml}
 overall_confidence: "<VERY LOW|LOW|MEDIUM|HIGH|VERY HIGH>"
 ---
 

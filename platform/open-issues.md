@@ -1060,5 +1060,30 @@ Blogger pipeline already has 5 SIEM formats, Sentinel-APEX pipeline has a
 different 5); producing a commercial-packaging document for SA-2026-0002/
 0003 matching SA-2026-0001's existing precedent.
 
+## Issue 16 — SA-2026-0003 marketing assets overstated detection content (Sigma rules claimed, none exist) (GCIEP v1)
+
+Found while researching `Sentinel-APEX/reports/drafts/SA-2026-0003-commercial-
+packaging.md` (task #163): `marketing/SA-2026-0003-marketing-assets.md`
+claimed "Sigma/SIEM detection guidance" or "Sigma detection rules" in three
+places (X/Twitter thread, newsletter blurb, release note), but the actual
+published report explicitly states "No Sigma rule is provided for this
+report" — the same unverified-log-schema restraint SA-2026-0002 documents.
+Same class of defect as Issue-less task #77 (false TAXII/MISP/CSV delivery-
+format claims): a customer-facing marketing surface overstating what a
+report actually contains, a direct Enterprise Trust Enforcement Layer
+violation if left uncorrected. **Resolved** — all three phrases corrected to
+accurately describe behavioral detection/hunting guidance (what the report
+does provide) instead of Sigma rules (what it explicitly does not). No
+numbers or claims invented in the fix; the corrected text was cross-checked
+against the published report's own "Detection guidance" subsection.
+
+While producing the same commercial brief, also found and fixed a smaller,
+adjacent staleness: `SA-2026-0002-commercial-packaging.md`'s own pricing
+section still described "the same three-tier structure as SA-2026-0001
+(Free/Pro/Enterprise)," omitting the Starter tier (₹999/$12/mo) that has
+been live in production since Issue 10, well before this brief was written.
+Corrected to the current four-rung structure (Free API tier, Starter, Pro,
+Enterprise) sourced from `docs/PRICING.md`.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

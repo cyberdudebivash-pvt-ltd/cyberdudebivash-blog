@@ -9,9 +9,10 @@ structured Release Governance record.
 
 Nothing here re-implements a check that already exists elsewhere:
 
-- Intelligence / Evidence / Detection Quality are entirely derived from
-  ``quality.gate_report()``'s findings (see ``DOMAIN_FOR_GATE``) — this
-  module only buckets and labels them into the three domains.
+- Intelligence / Evidence / Editorial / Detection Quality are entirely
+  derived from ``quality.gate_report()``'s findings (see
+  ``DOMAIN_FOR_GATE``) — this module only buckets and labels them into
+  the four domains.
 - Rendering Quality shells out to the canonical Node renderer; Markdown
   parsing is never duplicated in Python.
 - Publication Quality reads the already-rendered, already-shipped HTML file
@@ -42,12 +43,17 @@ NOT_APPLICABLE = "Not Applicable"
 # covers every tag gate_report()/gate_corpus() can actually emit, so a
 # future gate added without a matching entry here fails loudly instead of
 # silently landing in a catch-all bucket.
+# "Editorial Quality" added (GCIEP v1, 2026-07-29): the 9-stage editorial
+# workflow this program reviews had no certification domain for Editorial
+# Review at all — hype-language was folded into Evidence Quality alongside
+# unrelated evidence-integrity checks, which is a different concern
+# (editorial tone/style vs. whether a claim is actually supported).
 DOMAIN_FOR_GATE: dict[str, str] = {
     "structure": "Intelligence Quality",
     "attack": "Intelligence Quality",
     "confidence": "Evidence Quality",
     "content-integrity": "Evidence Quality",
-    "hype-language": "Evidence Quality",
+    "hype-language": "Editorial Quality",
     "reference-completeness": "Evidence Quality",
     "ioc-defanging": "Detection Quality",
     "sigma": "Detection Quality",
@@ -58,7 +64,7 @@ DOMAIN_FOR_GATE: dict[str, str] = {
     "corpus-ioc-reuse": "Evidence Quality",
 }
 
-GATE_DOMAINS = ("Intelligence Quality", "Evidence Quality", "Detection Quality")
+GATE_DOMAINS = ("Intelligence Quality", "Evidence Quality", "Editorial Quality", "Detection Quality")
 ALL_DOMAINS = GATE_DOMAINS + ("Rendering Quality", "Publication Quality")
 
 
@@ -352,6 +358,7 @@ def render_release_governance_markdown(cert: CertificationReport) -> str:
         "",
         _findings_section("Quality Findings", d["Intelligence Quality"]),
         _findings_section("Evidence Findings", d["Evidence Quality"]),
+        _findings_section("Editorial Findings", d["Editorial Quality"]),
         _findings_section("Detection Findings", d["Detection Quality"]),
         _findings_section("Rendering Findings", d["Rendering Quality"]),
         _findings_section("Publication Findings", d["Publication Quality"]),

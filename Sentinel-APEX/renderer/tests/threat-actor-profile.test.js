@@ -74,6 +74,28 @@ test('escapes pipe characters in curated text so tables stay well-formed', () =>
   assert.ok(md.includes('A\\|B'));
 });
 
+test('front matter uses a single-value audience field, matching every other template\'s convention (GCIEP v1)', () => {
+  const yaml = require('js-yaml');
+  const md = buildThreatActorProfileMarkdown(LOCKBIT);
+  const fm = yaml.load(md.split('---')[1]);
+  assert.strictEqual(fm.audience, 'soc');
+  assert.ok(!fm.audience.includes(','), 'audience must not be a comma-joined multi-value string');
+});
+
+test('front matter promotes real curated ttps into attack_ids, matching soc-detection-brief.md/threat-hunting-playbook.md\'s convention', () => {
+  const yaml = require('js-yaml');
+  const md = buildThreatActorProfileMarkdown(LOCKBIT);
+  const fm = yaml.load(md.split('---')[1]);
+  assert.deepStrictEqual(fm.attack_ids, LOCKBIT.attributes.ttps);
+});
+
+test('attack_ids is a valid empty YAML list, not a broken block scalar, when no ttps are curated', () => {
+  const yaml = require('js-yaml');
+  const md = buildThreatActorProfileMarkdown({ name: 'X', attributes: { description: 'd', ttps: [], known_cves: [], refs: [] } });
+  const fm = yaml.load(md.split('---')[1]);
+  assert.deepStrictEqual(fm.attack_ids, []);
+});
+
 test('renders for all 8 real curated actors without throwing', () => {
   for (const [id, actor] of Object.entries(THREAT_ACTOR_DB)) {
     assert.doesNotThrow(() => buildThreatActorProfileMarkdown(actor), `failed for ${id}`);

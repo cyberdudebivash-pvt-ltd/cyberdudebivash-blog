@@ -71,7 +71,23 @@ def test_bucketing_groups_findings_into_correct_domains():
     buckets = certification._bucket_gate_findings(findings)
     assert buckets["Intelligence Quality"].verdict == FAIL
     assert buckets["Detection Quality"].verdict == FAIL
-    assert buckets["Evidence Quality"].verdict == NEEDS_REVIEW
+    # hype-language moved to its own Editorial Quality domain (GCIEP v1) -
+    # it's a tone/style concern, not an evidence-integrity one.
+    assert buckets["Editorial Quality"].verdict == NEEDS_REVIEW
+    assert buckets["Evidence Quality"].verdict == PASS
+
+
+def test_editorial_quality_is_a_real_certification_domain():
+    # GCIEP v1: the 9-stage editorial workflow this program reviews had no
+    # certification domain for Editorial Review at all before this.
+    assert "Editorial Quality" in certification.ALL_DOMAINS
+    assert certification.DOMAIN_FOR_GATE["hype-language"] == "Editorial Quality"
+
+
+def test_release_governance_markdown_includes_editorial_findings():
+    cert = certify(str(REAL_REPORT), _rendering_check=_stub_rendering_ok)
+    md = render_release_governance_markdown(cert)
+    assert "## Editorial Findings" in md
 
 
 def test_unmapped_gate_tag_fails_open_into_intelligence_quality():
