@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-29T19:31:27.421Z",
+  "generated": "2026-07-29T20:01:40.836Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,55 +7,13 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2901,
+  "total_published": 2902,
   "s2n_stats": {
-    "passed": 97,
-    "suppressed": 57,
-    "avg_qs": 0.515
+    "passed": 96,
+    "suppressed": 58,
+    "avg_qs": 0.516
   },
   "items": [
-    {
-      "id": "REDDIT_CYBER-933f2e0bee01f56d",
-      "title": "Hugging Face built an interactive replay of the OAl agent that breached them",
-      "description": "https://x.com/i/status/2082241780792115626 submitted by /u/rkhunter_ [link] [comments]",
-      "cvss": 6.5,
-      "final_ps": 62,
-      "quality_score": 0.465,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 1,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1va3mes/hugging_face_built_an_interactive_replay_of_the/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "ioc_presence=1 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.465"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
     {
       "id": "CVE-2026-50522",
       "title": "Critical SharePoint RCE CVE-2026-50522 Under Active Exploitation After Public PoC",
@@ -1342,6 +1300,47 @@
         "priority": [
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54704",
+      "title": "OpenTelemetry Java Instrumentation: JDBC Auto-Instrumentation Logging Clear-Text Passwords",
+      "description": "OpenTelemetry Java Instrumentation JDBC auto-instrumentation may fail to sanitize passwords in SQL CONNECT statements when the password is double-quoted. As a result, clear-text database passwords can be added to trace span attributes and exported to observability backends.",
+      "cvss": 6.5,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54704"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3992,6 +3991,49 @@
       "suppression_reason": null
     },
     {
+      "id": "REDDIT_CYBER-933f2e0bee01f56d",
+      "title": "Hugging Face built an interactive replay of the OAl agent that breached them",
+      "description": "https://x.com/i/status/2082241780792115626 submitted by /u/rkhunter_ [link] [comments]",
+      "cvss": 6.5,
+      "final_ps": 23,
+      "quality_score": 0.38,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "reddit_cyber",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 1,
+      "refs": [
+        "https://www.reddit.com/r/cybersecurity/comments/1va3mes/hugging_face_built_an_interactive_replay_of_the/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.380"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
+    },
+    {
       "id": "CVE-2026-54727",
       "title": "proot-distro has a Container Isolation Bypass via Crafted Restore Archive",
       "description": "## Affected Component - **Package:** proot-distro\n- **Affected command:** `restore`\n- **Attack surface:** Host-side Termux CLI processing a user-supplied backup archive\n- **Vulnerability type:** Container Isolation Bypass / Cross-Container Read and Write --- ## Affected Versions | Component | Versio",
@@ -4231,51 +4273,10 @@
       "suppression_reason": null
     },
     {
-      "id": "SENTINELAPEX-b317b4816614",
-      "title": "netfoil: Incorrect block responses could lead to localhost traffic",
-      "description": "### Summary\n`0.0.0.0` was used instead of NXDOMAIN for block responses. On Linux, which is the target platform for netfoil, the `0.0.0.0` is sent to localhost rather than just dropped.\n\n### Impact\nUnintended traffic could be sent to localhost. Impact depends on running services a... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 15,
-      "quality_score": 0.387,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 1,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.387"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
-    },
-    {
-      "id": "CVE-2026-54704",
-      "title": "OpenTelemetry Java Instrumentation: JDBC Auto-Instrumentation Logging Clear-Text Passwords",
-      "description": "OpenTelemetry Java Instrumentation JDBC auto-instrumentation may fail to sanitize passwords in SQL CONNECT statements when the password is double-quoted. As a result, clear-text database passwords can be added to trace span attributes and exported to observability backends.",
-      "cvss": 6.5,
+      "id": "CVE-2026-54705",
+      "title": "mathlive's Lack of Escaping of HTML allows for XSS",
+      "description": "### Summary\n\nDespite the 0.104.0 patch escaping attribute-bearing constructs (`\\htmlData`, `\\href`), text-content reflection was missed. The `\\text{}`, `\\mbox{}` commands accept arbitrary characters in their body and emit them raw and unescaped into both the HTML markup and the M... [Full analysis a",
+      "cvss": 6.3,
       "final_ps": 15,
       "quality_score": 0.378,
       "threat_level": "LOW",
@@ -4294,7 +4295,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-54704"
+        "CVE-2026-54705"
       ],
       "ioc_count": 0,
       "refs": [],
