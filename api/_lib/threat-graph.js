@@ -67,9 +67,29 @@ const THREAT_ACTOR_DB = {
       target_regions: ['global'],
       ttps: ['T1195.002', 'T1190', 'T1078', 'T1059.001', 'T1071.001', 'T1027'],
       description: 'Chinese state-sponsored threat group conducting both espionage for the MSS and financially motivated cybercrime. Known for supply chain attacks, gaming industry IP theft, and rapid exploitation of public-facing application vulnerabilities.',
-      known_cves: ['CVE-2024-27199', 'CVE-2024-27198', 'CVE-2019-3396', 'CVE-2020-10189'],
+      // CVE-2024-27198/27199 removed (GPEP v2 Phase 3, 2026-07-29): sourced
+      // research found no public reporting tying APT41 to the TeamCity CVE
+      // pair — see the new actor:apt29 entry below, which the real
+      // publicly-documented attribution belongs to instead.
+      known_cves: ['CVE-2019-3396', 'CVE-2020-10189'],
       refs: ['https://www.mandiant.com/resources/insights/apt41-dual-espionage-and-cyber-crime-operations',
              'https://www.justice.gov/opa/pr/seven-international-cyber-defendants-including-apt41-associates-charged'],
+    },
+  },
+  'actor:apt29': {
+    id: 'actor:apt29', type: 'ThreatActor', name: 'APT29',
+    attributes: {
+      aliases: ['Cozy Bear', 'BlueBravo', 'Midnight Blizzard', 'NOBELIUM', 'The Dukes'],
+      category: 'nation_state', motivation: 'espionage',
+      sophistication: 'advanced', origin: 'russia', active: true,
+      first_seen: '2008-01-01', last_seen: null,
+      target_sectors: ['government', 'technology', 'think_tanks', 'defense_industrial_base'],
+      target_regions: ['usa', 'europe', 'global'],
+      ttps: ['T1190', 'T1078', 'T1071.001', 'T1027'],
+      description: 'Russian SVR-linked state-sponsored actor (Cozy Bear). Added to this graph (GPEP v2 Phase 3, 2026-07-29) after sourced research corrected a prior entry that misattributed the JetBrains TeamCity CVE-2024-27198/27199 pair to APT41 with no supporting citation for that specific claim. FortiGuard Labs assessed with medium confidence that TeamCity exploitation activity was part of a BlueBravo/APT29 campaign tracked by Mandiant; a separate technical investigation documents APT29 exploiting CVE-2024-27198 specifically. This platform\'s own certified SA-2026-0003 report independently found no source naming any actor for this CVE pair — consistent with this being a real, contested, or at least not-yet-fully-converged attribution, which is why it is recorded here at MEDIUM confidence, not the 0.92 the prior (unsupported) APT41 entry carried.',
+      known_cves: ['CVE-2024-27198'],
+      refs: ['https://www.fortinet.com/blog/threat-research/teamcity-intrusion-saga-apt29-suspected-exploiting-cve-2023-42793',
+             'https://moe-3.gitbook.io/moex0-blog/articles/investigating-apt29-exploiting-teamcity-cve-2024-27198'],
     },
   },
   'actor:cl0p': {
@@ -168,8 +188,13 @@ const THREAT_ACTOR_DB = {
 /* ─── CVE → ACTOR MAPPING (public, verifiable attributions only) ─────── */
 const CVE_ACTOR_MAP = {
   'CVE-2023-27351': ['actor:lockbit', 'actor:cl0p'],     // PaperCut — CISA KEV AA23-131A
-  'CVE-2024-27199': ['actor:apt41', 'actor:cl0p'],       // JetBrains TeamCity — widely attributed
-  'CVE-2024-27198': ['actor:apt41', 'actor:cl0p'],       // JetBrains TeamCity companion
+  // CVE-2024-27198 corrected to actor:apt29 (GPEP v2 Phase 3, 2026-07-29):
+  // the prior 'actor:apt41'/'actor:cl0p' mapping had no supporting public
+  // source for this specific CVE — see actor:apt29's own refs above.
+  // CVE-2024-27199 (the companion path-traversal flaw) is left unmapped:
+  // no source found attributing it to any specific actor, matching this
+  // platform's own certified SA-2026-0003 report's independent finding.
+  'CVE-2024-27198': ['actor:apt29'],                     // JetBrains TeamCity — FortiGuard/Mandiant (medium confidence)
   'CVE-2023-34362': ['actor:cl0p'],                      // MOVEit — CISA AA23-158A
   'CVE-2023-0669':  ['actor:cl0p'],                      // GoAnywhere MFT
   'CVE-2023-20198': ['actor:salt-typhoon'],               // Cisco IOS XE
@@ -180,7 +205,7 @@ const CVE_ACTOR_MAP = {
 /* ─── KEYWORD → ACTOR MAPPING ────────────────────────────────────────── */
 const KEYWORD_ACTOR_MAP = [
   { patterns: [/papercut/i],                                           actors: ['actor:lockbit'] },
-  { patterns: [/teamcity/i, /jetbrains/i],                             actors: ['actor:apt41', 'actor:cl0p'] },
+  { patterns: [/teamcity/i, /jetbrains/i],                             actors: ['actor:apt29'] },
   { patterns: [/trueconf/i, /phantomcore/i],                           actors: ['actor:phantomcore'] },
   { patterns: [/shinyhunters/i, /shiny\s*hunters/i],                   actors: ['actor:shinyhunters'] },
   { patterns: [/volt\s*typhoon/i, /vanguard\s*panda/i],                actors: ['actor:volt-typhoon'] },

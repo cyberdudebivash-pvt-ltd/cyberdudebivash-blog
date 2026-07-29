@@ -1085,5 +1085,86 @@ been live in production since Issue 10, well before this brief was written.
 Corrected to the current four-rung structure (Free API tier, Starter, Pro,
 Enterprise) sourced from `docs/PRICING.md`.
 
+## Issue 17 — Live knowledge graph attributed CVE-2024-27198/27199 to APT41/Cl0p with mis-cited sources, contradicting this platform's own certified report (GPEP v2 Phase 3)
+
+Found while auditing the Knowledge Graph subsystem for GPEP v2 Phase 1.
+`api/_lib/threat-graph.js`'s `CVE_ACTOR_MAP` and the persisted
+`api/intel/threat-graph.json` both attributed the JetBrains TeamCity CVE
+pair (CVE-2024-27198, CVE-2024-27199) to `actor:apt41` and `actor:cl0p` at
+0.92 confidence — this file's own header states "ALL attributions are
+backed by public CISA advisories, vendor reports, or law-enforcement
+disclosures. NO speculative attribution," yet the cited sources for these
+two specific edges were each actor's own *general* profile page
+(APT41: Mandiant's general dual-espionage writeup; Cl0p: CISA's MOVEit
+advisory AA23-158A) — neither source mentions TeamCity or this CVE pair at
+all. This directly contradicted this platform's own certified SA-2026-0003
+report, published earlier the same day, which explicitly and carefully
+found **no source naming any actor** for this exact CVE pair (only the
+ransomware families BianLian and Jasmin, per GuidePoint Security and Trend
+Micro respectively) and recorded that as an Intelligence Gap rather than
+guessing.
+
+**Verified via `WebSearch`, not assumed**: real, independent public
+reporting exists — a FortiGuard Labs writeup (citing Mandiant) assessing
+"medium confidence" that TeamCity exploitation activity was part of a
+BlueBravo/APT29 campaign, plus a separate dedicated technical investigation
+("Investigating APT29 Exploiting TeamCity CVE-2024-27198"). No source
+found ties Cl0p to this specific CVE pair (Cl0p's own real, sourced
+`known_cves` — MOVEit, GoAnywhere, PaperCut — were untouched by this fix).
+`actor:apt29` did not previously exist anywhere in `THREAT_ACTOR_DB`
+despite `api/_lib/intelligence-hub.js` already referencing it in an
+unrelated keyword-classification list — a curated actor profile was never
+built for a real, major nation-state actor the codebase otherwise gestures
+at.
+
+**Resolved**:
+1. `THREAT_ACTOR_DB`: removed CVE-2024-27198/27199 from `actor:apt41`'s
+   `known_cves`; added a new, properly-sourced `actor:apt29` entry.
+2. `CVE_ACTOR_MAP`: `CVE-2024-27198` → `['actor:apt29']` (was
+   `['actor:apt41', 'actor:cl0p']`); `CVE-2024-27199` removed entirely (no
+   source supports any actor for this specific CVE, matching SA-2026-0003's
+   own honest finding — left unattributed rather than guessed).
+3. `KEYWORD_ACTOR_MAP`'s teamcity/jetbrains pattern updated to match.
+4. Persisted `api/intel/threat-graph.json`: removed the 3 mis-sourced edges
+   (`actor:apt41→exploits→CVE-2024-27198`,
+   `actor:apt41→exploits→CVE-2024-27199`,
+   `actor:cl0p→exploits→CVE-2024-27199`) plus their downstream
+   campaign-level echo (`actor:apt41`/`actor:cl0p` also "executed" the two
+   campaign clusters built around these CVEs — the same underlying claim,
+   one hop removed, and equally unsupported); added a correctly-sourced
+   `actor:apt29→exploits→CVE-2024-27198` edge at **0.6 confidence** (medium,
+   matching FortiGuard's own stated confidence — not the prior 0.92) plus
+   the corresponding campaign-execution edges.
+5. Used the existing `loadGraph`/`addNode`/`addEdge`/`saveGraph` functions
+   throughout rather than hand-editing the JSON, so stats recomputation and
+   the dual edges/connections representation stayed consistent
+   automatically.
+6. New regression suite:
+   `tests-js/threat-graph-attribution-accuracy.test.js` (8 tests) — asserts
+   the corrected mapping in source, the absence of the stale edges in the
+   persisted graph, and the new APT29/Malware data's presence, so this
+   specific class of drift is caught automatically going forward.
+
+**Same pass, same file family**: populated the graph's previously-**empty
+Malware node type** (`stats.malware`: 0 → 2) with `malware:bianlian` and
+`malware:jasmin`, sourced directly from SA-2026-0003's own citations —
+`capabilities.md` had explicitly flagged this as unpopulated; closed here
+rather than re-flagged.
+
+**Not attempted, flagged as a Strategic Investment for GPEP v2's Innovation
+Backlog**: this fix addressed the one instance that directly contradicted
+a certified report. Inspecting `actor:apt41`'s full node during this fix
+surfaced dozens of additional algorithmically-attributed edges (real CVEs
+from 2026, auto-aggregated article IDs like `SENTINELAPEX-*`,
+`REDDIT_CYBER-*`, `DARKREADING-*`) at a flat 0.85 confidence, produced by
+`computeActorAttribution`'s keyword/CVE-map matching against the live
+intel feed — none individually re-verified here. Whether this volume of
+automated attribution carries the same risk as the one instance found and
+fixed is an open question this issue surfaces but does not resolve; a
+systematic, likely partially-automatable audit (e.g., checking that each
+edge's cited source URL actually contains the target CVE ID or a
+TeamCity-equivalent keyword) is the natural next step, not undertaken given
+the scope of a single audit pass.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

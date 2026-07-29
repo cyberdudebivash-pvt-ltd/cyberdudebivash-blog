@@ -1,15 +1,15 @@
 {
-  "generated": "2026-07-29T15:31:42.301Z",
+  "generated": "2026-07-29T16:22:48.196Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 9678,
-    "actors": 8,
+    "total_nodes": 9681,
+    "actors": 9,
     "cves": 2702,
     "campaigns": 1007,
-    "malware": 0,
+    "malware": 2,
     "iocs": 862,
-    "edges": 3515
+    "edges": 3514
   },
   "nodes": {
     "actor:lockbit": {
@@ -120,16 +120,6 @@
       "name": "APT41",
       "connections": [
         {
-          "target": "CVE-2024-27199",
-          "relationship": "exploits",
-          "confidence": 0.92
-        },
-        {
-          "target": "CVE-2024-27198",
-          "relationship": "exploits",
-          "confidence": 0.92
-        },
-        {
           "target": "CVE-2019-3396",
           "relationship": "exploits",
           "confidence": 0.92
@@ -140,18 +130,8 @@
           "confidence": 0.92
         },
         {
-          "target": "campaign:cve-2024-27199-and-cve-2024-27198",
-          "relationship": "executes",
-          "confidence": 0.9
-        },
-        {
           "target": "CISA-447ce5be1e8784bc",
           "relationship": "exploits",
-          "confidence": 0.85
-        },
-        {
-          "target": "campaign:cve-2024-27199",
-          "relationship": "executes",
           "confidence": 0.85
         },
         {
@@ -422,11 +402,6 @@
       "name": "Cl0p",
       "connections": [
         {
-          "target": "CVE-2024-27199",
-          "relationship": "exploits",
-          "confidence": 0.92
-        },
-        {
           "target": "CVE-2023-34362",
           "relationship": "exploits",
           "confidence": 0.92
@@ -453,11 +428,6 @@
         },
         {
           "target": "campaign:cve-2023-27351",
-          "relationship": "executes",
-          "confidence": 0.85
-        },
-        {
-          "target": "campaign:cve-2024-27199",
           "relationship": "executes",
           "confidence": 0.85
         },
@@ -1443,6 +1413,16 @@
           "target": "CVE-2024-27199",
           "relationship": "co_occurs_with",
           "confidence": 0.7
+        },
+        {
+          "target": "malware:bianlian",
+          "relationship": "associated_with",
+          "confidence": 0.85
+        },
+        {
+          "target": "malware:jasmin",
+          "relationship": "associated_with",
+          "confidence": 0.85
         }
       ],
       "attributes": {
@@ -184586,6 +184566,95 @@
           "confidence": 1
         }
       ]
+    },
+    "actor:apt29": {
+      "id": "actor:apt29",
+      "type": "ThreatActor",
+      "name": "APT29",
+      "attributes": {
+        "aliases": [
+          "Cozy Bear",
+          "BlueBravo",
+          "Midnight Blizzard",
+          "NOBELIUM",
+          "The Dukes"
+        ],
+        "category": "nation_state",
+        "motivation": "espionage",
+        "sophistication": "advanced",
+        "origin": "russia",
+        "active": true,
+        "first_seen": "2008-01-01",
+        "last_seen": null,
+        "target_sectors": [
+          "government",
+          "technology",
+          "think_tanks",
+          "defense_industrial_base"
+        ],
+        "target_regions": [
+          "usa",
+          "europe",
+          "global"
+        ],
+        "ttps": [
+          "T1190",
+          "T1078",
+          "T1071.001",
+          "T1027"
+        ],
+        "description": "Russian SVR-linked state-sponsored actor (Cozy Bear). Added to this graph (GPEP v2 Phase 3, 2026-07-29) after sourced research corrected a prior entry that misattributed the JetBrains TeamCity CVE-2024-27198/27199 pair to APT41 with no supporting citation for that specific claim. FortiGuard Labs assessed with medium confidence that TeamCity exploitation activity was part of a BlueBravo/APT29 campaign tracked by Mandiant; a separate technical investigation documents APT29 exploiting CVE-2024-27198 specifically. This platform's own certified SA-2026-0003 report independently found no source naming any actor for this CVE pair — consistent with this being a real, contested, or at least not-yet-fully-converged attribution, which is why it is recorded here at MEDIUM confidence, not the 0.92 the prior (unsupported) APT41 entry carried.",
+        "known_cves": [
+          "CVE-2024-27198"
+        ],
+        "refs": [
+          "https://www.fortinet.com/blog/threat-research/teamcity-intrusion-saga-apt29-suspected-exploiting-cve-2023-42793",
+          "https://moe-3.gitbook.io/moex0-blog/articles/investigating-apt29-exploiting-teamcity-cve-2024-27198"
+        ]
+      },
+      "connections": [
+        {
+          "target": "CVE-2024-27198",
+          "relationship": "exploits",
+          "confidence": 0.6
+        },
+        {
+          "target": "campaign:cve-2024-27199-and-cve-2024-27198",
+          "relationship": "executes",
+          "confidence": 0.6
+        },
+        {
+          "target": "campaign:cve-2024-27199",
+          "relationship": "executes",
+          "confidence": 0.6
+        }
+      ]
+    },
+    "malware:bianlian": {
+      "id": "malware:bianlian",
+      "type": "Malware",
+      "name": "BianLian",
+      "attributes": {
+        "category": "ransomware",
+        "description": "Ransomware strain independently confirmed by GuidePoint Security's own direct observation exploiting the JetBrains TeamCity CVE-2024-27198/27199 pair (SA-2026-0003). No file-level IOCs published for this specific campaign in sources available to this platform.",
+        "refs": [
+          "https://www.guidepointsecurity.com/newsroom/threat-actors-actively-exploit-jetbrains-teamcity-flaws-to-deliver-malware/"
+        ]
+      },
+      "connections": []
+    },
+    "malware:jasmin": {
+      "id": "malware:jasmin",
+      "type": "Malware",
+      "name": "Jasmin",
+      "attributes": {
+        "category": "ransomware",
+        "description": "Ransomware strain independently confirmed by Trend Micro's own telemetry, with a documented execution chain (java.exe -> cmd.exe -> msiexec.exe remote MSI) and file-level IOCs, exploiting the JetBrains TeamCity CVE-2024-27198/27199 pair (SA-2026-0003). Appends a .lsoc extension to encrypted files.",
+        "refs": [
+          "https://www.trendmicro.com/en_us/research/24/c/teamcity-vulnerability-exploits-lead-to-jasmin-ransomware.html"
+        ]
+      },
+      "connections": []
     }
   },
   "edges": [
@@ -184643,28 +184712,6 @@
       "sources": []
     },
     {
-      "id": "actor:apt41→exploits→CVE-2024-27199",
-      "source": "actor:apt41",
-      "target": "CVE-2024-27199",
-      "relationship": "exploits",
-      "confidence": 0.92,
-      "first_seen": "2024-03-04",
-      "sources": [
-        "https://www.mandiant.com/resources/insights/apt41-dual-espionage-and-cyber-crime-operations"
-      ]
-    },
-    {
-      "id": "actor:apt41→exploits→CVE-2024-27198",
-      "source": "actor:apt41",
-      "target": "CVE-2024-27198",
-      "relationship": "exploits",
-      "confidence": 0.92,
-      "first_seen": "2024-03-04",
-      "sources": [
-        "https://www.mandiant.com/resources/insights/apt41-dual-espionage-and-cyber-crime-operations"
-      ]
-    },
-    {
       "id": "actor:apt41→exploits→CVE-2019-3396",
       "source": "actor:apt41",
       "target": "CVE-2019-3396",
@@ -184684,26 +184731,6 @@
       "first_seen": "2020-03-05",
       "sources": [
         "https://www.mandiant.com/resources/insights/apt41-dual-espionage-and-cyber-crime-operations"
-      ]
-    },
-    {
-      "id": "actor:apt41→executes→campaign:cve-2024-27199-and-cve-2024-27198",
-      "source": "actor:apt41",
-      "target": "campaign:cve-2024-27199-and-cve-2024-27198",
-      "relationship": "executes",
-      "confidence": 0.9,
-      "first_seen": "2024-03-04",
-      "sources": []
-    },
-    {
-      "id": "actor:cl0p→exploits→CVE-2024-27199",
-      "source": "actor:cl0p",
-      "target": "CVE-2024-27199",
-      "relationship": "exploits",
-      "confidence": 0.92,
-      "first_seen": "2024-03-04",
-      "sources": [
-        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-158a"
       ]
     },
     {
@@ -185045,24 +185072,6 @@
       "id": "actor:cl0p→executes→campaign:cve-2023-27351",
       "source": "actor:cl0p",
       "target": "campaign:cve-2023-27351",
-      "relationship": "executes",
-      "confidence": 0.85,
-      "first_seen": "2026-04-28",
-      "sources": []
-    },
-    {
-      "id": "actor:apt41→executes→campaign:cve-2024-27199",
-      "source": "actor:apt41",
-      "target": "campaign:cve-2024-27199",
-      "relationship": "executes",
-      "confidence": 0.85,
-      "first_seen": "2026-04-28",
-      "sources": []
-    },
-    {
-      "id": "actor:cl0p→executes→campaign:cve-2024-27199",
-      "source": "actor:cl0p",
-      "target": "campaign:cve-2024-27199",
       "relationship": "executes",
       "confidence": 0.85,
       "first_seen": "2026-04-28",
@@ -216380,6 +216389,62 @@
       "first_seen": "2026-07-29",
       "sources": [
         "shared campaign: campaign:cve-2026-65943-and-cve-2026-65946"
+      ]
+    },
+    {
+      "id": "actor:apt29→exploits→CVE-2024-27198",
+      "source": "actor:apt29",
+      "target": "CVE-2024-27198",
+      "relationship": "exploits",
+      "confidence": 0.6,
+      "first_seen": "2024-03-04",
+      "sources": [
+        "https://www.fortinet.com/blog/threat-research/teamcity-intrusion-saga-apt29-suspected-exploiting-cve-2023-42793",
+        "https://moe-3.gitbook.io/moex0-blog/articles/investigating-apt29-exploiting-teamcity-cve-2024-27198"
+      ]
+    },
+    {
+      "id": "CVE-2024-27198→associated_with→malware:bianlian",
+      "source": "CVE-2024-27198",
+      "target": "malware:bianlian",
+      "relationship": "associated_with",
+      "confidence": 0.85,
+      "first_seen": "2024-03-04",
+      "sources": [
+        "https://www.guidepointsecurity.com/newsroom/threat-actors-actively-exploit-jetbrains-teamcity-flaws-to-deliver-malware/"
+      ]
+    },
+    {
+      "id": "CVE-2024-27198→associated_with→malware:jasmin",
+      "source": "CVE-2024-27198",
+      "target": "malware:jasmin",
+      "relationship": "associated_with",
+      "confidence": 0.85,
+      "first_seen": "2024-03-19",
+      "sources": [
+        "https://www.trendmicro.com/en_us/research/24/c/teamcity-vulnerability-exploits-lead-to-jasmin-ransomware.html"
+      ]
+    },
+    {
+      "id": "actor:apt29→executes→campaign:cve-2024-27199-and-cve-2024-27198",
+      "source": "actor:apt29",
+      "target": "campaign:cve-2024-27199-and-cve-2024-27198",
+      "relationship": "executes",
+      "confidence": 0.6,
+      "first_seen": "2024-03-04",
+      "sources": [
+        "https://moe-3.gitbook.io/moex0-blog/articles/investigating-apt29-exploiting-teamcity-cve-2024-27198"
+      ]
+    },
+    {
+      "id": "actor:apt29→executes→campaign:cve-2024-27199",
+      "source": "actor:apt29",
+      "target": "campaign:cve-2024-27199",
+      "relationship": "executes",
+      "confidence": 0.6,
+      "first_seen": "2024-03-04",
+      "sources": [
+        "https://moe-3.gitbook.io/moex0-blog/articles/investigating-apt29-exploiting-teamcity-cve-2024-27198"
       ]
     }
   ]
