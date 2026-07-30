@@ -27,10 +27,12 @@ import {
   generateMalwareDetectionPack,
 } from '../lib/api/detection-rules';
 import type { DetectionRule } from '../lib/detection/schema';
+import { RuleSeverity, DetectionFormat, DetectionBehavior } from '../lib/detection/schema';
+import { IOCType } from '../lib/intelligence/schema';
 
 describe('Detection Engineering - Sigma Rule Generation', () => {
   it('should generate Sigma rule for SHA256 hash', () => {
-    const rule = generateSigmaFromIOC('sha256', 'abc123def456', 'Qilin');
+    const rule = generateSigmaFromIOC(IOCType.SHA256, 'abc123def456', 'Qilin');
     expect(rule.title).toContain('Qilin');
     expect(rule.title).toContain('SHA256');
     expect(rule.logsource.category).toBe('process_creation');
@@ -38,19 +40,19 @@ describe('Detection Engineering - Sigma Rule Generation', () => {
   });
 
   it('should generate Sigma rule for domain IOC', () => {
-    const rule = generateSigmaFromIOC('domain', 'c2.malware.com', 'Qilin');
+    const rule = generateSigmaFromIOC(IOCType.DOMAIN, 'c2.malware.com', 'Qilin');
     expect(rule.title).toContain('C2 Domain');
     expect(rule.logsource.category).toBe('dns_query');
   });
 
   it('should generate Sigma rule for IPv4 IOC', () => {
-    const rule = generateSigmaFromIOC('ipv4', '192.168.1.100', 'BianLian');
+    const rule = generateSigmaFromIOC(IOCType.IPV4, '192.168.1.100', 'BianLian');
     expect(rule.title).toContain('IPv4');
     expect(rule.logsource.category).toBe('network_connection');
   });
 
   it('should include MITRE ATT&CK tags', () => {
-    const rule = generateSigmaFromIOC('domain', 'c2.example.com', 'Malware', {
+    const rule = generateSigmaFromIOC(IOCType.DOMAIN, 'c2.example.com', 'Malware', {
       techniques: ['T1071.001', 'T1008'],
     });
     expect(rule.tags).toContain('attack_t1071_001');
@@ -58,14 +60,14 @@ describe('Detection Engineering - Sigma Rule Generation', () => {
   });
 
   it('should generate unique rule IDs', () => {
-    const rule1 = generateSigmaFromIOC('sha256', 'hash1', 'Malware1');
-    const rule2 = generateSigmaFromIOC('sha256', 'hash2', 'Malware1');
+    const rule1 = generateSigmaFromIOC(IOCType.SHA256, 'hash1', 'Malware1');
+    const rule2 = generateSigmaFromIOC(IOCType.SHA256, 'hash2', 'Malware1');
     expect(rule1.id).not.toBe(rule2.id);
   });
 
   it('should set severity level correctly', () => {
-    const rule = generateSigmaFromIOC('sha256', 'hash', 'Malware', {
-      severity: 'critical',
+    const rule = generateSigmaFromIOC(IOCType.SHA256, 'hash', 'Malware', {
+      severity: RuleSeverity.CRITICAL,
     });
     expect(rule.level).toBe('critical');
   });
@@ -73,28 +75,28 @@ describe('Detection Engineering - Sigma Rule Generation', () => {
 
 describe('Detection Engineering - YARA Rule Generation', () => {
   it('should generate YARA rule for hash IOC', () => {
-    const rule = generateYaraFromIOC('sha256', 'abc123def456', 'Qilin');
+    const rule = generateYaraFromIOC(IOCType.SHA256, 'abc123def456', 'Qilin');
     expect(rule.name).toContain('Qilin');
     expect(rule.strings.length).toBeGreaterThan(0);
     expect(rule.condition).toBeDefined();
   });
 
   it('should generate YARA rule for domain IOC', () => {
-    const rule = generateYaraFromIOC('domain', 'c2.malware.com', 'Qilin');
+    const rule = generateYaraFromIOC(IOCType.DOMAIN, 'c2.malware.com', 'Qilin');
     expect(rule.strings.length).toBeGreaterThan(0);
     // Should have multiple variants (direct, encoded, wildcard)
     expect(rule.strings.length).toBeGreaterThanOrEqual(2);
   });
 
   it('should include metadata in YARA rule', () => {
-    const rule = generateYaraFromIOC('filename', 'malware.exe', 'Malware');
+    const rule = generateYaraFromIOC(IOCType.FILE_PATH, 'malware.exe', 'Malware');
     expect(rule.metadata.author).toContain('SENTINEL APEX');
     expect(rule.metadata.malware_family).toBe('malware');
     expect(rule.metadata.severity).toBeGreaterThan(0);
   });
 
   it('should generate valid YARA conditions', () => {
-    const rule = generateYaraFromIOC('registry', 'HKEY_LOCAL_MACHINE\\Software\\Test', 'Malware');
+    const rule = generateYaraFromIOC(IOCType.REGISTRY, 'HKEY_LOCAL_MACHINE\\Software\\Test', 'Malware');
     expect(rule.condition).toBeTruthy();
     // Condition should reference string names
     const conditionHasStringRef = rule.strings.some(s => rule.condition.includes(s.name));
@@ -104,20 +106,20 @@ describe('Detection Engineering - YARA Rule Generation', () => {
 
 describe('Detection Engineering - Suricata Rule Generation', () => {
   it('should generate Suricata rules for IPv4 IOC', () => {
-    const rules = generateSuricataFromIOC('ipv4', '192.168.1.100', 'Qilin');
+    const rules = generateSuricataFromIOC(IOCType.IPV4, '192.168.1.100', 'Qilin');
     expect(rules.length).toBeGreaterThan(0);
     expect(rules[0].msg).toContain('Qilin');
   });
 
   it('should generate bidirectional rules for network communication', () => {
-    const rules = generateSuricataFromIOC('ipv4', '10.0.0.1', 'Malware');
+    const rules = generateSuricataFromIOC(IOCType.IPV4, '10.0.0.1', 'Malware');
     // Should have inbound and outbound rules
     const hasInbound = rules.some(r => r.msg.includes('Outbound') || r.msg.includes('Communication'));
     expect(hasInbound).toBe(true);
   });
 
   it('should include proper Suricata action', () => {
-    const rules = generateSuricataFromIOC('domain', 'evil.com', 'Malware');
+    const rules = generateSuricataFromIOC(IOCType.DOMAIN, 'evil.com', 'Malware');
     expect(rules.length).toBeGreaterThan(0);
     for (const rule of rules) {
       expect(['alert', 'drop', 'reject', 'pass'].includes(rule.action)).toBe(true);
@@ -125,13 +127,13 @@ describe('Detection Engineering - Suricata Rule Generation', () => {
   });
 
   it('should generate HTTP rules for URLs', () => {
-    const rules = generateSuricataFromIOC('url', 'https://evil.com/malware/loader', 'Malware');
+    const rules = generateSuricataFromIOC(IOCType.URL, 'https://evil.com/malware/loader', 'Malware');
     expect(rules.length).toBeGreaterThan(0);
   });
 
   it('should assign unique SIDs to rules', () => {
-    const rules1 = generateSuricataFromIOC('ipv4', '1.1.1.1', 'Malware1');
-    const rules2 = generateSuricataFromIOC('ipv4', '2.2.2.2', 'Malware2');
+    const rules1 = generateSuricataFromIOC(IOCType.IPV4, '1.1.1.1', 'Malware1');
+    const rules2 = generateSuricataFromIOC(IOCType.IPV4, '2.2.2.2', 'Malware2');
     const sids1 = new Set(rules1.map(r => r.sid));
     const sids2 = new Set(rules2.map(r => r.sid));
     expect(sids1.size).toBe(rules1.length);
@@ -141,35 +143,35 @@ describe('Detection Engineering - Suricata Rule Generation', () => {
 
 describe('Detection Engineering - SIEM Rule Generation', () => {
   it('should generate Splunk search for IOC', () => {
-    const rules = generateSEMRuleFromIOC('sha256', 'abc123', 'Malware');
+    const rules = generateSEMRuleFromIOC(IOCType.SHA256, 'abc123', 'Malware');
     const splunkRule = rules.find(r => r.source === 'splunk');
     expect(splunkRule).toBeDefined();
     expect(splunkRule?.fields.some(f => f.name === 'search')).toBe(true);
   });
 
   it('should generate Elasticsearch query for IOC', () => {
-    const rules = generateSEMRuleFromIOC('domain', 'evil.com', 'Malware');
+    const rules = generateSEMRuleFromIOC(IOCType.DOMAIN, 'evil.com', 'Malware');
     const elkRule = rules.find(r => r.source === 'elk');
     expect(elkRule).toBeDefined();
     expect(elkRule?.fields.some(f => f.name === 'query')).toBe(true);
   });
 
   it('should generate Azure Sentinel KQL query', () => {
-    const rules = generateSEMRuleFromIOC('ipv4', '192.168.1.1', 'Malware');
+    const rules = generateSEMRuleFromIOC(IOCType.IPV4, '192.168.1.1', 'Malware');
     const sentinelRule = rules.find(r => r.source === 'sentinel');
     expect(sentinelRule).toBeDefined();
     expect(sentinelRule?.fields.some(f => f.name === 'query')).toBe(true);
   });
 
   it('should generate ArcSight AEL rule', () => {
-    const rules = generateSEMRuleFromIOC('email', 'attacker@evil.com', 'Malware');
+    const rules = generateSEMRuleFromIOC(IOCType.EMAIL, 'attacker@evil.com', 'Malware');
     const arcRule = rules.find(r => r.source === 'arcsight');
     expect(arcRule).toBeDefined();
   });
 
   it('should include severity in SIEM rules', () => {
-    const rules = generateSEMRuleFromIOC('registry', 'HKEY_LOCAL_MACHINE\\Software', 'Malware', {
-      severity: 'critical',
+    const rules = generateSEMRuleFromIOC(IOCType.REGISTRY, 'HKEY_LOCAL_MACHINE\\Software', 'Malware', {
+      severity: RuleSeverity.CRITICAL,
     });
     for (const rule of rules) {
       expect(rule.severity).toBe('critical');
@@ -179,7 +181,7 @@ describe('Detection Engineering - SIEM Rule Generation', () => {
 
 describe('Detection Engineering - Rule Validation', () => {
   it('should validate Sigma rule successfully', () => {
-    const rule = generateSigmaFromIOC('sha256', 'hash', 'Malware');
+    const rule = generateSigmaFromIOC(IOCType.SHA256, 'hash', 'Malware');
     const validation = validateSigmaRule(rule);
     expect(validation.valid).toBe(true);
     expect(validation.errors.length).toBe(0);
@@ -195,14 +197,14 @@ describe('Detection Engineering - Rule Validation', () => {
       date: '2024-01-01',
       logsource: {},
       detection: { selection: {}, condition: 'selection' },
-      level: 'high' as const,
+      level: RuleSeverity.HIGH as const,
     };
     const validation = validateSigmaRule(invalidRule);
     expect(validation.valid).toBe(false);
   });
 
   it('should validate YARA rule successfully', () => {
-    const rule = generateYaraFromIOC('filename', 'malware.exe', 'Malware');
+    const rule = generateYaraFromIOC(IOCType.FILE_PATH, 'malware.exe', 'Malware');
     const validation = validateYaraRule(rule);
     expect(validation.valid).toBe(true);
   });
@@ -214,9 +216,9 @@ describe('Detection Engineering - Rule Validation', () => {
       description: 'Test detection rule',
       author: 'Test Author',
       date: '2024-01-01',
-      severity: 'high',
+      severity: RuleSeverity.HIGH,
       formats: {
-        sigma: generateSigmaFromIOC('sha256', 'hash', 'Malware'),
+        sigma: generateSigmaFromIOC(IOCType.SHA256, 'hash', 'Malware'),
       },
       metadata: {
         linkedMalware: ['malware_1'],
@@ -241,7 +243,7 @@ describe('Detection Engineering - Rule Deduplication', () => {
       description: 'Test',
       author: 'Test',
       date: '2024-01-01',
-      severity: 'high',
+      severity: RuleSeverity.HIGH,
       formats: {},
       metadata: {
         linkedMalware: ['malware_1'],
@@ -267,7 +269,7 @@ describe('Detection Engineering - Rule Deduplication', () => {
       description: 'Test',
       author: 'Test',
       date: '2024-01-01',
-      severity: 'high',
+      severity: RuleSeverity.HIGH,
       formats: {},
       metadata: {
         linkedMalware: ['mal1'],
@@ -285,7 +287,7 @@ describe('Detection Engineering - Rule Deduplication', () => {
       description: 'Test',
       author: 'Test',
       date: '2024-01-01',
-      severity: 'high',
+      severity: RuleSeverity.HIGH,
       formats: {},
       metadata: {
         linkedMalware: ['mal1'],
@@ -313,8 +315,8 @@ describe('Detection Engineering - Rule Optimization', () => {
         description: 'Test',
         author: 'Test',
         date: '2024-01-01',
-        severity: 'high',
-        formats: { sigma: generateSigmaFromIOC('sha256', `hash${i}`, 'Malware') },
+        severity: RuleSeverity.HIGH,
+        formats: { sigma: generateSigmaFromIOC(IOCType.SHA256, `hash${i}`, 'Malware') },
         metadata: {
           linkedMalware: ['malware_1'],
           linkedTechniques: ['T1543'],
@@ -343,9 +345,9 @@ describe('Detection Engineering - Rule Rendering', () => {
       description: 'Test',
       author: 'Test',
       date: '2024-01-01',
-      severity: 'high',
+      severity: RuleSeverity.HIGH,
       formats: {
-        sigma: generateSigmaFromIOC('sha256', 'hash', 'Malware'),
+        sigma: generateSigmaFromIOC(IOCType.SHA256, 'hash', 'Malware'),
       },
       metadata: {
         linkedMalware: ['malware_1'],
@@ -358,7 +360,7 @@ describe('Detection Engineering - Rule Rendering', () => {
     };
 
     const collection = buildDetectionCollection('TestMalware', [detectionRule]);
-    const export_ = renderDetectionRuleExport(collection, 'sigma');
+    const export_ = renderDetectionRuleExport(collection, DetectionFormat.SIGMA);
     expect(export_.content.length).toBeGreaterThan(0);
     expect(export_.mimeType).toContain('yaml');
   });
@@ -370,9 +372,9 @@ describe('Detection Engineering - Rule Rendering', () => {
       description: 'Test',
       author: 'Test',
       date: '2024-01-01',
-      severity: 'high',
+      severity: RuleSeverity.HIGH,
       formats: {
-        yara: generateYaraFromIOC('filename', 'malware.exe', 'Malware'),
+        yara: generateYaraFromIOC(IOCType.FILE_PATH, 'malware.exe', 'Malware'),
       },
       metadata: {
         linkedMalware: [],
@@ -385,7 +387,7 @@ describe('Detection Engineering - Rule Rendering', () => {
     };
 
     const collection = buildDetectionCollection('TestMalware', [detectionRule]);
-    const export_ = renderDetectionRuleExport(collection, 'yara');
+    const export_ = renderDetectionRuleExport(collection, DetectionFormat.YARA);
     expect(export_.content.length).toBeGreaterThan(0);
     expect(export_.content).toContain('rule');
   });
@@ -397,9 +399,9 @@ describe('Detection Engineering - Rule Rendering', () => {
       description: 'Test',
       author: 'Test',
       date: '2024-01-01',
-      severity: 'high',
+      severity: RuleSeverity.HIGH,
       formats: {
-        suricata: generateSuricataFromIOC('ipv4', '192.168.1.1', 'Malware'),
+        suricata: generateSuricataFromIOC(IOCType.IPV4, '192.168.1.1', 'Malware'),
       },
       metadata: {
         linkedMalware: [],
@@ -412,7 +414,7 @@ describe('Detection Engineering - Rule Rendering', () => {
     };
 
     const collection = buildDetectionCollection('TestMalware', [detectionRule]);
-    const export_ = renderDetectionRuleExport(collection, 'suricata');
+    const export_ = renderDetectionRuleExport(collection, DetectionFormat.SURICATA);
     expect(export_.content.length).toBeGreaterThan(0);
   });
 });
@@ -420,10 +422,10 @@ describe('Detection Engineering - Rule Rendering', () => {
 describe('Detection Engineering - API Integration', () => {
   it('should generate detection rules via API', () => {
     const response = generateDetectionRules({
-      iocType: 'sha256',
+      iocType: IOCType.SHA256,
       iocValue: 'abc123',
       malwareId: 'test_malware',
-      formats: ['sigma'],
+      formats: [DetectionFormat.SIGMA],
     });
 
     expect(response.rules.length).toBeGreaterThan(0);
@@ -433,7 +435,7 @@ describe('Detection Engineering - API Integration', () => {
 
   it('should retrieve generated detection rule', () => {
     const response = generateDetectionRules({
-      iocType: 'domain',
+      iocType: IOCType.DOMAIN,
       iocValue: 'evil.com',
       malwareId: 'test_malware',
     });
@@ -446,7 +448,7 @@ describe('Detection Engineering - API Integration', () => {
 
   it('should search detection rules by malware ID', () => {
     generateDetectionRules({
-      iocType: 'sha256',
+      iocType: IOCType.SHA256,
       iocValue: 'hash1',
       malwareId: 'qilin',
     });
@@ -462,23 +464,23 @@ describe('Detection Engineering - API Integration', () => {
       malwareName: 'Qilin Ransomware',
       iocs: [
         {
-          type: 'sha256',
+          type: IOCType.SHA256,
           value: 'hash1',
           confidence: 'HIGH',
         },
         {
-          type: 'domain',
+          type: IOCType.DOMAIN,
           value: 'c2.malware.com',
           confidence: 'HIGH',
         },
         {
-          type: 'ipv4',
+          type: IOCType.IPV4,
           value: '192.168.1.1',
           confidence: 'MEDIUM',
         },
       ],
       techniques: ['T1543', 'T1071.001'],
-      formats: ['sigma', 'yara'],
+      formats: [DetectionFormat.SIGMA, DetectionFormat.YARA],
     });
 
     expect(rules.length).toBeGreaterThanOrEqual(2);
@@ -487,9 +489,9 @@ describe('Detection Engineering - API Integration', () => {
 
   it('should calculate detection rule statistics', () => {
     generateDetectionRules({
-      iocType: 'sha256',
+      iocType: IOCType.SHA256,
       iocValue: 'hash',
-      formats: ['sigma', 'yara', 'suricata'],
+      formats: [DetectionFormat.SIGMA, DetectionFormat.YARA, DetectionFormat.SURICATA],
     });
 
     const stats = getDetectionRuleStats();
@@ -502,13 +504,13 @@ describe('Detection Engineering - API Integration', () => {
 
 describe('Detection Engineering - MITRE Technique Mapping', () => {
   it('should map behaviors to MITRE techniques', () => {
-    const techniques = mapBehaviorToTechniques(['NETWORK_COMMUNICATION']);
+    const techniques = mapBehaviorToTechniques([DetectionBehavior.NETWORK_COMMUNICATION]);
     expect(techniques.length).toBeGreaterThan(0);
     expect(techniques[0].technique_id).toMatch(/^T\d+/);
   });
 
   it('should include multiple behaviors', () => {
-    const techniques = mapBehaviorToTechniques(['PERSISTENCE', 'DEFENSE_EVASION']);
+    const techniques = mapBehaviorToTechniques([DetectionBehavior.PERSISTENCE, DetectionBehavior.DEFENSE_EVASION]);
     expect(techniques.length).toBeGreaterThan(0);
   });
 });
@@ -523,7 +525,7 @@ describe('Detection Engineering - Rule Prioritization', () => {
         description: 'Test',
         author: 'Test',
         date: '2024-01-01',
-        severity: 'high',
+        severity: RuleSeverity.HIGH,
         formats: {},
         metadata: {
           linkedMalware: ['malware_1'],
@@ -552,7 +554,7 @@ describe('Detection Engineering - Rule Coverage Analysis', () => {
         description: 'Test',
         author: 'Test',
         date: '2024-01-01',
-        severity: 'high',
+        severity: RuleSeverity.HIGH,
         formats: {},
         metadata: {
           linkedMalware: [],
@@ -568,7 +570,7 @@ describe('Detection Engineering - Rule Coverage Analysis', () => {
     const allIOCs = ['ioc1', 'ioc2', 'ioc3'];
     const coverage = calculateRuleCoverage(rules, allIOCs);
     expect(coverage.totalIOCs).toBe(3);
-    expect(coverage.coveredByRule).toBe(2);
+    expect(coverage.coveredIOCs).toBe(2);
     expect(coverage.coverage).toBeLessThanOrEqual(100);
   });
 });
@@ -579,9 +581,9 @@ describe('Detection Engineering - Performance', () => {
 
     for (let i = 0; i < 100; i++) {
       generateDetectionRules({
-        iocType: 'sha256',
+        iocType: IOCType.SHA256,
         iocValue: `hash${i}`,
-        formats: ['sigma'],
+        formats: [DetectionFormat.SIGMA],
       });
     }
 
@@ -598,7 +600,7 @@ describe('Detection Engineering - Performance', () => {
         description: 'Test',
         author: 'Test',
         date: '2024-01-01',
-        severity: 'high',
+        severity: RuleSeverity.HIGH,
         formats: {},
         metadata: {
           linkedMalware: [i % 10 === 0 ? 'malware_1' : 'malware_2'],

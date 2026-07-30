@@ -15,8 +15,13 @@ import {
   policyEngine,
   reviewerEngine,
 } from '../lib/governance';
-import { WorkflowState as WorkflowStateEnum } from '../lib/governance/types';
-import { ApprovalRole as ApprovalRoleEnum, ApprovalStatus as ApprovalStatusEnum } from '../lib/governance/types';
+import {
+  WorkflowState as WorkflowStateEnum,
+  ApprovalRole as ApprovalRoleEnum,
+  ApprovalStatus as ApprovalStatusEnum,
+  AuditAction as AuditActionEnum,
+  PublishDestination as PublishDestinationEnum,
+} from '../lib/governance/types';
 
 describe('Governance Layer', () => {
   // ============================================================================
@@ -61,7 +66,7 @@ describe('Governance Layer', () => {
         objectId,
         WorkflowStateEnum.DRAFT,
         WorkflowStateEnum.SCHEMA_VALIDATED,
-        'analyst'
+        ApprovalRoleEnum.ANALYST
       );
 
       const history = workflowEngine.getTransitionHistory(objectId);
@@ -75,7 +80,7 @@ describe('Governance Layer', () => {
         objectId,
         WorkflowStateEnum.DRAFT,
         WorkflowStateEnum.ANALYST_REVIEW,
-        'analyst'
+        ApprovalRoleEnum.ANALYST
       );
 
       const current = workflowEngine.getCurrentState(objectId);
@@ -88,7 +93,7 @@ describe('Governance Layer', () => {
         objectId,
         WorkflowStateEnum.DRAFT,
         WorkflowStateEnum.ANALYST_REVIEW,
-        'analyst'
+        ApprovalRoleEnum.ANALYST
       );
 
       const isStale = workflowEngine.isStale(objectId, 1); // 1ms threshold
@@ -101,10 +106,10 @@ describe('Governance Layer', () => {
         objectId,
         WorkflowStateEnum.DRAFT,
         WorkflowStateEnum.ANALYST_REVIEW,
-        'analyst'
+        ApprovalRoleEnum.ANALYST
       );
 
-      await workflowEngine.resetToDraft(objectId, 'admin', 'Needs correction');
+      await workflowEngine.resetToDraft(objectId, ApprovalRoleEnum.ADMIN, 'Needs correction');
       const current = workflowEngine.getCurrentState(objectId);
       expect(current).toBe(WorkflowStateEnum.DRAFT);
     });
@@ -133,7 +138,6 @@ describe('Governance Layer', () => {
       const approval = chain.approvals[0];
 
       await approvalManager.approve(approval.approvalId, 'john-analyst');
-      const approved = approvalManager.approvalManager?.approvals.get(approval.approvalId);
 
       expect(approval.status).toBe(ApprovalStatusEnum.APPROVED);
     });
@@ -386,7 +390,7 @@ describe('Governance Layer', () => {
     test('should record audit entry', () => {
       const entry = auditEngine.recordEntry(
         'user-1',
-        'created',
+        AuditActionEnum.CREATED,
         'report',
         'report-1'
       );
@@ -399,7 +403,7 @@ describe('Governance Layer', () => {
     test('should track field changes', () => {
       auditEngine.recordEntry(
         'user-2',
-        'modified',
+        AuditActionEnum.MODIFIED,
         'report',
         'report-2',
         [
@@ -414,16 +418,16 @@ describe('Governance Layer', () => {
     });
 
     test('should filter entries by action', () => {
-      auditEngine.recordEntry('user-3', 'approved', 'report', 'report-3');
-      auditEngine.recordEntry('user-4', 'rejected', 'report', 'report-3');
+      auditEngine.recordEntry('user-3', AuditActionEnum.APPROVED, 'report', 'report-3');
+      auditEngine.recordEntry('user-4', AuditActionEnum.REJECTED, 'report', 'report-3');
 
-      const approved = auditEngine.getEntriesByAction('report-3', 'approved');
+      const approved = auditEngine.getEntriesByAction('report-3', AuditActionEnum.APPROVED);
       expect(approved.length).toBe(1);
     });
 
     test('should verify audit integrity', () => {
       const objectId = 'report-integrity';
-      auditEngine.recordEntry('user-5', 'created', 'report', objectId);
+      auditEngine.recordEntry('user-5', AuditActionEnum.CREATED, 'report', objectId);
 
       const result = auditEngine.verifyIntegrity(objectId);
       expect(result.isValid).toBe(true);
@@ -431,13 +435,13 @@ describe('Governance Layer', () => {
 
     test('should generate audit report', () => {
       const objectId = 'report-audit';
-      auditEngine.recordEntry('user-6', 'created', 'report', objectId);
-      auditEngine.recordEntry('user-7', 'reviewed', 'report', objectId, undefined, 'Looks good');
+      auditEngine.recordEntry('user-6', AuditActionEnum.CREATED, 'report', objectId);
+      auditEngine.recordEntry('user-7', AuditActionEnum.REVIEWED, 'report', objectId, undefined, 'Looks good');
 
       const report = auditEngine.generateAuditReport(objectId);
       expect(report).toContain('Audit Report');
-      expect(report).toContain('created');
-      expect(report).toContain('reviewed');
+      expect(report).toContain(AuditActionEnum.CREATED);
+      expect(report).toContain(AuditActionEnum.REVIEWED);
     });
   });
 
@@ -468,7 +472,7 @@ describe('Governance Layer', () => {
         'report-2',
         1,
         { name: 'v1' },
-        'analyst',
+        ApprovalRoleEnum.ANALYST,
         'v1',
         { fieldChanges: [], iocChanges: { added: [], removed: [], modified: [] }, detectionChanges: { added: [], removed: [], modified: [] }, techniqueChanges: { added: [], removed: [] } }
       );
@@ -484,7 +488,7 @@ describe('Governance Layer', () => {
         'report-3',
         1,
         { name: 'Test' },
-        'analyst',
+        ApprovalRoleEnum.ANALYST,
         'Initial',
         { fieldChanges: [], iocChanges: { added: [], removed: [], modified: [] }, detectionChanges: { added: [], removed: [], modified: [] }, techniqueChanges: { added: [], removed: [] } }
       );
@@ -500,7 +504,7 @@ describe('Governance Layer', () => {
         'report-4',
         1,
         { name: 'v1' },
-        'analyst',
+        ApprovalRoleEnum.ANALYST,
         'Initial version',
         { fieldChanges: [], iocChanges: { added: [], removed: [], modified: [] }, detectionChanges: { added: [], removed: [], modified: [] }, techniqueChanges: { added: [], removed: [] } }
       );
@@ -542,7 +546,7 @@ describe('Governance Layer', () => {
         'medium',
         'Details',
         [],
-        'admin'
+        ApprovalRoleEnum.ADMIN
       );
 
       rollbackEngine.recordNotificationSent(retraction.retractionId, 'email', 150);
@@ -559,7 +563,7 @@ describe('Governance Layer', () => {
         'low',
         'Typo fixed',
         [],
-        'analyst'
+        ApprovalRoleEnum.ANALYST
       );
 
       rollbackEngine.markCorrected(retraction.retractionId, 'version-2');
@@ -568,15 +572,15 @@ describe('Governance Layer', () => {
     });
 
     test('should get retractions by severity', () => {
-      rollbackEngine.retract('obj-1', 'report', 'v1', 'Reason', 'critical', 'Details', [], 'admin');
-      rollbackEngine.retract('obj-2', 'report', 'v1', 'Reason', 'low', 'Details', [], 'admin');
+      rollbackEngine.retract('obj-1', 'report', 'v1', 'Reason', 'critical', 'Details', [], ApprovalRoleEnum.ADMIN);
+      rollbackEngine.retract('obj-2', 'report', 'v1', 'Reason', 'low', 'Details', [], ApprovalRoleEnum.ADMIN);
 
       const critical = rollbackEngine.getRetractionsBySeverity('critical');
       expect(critical.length).toBeGreaterThan(0);
     });
 
     test('should generate retraction report', () => {
-      rollbackEngine.retract('report-4', 'report', 'v1', 'Test', 'medium', 'Details', ['affected-1'], 'admin');
+      rollbackEngine.retract('report-4', 'report', 'v1', 'Test', 'medium', 'Details', ['affected-1'], ApprovalRoleEnum.ADMIN);
 
       const report = rollbackEngine.generateRetractionReport('report-4');
       expect(report).toContain('Retraction Report');
@@ -595,7 +599,7 @@ describe('Governance Layer', () => {
         'report',
         'version-1',
         'publisher-1',
-        ['api', 'blog', 'rss'],
+        [PublishDestinationEnum.API, PublishDestinationEnum.BLOG, PublishDestinationEnum.RSS],
         [
           { format: 'markdown', content: '# Report' },
           { format: 'html', content: '<h1>Report</h1>' },
@@ -613,7 +617,7 @@ describe('Governance Layer', () => {
         'report',
         'version-1',
         'publisher',
-        ['api'],
+        [PublishDestinationEnum.API],
         [{ format: 'json', content: '{}' }]
       );
 
@@ -630,18 +634,18 @@ describe('Governance Layer', () => {
         'report',
         'version-1',
         'publisher',
-        ['api', 'blog'],
+        [PublishDestinationEnum.API, PublishDestinationEnum.BLOG],
         [{ format: 'markdown', content: '#' }]
       );
 
-      publishingEngine.unpublishFromDestination(record.publishingId, 'blog');
+      publishingEngine.unpublishFromDestination(record.publishingId, PublishDestinationEnum.BLOG);
       const updated = publishingEngine.getPublishingRecord(record.publishingId);
       expect(updated?.destinations.length).toBe(1);
     });
 
     test('should get most popular published objects', () => {
-      publishingEngine.publish('report-4', 'report', 'v1', 'pub', ['api'], [{ format: 'json', content: '' }]);
-      publishingEngine.publish('report-5', 'report', 'v1', 'pub', ['api'], [{ format: 'json', content: '' }]);
+      publishingEngine.publish('report-4', 'report', 'v1', 'pub', [PublishDestinationEnum.API], [{ format: 'json', content: '' }]);
+      publishingEngine.publish('report-5', 'report', 'v1', 'pub', [PublishDestinationEnum.API], [{ format: 'json', content: '' }]);
 
       const popular = publishingEngine.getMostPopular(5);
       expect(popular.length).toBeGreaterThanOrEqual(0);
@@ -695,11 +699,11 @@ describe('Governance Layer', () => {
     test('should disable and enable policies', () => {
       const policy = policyEngine.createPolicy('Toggle', 'Test');
 
-      policyEngine.disablePolicy(policy.policyId, 'admin');
+      policyEngine.disablePolicy(policy.policyId, ApprovalRoleEnum.ADMIN);
       const disabled = policyEngine.getPolicy(policy.policyId);
       expect(disabled?.active).toBe(false);
 
-      policyEngine.enablePolicy(policy.policyId, 'admin');
+      policyEngine.enablePolicy(policy.policyId, ApprovalRoleEnum.ADMIN);
       const enabled = policyEngine.getPolicy(policy.policyId);
       expect(enabled?.active).toBe(true);
     });
@@ -714,7 +718,7 @@ describe('Governance Layer', () => {
       const reviewer = reviewerEngine.registerReviewer(
         'John Analyst',
         'john@example.com',
-        ['analyst', 'peer_analyst'],
+        [ApprovalRoleEnum.ANALYST, ApprovalRoleEnum.PEER_ANALYST],
         ['ransomware', 'APT']
       );
 
@@ -725,21 +729,21 @@ describe('Governance Layer', () => {
     });
 
     test('should get reviewers by role', () => {
-      reviewerEngine.registerReviewer('Jane QA', 'jane@example.com', ['qa_lead'], []);
+      reviewerEngine.registerReviewer('Jane QA', 'jane@example.com', [ApprovalRoleEnum.QA_LEAD], []);
 
-      const qaReviewers = reviewerEngine.getReviewersByRole('qa_lead');
+      const qaReviewers = reviewerEngine.getReviewersByRole(ApprovalRoleEnum.QA_LEAD);
       expect(qaReviewers.length).toBeGreaterThan(0);
     });
 
     test('should get reviewers by expertise', () => {
-      reviewerEngine.registerReviewer('Expert', 'expert@example.com', ['analyst'], ['zero-day']);
+      reviewerEngine.registerReviewer('Expert', 'expert@example.com', [ApprovalRoleEnum.ANALYST], ['zero-day']);
 
       const experts = reviewerEngine.getReviewersByExpertise('zero-day');
       expect(experts.length).toBeGreaterThan(0);
     });
 
     test('should track review statistics', () => {
-      const reviewer = reviewerEngine.registerReviewer('Reviewer', 'r@example.com', ['analyst'], []);
+      const reviewer = reviewerEngine.registerReviewer('Reviewer', 'r@example.com', [ApprovalRoleEnum.ANALYST], []);
 
       reviewerEngine.recordReview(reviewer.reviewerId, true, 3600000); // 1 hour
 
@@ -749,7 +753,7 @@ describe('Governance Layer', () => {
     });
 
     test('should deactivate and reactivate reviewers', () => {
-      const reviewer = reviewerEngine.registerReviewer('Active', 'a@example.com', ['analyst'], []);
+      const reviewer = reviewerEngine.registerReviewer('Active', 'a@example.com', [ApprovalRoleEnum.ANALYST], []);
 
       reviewerEngine.deactivateReviewer(reviewer.reviewerId);
       const deactivated = reviewerEngine.getReviewer(reviewer.reviewerId);
@@ -761,15 +765,15 @@ describe('Governance Layer', () => {
     });
 
     test('should find best reviewer for role', () => {
-      reviewerEngine.registerReviewer('Best Reviewer', 'best@example.com', ['qa_lead'], ['ransomware']);
+      reviewerEngine.registerReviewer('Best Reviewer', 'best@example.com', [ApprovalRoleEnum.QA_LEAD], ['ransomware']);
 
-      const best = reviewerEngine.findBestReviewerForRole('qa_lead', 'ransomware');
+      const best = reviewerEngine.findBestReviewerForRole(ApprovalRoleEnum.QA_LEAD, 'ransomware');
       expect(best).not.toBeNull();
       expect(best?.expertise).toContain('ransomware');
     });
 
     test('should get top approvers', () => {
-      const reviewer = reviewerEngine.registerReviewer('Top', 'top@example.com', ['analyst'], []);
+      const reviewer = reviewerEngine.registerReviewer('Top', 'top@example.com', [ApprovalRoleEnum.ANALYST], []);
 
       reviewerEngine.recordReview(reviewer.reviewerId, true, 1000);
       reviewerEngine.recordReview(reviewer.reviewerId, true, 1000);

@@ -286,7 +286,7 @@ describe('IOC Intelligence Engine', () => {
 
       // Get an IOC from the malware
       const testIOC = malware.iocs[0];
-      if (testIOC) {
+      if (testIOC && testIOC.normalized) {
         const correlation = correlator.correlate(testIOC.normalized, testIOC.type);
         expect(correlation.correlated_malware).toContain('qilin');
       }
@@ -298,7 +298,7 @@ describe('IOC Intelligence Engine', () => {
       correlator.loadMalwareFamilies([malware]);
 
       const testIOC = malware.iocs[0];
-      if (testIOC) {
+      if (testIOC && testIOC.normalized) {
         const graph = correlator.getCorrelationGraph(testIOC.normalized);
         expect(graph.ioc).toBe(testIOC.normalized);
         expect(graph.malware.length).toBeGreaterThanOrEqual(0);
