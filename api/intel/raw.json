@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-30T14:40:35.551Z",
+  "generated": "2026-07-30T16:23:11.894Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 145,
+  "count": 149,
   "items": [
     {
       "id": "SENTINELAPEX-5c7197fa7f4d",
@@ -188,6 +188,76 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-66066",
+      "title": "KindaRails2Shell: arbitrary file read to RCE in Rails Active Storage via libvips (CVE-2026-66066)",
+      "description": "Active Storage's default vips variant processor exposes an arbitrary file read that chains to RCE on stock Rails 7.x and 8.x, where the app serves back processed variants of user-supplied images. No authentication required in certain setups. Only vips is affected, Magick is not. Patched in 7.2.3.2, ",
+      "cvss": 8,
+      "final_ps": 85,
+      "quality_score": 0.595,
+      "threat_level": "CRITICAL",
+      "type": "CVE_REPORT",
+      "source": "reddit_netsec",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_netsec"
+      ],
+      "first_seen": "2026-07-30",
+      "last_seen": "2026-07-30",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_netsec",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-66066"
+      ],
+      "ioc_count": 3,
+      "refs": [
+        "https://www.reddit.com/r/netsec/comments/1vauljz/kindarails2shell_arbitrary_file_read_to_rce_in/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_netsec)",
+          "data_confidence=1.00",
+          "ioc_presence=3 IOCs",
+          "recency=0d (score=1.00)",
+          "QS=0.595"
+        ],
+        "priority": [
+          "+12 PoC_available",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "ipv4",
+          "value": "7.2.3.2",
+          "confidence_score": 0.88,
+          "first_seen": "2026-07-30",
+          "source_count": 1
+        },
+        {
+          "type": "ipv4",
+          "value": "8.0.5.1",
+          "confidence_score": 0.88,
+          "first_seen": "2026-07-30",
+          "source_count": 1
+        },
+        {
+          "type": "ipv4",
+          "value": "8.1.3.1",
+          "confidence_score": 0.88,
+          "first_seen": "2026-07-30",
+          "source_count": 1
+        }
+      ]
+    },
+    {
       "id": "SENTINELAPEX-1fa6060a73ac",
       "title": "vBulletin fixes critical pre-auth RCE flaw with public exploit",
       "description": "A critical vulnerability in the vBulletin forum software allows unauthenticated attackers to execute arbitrary PHP code through template rendering. [...]",
@@ -231,38 +301,38 @@
       "iocs": []
     },
     {
-      "id": "SECURITYWEEK-b12e634d24b189eb",
-      "title": "Cantina Emerges From Stealth With $8 Million in Funding",
-      "description": "The startup’s community-powered agentic security platform helps proactively identify, prioritize, and remediate vulnerabilities. The post Cantina Emerges From Stealth With $8 Million in Funding appeared first on SecurityWeek .",
+      "id": "THEHACKERNEWS-3d398f1c5b5f5072",
+      "title": "ThreatsDay: AI-Powered Hacking, 370 Chrome Flaws, SonicWall Attacks, DNS Hijacking + 22 More Stories",
+      "description": "A lot of security still comes down to trusting the wrong screen. This week, that screen might be a login page, an install guide, a recruiter call, or a familiar service behaving slightly wrong. Behind it: reused credentials, exposed systems, quiet loaders, abused trust, and exploit paths that should",
       "cvss": 6.5,
-      "final_ps": 63,
-      "quality_score": 0.505,
+      "final_ps": 62,
+      "quality_score": 0.468,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "securityweek",
+      "type": "AI_SECURITY",
+      "source": "thehackernews",
       "sources_confirmed": 1,
       "merged_sources": [
-        "securityweek"
+        "thehackernews"
       ],
       "first_seen": "2026-07-30",
       "last_seen": "2026-07-30",
       "exploited": true,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "SecurityWeek",
+      "vendor": "The Hacker News",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.securityweek.com/cantina-emerges-from-stealth-with-8-million-in-funding/"
+        "https://thehackernews.com/2026/07/threatsday-ai-powered-hacking-370.html"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.70 (securityweek)",
+          "source_weight=0.55 (thehackernews)",
           "data_confidence=0.80",
           "recency=0d (score=1.00)",
-          "QS=0.505"
+          "QS=0.468"
         ],
         "priority": [
           "+8 exploited_in_wild"
@@ -275,42 +345,41 @@
       "iocs": []
     },
     {
-      "id": "SECURITYWEEK-99bf63b6db4a68b5",
-      "title": "‘DangleGeddon’: AI Could Weaponize Forgotten DNS Records at Global Scale",
-      "description": "Researchers warn that AI could turn dangling DNS takeovers into a nation-state weapon capable of disrupting governments, banks and global supply chains. The post ‘DangleGeddon’: AI Could Weaponize Forgotten DNS Records at Global Scale appeared first on SecurityWeek .",
+      "id": "BLEEPINGCOMPUTER-a9cfc5b47054282d",
+      "title": "Microsoft Teams vishing attacks lead to Chaos ransomware attacks",
+      "description": "Threat actors are impersonating IT support staff in Microsoft Teams calls to gain remote access to corporate devices and deploy Chaos ransomware in attacks targeting North American organizations. [...]",
       "cvss": 6.5,
-      "final_ps": 63,
-      "quality_score": 0.525,
+      "final_ps": 60,
+      "quality_score": 0.45,
       "threat_level": "MEDIUM",
-      "type": "THREAT_ACTOR",
-      "source": "securityweek",
+      "type": "RANSOMWARE",
+      "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
-        "securityweek"
+        "bleepingcomputer"
       ],
       "first_seen": "2026-07-30",
       "last_seen": "2026-07-30",
       "exploited": false,
       "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "SecurityWeek",
+      "ransomware": true,
+      "vendor": "BleepingComputer",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.securityweek.com/danglegeddon-ai-could-weaponize-forgotten-dns-records-at-global-scale/"
+        "https://www.bleepingcomputer.com/news/security/microsoft-teams-vishing-attacks-lead-to-chaos-ransomware-attacks/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.70 (securityweek)",
+          "source_weight=0.72 (bleepingcomputer)",
           "data_confidence=0.80",
           "recency=0d (score=1.00)",
-          "QS=0.525"
+          "QS=0.450"
         ],
         "priority": [
-          "+5 nation_state",
-          "+3 supply_chain"
+          "+10 ransomware_confirmed"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -365,48 +434,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "SENTINELAPEX-353147ee571b",
-      "title": "CISA shares advice on isolating vital systems during cyberattacks",
-      "description": "The U.S. and Australian governments have released new guidance urging critical infrastructure organizations to prepare to isolate vital operational technology systems in the event of a cyberattack or other major disruptions. [...]",
-      "cvss": 7.8,
-      "final_ps": 51,
-      "quality_score": 0.428,
-      "threat_level": "MEDIUM",
-      "type": "CRITICAL_INFRASTRUCTURE",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-28",
-      "last_seen": "2026-07-28",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=1d (score=0.85)",
-          "QS=0.428"
-        ],
-        "priority": [
-          "+4 critical_infra"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -544,6 +571,48 @@
       "iocs": []
     },
     {
+      "id": "SENTINELAPEX-353147ee571b",
+      "title": "CISA shares advice on isolating vital systems during cyberattacks",
+      "description": "The U.S. and Australian governments have released new guidance urging critical infrastructure organizations to prepare to isolate vital operational technology systems in the event of a cyberattack or other major disruptions. [...]",
+      "cvss": 7.8,
+      "final_ps": 49,
+      "quality_score": 0.408,
+      "threat_level": "MEDIUM",
+      "type": "CRITICAL_INFRASTRUCTURE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-28",
+      "last_seen": "2026-07-28",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=2d (score=0.65)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "EXPLOITDB-13fc423caf742505",
       "title": "[webapps] OpenCATS 0.9.7.4 - SQL Injection",
       "description": "",
@@ -636,59 +705,6 @@
       "suppressed": false,
       "suppression_reason": null,
       "iocs": []
-    },
-    {
-      "id": "REDDIT_CYBER-ddb556fcb219ef8e",
-      "title": "[Academic] SOC analyst decision-making: review a series of network security alerts (18+, ~10-15 min, all backgrounds wel",
-      "description": "Hi all, I'm an MSc Cyber Security student at the University of Gloucestershire running a short online study for my dissertation on how people make decisions when reviewing intrusion detection system (IDS) alerts. What you'll do: You'll be shown a series of realistic network security alerts one at a ",
-      "cvss": 6.5,
-      "final_ps": 48,
-      "quality_score": 0.405,
-      "threat_level": "MEDIUM",
-      "type": "CRITICAL_INFRASTRUCTURE",
-      "source": "reddit_cyber",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_cyber"
-      ],
-      "first_seen": "2026-07-30",
-      "last_seen": "2026-07-30",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 1,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1vauygv/academic_soc_analyst_decisionmaking_review_a/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "ioc_presence=1 IOCs",
-          "recency=0d (score=1.00)",
-          "QS=0.405"
-        ],
-        "priority": [
-          "+4 critical_infra"
-        ],
-        "suppression": "Tier-4 (social/community) source only, no authoritative confirmation",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Tier-4 (social/community) source only, no authoritative confirmation",
-      "iocs": [
-        {
-          "type": "url",
-          "value": "http://dissertation-explainids.uogs.co.uk",
-          "confidence_score": 0.82,
-          "first_seen": "2026-07-30",
-          "source_count": 1
-        }
-      ]
     },
     {
       "id": "MSRC-0ea98c0dc61cfb90",
@@ -1065,50 +1081,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-55651",
-      "title": "Easy!Appointments Vulnerable to Appointments Takeover via Excessive Data Exposure",
-      "description": "### Summary\nAn Excessive Data Exposure vulnerability in the customers search endpoint allows an authenticated user to obtain appointment hashes belonging to other users.\nUsing these hashes, an attacker can modify or delete appointments of other providers, resulting in an Appointm... [Full analysis a",
-      "cvss": 7.1,
-      "final_ps": 44,
-      "quality_score": 0.473,
-      "threat_level": "LOW",
-      "type": "INCIDENT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55651"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=0d (score=1.00)",
-          "QS=0.473"
-        ],
-        "priority": [
-          "base_ps=44 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
       "id": "SENTINELAPEX-66bf72fe37fd",
       "title": "Health-ISAC warns of rising ShinyHunters data theft attacks on healthcare",
       "description": "Health-ISAC, a cybersecurity information-sharing organization for the health sector, is warning healthcare and medical technology organizations of an observed increase in successful attacks by ShinyHunters. [...]",
@@ -1232,6 +1204,282 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-12383",
+      "title": "CVE-2026-12383: A flaw was found in the Event-Driven Ansible (EDA) server. The ExternalEventStreamViewSet uses permissiv",
+      "description": "CVE-2026-12383: A flaw was found in the Event-Driven Ansible (EDA) server. The ExternalEventStreamViewSet uses permissive access control",
+      "cvss": 7.8,
+      "final_ps": 42,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-12383"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--81af48ebc35c2fff.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=2d (score=0.65)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-51244",
+      "title": "CVE-2026-51244: schreibfaul1 ESP32-audioI2S 3.4.5 has a buffer overflow vulnerability in UnpackFrameHeader(). Multiple a",
+      "description": "CVE-2026-51244: schreibfaul1 ESP32-audioI2S 3.4.5 has a buffer overflow vulnerability in UnpackFrameHeader(). Multiple attacker-controll",
+      "cvss": 7.8,
+      "final_ps": 42,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-51244"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--57ea0d9d8655614a.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=2d (score=0.65)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-66758",
+      "title": "CVE-2026-66758: A flaw was found in the file-fits plugin in GIMP. When processing a FITS image file, the plugin calculat",
+      "description": "CVE-2026-66758: A flaw was found in the file-fits plugin in GIMP. When processing a FITS image file, the plugin calculates memory alloca",
+      "cvss": 7.8,
+      "final_ps": 42,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-66758"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--baf72f8a684de9dc.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=2d (score=0.65)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-66759",
+      "title": "CVE-2026-66759: A flaw was found in the file-icns plugin in GIMP. When applying a decompressed mask during ICNS image pr",
+      "description": "CVE-2026-66759: A flaw was found in the file-icns plugin in GIMP. When applying a decompressed mask during ICNS image processing, the pl",
+      "cvss": 7.8,
+      "final_ps": 42,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-66759"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--39b4a9458aafdaeb.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=2d (score=0.65)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-42016",
+      "title": "CVE-2026-42016: JFrog Artifactory (Self Hosted) versions before 7.133.11 are vulnerable to a privilege escalation attack",
+      "description": "CVE-2026-42016: JFrog Artifactory (Self Hosted) versions before 7.133.11 are vulnerable to a privilege escalation attack due to a valida",
+      "cvss": 7.8,
+      "final_ps": 42,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42016"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--e7a12ce91f621e2d.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=2d (score=0.65)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-42017",
+      "title": "CVE-2026-42017: An event-handling weakness in JFrog Artifactory could expose privileged authorization material to a lowe",
+      "description": "CVE-2026-42017: An event-handling weakness in JFrog Artifactory could expose privileged authorization material to a lower-privileged use",
+      "cvss": 7.8,
+      "final_ps": 42,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42017"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--cf072a639e214edc.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=2d (score=0.65)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -1603,6 +1851,50 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-55651",
+      "title": "Easy!Appointments Vulnerable to Appointments Takeover via Excessive Data Exposure",
+      "description": "### Summary\nAn Excessive Data Exposure vulnerability in the customers search endpoint allows an authenticated user to obtain appointment hashes belonging to other users.\nUsing these hashes, an attacker can modify or delete appointments of other providers, resulting in an Appointm... [Full analysis a",
+      "cvss": 7.1,
+      "final_ps": 42,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "INCIDENT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55651"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=1d (score=0.85)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-54121",
       "title": "PoC exploit released for critical AD CS domain-takeover flaw (CVE-2026-54121)",
       "description": "",
@@ -1785,14 +2077,14 @@
       "iocs": []
     },
     {
-      "id": "BLEEPINGCOMPUTER-a5b00e392aa81816",
-      "title": "After the Break-In: What Attackers Do Once They're Already Inside",
-      "description": "Attackers rarely stop after gaining initial access. Huntress analyzes a real-world intrusion to show how threat actors establish persistence, disable defenses, and reshape compromised systems, and why defenders must investigate the original entry point rather than simply remove the malware. [...]",
+      "id": "BLEEPINGCOMPUTER-f1ac283e2066d734",
+      "title": "Analog Devices discloses data breach, says operations unaffected",
+      "description": "American semiconductor company Analog Devices announced that an unauthorized party accessed some of its systems and exfiltrated certain files. [...]",
       "cvss": 6.5,
       "final_ps": 41,
       "quality_score": 0.45,
       "threat_level": "LOW",
-      "type": "MALWARE_REPORT",
+      "type": "DATA_BREACH",
       "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -1809,7 +2101,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.bleepingcomputer.com/news/security/after-the-break-in-what-attackers-do-once-theyre-already-inside/"
+        "https://www.bleepingcomputer.com/news/security/analog-devices-discloses-data-breach-says-operations-unaffected/"
       ],
       "explanation": {
         "quality": [
@@ -1829,9 +2121,9 @@
       "iocs": []
     },
     {
-      "id": "SECURITYWEEK-3963bcbb7ab240e9",
-      "title": "DataBahn Raises $40 Million for Agentic Data Pipeline Management",
-      "description": "The company will accelerate investments in R&D and product innovation to expand its agentic data control plane. The post DataBahn Raises $40 Million for Agentic Data Pipeline Management appeared first on SecurityWeek .",
+      "id": "SECURITYWEEK-f5c1332d56cef869",
+      "title": "Timeless Compliance: Why Better Questions Beat Bigger Frameworks",
+      "description": "The best compliance programs aren't the biggest ones. They're the ones built on a short list of questions that can actually be answered, and that still hold true when the models change. The post Timeless Compliance: Why Better Questions Beat Bigger Frameworks appeared first on SecurityWeek .",
       "cvss": 6.5,
       "final_ps": 41,
       "quality_score": 0.445,
@@ -1853,95 +2145,7 @@
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.securityweek.com/databahn-raises-40-million-for-agentic-data-pipeline-management/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.70 (securityweek)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.445"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "SECURITYWEEK-1366da3a4e19e8d6",
-      "title": "Discern Security Raises $13 Million in Series A Funding",
-      "description": "The company will invest in accelerating the development and adoption of its agentic platform. The post Discern Security Raises $13 Million in Series A Funding appeared first on SecurityWeek .",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.445,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "securityweek",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "securityweek"
-      ],
-      "first_seen": "2026-07-30",
-      "last_seen": "2026-07-30",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "SecurityWeek",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.securityweek.com/discern-security-raises-13-million-in-series-a-funding/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.70 (securityweek)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.445"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "SECURITYWEEK-e44c1d1d2fa105a0",
-      "title": "Onyx Security Raises $113 Million to Control AI Agents in the Enterprise",
-      "description": "The Series B funding round brings the total raised by Onyx Security to $153 million. The post Onyx Security Raises $113 Million to Control AI Agents in the Enterprise appeared first on SecurityWeek .",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.445,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "securityweek",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "securityweek"
-      ],
-      "first_seen": "2026-07-30",
-      "last_seen": "2026-07-30",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "SecurityWeek",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.securityweek.com/onyx-security-raises-113-million-to-control-ai-agents-in-the-enterprise/"
+        "https://www.securityweek.com/timeless-compliance-why-better-questions-beat-bigger-frameworks/"
       ],
       "explanation": {
         "quality": [
@@ -2867,50 +3071,6 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54082",
-      "title": "CVE-2026-54082 - veraPDF-validatio: Use of Default `DocumentBuilderFactory` leads to XXE When Processing Untrusted PDFs",
-      "description": "CVE-2026-54082 - veraPDF-validatio: Use of Default `DocumentBuilderFactory` leads to XXE When Processing Untrusted PDFs",
-      "cvss": 6.5,
-      "final_ps": 40,
-      "quality_score": 0.433,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54082"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.40",
-          "recency=0d (score=1.00)",
-          "QS=0.432"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -4272,6 +4432,50 @@
       "iocs": []
     },
     {
+      "id": "DARKREADING-d6de0410bf2000a0",
+      "title": "Claude Mythos — Hype vs. Reality: What Security Teams Need to Know",
+      "description": "In this edition of Reporters' Notebook, our journalists discuss the ins and outs of Anthropic's Claude Mythos rollout. How seriously should we take its risks? How big of a deal is it?",
+      "cvss": 6.5,
+      "final_ps": 39,
+      "quality_score": 0.408,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "darkreading",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "darkreading"
+      ],
+      "first_seen": "2026-07-30",
+      "last_seen": "2026-07-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "darkreading",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.darkreading.com/cybersecurity-operations/claude-mythos-hype-vs-reality"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (darkreading)",
+          "data_confidence=0.80",
+          "recency=0d (score=1.00)",
+          "QS=0.408"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-59920",
       "title": "CVE-2026-59920 Netty: STOMP CONNECT Frame Header Injection",
       "description": "CVE-2026-59920 Netty: STOMP CONNECT Frame Header Injection",
@@ -4316,47 +4520,47 @@
       "iocs": []
     },
     {
-      "id": "REDDIT_CYBER-0e8ac3473d922a12",
-      "title": "How do you actually learn ISO 27001 and security frameworks?",
-      "description": "I worked at a government institution from 2022 to 2025 in a cybersecurity department. The funny part is that we barely did any actual work, so I spent most of my time studying. I downloaded a lot of pirated videos from Telegram, courses, and other learning materials. I immigrated to Europe in 2025, ",
+      "id": "CVE-2026-54082",
+      "title": "CVE-2026-54082 - veraPDF-validatio: Use of Default `DocumentBuilderFactory` leads to XXE When Processing Untrusted PDFs",
+      "description": "CVE-2026-54082 - veraPDF-validatio: Use of Default `DocumentBuilderFactory` leads to XXE When Processing Untrusted PDFs",
       "cvss": 6.5,
       "final_ps": 38,
-      "quality_score": 0.375,
+      "quality_score": 0.418,
       "threat_level": "LOW",
-      "type": "SOCIAL_ENGINEERING",
-      "source": "reddit_cyber",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_cyber"
+        "sentinel_apex"
       ],
-      "first_seen": "2026-07-30",
-      "last_seen": "2026-07-30",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
+      "vendor": "",
+      "product": "",
       "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1vasy6f/how_do_you_actually_learn_iso_27001_and_security/"
+      "cves": [
+        "CVE-2026-54082"
       ],
+      "ioc_count": 0,
+      "refs": [],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.375"
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=1d (score=0.85)",
+          "QS=0.417"
         ],
         "priority": [
           "base_ps=38 (no boosts)"
         ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "suppression": null,
         "merge": null
       },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -4716,35 +4920,35 @@
       "iocs": []
     },
     {
-      "id": "REDDIT_CYBER-991b3d04eedb25c1",
-      "title": "CosmosEscape: Taking Over Every Database in Azure Cosmos DB",
-      "description": "submitted by /u/LieOtherwise6583 [link] [comments]",
+      "id": "REDDIT_NETSEC-397c4af33595a8be",
+      "title": "What Every Programmer Should Know About Twists of Elliptic Curves",
+      "description": "submitted by /u/DataBaeBee [link] [comments]",
       "cvss": 6.5,
       "final_ps": 36,
       "quality_score": 0.325,
       "threat_level": "LOW",
       "type": "NEWS_REPORT",
-      "source": "reddit_cyber",
+      "source": "reddit_netsec",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_cyber"
+        "reddit_netsec"
       ],
       "first_seen": "2026-07-30",
       "last_seen": "2026-07-30",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "reddit_cyber",
+      "vendor": "reddit_netsec",
       "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
       "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1vatd65/cosmosescape_taking_over_every_database_in_azure/"
+        "https://www.reddit.com/r/netsec/comments/1vax66g/what_every_programmer_should_know_about_twists_of/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_cyber)",
+          "source_weight=0.42 (reddit_netsec)",
           "data_confidence=0.55",
           "recency=0d (score=1.00)",
           "QS=0.325"
@@ -5482,6 +5686,306 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-67428",
+      "title": "Flyto2 Core: Multiple HTTP-family modules fetch client-controlled URLs without the SSRF guard their siblings apply (SSRF",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-30",
+      "last_seen": "2026-07-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "flyto-core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-67428",
+        "CVE-2026-67428"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-pgwh-4jj4-qm8v",
+        "https://github.com/flytohub/flyto-core/security/advisories/GHSA-pgwh-4jj4-qm8v",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-67428",
+        "https://github.com/flytohub/flyto-core/commit/0a0a528520ec18f5a21f1ddf858a71cc1edfb6e9"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-67425",
+      "title": "Flyto2 Core: LLM/API keys leak to an attacker-controlled base_url",
+      "description": "",
+      "cvss": 8.6,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-30",
+      "last_seen": "2026-07-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "flyto-core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-67425",
+        "CVE-2026-67425"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-qq9q-xgm3-xv9g",
+        "https://github.com/flytohub/flyto-core/security/advisories/GHSA-qq9q-xgm3-xv9g",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-67425",
+        "https://github.com/flytohub/flyto-core/commit/d5f89d71303e3c1e6418d347c5c55fcd173cc8cc"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-67424",
+      "title": "Flyto2 Core: Guarded HTTP modules follow redirects into internal space without per-hop SSRF revalidation",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-30",
+      "last_seen": "2026-07-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "flyto-core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-67424",
+        "CVE-2026-67424"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-c9hr-64h3-gxpc",
+        "https://github.com/flytohub/flyto-core/security/advisories/GHSA-c9hr-64h3-gxpc",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-67424",
+        "https://github.com/flytohub/flyto-core/commit/0a0a528520ec18f5a21f1ddf858a71cc1edfb6e9"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-67427",
+      "title": "Flyto2 Core: ${env.VAR} interpolation reads any env secret despite env.get being denylisted",
+      "description": "",
+      "cvss": 8.6,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-30",
+      "last_seen": "2026-07-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "flyto-core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-67427",
+        "CVE-2026-67427"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-hr7p-wg7r-hg9m",
+        "https://github.com/flytohub/flyto-core/security/advisories/GHSA-hr7p-wg7r-hg9m",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-67427",
+        "https://github.com/flytohub/flyto-core/commit/d5f89d71303e3c1e6418d347c5c55fcd173cc8cc"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-67431",
+      "title": "MCP Ruby SDK: Ruby SSE Session Poisoning",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-30",
+      "last_seen": "2026-07-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rubygems",
+      "product": "mcp",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-67431",
+        "CVE-2026-67431"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-5p9g-j988-pcwv",
+        "https://github.com/modelcontextprotocol/ruby-sdk/security/advisories/GHSA-5p9g-j988-pcwv",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-67431",
+        "https://github.com/modelcontextprotocol/ruby-sdk/commit/35466605319a34e4c7808712ae9bb1ca1afb2356"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-67432",
+      "title": "MCP Ruby SDK: Unbounded JSON-RPC request body causes uncontrolled memory allocation in StreamableHTTPTransport",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-07-30",
+      "last_seen": "2026-07-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rubygems",
+      "product": "mcp",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-67432",
+        "CVE-2026-67432"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-h669-8m4g-r2hc",
+        "https://github.com/modelcontextprotocol/ruby-sdk/security/advisories/GHSA-h669-8m4g-r2hc",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-67432",
+        "https://github.com/modelcontextprotocol/ruby-sdk/commit/772e0cb1f9db69312006926eee59a7287ad50166"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-67437",
       "title": "OliveTin: Unauthenticated DoS via OAuth2 State Memory Exhaustion (Unbounded Map Growth)",
       "description": "",
@@ -5523,282 +6027,6 @@
         ],
         "priority": [
           "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-12383",
-      "title": "CVE-2026-12383: A flaw was found in the Event-Driven Ansible (EDA) server. The ExternalEventStreamViewSet uses permissiv",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-12383"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--81af48ebc35c2fff.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-51244",
-      "title": "CVE-2026-51244: schreibfaul1 ESP32-audioI2S 3.4.5 has a buffer overflow vulnerability in UnpackFrameHeader(). Multiple a",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-51244"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--57ea0d9d8655614a.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-66758",
-      "title": "CVE-2026-66758: A flaw was found in the file-fits plugin in GIMP. When processing a FITS image file, the plugin calculat",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-66758"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--baf72f8a684de9dc.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-66759",
-      "title": "CVE-2026-66759: A flaw was found in the file-icns plugin in GIMP. When applying a decompressed mask during ICNS image pr",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-66759"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--39b4a9458aafdaeb.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42016",
-      "title": "CVE-2026-42016: JFrog Artifactory (Self Hosted) versions before 7.133.11 are vulnerable to a privilege escalation attack",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42016"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--e7a12ce91f621e2d.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42017",
-      "title": "CVE-2026-42017: An event-handling weakness in JFrog Artifactory could expose privileged authorization material to a lowe",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42017"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--cf072a639e214edc.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -5881,190 +6109,6 @@
       "ioc_count": 0,
       "refs": [
         "https://intel.cyberdudebivash.com/reports/2026/07/intel--70e63a2c893223c6.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-39873",
-      "title": "CVE-2026-39873: The issue was addressed with improved memory handling. This issue is fixed in macOS Sequoia 15.7.8, macO",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-39873"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--623ec178ca32a402.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-39874",
-      "title": "CVE-2026-39874: A permissions issue was addressed with additional restrictions. This issue is fixed in macOS Sequoia 15.",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-39874"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--3d0aa66e4c304742.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-39875",
-      "title": "CVE-2026-39875: A permissions issue was addressed with additional restrictions. This issue is fixed in macOS Sequoia 15.",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-39875"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d8744ec674761220.html"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-39877",
-      "title": "CVE-2026-39877: A memory corruption issue was addressed with improved memory handling. This issue is fixed in macOS Sequ",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-27",
-      "last_seen": "2026-07-27",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-39877"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://intel.cyberdudebivash.com/reports/2026/07/intel--c488673e70a0699e.html"
       ],
       "explanation": {
         "quality": [
@@ -6387,6 +6431,190 @@
       "ioc_count": 0,
       "refs": [
         "https://intel.cyberdudebivash.com/reports/2026/07/intel--c294b8f9bd943fb8.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-39873",
+      "title": "CVE-2026-39873: The issue was addressed with improved memory handling. This issue is fixed in macOS Sequoia 15.7.8, macO",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-39873"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--623ec178ca32a402.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-39874",
+      "title": "CVE-2026-39874: A permissions issue was addressed with additional restrictions. This issue is fixed in macOS Sequoia 15.",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-39874"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--3d0aa66e4c304742.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-39875",
+      "title": "CVE-2026-39875: A permissions issue was addressed with additional restrictions. This issue is fixed in macOS Sequoia 15.",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-39875"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--d8744ec674761220.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-39877",
+      "title": "CVE-2026-39877: A memory corruption issue was addressed with improved memory handling. This issue is fixed in macOS Sequ",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-27",
+      "last_seen": "2026-07-27",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-39877"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://intel.cyberdudebivash.com/reports/2026/07/intel--c488673e70a0699e.html"
       ],
       "explanation": {
         "quality": [
