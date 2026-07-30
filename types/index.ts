@@ -112,3 +112,28 @@ export type {
   Frontmatter,
   SEOMetadata,
 } from '../lib/reporting';
+
+// Re-export IOC Intelligence Engine types and functions
+export {
+  createIOCEngine,
+  normalizeIOC,
+  validateIOC,
+  aggregateConfidence,
+  scoreEvidence,
+  calculateCorrelationConfidence,
+  calculateCompositeScore,
+  deduplicate,
+  createCorrelationEngine,
+} from '../lib/ioc';
+
+export type {
+  NormalizedIOC,
+  IOCNormalizationResult,
+  IOCValidationResult,
+  IOCWithMetadata,
+  IOCRelationship,
+  IOCCorrelationResult,
+  IOCSearchQuery,
+  IOCDeduplicationConfig,
+  ConfidenceComponents,
+} from '../lib/ioc';
