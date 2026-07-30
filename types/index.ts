@@ -137,3 +137,59 @@ export type {
   IOCDeduplicationConfig,
   ConfidenceComponents,
 } from '../lib/ioc';
+
+// Re-export detection engineering types and functions
+export type {
+  SigmaRule,
+  YaraRule,
+  SuricataRule,
+  SEMRule,
+  DetectionRuleCollection,
+  GenerateDetectionRequest,
+  GenerateDetectionResponse,
+  DetectionRuleExport,
+  DetectionSearchQuery,
+  RuleValidationResult,
+  DeduplicationResult,
+  OptimizationMetrics,
+} from '../lib/detection/schema';
+
+export {
+  DetectionFormat,
+  RuleSeverity,
+  DetectionBehavior,
+  generateSigmaFromIOC,
+  generateYaraFromIOC,
+  generateSuricataFromIOC,
+  generateSEMRuleFromIOC,
+  validateDetectionRule,
+  validateSigmaRule,
+  validateYaraRule,
+  validateSuricataRule,
+  validateSEMRule,
+  deduplicateRules,
+  optimizeSigmaLogsources,
+  optimizeYaraStrings,
+  consolidateSuricataRules,
+  renderDetectionRuleExport,
+  exportDetectionRuleBundle,
+  buildDetectionCollection,
+  mapBehaviorToTechniques,
+  linkRulesToMalware,
+  linkRulesToTechniques,
+  linkRulesToCampaigns,
+  linkRulesToActors,
+  calculateRuleCoverage,
+  prioritizeRules,
+  calculateRuleEffectiveness,
+} from '../lib/detection/index';
+
+export type {
+  TechniqueMapping,
+  CoverageAnalysis,
+  RulePriority,
+  RuleEffectiveness,
+  IOCCoverage,
+  FPAnalysis,
+  RulePerformanceProfile,
+} from '../lib/detection/index';
