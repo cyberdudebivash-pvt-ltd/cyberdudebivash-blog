@@ -3,7 +3,8 @@
  * Generates Splunk SPL, ELK, Sentinel KQL, ArcSight AEL rules
  */
 
-import type { SEMRule, RuleSeverity } from '../schema';
+import type { SEMRule } from '../schema';
+import { RuleSeverity } from '../schema';
 import type { IOCType } from '../../intelligence/schema';
 
 // ============================================================================
@@ -22,7 +23,7 @@ export function generateSEMRuleFromIOC(
   malwareName: string,
   options?: SEMGeneratorOptions
 ): SEMRule[] {
-  const severity = options?.severity || 'high';
+  const severity = options?.severity || RuleSeverity.HIGH;
   const timeWindow = options?.timeWindow || '10m';
   const threshold = options?.threshold || 1;
 
@@ -73,7 +74,7 @@ function generateSplunkRule(iocType: IOCType, iocValue: string, malwareName: str
 }
 
 function generateSplunkSearch(iocType: IOCType, iocValue: string): string {
-  const searches: Record<IOCType, string> = {
+  const searches: Record<string, string> = {
     sha256: `index=main (process_hash="${iocValue}" OR md5="${iocValue}" OR sha1="${iocValue}" OR sha256="${iocValue}") | stats count by host, user, process_name`,
     sha1: `index=main (md5="${iocValue}" OR sha1="${iocValue}" OR sha256="${iocValue}") | stats count by host, user`,
     md5: `index=main (md5="${iocValue}" OR sha1="${iocValue}" OR sha256="${iocValue}") | stats count by host, user`,
@@ -83,15 +84,15 @@ function generateSplunkSearch(iocType: IOCType, iocValue: string): string {
     url: `index=main url="${iocValue}" OR uri="${iocValue}" | stats count by src_ip, dest_ip, http_method`,
     email: `index=main src_user="*${iocValue}*" OR sender="*${iocValue}*" OR email="*${iocValue}*" | stats count by src_user, dest_user`,
     registry: `index=main object="${iocValue}" OR process_name="*${iocValue}*" | stats count by host, user, process_name`,
-    filename: `index=main FileName="${iocValue}" OR file_name="${iocValue}" | stats count by host, user, file_path`,
     file_path: `index=main file_path="${iocValue}" | stats count by host, user, process_name`,
     mutex: `index=main mutex="${iocValue}" | stats count by host, process_name`,
-    service_name: `index=main service="${iocValue}" | stats count by host, user`,
-    named_pipe: `index=main pipe_name="${iocValue}" | stats count by host, process_name`,
+    service: `index=main service="${iocValue}" | stats count by host, user`,
+    process: `index=main process_name="${iocValue}" | stats count by host, user`,
     ja3: `index=main tls_ja3="${iocValue}" | stats count by src_ip, dest_ip, dest_port`,
     ja4: `index=main tls_ja4="${iocValue}" | stats count by src_ip, dest_ip`,
-    certificate_sha1: `index=main certificate_fingerprint="${iocValue}" | stats count by src_ip, dest_ip`,
-    http_user_agent: `index=main http_user_agent="*${iocValue}*" | stats count by src_ip, dest_ip, http_method`,
+    certificate: `index=main certificate_fingerprint="${iocValue}" | stats count by src_ip, dest_ip`,
+    user_agent: `index=main http_user_agent="*${iocValue}*" | stats count by src_ip, dest_ip, http_method`,
+    tls_fingerprint: `index=main tls_fingerprint="${iocValue}" | stats count by src_ip, dest_ip`,
   };
 
   return searches[iocType] || `index=main "${iocValue}" | stats count by host`;
@@ -122,7 +123,7 @@ function generateELKRule(iocType: IOCType, iocValue: string, malwareName: string
 }
 
 function generateELKQuery(iocType: IOCType, iocValue: string): string {
-  const queries: Record<IOCType, string> = {
+  const queries: Record<string, string> = {
     sha256: `{ "bool": { "must": [ { "match": { "file.hash.sha256": "${iocValue.toUpperCase()}" } } ] } }`,
     sha1: `{ "bool": { "must": [ { "match": { "file.hash.sha1": "${iocValue.toUpperCase()}" } } ] } }`,
     md5: `{ "bool": { "must": [ { "match": { "file.hash.md5": "${iocValue.toUpperCase()}" } } ] } }`,
@@ -132,15 +133,15 @@ function generateELKQuery(iocType: IOCType, iocValue: string): string {
     url: `{ "bool": { "must": [ { "match": { "url.full": "${iocValue}" } } ] } }`,
     email: `{ "bool": { "should": [ { "match": { "email.sender.address": "${iocValue.toLowerCase()}" } }, { "match": { "email.recipient": "${iocValue.toLowerCase()}" } } ] } }`,
     registry: `{ "bool": { "must": [ { "match": { "registry.path": "${iocValue.toUpperCase()}" } } ] } }`,
-    filename: `{ "bool": { "must": [ { "match": { "file.name": "${iocValue}" } } ] } }`,
     file_path: `{ "bool": { "must": [ { "match": { "file.path": "${iocValue}" } } ] } }`,
     mutex: `{ "bool": { "must": [ { "match": { "process.mutex": "${iocValue}" } } ] } }`,
-    service_name: `{ "bool": { "must": [ { "match": { "service.name": "${iocValue}" } } ] } }`,
-    named_pipe: `{ "bool": { "must": [ { "match": { "process.name": "${iocValue}" } } ] } }`,
+    service: `{ "bool": { "must": [ { "match": { "service.name": "${iocValue}" } } ] } }`,
+    process: `{ "bool": { "must": [ { "match": { "process.name": "${iocValue}" } } ] } }`,
     ja3: `{ "bool": { "must": [ { "match": { "tls.fingerprints.ja3.hash": "${iocValue}" } } ] } }`,
     ja4: `{ "bool": { "must": [ { "match": { "tls.fingerprints.ja4.hash": "${iocValue}" } } ] } }`,
-    certificate_sha1: `{ "bool": { "must": [ { "match": { "tls.server.certificate.fingerprint.sha1": "${iocValue.toUpperCase()}" } } ] } }`,
-    http_user_agent: `{ "bool": { "must": [ { "match": { "http.request.header.user-agent": "${iocValue}" } } ] } }`,
+    certificate: `{ "bool": { "must": [ { "match": { "tls.server.certificate.fingerprint.sha1": "${iocValue.toUpperCase()}" } } ] } }`,
+    user_agent: `{ "bool": { "must": [ { "match": { "http.request.header.user-agent": "${iocValue}" } } ] } }`,
+    tls_fingerprint: `{ "bool": { "must": [ { "match": { "tls.fingerprint": "${iocValue}" } } ] } }`,
   };
 
   return queries[iocType] || `{ "bool": { "must": [ { "match_phrase": { "message": "${iocValue}" } } ] } }`;
@@ -182,7 +183,7 @@ function generateSentinelRule(
 }
 
 function generateSentinelKQL(iocType: IOCType, iocValue: string): string {
-  const queries: Record<IOCType, string> = {
+  const queries: Record<string, string> = {
     sha256: `SecurityEvent | where EventID == 23 and SHA256 == "${iocValue.toUpperCase()}" | summarize count() by Computer, Account`,
     sha1: `SecurityEvent | where EventID == 23 and SHA1 == "${iocValue.toUpperCase()}" | summarize count() by Computer`,
     md5: `SecurityEvent | where EventID == 23 and MD5 == "${iocValue.toUpperCase()}" | summarize count() by Computer`,
@@ -192,15 +193,15 @@ function generateSentinelKQL(iocType: IOCType, iocValue: string): string {
     url: `CommonSecurityLog | where RequestURL contains "${iocValue}" | summarize count() by SourceIP, RequestURL`,
     email: `OfficeActivity | where UserId contains "${iocValue.toLowerCase()}" or Sender contains "${iocValue.toLowerCase()}" | summarize count() by UserId`,
     registry: `SecurityEvent | where EventID == 13 and ObjectName contains "${iocValue.toUpperCase()}" | summarize count() by Computer, Account`,
-    filename: `FileDeleteEvents | where FileName == "${iocValue}" | summarize count() by Computer, InitiatingProcessAccountName`,
     file_path: `FileCreateEvents | where FolderPath contains "${iocValue}" | summarize count() by Computer`,
     mutex: `ProcessCreationTime | where CommandLine contains "${iocValue}" | summarize count() by Computer, InitiatingProcessCommandLine`,
-    service_name: `SecurityEvent | where EventID == 7045 and ServiceName == "${iocValue}" | summarize count() by Computer`,
-    named_pipe: `ProcessCreationTime | where CommandLine contains "${iocValue}" | summarize count() by Computer`,
+    service: `SecurityEvent | where EventID == 7045 and ServiceName == "${iocValue}" | summarize count() by Computer`,
+    process: `ProcessCreationTime | where CommandLine contains "${iocValue}" | summarize count() by Computer`,
     ja3: `CommonSecurityLog | where DeviceCustomString1 == "${iocValue}" | summarize count() by SourceIP, DestinationIP`,
     ja4: `CommonSecurityLog | where DeviceCustomString2 == "${iocValue}" | summarize count() by SourceIP, DestinationIP`,
-    certificate_sha1: `CommonSecurityLog | where CertificateHash == "${iocValue.toUpperCase()}" | summarize count() by SourceIP, DestinationIP`,
-    http_user_agent: `CommonSecurityLog | where RequestUserAgent == "${iocValue}" | summarize count() by SourceIP, DestinationIP`,
+    certificate: `CommonSecurityLog | where CertificateHash == "${iocValue.toUpperCase()}" | summarize count() by SourceIP, DestinationIP`,
+    user_agent: `CommonSecurityLog | where RequestUserAgent == "${iocValue}" | summarize count() by SourceIP, DestinationIP`,
+    tls_fingerprint: `CommonSecurityLog | where TLSFingerprint == "${iocValue.toUpperCase()}" | summarize count() by SourceIP, DestinationIP`,
   };
 
   return queries[iocType] || `CommonSecurityLog | where RequestURL contains "${iocValue}" | summarize count() by SourceIP`;
@@ -231,7 +232,7 @@ function generateArcSightRule(iocType: IOCType, iocValue: string, malwareName: s
 }
 
 function generateArcSightAEL(iocType: IOCType, iocValue: string): string {
-  const rules: Record<IOCType, string> = {
+  const rules: Record<string, string> = {
     sha256: `fileHash matches "${iocValue.toUpperCase()}"`,
     sha1: `fileHash matches "${iocValue.toUpperCase()}"`,
     md5: `fileHash matches "${iocValue.toUpperCase()}"`,
@@ -241,15 +242,15 @@ function generateArcSightAEL(iocType: IOCType, iocValue: string): string {
     url: `requestUrl matches "${iocValue}"`,
     email: `sender matches "${iocValue.toLowerCase()}" OR recipient matches "${iocValue.toLowerCase()}"`,
     registry: `destinationUserName matches "${iocValue.toUpperCase()}"`,
-    filename: `fileName matches "${iocValue}"`,
     file_path: `filePath contains "${iocValue}"`,
     mutex: `deviceCustomString1 matches "${iocValue}"`,
-    service_name: `deviceCustomString1 matches "${iocValue}"`,
-    named_pipe: `deviceCustomString2 matches "${iocValue}"`,
+    service: `deviceCustomString1 matches "${iocValue}"`,
+    process: `deviceCustomString2 matches "${iocValue}"`,
     ja3: `deviceCustomString3 matches "${iocValue}"`,
     ja4: `deviceCustomString4 matches "${iocValue}"`,
-    certificate_sha1: `deviceCustomString5 matches "${iocValue.toUpperCase()}"`,
-    http_user_agent: `request contains "${iocValue}"`,
+    certificate: `deviceCustomString5 matches "${iocValue.toUpperCase()}"`,
+    user_agent: `request contains "${iocValue}"`,
+    tls_fingerprint: `deviceCustomString6 matches "${iocValue}"`,
   };
 
   return rules[iocType] || `message matches "${iocValue}"`;

@@ -3,7 +3,7 @@
  * Automated validation gates that block publication on errors
  */
 
-import type { ValidationResult, QualityGateResult, GateSeverity } from './types';
+import type { ValidationResult, QualityGateResult } from './types';
 import { GateSeverity } from './types';
 
 // ============================================================================

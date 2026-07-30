@@ -3,7 +3,8 @@
  * REST endpoints for detection rule generation and management
  */
 
-import type { DetectionRule, GenerateDetectionRequest, GenerateDetectionResponse, DetectionSearchQuery, DetectionRuleExport } from '../detection/schema';
+import type { DetectionRule, GenerateDetectionRequest, GenerateDetectionResponse, DetectionSearchQuery, DetectionRuleExport, SuricataRule, SEMRule } from '../detection/schema';
+import { DetectionFormat, RuleSeverity } from '../detection/schema';
 import {
   generateSigmaFromIOC,
   generateYaraFromIOC,
@@ -30,7 +31,7 @@ export function generateDetectionRules(request: GenerateDetectionRequest): Gener
   const rules: DetectionRule[] = [];
 
   const malwareName = request.malwareId || 'UnknownMalware';
-  const formats = request.formats || ['sigma', 'yara', 'suricata'];
+  const formats = request.formats || [DetectionFormat.SIGMA, DetectionFormat.YARA, DetectionFormat.SURICATA];
   const techniques = request.techniques || [];
 
   // Generate base rule ID
@@ -38,7 +39,7 @@ export function generateDetectionRules(request: GenerateDetectionRequest): Gener
 
   // Generate Sigma rule
   let sigmaRule = null;
-  if (formats.includes('sigma')) {
+  if (formats.includes(DetectionFormat.SIGMA)) {
     sigmaRule = generateSigmaFromIOC(request.iocType as IOCType, request.iocValue, malwareName, {
       severity: request.severity,
       techniques,
@@ -48,23 +49,23 @@ export function generateDetectionRules(request: GenerateDetectionRequest): Gener
 
   // Generate YARA rule
   let yaraRule = null;
-  if (formats.includes('yara')) {
+  if (formats.includes(DetectionFormat.YARA)) {
     yaraRule = generateYaraFromIOC(request.iocType as IOCType, request.iocValue, malwareName, {
       severity: request.severity,
     });
   }
 
   // Generate Suricata rules
-  let suricataRules = [];
-  if (formats.includes('suricata')) {
+  let suricataRules: SuricataRule[] = [];
+  if (formats.includes(DetectionFormat.SURICATA)) {
     suricataRules = generateSuricataFromIOC(request.iocType as IOCType, request.iocValue, malwareName, {
       severity: request.severity,
     });
   }
 
   // Generate SIEM rules
-  let semRules = [];
-  if (formats.includes('siem') || formats.includes('splunk') || formats.includes('elk') || formats.includes('sentinel')) {
+  let semRules: SEMRule[] = [];
+  if (formats.includes(DetectionFormat.SPLUNK) || formats.includes(DetectionFormat.ELK) || formats.includes(DetectionFormat.SENTINEL)) {
     semRules = generateSEMRuleFromIOC(request.iocType as IOCType, request.iocValue, malwareName, {
       severity: request.severity,
     });
@@ -77,7 +78,7 @@ export function generateDetectionRules(request: GenerateDetectionRequest): Gener
     description: `Automated detection rule for ${malwareName} based on ${request.iocType} indicator: ${request.iocValue}`,
     author: 'SENTINEL APEX Detection Engineering',
     date: new Date().toISOString().split('T')[0],
-    severity: request.severity || 'high',
+    severity: request.severity || RuleSeverity.HIGH,
     formats: {
       sigma: sigmaRule || undefined,
       yara: yaraRule || undefined,
@@ -110,10 +111,10 @@ export function generateDetectionRules(request: GenerateDetectionRequest): Gener
 
   // Calculate coverage
   let coverage = 0.8; // Default 80% coverage
-  if (formats.includes('sigma') && sigmaRule) coverage += 0.05;
-  if (formats.includes('yara') && yaraRule) coverage += 0.05;
-  if (formats.includes('suricata') && suricataRules.length > 0) coverage += 0.05;
-  if (formats.includes('siem') && semRules.length > 0) coverage += 0.05;
+  if (formats.includes(DetectionFormat.SIGMA) && sigmaRule) coverage += 0.05;
+  if (formats.includes(DetectionFormat.YARA) && yaraRule) coverage += 0.05;
+  if (formats.includes(DetectionFormat.SURICATA) && suricataRules.length > 0) coverage += 0.05;
+  if ((formats.includes(DetectionFormat.SPLUNK) || formats.includes(DetectionFormat.ELK) || formats.includes(DetectionFormat.SENTINEL)) && semRules.length > 0) coverage += 0.05;
   coverage = Math.min(coverage, 1.0);
 
   return {
@@ -244,7 +245,7 @@ export interface MalwareDetectionPackRequest {
     confidence: 'HIGH' | 'MEDIUM' | 'LOW';
   }>;
   techniques?: string[];
-  formats?: string[];
+  formats?: DetectionFormat[];
 }
 
 export function generateMalwareDetectionPack(request: MalwareDetectionPackRequest): DetectionRule[] {
@@ -258,8 +259,8 @@ export function generateMalwareDetectionPack(request: MalwareDetectionPackReques
         iocValue: ioc.value,
         malwareId: request.malwareId,
         techniques: request.techniques,
-        formats: (request.formats as any) || ['sigma', 'yara', 'suricata'],
-        severity: ioc.confidence === 'HIGH' ? 'high' : 'medium',
+        formats: request.formats || [DetectionFormat.SIGMA, DetectionFormat.YARA, DetectionFormat.SURICATA],
+        severity: ioc.confidence === 'HIGH' ? RuleSeverity.HIGH : RuleSeverity.MEDIUM,
       });
 
       rules.push(...response.rules);

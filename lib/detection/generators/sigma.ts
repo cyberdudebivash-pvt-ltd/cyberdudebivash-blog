@@ -4,7 +4,8 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import type { SigmaRule, SigmaDetection, RuleSeverity } from '../schema';
+import type { SigmaRule, SigmaDetection } from '../schema';
+import { RuleSeverity } from '../schema';
 import type { IOCType } from '../../intelligence/schema';
 
 // ============================================================================
@@ -24,7 +25,7 @@ export function generateSigmaFromIOC(
   malwareName: string,
   options?: SigmaGeneratorOptions
 ): SigmaRule {
-  const severity = options?.severity || 'high';
+  const severity = options?.severity || RuleSeverity.HIGH;
   const techniques = options?.techniques || [];
   const malwareId = options?.malwareId || malwareName.toLowerCase();
 
@@ -67,7 +68,7 @@ export function generateSigmaFromIOC(
 // ============================================================================
 
 function generateTitle(iocType: IOCType, iocValue: string, malwareName: string): string {
-  const titleMap: Record<IOCType, string> = {
+  const titleMap: Record<string, string> = {
     sha256: `Detection of ${malwareName} - SHA256 Hash Match`,
     sha1: `Detection of ${malwareName} - SHA1 Hash Match`,
     md5: `Detection of ${malwareName} - MD5 Hash Match`,
@@ -77,15 +78,15 @@ function generateTitle(iocType: IOCType, iocValue: string, malwareName: string):
     url: `Detection of ${malwareName} - Malicious URL Access`,
     email: `Detection of ${malwareName} - Associated Email Address`,
     registry: `Detection of ${malwareName} - Registry Persistence`,
-    filename: `Detection of ${malwareName} - Suspicious Filename`,
     file_path: `Detection of ${malwareName} - Suspicious File Path`,
     mutex: `Detection of ${malwareName} - Mutex Creation`,
-    service_name: `Detection of ${malwareName} - Service Installation`,
-    named_pipe: `Detection of ${malwareName} - Named Pipe Communication`,
+    service: `Detection of ${malwareName} - Service Installation`,
+    process: `Detection of ${malwareName} - Process Execution`,
     ja3: `Detection of ${malwareName} - TLS Fingerprint Match`,
     ja4: `Detection of ${malwareName} - TLS/QUIC Fingerprint Match`,
-    certificate_sha1: `Detection of ${malwareName} - Certificate Hash`,
-    http_user_agent: `Detection of ${malwareName} - User Agent Signature`,
+    certificate: `Detection of ${malwareName} - Certificate Hash`,
+    user_agent: `Detection of ${malwareName} - User Agent Signature`,
+    tls_fingerprint: `Detection of ${malwareName} - TLS Fingerprint Match`,
   };
 
   return titleMap[iocType] || `Detection of ${malwareName} - ${iocType}`;
@@ -101,7 +102,7 @@ function generateDescription(
   malwareName: string,
   techniques: string[]
 ): string {
-  const descriptions: Record<IOCType, string> = {
+  const descriptions: Record<string, string> = {
     sha256: `Detects execution of ${malwareName} malware based on known file hash (SHA256). This rule identifies attempts to run the malware executable.`,
     sha1: `Detects execution of ${malwareName} malware based on known file hash (SHA1). This rule identifies attempts to run the malware executable.`,
     md5: `Detects execution of ${malwareName} malware based on known file hash (MD5). This rule identifies attempts to run the malware executable.`,
@@ -111,15 +112,15 @@ function generateDescription(
     url: `Detects HTTP/HTTPS requests to known malicious URLs associated with ${malwareName}. May indicate malware callback, exploitation, or lateral movement.`,
     email: `Detects ${malwareName} spear-phishing and distribution campaigns using the email address ${iocValue}.`,
     registry: `Detects ${malwareName} persistence mechanisms through registry modification. Monitors for creation/modification of known registry keys.`,
-    filename: `Detects ${malwareName} based on suspicious filename patterns used by the malware during installation or execution.`,
     file_path: `Detects ${malwareName} based on suspicious file paths used for staging or execution.`,
     mutex: `Detects ${malwareName} process execution by monitoring for creation of known mutex objects used for single-instance enforcement.`,
-    service_name: `Detects ${malwareName} persistence through Windows service installation with known service names.`,
-    named_pipe: `Detects ${malwareName} inter-process communication through named pipes used for C2 or lateral movement.`,
+    service: `Detects ${malwareName} persistence through Windows service installation with known service names.`,
+    process: `Detects ${malwareName} process execution through known process names or command lines.`,
     ja3: `Detects ${malwareName} TLS communications based on fingerprinting. Monitors for known TLS client signatures.`,
     ja4: `Detects ${malwareName} TLS/QUIC communications based on fingerprinting.`,
-    certificate_sha1: `Detects ${malwareName} HTTPS communications using known certificate hashes.`,
-    http_user_agent: `Detects ${malwareName} HTTP communications using known user agent strings.`,
+    certificate: `Detects ${malwareName} HTTPS communications using known certificate hashes.`,
+    user_agent: `Detects ${malwareName} HTTP communications using known user agent strings.`,
+    tls_fingerprint: `Detects ${malwareName} TLS communications using fingerprint patterns.`,
   };
 
   let desc = descriptions[iocType] || `Detects ${malwareName} based on ${iocType} indicator.`;
@@ -136,7 +137,7 @@ function generateDescription(
 // ============================================================================
 
 function generateLogsource(iocType: IOCType) {
-  const logsourceMap: Record<IOCType, { category: string; product?: string; service?: string }> = {
+  const logsourceMap: Record<string, { category: string; product?: string; service?: string }> = {
     sha256: { category: 'process_creation', product: 'windows' },
     sha1: { category: 'process_creation', product: 'windows' },
     md5: { category: 'process_creation', product: 'windows' },
@@ -146,15 +147,15 @@ function generateLogsource(iocType: IOCType) {
     url: { category: 'web_application_firewall' },
     email: { category: 'email_security' },
     registry: { category: 'registry_set', product: 'windows' },
-    filename: { category: 'file_event', product: 'windows' },
     file_path: { category: 'file_event', product: 'windows' },
     mutex: { category: 'process_creation', product: 'windows' },
-    service_name: { category: 'service_installation', product: 'windows' },
-    named_pipe: { category: 'pipe_created', product: 'windows' },
+    service: { category: 'service_installation', product: 'windows' },
+    process: { category: 'process_creation', product: 'windows' },
     ja3: { category: 'network_connection', product: 'zeek' },
     ja4: { category: 'network_connection', product: 'zeek' },
-    certificate_sha1: { category: 'network_connection' },
-    http_user_agent: { category: 'web_application_firewall' },
+    certificate: { category: 'network_connection' },
+    user_agent: { category: 'web_application_firewall' },
+    tls_fingerprint: { category: 'network_connection' },
   };
 
   return logsourceMap[iocType] || { category: 'process_creation', product: 'windows' };
@@ -220,12 +221,6 @@ function generateDetection(iocType: IOCType, iocValue: string): SigmaDetection {
       },
       condition: 'registry_set',
     },
-    filename: {
-      file_event: {
-        FileName: iocValue,
-      },
-      condition: 'file_event',
-    },
     file_path: {
       file_event: {
         TargetFilename: iocValue,
@@ -238,17 +233,17 @@ function generateDetection(iocType: IOCType, iocValue: string): SigmaDetection {
       },
       condition: 'process_creation',
     },
-    service_name: {
+    service: {
       service_installation: {
         ServiceName: iocValue,
       },
       condition: 'service_installation',
     },
-    named_pipe: {
-      pipe_created: {
-        PipeName: iocValue,
+    process: {
+      process_creation: {
+        Image: iocValue,
       },
-      condition: 'pipe_created',
+      condition: 'process_creation',
     },
     ja3: {
       network_connection: {
@@ -262,17 +257,23 @@ function generateDetection(iocType: IOCType, iocValue: string): SigmaDetection {
       },
       condition: 'network_connection',
     },
-    certificate_sha1: {
+    certificate: {
       network_connection: {
         certificate_sha1: iocValue.toUpperCase(),
       },
       condition: 'network_connection',
     },
-    http_user_agent: {
+    user_agent: {
       http_request: {
         User_Agent: iocValue,
       },
       condition: 'http_request',
+    },
+    tls_fingerprint: {
+      network_connection: {
+        tls_fingerprint: iocValue.toUpperCase(),
+      },
+      condition: 'network_connection',
     },
   };
 
@@ -298,7 +299,7 @@ function generateTags(iocType: IOCType, malwareId: string, techniques: string[])
   }
 
   // Add behavior-based tags
-  const behaviorTags: Record<IOCType, string[]> = {
+  const behaviorTags: Record<string, string[]> = {
     sha256: ['execution', 'binary'],
     sha1: ['execution', 'binary'],
     md5: ['execution', 'binary'],
@@ -308,15 +309,15 @@ function generateTags(iocType: IOCType, malwareId: string, techniques: string[])
     url: ['c2', 'network', 'web'],
     email: ['phishing', 'initial_access'],
     registry: ['persistence', 'defense_evasion'],
-    filename: ['execution', 'binary'],
     file_path: ['execution', 'binary'],
     mutex: ['execution', 'process'],
-    service_name: ['persistence', 'execution'],
-    named_pipe: ['execution', 'ipc'],
+    service: ['persistence', 'execution'],
+    process: ['execution', 'process'],
     ja3: ['c2', 'network', 'tls'],
     ja4: ['c2', 'network', 'tls'],
-    certificate_sha1: ['c2', 'network', 'tls'],
-    http_user_agent: ['c2', 'network', 'http'],
+    certificate: ['c2', 'network', 'tls'],
+    user_agent: ['c2', 'network', 'http'],
+    tls_fingerprint: ['c2', 'network', 'tls'],
   };
 
   baseTags.push(...(behaviorTags[iocType] || []));
@@ -329,7 +330,7 @@ function generateTags(iocType: IOCType, malwareId: string, techniques: string[])
 // ============================================================================
 
 function generateFalsePositives(iocType: IOCType): string[] {
-  const fpMap: Record<IOCType, string[]> = {
+  const fpMap: Record<string, string[]> = {
     sha256: ['Legitimate software updates', 'Development tools', 'Antivirus false positives'],
     sha1: ['Legitimate software updates', 'Development tools', 'Antivirus false positives'],
     md5: ['Legitimate software updates', 'Development tools', 'Antivirus false positives'],
@@ -339,15 +340,15 @@ function generateFalsePositives(iocType: IOCType): string[] {
     url: ['Legitimate business applications', 'CDN URLs', 'Analytics platforms'],
     email: ['Spoofed addresses', 'Legitimate domain variations', 'Internal testing accounts'],
     registry: ['Legitimate software installation', 'Administrative scripts'],
-    filename: ['Generic system filenames', 'Third-party software'],
     file_path: ['Common installation paths', 'Shared directories'],
     mutex: ['Legitimate application mutexes', 'Third-party software'],
-    service_name: ['Third-party services', 'Administrative tools'],
-    named_pipe: ['Legitimate IPC communication', 'System services'],
+    service: ['Third-party services', 'Administrative tools'],
+    process: ['Legitimate process names', 'System processes'],
     ja3: ['Legitimate TLS clients', 'Browser variations'],
     ja4: ['Legitimate TLS clients', 'QUIC implementations'],
-    certificate_sha1: ['Legitimate certificate sharing', 'Wildcard certificates'],
-    http_user_agent: ['Legitimate browser variants', 'Corporate proxies'],
+    certificate: ['Legitimate certificate sharing', 'Wildcard certificates'],
+    user_agent: ['Legitimate browser variants', 'Corporate proxies'],
+    tls_fingerprint: ['Legitimate TLS clients', 'Common implementations'],
   };
 
   return fpMap[iocType] || [];

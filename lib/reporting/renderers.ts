@@ -15,7 +15,7 @@ export interface Renderer {
 export class MarkdownRenderer implements Renderer {
   name = 'markdown';
 
-  render(report: MalwareReport, metadata: ReportMetadata): string {
+  render(report: MalwareReport, metadata: MalwareReportMetadata): string {
     const lines: string[] = [];
 
     lines.push(`# ${report.title}\n`);
@@ -56,7 +56,7 @@ export class MarkdownRenderer implements Renderer {
 export class HTMLRenderer implements Renderer {
   name = 'html';
 
-  render(report: MalwareReport, metadata: ReportMetadata): string {
+  render(report: MalwareReport, metadata: MalwareReportMetadata): string {
     let html = '';
     html += `<article class="malware-report">\n`;
     html += `<header class="report-header">\n`;
@@ -103,7 +103,7 @@ export class HTMLRenderer implements Renderer {
 export class JSONRenderer implements Renderer {
   name = 'json';
 
-  render(report: MalwareReport, metadata: ReportMetadata): string {
+  render(report: MalwareReport, metadata: MalwareReportMetadata): string {
     const json = {
       metadata,
       report: {

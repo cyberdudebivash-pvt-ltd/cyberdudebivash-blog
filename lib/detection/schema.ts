@@ -55,8 +55,8 @@ export interface SigmaDetectionField {
 }
 
 export interface SigmaDetection {
-  [key: string]: SigmaDetectionField | string[];
-  condition: string | string[];
+  [key: string]: SigmaDetectionField | string[] | (string | string[]) | undefined;
+  condition?: string | string[];
 }
 
 export interface SigmaRule {

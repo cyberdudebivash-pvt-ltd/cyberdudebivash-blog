@@ -70,13 +70,19 @@ export {
 export type {
   SigmaGeneratorOptions,
   IOCForGeneration as SigmaIOCForGeneration,
-  YaraGeneratorOptions,
-  IOCForYaraGeneration,
-  SuricataGeneratorOptions,
-  IOCForSuricataGeneration,
-  SEMGeneratorOptions,
-  IOCForSEMGeneration,
 } from './generators/sigma';
+
+export type {
+  YaraGeneratorOptions,
+} from './generators/yara';
+
+export type {
+  SuricataGeneratorOptions,
+} from './generators/suricata';
+
+export type {
+  SEMGeneratorOptions,
+} from './generators/siem';
 
 // Correlator
 export {

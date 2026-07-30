@@ -11,8 +11,22 @@ import type {
   DetectionRule,
   RuleValidationResult,
   RuleValidationError,
-  DetectionFormat,
 } from './schema';
+import { DetectionFormat } from './schema';
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+function mapSourceToFormat(source: string): DetectionFormat {
+  const sourceToFormat: Record<string, DetectionFormat> = {
+    'splunk': DetectionFormat.SPLUNK,
+    'elk': DetectionFormat.ELK,
+    'sentinel': DetectionFormat.SENTINEL,
+    'arcsight': DetectionFormat.ARCSIGHT,
+  };
+  return sourceToFormat[source] || DetectionFormat.SPLUNK;
+}
 
 // ============================================================================
 // SIGMA VALIDATION
@@ -26,7 +40,7 @@ export function validateSigmaRule(rule: SigmaRule): RuleValidationResult {
   if (!rule.title || rule.title.trim().length === 0) {
     errors.push({
       rule: rule.title || 'unknown',
-      format: 'sigma',
+      format: DetectionFormat.SIGMA,
       error: 'Missing required field: title',
       field: 'title',
       severity: 'error',
@@ -36,7 +50,7 @@ export function validateSigmaRule(rule: SigmaRule): RuleValidationResult {
   if (!rule.id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(rule.id)) {
     errors.push({
       rule: rule.title || 'unknown',
-      format: 'sigma',
+      format: DetectionFormat.SIGMA,
       error: 'Invalid UUID format for rule ID',
       field: 'id',
       severity: 'error',
@@ -46,7 +60,7 @@ export function validateSigmaRule(rule: SigmaRule): RuleValidationResult {
   if (!rule.description || rule.description.trim().length === 0) {
     errors.push({
       rule: rule.title || 'unknown',
-      format: 'sigma',
+      format: DetectionFormat.SIGMA,
       error: 'Missing required field: description',
       field: 'description',
       severity: 'error',
@@ -56,7 +70,7 @@ export function validateSigmaRule(rule: SigmaRule): RuleValidationResult {
   if (!rule.logsource) {
     errors.push({
       rule: rule.title || 'unknown',
-      format: 'sigma',
+      format: DetectionFormat.SIGMA,
       error: 'Missing required field: logsource',
       field: 'logsource',
       severity: 'error',
@@ -65,7 +79,7 @@ export function validateSigmaRule(rule: SigmaRule): RuleValidationResult {
     if (!rule.logsource.category && !rule.logsource.product && !rule.logsource.service) {
       warnings.push({
         rule: rule.title || 'unknown',
-        format: 'sigma',
+        format: DetectionFormat.SIGMA,
         error: 'Logsource should specify at least category, product, or service',
         field: 'logsource',
         severity: 'warning',
@@ -77,7 +91,7 @@ export function validateSigmaRule(rule: SigmaRule): RuleValidationResult {
   if (!rule.detection) {
     errors.push({
       rule: rule.title || 'unknown',
-      format: 'sigma',
+      format: DetectionFormat.SIGMA,
       error: 'Missing required field: detection',
       field: 'detection',
       severity: 'error',
@@ -86,7 +100,7 @@ export function validateSigmaRule(rule: SigmaRule): RuleValidationResult {
     if (!rule.detection.condition) {
       errors.push({
         rule: rule.title || 'unknown',
-        format: 'sigma',
+        format: DetectionFormat.SIGMA,
         error: 'Detection must have a condition',
         field: 'detection.condition',
         severity: 'error',
@@ -99,7 +113,7 @@ export function validateSigmaRule(rule: SigmaRule): RuleValidationResult {
   if (!validLevels.includes(rule.level)) {
     errors.push({
       rule: rule.title || 'unknown',
-      format: 'sigma',
+      format: DetectionFormat.SIGMA,
       error: `Invalid level: ${rule.level}`,
       field: 'level',
       severity: 'error',
@@ -125,7 +139,7 @@ export function validateYaraRule(rule: YaraRule): RuleValidationResult {
   if (!rule.name || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(rule.name)) {
     errors.push({
       rule: rule.name || 'unknown',
-      format: 'yara',
+      format: DetectionFormat.YARA,
       error: 'Invalid YARA rule name (must start with letter or underscore)',
       field: 'name',
       severity: 'error',
@@ -136,7 +150,7 @@ export function validateYaraRule(rule: YaraRule): RuleValidationResult {
   if (!rule.strings || rule.strings.length === 0) {
     errors.push({
       rule: rule.name || 'unknown',
-      format: 'yara',
+      format: DetectionFormat.YARA,
       error: 'Rule must have at least one string pattern',
       field: 'strings',
       severity: 'error',
@@ -146,7 +160,7 @@ export function validateYaraRule(rule: YaraRule): RuleValidationResult {
       if (!str.name || !/^\$[a-zA-Z_][a-zA-Z0-9_]*$/.test(str.name)) {
         errors.push({
           rule: rule.name || 'unknown',
-          format: 'yara',
+          format: DetectionFormat.YARA,
           error: `Invalid string name: ${str.name}`,
           field: 'strings',
           severity: 'error',
@@ -156,7 +170,7 @@ export function validateYaraRule(rule: YaraRule): RuleValidationResult {
       if (!str.pattern || str.pattern.trim().length === 0) {
         errors.push({
           rule: rule.name || 'unknown',
-          format: 'yara',
+          format: DetectionFormat.YARA,
           error: `String ${str.name} has no pattern`,
           field: 'strings',
           severity: 'error',
@@ -169,7 +183,7 @@ export function validateYaraRule(rule: YaraRule): RuleValidationResult {
   if (!rule.condition || rule.condition.trim().length === 0) {
     errors.push({
       rule: rule.name || 'unknown',
-      format: 'yara',
+      format: DetectionFormat.YARA,
       error: 'Rule must have a condition',
       field: 'condition',
       severity: 'error',
@@ -184,7 +198,7 @@ export function validateYaraRule(rule: YaraRule): RuleValidationResult {
     ) {
       warnings.push({
         rule: rule.name || 'unknown',
-        format: 'yara',
+        format: DetectionFormat.YARA,
         error: 'Condition may be invalid (no recognized keywords or string references)',
         field: 'condition',
         severity: 'warning',
@@ -212,7 +226,7 @@ export function validateSuricataRule(rule: SuricataRule): RuleValidationResult {
   if (!validActions.includes(rule.action)) {
     errors.push({
       rule: rule.msg || 'unknown',
-      format: 'suricata',
+      format: DetectionFormat.SURICATA,
       error: `Invalid action: ${rule.action}`,
       field: 'action',
       severity: 'error',
@@ -224,7 +238,7 @@ export function validateSuricataRule(rule: SuricataRule): RuleValidationResult {
   if (!validProtocols.includes(rule.protocol)) {
     errors.push({
       rule: rule.msg || 'unknown',
-      format: 'suricata',
+      format: DetectionFormat.SURICATA,
       error: `Invalid protocol: ${rule.protocol}`,
       field: 'protocol',
       severity: 'error',
@@ -235,7 +249,7 @@ export function validateSuricataRule(rule: SuricataRule): RuleValidationResult {
   if (!rule.sourceIp || rule.sourceIp === '') {
     errors.push({
       rule: rule.msg || 'unknown',
-      format: 'suricata',
+      format: DetectionFormat.SURICATA,
       error: 'Missing source IP',
       field: 'sourceIp',
       severity: 'error',
@@ -245,7 +259,7 @@ export function validateSuricataRule(rule: SuricataRule): RuleValidationResult {
   if (!rule.destIp || rule.destIp === '') {
     errors.push({
       rule: rule.msg || 'unknown',
-      format: 'suricata',
+      format: DetectionFormat.SURICATA,
       error: 'Missing destination IP',
       field: 'destIp',
       severity: 'error',
@@ -256,7 +270,7 @@ export function validateSuricataRule(rule: SuricataRule): RuleValidationResult {
   if (!rule.msg || rule.msg.trim().length === 0) {
     errors.push({
       rule: 'unknown',
-      format: 'suricata',
+      format: DetectionFormat.SURICATA,
       error: 'Rule must have a message (msg)',
       field: 'msg',
       severity: 'error',
@@ -267,7 +281,7 @@ export function validateSuricataRule(rule: SuricataRule): RuleValidationResult {
   if (!rule.sid) {
     errors.push({
       rule: rule.msg || 'unknown',
-      format: 'suricata',
+      format: DetectionFormat.SURICATA,
       error: 'Rule must have a SID (signature ID)',
       field: 'sid',
       severity: 'error',
@@ -278,7 +292,7 @@ export function validateSuricataRule(rule: SuricataRule): RuleValidationResult {
   if (!rule.content || rule.content.length === 0) {
     warnings.push({
       rule: rule.msg || 'unknown',
-      format: 'suricata',
+      format: DetectionFormat.SURICATA,
       error: 'Rule has no content patterns (may match too broadly)',
       field: 'content',
       severity: 'warning',
@@ -303,7 +317,7 @@ export function validateSEMRule(rule: SEMRule): RuleValidationResult {
   if (!rule.name || rule.name.trim().length === 0) {
     errors.push({
       rule: 'unknown',
-      format: rule.source,
+      format: mapSourceToFormat(rule.source),
       error: 'Rule must have a name',
       field: 'name',
       severity: 'error',
@@ -313,7 +327,7 @@ export function validateSEMRule(rule: SEMRule): RuleValidationResult {
   if (!rule.description || rule.description.trim().length === 0) {
     errors.push({
       rule: rule.name || 'unknown',
-      format: rule.source,
+      format: mapSourceToFormat(rule.source),
       error: 'Rule must have a description',
       field: 'description',
       severity: 'error',
@@ -323,7 +337,7 @@ export function validateSEMRule(rule: SEMRule): RuleValidationResult {
   if (!rule.eventType || rule.eventType.trim().length === 0) {
     errors.push({
       rule: rule.name || 'unknown',
-      format: rule.source,
+      format: mapSourceToFormat(rule.source),
       error: 'Rule must specify eventType',
       field: 'eventType',
       severity: 'error',
@@ -333,7 +347,7 @@ export function validateSEMRule(rule: SEMRule): RuleValidationResult {
   if (!rule.fields || rule.fields.length === 0) {
     errors.push({
       rule: rule.name || 'unknown',
-      format: rule.source,
+      format: mapSourceToFormat(rule.source),
       error: 'Rule must have at least one field',
       field: 'fields',
       severity: 'error',
@@ -344,7 +358,7 @@ export function validateSEMRule(rule: SEMRule): RuleValidationResult {
     if (!rule.threshold.value || rule.threshold.value <= 0) {
       errors.push({
         rule: rule.name || 'unknown',
-        format: rule.source,
+        format: mapSourceToFormat(rule.source),
         error: 'Threshold value must be greater than 0',
         field: 'threshold.value',
         severity: 'error',
@@ -353,7 +367,7 @@ export function validateSEMRule(rule: SEMRule): RuleValidationResult {
     if (!rule.threshold.timeWindow || rule.threshold.timeWindow.trim().length === 0) {
       errors.push({
         rule: rule.name || 'unknown',
-        format: rule.source,
+        format: mapSourceToFormat(rule.source),
         error: 'Threshold must have a time window',
         field: 'threshold.timeWindow',
         severity: 'error',
@@ -379,7 +393,7 @@ export function validateDetectionRule(rule: DetectionRule): RuleValidationResult
   if (!rule.id || rule.id.trim().length === 0) {
     errors.push({
       rule: rule.name || 'unknown',
-      format: 'sigma',
+      format: DetectionFormat.SIGMA,
       error: 'Rule must have an ID',
       field: 'id',
       severity: 'error',
@@ -389,7 +403,7 @@ export function validateDetectionRule(rule: DetectionRule): RuleValidationResult
   if (!rule.name || rule.name.trim().length === 0) {
     errors.push({
       rule: 'unknown',
-      format: 'sigma',
+      format: DetectionFormat.SIGMA,
       error: 'Rule must have a name',
       field: 'name',
       severity: 'error',
@@ -427,7 +441,7 @@ export function validateDetectionRule(rule: DetectionRule): RuleValidationResult
   if (!rule.metadata.linkedMalware || rule.metadata.linkedMalware.length === 0) {
     warnings.push({
       rule: rule.name || 'unknown',
-      format: 'sigma',
+      format: DetectionFormat.SIGMA,
       error: 'Rule should be linked to at least one malware family',
       field: 'metadata.linkedMalware',
       severity: 'warning',

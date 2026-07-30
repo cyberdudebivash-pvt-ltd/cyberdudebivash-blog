@@ -47,7 +47,6 @@ export class IOCIntelligenceEngine {
     // Score confidence
     const evidenceConfidence = scoreEvidence(evidence);
     const components = {
-      source_confidence: sourceConfidence,
       ...evidenceConfidence,
     };
     const aggregated = aggregateConfidence(components);
@@ -173,7 +172,13 @@ export class IOCIntelligenceEngine {
 
   export(): {
     iocs: IOCWithMetadata[];
-    stats: ReturnType<typeof this.stats>;
+    stats: {
+      total_iocs: number;
+      by_type: Record<IOCType, number>;
+      high_confidence: number;
+      relationships: number;
+      unique_normalized_forms: number;
+    };
   } {
     return {
       iocs: Array.from(this.iocs.values()),

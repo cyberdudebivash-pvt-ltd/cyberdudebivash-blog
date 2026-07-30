@@ -3,7 +3,7 @@
  * Deterministic normalization rules for all IOC types
  */
 
-import type { IOCType } from '../intelligence/schema';
+import { IOCType } from '../intelligence/schema';
 import type { NormalizationRule } from './types';
 
 const ipv4Regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
@@ -13,26 +13,26 @@ const sha1Regex = /^[a-fA-F0-9]{40}$/;
 const md5Regex = /^[a-fA-F0-9]{32}$/;
 
 export const normalizationRules: Record<IOCType, NormalizationRule> = {
-  ipv4: {
-    type: 'ipv4',
+  [IOCType.IPV4]: {
+    type: IOCType.IPV4,
     apply: (value: string) => value.trim(),
     description: 'IPv4 addresses normalized to standard dotted-quad notation',
   },
-  ipv6: {
-    type: 'ipv6',
+  [IOCType.IPV6]: {
+    type: IOCType.IPV6,
     apply: (value: string) => {
       const addr = value.trim().toLowerCase();
       return compressIPv6(addr);
     },
     description: 'IPv6 addresses normalized to compressed canonical form',
   },
-  domain: {
-    type: 'domain',
+  [IOCType.DOMAIN]: {
+    type: IOCType.DOMAIN,
     apply: (value: string) => value.trim().toLowerCase(),
     description: 'Domains normalized to lowercase',
   },
-  url: {
-    type: 'url',
+  [IOCType.URL]: {
+    type: IOCType.URL,
     apply: (value: string) => {
       const url = new URL(value.trim());
       url.hostname = url.hostname.toLowerCase();
@@ -44,79 +44,79 @@ export const normalizationRules: Record<IOCType, NormalizationRule> = {
     },
     description: 'URLs normalized: lowercase hostname, remove redundant ports, preserve path/query',
   },
-  sha256: {
-    type: 'sha256',
+  [IOCType.SHA256]: {
+    type: IOCType.SHA256,
     apply: (value: string) => value.trim().toUpperCase(),
     description: 'SHA256 hashes normalized to uppercase',
   },
-  sha1: {
-    type: 'sha1',
+  [IOCType.SHA1]: {
+    type: IOCType.SHA1,
     apply: (value: string) => value.trim().toUpperCase(),
     description: 'SHA1 hashes normalized to uppercase',
   },
-  md5: {
-    type: 'md5',
+  [IOCType.MD5]: {
+    type: IOCType.MD5,
     apply: (value: string) => value.trim().toUpperCase(),
     description: 'MD5 hashes normalized to uppercase',
   },
-  email: {
-    type: 'email',
+  [IOCType.EMAIL]: {
+    type: IOCType.EMAIL,
     apply: (value: string) => value.trim().toLowerCase(),
     description: 'Email addresses normalized to lowercase',
   },
-  mutex: {
-    type: 'mutex',
+  [IOCType.MUTEX]: {
+    type: IOCType.MUTEX,
     apply: (value: string) => value.trim(),
     description: 'Mutex names preserved as-is with trimming',
   },
-  registry: {
-    type: 'registry',
+  [IOCType.REGISTRY]: {
+    type: IOCType.REGISTRY,
     apply: (value: string) => {
       const normalized = value.trim();
       return normalized.toUpperCase().replace(/\\\\/g, '\\');
     },
     description: 'Registry paths normalized to uppercase with canonical backslashes',
   },
-  service: {
-    type: 'service',
+  [IOCType.SERVICE]: {
+    type: IOCType.SERVICE,
     apply: (value: string) => value.trim().toLowerCase(),
     description: 'Service names normalized to lowercase',
   },
-  process: {
-    type: 'process',
+  [IOCType.PROCESS]: {
+    type: IOCType.PROCESS,
     apply: (value: string) => value.trim(),
     description: 'Process names preserved with trimming',
   },
-  file_path: {
-    type: 'file_path',
+  [IOCType.FILE_PATH]: {
+    type: IOCType.FILE_PATH,
     apply: (value: string) => {
       const normalized = value.trim();
       return normalized.replace(/\\\\/g, '\\').toUpperCase();
     },
     description: 'File paths normalized with canonical separators',
   },
-  certificate: {
-    type: 'certificate',
+  [IOCType.CERTIFICATE]: {
+    type: IOCType.CERTIFICATE,
     apply: (value: string) => value.trim().toUpperCase(),
     description: 'Certificate fingerprints normalized to uppercase',
   },
-  ja3: {
-    type: 'ja3',
+  [IOCType.JA3]: {
+    type: IOCType.JA3,
     apply: (value: string) => value.trim().toUpperCase(),
     description: 'JA3 fingerprints normalized to uppercase',
   },
-  ja4: {
-    type: 'ja4',
+  [IOCType.JA4]: {
+    type: IOCType.JA4,
     apply: (value: string) => value.trim().toUpperCase(),
     description: 'JA4 fingerprints normalized to uppercase',
   },
-  user_agent: {
-    type: 'user_agent',
+  [IOCType.USER_AGENT]: {
+    type: IOCType.USER_AGENT,
     apply: (value: string) => value.trim(),
     description: 'User agents preserved with trimming',
   },
-  tls_fingerprint: {
-    type: 'tls_fingerprint',
+  [IOCType.TLS_FINGERPRINT]: {
+    type: IOCType.TLS_FINGERPRINT,
     apply: (value: string) => value.trim().toUpperCase(),
     description: 'TLS fingerprints normalized to uppercase',
   },

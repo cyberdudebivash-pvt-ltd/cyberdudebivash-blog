@@ -3,7 +3,8 @@
  * Generates Suricata IDS/IPS rules for network detection
  */
 
-import type { SuricataRule, SuricataContent, SuricataFlow, RuleSeverity } from '../schema';
+import type { SuricataRule, SuricataContent, SuricataFlow } from '../schema';
+import { RuleSeverity } from '../schema';
 import type { IOCType } from '../../intelligence/schema';
 
 let sidCounter = 1000000;
@@ -24,7 +25,7 @@ export function generateSuricataFromIOC(
   malwareName: string,
   options?: SuricataGeneratorOptions
 ): SuricataRule[] {
-  const severity = options?.severity || 'high';
+  const severity = options?.severity || RuleSeverity.HIGH;
   const direction = options?.direction || '->';
   const classType = options?.classType || 'attempted-recon';
 
@@ -41,7 +42,7 @@ export function generateSuricataFromIOC(
       rules.push(...generateHTTPRules(iocValue, malwareName, severity, classType));
       break;
 
-    case 'http_user_agent':
+    case 'user_agent':
       rules.push(...generateUserAgentRules(iocValue, malwareName, severity, classType));
       break;
 

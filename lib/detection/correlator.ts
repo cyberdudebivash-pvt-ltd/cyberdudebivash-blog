@@ -5,10 +5,10 @@
 
 import type {
   DetectionRule,
-  DetectionBehavior,
   RuleMetadata,
   DetectionRuleCollection,
 } from './schema';
+import { DetectionBehavior } from './schema';
 import type { MalwareFamily, Campaign, ThreatActor, MitreTechnique } from '../intelligence/schema';
 
 // ============================================================================
@@ -25,72 +25,72 @@ const MITRE_TECHNIQUE_MAP: Record<string, TechniqueMapping> = {
   'T1071.001': {
     technique_id: 'T1071.001',
     technique_name: 'Application Layer Protocol: Web Protocols',
-    behaviors: ['NETWORK_COMMUNICATION'],
+    behaviors: [DetectionBehavior.NETWORK_COMMUNICATION],
   },
   'T1190': {
     technique_id: 'T1190',
     technique_name: 'Exploit Public-Facing Application',
-    behaviors: ['PROCESS_EXECUTION'],
+    behaviors: [DetectionBehavior.PROCESS_EXECUTION],
   },
   'T1566': {
     technique_id: 'T1566',
     technique_name: 'Phishing',
-    behaviors: ['INITIAL_ACCESS'],
+    behaviors: [DetectionBehavior.FILE_ACTIVITY],
   },
   'T1192': {
     technique_id: 'T1192',
     technique_name: 'Spear Phishing',
-    behaviors: ['INITIAL_ACCESS'],
+    behaviors: [DetectionBehavior.FILE_ACTIVITY],
   },
   'T1547.001': {
     technique_id: 'T1547.001',
     technique_name: 'Boot or Logon Autostart Execution: Registry Run Keys',
-    behaviors: ['PERSISTENCE', 'DEFENSE_EVASION'],
+    behaviors: [DetectionBehavior.PERSISTENCE, DetectionBehavior.DEFENSE_EVASION],
   },
   'T1547.012': {
     technique_id: 'T1547.012',
     technique_name: 'Boot or Logon Autostart Execution: Print Processors',
-    behaviors: ['PERSISTENCE', 'DEFENSE_EVASION'],
+    behaviors: [DetectionBehavior.PERSISTENCE, DetectionBehavior.DEFENSE_EVASION],
   },
   'T1547': {
     technique_id: 'T1547',
     technique_name: 'Boot or Logon Autostart Execution',
-    behaviors: ['PERSISTENCE'],
+    behaviors: [DetectionBehavior.PERSISTENCE],
   },
   'T1110': {
     technique_id: 'T1110',
     technique_name: 'Brute Force',
-    behaviors: ['CREDENTIAL_THEFT'],
+    behaviors: [DetectionBehavior.CREDENTIAL_THEFT],
   },
   'T1001': {
     technique_id: 'T1001',
     technique_name: 'Data Obfuscation',
-    behaviors: ['DEFENSE_EVASION'],
+    behaviors: [DetectionBehavior.DEFENSE_EVASION],
   },
   'T1566.002': {
     technique_id: 'T1566.002',
     technique_name: 'Phishing: Phishing Attachment',
-    behaviors: ['INITIAL_ACCESS'],
+    behaviors: [DetectionBehavior.FILE_ACTIVITY],
   },
   'T1486': {
     technique_id: 'T1486',
     technique_name: 'Data Encrypted for Impact',
-    behaviors: ['DATA_EXFILTRATION'],
+    behaviors: [DetectionBehavior.DATA_EXFILTRATION],
   },
   'T1105': {
     technique_id: 'T1105',
     technique_name: 'Ingress Tool Transfer',
-    behaviors: ['COMMAND_AND_CONTROL'],
+    behaviors: [DetectionBehavior.NETWORK_COMMUNICATION],
   },
   'T1570': {
     technique_id: 'T1570',
     technique_name: 'Lateral Tool Transfer',
-    behaviors: ['LATERAL_MOVEMENT'],
+    behaviors: [DetectionBehavior.LATERAL_MOVEMENT],
   },
   'T1133': {
     technique_id: 'T1133',
     technique_name: 'External Remote Services',
-    behaviors: ['PERSISTENCE', 'INITIAL_ACCESS'],
+    behaviors: [DetectionBehavior.PERSISTENCE, DetectionBehavior.NETWORK_COMMUNICATION],
   },
 };
 
@@ -123,7 +123,7 @@ export function linkRulesToMalware(rules: DetectionRule[], malwareFamilies: Malw
     for (const family of malwareFamilies) {
       // Check if rule IOCs match malware IOCs
       const ruleIOCs = new Set<string>(rule.metadata.linkedIOCs);
-      const malwareIOCs = new Set(family.iocs.map(ioc => ioc.normalized.toUpperCase()));
+      const malwareIOCs = new Set(family.iocs.map(ioc => (ioc.normalized || ioc.value).toUpperCase()));
 
       for (const ruleIOC of ruleIOCs) {
         if (malwareIOCs.has(ruleIOC.toUpperCase())) {
@@ -180,7 +180,7 @@ export function linkRulesToCampaigns(rules: DetectionRule[], campaigns: Campaign
   for (const rule of rules) {
     for (const campaign of campaigns) {
       // Link through malware families
-      const ruleHasMalware = rule.metadata.linkedMalware.some(m => campaign.malware.includes(m));
+      const ruleHasMalware = rule.metadata.linkedMalware.some(m => campaign.malware_families.includes(m));
 
       if (ruleHasMalware) {
         if (!rule.metadata.linkedMalware.includes(campaign.id)) {
@@ -201,13 +201,11 @@ export function linkRulesToCampaigns(rules: DetectionRule[], campaigns: Campaign
 export function linkRulesToActors(rules: DetectionRule[], actors: ThreatActor[]): void {
   for (const rule of rules) {
     for (const actor of actors) {
-      // Link through malware families
-      const ruleHasMalware = rule.metadata.linkedMalware.some(m => actor.malware.includes(m));
-
-      if (ruleHasMalware) {
-        if (!rule.metadata.linkedMalware.includes(`actor_${actor.id}`)) {
-          rule.metadata.linkedMalware.push(`actor_${actor.id}`);
-        }
+      if (!rule.metadata.linkedActors) {
+        rule.metadata.linkedActors = [];
+      }
+      if (!rule.metadata.linkedActors.includes(actor.id)) {
+        rule.metadata.linkedActors.push(actor.id);
       }
     }
   }

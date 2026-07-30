@@ -1,0 +1,37 @@
+From 734016fc4ebbbb1a19b40349ae0a89e5bcc3fbf3 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 30 Jul 2026 13:42:29 +0000
+Subject: [PATCH 5/6] fix: resolve SigmaDetection type incompatibility for
+ condition property
+
+- Modify SigmaDetection interface to accept condition as optional property
+- Update index signature to allow string | string[] values
+- This fixes TypeScript's strict index signature validation for the condition property
+- Eliminates 12 cascading TS2322 errors in detection generators
+
+Reduces TypeScript errors from 146 to 134.
+
+Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01PcqZQMLx2zqEEPRtdAX17K
+---
+ lib/detection/schema.ts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lib/detection/schema.ts b/lib/detection/schema.ts
+index ee15c804b..009e11300 100644
+--- a/lib/detection/schema.ts
++++ b/lib/detection/schema.ts
+@@ -55,8 +55,8 @@ export interface SigmaDetectionField {
+ }
+ 
+ export interface SigmaDetection {
+-  [key: string]: SigmaDetectionField | string[];
+-  condition: string | string[];
++  [key: string]: SigmaDetectionField | string[] | (string | string[]);
++  condition?: string | string[];
+ }
+ 
+ export interface SigmaRule {
+-- 
+2.43.0
+

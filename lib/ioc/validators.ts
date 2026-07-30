@@ -3,7 +3,7 @@
  * Syntax and semantic validation for all IOC types
  */
 
-import type { IOCType } from '../intelligence/schema';
+import { IOCType } from '../intelligence/schema';
 import type { ValidationRule } from './types';
 
 const ipv4Regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
@@ -16,8 +16,8 @@ const urlRegex = /^https?:\/\/.+/;
 const domainRegex = /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
 
 export const validationRules: Record<IOCType, ValidationRule> = {
-  ipv4: {
-    type: 'ipv4',
+  [IOCType.IPV4]: {
+    type: IOCType.IPV4,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -40,8 +40,8 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'IPv4 syntax and range validation',
   },
 
-  ipv6: {
-    type: 'ipv6',
+  [IOCType.IPV6]: {
+    type: IOCType.IPV6,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -55,8 +55,8 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'IPv6 syntax validation',
   },
 
-  domain: {
-    type: 'domain',
+  [IOCType.DOMAIN]: {
+    type: IOCType.DOMAIN,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -78,8 +78,8 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'Domain syntax validation',
   },
 
-  url: {
-    type: 'url',
+  [IOCType.URL]: {
+    type: IOCType.URL,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -100,8 +100,8 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'URL syntax validation',
   },
 
-  sha256: {
-    type: 'sha256',
+  [IOCType.SHA256]: {
+    type: IOCType.SHA256,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -115,8 +115,8 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'SHA256 hash format validation (64 hex chars)',
   },
 
-  sha1: {
-    type: 'sha1',
+  [IOCType.SHA1]: {
+    type: IOCType.SHA1,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -130,8 +130,8 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'SHA1 hash format validation (40 hex chars)',
   },
 
-  md5: {
-    type: 'md5',
+  [IOCType.MD5]: {
+    type: IOCType.MD5,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -145,8 +145,8 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'MD5 hash format validation (32 hex chars)',
   },
 
-  email: {
-    type: 'email',
+  [IOCType.EMAIL]: {
+    type: IOCType.EMAIL,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -164,14 +164,14 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'Email address syntax validation',
   },
 
-  mutex: {
-    type: 'mutex',
+  [IOCType.MUTEX]: {
+    type: IOCType.MUTEX,
     validate: () => ({ valid: true, errors: [], warnings: [] }),
     description: 'Mutex names accepted as-is',
   },
 
-  registry: {
-    type: 'registry',
+  [IOCType.REGISTRY]: {
+    type: IOCType.REGISTRY,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -189,26 +189,26 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'Windows registry path validation',
   },
 
-  service: {
-    type: 'service',
+  [IOCType.SERVICE]: {
+    type: IOCType.SERVICE,
     validate: () => ({ valid: true, errors: [], warnings: [] }),
     description: 'Service names accepted as-is',
   },
 
-  process: {
-    type: 'process',
+  [IOCType.PROCESS]: {
+    type: IOCType.PROCESS,
     validate: () => ({ valid: true, errors: [], warnings: [] }),
     description: 'Process names accepted as-is',
   },
 
-  file_path: {
-    type: 'file_path',
+  [IOCType.FILE_PATH]: {
+    type: IOCType.FILE_PATH,
     validate: () => ({ valid: true, errors: [], warnings: [] }),
     description: 'File paths accepted as-is',
   },
 
-  certificate: {
-    type: 'certificate',
+  [IOCType.CERTIFICATE]: {
+    type: IOCType.CERTIFICATE,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -226,8 +226,8 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'TLS certificate fingerprint validation',
   },
 
-  ja3: {
-    type: 'ja3',
+  [IOCType.JA3]: {
+    type: IOCType.JA3,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -241,8 +241,8 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'JA3 fingerprint validation',
   },
 
-  ja4: {
-    type: 'ja4',
+  [IOCType.JA4]: {
+    type: IOCType.JA4,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];
@@ -256,14 +256,14 @@ export const validationRules: Record<IOCType, ValidationRule> = {
     description: 'JA4 fingerprint validation',
   },
 
-  user_agent: {
-    type: 'user_agent',
+  [IOCType.USER_AGENT]: {
+    type: IOCType.USER_AGENT,
     validate: () => ({ valid: true, errors: [], warnings: [] }),
     description: 'User agents accepted as-is',
   },
 
-  tls_fingerprint: {
-    type: 'tls_fingerprint',
+  [IOCType.TLS_FINGERPRINT]: {
+    type: IOCType.TLS_FINGERPRINT,
     validate: (value: string) => {
       const errors: string[] = [];
       const warnings: string[] = [];

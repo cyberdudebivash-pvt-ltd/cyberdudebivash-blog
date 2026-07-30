@@ -181,7 +181,7 @@ export {
 export {
   createIOCEngine,
   normalizeIOC,
-  validateIOC,
+  validateIOC as validateIOCValue,
   aggregateConfidence,
   scoreEvidence,
   calculateCorrelationConfidence,

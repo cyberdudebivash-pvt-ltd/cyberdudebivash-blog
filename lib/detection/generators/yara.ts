@@ -4,7 +4,8 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import type { YaraRule, YaraMetadata, YaraString, RuleSeverity } from '../schema';
+import type { YaraRule, YaraMetadata, YaraString } from '../schema';
+import { RuleSeverity } from '../schema';
 import type { IOCType } from '../../intelligence/schema';
 
 // ============================================================================
@@ -64,20 +65,19 @@ function generateYaraRuleName(malwareName: string, iocType: IOCType): string {
 // ============================================================================
 
 function generateYaraMetadata(malwareName: string, iocType: IOCType, severity?: RuleSeverity): YaraMetadata {
-  const severityScore: Record<RuleSeverity | undefined, number> = {
-    critical: 10,
-    high: 8,
-    medium: 6,
-    low: 4,
-    informational: 2,
-    undefined: 6,
+  const severityScore: Record<string, number> = {
+    [RuleSeverity.CRITICAL]: 10,
+    [RuleSeverity.HIGH]: 8,
+    [RuleSeverity.MEDIUM]: 6,
+    [RuleSeverity.LOW]: 4,
+    [RuleSeverity.INFORMATIONAL]: 2,
   };
 
   return {
     author: 'SENTINEL APEX Detection Engineering',
     description: `Detection rule for ${malwareName} based on ${iocType} indicator`,
     date: new Date().toISOString().split('T')[0],
-    severity: severityScore[severity] || 6,
+    severity: (severity && severityScore[severity]) || 6,
     tlp: 'white',
     malware_family: malwareName.toLowerCase(),
     ioc_type: iocType,
@@ -107,20 +107,19 @@ function generateYaraStrings(iocType: IOCType, iocValue: string, malwareName: st
     case 'registry':
       return generateRegistryStrings(iocValue);
 
-    case 'filename':
     case 'file_path':
       return generateFilenameStrings(iocValue);
 
-    case 'service_name':
+    case 'service':
       return generateServiceStrings(iocValue);
 
     case 'mutex':
       return generateMutexStrings(iocValue);
 
-    case 'named_pipe':
+    case 'process':
       return generateNamedPipeStrings(iocValue);
 
-    case 'http_user_agent':
+    case 'user_agent':
       return generateUserAgentStrings(iocValue);
 
     case 'ja3':
