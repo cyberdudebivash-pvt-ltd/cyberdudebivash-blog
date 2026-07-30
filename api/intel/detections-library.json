@@ -1,8 +1,64 @@
 {
-  "generated": "2026-07-30T14:35:31.272Z",
+  "generated": "2026-07-30T19:55:24.792Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-54722-npm-dssrf",
+      "title": "dssrf has an SSRF bypass with remove_at_symbol_in_string",
+      "url": "/posts/cve-2026-54722-npm-dssrf.html",
+      "generated": "2026-07-30T17:55:43.741Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-54722",
+        "CVE-2026-54722"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://evil.com@127.0.0.1/`\"; http.host; content:\"evil.com@127.0.0.1\"; nocase; http.uri; content:\"/`\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://evil.com127.0.0.1/`\"; http.host; content:\"evil.com127.0.0.1\"; nocase; http.uri; content:\"/`\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain evil.com\"; dns.query; content:\"evil.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-67428-pip-flyto-core",
+      "title": "Flyto2 Core: Multiple HTTP-family modules fetch client-controlled URLs without the SSRF guard their siblings apply (SSRF to internal/metadata)",
+      "url": "/posts/cve-2026-67428-pip-flyto-core.html",
+      "generated": "2026-07-30T16:23:12.012Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-67428",
+        "CVE-2026-67428"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 169.254.169.254 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 169.254.169.254\"; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "academic-soc-analyst-decision-making-review-a-series-of-n",
+      "title": "[Academic] SOC analyst decision-making: review a series of network security alerts (18+, ~10-15 min, all backgrounds welcome)",
+      "url": "/posts/academic-soc-analyst-decision-making-review-a-series-of-n.html",
+      "generated": "2026-07-30T14:40:35.663Z",
+      "severity": "MEDIUM",
+      "cves": [],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://dissertation-explainids.uogs.co.uk\"; http.host; content:\"dissertation-explainids.uogs.co.uk\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
     {
       "slug": "hugging-face-built-an-interactive-replay-of-the-oal-agent-th",
       "title": "Hugging Face built an interactive replay of the OAl agent that breached them",
@@ -4140,68 +4196,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1uslf2v/can_aigenerated_adversaries_break_ttpbased/&quot;&g\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1uslf2v/can_aigenerated_adversaries_break_ttpbased/&quot\\;&g\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain arxiv.org\"; dns.query; content:\"arxiv.org\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "towards-csi-what-s-the-best-harness-arxiv-2026",
-      "title": "Towards CSI: What's the best harness? (arXiv 2026)",
-      "url": "/posts/towards-csi-what-s-the-best-harness-arxiv-2026.html",
-      "generated": "2026-07-10T10:32:03.097Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://arxiv.org/pdf/2605.28334&quot;&gt;https://arxiv.org/pdf/2605.28334&lt;/a&gt;&lt;/p&gt;\"; http.host; content:\"arxiv.org\"; nocase; http.uri; content:\"/pdf/2605.28334&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Obvious-Language4462&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Obvious-Language4462&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://arxiv.org/pdf/2605.28334&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"arxiv.org\"; nocase; http.uri; content:\"/pdf/2605.28334&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1usj1gg/towards_csi_whats_the_best_harness_arxiv_2026/&quot\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1usj1gg/towards_csi_whats_the_best_harness_arxiv_2026/&quot\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain arxiv.org\"; dns.query; content:\"arxiv.org\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
-      ]
-    },
-    {
-      "slug": "hallusquatting-turns-ai-hallucinations-into-botnet-deliver",
-      "title": "'HalluSquatting' Turns AI Hallucinations Into Botnet Delivery Mechanism",
-      "url": "/posts/hallusquatting-turns-ai-hallucinations-into-botnet-deliver.html",
-      "generated": "2026-07-10T09:59:58.317Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1usiani/hallusquatting_turns_ai_hallucinations_into/\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1usiani/hallusquatting_turns_ai_hallucinations_into/\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/fs9O5i_ntC9bHEcwOzZKsdWCEwiHH0hpKlSa-oQR3ks.jpeg?width=640&amp;amp;\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/fs9O5i_ntC9bHEcwOzZKsdWCEwiHH0hpKlSa-oQR3ks.jpeg?width=640&amp\\;amp\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/rkhunter_&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/rkhunter_&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.securityweek.com/hallusquatting-turns-ai-hallucinations-into-botnet-delivery-mechanism/&\"; http.host; content:\"www.securityweek.com\"; nocase; http.uri; content:\"/hallusquatting-turns-ai-hallucinations-into-botnet-delivery-mechanism/&\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.securityweek.com\"; dns.query; content:\"www.securityweek.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
-      ]
-    },
-    {
-      "slug": "new-research-why-no-single-ai-agent-harness-wins-every-cybe",
-      "title": "New research: Why no single AI agent harness wins every cybersecurity task",
-      "url": "/posts/new-research-why-no-single-ai-agent-harness-wins-every-cybe.html",
-      "generated": "2026-07-10T09:59:58.312Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://arxiv.org/pdf/2605.28334&quot;&gt;https://arxiv.org/pdf/2605.28334&lt;/a&gt;&lt;/p&gt;\"; http.host; content:\"arxiv.org\"; nocase; http.uri; content:\"/pdf/2605.28334&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Obvious-Language4462&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Obvious-Language4462&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1usj25u/new_research_why_no_single_ai_agent_harness_\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1usj25u/new_research_why_no_single_ai_agent_harness_\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain arxiv.org\"; dns.query; content:\"arxiv.org\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
       ]
     }
   ]
