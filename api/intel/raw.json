@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-30T01:01:53.208Z",
+  "generated": "2026-07-30T01:31:48.263Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 157,
+  "count": 155,
   "items": [
     {
       "id": "SENTINELAPEX-5c7197fa7f4d",
@@ -683,48 +683,55 @@
       "iocs": []
     },
     {
-      "id": "REDDIT_CYBER-307a20d15ac36fa0",
-      "title": "Absolute beginner going into college",
-      "description": "My daughter has the opportunity to go to college and possibly get a bachelors in cyber security for free. She is just starting to get into learning about it and will be an absolute beginner. How diificult will it be for her to start? I've been told college programs begin with the basics but just wan",
-      "cvss": 6.5,
+      "id": "SENTINELAPEX-b317b4816614",
+      "title": "netfoil: Incorrect block responses could lead to localhost traffic",
+      "description": "### Summary\n`0.0.0.0` was used instead of NXDOMAIN for block responses. On Linux, which is the target platform for netfoil, the `0.0.0.0` is sent to localhost rather than just dropped.\n\n### Impact\nUnintended traffic could be sent to localhost. Impact depends on running services a... [Full analysis a",
+      "cvss": 7.8,
       "final_ps": 46,
-      "quality_score": 0.375,
+      "quality_score": 0.473,
       "threat_level": "MEDIUM",
-      "type": "CRITICAL_INFRASTRUCTURE",
-      "source": "reddit_cyber",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
-        "reddit_cyber"
+        "sentinel_apex"
       ],
-      "first_seen": "2026-07-30",
-      "last_seen": "2026-07-30",
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "reddit_cyber",
-      "product": "Threat Intelligence",
+      "vendor": "",
+      "product": "",
       "due_date": null,
       "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/cybersecurity/comments/1vae8o8/absolute_beginner_going_into_college/"
-      ],
+      "ioc_count": 1,
+      "refs": [],
       "explanation": {
         "quality": [
-          "source_weight=0.42 (reddit_cyber)",
-          "data_confidence=0.80",
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "ioc_presence=1 IOCs",
           "recency=0d (score=1.00)",
-          "QS=0.375"
+          "QS=0.473"
         ],
         "priority": [
-          "+4 critical_infra"
+          "base_ps=46 (no boosts)"
         ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "suppression": null,
         "merge": null
       },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": [
+        {
+          "type": "ipv4",
+          "value": "0.0.0.0",
+          "confidence_score": 0.88,
+          "first_seen": "2026-07-30",
+          "source_count": 1
+        }
+      ]
     },
     {
       "id": "CVE-2026-53359",
@@ -1158,50 +1165,6 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "SANS_ISC-4fd24321e4f60cdd",
-      "title": "Reconnaissance First: An SSH Bot That Sizes Up Your Hardware Before Deploying a Miner [Guest Diary], (Thu, Jul 30th)",
-      "description": "[This is a Guest Diary by Adam Cann, an ISC intern as part of the SANS.edu BACS program]",
-      "cvss": 6.5,
-      "final_ps": 41,
-      "quality_score": 0.445,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sans_isc",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sans_isc"
-      ],
-      "first_seen": "2026-07-30",
-      "last_seen": "2026-07-30",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "SANS ISC",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://isc.sans.edu/diary/rss/33198"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.70 (sans_isc)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.445"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -2027,50 +1990,6 @@
         "priority": [
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54704",
-      "title": "OpenTelemetry Java Instrumentation: JDBC Auto-Instrumentation Logging Clear-Text Passwords",
-      "description": "OpenTelemetry Java Instrumentation JDBC auto-instrumentation may fail to sanitize passwords in SQL CONNECT statements when the password is double-quoted. As a result, clear-text database passwords can be added to trace span attributes and exported to observability backends.",
-      "cvss": 6.5,
-      "final_ps": 40,
-      "quality_score": 0.433,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54704"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.40",
-          "recency=0d (score=1.00)",
-          "QS=0.432"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3347,50 +3266,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "DARKREADING-7aa195770a1825d5",
-      "title": "SE Asian Cybercriminal Syndicates Become a Global Power",
-      "description": "The groups move from goods to services and continue to traffic people from at least 80 countries, costing nations in the region at least $88 billion in 2025 alone.",
-      "cvss": 6.5,
-      "final_ps": 39,
-      "quality_score": 0.408,
-      "threat_level": "LOW",
-      "type": "SOCIAL_ENGINEERING",
-      "source": "darkreading",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "darkreading"
-      ],
-      "first_seen": "2026-07-30",
-      "last_seen": "2026-07-30",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "darkreading",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.darkreading.com/threat-intelligence/se-asian-cybercriminal-syndicates-global-power"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.55 (darkreading)",
-          "data_confidence=0.80",
-          "recency=0d (score=1.00)",
-          "QS=0.408"
-        ],
-        "priority": [
-          "base_ps=39 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -5246,6 +5121,50 @@
       "iocs": []
     },
     {
+      "id": "REDDIT_NETSEC-110d0aae3bc11559",
+      "title": "Detection and Enforcement for Endpoint AI Agents",
+      "description": "submitted by /u/netw0rm [link] [comments]",
+      "cvss": 6.5,
+      "final_ps": 36,
+      "quality_score": 0.325,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "reddit_netsec",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "reddit_netsec"
+      ],
+      "first_seen": "2026-07-30",
+      "last_seen": "2026-07-30",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_netsec",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.reddit.com/r/netsec/comments/1vadzuv/detection_and_enforcement_for_endpoint_ai_agents/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_netsec)",
+          "data_confidence=0.55",
+          "recency=0d (score=1.00)",
+          "QS=0.325"
+        ],
+        "priority": [
+          "base_ps=36 (no boosts)"
+        ],
+        "suppression": "Quality score below minimum threshold (QS < 0.35)",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Quality score below minimum threshold (QS < 0.35)",
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-43983",
       "title": "Pocket ID: OIDC refresh token flow bypasses authorization revocation, account disabling, and group restrictions",
       "description": "",
@@ -6922,48 +6841,6 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-b317b4816614",
-      "title": "netfoil: Incorrect block responses could lead to localhost traffic",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 15,
-      "quality_score": 0.387,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-07-29",
-      "last_seen": "2026-07-29",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.387"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-54705",
       "title": "mathlive's Lack of Escaping of HTML allows for XSS",
       "description": "",
@@ -6987,6 +6864,50 @@
       "due_date": null,
       "cves": [
         "CVE-2026-54705"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.15",
+          "recency=0d (score=1.00)",
+          "QS=0.378"
+        ],
+        "priority": [
+          "base_ps=15 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-54704",
+      "title": "OpenTelemetry Java Instrumentation: JDBC Auto-Instrumentation Logging Clear-Text Passwords",
+      "description": "",
+      "cvss": 6.5,
+      "final_ps": 15,
+      "quality_score": 0.378,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-07-29",
+      "last_seen": "2026-07-29",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-54704"
       ],
       "ioc_count": 0,
       "refs": [],
