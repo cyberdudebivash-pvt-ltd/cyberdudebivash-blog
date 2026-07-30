@@ -16,15 +16,36 @@ jobs:
         run: |
           echo "⚡ SENTINEL APEX — Freshness Check — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 
-          # Fetch live-intel.json from production
+          # Fetch live-intel.json from production with improved error handling
+          echo "🔗 Fetching live-intel.json from production..."
           HTTP_STATUS=$(curl -s -o /tmp/live-intel.json -w "%{http_code}" \
             "https://blog.cyberdudebivash.in/live-intel.json" \
             --max-time 20 \
-            -H "Cache-Control: no-cache")
+            --connect-timeout 10 \
+            -H "Cache-Control: no-cache" \
+            -H "User-Agent: SENTINEL-APEX-CI/1.0")
 
           if [ "$HTTP_STATUS" != "200" ]; then
-            echo "::error title=Feed Fetch Failed::live-intel.json returned HTTP ${HTTP_STATUS} — platform may be down"
-            exit 1
+            echo "❌ Feed fetch failed with HTTP ${HTTP_STATUS}"
+            echo "Attempting fallback: HEAD request to verify endpoint availability..."
+            HEAD_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -I \
+              "https://blog.cyberdudebivash.in/live-intel.json" \
+              --max-time 10)
+
+            if [ "$HEAD_STATUS" != "200" ]; then
+              echo "::error title=Production Platform Unreachable::Cannot reach blog.cyberdudebivash.in (HTTP ${HEAD_STATUS}). Platform may be offline or DNS issue."
+              exit 1
+            else
+              echo "::warning title=Feed Fetch Degraded::HEAD request succeeded but GET failed. Retrying..."
+              sleep 5
+              HTTP_STATUS=$(curl -s -o /tmp/live-intel.json -w "%{http_code}" \
+                "https://blog.cyberdudebivash.in/live-intel.json" \
+                --max-time 20)
+              if [ "$HTTP_STATUS" != "200" ]; then
+                echo "::error title=Feed Fetch Failed::live-intel.json returned HTTP ${HTTP_STATUS} on retry"
+                exit 1
+              fi
+            fi
           fi
 
           FILE_SIZE=$(wc -c < /tmp/live-intel.json)

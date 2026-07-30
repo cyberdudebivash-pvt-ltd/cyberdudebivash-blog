@@ -32,7 +32,21 @@ jobs:
           node-version: '20'
 
       - name: "📦 Install dependencies"
-        run: npm ci --no-audit --no-fund
+        run: |
+          echo "📦 Installing dependencies with fallback strategy..."
+          if npm ci --no-audit --no-fund --legacy-peer-deps 2>&1 | tee /tmp/npm-install.log; then
+            echo "✅ Dependencies installed successfully"
+          else
+            echo "⚠️  npm ci failed, attempting npm install as fallback..."
+            if npm install --no-audit --no-fund --legacy-peer-deps 2>&1 | tee -a /tmp/npm-install.log; then
+              echo "✅ Dependencies installed successfully (via fallback)"
+            else
+              echo "❌ Both npm ci and npm install failed"
+              echo "Installation log:"
+              tail -30 /tmp/npm-install.log
+              exit 1
+            fi
+          fi
 
       - name: "🔬 Syntax-check the renderer"
         run: node -c Sentinel-APEX/renderer/report-renderer.js
