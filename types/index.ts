@@ -67,3 +67,48 @@ export type {
   ValidatedDetectionRule,
   ValidatedKnowledgeGraph,
 } from '../lib/intelligence/validators';
+
+// Re-export reporting engine types and functions
+export {
+  ReportEngine,
+  generateReport,
+} from '../lib/reporting/report-engine';
+
+export type {
+  ReportOutput,
+  ReportValidationError,
+} from '../lib/reporting/report-engine';
+
+export {
+  ReportBuilder,
+} from '../lib/reporting/report-builder';
+
+export type {
+  MalwareReport,
+  ReportSection,
+} from '../lib/reporting/report-builder';
+
+export {
+  MarkdownRenderer,
+  HTMLRenderer,
+  JSONRenderer,
+  getRenderer,
+} from '../lib/reporting/renderers';
+
+export type {
+  Renderer,
+} from '../lib/reporting/renderers';
+
+export {
+  generateMetadata,
+  generateFrontmatter,
+  formatFrontmatterYAML,
+  generateSEOMetadata,
+  generateStructuredData,
+} from '../lib/reporting';
+
+export type {
+  MalwareReportMetadata,
+  Frontmatter,
+  SEOMetadata,
+} from '../lib/reporting';
