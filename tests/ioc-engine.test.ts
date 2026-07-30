@@ -14,6 +14,7 @@ import {
   createCorrelationEngine,
 } from '../lib/ioc';
 import { validateMalwareFamily } from '../lib/intelligence/validators';
+import { IOCType } from '../lib/intelligence/schema';
 
 describe('IOC Intelligence Engine', () => {
   let qilinData: any;
@@ -29,74 +30,74 @@ describe('IOC Intelligence Engine', () => {
 
   describe('Normalization', () => {
     it('should normalize hashes to uppercase', () => {
-      const normalized = normalizeIOC('sha256', 'abc123def456');
+      const normalized = normalizeIOC(IOCType.SHA256, 'abc123def456');
       expect(normalized).toBe('ABC123DEF456');
     });
 
     it('should normalize domains to lowercase', () => {
-      const normalized = normalizeIOC('domain', 'C2.MALWARE.COM');
+      const normalized = normalizeIOC(IOCType.DOMAIN, 'C2.MALWARE.COM');
       expect(normalized).toBe('c2.malware.com');
     });
 
     it('should normalize URLs with protocol and port', () => {
-      const normalized = normalizeIOC('url', 'HTTPS://EXAMPLE.COM:443/path');
+      const normalized = normalizeIOC(IOCType.URL, 'HTTPS://EXAMPLE.COM:443/path');
       expect(normalized).toContain('https://example.com/path');
     });
 
     it('should normalize email to lowercase', () => {
-      const normalized = normalizeIOC('email', 'Admin@EXAMPLE.COM');
+      const normalized = normalizeIOC(IOCType.EMAIL, 'Admin@EXAMPLE.COM');
       expect(normalized).toBe('admin@example.com');
     });
 
     it('should normalize registry paths to uppercase', () => {
-      const normalized = normalizeIOC('registry', 'hkey_local_machine\\software\\test');
+      const normalized = normalizeIOC(IOCType.REGISTRY, 'hkey_local_machine\\software\\test');
       expect(normalized.toUpperCase()).toContain('HKEY_LOCAL_MACHINE');
     });
 
     it('should be deterministic across multiple calls', () => {
       const value = 'abc123def456';
-      const norm1 = normalizeIOC('sha256', value);
-      const norm2 = normalizeIOC('sha256', value);
+      const norm1 = normalizeIOC(IOCType.SHA256, value);
+      const norm2 = normalizeIOC(IOCType.SHA256, value);
       expect(norm1).toBe(norm2);
     });
   });
 
   describe('Validation', () => {
     it('should validate valid SHA256 hash', () => {
-      const result = validateIOC('sha256', '56942b36d5990f66a81955a94511298fd27cb6092e467110a7995a0654f17b1a');
+      const result = validateIOC(IOCType.SHA256, '56942b36d5990f66a81955a94511298fd27cb6092e467110a7995a0654f17b1a');
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
     it('should reject invalid SHA256 hash', () => {
-      const result = validateIOC('sha256', 'invalid_hash');
+      const result = validateIOC(IOCType.SHA256, 'invalid_hash');
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });
 
     it('should validate valid IPv4', () => {
-      const result = validateIOC('ipv4', '192.168.1.1');
+      const result = validateIOC(IOCType.IPV4, '192.168.1.1');
       expect(result.valid).toBe(true);
     });
 
     it('should reject IPv4 with out-of-range octets', () => {
-      const result = validateIOC('ipv4', '192.168.1.256');
+      const result = validateIOC(IOCType.IPV4, '192.168.1.256');
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });
 
     it('should validate valid email', () => {
-      const result = validateIOC('email', 'user@example.com');
+      const result = validateIOC(IOCType.EMAIL, 'user@example.com');
       expect(result.valid).toBe(true);
     });
 
     it('should validate valid URL', () => {
-      const result = validateIOC('url', 'https://example.com/path');
+      const result = validateIOC(IOCType.URL, 'https://example.com/path');
       expect(result.valid).toBe(true);
     });
 
     it('should reject malformed URL', () => {
-      const result = validateIOC('url', 'not-a-url');
+      const result = validateIOC(IOCType.URL, 'not-a-url');
       expect(result.valid).toBe(false);
     });
   });
@@ -106,7 +107,7 @@ describe('IOC Intelligence Engine', () => {
       const engine = createIOCEngine();
       engine.addIOC(
         'test-ioc-1',
-        'sha256',
+        IOCType.SHA256,
         'abc123def456',
         'HIGH',
         [
@@ -130,7 +131,7 @@ describe('IOC Intelligence Engine', () => {
       expect(() => {
         engine.addIOC(
           'test-ioc-bad',
-          'sha256',
+          IOCType.SHA256,
           'invalid',
           'HIGH',
           [
@@ -147,7 +148,7 @@ describe('IOC Intelligence Engine', () => {
 
     it('should search IOCs by type', () => {
       const engine = createIOCEngine();
-      engine.addIOC('ioc-1', 'sha256', 'abc123', 'HIGH', [
+      engine.addIOC('ioc-1', IOCType.SHA256, 'abc123', 'HIGH', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -155,7 +156,7 @@ describe('IOC Intelligence Engine', () => {
           confidence: 'HIGH',
         },
       ]);
-      engine.addIOC('ioc-2', 'domain', 'example.com', 'HIGH', [
+      engine.addIOC('ioc-2', IOCType.DOMAIN, 'example.com', 'HIGH', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -164,14 +165,14 @@ describe('IOC Intelligence Engine', () => {
         },
       ]);
 
-      const results = engine.search({ type: 'sha256' });
+      const results = engine.search({ type: IOCType.SHA256 });
       expect(results).toHaveLength(1);
-      expect(results[0].type).toBe('sha256');
+      expect(results[0].type).toBe(IOCType.SHA256);
     });
 
     it('should search IOCs by normalized value', () => {
       const engine = createIOCEngine();
-      engine.addIOC('ioc-domain', 'domain', 'EXAMPLE.COM', 'HIGH', [
+      engine.addIOC('ioc-domain', IOCType.DOMAIN, 'EXAMPLE.COM', 'HIGH', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -186,7 +187,7 @@ describe('IOC Intelligence Engine', () => {
 
     it('should filter IOCs by confidence level', () => {
       const engine = createIOCEngine();
-      engine.addIOC('high', 'sha256', 'abc123', 'HIGH', [
+      engine.addIOC('high', IOCType.SHA256, 'abc123', 'HIGH', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -194,7 +195,7 @@ describe('IOC Intelligence Engine', () => {
           confidence: 'HIGH',
         },
       ]);
-      engine.addIOC('low', 'sha256', 'def456', 'LOW', [
+      engine.addIOC('low', IOCType.SHA256, 'def456', 'LOW', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -220,8 +221,8 @@ describe('IOC Intelligence Engine', () => {
         },
       ];
 
-      engine.addIOC('ioc-1', 'sha256', 'abc123', 'HIGH', evidence);
-      engine.addIOC('ioc-2', 'sha256', 'ABC123', 'HIGH', evidence); // Same, different case
+      engine.addIOC('ioc-1', IOCType.SHA256, 'abc123', 'HIGH', evidence);
+      engine.addIOC('ioc-2', IOCType.SHA256, 'ABC123', 'HIGH', evidence); // Same, different case
 
       const iocs = engine.export().iocs;
       const dedupResults = deduplicate(iocs);
@@ -239,10 +240,10 @@ describe('IOC Intelligence Engine', () => {
         },
       ];
 
-      engine.addIOC('ioc-1', 'domain', 'c2.malware.com', 'HIGH', evidence, {
+      engine.addIOC('ioc-1', IOCType.DOMAIN, 'c2.malware.com', 'HIGH', evidence, {
         aliases: ['c2.malware-alt.com'],
       });
-      engine.addIOC('ioc-2', 'domain', 'C2.MALWARE.COM', 'MEDIUM', evidence, {
+      engine.addIOC('ioc-2', IOCType.DOMAIN, 'C2.MALWARE.COM', 'MEDIUM', evidence, {
         aliases: ['c2.alt.com'],
       });
 
@@ -264,7 +265,7 @@ describe('IOC Intelligence Engine', () => {
 
     it('should compute composite confidence score', () => {
       const engine = createIOCEngine();
-      const ioc = engine.addIOC('test', 'sha256', 'abc123', 'HIGH', [
+      const ioc = engine.addIOC('test', IOCType.SHA256, 'abc123', 'HIGH', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -308,7 +309,7 @@ describe('IOC Intelligence Engine', () => {
   describe('Engine Statistics', () => {
     it('should calculate engine statistics', () => {
       const engine = createIOCEngine();
-      engine.addIOC('ioc-1', 'sha256', 'abc123', 'HIGH', [
+      engine.addIOC('ioc-1', IOCType.SHA256, 'abc123', 'HIGH', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -316,7 +317,7 @@ describe('IOC Intelligence Engine', () => {
           confidence: 'HIGH',
         },
       ]);
-      engine.addIOC('ioc-2', 'domain', 'example.com', 'MEDIUM', [
+      engine.addIOC('ioc-2', IOCType.DOMAIN, 'example.com', 'MEDIUM', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -327,8 +328,8 @@ describe('IOC Intelligence Engine', () => {
 
       const stats = engine.stats();
       expect(stats.total_iocs).toBe(2);
-      expect(stats.by_type.sha256).toBe(1);
-      expect(stats.by_type.domain).toBe(1);
+      expect(stats.by_type[IOCType.SHA256]).toBe(1);
+      expect(stats.by_type[IOCType.DOMAIN]).toBe(1);
       expect(stats.high_confidence).toBeGreaterThanOrEqual(1);
     });
   });
@@ -340,7 +341,7 @@ describe('IOC Intelligence Engine', () => {
 
       // Add 1000 IOCs
       for (let i = 0; i < 1000; i++) {
-        engine.addIOC(`ioc-${i}`, 'sha256', `abc${String(i).padStart(6, '0')}def456`, 'HIGH', [
+        engine.addIOC(`ioc-${i}`, IOCType.SHA256, `abc${String(i).padStart(6, '0')}def456`, 'HIGH', [
           {
             source: 'test',
             date: new Date().toISOString(),
