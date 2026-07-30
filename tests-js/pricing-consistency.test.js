@@ -88,11 +88,14 @@ test('pricing.html fallback PLANS.starter matches the backend amount', () => {
 
 test('pricing.html\'s Starter plan-price card shows the canonical INR/USD amounts', () => {
   const src = readFile('pricing.html');
-  // Scoped to the "API Starter" plan-name card specifically -- the Free
-  // tier's identical plan-price markup (data-inr="0") comes first in the
-  // document and would otherwise false-match.
-  const idx = src.indexOf('API Starter');
-  assert.ok(idx !== -1, 'could not find the API Starter plan-name in pricing.html');
+  // Scoped to the "API Starter" plan-name *card* element specifically, not
+  // just the bare text -- the Free tier's identical plan-price markup
+  // (data-inr="0") comes first in the document and would otherwise
+  // false-match, and so (since 2026-07-29) does the page's own meta
+  // description/OG/twitter/JSON-LD tags, which now mention "API Starter"
+  // by name in the <head>, well before this card.
+  const idx = src.indexOf('<div class="plan-name">API Starter</div>');
+  assert.ok(idx !== -1, 'could not find the API Starter plan-name card in pricing.html');
   const section = src.slice(idx, idx + 400);
   const m = section.match(/class="plan-price" data-inr="([\d,]+)" data-usd="(\d+)"/);
   assert.ok(m, 'could not find the Starter plan-price card in pricing.html');
