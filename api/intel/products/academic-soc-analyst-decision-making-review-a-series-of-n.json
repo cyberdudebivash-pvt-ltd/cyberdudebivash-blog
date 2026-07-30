@@ -1,0 +1,61 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "REDDIT_CYBER-ddb556fcb219ef8e",
+  "title": "[Academic] SOC analyst decision-making: review a series of network security alerts (18+, ~10-15 min, all backgrounds welcome)",
+  "generated": "2026-07-30T14:40:35.663Z",
+  "severity": "MEDIUM",
+  "cvss": 6.5,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "reddit_cyber",
+  "product": "Threat Intelligence",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxp://dissertation-explainids[.]uogs[.]co[.]uk",
+      "type": "url",
+      "confidence": 0.82
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://dissertation-explainids.uogs.co.uk\"; http.host; content:\"dissertation-explainids.uogs.co.uk\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: reddit_cyber Threat Intelligence.",
+      "CVSS base score of 6.5 assigned by an authoritative source.",
+      "1 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as moderate (CVSS 6.5); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor reddit_cyber has been targeted in 227 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Product Threat Intelligence has been targeted in 571 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: academic-soc-analyst-decision-making-review-a-series-of-n (3 shared entities)"
+  ],
+  "source": "https://www.reddit.com/r/cybersecurity/comments/1vauygv/academic_soc_analyst_decisionmaking_review_a/",
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}
