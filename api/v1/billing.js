@@ -41,6 +41,7 @@ const FIELDS = {
   'create-razorpay-order':   ['email', 'plan_type'],
   'verify-razorpay-payment': ['email', 'plan_type', 'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature'],
   'create-product-checkout': ['email', 'product_id'],
+  'verify-product-payment':  ['email', 'product_id', 'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature'],
 };
 
 /* ─── Apex API base URL ────────────────────────────────────────── */
@@ -60,7 +61,7 @@ module.exports = async (req, res) => {
 
   const action = String(req.query.action || '').toLowerCase().trim();
 
-  const VALID_ACTIONS = 'plans, create-intent, submit-payment, status, subscribe, create-razorpay-order, verify-razorpay-payment, create-product-checkout';
+  const VALID_ACTIONS = 'plans, create-intent, submit-payment, status, subscribe, create-razorpay-order, verify-razorpay-payment, create-product-checkout, verify-product-payment';
 
   if (!action) {
     return fail(res, 400, 'MISSING_ACTION', `action parameter required. Valid: ${VALID_ACTIONS}.`);
@@ -76,6 +77,7 @@ module.exports = async (req, res) => {
     case 'create-razorpay-order':    return handleCreateRazorpayOrder(req, res);
     case 'verify-razorpay-payment':  return handleVerifyRazorpayPayment(req, res);
     case 'create-product-checkout':  return handleCreateProductCheckout(req, res);
+    case 'verify-product-payment':   return handleVerifyProductPayment(req, res);
     default:
       return fail(res, 400, 'INVALID_ACTION', `Unknown action: "${action}". Valid: ${VALID_ACTIONS}`);
   }
@@ -686,17 +688,16 @@ async function handleVerifyRazorpayPayment(req, res) {
 
 /* ═══════════════════════════════════════════════════════════════
    POST /api/v1/billing?action=create-product-checkout
-   One-time digital product checkout (Stripe Checkout, mode=payment).
+   One-time digital product checkout (Razorpay) with automatic fulfillment.
    Used by /products.html "Buy Now" buttons — replaces mailto links.
    Body: { email, product_id }
-   Fulfillment is manual today: paid orders are recorded in Redis and
-   reviewed via GET /api/v1/admin?action=product-orders.
+   Fulfillment is automatic: signed download tokens generated on verification.
 ═══════════════════════════════════════════════════════════════ */
 async function handleCreateProductCheckout(req, res) {
   if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
 
-  if (!process.env.STRIPE_SECRET_KEY) {
-    return fail(res, 503, 'BILLING_UNAVAILABLE',
+  if (!razorpay.configured()) {
+    return fail(res, 503, 'RAZORPAY_UNAVAILABLE',
       'Instant checkout is not configured yet. Contact bivash@cyberdudebivash.com to order this product.');
   }
 
@@ -721,36 +722,161 @@ async function handleCreateProductCheckout(req, res) {
   if (!(await sec.intentIpRateLimit(req, res))) return;
 
   try {
-    const base = process.env.NEXT_PUBLIC_BASE_URL || 'https://blog.cyberdudebivash.in';
-    const session = await stripe.createProductCheckoutSession(
-      email, productId, product,
-      `${base}/products.html?checkout=success&product=${encodeURIComponent(productId)}`,
-      `${base}/products.html?checkout=cancelled`
-    );
+    const amountInPaise = product.amount * 100; // Convert USD cents to paise
+    const receipt = generateIntentId();
+    const order = await razorpay.createOrder(amountInPaise, 'INR', receipt, {
+      email, productId, platform: 'CYBERDUDEBIVASH_SENTINEL_APEX',
+    });
 
-    await redis.hmset(`payment:product:order:${session.id}`, {
-      sessionId: session.id,
-      email, productId,
+    await redis.hmset(`payment:product:order:${order.id}`, {
+      orderId:   order.id,
+      email,
+      productId,
       productName: product.name,
       amount:    String(product.amount),
       currency:  product.currency,
+      amountInPaise: String(amountInPaise),
       status:    'created',
       createdAt: now(),
       ip,
     });
-    await redis.expire(`payment:product:order:${session.id}`, INTENT_TTL_SECONDS);
-    await redis.zadd('payment:product:orders', Date.now(), session.id);
+    await redis.expire(`payment:product:order:${order.id}`, INTENT_TTL_SECONDS);
+    await redis.zadd('payment:product:orders', Date.now(), order.id);
 
-    await auditLog('PRODUCT_CHECKOUT_CREATED', { sessionId: session.id, email, productId, amount: product.amount, ip });
+    await auditLog('PRODUCT_CHECKOUT_CREATED', { orderId: order.id, email, productId, amount: product.amount, ip });
 
     return ok(res, {
-      message: 'Checkout session created.',
-      checkout_url: session.url,
-      session_id:   session.id,
-      product: { product_id: productId, name: product.name, amount: product.amount, currency: product.currency },
+      message: 'Checkout session created. Complete payment then verify with order ID.',
+      order: {
+        order_id: order.id,
+        amount:   amountInPaise,
+        currency: 'INR',
+        key_id:   razorpay.KEY_ID,
+        product_id: productId,
+        product_name: product.name,
+        email,
+      },
+      next_step: {
+        endpoint: 'POST /api/v1/billing?action=verify-product-payment',
+        payload: { email, product_id: productId, razorpay_order_id: order.id, razorpay_payment_id: '<from checkout.js>', razorpay_signature: '<from checkout.js>' },
+      },
+      support: 'bivash@cyberdudebivash.com',
     }, 201);
 
   } catch (e) {
     return fail(res, 500, 'CHECKOUT_FAILED', sec.safeError(e, 'Checkout unavailable. Please retry or contact support.'));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   POST /api/v1/billing?action=verify-product-payment
+   Verify product purchase, deliver instantly via signed download token.
+   Body: { email, product_id, razorpay_order_id, razorpay_payment_id, razorpay_signature }
+═══════════════════════════════════════════════════════════════ */
+async function handleVerifyProductPayment(req, res) {
+  if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
+
+  if (!razorpay.configured()) {
+    return fail(res, 503, 'RAZORPAY_UNAVAILABLE', 'Instant checkout is not configured yet.');
+  }
+
+  const deliveryLib = require('../_lib/product-delivery');
+  const ip   = sec.getIp(req);
+  const body = await parseBody(req);
+
+  const whitelistErr = sec.assertFieldWhitelist(body, FIELDS['verify-product-payment']);
+  if (whitelistErr) return fail(res, 400, 'INVALID_FIELDS', whitelistErr);
+
+  const email     = normalizeEmail(body.email);
+  const productId = sanitize(String(body.product_id || ''), 64);
+  const orderId   = sanitize(String(body.razorpay_order_id || ''), 64);
+  const paymentId = sanitize(String(body.razorpay_payment_id || ''), 64);
+  const signature = sanitize(String(body.razorpay_signature || ''), 128);
+
+  if (!sec.validateEmail(email)) {
+    return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
+  }
+  const product = getProduct(productId);
+  if (!product) {
+    return fail(res, 400, 'INVALID_PRODUCT', `Unknown product_id: "${productId}"`);
+  }
+  if (!RAZORPAY_ID_RE.test(orderId) || !RAZORPAY_ID_RE.test(paymentId)) {
+    return fail(res, 400, 'INVALID_RAZORPAY_ID', 'razorpay_order_id / razorpay_payment_id are malformed.');
+  }
+  if (!/^[a-f0-9]{16,128}$/i.test(signature)) {
+    return fail(res, 400, 'INVALID_SIGNATURE_FORMAT', 'razorpay_signature must be a hex digest.');
+  }
+
+  /* Same daily submission budget (3/day/IP) */
+  if (!(await sec.submissionIpRateLimit(req, res))) {
+    await auditLog('RATE_LIMIT_HIT', { ip, email, endpoint: 'verify-product-payment' });
+    return;
+  }
+
+  /* ── Cryptographic proof of payment ───────────────────────────── */
+  if (!razorpay.verifyPaymentSignature(orderId, paymentId, signature)) {
+    await auditLog('RAZORPAY_SIGNATURE_INVALID', { ip, email, orderId, paymentId });
+    return fail(res, 403, 'INVALID_SIGNATURE', 'Payment signature verification failed.');
+  }
+
+  /* ── Replay guard — each payment_id may only complete once ────── */
+  const dupKey = `payment:product:txn:seen:${paymentId}`;
+  try {
+    const dup = await redis.exists(dupKey);
+    if (dup && parseInt(dup, 10) > 0) {
+      return ok(res, {
+        message: 'Product already delivered.',
+        already_processed: true,
+      });
+    }
+  } catch (_) { /* fall through — order-status check below also guards */ }
+
+  let order;
+  try {
+    order = parseHash(await redis.hgetall(`payment:product:order:${orderId}`));
+  } catch (e) {
+    return fail(res, 503, 'SERVICE_UNAVAILABLE', 'Verification service temporarily unavailable. Retry in 30s.');
+  }
+  if (!order) {
+    return fail(res, 404, 'ORDER_NOT_FOUND', 'Razorpay order not found or expired (24h TTL).');
+  }
+  if (order.email !== email || order.productId !== productId) {
+    await auditLog('PRODUCT_ORDER_MISMATCH', { ip, email, orderId, expectedEmail: order.email, expectedProduct: order.productId });
+    return fail(res, 403, 'ORDER_MISMATCH', 'email/product_id do not match the original order.');
+  }
+  if (order.status === 'paid') {
+    return ok(res, { message: 'Product already delivered.', already_processed: true });
+  }
+
+  try {
+    const purchaseId = generateIntentId();
+    await redis.setex(dupKey, SUBMISSION_TTL_SECONDS, '1');
+    await redis.hmset(`payment:product:order:${orderId}`, {
+      status: 'paid', paymentId, verifiedAt: now(),
+    });
+    await redis.expire(`payment:product:order:${orderId}`, SUBMISSION_TTL_SECONDS);
+
+    /* ── Automated fulfillment — deliver product instantly ─────── */
+    const delivery = await deliveryLib.fulfillProduct(email, productId, purchaseId, redis);
+
+    await auditLog('PRODUCT_PAYMENT_VERIFIED', {
+      email, productId, orderId, paymentId, purchaseId, ip,
+    });
+
+    return ok(res, {
+      message: 'Payment verified. Your product is ready to download.',
+      verification: {
+        order_id: orderId,
+        payment_id: paymentId,
+        product_id: productId,
+        product_name: product.name,
+        purchase_id: purchaseId,
+      },
+      delivery,
+      support: 'bivash@cyberdudebivash.com',
+    });
+
+  } catch (e) {
+    return fail(res, 500, 'VERIFICATION_FAILED', sec.safeError(e, 'Verification failed. Please contact support with your payment ID.'));
   }
 }
