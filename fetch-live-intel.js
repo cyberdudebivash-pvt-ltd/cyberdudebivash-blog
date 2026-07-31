@@ -44,6 +44,11 @@ let productsEngine = null;
 try { productsEngine = require('./Sentinel-APEX/engine-node/products-engine'); }
 catch (e) { console.warn('⚠️ products-engine unavailable:', e.message); }
 
+// Detection Rules Canonical Store Manager (Stage 1.2)
+let detectionRulesManager = null;
+try { detectionRulesManager = require('./api/_lib/detection-rules'); }
+catch (e) { console.warn('⚠️ detection-rules manager unavailable:', e.message); }
+
 const CFG = {
   // ── Core paths ─────────────────────────────────────────────────────
   baseUrl:            'https://blog.cyberdudebivash.in',
@@ -1679,6 +1684,7 @@ falsepositives:\n    - Security scanners\nlevel: ${(item.cvss||0)>=9.5?'critical
 // Evidence-driven Sigma / KQL / Splunk / OSQuery + Suricata, compiled from
 // one canonical spec per ATT&CK technique. Fully guarded: any failure returns
 // '' so the existing report is never affected.
+// Stage 1.2: Rules are now stored in canonical detection-rules store with versioning.
 function genMultiPlatformDetections(item, esc) {
   if (!detEngine || !item) return '';
   try {
@@ -1690,6 +1696,31 @@ function genMultiPlatformDetections(item, esc) {
     if (item.id && /^CVE-/i.test(item.id)) refs.unshift(`https://nvd.nist.gov/vuln/detail/${item.id}`);
     const { detections, suricata } = detEngine.buildDetections(text, iocs, { references: refs });
     if (!detections.length && !suricata.length) return '';
+
+    // Stage 1.2: Store detection rules in canonical store with source metadata
+    if (detectionRulesManager && detections.length > 0) {
+      const sourceMetadata = {
+        confidence: item.severity === 'CRITICAL' ? 'HIGH' : item.severity === 'HIGH' ? 'HIGH' : 'MEDIUM',
+        iocs: iocs.map(i => i.value),
+        articles: [item.id],
+        evidence: text.slice(0, 200),
+      };
+      try {
+        // Store each detection rule in canonical format
+        for (const detection of detections) {
+          const ruleSpec = {
+            ...detection,
+            description: text.slice(0, 150),
+            data_source: 'process_creation', // Map from detection type
+            suricata: suricata.filter(s => s.includes(detection.technique_id) || s.includes(item.id)),
+          };
+          detectionRulesManager.storeRule(ruleSpec, sourceMetadata);
+        }
+        log(`✓ Stored ${detections.length} detection rules in canonical store`);
+      } catch (storeErr) {
+        console.warn(`⚠️ Failed to store rules in canonical store:`, storeErr.message);
+      }
+    }
 
     const LABELS = {
       sigma: 'Sigma (SIEM-agnostic)', kql: 'Microsoft Defender / Sentinel (KQL)',
