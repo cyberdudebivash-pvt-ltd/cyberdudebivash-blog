@@ -217,7 +217,7 @@ jobs:
 
             console.log('  Status:', status);
             console.log('');
-            console.log('✅ Freshness certification: Feed is current within \${newest.toFixed(0)}-minute window');
+            console.log('✅ Freshness certification: Feed is current within ' + newest.toFixed(0) + '-minute window');
           "
 
           echo "freshness_verified=true" >> $GITHUB_OUTPUT
@@ -382,9 +382,11 @@ jobs:
           if [ $FAIL -eq 0 ]; then
             echo "certification_passed=true" >> $GITHUB_OUTPUT
             echo "status=CERTIFIED" >> $GITHUB_OUTPUT
+            exit 0
           else
             echo "certification_passed=false" >> $GITHUB_OUTPUT
             echo "status=NOT_CERTIFIED" >> $GITHUB_OUTPUT
+            exit 1
           fi
 
       - name: "Generate Operational Dashboard"
