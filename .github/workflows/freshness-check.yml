@@ -76,10 +76,7 @@ jobs:
 
             console.log('Items in feed  : ' + items.length);
 
-            // PRIMARY: metadata.generated — written by pipeline on every run
-            const metaGenerated = (d.metadata || {}).generated || d.lastUpdated || null;
-
-            // SECONDARY: latest _addedAt — pipeline ingestion timestamp per item
+            // PRIMARY: latest _addedAt — ACTUAL item ingestion time (most reliable)
             const withAddedAt = items.filter(i => i._addedAt);
             let latestIngestDate = null;
             let latestIngestId = null;
@@ -89,42 +86,44 @@ jobs:
               latestIngestId = sorted[0].id;
             }
 
-            // Determine freshness reference
+            // SECONDARY FALLBACK: metadata.generated only if NO items have _addedAt
+            const metaGenerated = (d.metadata || {}).generated || d.lastUpdated || null;
+
+            // Determine freshness reference — prefer actual item timestamps
             let freshnessDate = null;
             let freshnessSource = '';
 
-            if (metaGenerated) {
-              freshnessDate = new Date(metaGenerated);
-              freshnessSource = 'metadata.generated';
-            } else if (latestIngestDate) {
+            if (latestIngestDate) {
               freshnessDate = latestIngestDate;
-              freshnessSource = '_addedAt (' + latestIngestId + ')';
+              freshnessSource = 'latest _addedAt (' + latestIngestId + ')';
+            } else if (metaGenerated) {
+              freshnessDate = new Date(metaGenerated);
+              freshnessSource = 'metadata.generated (fallback — no item timestamps)';
             } else {
-              // No pipeline timestamp available — feed has items but pipeline stamps are missing.
-              // This is a WARNING, not a hard failure. pubDate is unreliable for freshness.
-              console.log('⚠️  WARNING: No _addedAt or metadata.generated found in feed.');
-              console.log('   Pipeline timestamps not yet applied — update fetch-live-intel.js.');
-              console.log('   Feed has ' + items.length + ' items — treating as operational.');
-              console.log('✅ Freshness check PASSED (advisory mode — no pipeline timestamps)');
-              process.exit(0);
+              // No timestamps available at all
+              console.error('::error title=Malformed Feed::No _addedAt or metadata.generated in feed. Pipeline may be corrupted.');
+              process.exit(1);
             }
 
             const ageMinutes = Math.floor((Date.now() - freshnessDate.getTime()) / 60000);
 
+            console.log('Items in feed  : ' + items.length);
             console.log('Freshness ref  : ' + freshnessSource);
             console.log('Timestamp      : ' + freshnessDate.toISOString());
             console.log('Age (minutes)  : ' + ageMinutes);
 
-            // Pipeline runs every 5 min — thresholds account for GitHub Actions scheduling jitter.
-            // WARN at 90 min, FAIL at 6 hours (pipeline truly down).
-            if (ageMinutes > 360) {
-              console.error('::error title=Pipeline Stale (CRITICAL)::Pipeline last ran ' + ageMinutes + ' minutes ago — SENTINEL APEX may have failed. Check Actions.');
+            // PRODUCTION STABLE THRESHOLDS:
+            // - Feed should refresh every 30 min (APEX pipeline runs :00/:30)
+            // - WARN at 65 min (2+ missed runs, scheduler jitter)
+            // - FAIL at 120 min (4+ missed runs, pipeline definitely down)
+            if (ageMinutes > 120) {
+              console.error('::error title=Pipeline Down (CRITICAL)::Latest items ' + ageMinutes + ' minutes old — pipeline not ingesting. Restart sentinel-apex.yml workflow or check Actions logs.');
               process.exit(1);
-            } else if (ageMinutes > 90) {
-              console.log('::warning title=Pipeline Delay::Pipeline last ran ' + ageMinutes + ' minutes ago — monitor for continued delays.');
-              console.log('✅ Feed operational (delayed but within recovery window)');
+            } else if (ageMinutes > 65) {
+              console.log('::warning title=Pipeline Delay (WARN)::Latest items ' + ageMinutes + ' minutes old — may have missed runs.');
+              console.log('✅ Feed operational (monitoring for recovery)');
             } else {
-              console.log('✅ Pipeline fresh — last run ' + ageMinutes + ' minutes ago');
+              console.log('✅ Pipeline healthy — latest items ' + ageMinutes + ' minutes old');
             }
           " 2>&1
 

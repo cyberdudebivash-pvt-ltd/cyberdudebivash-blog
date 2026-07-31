@@ -2808,6 +2808,8 @@ function writeLiveIntel(allItems, state) {
         existingItems = Array.isArray(ex.items) ? ex.items : [];
       } catch(_) {}
     }
+    const nowTs = new Date().toISOString();
+    const existingIds = new Set(existingItems.map(e => e.id));
     const newItems = allItems.map(item => {
       // Compute resolved slug FIRST — item.slug may be null for many pipeline sources.
       // Using it directly in the object literal would make `link` always null when item.slug is falsy
@@ -2816,6 +2818,11 @@ function writeLiveIntel(allItems, state) {
         slugify(item.id.startsWith('CVE')
           ? `${item.id}-${item.vendor||''}-${item.product||''}`
           : item.title.slice(0, 60));
+      // PRODUCTION FIX: Only set _addedAt=NOW for truly new items.
+      // For items already in the rolling window, preserve their original _addedAt.
+      const isNewToFeed = !existingIds.has(item.id);
+      const existingItem = isNewToFeed ? null : existingItems.find(e => e.id === item.id);
+      const addedAt = isNewToFeed ? nowTs : (existingItem?._addedAt || nowTs);
       return {
       id: item.id, title: (item.title||'').slice(0,120), desc: (item.desc||'').slice(0,200),
       cvss: item.cvss||0, type: item.type||'INTEL', source: item.source||'',
@@ -2826,7 +2833,7 @@ function writeLiveIntel(allItems, state) {
       sourceCount: item.sourceCount||1, iocCount: (item.iocs||[]).length,
       slug: resolvedSlug,
       link: resolvedSlug ? `${CFG.baseUrl}/posts/${resolvedSlug}.html` : null,
-      _addedAt: new Date().toISOString(),
+      _addedAt: addedAt,
       };
     });
     // Merge: new items override existing by id, then sort DESC by priority→pubDate, trim to window
@@ -2839,6 +2846,8 @@ function writeLiveIntel(allItems, state) {
       return new Date(b.pubDate||0) - new Date(a.pubDate||0);
     });    const liveItems = merged.slice(0, CFG.liveRollingWindow || 150);
     const _liveGenTs = new Date().toISOString();
+    // PRODUCTION DIAGNOSTIC: track truly new items (not in existingItems)
+    const trulyNewCount = newItems.filter(i => !existingIds.has(i.id)).length;
     safeWriteSync(CFG.liveJsonPath, JSON.stringify({
       generatedAt: _liveGenTs, lastUpdated: _liveGenTs, totalPublished: state.totalPublished||0,
       metadata: { generated: _liveGenTs, version: '5.0', pipeline: 'SENTINEL APEX v5.0', platform: 'blog.cyberdudebivash.in' },
@@ -2854,7 +2863,7 @@ function writeLiveIntel(allItems, state) {
       },
       items: liveItems,
     }, null, 2), 'utf8');
-    log(`live-intel.json: ${liveItems.length} items (${newItems.length} new merged → rolled to ${CFG.liveRollingWindow||150}).`);
+    log(`live-intel.json: ${liveItems.length} total (${trulyNewCount} newly ingested, ${newItems.length-trulyNewCount} existing). Rolled window: ${CFG.liveRollingWindow||150}.`);
   } catch(e) { warn(`live-intel.json failed: ${e.message}`); }
 }
 
