@@ -42,6 +42,9 @@ const FIELDS = {
   'verify-razorpay-payment': ['email', 'plan_type', 'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature'],
   'create-product-checkout': ['email', 'product_id'],
   'verify-product-payment':  ['email', 'product_id', 'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature'],
+  'create-subscription':     ['email', 'plan_type', 'period'],
+  'manage-subscription':     ['email', 'subscription_id', 'action'],
+  'list-subscriptions':      ['email'],
 };
 
 /* ─── Apex API base URL ────────────────────────────────────────── */
@@ -61,7 +64,7 @@ module.exports = async (req, res) => {
 
   const action = String(req.query.action || '').toLowerCase().trim();
 
-  const VALID_ACTIONS = 'plans, create-intent, submit-payment, status, subscribe, create-razorpay-order, verify-razorpay-payment, create-product-checkout, verify-product-payment';
+  const VALID_ACTIONS = 'plans, create-intent, submit-payment, status, subscribe, create-razorpay-order, verify-razorpay-payment, create-product-checkout, verify-product-payment, create-subscription, manage-subscription, list-subscriptions';
 
   if (!action) {
     return fail(res, 400, 'MISSING_ACTION', `action parameter required. Valid: ${VALID_ACTIONS}.`);
@@ -78,6 +81,9 @@ module.exports = async (req, res) => {
     case 'verify-razorpay-payment':  return handleVerifyRazorpayPayment(req, res);
     case 'create-product-checkout':  return handleCreateProductCheckout(req, res);
     case 'verify-product-payment':   return handleVerifyProductPayment(req, res);
+    case 'create-subscription':      return handleCreateSubscription(req, res);
+    case 'manage-subscription':      return handleManageSubscription(req, res);
+    case 'list-subscriptions':       return handleListSubscriptions(req, res);
     default:
       return fail(res, 400, 'INVALID_ACTION', `Unknown action: "${action}". Valid: ${VALID_ACTIONS}`);
   }
@@ -878,5 +884,174 @@ async function handleVerifyProductPayment(req, res) {
 
   } catch (e) {
     return fail(res, 500, 'VERIFICATION_FAILED', sec.safeError(e, 'Verification failed. Please contact support with your payment ID.'));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   POST /api/v1/billing?action=create-subscription
+   Set up recurring billing (monthly or annual subscription).
+   Body: { email, plan_type: "starter"|"pro"|"enterprise", period: "monthly"|"yearly" }
+═══════════════════════════════════════════════════════════════ */
+async function handleCreateSubscription(req, res) {
+  if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
+
+  if (!razorpay.configured()) {
+    return fail(res, 503, 'RAZORPAY_UNAVAILABLE', 'Subscriptions not configured yet.');
+  }
+
+  const subLib = require('../_lib/subscriptions');
+  const ip   = sec.getIp(req);
+  const body = await parseBody(req);
+
+  const whitelistErr = sec.assertFieldWhitelist(body, FIELDS['create-subscription']);
+  if (whitelistErr) return fail(res, 400, 'INVALID_FIELDS', whitelistErr);
+
+  const email    = normalizeEmail(body.email);
+  const planType = sanitize(String(body.plan_type || '').toLowerCase(), 20);
+  const period   = sanitize(String(body.period || 'monthly').toLowerCase(), 10);
+
+  if (!sec.validateEmail(email)) {
+    return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
+  }
+  if (!sec.validatePlan(planType)) {
+    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "starter", "pro" or "enterprise"');
+  }
+  if (!['monthly', 'yearly'].includes(period)) {
+    return fail(res, 400, 'INVALID_PERIOD', 'period must be "monthly" or "yearly"');
+  }
+
+  if (!(await sec.intentIpRateLimit(req, res))) return;
+
+  const plan = PLANS[planType];
+
+  try {
+    const subscription = await subLib.createSubscription(razorpay, email, planType, plan, { period });
+
+    await subLib.storeSubscriptionRecord(redis, email, subscription);
+
+    await auditLog('SUBSCRIPTION_CREATED', {
+      email, planType, period, subscriptionId: subscription.subscription_id, ip,
+    });
+
+    return ok(res, {
+      message: 'Subscription created. Complete first payment to activate.',
+      subscription: {
+        subscription_id: subscription.subscription_id,
+        status: subscription.status,
+        plan_type: planType,
+        period,
+        amount: subscription.amount,
+        currency: subscription.currency,
+        next_billing_at: subscription.next_billing_at,
+        created_at: subscription.created_at,
+      },
+      support: 'bivash@cyberdudebivash.com',
+    }, 201);
+
+  } catch (e) {
+    return fail(res, 500, 'SUBSCRIPTION_FAILED', sec.safeError(e, 'Could not create subscription. Please retry.'));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   POST /api/v1/billing?action=manage-subscription
+   Pause, resume, or cancel a subscription.
+   Body: { email, subscription_id, action: "pause"|"resume"|"cancel" }
+═══════════════════════════════════════════════════════════════ */
+async function handleManageSubscription(req, res) {
+  if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
+
+  if (!razorpay.configured()) {
+    return fail(res, 503, 'RAZORPAY_UNAVAILABLE', 'Subscriptions not configured yet.');
+  }
+
+  const subLib = require('../_lib/subscriptions');
+  const ip   = sec.getIp(req);
+  const body = await parseBody(req);
+
+  const whitelistErr = sec.assertFieldWhitelist(body, FIELDS['manage-subscription']);
+  if (whitelistErr) return fail(res, 400, 'INVALID_FIELDS', whitelistErr);
+
+  const email     = normalizeEmail(body.email);
+  const subId     = sanitize(String(body.subscription_id || ''), 64);
+  const action    = sanitize(String(body.action || '').toLowerCase(), 20);
+
+  if (!sec.validateEmail(email)) {
+    return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
+  }
+  if (!subId) {
+    return fail(res, 400, 'MISSING_SUBSCRIPTION_ID', 'subscription_id required.');
+  }
+  if (!['pause', 'resume', 'cancel'].includes(action)) {
+    return fail(res, 400, 'INVALID_ACTION', 'action must be "pause", "resume", or "cancel"');
+  }
+
+  try {
+    let result;
+    switch (action) {
+      case 'pause':
+        result = await subLib.pauseSubscription(razorpay, subId);
+        break;
+      case 'resume':
+        result = await subLib.resumeSubscription(razorpay, subId);
+        break;
+      case 'cancel':
+        result = await subLib.cancelSubscription(razorpay, subId, { cancelAt: 'now' });
+        break;
+    }
+
+    await auditLog('SUBSCRIPTION_MANAGED', { email, subscriptionId: subId, action, ip });
+
+    return ok(res, {
+      message: `Subscription ${action}d successfully.`,
+      subscription: {
+        subscription_id: result.subscription_id,
+        status: result.status,
+        action,
+      },
+      support: 'bivash@cyberdudebivash.com',
+    });
+
+  } catch (e) {
+    return fail(res, 500, 'SUBSCRIPTION_FAILED', sec.safeError(e, `Failed to ${action} subscription. Please retry or contact support.`));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GET /api/v1/billing?action=list-subscriptions&email={email}
+   List all subscriptions for a customer.
+═══════════════════════════════════════════════════════════════ */
+async function handleListSubscriptions(req, res) {
+  if (req.method !== 'GET') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'GET required');
+
+  const subLib = require('../_lib/subscriptions');
+  const email = normalizeEmail(req.query.email || '');
+
+  if (!sec.validateEmail(email)) {
+    return fail(res, 400, 'INVALID_EMAIL', 'email query parameter required.');
+  }
+
+  try {
+    const subscriptions = await subLib.getUserSubscriptions(redis, email);
+
+    return ok(res, {
+      email,
+      subscriptions: subscriptions.map(sub => ({
+        subscription_id: sub.subscriptionId,
+        plan_type: sub.planType,
+        status: sub.status,
+        period: sub.period,
+        amount: parseInt(sub.amount || '0', 10),
+        currency: sub.currency,
+        created_at: sub.createdAt,
+        next_billing_at: sub.nextBillingAt,
+        paused_at: sub.pausedAt || null,
+        cancelled_at: sub.cancelledAt || null,
+      })),
+      total: subscriptions.length,
+    });
+
+  } catch (e) {
+    return fail(res, 500, 'LIST_FAILED', sec.safeError(e, 'Failed to list subscriptions. Please retry.'));
   }
 }
