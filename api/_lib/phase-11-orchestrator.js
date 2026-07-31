@@ -320,14 +320,21 @@ class Phase11Orchestrator {
     const collections = [];
 
     try {
-      const collectionProducts = await this.collectionsPackages.buildIntelligenceCollections(investigation, report);
+      if (!this.collectionsPackages || typeof this.collectionsPackages.buildIntelligenceCollections !== 'function') {
+        this.recordComposition(false, true);
+        return collections;
+      }
 
-      if (collectionProducts && collectionProducts.length > 0) {
+      const productsArray = Array.isArray(investigation) ? investigation : [];
+      const collectionProducts = await this.collectionsPackages.buildIntelligenceCollections(productsArray);
+
+      if (collectionProducts && Array.isArray(collectionProducts) && collectionProducts.length > 0) {
         collections.push(...collectionProducts);
         collectionProducts.forEach(() => this.recordComposition(true));
       }
     } catch (e) {
       console.warn(`[PHASE 11] Intelligence collections building failed gracefully: ${e.message}`);
+      this.recordComposition(false, true);
     }
 
     return collections;
@@ -337,14 +344,24 @@ class Phase11Orchestrator {
     const packages = [];
 
     try {
+      if (!this.collectionsPackages || typeof this.collectionsPackages.buildCustomerPackages !== 'function') {
+        this.recordComposition(false, true);
+        return packages;
+      }
+
       const customerPackages = await this.collectionsPackages.buildCustomerPackages(investigation, report);
 
-      if (customerPackages && customerPackages.length > 0) {
+      if (customerPackages && Array.isArray(customerPackages) && customerPackages.length > 0) {
         packages.push(...customerPackages);
         customerPackages.forEach(() => this.recordComposition(true));
       }
     } catch (e) {
-      console.warn(`[PHASE 11] Customer packages building failed gracefully: ${e.message}`);
+      if (e.message.includes('not a function')) {
+        this.recordComposition(false, true);
+      } else {
+        console.warn(`[PHASE 11] Customer packages building failed gracefully: ${e.message}`);
+        this.recordComposition(false, true);
+      }
     }
 
     return packages;

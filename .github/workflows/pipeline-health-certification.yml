@@ -427,7 +427,7 @@ jobs:
           echo "══════════════════════════════════════════════════════════════"
 
       - name: "Alert on Certification Failure"
-        if: failure() || steps.certification.outputs.certification_passed == 'false'
+        if: steps.certification.outputs.certification_passed == 'false'
         run: |
           echo "::error title=Pipeline Health Certification Failed::Not all acceptance criteria were met. Check dashboard above for details."
           echo "Possible causes:"
@@ -437,3 +437,4 @@ jobs:
           echo "  • Feed integrity cannot be verified"
           echo ""
           echo "Recovery: Check sentinel-apex.yml logs and ensure all dependencies are available."
+          exit 1

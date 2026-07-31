@@ -90,6 +90,9 @@ class ExecutiveIntelligenceEngine {
   }
 
   async composeWeeklyExecutiveDigest(recentIntelligence, metrics) {
+    const intelligenceArray = Array.isArray(recentIntelligence) ? recentIntelligence : [];
+    const metricsObj = metrics || {};
+
     const product = {
       id: `weekly-digest-${Date.now()}`,
       productId: 'weekly-executive-digest',
@@ -104,15 +107,15 @@ class ExecutiveIntelligenceEngine {
       },
       modules: {
         threatLandscape: {
-          highestRisks: recentIntelligence.slice(0, 5),
-          threatTrends: await this.analyzeThreatTrends(recentIntelligence),
+          highestRisks: intelligenceArray.slice(0, 5),
+          threatTrends: await this.analyzeThreatTrends(intelligenceArray),
         },
         keyMetrics: {
-          publishedReports: metrics.published || 0,
-          newThreats: metrics.newThreats || 0,
-          updatedIntelligence: metrics.updated || 0,
+          publishedReports: metricsObj.published || 0,
+          newThreats: metricsObj.newThreats || 0,
+          updatedIntelligence: metricsObj.updated || 0,
         },
-        recommendations: await this.generateWeeklyRecommendations(recentIntelligence),
+        recommendations: await this.generateWeeklyRecommendations(intelligenceArray),
       },
       lineage: {
         source: 'phase-11-executive-intelligence',
@@ -124,6 +127,10 @@ class ExecutiveIntelligenceEngine {
   }
 
   async composeMonthlyExecutiveOutlook(monthlyIntelligence, trends, riskMetrics) {
+    const intelligenceArray = Array.isArray(monthlyIntelligence) ? monthlyIntelligence : [];
+    const trendsData = trends || {};
+    const metricsData = riskMetrics || {};
+
     const product = {
       id: `monthly-outlook-${Date.now()}`,
       productId: 'monthly-executive-threat-outlook',
@@ -138,16 +145,16 @@ class ExecutiveIntelligenceEngine {
       },
       modules: {
         threatLandscape: {
-          overview: await this.generateMonthlyOverview(monthlyIntelligence),
-          topThreats: monthlyIntelligence.slice(0, 10),
-          emergingRisks: await this.identifyEmergingRisks(trends),
+          overview: await this.generateMonthlyOverview(intelligenceArray),
+          topThreats: intelligenceArray.slice(0, 10),
+          emergingRisks: await this.identifyEmergingRisks(trendsData),
         },
         riskAssessment: {
-          metrics: riskMetrics,
-          trendAnalysis: await this.analyzeTrendAnalysis(trends),
-          forecastOutlook: await this.generateOutlook(trends),
+          metrics: metricsData,
+          trendAnalysis: await this.analyzeTrendAnalysis(trendsData),
+          forecastOutlook: await this.generateOutlook(trendsData),
         },
-        strategicRecommendations: await this.buildStrategicRecommendations(monthlyIntelligence, trends),
+        strategicRecommendations: await this.buildStrategicRecommendations(intelligenceArray, trendsData),
         confidence: 0.7,
       },
       lineage: {
@@ -161,7 +168,7 @@ class ExecutiveIntelligenceEngine {
 
   async composeIndustryExecutiveAdvisory(investigation, targetedSectors, industryTrends) {
     const product = {
-      id: `industry-advisory-${report.id}`,
+      id: `industry-advisory-${investigation.id}`,
       productId: 'industry-executive-advisory',
       type: 'advisory',
       audience: ['executive', 'industry_peers'],
