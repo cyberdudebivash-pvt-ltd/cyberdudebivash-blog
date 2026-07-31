@@ -4,6 +4,7 @@ const redis = require('./redis');
 const crypto = require('crypto');
 const { ProductCatalog } = require('./product-catalog');
 const { ProductCompositionEngine } = require('./product-composition-engine');
+const { Phase10Orchestrator } = require('./phase-10-orchestrator');
 const { ProductLineage } = require('./product-models');
 
 class ProductFactory {
@@ -11,6 +12,7 @@ class ProductFactory {
     this.redis = redisClient;
     this.catalog = new ProductCatalog();
     this.compositionEngine = new ProductCompositionEngine(redisClient);
+    this.phase10 = new Phase10Orchestrator();
   }
 
   async generateProductPortfolio(investigation, report, qualityReview) {
@@ -108,6 +110,8 @@ class ProductFactory {
     if (product) {
       product = await this.compositionEngine.applyPhase8Enhancements(product, investigation, report, qualityReview);
       product = await this.compositionEngine.applyPhase9Enhancements(product, investigation, report, {}, []);
+      const enhancement = await this.phase10.enhanceProductWithOperationalContext(product, investigation, report);
+      product = enhancement.product;
     }
 
     return product;
