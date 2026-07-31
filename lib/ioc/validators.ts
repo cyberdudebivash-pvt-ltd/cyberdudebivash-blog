@@ -22,12 +22,17 @@ export const validationRules: Record<IOCType, ValidationRule> = {
       const errors: string[] = [];
       const warnings: string[] = [];
 
-      if (!ipv4Regex.test(value)) {
+      // Threat intel commonly publishes hosting ranges as CIDR blocks
+      // (e.g. "45.142.0.0/15"), so the prefix is validated separately
+      // from the dotted-quad address.
+      const [address, cidr] = value.split('/');
+
+      if (!ipv4Regex.test(address)) {
         errors.push('Invalid IPv4 format');
         return { valid: false, errors, warnings };
       }
 
-      const parts = value.split('.');
+      const parts = address.split('.');
       for (const part of parts) {
         const num = parseInt(part, 10);
         if (num > 255) {
@@ -35,9 +40,15 @@ export const validationRules: Record<IOCType, ValidationRule> = {
         }
       }
 
+      if (cidr !== undefined) {
+        if (!/^\d{1,2}$/.test(cidr) || Number(cidr) > 32) {
+          errors.push(`Invalid CIDR prefix length: /${cidr}`);
+        }
+      }
+
       return { valid: errors.length === 0, errors, warnings };
     },
-    description: 'IPv4 syntax and range validation',
+    description: 'IPv4 syntax and range validation (supports optional CIDR notation)',
   },
 
   [IOCType.IPV6]: {

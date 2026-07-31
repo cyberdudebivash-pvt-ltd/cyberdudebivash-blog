@@ -73,7 +73,7 @@ function generateTitle(iocType: IOCType, iocValue: string, malwareName: string):
     sha1: `Detection of ${malwareName} - SHA1 Hash Match`,
     md5: `Detection of ${malwareName} - MD5 Hash Match`,
     domain: `Detection of ${malwareName} - C2 Domain Communication`,
-    ipv4: `Detection of ${malwareName} - C2 IP Address Communication`,
+    ipv4: `Detection of ${malwareName} - C2 IPv4 Communication`,
     ipv6: `Detection of ${malwareName} - C2 IPv6 Communication`,
     url: `Detection of ${malwareName} - Malicious URL Access`,
     email: `Detection of ${malwareName} - Associated Email Address`,
