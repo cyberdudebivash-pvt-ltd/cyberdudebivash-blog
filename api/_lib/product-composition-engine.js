@@ -9,11 +9,13 @@ const {
   MachineProduct,
 } = require('./product-models');
 const { Phase8Orchestrator } = require('./phase-8-orchestrator');
+const { Phase9Orchestrator } = require('./phase-9-orchestrator');
 
 class ProductCompositionEngine {
   constructor(redisClient = redis) {
     this.redis = redisClient;
     this.phase8 = new Phase8Orchestrator();
+    this.phase9 = new Phase9Orchestrator();
   }
 
   async composeExecutiveBrief(investigation, report, qualityReview) {
@@ -483,6 +485,22 @@ class ProductCompositionEngine {
       return result.product;
     } catch (e) {
       console.warn(`[PHASE 8] Enhancement failed gracefully: ${e.message}`);
+      return product;
+    }
+  }
+
+  async applyPhase9Enhancements(product, investigation, report, previousIntelligence = {}, historicalRecords = []) {
+    try {
+      const result = await this.phase9.enhanceProduct(
+        product,
+        investigation,
+        report,
+        previousIntelligence,
+        historicalRecords
+      );
+      return result.product;
+    } catch (e) {
+      console.warn(`[PHASE 9] Enhancement failed gracefully: ${e.message}`);
       return product;
     }
   }
