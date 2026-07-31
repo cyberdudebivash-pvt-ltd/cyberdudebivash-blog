@@ -107,6 +107,7 @@ class ProductFactory {
 
     if (product) {
       product = await this.compositionEngine.applyPhase8Enhancements(product, investigation, report, qualityReview);
+      product = await this.compositionEngine.applyPhase9Enhancements(product, investigation, report, {}, []);
     }
 
     return product;
