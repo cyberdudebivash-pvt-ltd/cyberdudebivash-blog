@@ -331,16 +331,16 @@ jobs:
           # Criterion 1: Pipeline executed
           if [ "${{ steps.pipeline_exec.outputs.pipeline_executed }}" = "true" ]; then
             echo "✅ PASS: Pipeline executed"
-            ((PASS++))
+            PASS=$((PASS + 1))
           else
             echo "❌ FAIL: Pipeline did not execute"
-            ((FAIL++))
+            FAIL=$((FAIL + 1))
           fi
 
           # Criterion 2: At least one source evaluated
           if [ "${{ steps.source_health.outputs.sources_evaluated }}" = "true" ]; then
             echo "✅ PASS: Sources evaluated"
-            ((PASS++))
+            PASS=$((PASS + 1))
           else
             echo "⚠️  SKIP: No sources evaluated yet"
           fi
@@ -348,7 +348,7 @@ jobs:
           # Criterion 3: Publication validated
           if [ "${{ steps.publication_health.outputs.all_publications_successful }}" = "true" ]; then
             echo "✅ PASS: Publication validated"
-            ((PASS++))
+            PASS=$((PASS + 1))
           else
             echo "⚠️  WARN: Some publication formats missing"
           fi
@@ -356,16 +356,16 @@ jobs:
           # Criterion 4: Feed integrity verified
           if [ -f live-intel.json ] && [ -s live-intel.json ]; then
             echo "✅ PASS: Feed integrity verified"
-            ((PASS++))
+            PASS=$((PASS + 1))
           else
             echo "❌ FAIL: Feed integrity not verified"
-            ((FAIL++))
+            FAIL=$((FAIL + 1))
           fi
 
           # Criterion 5: Freshness verified
           if [ "${{ steps.freshness_metrics.outputs.freshness_verified }}" = "true" ]; then
             echo "✅ PASS: Freshness verified"
-            ((PASS++))
+            PASS=$((PASS + 1))
           else
             echo "⚠️  WARN: Freshness not yet determined"
           fi
@@ -373,7 +373,7 @@ jobs:
           # Criterion 6: Metrics recorded
           if [ "${{ steps.history_persistence.outputs.history_recorded }}" = "true" ]; then
             echo "✅ PASS: Metrics recorded"
-            ((PASS++))
+            PASS=$((PASS + 1))
           else
             echo "⚠️  WARN: Metrics not yet persisted"
           fi
