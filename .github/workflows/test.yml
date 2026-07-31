@@ -205,6 +205,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: test-resilience
+    # romeovs/lcov-reporter-action needs pull-requests:write to post its
+    # comment; without it the default (read-only) GITHUB_TOKEN gets a 403.
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -236,6 +241,7 @@ jobs:
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request'
+        continue-on-error: true # advisory report; must never block the merge gate
         uses: romeovs/lcov-reporter-action@v0.3.1
         with:
           lcov-file: ./coverage/lcov.info

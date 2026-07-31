@@ -29,6 +29,26 @@ describe('Governance Layer', () => {
   // ============================================================================
 
   describe('WorkflowEngine', () => {
+    // Walks an object through every intermediate validation state required
+    // by VALID_TRANSITIONS (lib/governance/workflow.ts) to legally reach
+    // ANALYST_REVIEW — draft cannot jump there directly.
+    async function advanceToAnalystReview(objectId: string, actor: string): Promise<void> {
+      const path: WorkflowStateEnum[] = [
+        WorkflowStateEnum.DRAFT,
+        WorkflowStateEnum.AI_GENERATED,
+        WorkflowStateEnum.SCHEMA_VALIDATED,
+        WorkflowStateEnum.IOC_VALIDATED,
+        WorkflowStateEnum.DETECTION_VALIDATED,
+        WorkflowStateEnum.EVIDENCE_VALIDATED,
+        WorkflowStateEnum.MITRE_VALIDATED,
+        WorkflowStateEnum.THREAT_ACTOR_VALIDATED,
+        WorkflowStateEnum.ANALYST_REVIEW,
+      ];
+      for (let i = 1; i < path.length; i++) {
+        await workflowEngine.transitionState(objectId, path[i - 1], path[i], actor);
+      }
+    }
+
     test('should allow valid state transitions', () => {
       expect(
         workflowEngine.canTransition(
@@ -76,12 +96,7 @@ describe('Governance Layer', () => {
 
     test('should get current state from history', async () => {
       const objectId = 'test-obj-state';
-      await workflowEngine.transitionState(
-        objectId,
-        WorkflowStateEnum.DRAFT,
-        WorkflowStateEnum.ANALYST_REVIEW,
-        ApprovalRoleEnum.ANALYST
-      );
+      await advanceToAnalystReview(objectId, ApprovalRoleEnum.ANALYST);
 
       const current = workflowEngine.getCurrentState(objectId);
       expect(current).toBe(WorkflowStateEnum.ANALYST_REVIEW);
@@ -89,12 +104,10 @@ describe('Governance Layer', () => {
 
     test('should detect stale objects', async () => {
       const objectId = 'test-obj-stale';
-      await workflowEngine.transitionState(
-        objectId,
-        WorkflowStateEnum.DRAFT,
-        WorkflowStateEnum.ANALYST_REVIEW,
-        ApprovalRoleEnum.ANALYST
-      );
+      await advanceToAnalystReview(objectId, ApprovalRoleEnum.ANALYST);
+      // Guarantee real wall-clock time elapses past the 1ms threshold —
+      // chained transitions can otherwise resolve within the same millisecond.
+      await new Promise((resolve) => setTimeout(resolve, 5));
 
       const isStale = workflowEngine.isStale(objectId, 1); // 1ms threshold
       expect(isStale).toBe(true);
@@ -102,12 +115,7 @@ describe('Governance Layer', () => {
 
     test('should reset to draft', async () => {
       const objectId = 'test-obj-reset';
-      await workflowEngine.transitionState(
-        objectId,
-        WorkflowStateEnum.DRAFT,
-        WorkflowStateEnum.ANALYST_REVIEW,
-        ApprovalRoleEnum.ANALYST
-      );
+      await advanceToAnalystReview(objectId, ApprovalRoleEnum.ANALYST);
 
       await workflowEngine.resetToDraft(objectId, ApprovalRoleEnum.ADMIN, 'Needs correction');
       const current = workflowEngine.getCurrentState(objectId);
@@ -211,6 +219,7 @@ describe('Governance Layer', () => {
         name: 'Test Report',
         description: 'Test Description',
         malwareId: 'malware-456',
+        createdAt: new Date().toISOString(),
         iocs: [{ id: 'ioc-1' }],
         techniques: [{ id: 'technique-1' }],
         sections: [{ title: 'Overview', evidence: [{ id: 'ev-1' }] }],
@@ -676,7 +685,7 @@ describe('Governance Layer', () => {
       const result = policyEngine.evaluatePolicy(policy.policyId, 'obj-1', {
         confidence: 80,
         qualityScore: 80,
-        iocs: [{ id: 'ioc-1' }],
+        iocs: [{ id: 'ioc-1', validated: true }],
         techniques: [{ id: 'tech-1' }],
         references: [{ url: 'https://example.com' }],
       });

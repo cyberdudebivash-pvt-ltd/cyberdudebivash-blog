@@ -98,9 +98,10 @@ describe('Detection Engineering - YARA Rule Generation', () => {
   it('should generate valid YARA conditions', () => {
     const rule = generateYaraFromIOC(IOCType.REGISTRY, 'HKEY_LOCAL_MACHINE\\Software\\Test', 'Malware');
     expect(rule.condition).toBeTruthy();
-    // Condition should reference string names
+    // Condition should either reference string names directly, or use a
+    // YARA quantifier expression ("any of them" / "all of them" / "N of them")
     const conditionHasStringRef = rule.strings.some(s => rule.condition.includes(s.name));
-    expect(conditionHasStringRef || rule.condition.includes('any of') || rule.condition.includes('all of')).toBe(true);
+    expect(conditionHasStringRef || rule.condition.includes('of them')).toBe(true);
   });
 });
 

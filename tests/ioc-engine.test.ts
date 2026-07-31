@@ -108,7 +108,7 @@ describe('IOC Intelligence Engine', () => {
       engine.addIOC(
         'test-ioc-1',
         IOCType.SHA256,
-        'abc123def456',
+        '40fb0d23580f60c4418886379201bba68e776806c6af8a8adc3fc5251888c677',
         'HIGH',
         [
           {
@@ -122,8 +122,8 @@ describe('IOC Intelligence Engine', () => {
 
       const ioc = engine.getIOC('test-ioc-1');
       expect(ioc).toBeDefined();
-      expect(ioc?.original).toBe('abc123def456');
-      expect(ioc?.normalized).toBe('ABC123DEF456');
+      expect(ioc?.original).toBe('40fb0d23580f60c4418886379201bba68e776806c6af8a8adc3fc5251888c677');
+      expect(ioc?.normalized).toBe('40FB0D23580F60C4418886379201BBA68E776806C6AF8A8ADC3FC5251888C677');
     });
 
     it('should reject invalid IOC on add', () => {
@@ -148,7 +148,7 @@ describe('IOC Intelligence Engine', () => {
 
     it('should search IOCs by type', () => {
       const engine = createIOCEngine();
-      engine.addIOC('ioc-1', IOCType.SHA256, 'abc123', 'HIGH', [
+      engine.addIOC('ioc-1', IOCType.SHA256, '1728507f4a0d51fb1d2fc47f0550ef54fa4d9c6949561bb7f4050d26558cd1a4', 'HIGH', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -187,7 +187,7 @@ describe('IOC Intelligence Engine', () => {
 
     it('should filter IOCs by confidence level', () => {
       const engine = createIOCEngine();
-      engine.addIOC('high', IOCType.SHA256, 'abc123', 'HIGH', [
+      engine.addIOC('high', IOCType.SHA256, '8ce9ae7f77f2fdbcfc6a2ac72a88c8b89a830c51e6f8e83f929785fd296d03f7', 'HIGH', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -195,7 +195,7 @@ describe('IOC Intelligence Engine', () => {
           confidence: 'HIGH',
         },
       ]);
-      engine.addIOC('low', IOCType.SHA256, 'def456', 'LOW', [
+      engine.addIOC('low', IOCType.SHA256, '0aad5a1c822cfb02c79a50c1c35744bd22b45eb1cd4c32df8ded05600e4701c6', 'LOW', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -221,8 +221,8 @@ describe('IOC Intelligence Engine', () => {
         },
       ];
 
-      engine.addIOC('ioc-1', IOCType.SHA256, 'abc123', 'HIGH', evidence);
-      engine.addIOC('ioc-2', IOCType.SHA256, 'ABC123', 'HIGH', evidence); // Same, different case
+      engine.addIOC('ioc-1', IOCType.SHA256, '704c15e366f5c161f1cc18a53dc72ea589c67e1ecbc24313e4cbe0cd85c80b27', 'HIGH', evidence);
+      engine.addIOC('ioc-2', IOCType.SHA256, '704C15E366F5C161F1CC18A53DC72EA589C67E1ECBC24313E4CBE0CD85C80B27', 'HIGH', evidence); // Same, different case
 
       const iocs = engine.export().iocs;
       const dedupResults = deduplicate(iocs);
@@ -265,7 +265,7 @@ describe('IOC Intelligence Engine', () => {
 
     it('should compute composite confidence score', () => {
       const engine = createIOCEngine();
-      const ioc = engine.addIOC('test', IOCType.SHA256, 'abc123', 'HIGH', [
+      const ioc = engine.addIOC('test', IOCType.SHA256, 'e32de0bc8c9f420a31488958109b9d8421a1c01570eb5a5fdee9617b8946bffb', 'HIGH', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -309,7 +309,7 @@ describe('IOC Intelligence Engine', () => {
   describe('Engine Statistics', () => {
     it('should calculate engine statistics', () => {
       const engine = createIOCEngine();
-      engine.addIOC('ioc-1', IOCType.SHA256, 'abc123', 'HIGH', [
+      engine.addIOC('ioc-1', IOCType.SHA256, '8c469893e0e4d5ca19f77ca22310ae85def4c197510cb6cb477dd0dc1b0e1362', 'HIGH', [
         {
           source: 'test',
           date: new Date().toISOString(),
@@ -341,7 +341,7 @@ describe('IOC Intelligence Engine', () => {
 
       // Add 1000 IOCs
       for (let i = 0; i < 1000; i++) {
-        engine.addIOC(`ioc-${i}`, IOCType.SHA256, `abc${String(i).padStart(6, '0')}def456`, 'HIGH', [
+        engine.addIOC(`ioc-${i}`, IOCType.SHA256, `abc${String(i).padStart(6, '0')}def456`.padEnd(64, '0'), 'HIGH', [
           {
             source: 'test',
             date: new Date().toISOString(),

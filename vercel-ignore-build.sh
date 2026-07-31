@@ -19,7 +19,7 @@
 MSG="$(git log -1 --pretty=%B 2>/dev/null || true)"
 
 case "$MSG" in
-  "SENTINEL APEX"*|"syndication: auto-published"*)
+  "SENTINEL APEX"*|"syndication: auto-published"*|*"🛰 [SENTINEL APEX]"*)
     HOUR=$((10#$(date -u +%H)))
     MIN=$((10#$(date -u +%M)))
     if [ $((HOUR % 2)) -eq 0 ] && [ "$MIN" -lt 10 ]; then
