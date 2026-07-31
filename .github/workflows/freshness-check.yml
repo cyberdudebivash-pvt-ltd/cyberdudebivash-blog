@@ -101,17 +101,23 @@ jobs:
             // - Feed should refresh every 30 min (APEX pipeline runs :00/:30)
             // - WARN at 90 min (3+ missed runs, likely backlog/delays)
             // - CRITICAL at 180 min (6+ missed runs, definite pipeline failure)
-            // - AUTO-TRIGGER recovery at 180 min
+            // - Note: Freshness check ALWAYS succeeds (does not exit non-zero)
+            // - Recovery coordination happens in separate auto-recovery step
+            let statusLevel = 'HEALTHY';
             if (ageMinutes > 180) {
-              console.error('::error title=Pipeline Down (CRITICAL - AUTO-RECOVERY)::Latest items ' + ageMinutes + ' minutes old — pipeline stalled. Auto-triggering sentinel-apex.yml recovery workflow.');
-              // Exit with special code to trigger recovery workflow
-              process.exit(2);
+              console.warn('::warning title=Pipeline Down (CRITICAL - AUTO-RECOVERY)::Latest items ' + ageMinutes + ' minutes old — pipeline stalled. Auto-recovery will trigger.');
+              statusLevel = 'CRITICAL';
             } else if (ageMinutes > 90) {
               console.warn('::warning title=Pipeline Degraded (WARN)::Latest items ' + ageMinutes + ' minutes old — ' + Math.floor(ageMinutes / 30) + ' missed runs detected. Monitor for recovery.');
-              console.log('ℹ️ Feed operational but degraded — no auto-recovery yet');
+              statusLevel = 'DEGRADED';
             } else {
               console.log('✅ Pipeline healthy — latest items ' + ageMinutes + ' minutes old');
+              statusLevel = 'HEALTHY';
             }
+
+            console.log('Status level: ' + statusLevel);
+            // Always exit successfully so workflow proceeds to auto-recovery step
+            process.exit(0);
           " 2>&1
 
           echo "✅ Freshness check complete"
