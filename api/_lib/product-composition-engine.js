@@ -8,10 +8,12 @@ const {
   ThreatIntelligenceProduct,
   MachineProduct,
 } = require('./product-models');
+const { Phase8Orchestrator } = require('./phase-8-orchestrator');
 
 class ProductCompositionEngine {
   constructor(redisClient = redis) {
     this.redis = redisClient;
+    this.phase8 = new Phase8Orchestrator();
   }
 
   async composeExecutiveBrief(investigation, report, qualityReview) {
@@ -473,6 +475,16 @@ class ProductCompositionEngine {
     const severity = investigation.severity || 'MEDIUM';
     const severityMap = { CRITICAL: 95, HIGH: 75, MEDIUM: 50, LOW: 25 };
     return severityMap[severity] || 50;
+  }
+
+  async applyPhase8Enhancements(product, investigation, report, qualityReview) {
+    try {
+      const result = await this.phase8.enhanceProduct(product, investigation, report, qualityReview);
+      return result.product;
+    } catch (e) {
+      console.warn(`[PHASE 8] Enhancement failed gracefully: ${e.message}`);
+      return product;
+    }
   }
 }
 

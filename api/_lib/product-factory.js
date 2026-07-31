@@ -72,32 +72,44 @@ class ProductFactory {
   }
 
   async generateProduct(productId, investigation, report, qualityReview) {
+    let product = null;
+
     switch (productId) {
       case 'executive-brief':
-        return await this.compositionEngine.composeExecutiveBrief(investigation, report, qualityReview);
+        product = await this.compositionEngine.composeExecutiveBrief(investigation, report, qualityReview);
+        break;
       case 'board-summary':
-        return await this.compositionEngine.composeBoardSummary(investigation, report, qualityReview);
+        product = await this.compositionEngine.composeBoardSummary(investigation, report, qualityReview);
+        break;
       case 'technical-report':
-        return await this.compositionEngine.composeTechnicalReport(investigation, report, qualityReview);
+        product = await this.compositionEngine.composeTechnicalReport(investigation, report, qualityReview);
+        break;
       case 'ioc-feed':
-        return await this.compositionEngine.composeIOCFeed(investigation, report);
+        product = await this.compositionEngine.composeIOCFeed(investigation, report);
+        break;
       case 'threat-actor-profile':
         if (investigation.threatActors && investigation.threatActors.length > 0) {
-          return await this.compositionEngine.composeThreatActorProfile(investigation, report);
+          product = await this.compositionEngine.composeThreatActorProfile(investigation, report);
         }
-        return null;
+        break;
       case 'campaign-intelligence':
         if (investigation.campaigns && investigation.campaigns.length > 0) {
-          return await this.compositionEngine.composeCampaignIntelligence(investigation, report);
+          product = await this.compositionEngine.composeCampaignIntelligence(investigation, report);
         }
-        return null;
+        break;
       case 'stix-bundle':
-        return await this.compositionEngine.composeSTIXBundle(investigation, report);
+        product = await this.compositionEngine.composeSTIXBundle(investigation, report);
+        break;
       case 'json-object':
-        return await this.compositionEngine.composeJSONIntelligenceObject(investigation, report);
-      default:
-        return null;
+        product = await this.compositionEngine.composeJSONIntelligenceObject(investigation, report);
+        break;
     }
+
+    if (product) {
+      product = await this.compositionEngine.applyPhase8Enhancements(product, investigation, report, qualityReview);
+    }
+
+    return product;
   }
 
   async generateTechnicalProducts(investigation, report, qualityReview) {
