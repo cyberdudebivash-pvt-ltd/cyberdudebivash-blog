@@ -12,44 +12,29 @@ jobs:
     timeout-minutes: 3
 
     steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: "Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: "Check live-intel.json freshness"
         run: |
           echo "⚡ SENTINEL APEX — Freshness Check — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 
-          # Fetch live-intel.json from production with improved error handling
-          echo "🔗 Fetching live-intel.json from production..."
-          HTTP_STATUS=$(curl -s -o /tmp/live-intel.json -w "%{http_code}" \
-            "https://blog.cyberdudebivash.in/live-intel.json" \
-            --max-time 20 \
-            --connect-timeout 10 \
-            -H "Cache-Control: no-cache" \
-            -H "User-Agent: SENTINEL-APEX-CI/1.0")
-
-          if [ "$HTTP_STATUS" != "200" ]; then
-            echo "❌ Feed fetch failed with HTTP ${HTTP_STATUS}"
-            echo "Attempting fallback: HEAD request to verify endpoint availability..."
-            HEAD_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -I \
-              "https://blog.cyberdudebivash.in/live-intel.json" \
-              --max-time 10)
-
-            if [ "$HEAD_STATUS" != "200" ]; then
-              echo "::error title=Production Platform Unreachable::Cannot reach blog.cyberdudebivash.in (HTTP ${HEAD_STATUS}). Platform may be offline or DNS issue."
-              exit 1
-            else
-              echo "::warning title=Feed Fetch Degraded::HEAD request succeeded but GET failed. Retrying..."
-              sleep 5
-              HTTP_STATUS=$(curl -s -o /tmp/live-intel.json -w "%{http_code}" \
-                "https://blog.cyberdudebivash.in/live-intel.json" \
-                --max-time 20)
-              if [ "$HTTP_STATUS" != "200" ]; then
-                echo "::error title=Feed Fetch Failed::live-intel.json returned HTTP ${HTTP_STATUS} on retry"
-                exit 1
-              fi
-            fi
+          # Verify live-intel.json exists in repository
+          echo "🔗 Verifying live-intel.json in repository..."
+          if [ ! -f "live-intel.json" ]; then
+            echo "::error title=Feed File Missing::live-intel.json not found in repository"
+            exit 1
           fi
 
-          FILE_SIZE=$(wc -c < /tmp/live-intel.json)
-          echo "✅ Fetched live-intel.json — ${FILE_SIZE} bytes"
+          FILE_SIZE=$(wc -c < live-intel.json)
+          echo "✅ Found live-intel.json — ${FILE_SIZE} bytes"
 
           if [ "$FILE_SIZE" -lt 10000 ]; then
             echo "::error title=Feed Too Small::live-intel.json is only ${FILE_SIZE} bytes — possible corruption"
@@ -61,7 +46,7 @@ jobs:
           # NOT when the pipeline ran. We use _addedAt (pipeline ingestion timestamp)
           # or metadata.generated (set on each pipeline run) for true freshness.
           node -e "
-            const raw = require('fs').readFileSync('/tmp/live-intel.json', 'utf8');
+            const raw = require('fs').readFileSync('./live-intel.json', 'utf8');
             let d;
             try { d = JSON.parse(raw); } catch(e) {
               console.error('::error title=Feed Parse Error::live-intel.json is invalid JSON: ' + e.message);
