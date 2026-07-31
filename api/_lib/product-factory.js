@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const { ProductCatalog } = require('./product-catalog');
 const { ProductCompositionEngine } = require('./product-composition-engine');
 const { Phase10Orchestrator } = require('./phase-10-orchestrator');
+const { Phase11Orchestrator } = require('./phase-11-orchestrator');
 const { ProductLineage } = require('./product-models');
 
 class ProductFactory {
@@ -13,16 +14,17 @@ class ProductFactory {
     this.catalog = new ProductCatalog();
     this.compositionEngine = new ProductCompositionEngine(redisClient);
     this.phase10 = new Phase10Orchestrator();
+    this.phase11 = new Phase11Orchestrator();
   }
 
-  async generateProductPortfolio(investigation, report, qualityReview) {
+  async generateProductPortfolio(investigation, report, qualityReview, vulnerabilityData = {}) {
     console.log(`[PRODUCT FACTORY] Generating portfolio for investigation ${investigation.id}`);
 
     const products = [];
     const lineage = new ProductLineage(investigation.id);
 
     try {
-      // Determine applicable products
+      // Phase 1-9: Determine applicable products
       const applicableProducts = this.catalog.getProductsForInvestigation(investigation);
 
       for (const productDef of applicableProducts) {
@@ -30,10 +32,7 @@ class ProductFactory {
           const product = await this.generateProduct(productDef.id, investigation, report, qualityReview);
 
           if (product) {
-            // Add to lineage
             lineage.addStage('product', product.id);
-
-            // Persist product
             await this.persistProduct(product);
 
             products.push({
@@ -51,10 +50,46 @@ class ProductFactory {
         }
       }
 
-      // Also generate all technical and detection products
+      // Technical and detection products (Phases 1-9)
       products.push(...await this.generateTechnicalProducts(investigation, report, qualityReview));
       products.push(...await this.generateDetectionProducts(investigation, report));
       products.push(...await this.generateMachineProducts(investigation, report));
+
+      // Phase 11: Global Intelligence Product Suite
+      console.log('[PRODUCT FACTORY] Applying Phase 11 enhancements');
+      const phase11Portfolio = await this.phase11.generateGlobalIntelligencePortfolio(
+        investigation,
+        report,
+        vulnerabilityData
+      );
+
+      if (phase11Portfolio && phase11Portfolio.products) {
+        for (const [productType, productList] of Object.entries(phase11Portfolio.products)) {
+          if (Array.isArray(productList)) {
+            for (const product of productList) {
+              if (product) {
+                try {
+                  lineage.addStage('phase11', product.id);
+                  await this.persistProduct(product);
+
+                  products.push({
+                    id: product.id,
+                    productId: product.productId || product.id,
+                    type: product.type || productType,
+                    status: product.status,
+                    classification: product.classification,
+                    phase: 'phase-11',
+                  });
+
+                  console.log(`[PRODUCT FACTORY] Phase 11 product generated: ${product.productId}`);
+                } catch (e) {
+                  console.error(`[PRODUCT FACTORY] Failed to persist Phase 11 product: ${e.message}`);
+                }
+              }
+            }
+          }
+        }
+      }
 
       // Store portfolio metadata
       await this.storeProductPortfolio(investigation.id, report.id, products, lineage);
@@ -64,6 +99,7 @@ class ProductFactory {
         reportId: report.id,
         portfolioSize: products.length,
         products,
+        phase11Stats: phase11Portfolio?.metadata?.compositionStats,
         lineage: lineage.getFullLineage(),
         generatedAt: new Date().toISOString(),
       };
@@ -112,6 +148,8 @@ class ProductFactory {
       product = await this.compositionEngine.applyPhase9Enhancements(product, investigation, report, {}, []);
       const enhancement = await this.phase10.enhanceProductWithOperationalContext(product, investigation, report);
       product = enhancement.product;
+      const phase11Enhancement = await this.phase11.enhanceProductWithPhase11Context(product, investigation, report);
+      product = phase11Enhancement.product;
     }
 
     return product;
