@@ -7,9 +7,12 @@ const { IntelligenceChangeDetectionEngine } = require('./intelligence-change-det
 const { HistoricalIntelligenceComparisonEngine } = require('./historical-intelligence-comparison');
 const { EvidenceConflictEngine } = require('./evidence-conflict-engine');
 const { CollectionRecommendationEngine } = require('./collection-recommendation-engine');
+const { MalwareRelationshipEngine } = require('./malware-relationship-engine');
+const { InfrastructureCorrelationEngine } = require('./infrastructure-correlation-engine');
+const { ThreatActorKnowledgeBaseEngine } = require('./threat-actor-kb-engine');
 
 class Phase9Orchestrator {
-  constructor() {
+  constructor(threatGraphDB = {}) {
     this.correlation = new CorrelationEngine();
     this.attribution = new AttributionEngine();
     this.campaignEvolution = new CampaignEvolutionEngine();
@@ -17,6 +20,10 @@ class Phase9Orchestrator {
     this.historicalComparison = new HistoricalIntelligenceComparisonEngine();
     this.conflictDetection = new EvidenceConflictEngine();
     this.collectionAnalysis = new CollectionRecommendationEngine();
+    this.malwareAnalysis = new MalwareRelationshipEngine();
+    this.infraCorrelation = new InfrastructureCorrelationEngine();
+    this.actorKB = new ThreatActorKnowledgeBaseEngine();
+    this.threatGraphDB = threatGraphDB;
   }
 
   async enhanceProduct(product, investigation, report, previousIntelligence = {}, historicalRecords = []) {
@@ -52,18 +59,27 @@ class Phase9Orchestrator {
       // Phase 9G: Collection gap analysis and recommendations
       product.modules.intelligence.collectionGaps = this.collectionAnalysis.analyzeCollectionGaps(investigation);
 
-      // Phase 9H: Intelligence quality assessment
+      // Phase 9H: Malware relationship analysis
+      product.modules.intelligence.malwareRelationships = this.malwareAnalysis.analyzeMalwareRelationships(investigation);
+
+      // Phase 9I: Infrastructure correlation and clustering
+      product.modules.intelligence.infrastructureCorrelations = this.infraCorrelation.correlateInfrastructure(investigation);
+
+      // Phase 9J: Threat actor knowledge base enrichment
+      product.modules.intelligence.threatActorEnrichment = this.actorKB.enrichActorIntelligence(investigation, this.threatGraphDB);
+
+      // Phase 9K: Intelligence quality assessment
       product.modules.intelligence.qualityAssessment = this.assessIntelligenceQuality(
         product.modules.intelligence,
         investigation
       );
 
-      // Phase 9I: Enterprise correlation APIs metadata
+      // Phase 9L: Enterprise correlation APIs metadata
       product.modules.intelligence.correlationAPIs = this.generateCorrelationAPIMetadata(
         product.modules.intelligence
       );
 
-      // Phase 9J: Operational intelligence outputs
+      // Phase 9M: Operational intelligence outputs
       product.modules.intelligence.operationalOutputs = this.generateOperationalOutputs(product, investigation);
 
       // Mark product as Phase 9 enhanced
