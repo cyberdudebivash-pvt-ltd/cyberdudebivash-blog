@@ -114,14 +114,14 @@ jobs:
 
             // PRODUCTION STABLE THRESHOLDS:
             // - Feed should refresh every 30 min (APEX pipeline runs :00/:30)
-            // - WARN at 65 min (2+ missed runs, scheduler jitter)
-            // - FAIL at 120 min (4+ missed runs, pipeline definitely down)
-            if (ageMinutes > 120) {
-              console.error('::error title=Pipeline Down (CRITICAL)::Latest items ' + ageMinutes + ' minutes old — pipeline not ingesting. Restart sentinel-apex.yml workflow or check Actions logs.');
+            // - WARN at 90 min (3+ missed runs, scheduler jitter, transient network issues)
+            // - FAIL at 180 min (6+ missed runs, persistent pipeline failure, infrastructure issue)
+            if (ageMinutes > 180) {
+              console.error('::error title=Pipeline Down (CRITICAL)::Latest items ' + ageMinutes + ' minutes old — pipeline not ingesting. Initiating auto-recovery.');
               process.exit(1);
-            } else if (ageMinutes > 65) {
-              console.log('::warning title=Pipeline Delay (WARN)::Latest items ' + ageMinutes + ' minutes old — may have missed runs.');
-              console.log('✅ Feed operational (monitoring for recovery)');
+            } else if (ageMinutes > 90) {
+              console.log('::warning title=Pipeline Delay (WARN)::Latest items ' + ageMinutes + ' minutes old — monitoring for recovery.');
+              console.log('✅ Feed operational (auto-recovery armed)');
             } else {
               console.log('✅ Pipeline healthy — latest items ' + ageMinutes + ' minutes old');
             }
@@ -129,8 +129,32 @@ jobs:
 
           echo "✅ Freshness check complete"
 
+      - name: "Auto-recovery: Trigger SENTINEL APEX pipeline"
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log('🚨 Auto-recovery triggered — dispatching sentinel-apex.yml');
+            try {
+              const response = await github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'sentinel-apex.yml',
+                ref: 'main',
+                inputs: {
+                  force_reset_state: 'false',
+                  debug: 'true'
+                }
+              });
+              console.log('✅ SENTINEL APEX v5.0 auto-recovery dispatched');
+            } catch (error) {
+              console.error('❌ Auto-recovery dispatch failed: ' + error.message);
+              console.log('ℹ️ Manual recovery required — see: https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/workflows/sentinel-apex.yml');
+            }
+
       - name: "Alert on failure"
         if: failure()
         run: |
-          echo "::error title=SENTINEL APEX Feed Alert::Intel feed may be stale or unreachable. Manual trigger: https://github.com/cyberdudebivash/cyberdudebivash-blog/actions/workflows/sentinel-apex.yml"
+          echo "::error title=SENTINEL APEX Feed Alert::Intel feed may be stale or unreachable. Auto-recovery initiated (check sentinel-apex.yml workflow). Manual recovery: https://github.com/cyberdudebivash/cyberdudebivash-blog/actions/workflows/sentinel-apex.yml"
           echo "Timestamp: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"

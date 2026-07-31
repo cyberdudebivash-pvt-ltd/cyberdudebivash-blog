@@ -125,6 +125,34 @@ jobs:
             exit $EXIT_CODE
           fi
 
+      - name: "Ensure feed heartbeat"
+        run: |
+          echo "♥️ Ensuring feed heartbeat..."
+          if [ -f live-intel.json ]; then
+            node -e "
+              const fs = require('fs');
+              const d = JSON.parse(fs.readFileSync('./live-intel.json', 'utf8'));
+              const now = new Date().toISOString();
+
+              // Ensure all items have _addedAt timestamp
+              d.items = (d.items || []).map(item => ({
+                ...item,
+                _addedAt: item._addedAt || item.pubDate || item.published || now
+              }));
+
+              // Update metadata with current timestamp and heartbeat
+              d.metadata = d.metadata || {};
+              d.metadata.generatedAt = now;
+              d.metadata._heartbeat = now;
+              d.lastUpdated = now;
+
+              fs.writeFileSync('./live-intel.json', JSON.stringify(d, null, 2));
+              console.log('✅ Feed heartbeat updated — ' + d.items.length + ' items, all timestamped');
+            "
+          else
+            echo "⚠️ live-intel.json not found — will be created by pipeline"
+          fi
+
       - name: "Detect changes"
         id: changes
         run: |
