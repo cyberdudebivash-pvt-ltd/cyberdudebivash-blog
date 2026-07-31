@@ -125,33 +125,37 @@ jobs:
             exit $EXIT_CODE
           fi
 
-      - name: "Ensure feed heartbeat"
+      - name: "Ensure feed heartbeat (production stability)"
         run: |
-          echo "♥️ Ensuring feed heartbeat..."
-          if [ -f live-intel.json ]; then
-            node -e "
-              const fs = require('fs');
-              const d = JSON.parse(fs.readFileSync('./live-intel.json', 'utf8'));
+          echo "⏱️ Adding heartbeat timestamp to live-intel.json..."
+          node -e "
+            const fs = require('fs');
+            try {
+              const data = JSON.parse(fs.readFileSync('live-intel.json', 'utf8'));
               const now = new Date().toISOString();
 
-              // Ensure all items have _addedAt timestamp
-              d.items = (d.items || []).map(item => ({
-                ...item,
-                _addedAt: item._addedAt || item.pubDate || item.published || now
-              }));
+              // Update metadata with current timestamp (heartbeat)
+              if (!data.metadata) data.metadata = {};
+              data.metadata.generatedAt = now;
+              data.metadata.lastPipelineRun = now;
+              data._heartbeat = now;
 
-              // Update metadata with current timestamp and heartbeat
-              d.metadata = d.metadata || {};
-              d.metadata.generatedAt = now;
-              d.metadata._heartbeat = now;
-              d.lastUpdated = now;
+              // Ensure all items have _addedAt for freshness calculation
+              if (data.items && Array.isArray(data.items)) {
+                data.items.forEach((item, idx) => {
+                  if (!item._addedAt) {
+                    item._addedAt = item.pubDate || item.published || now;
+                  }
+                });
+              }
 
-              fs.writeFileSync('./live-intel.json', JSON.stringify(d, null, 2));
-              console.log('✅ Feed heartbeat updated — ' + d.items.length + ' items, all timestamped');
-            "
-          else
-            echo "⚠️ live-intel.json not found — will be created by pipeline"
-          fi
+              fs.writeFileSync('live-intel.json', JSON.stringify(data, null, 2));
+              console.log('✅ Heartbeat added to ' + (data.items?.length || 0) + ' items');
+            } catch(e) {
+              console.error('⚠️ Heartbeat update failed: ' + e.message);
+              // Non-fatal - continue to commit attempt
+            }
+          " 2>&1
 
       - name: "Detect changes"
         id: changes
@@ -165,26 +169,49 @@ jobs:
           echo "📊 Changed files: $CHANGED"
           git status --short | grep -v "pipeline.lock" | head -20
 
-      - name: "Commit and push intel"
-        if: steps.changes.outputs.changed != '0'
+      - name: "Commit and push intel (always commit for heartbeat)"
         run: |
+          git add live-intel.json intel-state.json 2>/dev/null || true
           git add -A
           git reset HEAD pipeline.lock 2>/dev/null || true
+
+          # Check if there are changes (including heartbeat)
+          CHANGED=$(git status --cached --short | grep -v "pipeline.lock" | wc -l | tr -d ' ')
+
+          if [ "$CHANGED" = "0" ]; then
+            echo "ℹ️ No changes detected — skipping commit (feed already up-to-date)"
+            exit 0
+          fi
+
+          echo "📝 Preparing commit for $CHANGED changed file(s)..."
           NEW_POSTS=$(git status --cached --short | grep "^A.*posts/" | wc -l | tr -d ' ')
           API_FILES=$(git status --cached --short | grep "^A.*api/" | wc -l | tr -d ' ')
+          MOD_FILES=$(git status --cached --short | grep "^M" | wc -l | tr -d ' ')
           TOTAL_PUB=$(node -e "try{const s=require('./intel-state.json');console.log(s.totalPublished||0)}catch(e){console.log(0)}" 2>/dev/null || echo 0)
           SOURCES=$(node -e "try{const d=require('./live-intel.json');const u=[...new Set(d.items.map(i=>i.source))];console.log(u.length+'srcs')}catch(e){console.log('?srcs')}" 2>/dev/null || echo '?srcs')
-          COMMIT_MSG="SENTINEL APEX v5.0: +${NEW_POSTS} reports, +${API_FILES} API files, total=${TOTAL_PUB}, ${SOURCES} [$(date -u '+%Y-%m-%dT%H:%M:%SZ')] [skip ci]"
+
+          COMMIT_MSG="SENTINEL APEX v5.0: +${NEW_POSTS} reports, +${API_FILES} API files, ~${MOD_FILES} modified, total=${TOTAL_PUB}, ${SOURCES} [$(date -u '+%Y-%m-%dT%H:%M:%SZ')] [skip ci]"
           git commit -m "$COMMIT_MSG"
-          # Push with retry + rebase
+
+          echo "🚀 Pushing to main with retry logic..."
+          # Push with retry + rebase (production-stable)
           for i in 1 2 3; do
-            git push origin main && echo "✅ Push succeeded (attempt $i)" && break
+            if git push origin main; then
+              echo "✅ Push succeeded (attempt $i)"
+              break
+            fi
             if [ $i -lt 3 ]; then
-              echo "⚠️ Push attempt $i failed — rebasing..."
-              git pull --rebase origin main || { echo "⚠️ Rebase conflict — aborting cleanly, will retry"; git rebase --abort 2>/dev/null || true; }
+              echo "⚠️ Push attempt $i failed — rebasing and retrying..."
               sleep $((i * 3))
+              if git pull --rebase origin main 2>/dev/null; then
+                echo "✅ Rebase succeeded"
+              else
+                echo "⚠️ Rebase failed — aborting and retrying"
+                git rebase --abort 2>/dev/null || true
+              fi
             else
-              echo "❌ Push failed after 3 attempts" && exit 1
+              echo "❌ Push failed after 3 attempts"
+              exit 1
             fi
           done
 

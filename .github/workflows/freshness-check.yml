@@ -112,16 +112,18 @@ jobs:
             console.log('Timestamp      : ' + freshnessDate.toISOString());
             console.log('Age (minutes)  : ' + ageMinutes);
 
-            // PRODUCTION STABLE THRESHOLDS:
+            // PRODUCTION STABLE THRESHOLDS (Enhanced with Auto-Recovery):
             // - Feed should refresh every 30 min (APEX pipeline runs :00/:30)
-            // - WARN at 90 min (3+ missed runs, scheduler jitter, transient network issues)
-            // - FAIL at 180 min (6+ missed runs, persistent pipeline failure, infrastructure issue)
+            // - WARN at 90 min (3+ missed runs, likely backlog/delays)
+            // - CRITICAL at 180 min (6+ missed runs, definite pipeline failure)
+            // - AUTO-TRIGGER recovery at 180 min
             if (ageMinutes > 180) {
-              console.error('::error title=Pipeline Down (CRITICAL)::Latest items ' + ageMinutes + ' minutes old — pipeline not ingesting. Initiating auto-recovery.');
-              process.exit(1);
+              console.error('::error title=Pipeline Down (CRITICAL - AUTO-RECOVERY)::Latest items ' + ageMinutes + ' minutes old — pipeline stalled. Auto-triggering sentinel-apex.yml recovery workflow.');
+              // Exit with special code to trigger recovery workflow
+              process.exit(2);
             } else if (ageMinutes > 90) {
-              console.log('::warning title=Pipeline Delay (WARN)::Latest items ' + ageMinutes + ' minutes old — monitoring for recovery.');
-              console.log('✅ Feed operational (auto-recovery armed)');
+              console.warn('::warning title=Pipeline Degraded (WARN)::Latest items ' + ageMinutes + ' minutes old — " + Math.floor(ageMinutes / 30) + " missed runs detected. Monitor for recovery.');
+              console.log('ℹ️ Feed operational but degraded — no auto-recovery yet');
             } else {
               console.log('✅ Pipeline healthy — latest items ' + ageMinutes + ' minutes old');
             }
@@ -129,15 +131,16 @@ jobs:
 
           echo "✅ Freshness check complete"
 
-      - name: "Auto-recovery: Trigger SENTINEL APEX pipeline"
+      - name: "Auto-recovery trigger"
         if: failure()
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log('🚨 Auto-recovery triggered — dispatching sentinel-apex.yml');
+            // Auto-trigger sentinel-apex.yml recovery only on CRITICAL (exit code 2)
+            console.log('Checking for CRITICAL freshness failure — triggering recovery workflow...');
             try {
-              const response = await github.rest.actions.createWorkflowDispatch({
+              const run = await github.rest.actions.createWorkflowDispatch({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 workflow_id: 'sentinel-apex.yml',
@@ -147,14 +150,13 @@ jobs:
                   debug: 'true'
                 }
               });
-              console.log('✅ SENTINEL APEX v5.0 auto-recovery dispatched');
-            } catch (error) {
-              console.error('❌ Auto-recovery dispatch failed: ' + error.message);
-              console.log('ℹ️ Manual recovery required — see: https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/workflows/sentinel-apex.yml');
+              console.log('✅ Recovery workflow triggered: ' + run.data.id);
+            } catch(e) {
+              console.warn('⚠️ Auto-recovery trigger failed: ' + e.message);
             }
 
       - name: "Alert on failure"
         if: failure()
         run: |
-          echo "::error title=SENTINEL APEX Feed Alert::Intel feed may be stale or unreachable. Auto-recovery initiated (check sentinel-apex.yml workflow). Manual recovery: https://github.com/cyberdudebivash/cyberdudebivash-blog/actions/workflows/sentinel-apex.yml"
+          echo "::error title=SENTINEL APEX Feed Alert::Intel feed stale — auto-recovery workflow triggered. Manual trigger: https://github.com/cyberdudebivash/cyberdudebivash-blog/actions/workflows/sentinel-apex.yml"
           echo "Timestamp: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
