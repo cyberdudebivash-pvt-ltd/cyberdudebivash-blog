@@ -36,6 +36,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: "🔒 npm audit — Critical vulnerabilities only"
         run: |
@@ -46,7 +47,7 @@ jobs:
             exit 0
           fi
 
-          npm install --ignore-scripts --no-fund --legacy-peer-deps 2>&1 | grep -v "deprecated" | tail -5
+          npm ci --ignore-scripts --no-fund --legacy-peer-deps 2>&1 | grep -v "deprecated" | tail -5
           echo ""
           echo "=== npm audit (critical only) ==="
           npm audit --audit-level=critical --json 2>/dev/null | node -e "
