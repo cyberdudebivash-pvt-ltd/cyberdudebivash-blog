@@ -16,6 +16,13 @@ on:
       - '.github/workflows/report-renderer-ci.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: report-renderer-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   node-renderer-tests:
     name: "Report Renderer — Real Report Validation"

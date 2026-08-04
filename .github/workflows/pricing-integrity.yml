@@ -37,6 +37,13 @@ on:
       - 'tests-js/pricing-consistency.test.js'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: pricing-integrity-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pricing-consistency:
     name: "Backend price vs. every customer-facing surface"

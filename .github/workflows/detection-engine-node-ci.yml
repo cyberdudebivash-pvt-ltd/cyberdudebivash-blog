@@ -14,6 +14,13 @@ on:
       - '.github/workflows/detection-engine-node-ci.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: detection-engine-node-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   node-detection-tests:
     name: "Node Detection Engine + Generator Wiring"

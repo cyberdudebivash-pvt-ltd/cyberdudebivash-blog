@@ -29,6 +29,13 @@ on:
     - cron: '0 3 * * *' # 03:00 UTC daily
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: backup-customer-data
+  cancel-in-progress: false
+
 jobs:
   backup:
     name: "Backup Customer Data"
