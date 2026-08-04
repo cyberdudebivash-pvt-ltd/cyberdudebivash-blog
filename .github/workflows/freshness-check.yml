@@ -9,6 +9,14 @@ concurrency:
   group: blog-freshness-check
   cancel-in-progress: true
 
+# contents:read for checkout; actions:write because the "Auto-recovery
+# trigger" step below calls github.rest.actions.createWorkflowDispatch()
+# to re-run sentinel-apex.yml on CRITICAL staleness -- traced from the
+# step's actual API call, not assumed.
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   freshness-check:
     name: "Verify SENTINEL APEX pipeline is operational"

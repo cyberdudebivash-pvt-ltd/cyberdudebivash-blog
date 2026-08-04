@@ -12,6 +12,13 @@ on:
       - '.github/workflows/intelligence-engine-ci.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: intelligence-engine-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   engine-tests:
     name: "Engine Test Suite"

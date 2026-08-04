@@ -27,6 +27,13 @@ on:
       - '.github/workflows/continuous-assurance.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: continuous-assurance-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   assure:
     name: "Full Assurance Pass"
