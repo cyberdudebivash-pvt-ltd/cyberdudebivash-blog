@@ -13,6 +13,10 @@ on:
         type: choice
         options: ["true", "false"]
 
+concurrency:
+  group: blog-pipeline-health-certification
+  cancel-in-progress: true
+
 jobs:
   health-certification:
     name: "12-Category Pipeline Health Certification"
@@ -30,9 +34,10 @@ jobs:
         with:
           node-version: "20"
 
-      - name: "Install dependencies"
-        run: |
-          npm install --silent 2>/dev/null || true
+      # No dependency install step: every CATEGORY check below uses only
+      # Node's built-in `fs`/`require()` of local JSON files -- no installed
+      # npm package is ever imported. The previous `npm install --silent`
+      # ran on every 30-minute execution for zero effect (2026-08-04 audit).
 
       - name: "CATEGORY 1: Pipeline Execution Validation"
         id: pipeline_exec

@@ -5,6 +5,10 @@ on:
     - cron: '*/30 * * * *'   # Every 30 minutes
   workflow_dispatch:
 
+concurrency:
+  group: blog-freshness-check
+  cancel-in-progress: true
+
 jobs:
   freshness-check:
     name: "Verify SENTINEL APEX pipeline is operational"
