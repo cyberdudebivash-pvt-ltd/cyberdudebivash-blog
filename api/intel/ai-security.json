@@ -2,11 +2,11 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-08-04T14:20:23.100Z",
+  "generated": "2026-08-04T17:50:31.163Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 11,
-    "p1": 0,
+    "published": 17,
+    "p1": 3,
     "leadsHeld": 1,
     "analystReports": 0,
     "sourcesOk": 5,
@@ -61,7 +61,7 @@
         "error": null
       }
     ],
-    "runtimeMs": 1074
+    "runtimeMs": 1142
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,8 +88,356 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 11,
+  "count": 17,
   "items": [
+    {
+      "id": "e75eca3fd77d104c",
+      "title": "Flowise Sandbox Escape to RCE",
+      "url": "https://github.com/advisories/GHSA-wg86-r78f-74mp",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-08-04T15:13:33Z",
+      "cve": "CVE-2026-69253",
+      "severity": "critical",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": true,
+          "mcp": false,
+          "rag": true,
+          "tool_use": true,
+          "supply_chain": false
+        },
+        "level": "high"
+      },
+      "enterprise_impact": {
+        "score": 85,
+        "priority": "P1"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "0e05c246e6305b36",
+      "title": "Flowise RCE via SQLite Record Manager Node",
+      "url": "https://github.com/advisories/GHSA-x3hf-7cj6-3r4m",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-08-04T16:05:10Z",
+      "cve": "CVE-2026-69259",
+      "severity": "critical",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "rag_vector",
+          "label": "RAG / Vector DB Attack"
+        },
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM08",
+          "name": "Vector and Embedding Weaknesses"
+        },
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0051",
+          "name": "LLM Prompt Injection"
+        },
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": true,
+          "mcp": false,
+          "rag": true,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 75,
+        "priority": "P1"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Monitor vector-store writes for unusual ingestion volume and content that scores high on injection heuristics.",
+        "hunt": "Sample retrieved chunks that led to unexpected model actions; check for embedded instructions."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "f46ee29955a88ca3",
+      "title": "Flowise RCE via TypeORM DataSource",
+      "url": "https://github.com/advisories/GHSA-g32j-mmxr-gfq5",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-08-04T14:28:04Z",
+      "cve": "CVE-2026-69251",
+      "severity": "critical",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": true,
+          "mcp": false,
+          "rag": true,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 75,
+        "priority": "P1"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "2f094fe14125cf1a",
+      "title": "Flowise: CVE-2025-8943 Patch Bypass: npm_config_yes bypasses MCP environment variable blocklist (Unauthenticated RCE)",
+      "url": "https://github.com/advisories/GHSA-xc48-889x-5qmw",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-08-04T17:09:48Z",
+      "cve": "CVE-2026-69263",
+      "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": true,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 63,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "af7c2e45e698c5ca",
+      "title": "Flowise: Unauthenticated Property Injection into Flow Execution Context via Ungated `overrideConfig` Spread in Prediction API",
+      "url": "https://github.com/advisories/GHSA-6vh2-wg4h-4vwj",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-08-04T15:56:11Z",
+      "cve": "CVE-2026-69258",
+      "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "prompt_injection",
+          "label": "Prompt Injection"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM01",
+          "name": "Prompt Injection"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0051",
+          "name": "LLM Prompt Injection"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": false,
+          "rag": true,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 63,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
+        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "780f25aed3a5b214",
+      "title": "Flowise: SSRF Protection Bypass via IPv4-Mapped IPv6 Addresses",
+      "url": "https://github.com/advisories/GHSA-c6xh-wv4j-ppv5",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-08-04T15:51:58Z",
+      "cve": "CVE-2026-69257",
+      "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": true,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 63,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
     {
       "id": "89a4d98688b2698f",
       "title": "Agentic Incident Response through Digital Twin-Enhanced Multiscale Planning",
