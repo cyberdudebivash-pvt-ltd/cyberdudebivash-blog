@@ -1002,25 +1002,35 @@ is a full 573-line weighted-clustering engine, live, with a persisted
 matching this file's own precedent for surfacing documentation debt
 honestly (see Issue 11's history).
 
-**Three "scattered parallel systems" findings, same category as Issue 1,
-not yet consolidated:**
-- Report structure: a 5-section code-enforced gate, a 60-section
-  documented-but-uncomputed taxonomy, and ~24 sections actually used in
-  real reports — three layers that don't fully agree.
+**Three "scattered parallel systems" findings, same category as Issue 1:**
+- **RESOLVED (naming/documentation only)**, a later pass: Report
+  structure — a 5-section code-enforced gate, a 66-section
+  documented-but-uncomputed taxonomy (six sections added since this entry
+  was first written), and 14–24 sections actually used in real reports.
+  These turned out not to be three competing systems needing a
+  canonical-ownership decision — they're three unlabeled tiers of one
+  hierarchy (hard gate ⊂ common spine ⊂ selective extended menu), each
+  still correct at its own level. The missing piece was a name for the
+  middle tier; it's now the **Standard Spine**, documented with its
+  section list and full three-tier model in
+  `Sentinel-APEX/eios/sentinel-intelligence-standard.md` § 8. The
+  5-section code gate in `quality.py` is unchanged and not widened to
+  match — whether it should be remains a genuine, still-open policy
+  question, tracked there rather than decided here.
 - Operational Intelligence by role: `authority_transformer.py`'s
   Executive Decision Center (CEO/Board/CISO/SOC/DevSecOps/Cloud) and EIOS
   Layer 5's audience templates (Executive/SOC/Hunter/IR/Board/Detection-
   Engineer) are two independent 6-role systems that don't match each
-  other or GTIEP's proposed role list.
+  other or GTIEP's proposed role list. Not yet consolidated.
 - Confidence: a 3-level code enum (LOW/MEDIUM/HIGH) vs. a 5-level prose
   scale (VERY LOW→VERY HIGH) used everywhere else, plus a real, practiced
   4-tag evidentiary convention vs. a richer, fully-specified-but-never-used
-  9-category Provenance model (`eios/layer-02`).
+  9-category Provenance model (`eios/layer-02`). Not yet consolidated.
 
-**Not resolved this sprint, deliberately** — each is a canonical-ownership
-or consolidation decision (which system wins), the same category Issue 1
-already established requires an explicit decision rather than an
-opportunistic same-sprint merge.
+**The remaining two not resolved, deliberately** — each is a genuine
+canonical-ownership decision (which system wins, not just what to call the
+gap between them), the same category Issue 1 already established requires
+an explicit decision rather than an opportunistic same-sprint merge.
 
 **Resolved this sprint (GTIEP v1), the additive/low-risk subset:**
 1. The two stale-documentation corrections above.
