@@ -197,6 +197,21 @@ this file's own "TECHNICAL DEPTH" list below as frameworks to reference —
 that guidance stays; these are now also real, dedicated analytical
 sections, not just references scattered through prose.
 
+**Three tiers, not one flat list.** The 66 sections below are the full
+menu — select per `report_type` and subject matter, omitting genuinely
+inapplicable ones per the rule two paragraphs down. Two narrower tiers sit
+inside this menu: `quality.py`'s `REQUIRED_SECTIONS` is a 5-section
+publication-blocking floor (Executive Summary, Verified Facts, Technical
+Analysis, MITRE ATT&CK, IOC Intelligence), and the **Standard Spine** — the
+14 sections every report should default to including even when nothing
+below makes any of them mandatory — is Executive Summary, Executive Risk
+Snapshot, Why This Matters, Verified Facts, Technical Analysis, MITRE
+ATT&CK Mapping, IOC Intelligence, Behavioral Indicators & Detection
+Opportunities, Vulnerability Management Guidance, Regulatory Impact,
+Intelligence Gaps, Confidence Assessment, References, Sentinel APEX
+Analyst Conclusion. Full three-tier model and rationale:
+`Sentinel-APEX/eios/sentinel-intelligence-standard.md` § 8.
+
 1. Executive Summary
 2. Key Findings
 3. Executive Risk Snapshot

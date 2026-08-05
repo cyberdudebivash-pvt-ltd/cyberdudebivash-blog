@@ -27,6 +27,10 @@ REQUIRED_SECTIONS = (
     "MITRE ATT&CK",
     "IOC Intelligence",
 )
+# This is the hard-gated floor (Tier 1) of a three-tier report-structure
+# model — Tier 2 (Standard Spine, 14 sections) and Tier 3 (extended menu,
+# master-prompt.md) sit above it and are not enforced here by design; see
+# Sentinel-APEX/eios/sentinel-intelligence-standard.md § 8.
 
 # Real hand-authored reports (Sentinel-APEX/reports/drafts/) use different,
 # equally valid section names for the same analytical content — see
