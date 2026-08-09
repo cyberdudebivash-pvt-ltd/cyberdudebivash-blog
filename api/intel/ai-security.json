@@ -2,16 +2,24 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-08-08T22:31:28.765Z",
+  "generated": "2026-08-09T01:53:23.394Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 8,
+    "published": 0,
     "p1": 0,
-    "leadsHeld": 2,
+    "leadsHeld": 0,
     "analystReports": 0,
-    "sourcesOk": 5,
+    "sourcesOk": 4,
     "sourcesTotal": 6,
     "sourceHealth": [
+      {
+        "name": "r/MachineLearning",
+        "key": "reddit_ml",
+        "tier": 3,
+        "status": "degraded",
+        "items": 0,
+        "error": "HTTP 429"
+      },
       {
         "name": "NVD (prompt injection)",
         "key": "nvd_pi",
@@ -21,19 +29,19 @@
         "error": null
       },
       {
-        "name": "r/netsec",
-        "key": "reddit_ns",
-        "tier": 3,
-        "status": "degraded",
-        "items": 0,
-        "error": "HTTP 429"
-      },
-      {
         "name": "NVD (AI/LLM keyword)",
         "key": "nvd_ai",
         "tier": 1,
         "status": "ok",
         "items": 40,
+        "error": null
+      },
+      {
+        "name": "r/netsec",
+        "key": "reddit_ns",
+        "tier": 3,
+        "status": "ok",
+        "items": 25,
         "error": null
       },
       {
@@ -45,23 +53,15 @@
         "error": null
       },
       {
-        "name": "r/MachineLearning",
-        "key": "reddit_ml",
-        "tier": 3,
-        "status": "ok",
-        "items": 25,
-        "error": null
-      },
-      {
         "name": "arXiv cs.CR (LLM security)",
         "key": "arxiv_sec",
         "tier": 2,
-        "status": "ok",
-        "items": 30,
-        "error": null
+        "status": "degraded",
+        "items": 0,
+        "error": "This operation was aborted"
       }
     ],
-    "runtimeMs": 2848
+    "runtimeMs": 15072
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,467 +88,6 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 8,
-  "items": [
-    {
-      "id": "8574e1b2b5a3f4bc",
-      "title": "A Security-Oriented Lifecycle Model for Large Language Model Systems",
-      "url": "https://arxiv.org/abs/2608.03626v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-08-04T13:13:48Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": true,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "719d4f3654fee618",
-      "title": "CLEAR: Causal Context-Based Agentic Reasoning for Vulnerability Detection",
-      "url": "https://arxiv.org/abs/2608.03134v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-08-04T05:03:11Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": true,
-          "mcp": false,
-          "rag": true,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "89a4d98688b2698f",
-      "title": "Agentic Incident Response through Digital Twin-Enhanced Multiscale Planning",
-      "url": "https://arxiv.org/abs/2608.02422v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-08-03T16:03:16Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": true,
-          "mcp": false,
-          "rag": true,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "ef70ba45a0298945",
-      "title": "A Multimodal Automatic Redteaming Evaluation based on Atomic Jailbreak Strategy Decoupling and Combination",
-      "url": "https://arxiv.org/abs/2608.04034v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-08-03T02:28:52Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "prompt_injection",
-          "label": "Prompt Injection"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM01",
-          "name": "Prompt Injection"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0051",
-          "name": "LLM Prompt Injection"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": true,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
-        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "0709f2ed934e759e",
-      "title": "$S^3$: Improving Agent Safety through Multi-Stage Defense",
-      "url": "https://arxiv.org/abs/2608.02683v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-08-03T02:06:06Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": true,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "63d000c82cd3e912",
-      "title": "SoK: How Frontier AI Reshapes System-Level Security Risk Dynamics in Critical Infrastructure",
-      "url": "https://arxiv.org/abs/2608.04033v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-08-03T01:30:35Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "supply_chain",
-          "label": "AI Supply Chain"
-        },
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM05",
-          "name": "Supply Chain Vulnerabilities"
-        },
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0010",
-          "name": "ML Supply Chain Compromise"
-        },
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": true,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": true
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Alert on model artifact downloads from non-allowlisted registries; scan pickled/`.pt` model files for arbitrary code (Fickling, ModelScan).",
-        "hunt": "Review CI/CD and notebook hosts for outbound connections initiated during model load."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "bce37b8b8431e1ef",
-      "title": "Securing Agentic AI: From Per-Action Checks to Trajectory Assurance",
-      "url": "https://arxiv.org/abs/2608.01558v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-08-03T00:28:49Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": true,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 20,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "ba9a3ddd21b4b5d0",
-      "title": "PromptShield Home: Ambient Multimodal Prompt Injection Defense for Smart-Home Agents",
-      "url": "https://arxiv.org/abs/2608.05495v1",
-      "source": "arXiv cs.CR (LLM security)",
-      "tier": 2,
-      "published": "2026-08-06T00:51:46Z",
-      "cve": null,
-      "severity": null,
-      "cvss": null,
-      "evidence_label": "PUBLISHED_RESEARCH",
-      "categories": [
-        {
-          "id": "prompt_injection",
-          "label": "Prompt Injection"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM01",
-          "name": "Prompt Injection"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0051",
-          "name": "LLM Prompt Injection"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "standard"
-      },
-      "enterprise_impact": {
-        "score": 10,
-        "priority": "P3"
-      },
-      "confidence": {
-        "source": "MODERATE",
-        "evidence": "LOW",
-        "overall": "LOW",
-        "rationale": "Research source; 1 corroborating source(s)."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
-        "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    }
-  ]
+  "count": 0,
+  "items": []
 }
