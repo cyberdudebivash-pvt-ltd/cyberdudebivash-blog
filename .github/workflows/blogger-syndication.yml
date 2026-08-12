@@ -142,7 +142,7 @@ jobs:
             2>&1 | tee logs/pipeline-output.txt
           PIPELINE_EXIT=${PIPESTATUS[0]}
           if [ "$PIPELINE_EXIT" -ne 0 ]; then
-            echo "::error::Syndication pipeline exited with code ${PIPELINE_EXIT} — 0 posts published this run. See log above for the failing cause (auth, rate-limit, or publish error)."
+            echo "::error::Syndication pipeline exited with code ${PIPELINE_EXIT}. Review the run summary for integrity blocks, published count, authentication, quota, or API failures."
           fi
           exit $PIPELINE_EXIT
 

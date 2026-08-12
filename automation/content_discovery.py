@@ -151,7 +151,7 @@ class PublicationState:
         self._state["posts"][article.content_hash] = entry
         self._state["total_published"] = len(self._state["posts"])
         # Remove from retry queue on success
-        self._remove_from_retry_queue(article.content_hash)
+        self._remove_from_retry_queue(article.content_hash, article.url)
         self.save()
 
     def record_failure(self, url: str, error: str) -> None:
@@ -191,9 +191,13 @@ class PublicationState:
             if item.get("attempts", 1) <= 3
         ]
 
-    def _remove_from_retry_queue(self, content_hash: str) -> None:
+    def _remove_from_retry_queue(self, content_hash: str, source_url: Optional[str] = None) -> None:
         queue = self._state.get("retry_queue", [])
-        self._state["retry_queue"] = [q for q in queue if q.get("content_hash") != content_hash]
+        self._state["retry_queue"] = [
+            q for q in queue
+            if q.get("content_hash") != content_hash
+            and (not source_url or q.get("url") != source_url)
+        ]
 
     @property
     def total_published(self) -> int:

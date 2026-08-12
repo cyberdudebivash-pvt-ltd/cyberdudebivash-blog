@@ -224,6 +224,19 @@ class TestRetryQueue(unittest.TestCase):
         state2 = PublicationState(self.state_file)
         self.assertEqual(len(state2.get_retry_queue()), 0)
 
+    def test_success_clears_stale_retry_with_same_url_and_different_hash(self):
+        state = PublicationState(self.state_file)
+        stale = self._article(30)
+        state.add_to_retry_queue(stale, "legacy placeholder")
+
+        fresh = self._article(30)
+        fresh.title = "Normalized title"
+        fresh.content_hash = _compute_hash(fresh.url, fresh.title)
+        state.mark_published(fresh, "post-normalized", "https://blogger.com/normalized")
+
+        state2 = PublicationState(self.state_file)
+        self.assertEqual(state2.get_retry_queue(), [])
+
     def test_retry_queue_max_3_attempts(self):
         state = PublicationState(self.state_file)
         a = self._article(4)

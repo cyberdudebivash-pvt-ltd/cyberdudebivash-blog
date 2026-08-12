@@ -58,6 +58,28 @@ def _requeue_unattempted(
     return len(remaining)
 
 
+def _merge_retry_and_fresh(
+    retry_articles: list[DiscoveredArticle],
+    fresh_articles: list[DiscoveredArticle],
+    state: PublicationState,
+) -> list[DiscoveredArticle]:
+    """Prefer current discovery data over stale retries for the same source.
+
+    Editorial normalization can change a content hash while the canonical
+    source URL remains stable. Publishing both variants creates duplicate
+    reports and can keep obsolete placeholder content in the retry queue.
+    """
+    fresh_hashes = {article.content_hash for article in fresh_articles}
+    fresh_urls = {article.url.strip() for article in fresh_articles if article.url}
+    retry_deduped = [
+        article for article in retry_articles
+        if not state.is_published(article.content_hash)
+        and article.content_hash not in fresh_hashes
+        and article.url.strip() not in fresh_urls
+    ]
+    return retry_deduped + fresh_articles
+
+
 def run_health_check(config: Config) -> bool:
     """Verify all external dependencies are reachable."""
     logger.info("Running health check")
@@ -126,9 +148,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
     # --- Content Discovery ---
     fresh_articles = discovery.discover()
     # Retry articles first (skip if already published or in fresh batch)
-    fresh_hashes = {a.content_hash for a in fresh_articles}
-    retry_deduped = [a for a in retry_articles if not discovery.state.is_published(a.content_hash) and a.content_hash not in fresh_hashes]
-    articles = retry_deduped + fresh_articles
+    articles = _merge_retry_and_fresh(retry_articles, fresh_articles, discovery.state)
     articles = articles[: config.max_posts_per_run]
     report["discovered"] = len(articles)
 
@@ -156,6 +176,16 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             post_result["labels"] = transformed["labels"]
             post_result["content_source"] = transformed["content_source"]
             post_result["llm_attempts"] = transformed.get("llm_attempts", [])
+            for field in (
+                "report_id",
+                "source_record_hash",
+                "report_family",
+                "review_status",
+                "certification_status",
+                "detection_status",
+                "generated_at",
+            ):
+                post_result[field] = transformed.get(field)
 
             if dry_run:
                 logger.info(

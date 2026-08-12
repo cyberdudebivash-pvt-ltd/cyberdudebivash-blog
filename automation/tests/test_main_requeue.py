@@ -13,7 +13,7 @@ limit is now hit before every discovered batch is exhausted.
 from unittest.mock import Mock
 
 from automation.content_discovery import DiscoveredArticle
-from automation.main import _pipeline_exit_code, _requeue_unattempted
+from automation.main import _merge_retry_and_fresh, _pipeline_exit_code, _requeue_unattempted
 
 
 def _article(n):
@@ -55,3 +55,17 @@ def test_partial_success_still_returns_failure_exit_code():
 
 def test_clean_run_returns_success_exit_code():
     assert _pipeline_exit_code({"published": 2, "failed": 0}) == 0
+
+
+def test_fresh_article_replaces_stale_retry_with_same_source_url():
+    stale = _article(1)
+    stale.content_hash = "old-template-hash"
+    fresh = _article(1)
+    fresh.title = "Article 1 without placeholder taxonomy"
+    fresh.content_hash = "new-template-hash"
+    state = Mock()
+    state.is_published.return_value = False
+
+    merged = _merge_retry_and_fresh([stale], [fresh], state)
+
+    assert merged == [fresh]
