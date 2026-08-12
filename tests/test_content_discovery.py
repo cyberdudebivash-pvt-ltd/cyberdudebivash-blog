@@ -49,6 +49,11 @@ class TestComputeHash(unittest.TestCase):
         self.assertEqual(len(h), 16)
 
 
+class TestProductionDefaults(unittest.TestCase):
+    def test_default_batch_size_stays_within_observed_blogger_quota(self):
+        self.assertEqual(Config().max_posts_per_run, 5)
+
+
 class TestIsRecent(unittest.TestCase):
     def test_recent_article_passes(self):
         recent = datetime.now(timezone.utc) - timedelta(hours=10)

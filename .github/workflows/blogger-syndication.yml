@@ -26,9 +26,9 @@ on:
           - "false"
           - "true"
       max_posts:
-        description: "Max posts per run (default: 12)"
+        description: "Max posts per run (default: 5; Blogger quota-safe)"
         required: false
-        default: "12"
+        default: "5"
 
 concurrency:
   group: main-content-writers
@@ -127,7 +127,7 @@ jobs:
           TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
           NEWSLETTER_SIGNUP_URL: ${{ secrets.NEWSLETTER_SIGNUP_URL }}
-          MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '12' }}
+          MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '5' }}
         run: |
           DRY_RUN_FLAG=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
@@ -138,7 +138,7 @@ jobs:
           set +e
           python -m automation.main \
             $DRY_RUN_FLAG \
-            --max-posts ${{ github.event.inputs.max_posts || '12' }} \
+            --max-posts ${{ github.event.inputs.max_posts || '5' }} \
             2>&1 | tee logs/pipeline-output.txt
           PIPELINE_EXIT=${PIPESTATUS[0]}
           if [ "$PIPELINE_EXIT" -ne 0 ]; then

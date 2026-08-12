@@ -54,8 +54,9 @@ class Config:
     target_blog_url: str = "https://cyberbivash.blogspot.com"
     blogger_api_base: str = "https://www.googleapis.com/blogger/v3"
 
-    # Pipeline control — 12 posts/run → more indexed pages → more AdSense impressions
-    max_posts_per_run: int = 12
+    # Pipeline control — production observations show Blogger accepts five
+    # consecutive writes before quota throttling. Stay below that boundary.
+    max_posts_per_run: int = 5
     max_article_age_hours: int = 72
     retry_attempts: int = 3
     retry_base_delay: float = 2.0
@@ -93,7 +94,7 @@ class Config:
             twitter_access_token=os.environ.get("TWITTER_ACCESS_TOKEN", ""),
             twitter_access_secret=os.environ.get("TWITTER_ACCESS_SECRET", ""),
             newsletter_signup_url=os.environ.get("NEWSLETTER_SIGNUP_URL", "https://cyberdudebivash.substack.com"),
-            max_posts_per_run=int(os.environ.get("MAX_POSTS_PER_RUN", "8")),
+            max_posts_per_run=int(os.environ.get("MAX_POSTS_PER_RUN", "5")),
         )
 
     def validate(self) -> list[str]:
