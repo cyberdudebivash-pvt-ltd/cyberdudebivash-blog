@@ -1,8 +1,34 @@
 {
-  "generated": "2026-08-12T13:51:26.430Z",
+  "generated": "2026-08-12T19:29:45.984Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-48798-nuget-ssh-net",
+      "title": "SSH.NET: ScpClient Recursive Download Allows Arbitrary File Write via Server-Controlled SCP Filenames",
+      "url": "/posts/cve-2026-48798-nuget-ssh-net.html",
+      "generated": "2026-08-12T15:28:29.319Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-48798",
+        "CVE-2026-48798"
+      ],
+      "mitreAttack": [
+        {
+          "id": "T1557",
+          "name": "Adversary-in-the-Middle",
+          "tactic": "credential-access",
+          "confidence": "HIGH"
+        }
+      ],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/advisories/GHSA-jr78-hfw4-xp7g),\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/advisories/GHSA-jr78-hfw4-xp7g),\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-62901-nuget-microsoft-netcore-app-runtime-win-arm64",
       "title": "Microsoft Security Advisory CVE-2026-62901 – .NET Denial of Service Vulnerability",
@@ -4177,25 +4203,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/bankster24&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/bankster24&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1ustdp5/training_recommendations_for_soc_teams_in_th\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1ustdp5/training_recommendations_for_soc_teams_in_th\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
-      ]
-    },
-    {
-      "slug": "cisa-kev-threat-intel-orchestrator",
-      "title": "CISA KEV Threat Intel Orchestrator",
-      "url": "/posts/cisa-kev-threat-intel-orchestrator.html",
-      "generated": "2026-07-10T14:31:55.504Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/manishrawat21/Cisa-KEV-Threat-Intel-Orchestrator&quot;&gt;Github&lt;/a&gt;&lt;/p&\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/manishrawat21/Cisa-KEV-Threat-Intel-Orchestrator&quot\\;&gt\\;Github&lt\\;/a&gt\\;&lt\\;/p&\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/manishrawat21&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/manishrawat21&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1usoudd/cisa_kev_threat_intel_orchestrator/&quot;&gt\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1usoudd/cisa_kev_threat_intel_orchestrator/&quot\\;&gt\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
       ]
     }
   ]
