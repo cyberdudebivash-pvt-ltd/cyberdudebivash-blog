@@ -74,6 +74,7 @@ def _merge_retry_and_fresh(
     retry_deduped = [
         article for article in retry_articles
         if not state.is_published(article.content_hash)
+        and not state.is_source_url_published(article.url)
         and article.content_hash not in fresh_hashes
         and article.url.strip() not in fresh_urls
     ]

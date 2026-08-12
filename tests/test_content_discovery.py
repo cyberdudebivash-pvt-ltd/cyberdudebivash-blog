@@ -114,6 +114,14 @@ class TestPublicationState(unittest.TestCase):
         # Reload from disk
         state2 = PublicationState(self.state_file)
         self.assertTrue(state2.is_published(article.content_hash))
+        self.assertTrue(state2.is_source_url_published(article.url))
+
+    def test_source_url_deduplication_is_exact(self):
+        state = PublicationState(self.state_file)
+        article = self._make_article()
+        state.mark_published(article, "post-123", "https://blogger.com/post-123")
+        self.assertTrue(state.is_source_url_published(article.url))
+        self.assertFalse(state.is_source_url_published(article.url + "-different"))
 
     def test_total_count_increments(self):
         state = PublicationState(self.state_file)

@@ -111,6 +111,14 @@ class PublicationState:
     def is_published(self, content_hash: str) -> bool:
         return content_hash in self._state["posts"]
 
+    def is_source_url_published(self, source_url: str) -> bool:
+        """Return True when the canonical source record already has a post."""
+        normalized = source_url.strip()
+        return bool(normalized) and any(
+            str(entry.get("source_url") or "").strip() == normalized
+            for entry in self._state.get("posts", {}).values()
+        )
+
     def is_cve_published(self, cve_id: str) -> bool:
         """Return True if this CVE was already published from any source."""
         cve_norm = cve_id.upper()

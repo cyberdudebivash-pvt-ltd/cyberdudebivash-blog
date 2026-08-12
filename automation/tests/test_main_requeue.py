@@ -65,7 +65,18 @@ def test_fresh_article_replaces_stale_retry_with_same_source_url():
     fresh.content_hash = "new-template-hash"
     state = Mock()
     state.is_published.return_value = False
+    state.is_source_url_published.return_value = False
 
     merged = _merge_retry_and_fresh([stale], [fresh], state)
 
     assert merged == [fresh]
+
+
+def test_published_source_url_suppresses_legacy_retry_hash():
+    stale = _article(2)
+    stale.content_hash = "legacy-hash"
+    state = Mock()
+    state.is_published.return_value = False
+    state.is_source_url_published.return_value = True
+
+    assert _merge_retry_and_fresh([stale], [], state) == []
