@@ -1,29 +1,27 @@
 name: "⚡ CYBERDUDEBIVASH® — Blogger Syndication Engine"
 
 on:
-  # RX-STABILIZATION-1 INCIDENT CONTAINMENT — 2026-08-12T17:1x UTC
-  # Automatic publication (cron + post-CI workflow_run) is temporarily
-  # disabled while RX-PR0 (report renderer recovery) is in progress, so no
-  # further reports publish through the degraded evidence-only renderer
-  # (regression: 0a4b2df) before the fix lands. workflow_dispatch (manual,
-  # dry-run capable) remains available for controlled testing.
-  # RESTORE both blocks below once RX-PR0 is merged, deployed, and live-
-  # certified (see REPORT_X_DUAL_DEPLOYMENT_ROLLBACK_PLAN.md).
-  #
-  # schedule:
-  #   # Runs every 2 hours at :15 (00:15, 02:15, … 22:15) = 12 runs/day.
-  #   # Reduced from twice-hourly to cut Vercel deployment usage — each run
-  #   # commits to main and triggers a deploy. Offset from the sentinel-apex
-  #   # intel pipeline (:00/:30) so pushes never collide. Syndication 12×/day
-  #   # is ample for SEO freshness; use "Run workflow" for an immediate push.
-  #   - cron: "15 */2 * * *"
-  # # Production deployment runs immediately after the dedicated evidence gate
-  # # passes on main. State/log-only publication commits do not retrigger that
-  # # gate, so this cannot create a workflow loop.
-  # workflow_run:
-  #   workflows: ["Blogger Evidence Integrity CI"]
-  #   types: [completed]
-  #   branches: [main]
+  # RX-STABILIZATION-1 — automatic publication restored 2026-08-12T18:1x UTC.
+  # Paused 2026-08-12T17:1x UTC during RX-PR0 (report renderer recovery);
+  # restored now that RX-PR0 (#70), its CodeRabbit follow-up (#71), and
+  # RX-PR1 (counterpart repo, #176) are all merged and live-verified —
+  # a dry run against real current NVD data (workflow run 31626154994)
+  # showed 3/3 discovered articles using the restored rich template with
+  # zero integrity-gate blocks and zero failures.
+  schedule:
+    # Runs every 2 hours at :15 (00:15, 02:15, … 22:15) = 12 runs/day.
+    # Reduced from twice-hourly to cut Vercel deployment usage — each run
+    # commits to main and triggers a deploy. Offset from the sentinel-apex
+    # intel pipeline (:00/:30) so pushes never collide. Syndication 12×/day
+    # is ample for SEO freshness; use "Run workflow" for an immediate push.
+    - cron: "15 */2 * * *"
+  # Production deployment runs immediately after the dedicated evidence gate
+  # passes on main. State/log-only publication commits do not retrigger that
+  # gate, so this cannot create a workflow loop.
+  workflow_run:
+    workflows: ["Blogger Evidence Integrity CI"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       dry_run:
