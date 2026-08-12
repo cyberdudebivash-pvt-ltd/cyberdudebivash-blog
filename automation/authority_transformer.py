@@ -22,8 +22,15 @@ from .logger import setup_logger
 from .industry_intelligence import detect_industries, get_industry_profile
 from .monetization_injector import MonetizationInjector
 from .product_recommendations import SERVICES as _CATALOG_SERVICES, recommend_services
-from .report_integrity import validate_publication
-from .report_renderer import render_evidence_report
+from .report_integrity import ReportContext, build_report_context, validate_publication
+from .report_renderer import (
+    _attack_section,
+    _detection_package,
+    _detection_section,
+    _family_analysis,
+    _provenance,
+    render_evidence_report,
+)
 from .seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss
 
 logger = setup_logger("authority_transformer")
@@ -522,7 +529,16 @@ def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Opt
                 "CISA KEV",
                 "Not Listed",
                 "#22c55e",
-                "Not present in verified catalog snapshot; exploitation may still exist",
+                "Not present in the verified catalog snapshot; this does not prove absence of exploitation",
+            )
+        )
+    else:
+        tiles.append(
+            _risk_tile(
+                "CISA KEV",
+                "Unknown",
+                "#64748b",
+                "Unknown or unavailable; no negative claim is made",
             )
         )
     if article.affected_vendor or article.affected_product:
@@ -568,7 +584,6 @@ def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Opt
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _build_analyst_prompt(article: DiscoveredArticle) -> str:
-    raise RuntimeError("Public LLM report generation is retired; use the evidence renderer")
     return f"""You are the CYBERDUDEBIVASH® SENTINEL APEX Principal Threat Intelligence Analyst. You produce intelligence at the level of Mandiant, CrowdStrike Intelligence, Unit 42, Microsoft MSTIC, and Recorded Future. Every sentence must be operationally actionable for SOC analysts, CISOs, detection engineers, and threat hunters.
 
 ARTICLE TITLE: {article.title}
@@ -663,7 +678,6 @@ ABSOLUTE RULES — VIOLATIONS WILL BREAK ENTERPRISE TRUST:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
-    raise RuntimeError("Legacy report renderer is retired and cannot be used for publication")
     article.summary = _sanitize_summary(article.summary)
     cves = _extract_cve_ids(article.title + " " + article.summary)
     cvss = _extract_cvss(article.title + " " + article.summary)
@@ -681,6 +695,11 @@ def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
     is_apt = "apt" in text or "nation-state" in text or "nation state" in text or "state-sponsored" in text or "volt typhoon" in text or "lazarus" in text or "apt28" in text
     is_cve = bool(cves) or "vulnerability" in text or "cve" in text
     is_patch = "patch" in text or "update" in text or "cisa" in text or "kev" in text
+    # Canonical evidence classification (report_integrity.py) — reused below
+    # for the KEV/exploitation-status labels rather than re-deriving them
+    # from the is_* text heuristics above, so this template and
+    # render_evidence_report() never disagree on the same underlying facts.
+    context = build_report_context(article)
     # "critical infrastructure" deliberately excluded — too broad, triggers on APT/ransomware reports
     is_ot = bool(re.search(r"\bot\b", text)) or "ics" in text or "scada" in text or "plc" in text or "operational technology" in text or "industrial control" in text or "hmi" in text or "historian" in text or "modbus" in text or "dnp3" in text or "ethernet/ip" in text or "s7comm" in text or "food processing" in text or "water treatment" in text or "energy sector" in text or "oil and gas" in text or "power grid" in text or "manufacturing plant" in text
     is_supply_chain = "supply chain" in text or "software supply" in text or "dependency" in text or "npm" in text or "pypi" in text or "open source" in text or "package" in text
@@ -1296,18 +1315,24 @@ def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
     _nvd_refs = ''.join(f'<li>NVD — {cve} — <a href="https://nvd.nist.gov/vuln/detail/{cve}" target="_blank" rel="noopener">https://nvd.nist.gov/vuln/detail/{cve}</a></li>' for cve in cves) if cves else '<li>NIST National Vulnerability Database — <a href="https://nvd.nist.gov" target="_blank" rel="noopener">https://nvd.nist.gov</a></li>'
     _cvss_plain = cvss if cvss else "pending — see NVD entry"
     _cve_analysis = ('<ul>' + '\n'.join(f'<li><strong>{cve}</strong> — {category} vulnerability. CVSS: {_cvss_plain}. Monitor NVD entry at https://nvd.nist.gov/vuln/detail/{cve} and vendor security advisory for authoritative CVSS vector string, affected version range, and patch availability.</li>' for cve in cves) + '</ul>') if cves else ''
-    _cisa_sentence = 'CISA has added this to the Known Exploited Vulnerabilities catalog, imposing mandatory patching deadlines for U.S. federal agencies.' if (is_patch and 'cisa' in text) else 'CYBERDUDEBIVASH® SENTINEL APEX has classified this as a priority intelligence item requiring immediate defensive action.'
+    _cisa_sentence = 'CISA has added this to the Known Exploited Vulnerabilities catalog, imposing mandatory patching deadlines for U.S. federal agencies.' if article.kev_listed is True else 'CYBERDUDEBIVASH® SENTINEL APEX has classified this as a priority intelligence item requiring immediate defensive action.'
     _cve_facts = (f'<li>CVE identifiers: {", ".join(cves)} — extracted from article content</li>' + '\n') if cves else ''
     _cvss_fact = (f'<li>CVSS score: {cvss} — extracted from article or vendor advisory</li>' + '\n') if cvss else ''
     _cvss_severity = f'based on CVSS score {cvss}' if cvss else 'based on threat category, exploitation status, and operational impact assessment'
     _patch_fact = '<li>Patch availability confirmed: vendor or CISA advisory references patch or required action</li>' if is_patch else '<li>Patch availability: unconfirmed at time of report generation — monitor vendor advisory channel</li>'
     _cvss_header = f'  |  CVSS {cvss}' if cvss else ''
-    _exploit_confidence = 'Actively exploited in the wild — CISA KEV inclusion or vendor confirmation (HIGH CONFIDENCE)' if is_patch else 'Technical details sufficient for exploitation — weaponization timeline estimated 24-72 hours post-PoC publication (MEDIUM CONFIDENCE)'
+    _exploit_confidence = 'Actively exploited in the wild — CISA KEV catalog inclusion confirmed (HIGH CONFIDENCE)' if article.kev_listed is True else 'Active exploitation not confirmed in CISA KEV at time of publication — technical severity assessed independently of exploitation status (MEDIUM CONFIDENCE)'
     _impact_text = 'Operational disruption, data encryption, ransom demand, potential double-extortion data leak' if is_ransomware else ('Production system disruption, perishable goods spoilage, supply chain continuity impact' if is_ot else ('Unauthorized account access, financial fraud, identity theft, regulatory breach notification obligation' if is_ato else 'Unauthorized access, privilege escalation, potential data exfiltration'))
     _prevalence_text = 'Widespread ransomware campaign with multiple victims across sector' if is_ransomware else ('Targeted exploitation — organizations matching the threat actor known targeting profile' if is_apt else 'Broad exposure — all organizations running the affected software or exposed services')
     _patch_status_text = 'Emergency patch available — deploy immediately' if is_patch else 'Monitor vendor advisory channel; implement compensating controls immediately pending patch availability'
     _ot_classification = 'Operational technology and industrial control system targeting with direct production impact risk.' if is_ot else 'Enterprise IT environment threat with potential for data loss, operational disruption, or financial impact.'
-    _exploit_status = 'Exploitation is confirmed active based on CISA KEV inclusion or public exploitation reporting (HIGH CONFIDENCE).' if is_patch else 'Active exploitation status is unconfirmed at time of publication — assess as pre-exploitation risk (MEDIUM CONFIDENCE).'
+    _exploit_status = (
+        f'{context.exploitation_label} (HIGH CONFIDENCE).'
+        if context.exploitation_status == "confirmed" else
+        f'{context.exploitation_label} — not confirmed is not the same as ruled out (MEDIUM CONFIDENCE).'
+        if context.exploitation_status in {"not_confirmed", "unknown"} else
+        f'{context.exploitation_label}.'
+    )
     _attribution_note = 'Threat actor category identified based on TTPs and campaign characteristics described in source material.' if (is_ransomware or is_apt) else 'Attribution to specific threat actors has not been confirmed in the source material — analyst assessment and sector context are the basis for any attribution statements in this report (LOW CONFIDENCE).'
     _business_impact = (
         'Ransomware encryption of production systems carries average recovery costs exceeding $1.85M (Sophos State of Ransomware 2024) excluding reputational damage and regulatory penalty exposure. GDPR Article 33 requires breach notification within 72 hours; NIS2 Directive extends mandatory reporting to a broader set of critical sectors.' if is_ransomware else
@@ -1476,11 +1501,11 @@ def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
     elif is_cve:
         # KEV-aware: never forecast a KEV addition for a CVE the report already
         # states is in the KEV catalog — that contradiction destroys analyst credibility.
-        _kev_listed = is_patch and 'cisa' in text
+        _kev_listed = article.kev_listed is True
         _kev_paragraph = (
             "<p><strong>KEV remediation deadline pressure (HIGH CONFIDENCE):</strong> With this vulnerability already listed in the CISA Known Exploited Vulnerabilities catalog, U.S. federal agencies face a mandatory remediation deadline — expect intensified adversary scanning for unpatched instances as the deadline approaches and public attention peaks.</p>"
             if _kev_listed else
-            "<p><strong>CISA KEV addition (MEDIUM CONFIDENCE):</strong> Vulnerabilities actively exploited in the wild with public PoC availability are added to CISA KEV within 7-14 days of confirmed exploitation — monitor KEV for mandatory patching deadline implications.</p>"
+            "<p><strong>CISA KEV addition (MEDIUM CONFIDENCE):</strong> Vulnerabilities with confirmed exploitation and public PoC availability are typically added to CISA KEV within 7-14 days of that confirmation — monitor KEV for mandatory patching deadline implications.</p>"
         )
         predictive = f"<p><strong>Active exploitation escalation (HIGH CONFIDENCE):</strong> Based on historical patterns for vulnerabilities in this class, {cve_str} will be incorporated into exploit kits and automated scanning tools within 72 hours of PoC publication, dramatically expanding the threat actor population able to exploit it.</p>{_kev_paragraph}<p><strong>RaaS initial access broker adoption (MEDIUM CONFIDENCE):</strong> High-CVSS network-exploitable vulnerabilities are routinely adopted by ransomware initial access brokers within 30 days of public exploit availability.</p>"
     else:
@@ -1511,6 +1536,28 @@ def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
             f'<div style="color:#94a3b8;font-size:13px;line-height:1.6">{_pp}</div></div>'
         )
     _pred_styled = "\n".join(_pred_cards) if _pred_cards else f'<div style="color:#94a3b8;font-size:13px;line-height:1.7">{predictive}</div>'
+
+    # Intelligence/news families carry no threat-specific telemetry or
+    # observables (mirrors report_renderer.py's _detection_package()
+    # not-applicable set). Rendering process-execution/Sigma/ATT&CK content
+    # for them is exactly the schema contamination validate_publication()
+    # rejects — a governance-focused analysis replaces it instead of an
+    # invented technical detection surface.
+    if context.family in {"ai_security", "breach_notice", "general_intelligence"} and not article.cve_id:
+        _detection_block = _family_analysis(article, context)
+    else:
+        # Detection/Sigma/ATT&CK content is sourced from report_renderer.py's
+        # vulnerability-class-aware, evidence-gated generator rather than the
+        # is_ransomware/is_ot/... heuristics below (which predate the KEV/
+        # exploitation-evidence model and, per RX-STABILIZATION-1 forensics,
+        # can assert unearned technical precision — e.g. branded ransomware
+        # Sigma rules with no actor-specific IOCs). mitre_techniques/sigma_*/
+        # siem_queries/hunt_queries/soc_actions above stay in place as
+        # reference material for a future richer, evidence-bound rebuild of
+        # the SIEM-query/hunting/SOC-playbook sections; they are intentionally
+        # not rendered here.
+        _package = _detection_package(article, context)
+        _detection_block = _attack_section(_package) + _detection_section(_package)
 
     return f"""{_sev_banner}
 
@@ -1567,46 +1614,7 @@ def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
 
 {f'{_sh("CVE Analysis", "#ef4444")}<div style="background:#0d0014;border:1px solid #ef444433;border-radius:6px;padding:14px 16px">{_cve_cards}</div>' if cves else ''}
 
-{_sh("MITRE ATT&CK Mapping", "#a855f7")}
-<div style="background:#0d0014;border:1px solid #a855f733;border-radius:6px;padding:14px 16px">
-<div style="color:#7c3aed;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9632; MITRE ATT&amp;CK ENTERPRISE TECHNIQUES</div>
-<div style="color:#64748b;font-size:11px;font-style:italic;margin-bottom:10px">Reflects known patterns for this threat category (MEDIUM CONFIDENCE) &mdash; not unique correlation against this specific article's details. The same framing applies to the Sigma rule, SIEM queries, hunting queries, and SOC playbook below.</div>
-{mitre_html}
-</div>
-
-{_sh("IOC Intelligence", "#f59e0b")}
-<div style="background:#0d0a00;border:1px solid #f59e0b33;border-radius:6px;padding:14px 16px">
-<div style="color:#b45309;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9651; BEHAVIORAL INDICATORS &mdash; NO CONFIRMED PUBLIC IOCs AT REPORT TIME</div>
-{ioc_styled}
-</div>
-
-{_sh("Detection Engineering Guidance", "#06b6d4")}
-<div style="background:#001a1a;border:1px solid #06b6d433;border-radius:6px;padding:14px 16px;font-size:13px;color:#cbd5e1;line-height:1.7">
-<div style="color:#0891b2;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9670; REQUIRED LOG SOURCES &amp; TELEMETRY</div>
-{'<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">OT Network Monitoring:</strong> Industrial protocol analysis (Modbus, S7comm, DNP3) from IT-OT boundary tap &mdash; requires Dragos/Claroty/Nozomi</div><div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">OT Endpoint Telemetry:</strong> Windows Event Logs from HMI &amp; engineering workstations &mdash; enable 4688 process creation with full command-line logging</div><div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">SCADA Audit Logs:</strong> PLC parameter changes, logic uploads, setpoint modifications outside approved change windows</div>' if is_ot else '<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Windows Security Events:</strong> ID 4688 (process creation+cmdline), 4698 (scheduled tasks), 4624/4625 (auth), 4672 (special privileges)</div><div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">EDR/XDR Telemetry:</strong> Process tree, file system events, registry (Sysmon 13), network connections with parent-child relationships</div><div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Network Telemetry:</strong> DNS query logs (all types), proxy/gateway logs with full URL, NetFlow/PCAP from choke points</div>'}
-{'<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Web Application Logs:</strong> Full URI with parameters, HTTP method, response code, body size, client IP &mdash; required for exploitation and post-exploitation web shell detection</div>' if is_cve else ''}
-{'<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Authentication Logs:</strong> Login events with IP, user-agent, geolocation, result &mdash; aggregated across all customer-facing auth endpoints; correlate across sessions for distributed low-velocity detection</div>' if is_ato else ''}
-{f'<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Browser Extension Telemetry:</strong> Chrome/Edge extension inventory from endpoint management; Chrome Enterprise Browser Management audit logs if deployed</div>' if is_extension else ''}
-{'<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">CI/CD Pipeline Logs:</strong> Package install events with dependency trace; build job timing anomalies; network connections during build phase</div>' if is_supply_chain else ''}
-<div style="margin:5px 0;padding:6px 10px;background:#001a1a;border-left:2px solid #06b6d4"><strong style="color:#67e8f9">Cloud Telemetry:</strong> CloudTrail / Azure Activity Logs / GCP Audit Logs for IAM changes, unusual API calls, non-standard region activity</div>
-</div>
-
-{_sh("Sigma Detection Rule", "#22c55e")}
-{_sigma_terminal}
-
-{f'{_sh("Multi-SIEM Detection Queries", "#06b6d4")}<div style="background:#001a1a;border:1px solid #06b6d433;border-radius:6px;padding:14px 16px"><div style="color:#0891b2;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:6px">&#9670; SAME DETECTION LOGIC AS THE SIGMA RULE ABOVE &mdash; VALIDATE FIELD NAMES AGAINST YOUR ENVIRONMENT BEFORE DEPLOYING</div>{_siem_block(siem_queries)}</div>' if siem_queries else ''}
-
-{_sh("Threat Hunting Queries", "#22c55e")}
-<div style="background:#001a10;border:1px solid #22c55e33;border-radius:6px;padding:14px 16px">
-<div style="color:#15803d;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9654; SIEM HUNT HYPOTHESES &mdash; VALIDATE AGAINST YOUR ENVIRONMENT</div>
-{hunt_html}
-</div>
-
-{_sh("SOC Analyst Playbook", "#f59e0b")}
-<div style="background:#0d0a00;border:1px solid #f59e0b33;border-radius:6px;padding:14px 16px">
-<div style="color:#b45309;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1.5px;margin-bottom:10px">&#9650; PRIORITIZED RESPONSE ACTIONS</div>
-{soc_html}
-</div>
+{_detection_block}
 
 {_sh("Executive Decision Matrix", "#ef4444")}
 <div style="overflow-x:auto">
@@ -1650,11 +1658,11 @@ def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
 </div>
 <div style="flex:1;min-width:180px;background:#001220;border:1px solid #00d4ff22;border-radius:6px;padding:12px 14px">
 <div style="color:#00d4ff;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1px;margin-bottom:6px">&#9670; SIGMA &amp; YARA LIBRARY</div>
-<div style="color:#94a3b8;font-size:12px">2,400+ production detection rules for Splunk, Elastic, Sentinel, Chronicle, QRadar &mdash; updated within 24h</div>
+<div style="color:#94a3b8;font-size:12px">Production detection rules for Splunk, Elastic, Sentinel, Chronicle, QRadar</div>
 </div>
 <div style="flex:1;min-width:180px;background:#001220;border:1px solid #00d4ff22;border-radius:6px;padding:12px 14px">
 <div style="color:#00d4ff;font-size:10px;font-weight:700;font-family:monospace;letter-spacing:1px;margin-bottom:6px">&#9670; IOC INTELLIGENCE FEED</div>
-<div style="color:#94a3b8;font-size:12px">Real-time enrichment from 40+ TI sources &mdash; commercial feeds, ISAC sharing, dark web monitoring</div>
+<div style="color:#94a3b8;font-size:12px">Real-time enrichment from commercial feeds, ISAC sharing, and dark web monitoring</div>
 </div>
 </div>
 <div style="text-align:center;padding-top:10px;border-top:1px solid #1e3a5f33">
@@ -1681,11 +1689,16 @@ def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
-    """Render the single production template used by every source family.
+    """Render the minimal evidence-only template (RX-STABILIZATION-1, deprecated).
 
-    The legacy renderer remains above only to preserve reviewable history while
-    this release migrates existing tests and downstream imports. It is not used
-    by the production pipeline.
+    Between commit 0a4b2df and RX-PR0 this was the sole production renderer;
+    it produced provenance-safe but commercially thin reports. `transform()`
+    now uses `_legacy_template_enhance()` (LLM-fallback deterministic
+    template, restored) so every report gets full commercial depth while
+    still passing through the same `validate_publication()` evidence gate.
+    `render_evidence_report()` is kept — not deleted — as a reviewable
+    reference renderer and a candidate input for the RX-PR2 canonical
+    contract; nothing in the production pipeline currently calls it.
     """
     return render_evidence_report(article, config).html
 
@@ -1710,14 +1723,21 @@ class AuthorityTransformer:
         # Strip internal scoring artifacts before any content generation or SEO use
         article.summary = _sanitize_summary(article.summary)
 
-        # Public publication is deterministic and evidence-first. Provider
-        # output is not allowed to create an alternate compact/enriched report
-        # format or bypass the publication gate. Any future LLM draft surface
-        # must be a separate, non-public workflow with explicit review.
+        # RX-STABILIZATION-1 (RX-PR0): try LLM-authored content first, fall
+        # back to the deterministic enterprise template on failure. Richness
+        # is never achieved by skipping the evidence gate below, and honesty
+        # is never achieved by skipping richness — both paths pass through
+        # the same build_report_context()/validate_publication() gate.
         llm_attempts: list = []
-        rendered = render_evidence_report(article, self.config)
-        body_content = rendered.html
-        content_source = "evidence_safe_template"
+        llm_result = call_llm(self.config, _build_analyst_prompt(article), attempts=llm_attempts)
+        if llm_result:
+            body_content, content_source = llm_result
+        else:
+            body_content = _legacy_template_enhance(article, self.config)
+            content_source = "template"
+
+        context = build_report_context(article)
+        detection_status = _detection_package(article, context).status
 
         # Generate SEO metadata
         seo_data = self.seo.generate(
@@ -1744,8 +1764,8 @@ class AuthorityTransformer:
         )
 
         # Build full HTML
-        html = self._assemble_html(article, body_content, seo_data)
-        validate_publication(article, rendered.context, html)
+        html = self._assemble_html(article, body_content, seo_data, context)
+        validate_publication(article, context, html)
 
         blogger_labels = article.labels[:20]
 
@@ -1778,13 +1798,13 @@ class AuthorityTransformer:
             "content_hash": article.content_hash,
             "content_source": content_source,
             "llm_attempts": llm_attempts,
-            "report_id": rendered.context.report_id,
-            "source_record_hash": rendered.context.source_record_hash,
-            "report_family": rendered.context.family,
-            "review_status": rendered.context.review_status,
-            "certification_status": rendered.context.certification_status,
-            "detection_status": rendered.detection_status,
-            "generated_at": rendered.context.generated_at,
+            "report_id": context.report_id,
+            "source_record_hash": context.source_record_hash,
+            "report_family": context.family,
+            "review_status": context.review_status,
+            "certification_status": context.certification_status,
+            "detection_status": detection_status,
+            "generated_at": context.generated_at,
         }
 
     def _build_blogger_title(self, article: DiscoveredArticle) -> str:
@@ -1797,7 +1817,9 @@ class AuthorityTransformer:
             title = title[:82].rsplit(" ", 1)[0] + "..."
         return title
 
-    def _assemble_html(self, article: DiscoveredArticle, body_content: str, seo_data: dict) -> str:
+    def _assemble_html(
+        self, article: DiscoveredArticle, body_content: str, seo_data: dict, context: ReportContext,
+    ) -> str:
         """Assemble the complete Blogger-compatible HTML article."""
         safe_source_url = _html_escape.escape(article.url, quote=True)
         json_ld = seo_data.get("json_ld", {})
@@ -1927,5 +1949,7 @@ class AuthorityTransformer:
 <div style="margin-top:20px;padding:12px 16px;background:#050d1a;border-top:1px solid #1e3a5f22;font-size:11px;color:#334155;font-family:monospace">
   Intelligence source: <a href="{safe_source_url}" target="_blank" rel="noopener noreferrer" style="color:#64748b">{safe_source_url}</a> · CYBERDUDEBIVASH® SENTINEL APEX Evidence Engine v3.0
 </div>
+
+{_provenance(article, context)}
 """
         return html

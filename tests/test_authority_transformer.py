@@ -5,7 +5,6 @@ import html
 import re
 import unittest
 from datetime import datetime, timezone
-from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
 
 import yaml
@@ -14,6 +13,7 @@ from automation.authority_transformer import (
     AuthorityTransformer,
     _build_dynamic_og_image_url,
     _generate_svg_thumbnail,
+    _legacy_template_enhance,
     _template_enhance,
 )
 from automation.config import Config
@@ -83,11 +83,27 @@ class TestEvidenceFirstTemplate(unittest.TestCase):
         self.assertIn(REVIEW_STATUS, content)
         self.assertIn(CERTIFICATION_STATUS, content)
 
-    def test_template_import_routes_to_production_renderer(self):
+    def test_deprecated_evidence_only_template_still_works(self):
+        # RX-STABILIZATION-1: _template_enhance()/render_evidence_report() are
+        # no longer the production fallback (see _legacy_template_enhance
+        # below) but are kept working, not deleted, per the deprecation
+        # policy — a future canonical-contract PR may recompose them with
+        # the richer template rather than discard the work.
         article = _make_article()
         content = _template_enhance(article, self.config)
         self.assertIn('data-review-status="automated-unreviewed"', content)
         self.assertNotIn("Executive Decision Matrix", content)
+
+    def test_legacy_template_is_the_production_fallback_and_is_commercially_rich(self):
+        # RX-PR0 restored this as AuthorityTransformer.transform()'s
+        # LLM-failure fallback — proving it independently (not only through
+        # transform()) pins the specific regression this fixes: 0a4b2df
+        # rerouted every report through the thin evidence-only renderer.
+        article = _make_article()
+        content = _legacy_template_enhance(article, self.config)
+        self.assertIn("Executive Decision Matrix", content)
+        self.assertIn("Executive Summary", content)
+        self.assertIn("Business Impact", content)
 
     def test_report_identity_is_deterministic_for_same_source_record(self):
         article = _make_article()
@@ -321,15 +337,21 @@ class TestAuthorityTransformerContract(unittest.TestCase):
             "generated_at",
         }
         self.assertTrue(required.issubset(result))
-        self.assertEqual(result["content_source"], "evidence_safe_template")
+        self.assertEqual(result["content_source"], "template")
         self.assertEqual(result["source_url"], _make_article().url)
         self.assertEqual(result["content_hash"], _make_article().content_hash)
         self.assertLessEqual(len(result["labels"]), 20)
 
-    def test_default_publication_never_calls_llm(self):
-        with patch("automation.authority_transformer.call_llm") as mocked:
-            self.transformer.transform(_make_article())
-        mocked.assert_not_called()
+    def test_default_publication_without_api_keys_falls_back_to_template(self):
+        # RX-PR0: transform() always attempts call_llm() first (mission
+        # Section 7 — "LLM SUCCESS -> enriched narrative, LLM FAILURE ->
+        # deterministic template", never "skip straight to a thin renderer").
+        # With no provider keys configured, call_llm() itself fails closed
+        # (returns None, no network call) and every attempt is recorded.
+        result = self.transformer.transform(_make_article())
+        self.assertEqual(result["content_source"], "template")
+        self.assertTrue(result["llm_attempts"])
+        self.assertTrue(all(a["error"] == "no_api_key" for a in result["llm_attempts"]))
 
     def test_structured_data_has_automated_author_and_no_fake_counts(self):
         content = self.transformer.transform(_make_article())["content"]
