@@ -112,7 +112,8 @@ class NVDCVESource:
 
                 # Build title
                 score_str = str(cvss_score) if cvss_score is not None else severity
-                title = f"{cve_id} — CVSS {score_str} {severity} Severity | Patch Required"
+                # NVD severity data does not prove a vendor patch exists.
+                title = f"{cve_id} — CVSS {score_str} {severity} Severity | NVD Vulnerability Record"
 
                 # Build summary
                 summary_parts = [description]
@@ -125,9 +126,12 @@ class NVDCVESource:
                 summary = " ".join(summary_parts)
 
                 url = f"https://nvd.nist.gov/vuln/detail/{cve_id}"
-                content_hash = _compute_hash(url, cve_id + title)
+                # Stable source identity must not change when editorial title
+                # wording changes. Also honour CVE-level historical state so
+                # the evidence-template migration never republishes a CVE.
+                content_hash = _compute_hash(url, cve_id)
 
-                if state.is_published(content_hash):
+                if state.is_published(content_hash) or state.is_cve_published(cve_id):
                     continue
 
                 # Parse published date

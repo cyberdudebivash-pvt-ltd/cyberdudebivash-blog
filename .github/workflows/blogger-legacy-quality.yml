@@ -1,0 +1,69 @@
+name: "Blogger Legacy Quality Audit"
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Read-only audit or quarantine objective integrity failures"
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - quarantine
+      max_posts:
+        description: "Most recent posts to inspect (1-500)"
+        required: true
+        default: '50'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: blogger-legacy-quality
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: "Audit legacy report quality"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: "Install dependencies"
+        run: pip install -r requirements.txt
+
+      - name: "Audit or quarantine"
+        env:
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+        run: |
+          APPLY_FLAG=""
+          if [ "${{ inputs.mode }}" = "quarantine" ]; then
+            APPLY_FLAG="--apply"
+          fi
+          python -m automation.legacy_quality_auditor \
+            --max-posts "${{ inputs.max_posts }}" \
+            --manifest logs/legacy-quality-manifest.json \
+            $APPLY_FLAG
+
+      - name: "Upload quality manifest and recovery backup"
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-quality-${{ inputs.mode }}-${{ github.run_id }}
+          path: logs/legacy-quality-manifest.json
+          if-no-files-found: error
+          retention-days: 30

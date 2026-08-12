@@ -3,6 +3,7 @@ CYBERDUDEBIVASH® SENTINEL APEX — Internal Linking Engine
 Generates contextual internal links to related reports, CVEs, and platform pages.
 """
 
+import html
 import json
 import re
 from typing import Optional
@@ -136,7 +137,7 @@ class InternalLinker:
         article_cve_set = {c.upper() for c in article_cves}
         article_label_set = set(article_labels)
 
-        cve_matches, label_matches, others = [], [], []
+        cve_matches, label_matches = [], []
         for content_hash, entry in posts.items():
             if content_hash == exclude_hash:
                 continue
@@ -153,23 +154,17 @@ class InternalLinker:
                 cve_matches.append((published_at, title, blogger_url))
             elif article_label_set & entry_labels:
                 label_matches.append((published_at, title, blogger_url))
-            else:
-                others.append((published_at, title, blogger_url))
 
         cve_matches.sort(reverse=True)
         label_matches.sort(reverse=True)
-        others.sort(reverse=True)
-
         combined = cve_matches + label_matches
-        if len(combined) < max_results:
-            combined += others[: max_results - len(combined)]
         combined = combined[:max_results]
 
         if not combined:
             return ""
 
         items_html = "".join(
-            f'<li><a href="{url}" target="_blank" rel="noopener">{title[:90]}</a></li>\n'
+            f'<li><a href="{html.escape(str(url), quote=True)}" target="_blank" rel="noopener">{html.escape(str(title)[:90])}</a></li>\n'
             for _, title, url in combined
         )
         return f"""

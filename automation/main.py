@@ -20,6 +20,7 @@ from .blogger_publisher import BloggerPublisher, BloggerPublishError, BloggerAut
 from .config import Config
 from .content_discovery import ContentDiscoveryEngine, DiscoveredArticle, PublicationState
 from .logger import setup_logger
+from .report_integrity import PublicationIntegrityError
 from .search_console_submitter import SearchConsoleSubmitter
 from .social_amplifier import SocialAmplifier
 
@@ -87,6 +88,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         "failed": 0,
         "skipped": 0,
         "requeued": 0,
+        "integrity_blocked": 0,
         "posts": [],
         "errors": [],
     }
@@ -114,16 +116,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
     retry_articles = []
     for item in retry_items:
         try:
-            retry_articles.append(DiscoveredArticle(
-                url=item["url"],
-                title=item["title"],
-                summary=item["summary"],
-                published_at=item["published_at"],
-                content_hash=item["content_hash"],
-                labels=item["labels"],
-                source=item["source"],
-                full_content=item.get("full_content"),
-            ))
+            retry_articles.append(DiscoveredArticle.from_dict(item))
         except KeyError:
             pass  # Malformed queue entry — skip silently
 
@@ -185,7 +178,12 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                 blogger_url = blogger_post.get("url", "")
 
                 # Persist state
-                discovery.state.mark_published(article, blogger_post_id, blogger_url)
+                discovery.state.mark_published(
+                    article,
+                    blogger_post_id,
+                    blogger_url,
+                    publication_metadata=transformed,
+                )
 
                 # Submit to Google Search Console
                 if blogger_url:
@@ -220,6 +218,20 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                 # Brief pause between posts to respect API rate limits
                 if article != articles[-1]:
                     time.sleep(2.0)
+
+        except PublicationIntegrityError as e:
+            logger.error(
+                "Publication integrity gate blocked report",
+                extra={"url": article.url, "issues": e.issues},
+            )
+            post_result["status"] = "integrity_blocked"
+            post_result["error"] = str(e)
+            post_result["integrity_issues"] = e.issues
+            report["errors"].append(str(e))
+            discovery.state.record_failure(article.url, str(e))
+            discovery.state.add_to_retry_queue(article, str(e))
+            report["failed"] += 1
+            report["integrity_blocked"] += 1
 
         except BloggerAuthError as e:
             logger.error("Authentication error — stopping pipeline", extra={"error": str(e)})
@@ -282,11 +294,17 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             "published": report["published"],
             "failed": report["failed"],
             "skipped": report["skipped"],
+            "integrity_blocked": report["integrity_blocked"],
         },
     )
 
     _write_run_report(report, config.logs_dir)
     return report
+
+
+def _pipeline_exit_code(report: dict) -> int:
+    """Return non-zero for every partial or complete pipeline failure."""
+    return 1 if int(report.get("failed", 0)) > 0 else 0
 
 
 def main() -> int:
@@ -311,8 +329,10 @@ def main() -> int:
 
     report = run_pipeline(config, dry_run=args.dry_run)
 
-    # Exit 1 if any articles failed (non-zero signals workflow failure)
-    return 1 if report["failed"] > 0 and report["published"] == 0 else 0
+    # Any blocked or failed article must surface as a workflow failure even
+    # when other articles published successfully. Partial success cannot hide
+    # an evidence-integrity, authentication, quota, or publication defect.
+    return _pipeline_exit_code(report)
 
 
 if __name__ == "__main__":

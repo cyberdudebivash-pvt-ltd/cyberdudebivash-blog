@@ -37,6 +37,33 @@ def _safe_str(value: object) -> str:
     return str(value).strip() if value is not None else ""
 
 
+_PLACEHOLDER_TAXONOMY = {
+    "unknown",
+    "not found",
+    "not found sector",
+    "unspecified",
+    "unspecified sector",
+    "n/a",
+    "na",
+    "none",
+    "null",
+    "-",
+}
+
+
+def _clean_taxonomy(value: object, *, kind: str) -> str:
+    """Reject source placeholders and malformed sector/country labels."""
+    cleaned = _safe_str(value)
+    lowered = cleaned.casefold()
+    if not cleaned or lowered in _PLACEHOLDER_TAXONOMY:
+        return ""
+    if lowered.startswith("not found") or lowered.startswith(f"{kind} of "):
+        return ""
+    if len(cleaned) > 100 or not any(ch.isalpha() for ch in cleaned):
+        return ""
+    return cleaned
+
+
 class CISAAdvisoriesSource:
     """Fetches CISA cybersecurity advisories (ICS, vendor, and general alerts)."""
 
@@ -142,15 +169,18 @@ class RansomwareIntelSource:
             if attack_date and attack_date < cutoff:
                 continue
 
-            sector = _safe_str(v.get("activity") or v.get("sector")) or "Unspecified Sector"
-            country = _safe_str(v.get("country"))
+            sector = _clean_taxonomy(v.get("activity") or v.get("sector"), kind="sector")
+            country = _clean_taxonomy(v.get("country"), kind="country")
             post_url = _safe_str(v.get("post_url") or v.get("url"))
 
-            title = f"{group} Ransomware Claims New Victim: {victim_name} | {sector} Sector"
+            title = f"{group} Ransomware Claims New Victim: {victim_name}"
+            if sector:
+                title += f" | {sector} Sector"
             summary_parts = [
                 f"{group} has listed {victim_name} as a new victim on its leak site.",
-                f"Targeted sector: {sector}.",
             ]
+            if sector:
+                summary_parts.append(f"Reported sector: {sector}.")
             if country:
                 summary_parts.append(f"Country: {country}.")
             summary = " ".join(summary_parts)
@@ -168,7 +198,8 @@ class RansomwareIntelSource:
             pub_iso = attack_date.isoformat() if attack_date else datetime.now(timezone.utc).isoformat()
             full_content = (
                 f"Ransomware Group: {group}\nVictim: {victim_name}\n"
-                f"Sector: {sector}\nCountry: {country or 'Not disclosed'}\nLeak Site: {url}"
+                f"Sector: {sector or 'Not supplied by source'}\n"
+                f"Country: {country or 'Not supplied by source'}\nLeak Site: {url}"
             )
 
             articles.append(DiscoveredArticle(

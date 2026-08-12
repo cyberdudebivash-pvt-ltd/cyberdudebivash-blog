@@ -186,6 +186,30 @@ class TestBloggerPublish(unittest.TestCase):
             _, kwargs = mock_post.call_args
             self.assertNotIn("images", kwargs["json"])
 
+    def test_update_post_retries_rate_limit_and_preserves_payload(self):
+        rate_limited = MagicMock()
+        rate_limited.status_code = 429
+        rate_limited.text = "quota"
+        success = self._mock_publish_success()
+
+        with patch("requests.put", side_effect=[rate_limited, success]) as mock_put:
+            with patch("time.sleep"):
+                result = self.publisher.update_post("post-abc-123", "Title", "<p>safe</p>", ["Review"])
+
+        self.assertEqual(result["id"], "post-abc-123")
+        self.assertEqual(mock_put.call_count, 2)
+        self.assertEqual(mock_put.call_args.kwargs["json"]["content"], "<p>safe</p>")
+
+    def test_update_post_rate_limit_exhaustion_is_explicit(self):
+        rate_limited = MagicMock()
+        rate_limited.status_code = 429
+        rate_limited.text = "quota"
+
+        with patch("requests.put", return_value=rate_limited):
+            with patch("time.sleep"):
+                with self.assertRaises(BloggerRateLimitError):
+                    self.publisher.update_post("post-abc-123", "Title", "<p>safe</p>", [])
+
     def test_health_check_passes(self):
         mock_resp = MagicMock()
         mock_resp.ok = True

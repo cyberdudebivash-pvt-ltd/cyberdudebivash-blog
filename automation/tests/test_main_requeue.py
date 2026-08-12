@@ -13,7 +13,7 @@ limit is now hit before every discovered batch is exhausted.
 from unittest.mock import Mock
 
 from automation.content_discovery import DiscoveredArticle
-from automation.main import _requeue_unattempted
+from automation.main import _pipeline_exit_code, _requeue_unattempted
 
 
 def _article(n):
@@ -47,3 +47,11 @@ def test_empty_remaining_list_is_a_no_op():
     count = _requeue_unattempted([], state, "some error")
     assert count == 0
     state.add_to_retry_queue.assert_not_called()
+
+
+def test_partial_success_still_returns_failure_exit_code():
+    assert _pipeline_exit_code({"published": 2, "failed": 1}) == 1
+
+
+def test_clean_run_returns_success_exit_code():
+    assert _pipeline_exit_code({"published": 2, "failed": 0}) == 0

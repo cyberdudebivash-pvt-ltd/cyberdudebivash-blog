@@ -88,14 +88,10 @@ jobs:
       # ──────────────────────────────────────────────
       - name: "🧪 Run Unit & Integration Tests"
         run: |
-          set +e
-          python -m pytest tests/ -v \
+          python -m pytest tests/ automation/tests/ \
             --tb=short \
             --timeout=30 \
-            -q \
-            2>&1 | head -100
-          TEST_EXIT=${PIPESTATUS[0]}
-          exit $TEST_EXIT
+            -q
         continue-on-error: false
 
       # ──────────────────────────────────────────────
@@ -211,6 +207,7 @@ jobs:
             print(f'Discovered: {r.get(\"discovered\", 0)}')
             print(f'Published:  {r.get(\"published\", 0)}')
             print(f'Failed:     {r.get(\"failed\", 0)}')
+            print(f'Integrity blocked: {r.get(\"integrity_blocked\", 0)}')
             print(f'Dry run:    {r.get(\"dry_run\", False)}')
             if r.get('errors'):
               print(f'Errors: {r[\"errors\"]}')

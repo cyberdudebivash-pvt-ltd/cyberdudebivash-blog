@@ -42,7 +42,7 @@ SERVICES = {
     },
     "detection_engineering": {
         "name": "Detection Engineering",
-        "description": "2,400+ Sigma · YARA · SIEM Rules",
+        "description": "Versioned Sigma · YARA · SIEM Content",
     },
 }
 

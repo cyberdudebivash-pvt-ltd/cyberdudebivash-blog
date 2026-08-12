@@ -157,14 +157,10 @@ class TestFullPipelinePublish(unittest.TestCase):
         self.assertGreater(report["published"], 0)
         self.assertEqual(report["failed"], 0)
 
-    def test_llm_attempts_reaches_the_persisted_report(self):
-        # Real production evidence (GPOCIP v1) showed llm_attempts was None
-        # on every post despite authority_transformer.transform() correctly
-        # returning it — main.py never copied it from transformed into
-        # post_result, a wiring gap that unit tests on call_llm() and
-        # _requeue_unattempted() in isolation couldn't catch, since neither
-        # exercises the real run_pipeline() -> transform() -> post_result
-        # path. This runs the actual pipeline end to end instead.
+    def test_deterministic_template_metadata_reaches_the_persisted_report(self):
+        # Public output is deterministic; LLM content cannot create a second
+        # compact/enriched format. The report must still persist provenance
+        # and publication metadata end to end.
         token_resp = MagicMock()
         token_resp.ok = True
         token_resp.json.return_value = MOCK_TOKEN_RESPONSE
@@ -187,13 +183,8 @@ class TestFullPipelinePublish(unittest.TestCase):
         for post in report["posts"]:
             self.assertIn("llm_attempts", post)
             self.assertIsInstance(post["llm_attempts"], list)
-            self.assertGreater(len(post["llm_attempts"]), 0)
-            # No API key configured (see _make_config) — every provider
-            # attempt must be recorded as a no_api_key skip, not silently
-            # dropped.
-            for attempt in post["llm_attempts"]:
-                self.assertEqual(attempt["error"], "no_api_key")
-                self.assertFalse(attempt["ok"])
+            self.assertEqual(post["llm_attempts"], [])
+            self.assertEqual(post["content_source"], "evidence_safe_template")
 
     def test_rate_limit_exhaustion_stops_run_without_attempting_remaining_articles(self):
         token_resp = MagicMock()

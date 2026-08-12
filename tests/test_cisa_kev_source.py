@@ -111,7 +111,7 @@ class TestCISAKEVSource(unittest.TestCase):
             f"CISA KEV Alert: {cve_id} — Microsoft Windows IKE Remote Code Execution Vulnerability"
             " | Active Exploitation Confirmed"
         )
-        content_hash = _compute_hash(f"cisa-kev-{cve_id}", title)
+        content_hash = _compute_hash(f"cisa-kev-{cve_id}", cve_id)
         from automation.content_discovery import DiscoveredArticle
         dummy = DiscoveredArticle(
             url=f"https://www.cisa.gov/known-exploited-vulnerabilities-catalog?search_api_fulltext={cve_id}",
@@ -127,6 +127,26 @@ class TestCISAKEVSource(unittest.TestCase):
         with patch("requests.get", return_value=_make_mock_response(MOCK_KEV_RESPONSE)):
             result = self.source.discover(self.state)
         self.assertEqual(result, [])
+
+    def test_existing_nvd_advisory_does_not_suppress_material_kev_update(self):
+        from automation.content_discovery import DiscoveredArticle
+
+        nvd_article = DiscoveredArticle(
+            url="https://nvd.nist.gov/vuln/detail/CVE-2026-1234",
+            title="CVE-2026-1234 NVD vulnerability record",
+            summary="A vulnerability record.",
+            published_at=datetime.now(timezone.utc).isoformat(),
+            content_hash="nvd-specific-hash",
+            labels=["Vulnerabilities"],
+            source="nvd_cve",
+        )
+        self.state.mark_published(nvd_article, "post-nvd", "https://blogger.com/post-nvd")
+
+        with patch("requests.get", return_value=_make_mock_response(MOCK_KEV_RESPONSE)):
+            result = self.source.discover(self.state)
+
+        self.assertEqual(len(result), 1)
+        self.assertTrue(result[0].kev_listed)
 
     def test_full_content_contains_kev_fields(self):
         with patch("requests.get", return_value=_make_mock_response(MOCK_KEV_RESPONSE)):

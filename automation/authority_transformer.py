@@ -22,6 +22,8 @@ from .logger import setup_logger
 from .industry_intelligence import detect_industries, get_industry_profile
 from .monetization_injector import MonetizationInjector
 from .product_recommendations import SERVICES as _CATALOG_SERVICES, recommend_services
+from .report_integrity import validate_publication
+from .report_renderer import render_evidence_report
 from .seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss
 
 logger = setup_logger("authority_transformer")
@@ -121,7 +123,7 @@ def _generate_svg_thumbnail(title: str, labels: list, cvss: Optional[str] = None
     accent = palette["accent"]
     badge_bg = palette["badge"]
 
-    category = labels[0].upper() if labels else "THREAT INTEL"
+    category = re.sub(r"[^A-Za-z0-9 .&+/-]", " ", labels[0]).upper().strip() if labels else "THREAT INTEL"
     # Truncate and wrap title for SVG text
     title_clean = re.sub(r"[<>&\"']", " ", title).strip()
     words = title_clean.split()
@@ -222,13 +224,16 @@ def _generate_svg_thumbnail(title: str, labels: list, cvss: Optional[str] = None
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _risk_tile(label: str, value: str, color: str = "#00d4ff", sub: str = "") -> str:
-    sub_html = f'<div style="color:#64748b;font-size:10px;margin-top:4px;line-height:1.4">{sub}</div>' if sub else ""
+    safe_label = _html_escape.escape(str(label))
+    safe_value = _html_escape.escape(str(value))
+    safe_sub = _html_escape.escape(str(sub))
+    sub_html = f'<div style="color:#64748b;font-size:10px;margin-top:4px;line-height:1.4">{safe_sub}</div>' if sub else ""
     return (
         f'<div style="flex:1;min-width:150px;background:#050d1a;border:1px solid {color}33;'
         f'border-radius:6px;padding:14px 16px">'
         f'<div style="color:{color};font-size:10px;font-weight:700;font-family:monospace;'
-        f'letter-spacing:1.3px;margin-bottom:6px;text-transform:uppercase">{label}</div>'
-        f'<div style="color:#e2e8f0;font-size:20px;font-weight:900">{value}</div>'
+        f'letter-spacing:1.3px;margin-bottom:6px;text-transform:uppercase">{safe_label}</div>'
+        f'<div style="color:#e2e8f0;font-size:20px;font-weight:900">{safe_value}</div>'
         f'{sub_html}</div>'
     )
 
@@ -512,7 +517,14 @@ def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Opt
         due_note = f"Remediation due {article.kev_due_date}" if article.kev_due_date else "Active exploitation confirmed"
         tiles.append(_risk_tile("CISA KEV", "LISTED", "#ef4444", due_note))
     elif article.kev_listed is False:
-        tiles.append(_risk_tile("CISA KEV", "Not Listed", "#22c55e", "No confirmed exploitation on record"))
+        tiles.append(
+            _risk_tile(
+                "CISA KEV",
+                "Not Listed",
+                "#22c55e",
+                "Not present in verified catalog snapshot; exploitation may still exist",
+            )
+        )
     if article.affected_vendor or article.affected_product:
         vp = (article.affected_product or article.affected_vendor or "")[:32]
         tiles.append(_risk_tile("Affected", vp, "#a855f7"))
@@ -527,9 +539,9 @@ def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Opt
     decisions = []
     if article.kev_listed is True:
         decisions.append(("Exploitation confirmed?", "YES — CISA KEV listed", "#ef4444"))
-        decisions.append(("Patch immediately?", "YES — active exploitation in the wild", "#ef4444"))
+        decisions.append(("Urgent remediation?", "YES — follow the cited CISA/vendor action", "#ef4444"))
     elif cvss_score is not None and cvss_score >= 9.0:
-        decisions.append(("Patch immediately?", "YES — CVSS ≥ 9.0 (Critical)", "#ef4444"))
+        decisions.append(("Urgent exposure review?", "YES — CVSS ≥ 9.0 (Critical)", "#ef4444"))
     if article.kev_required_action:
         decisions.append(("CISA required action", article.kev_required_action[:200], "#f59e0b"))
 
@@ -538,7 +550,7 @@ def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Opt
         rows = "\n".join(
             f'<div style="margin:5px 0;padding:9px 14px;background:#050d1a;border-left:3px solid {c};'
             f'border-radius:0 4px 4px 0;font-size:12.5px;color:#cbd5e1;line-height:1.6">'
-            f'<strong style="color:{c}">{q}</strong> &mdash; {a}</div>'
+            f'<strong style="color:{c}">{_html_escape.escape(str(q))}</strong> &mdash; {_html_escape.escape(str(a))}</div>'
             for q, a, c in decisions
         )
         decision_html = rows
@@ -556,6 +568,7 @@ def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Opt
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _build_analyst_prompt(article: DiscoveredArticle) -> str:
+    raise RuntimeError("Public LLM report generation is retired; use the evidence renderer")
     return f"""You are the CYBERDUDEBIVASH® SENTINEL APEX Principal Threat Intelligence Analyst. You produce intelligence at the level of Mandiant, CrowdStrike Intelligence, Unit 42, Microsoft MSTIC, and Recorded Future. Every sentence must be operationally actionable for SOC analysts, CISOs, detection engineers, and threat hunters.
 
 ARTICLE TITLE: {article.title}
@@ -649,7 +662,8 @@ ABSOLUTE RULES — VIOLATIONS WILL BREAK ENTERPRISE TRUST:
 # TEMPLATE FALLBACK — full 18-section structure when all LLM providers fail
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
+def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
+    raise RuntimeError("Legacy report renderer is retired and cannot be used for publication")
     article.summary = _sanitize_summary(article.summary)
     cves = _extract_cve_ids(article.title + " " + article.summary)
     cvss = _extract_cvss(article.title + " " + article.summary)
@@ -1663,6 +1677,20 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# PRODUCTION EVIDENCE-FIRST TEMPLATE
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
+    """Render the single production template used by every source family.
+
+    The legacy renderer remains above only to preserve reviewable history while
+    this release migrates existing tests and downstream imports. It is not used
+    by the production pipeline.
+    """
+    return render_evidence_report(article, config).html
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # AUTHORITY TRANSFORMER CLASS
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -1682,14 +1710,14 @@ class AuthorityTransformer:
         # Strip internal scoring artifacts before any content generation or SEO use
         article.summary = _sanitize_summary(article.summary)
 
-        # Generate core content — try LLM providers, fall back to template
+        # Public publication is deterministic and evidence-first. Provider
+        # output is not allowed to create an alternate compact/enriched report
+        # format or bypass the publication gate. Any future LLM draft surface
+        # must be a separate, non-public workflow with explicit review.
         llm_attempts: list = []
-        llm_result = call_llm(self.config, _build_analyst_prompt(article), attempts=llm_attempts)
-        if llm_result:
-            body_content, content_source = llm_result
-        else:
-            body_content = _template_enhance(article, self.config)
-            content_source = "template"
+        rendered = render_evidence_report(article, self.config)
+        body_content = rendered.html
+        content_source = "evidence_safe_template"
 
         # Generate SEO metadata
         seo_data = self.seo.generate(
@@ -1717,6 +1745,7 @@ class AuthorityTransformer:
 
         # Build full HTML
         html = self._assemble_html(article, body_content, seo_data)
+        validate_publication(article, rendered.context, html)
 
         blogger_labels = article.labels[:20]
 
@@ -1749,6 +1778,13 @@ class AuthorityTransformer:
             "content_hash": article.content_hash,
             "content_source": content_source,
             "llm_attempts": llm_attempts,
+            "report_id": rendered.context.report_id,
+            "source_record_hash": rendered.context.source_record_hash,
+            "report_family": rendered.context.family,
+            "review_status": rendered.context.review_status,
+            "certification_status": rendered.context.certification_status,
+            "detection_status": rendered.detection_status,
+            "generated_at": rendered.context.generated_at,
         }
 
     def _build_blogger_title(self, article: DiscoveredArticle) -> str:
@@ -1763,17 +1799,23 @@ class AuthorityTransformer:
 
     def _assemble_html(self, article: DiscoveredArticle, body_content: str, seo_data: dict) -> str:
         """Assemble the complete Blogger-compatible HTML article."""
+        safe_source_url = _html_escape.escape(article.url, quote=True)
         json_ld = seo_data.get("json_ld", {})
-        json_ld_str = json.dumps(json_ld, indent=2) if json_ld else ""
+        json_ld_str = (
+            json.dumps(json_ld, indent=2, ensure_ascii=False)
+            .replace("&", "\\u0026")
+            .replace("<", "\\u003c")
+            .replace(">", "\\u003e")
+            if json_ld else ""
+        )
 
-        faq_schema = self.seo.build_faq_schema(article.title, article.summary, article.labels)
-        faq_str = json.dumps(faq_schema, indent=2) if faq_schema else ""
-
-        howto_schema = self.seo.build_howto_schema(article.title, article.summary, article.labels)
-        howto_str = json.dumps(howto_schema, indent=2) if howto_schema else ""
-
-        glossary_schema = self.seo.build_glossary_schema(article.title, article.summary)
-        glossary_str = json.dumps(glossary_schema, indent=2) if glossary_schema else ""
+        # Legacy FAQ/HowTo generators inferred exploitation, patch presence,
+        # ATT&CK mappings, and response steps from keywords. Those schemas are
+        # disabled until they consume the same structured ReportContext as the
+        # visible report. Main Article JSON-LD remains source-backed.
+        faq_str = ""
+        howto_str = ""
+        glossary_str = ""
 
         cves = _extract_cve_ids(article.title + " " + article.summary)
         cvss = _extract_cvss(article.title + " " + article.summary)
@@ -1788,38 +1830,43 @@ class AuthorityTransformer:
         # get an identical, un-duplicated dashboard above the article body.
         risk_command_center = _build_risk_command_center(article, cves, cvss)
 
-        # Trust stats — real numbers only, read from the same publication
-        # state file the syndication pipeline writes.
-        trust_stats_block = _build_trust_stats_block(self.config)
+        # Publication-volume counters and inferred detection counts are not
+        # report evidence. Keep them out of automated customer-facing output.
+        trust_stats_block = ""
 
         # Recommended Services — data-driven, see product_recommendations.py
         recommended_services_block = _build_recommended_services_block(article.labels, self.config)
 
-        # Industry Impact Intelligence — only genuinely-detected industries
-        industry_block = _build_industry_intelligence_block(article.title, article.summary)
+        # Industry profiles are generic reference material and can overstate a
+        # source record's actual sector impact. The evidence-first renderer
+        # includes sector content only where the source itself supplies it.
+        industry_block = ""
 
-        # Executive Decision Center — CEO/Board/CISO/SOC/DevSecOps/Cloud summaries
-        _sev_for_edc, _ = _derive_severity(article, cvss)
-        exec_decision_center = _build_executive_decision_center(
-            category, article.cve_id or (cves[0] if cves else None), _sev_for_edc, self.config
-        )
+        # The family-specific report body already contains decision guidance.
+        # Do not append a second generic decision center that may recommend a
+        # Sigma deployment or vulnerability response for non-technical news.
+        exec_decision_center = ""
 
         # Metadata bar
-        meta_items = [f"📅 {pub_date}", f"📂 {category}", "🛡 CYBERDUDEBIVASH®"]
+        meta_items = [
+            f"📅 {_html_escape.escape(str(pub_date))}",
+            f"📂 {_html_escape.escape(str(category))}",
+            "🛡 CYBERDUDEBIVASH®",
+        ]
         if cves:
             meta_items.insert(0, f"🔍 {', '.join(cves[:2])}")
         if cvss:
             meta_items.insert(1 if cves else 0, f"⚠ CVSS {cvss}")
         meta_bar = " &nbsp;|&nbsp; ".join(meta_items)
 
-        related_block = self.linker.build_related_resources_block(
-            article.title, article.summary, article.labels
-        )
+        # Keep the report focused: generic platform-link blocks duplicate the
+        # header CTA and dilute source provenance.
+        related_block = ""
         correlation_block = self.linker.build_correlation_block(
             article.labels, cves, exclude_hash=article.content_hash
         )
-        mitre_navigator_download = _build_mitre_navigator_download(body_content, article.title)
-        ext_refs = self.linker.build_external_references(article.title, article.summary)
+        mitre_navigator_download = ""
+        ext_refs = ""
         hashtags = self.linker.build_hashtag_block(article.labels)
 
         schema_blocks = ""
@@ -1835,7 +1882,6 @@ class AuthorityTransformer:
         html = f"""{self.monetization.get_style_block()}
 {schema_blocks}
 <!-- CYBERDUDEBIVASH® SENTINEL APEX — Enterprise Threat Intelligence Report -->
-<!-- Source: {article.url} -->
 <!-- Generated: {datetime.now(timezone.utc).isoformat()} -->
 
 {svg_thumbnail}
@@ -1844,7 +1890,7 @@ class AuthorityTransformer:
 
 {self.monetization.inject_header_cta()}
 
-{self.monetization.inject_urgency_cta(article.labels)}
+{self.monetization.inject_urgency_cta(article.labels, kev_listed=article.kev_listed)}
 
 <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#e2e8f0;margin:20px 0;padding:14px 18px;background:#050d1a;border-radius:6px;font-size:12px;color:#64748b">
   {meta_bar}
@@ -1864,21 +1910,11 @@ class AuthorityTransformer:
 
 {exec_decision_center}
 
-{self.monetization.inject_mid_products_cta()}
-
 {related_block}
 
 {correlation_block}
 
 {mitre_navigator_download}
-
-{self.monetization.inject_newsletter_cta()}
-
-{self.monetization.inject_services_block()}
-
-{self.monetization.inject_api_cta()}
-
-{self.monetization.inject_detection_packs_cta()}
 
 {ext_refs}
 
@@ -1889,7 +1925,7 @@ class AuthorityTransformer:
 {self.monetization.inject_about_block()}
 
 <div style="margin-top:20px;padding:12px 16px;background:#050d1a;border-top:1px solid #1e3a5f22;font-size:11px;color:#334155;font-family:monospace">
-  Intelligence syndicated from <a href="{article.url}" target="_blank" rel="noopener" style="color:#334155">{article.url}</a> · CYBERDUDEBIVASH® SENTINEL APEX Intelligence Engine v2.0
+  Intelligence source: <a href="{safe_source_url}" target="_blank" rel="noopener noreferrer" style="color:#64748b">{safe_source_url}</a> · CYBERDUDEBIVASH® SENTINEL APEX Evidence Engine v3.0
 </div>
 """
         return html

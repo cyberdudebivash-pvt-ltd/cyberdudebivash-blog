@@ -35,13 +35,13 @@ class TestBuildCorrelationBlock(unittest.TestCase):
         # CVE match must appear before the label-only match in the output
         self.assertLess(block.index("Log4Shell Deep Dive"), block.index("Generic Vuln Roundup"))
 
-    def test_falls_back_to_recent_posts_when_no_direct_match(self):
+    def test_omits_unrelated_recent_posts_when_no_direct_match(self):
         self._write_state({
             "hash1": {"source_title": "Unrelated Ransomware Report", "blogger_url": "https://x/ransomware",
                       "cves": [], "labels": ["Ransomware"], "published_at": "2026-07-10"},
         })
         block = self.linker.build_correlation_block(["AI Security"], [])
-        self.assertIn("Unrelated Ransomware Report", block)
+        self.assertEqual(block, "")
 
     def test_excludes_current_article_by_hash(self):
         self._write_state({

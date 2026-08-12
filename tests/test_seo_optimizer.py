@@ -83,6 +83,16 @@ class TestSEOOptimizer(unittest.TestCase):
         kw_str = " ".join(result["keywords"]).lower()
         self.assertIn("cybersecurity", kw_str)
 
+    def test_keywords_do_not_inject_unrelated_threat_topics(self):
+        result = self._generate(
+            title="Identity Governance Policy Update",
+            summary="An organization published an identity governance policy update.",
+        )
+        lowered = {keyword.lower() for keyword in result["keywords"]}
+        self.assertNotIn("ransomware", lowered)
+        self.assertNotIn("cisa kev", lowered)
+        self.assertNotIn("ai security", lowered)
+
     def test_og_tags_structure(self):
         result = self._generate()
         og = result["og_tags"]
@@ -110,7 +120,11 @@ class TestSEOOptimizer(unittest.TestCase):
             f"No article type found in {types}",
         )
         self.assertIn("Organization", types)
-        self.assertIn("BreadcrumbList", types)
+        self.assertNotIn("BreadcrumbList", types)
+        article = result["json_ld"]["@graph"][0]
+        self.assertEqual(article["isBasedOn"], "https://blog.cyberdudebivash.in/posts/test")
+        self.assertNotIn("mainEntityOfPage", article)
+        self.assertNotIn("url", article)
 
     def test_json_ld_serializable(self):
         result = self._generate()
@@ -159,22 +173,19 @@ class TestSEOOptimizer(unittest.TestCase):
         about = result["json_ld"]["@graph"][0]["about"]
         self.assertFalse(any(str(item["name"]).startswith("CWE-") for item in about))
 
-    def test_howto_schema_for_ransomware(self):
+    def test_howto_schema_withheld_for_ransomware_without_verified_steps(self):
         howto = self.optimizer.build_howto_schema(
             "LockBit Ransomware Hits Healthcare",
             "LockBit ransomware group encrypted hospital systems.",
             ["Ransomware"],
         )
-        self.assertEqual(howto.get("@type"), "HowTo")
-        self.assertGreaterEqual(len(howto["step"]), 3)
-        self.assertTrue(all("name" in s and "text" in s for s in howto["step"]))
+        self.assertEqual(howto, {})
 
-    def test_howto_schema_for_cve(self):
+    def test_howto_schema_withheld_for_cve_without_verified_steps(self):
         howto = self.optimizer.build_howto_schema(
             "CVE-2026-9999 Critical RCE", "Critical remote code execution vulnerability.", ["Vulnerabilities"],
         )
-        self.assertEqual(howto.get("@type"), "HowTo")
-        self.assertIn("CVE-2026-9999", howto["name"])
+        self.assertEqual(howto, {})
 
     def test_howto_schema_empty_for_generic(self):
         howto = self.optimizer.build_howto_schema(

@@ -13,12 +13,10 @@ from .logger import setup_logger
 
 logger = setup_logger("seo_optimizer")
 
-# High-value cybersecurity SEO keywords
+# Minimal shared taxonomy. Topic keywords are added only when present in the
+# source title/labels; unrelated security terms must not be injected for SEO.
 BASE_KEYWORDS = [
-    "cybersecurity", "threat intelligence", "AI security", "zero-day",
-    "CVE", "CISA KEV", "ransomware", "malware", "SOC", "SIEM",
-    "MITRE ATT&CK", "OWASP LLM", "sentinel apex", "cyberdudebivash",
-    "cyber threat intelligence", "endpoint security", "cloud security",
+    "cybersecurity", "threat intelligence", "sentinel apex", "cyberdudebivash",
 ]
 
 
@@ -133,17 +131,17 @@ class SEOOptimizer:
 
         article_node = {
             "@type": article_type,
-            "@id": f"{url}#article",
             "headline": title[:110],
             "description": description,
-            "url": url,
-            "mainEntityOfPage": {"@type": "WebPage", "@id": url},
+            # The Blogger canonical URL is assigned only after insertion. The
+            # source URL is provenance, not the syndicated page canonical.
+            "isBasedOn": url,
             "datePublished": published_at,
             "dateModified": now,
             "author": {
                 "@type": "Organization",
                 "@id": f"{self.config.brand_url}#org",
-                "name": "CYBERDUDEBIVASH® Threat Intelligence Team",
+                "name": "CYBERDUDEBIVASH® SENTINEL APEX Automated Intelligence Engine",
                 "url": self.config.brand_url,
             },
             "publisher": {
@@ -171,14 +169,7 @@ class SEOOptimizer:
                 [{"@type": "Thing", "name": cve, "url": f"https://nvd.nist.gov/vuln/detail/{cve}"} for cve in cves]
                 + [{"@type": "Thing", "name": cwe, "url": f"https://cwe.mitre.org/data/definitions/{cwe.split('-')[1]}.html"} for cwe in (cwes or [])]
             ),
-            "mentions": [
-                {"@type": "SoftwareApplication", "name": "CYBERDUDEBIVASH® SENTINEL APEX",
-                 "url": self.config.sentinel_apex_url},
-            ],
         }
-        if article_type == "TechArticle":
-            article_node["proficiencyLevel"] = "Expert"
-            article_node["dependencies"] = "MITRE ATT&CK, CISA KEV, NVD"
 
         return {
             "@context": "https://schema.org",
@@ -190,7 +181,6 @@ class SEOOptimizer:
                     "name": "CYBERDUDEBIVASH®",
                     "url": self.config.brand_url,
                     "description": "AI-Powered Cyber Threat Intelligence & Enterprise Security Platform",
-                    "foundingDate": "2024",
                     "contactPoint": {
                         "@type": "ContactPoint",
                         "contactType": "customer support",
@@ -202,33 +192,6 @@ class SEOOptimizer:
                         "https://tools.cyberdudebivash.com",
                         "https://cyberbivash.blogspot.com",
                     ],
-                },
-                {
-                    "@type": "BreadcrumbList",
-                    "itemListElement": [
-                        {"@type": "ListItem", "position": 1,
-                         "name": "CYBERDUDEBIVASH®", "item": self.config.brand_url},
-                        {"@type": "ListItem", "position": 2,
-                         "name": "Threat Intelligence", "item": f"{self.config.brand_url}/threat-intelligence"},
-                        {"@type": "ListItem", "position": 3,
-                         "name": title[:60], "item": url},
-                    ],
-                },
-                {
-                    "@type": "WebSite",
-                    "@id": f"{self.config.brand_url}#website",
-                    "url": self.config.brand_url,
-                    "name": "CYBERDUDEBIVASH® Intelligence Blog",
-                    "description": "Enterprise Cybersecurity Intelligence, CVE Analysis, Threat Hunting, and Detection Engineering",
-                    "publisher": {"@id": f"{self.config.brand_url}#org"},
-                    "potentialAction": {
-                        "@type": "SearchAction",
-                        "target": {
-                            "@type": "EntryPoint",
-                            "urlTemplate": f"{self.config.brand_url}/?s={{search_term_string}}",
-                        },
-                        "query-input": "required name=search_term_string",
-                    },
                 },
             ],
         }
@@ -248,7 +211,7 @@ class SEOOptimizer:
                 "name": f"What is the severity and impact of {cve_ref}?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": f"{cve_ref}{cvss_note} poses a significant risk to enterprise environments. {summary[:350].rstrip('.')}. Immediate patch application and IOC monitoring is recommended. Full analysis available at CYBERDUDEBIVASH® SENTINEL APEX.",
+                    "text": f"The cited source describes {cve_ref}{cvss_note}. {summary[:350].rstrip('.')}. Confirm affected products, versions, exposure, and authoritative vendor remediation before taking action.",
                 },
             })
             questions.append({
@@ -256,7 +219,7 @@ class SEOOptimizer:
                 "name": f"How can SOC teams detect exploitation of {cve_ref}?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": f"SOC teams should monitor Windows Security Event IDs 4688 (process creation), 4698 (scheduled task), and web server access logs for exploitation patterns related to {cve_ref}. CYBERDUDEBIVASH® SENTINEL APEX provides production-ready Sigma and YARA detection rules for immediate SIEM deployment.",
+                    "text": f"Detection for {cve_ref} must use the affected product's actual telemetry and source-backed exploit behavior. Do not deploy generic web-shell or process rules unless the vulnerability class and execution path support them.",
                 },
             })
 
@@ -266,7 +229,7 @@ class SEOOptimizer:
                 "name": "What are the immediate steps to protect against this ransomware threat?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Immediate actions: (1) Verify immutable backup integrity and test restoration procedures, (2) Enable network segmentation to limit lateral movement, (3) Enforce MFA on all privileged accounts, (4) Monitor for vssadmin/wbadmin shadow copy deletion commands in SIEM. CYBERDUDEBIVASH® SENTINEL APEX provides real-time ransomware IOC feeds and Sigma detection rules.",
+                    "text": "Treat a leak-site listing as a claim until independent evidence confirms an incident. Validate internal alerts, identity activity, endpoint telemetry, remote access, and backup health before incident escalation or public attribution.",
                 },
             })
             questions.append({
@@ -274,7 +237,7 @@ class SEOOptimizer:
                 "name": "Which MITRE ATT&CK techniques does this ransomware use?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "This ransomware campaign maps to MITRE ATT&CK techniques including: T1566 (Phishing), T1059.001 (PowerShell), T1486 (Data Encrypted for Impact), T1490 (Inhibit System Recovery), and T1041 (Exfiltration Over C2 Channel). CYBERDUDEBIVASH® SENTINEL APEX provides full MITRE ATT&CK coverage mapping and detection guidance.",
+                    "text": "No MITRE ATT&CK technique should be attributed from a victim claim alone. Map only behaviors supported by incident telemetry, authoritative reporting, or validated actor-specific evidence.",
                 },
             })
 
@@ -305,7 +268,7 @@ class SEOOptimizer:
                 "name": f"What should developers do about {cve_ref}?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": f"Developers should check dependency manifests and lockfiles for the affected package/component version, pin to a patched release, and add a CI/CD policy check (software composition analysis) to prevent regression. Rotate any secrets that may have been exposed in affected build environments.",
+                    "text": f"Developers should identify whether {cve_ref} affects current dependency manifests and lockfiles, then apply authoritative vendor-supported remediation when available. Rotate secrets only when evidence indicates exposure.",
                 },
             })
 
@@ -315,7 +278,7 @@ class SEOOptimizer:
             "name": "How does CYBERDUDEBIVASH® SENTINEL APEX help defend against this threat?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "CYBERDUDEBIVASH® SENTINEL APEX provides: real-time CVE and threat intelligence feeds, 2,400+ Sigma/YARA detection rules, MITRE ATT&CK correlation engine, threat hunting workbench, and MSSP-grade intelligence APIs. Enterprise security teams use SENTINEL APEX to reduce detection gaps and respond to threats before they escalate.",
+                "text": "CYBERDUDEBIVASH® SENTINEL APEX provides source-linked threat intelligence, evidence status, detection-engineering guidance, and security decision support. Automated reports remain unreviewed reference drafts until an accountable human review occurs.",
             },
         })
 
@@ -333,6 +296,11 @@ class SEOOptimizer:
         already carries (SOC Analyst Playbook). Category-derived the same
         way build_faq_schema() is — no fabricated steps beyond what the
         report itself already publishes for that category."""
+        # Keyword-only inputs cannot establish patch availability, incident
+        # confirmation, or environment-specific response steps. A HowTo rich
+        # result would overstate automated analysis, so fail closed.
+        return {}
+
         text = (title + " " + summary).lower()
         cves = _extract_cve_ids(title + " " + summary)
 

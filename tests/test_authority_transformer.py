@@ -1,697 +1,369 @@
-"""
-Tests for authority_transformer — content generation, HTML validity, CTA injection.
-"""
+"""Production evidence-integrity tests for CTI transformation and rendering."""
 
-import json
-import os
+import base64
+import html
+import re
 import unittest
 from datetime import datetime, timezone
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
+from urllib.parse import parse_qs, urlparse
 
-from automation.authority_transformer import AuthorityTransformer, _template_enhance
+import yaml
+
+from automation.authority_transformer import (
+    AuthorityTransformer,
+    _build_dynamic_og_image_url,
+    _generate_svg_thumbnail,
+    _template_enhance,
+)
 from automation.config import Config
 from automation.content_discovery import DiscoveredArticle, _compute_hash
+from automation.report_integrity import (
+    CERTIFICATION_STATUS,
+    REVIEW_STATUS,
+    PublicationIntegrityError,
+    build_report_context,
+    validate_publication,
+)
+from automation.report_renderer import render_evidence_report
 
 
 def _make_article(**kwargs) -> DiscoveredArticle:
     defaults = {
-        "url": "https://blog.cyberdudebivash.in/posts/test-cve",
+        "url": "https://intel.cyberdudebivash.com/reports/CVE-2026-9999",
         "title": "CVE-2026-9999 Critical Windows RCE — CVSS 9.8",
-        "summary": "A critical remote code execution vulnerability in Windows IKE allows unauthenticated attackers to execute arbitrary code with SYSTEM privileges.",
-        "published_at": datetime.now(timezone.utc).isoformat(),
-        "content_hash": _compute_hash("https://blog.cyberdudebivash.in/posts/test-cve", "CVE-2026-9999"),
-        "labels": ["Vulnerabilities", "Zero-Day", "CISA KEV", "CYBERDUDEBIVASH"],
-        "source": "rss",
+        "summary": (
+            "A remote code execution vulnerability in a Windows web service allows "
+            "unauthenticated attackers to execute commands."
+        ),
+        "published_at": "2026-08-12T06:00:00+00:00",
+        "content_hash": _compute_hash(
+            "https://intel.cyberdudebivash.com/reports/CVE-2026-9999",
+            "CVE-2026-9999",
+        ),
+        "labels": ["Vulnerabilities", "CYBERDUDEBIVASH", "Threat Intelligence"],
+        "source": "nvd",
+        "full_content": "CVE ID: CVE-2026-9999\nDescription: Remote code execution in a Windows web service.\nCVSS Score: 9.8",
+        "cve_id": "CVE-2026-9999",
+        "cvss_score": 9.8,
+        "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+        "cwe_ids": ["CWE-78"],
+        "affected_vendor": "Example",
+        "affected_product": "Example Web Service",
     }
     defaults.update(kwargs)
     return DiscoveredArticle(**defaults)
 
 
-class TestTemplateEnhancement(unittest.TestCase):
+class TestEvidenceFirstTemplate(unittest.TestCase):
     def setUp(self):
         self.config = Config()
-        self.config.anthropic_api_key = ""  # Force template path
 
-    def test_template_contains_all_sections(self):
-        # Section names/structure below match the 2026-07-06 "trust & quality
-        # retrofit" (commit ee9447e) — several sections were renamed and the
-        # div-card layout replaced the old <h3>/<ul> structure.
+    def test_shared_visual_contract_and_provenance(self):
         article = _make_article()
-        html = _template_enhance(article, self.config)
-        required_sections = [
+        rendered = render_evidence_report(article, self.config)
+        content = rendered.html
+
+        for section in (
             "Executive Summary",
+            "Threat Classification and Evidence Status",
             "Verified Facts",
-            "Threat Classification & Severity",
-            "Business Impact",
             "Technical Analysis",
-            "MITRE ATT&CK Mapping",
-            "IOC Intelligence",
-            "Detection Engineering Guidance",
-            "Sigma Detection Rule",
-            "Threat Hunting Queries",
-            "SOC Analyst Playbook",
-            "Executive Decision Matrix",
-            "Executive Recommendations",
-            "Predictive Intelligence",
-            "MSSP Partner Advisory",
-            "SENTINEL APEX Intelligence Correlation",
-            "Long-Term Strategic Risk",
+            "Exposure and Remediation Decisions",
+            "Source Evidence Extract",
+            "Detection Engineering",
             "References",
-        ]
-        for section in required_sections:
-            self.assertIn(section, html, f"Missing section: {section}")
+            "Provenance and Review Status",
+        ):
+            self.assertIn(section, content)
 
-    def test_cve_analysis_section_present_when_cve_in_title(self):
-        article = _make_article()  # Default fixture has CVE-2026-9999
-        html = _template_enhance(article, self.config)
-        self.assertIn("CVE Analysis", html)
-        self.assertIn("CVE-2026-9999", html)
+        self.assertIn(rendered.context.report_id, content)
+        self.assertIn(rendered.context.source_record_hash, content)
+        self.assertIn(article.url, content)
+        self.assertIn(REVIEW_STATUS, content)
+        self.assertIn(CERTIFICATION_STATUS, content)
 
-    def test_cve_analysis_fallback_when_no_cve(self):
-        # Trust retrofit made this section CVE-conditional — no CVE means the
-        # section is omitted entirely rather than padded with filler text.
-        article = _make_article(title="Ransomware Campaign", summary="Generic ransomware news", labels=["Ransomware"])
-        html = _template_enhance(article, self.config)
-        self.assertNotIn("CVE Analysis", html)
-
-    def test_sigma_rules_valid_yaml_structure(self):
+    def test_template_import_routes_to_production_renderer(self):
         article = _make_article()
-        html = _template_enhance(article, self.config)
-        self.assertIn("Sigma Detection Rule", html)
-        self.assertIn("tags:", html)
-        # Each tag must be on its own properly-indented line — no broken double-indent
-        self.assertNotIn("attack.impact\n        -", html)
-        self.assertNotIn("attack.initial_access\n        -", html)
+        content = _template_enhance(article, self.config)
+        self.assertIn('data-review-status="automated-unreviewed"', content)
+        self.assertNotIn("Executive Decision Matrix", content)
 
-    def test_sigma_logsource_valid_format(self):
-        # Use titles/summaries that trigger the correct branch
-        for title, summary, labels, expected_field in [
-            ("LockBit Ransomware Campaign", "Ransomware encrypted hospital systems", ["Ransomware"], "category: process_creation"),
-            ("APT28 Nation-State Attack", "nation-state threat actor targeted government", ["APT"], "category: process_creation"),
-            ("CVE-2026-9999 Remote Code Execution", "Critical RCE vulnerability CVSS 9.8", ["Vulnerabilities"], "category: webserver"),
-        ]:
-            with self.subTest(labels=labels):
-                article = _make_article(title=title, summary=summary, labels=labels)
-                html = _template_enhance(article, self.config)
-                self.assertIn(expected_field, html, f"logsource field missing for {labels}")
-
-    def test_mitre_attack_in_output(self):
-        article = _make_article(labels=["Ransomware"])
-        html = _template_enhance(article, self.config)
-        self.assertIn("T1", html)
-
-    def test_category_derived_disclosure_present(self):
-        # GEIOM v1 finding: unlike the Threat Classification and Predictive
-        # Intelligence sections (which already carry real HIGH/MEDIUM/LOW
-        # CONFIDENCE labels), the MITRE/Sigma/SIEM/hunt/SOC block is selected
-        # from one of 8 fixed category buckets (platform/open-issues.md
-        # Issue 6) with no confidence framing at all. This disclosure makes
-        # that explicit instead of presenting category-derived guidance with
-        # the same unqualified certainty as the article-specific sections.
+    def test_report_identity_is_deterministic_for_same_source_record(self):
         article = _make_article()
-        html = _template_enhance(article, self.config)
-        self.assertIn("Reflects known patterns for this threat category", html)
-        self.assertIn("not unique correlation against this specific article", html)
+        one = build_report_context(article)
+        two = build_report_context(article)
+        self.assertEqual(one.report_id, two.report_id)
+        self.assertEqual(one.source_record_hash, two.source_record_hash)
 
-    # GCTIMP v1 finding: is_ot/is_ato/is_ai used bare "x " substring checks
-    # ("ot " in text / "ato " in text / "ai " in text) instead of word
-    # boundaries, so they false-positived on any word merely ending in
-    # those letters — "not", "hot", "robot", "NATO", "Dubai" — cascading
-    # into wrong severity, wrong regulatory citations ($500K/hr OT downtime
-    # or GDPR/PCI-DSS ATO language), and wrong MITRE/Sigma/SOC content for
-    # completely unrelated articles. Fixed with \b-bounded regex.
+    def test_report_identity_changes_when_source_record_changes(self):
+        original = build_report_context(_make_article())
+        changed = build_report_context(_make_article(summary="Materially changed source evidence."))
+        self.assertNotEqual(original.source_record_hash, changed.source_record_hash)
+        self.assertNotEqual(original.report_id, changed.report_id)
 
-    def test_common_word_not_does_not_trigger_ot_classification(self):
+    def test_source_content_is_html_escaped(self):
         article = _make_article(
-            title="Vendor Confirms Issue Has Not Been Fully Resolved",
-            summary="The vendor stated the flaw has not affected most customers and a hotfix is not yet available.",
-            labels=["Vulnerabilities"],
+            url='https://example.org/advisory?x=1&next="bad"',
+            summary='<script>alert("x")</script> source text',
+            full_content='<img src=x onerror=alert(1)>',
         )
-        html = _template_enhance(article, self.config)
-        self.assertNotIn("Operational technology and industrial control system targeting", html)
-
-    def test_nato_mention_does_not_trigger_account_takeover_classification(self):
-        article = _make_article(
-            title="NATO Cyber Command Warns of Espionage Campaign",
-            summary="NATO member states are advised to review network defenses following new reconnaissance activity.",
-            labels=["Nation-State"],
-        )
-        html = _template_enhance(article, self.config)
-        self.assertNotIn("Credential stuffing operations rely on the reuse", html)
-
-    def test_dubai_mention_does_not_trigger_ai_security_section(self):
-        article = _make_article(
-            title="Data Breach Disclosed by Firm Based in Dubai",
-            summary="A firm headquartered in Dubai disclosed a breach affecting customer records.",
-            labels=["Data Breach"],
-        )
-        html = _template_enhance(article, self.config)
-        self.assertNotIn("AI Security Impact", html)
-
-    def test_standalone_ot_abbreviation_still_triggers_ot_classification(self):
-        article = _make_article(
-            title="OT Network Compromise Disrupts Manufacturing Plant",
-            summary="Attackers gained access to the OT environment via an exposed HMI interface.",
-            labels=["OT/ICS"],
-        )
-        html = _template_enhance(article, self.config)
-        self.assertIn("Operational technology and industrial control system targeting", html)
-
-    def test_standalone_ato_abbreviation_still_triggers_account_takeover_classification(self):
-        article = _make_article(
-            title="Retailer Hit by Large-Scale ATO Fraud Ring",
-            summary="Investigators linked the ATO incidents to a credential stuffing campaign.",
-            labels=["Fraud"],
-        )
-        html = _template_enhance(article, self.config)
-        self.assertIn("Credential stuffing operations rely on the reuse", html)
-
-    def test_ai_section_when_ai_labels(self):
-        article = _make_article(
-            title="LLM Prompt Injection Attack",
-            summary="AI systems are vulnerable to prompt injection attacks",
-            labels=["AI Security"],
-        )
-        html = _template_enhance(article, self.config)
-        self.assertIn("AI Security Impact", html)
-
-    def test_ai_section_omitted_when_no_ai_content(self):
-        article = _make_article(
-            title="Windows RCE Vulnerability",
-            summary="Critical Windows vulnerability patched",
-            labels=["Vulnerabilities"],
-        )
-        html = _template_enhance(article, self.config)
-        self.assertNotIn("AI Security Impact", html)
-
-    def test_no_fabricated_content(self):
-        article = _make_article()
-        html = _template_enhance(article, self.config)
-        # Should not contain fabricated statistics we didn't put in
-        self.assertNotIn("$4.2 billion", html.lower())
-
-    def test_output_has_list_items(self):
-        # Trust retrofit replaced semantic <ul>/<li>/<h3> markup with a
-        # div-card layout (styled bullet chips + a table) for the premium
-        # enterprise UI — check for that structure instead.
-        article = _make_article()
-        html = _template_enhance(article, self.config)
-        self.assertIn("<table", html)
-        self.assertGreater(html.count("border-radius:0 4px 4px 0"), 5)
+        rendered = render_evidence_report(article, self.config)
+        self.assertNotIn('<script>alert("x")</script>', rendered.html)
+        self.assertNotIn('<img src=x onerror=alert(1)>', rendered.html)
+        self.assertIn("&lt;script&gt;", rendered.html)
+        self.assertIn("&amp;", rendered.html)
 
 
-class TestAuthorityTransformer(unittest.TestCase):
+class TestCveAndKevSemantics(unittest.TestCase):
     def setUp(self):
         self.config = Config()
-        self.config.anthropic_api_key = ""  # Force template path
+
+    def test_confirmed_absence_from_kev_is_not_no_exploitation_claim(self):
+        article = _make_article(kev_listed=False)
+        content = AuthorityTransformer(self.config).transform(article)["content"]
+        self.assertIn("Not Listed", content)
+        self.assertIn("does not prove absence of exploitation", content)
+        self.assertNotIn("No confirmed exploitation on record", content)
+        self.assertNotIn("Actively exploited in the wild", content)
+        self.assertNotIn("Exploitation is confirmed active", content)
+
+    def test_kev_true_is_the_structured_confirmation(self):
+        article = _make_article(
+            source="cisa_kev",
+            kev_listed=True,
+            kev_date_added="2026-08-10",
+            kev_due_date="2026-08-31",
+            kev_required_action="Apply mitigations per vendor instructions.",
+        )
+        result = AuthorityTransformer(self.config).transform(article)
+        content = result["content"]
+        self.assertEqual(result["report_family"], "cisa_kev")
+        self.assertIn("Confirmed — CISA KEV listed", content)
+        self.assertIn("Apply mitigations per vendor instructions.", content)
+        self.assertIn("CISA FEDERAL MANDATE", content)
+
+    def test_unknown_kev_does_not_become_false_negative(self):
+        article = _make_article(kev_listed=None)
+        content = AuthorityTransformer(self.config).transform(article)["content"]
+        self.assertIn("Unknown or unavailable; no negative claim is made", content)
+        self.assertNotIn("Not Listed", content)
+
+    def test_dos_cve_does_not_get_rce_or_webshell_material(self):
+        article = _make_article(
+            title="CVE-2026-48439 — CVSS 7.5 denial-of-service vulnerability",
+            summary="A denial-of-service condition can crash the affected CAI service.",
+            full_content="CVE ID: CVE-2026-48439\nCWE: CWE-400\nImpact: denial of service",
+            cve_id="CVE-2026-48439",
+            cvss_score=7.5,
+            cwe_ids=["CWE-400"],
+            kev_listed=False,
+        )
+        result = AuthorityTransformer(self.config).transform(article)
+        content = result["content"]
+        self.assertEqual(result["detection_status"], "telemetry_specification_only")
+        self.assertIn("Availability-impact evidence", content)
+        self.assertNotIn("Web Service Spawning a Command Interpreter", content)
+        self.assertNotIn("web shell", content.lower())
+        self.assertNotIn("lateral movement", content.lower())
+
+    def test_spoofing_cve_uses_identity_telemetry_not_web_exploitation(self):
+        article = _make_article(
+            title="CVE-2026-57104 Windows NAT spoofing vulnerability",
+            summary="A spoofing weakness affects Windows NAT identity handling.",
+            cve_id="CVE-2026-57104",
+            cvss_score=8.8,
+            cwe_ids=None,
+            kev_listed=False,
+        )
+        result = AuthorityTransformer(self.config).transform(article)
+        content = result["content"]
+        self.assertEqual(result["detection_status"], "telemetry_specification_only")
+        self.assertIn("identity/control-boundary weakness", content)
+        self.assertNotIn("Web Service Spawning", content)
+
+    def test_sql_injection_rule_has_real_uuid_and_valid_yaml(self):
+        article = _make_article(
+            title="CVE-2026-72898 Metabase SQL injection",
+            summary="A SQL injection vulnerability affects a Metabase web endpoint.",
+            full_content="CVE ID: CVE-2026-72898\nCWE: CWE-89\nClass: SQL injection",
+            cve_id="CVE-2026-72898",
+            cwe_ids=["CWE-89"],
+            kev_listed=True,
+        )
+        result = AuthorityTransformer(self.config).transform(article)
+        content = result["content"]
+        self.assertEqual(result["detection_status"], "syntax_validated_experimental")
+        self.assertIn("SQL Injection Probing", content)
+        match = re.search(r"<code>(title:.*?)</code>", content, re.DOTALL)
+        self.assertIsNotNone(match)
+        rule = yaml.safe_load(html.unescape(match.group(1)))
+        self.assertRegex(rule["id"], r"^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+        self.assertIn("condition", rule["detection"])
+        self.assertEqual(rule["status"], "experimental")
+
+
+class TestFamilySpecificSchemas(unittest.TestCase):
+    def setUp(self):
+        self.config = Config()
+
+    def test_ransomware_claim_has_claim_boundary_and_no_patch_schema(self):
+        article = _make_article(
+            source="ransomware_intel",
+            title="Qilin Ransomware Claims New Victim: Example Co",
+            summary="Qilin has listed Example Co as a new victim on its leak site.",
+            full_content="Ransomware Group: Qilin\nVictim: Example Co\nSector: Technology",
+            labels=["Ransomware", "Threat Intelligence"],
+            cve_id=None,
+            cvss_score=None,
+            cvss_vector=None,
+            cwe_ids=None,
+            affected_vendor=None,
+            affected_product=None,
+        )
+        result = AuthorityTransformer(self.config).transform(article)
+        content = result["content"]
+        self.assertEqual(result["report_family"], "ransomware_claim")
+        self.assertEqual(result["detection_status"], "withheld_insufficient_evidence")
+        self.assertIn("Third-party actor claim — independently unverified", content)
+        self.assertIn("no validated actor-specific IOCs or TTPs", content)
+        self.assertNotIn("pre-exploitation", content.lower())
+        self.assertNotIn("PATCH unconfirmed", content)
+        self.assertNotIn("Sigma YAML", content)
+
+    def test_ai_news_has_governance_schema_not_phishing_rule(self):
+        article = _make_article(
+            source="global_rss",
+            title="OpenAI Astra model safety evaluation published",
+            summary="OpenAI published evaluation results for the next Astra AI model.",
+            full_content="Model evaluation and capability safety news.",
+            labels=["AI Security", "Threat Intelligence"],
+            cve_id=None,
+            cvss_score=None,
+            cvss_vector=None,
+            cwe_ids=None,
+            affected_vendor=None,
+            affected_product=None,
+        )
+        result = AuthorityTransformer(self.config).transform(article)
+        content = result["content"]
+        self.assertEqual(result["report_family"], "ai_security")
+        self.assertEqual(result["detection_status"], "not_applicable")
+        self.assertIn("AI Security Assessment", content)
+        self.assertIn("Governance and Engineering Actions", content)
+        self.assertNotIn("Sigma YAML", content)
+        self.assertNotIn("Office Application Shell Spawn", content)
+        self.assertNotIn("phishing detection logic", content.lower())
+
+    def test_automated_reports_never_name_a_human_analyst(self):
+        content = AuthorityTransformer(self.config).transform(_make_article())["content"]
+        self.assertIn(REVIEW_STATUS, content)
+        self.assertNotIn("Bivash Kumar Nayak — Chief Security Architect", content)
+        self.assertIn("Automated Intelligence Engine", content)
+
+
+class TestFailClosedPublicationGate(unittest.TestCase):
+    def test_blocks_false_exploitation_assertion(self):
+        article = _make_article(kev_listed=False)
+        context = build_report_context(article)
+        safe = render_evidence_report(article, Config()).html
+        unsafe = safe + "<p>Exploitation is confirmed active.</p>"
+        with self.assertRaises(PublicationIntegrityError) as caught:
+            validate_publication(article, context, unsafe)
+        self.assertTrue(any("unverified exploitation assertion" in issue for issue in caught.exception.issues))
+
+    def test_blocks_placeholders(self):
+        article = _make_article()
+        context = build_report_context(article)
+        unsafe = render_evidence_report(article, Config()).html + "<p>Not Found Sector</p>"
+        with self.assertRaises(PublicationIntegrityError):
+            validate_publication(article, context, unsafe)
+
+    def test_blocks_missing_provenance(self):
+        article = _make_article()
+        context = build_report_context(article)
+        with self.assertRaises(PublicationIntegrityError) as caught:
+            validate_publication(article, context, "<p>short report</p>")
+        self.assertTrue(any("missing report identifier" in issue for issue in caught.exception.issues))
+
+    def test_blocks_human_attribution_without_review_event(self):
+        article = _make_article()
+        context = build_report_context(article)
+        unsafe = render_evidence_report(article, Config()).html + "Bivash Kumar Nayak — Chief Security Architect"
+        with self.assertRaises(PublicationIntegrityError):
+            validate_publication(article, context, unsafe)
+
+
+class TestAuthorityTransformerContract(unittest.TestCase):
+    def setUp(self):
+        self.config = Config()
         self.transformer = AuthorityTransformer(self.config)
 
-    def test_transform_returns_required_keys(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        required_keys = ["title", "content", "labels", "image_url", "meta_title", "meta_description",
-                         "keywords", "source_url", "content_hash", "content_source"]
-        for key in required_keys:
-            self.assertIn(key, result, f"Missing key: {key}")
-
-    def test_image_url_matches_the_dynamic_og_contract(self):
-        # ESPMP v1: this is the value main.py passes to
-        # publisher.publish_post(image_url=...), which reaches Blogger's
-        # real Post.images field — must carry the real CVE/severity from
-        # the article, not a placeholder.
-        article = _make_article()  # title: "CVE-2026-9999 ... CVSS 9.8"
-        result = self.transformer.transform(article)
-        self.assertTrue(result["image_url"].startswith(f"{self.config.source_base_url}/api/og?"))
-        from urllib.parse import urlparse, parse_qs
-        q = parse_qs(urlparse(result["image_url"]).query)
-        self.assertEqual(q["cve"], ["CVE-2026-9999"])
-        self.assertEqual(q["severity"], ["CRITICAL"])  # CVSS 9.8 -> CRITICAL per _derive_severity
-        self.assertIn("title", q)
-
-    def test_image_url_omits_cve_when_none_present(self):
-        article = _make_article(title="General threat landscape roundup", summary="No specific CVE here.")
-        result = self.transformer.transform(article)
-        from urllib.parse import urlparse, parse_qs
-        q = parse_qs(urlparse(result["image_url"]).query)
-        self.assertNotIn("cve", q)
-        self.assertEqual(q["severity"], ["HIGH"])  # default when no CVSS is known
-
-    def test_content_contains_cta_blocks(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        content = result["content"]
-        self.assertIn("SENTINEL APEX", content)
-        self.assertIn("cyberdudebivash.com", content)
-
-    def test_content_contains_schema_json_ld(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        self.assertIn('application/ld+json', result["content"])
-
-    def test_title_optimised_for_seo(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        self.assertLessEqual(len(result["title"]), 90)
-        self.assertTrue(len(result["title"]) > 10)
-
-    def test_blogger_title_includes_cve(self):
-        article = _make_article(title="CVE-2026-1234 Critical Windows Flaw")
-        result = self.transformer.transform(article)
-        self.assertIn("CVE-2026-1234", result["title"])
-
-    def test_labels_non_empty(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        self.assertGreater(len(result["labels"]), 0)
-
-    def test_labels_max_20(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
+    def test_transform_returns_production_metadata(self):
+        result = self.transformer.transform(_make_article())
+        required = {
+            "title",
+            "content",
+            "labels",
+            "image_url",
+            "meta_title",
+            "meta_description",
+            "keywords",
+            "source_url",
+            "content_hash",
+            "content_source",
+            "report_id",
+            "source_record_hash",
+            "report_family",
+            "review_status",
+            "certification_status",
+            "detection_status",
+            "generated_at",
+        }
+        self.assertTrue(required.issubset(result))
+        self.assertEqual(result["content_source"], "evidence_safe_template")
+        self.assertEqual(result["source_url"], _make_article().url)
+        self.assertEqual(result["content_hash"], _make_article().content_hash)
         self.assertLessEqual(len(result["labels"]), 20)
 
-    def test_content_source_template_when_no_api_key(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        self.assertEqual(result["content_source"], "template")
+    def test_default_publication_never_calls_llm(self):
+        with patch("automation.authority_transformer.call_llm") as mocked:
+            self.transformer.transform(_make_article())
+        mocked.assert_not_called()
 
-    def test_source_url_preserved(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        self.assertEqual(result["source_url"], article.url)
-
-    def test_content_hash_preserved(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        self.assertEqual(result["content_hash"], article.content_hash)
-
-    def test_read_more_link_in_content(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        self.assertIn(article.url, result["content"])
-
-    def test_ransomware_content_includes_backup_advice(self):
-        article = _make_article(
-            title="LockBit Ransomware Hits Healthcare",
-            summary="LockBit ransomware encrypted hospital systems",
-            labels=["Ransomware"],
-        )
-        result = self.transformer.transform(article)
-        self.assertIn("backup", result["content"].lower())
-
-    def test_svg_thumbnail_present_in_content(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        # SVG thumbnail must be the first meaningful element — Blogger uses it as firstImageUrl
-        self.assertIn("data:image/svg+xml;base64,", result["content"])
-        self.assertIn('<img src="data:image/svg+xml;base64,', result["content"])
-
-    def test_svg_thumbnail_quotes_escaped_in_alt(self):
-        article = _make_article(title='Windows "RCE" Vulnerability — CVE-2026-9999')
-        result = self.transformer.transform(article)
-        # Verify the alt attribute is well-formed (no raw unescaped double-quote breaks it)
-        import re as _re
-        alt_match = _re.search(r'alt="([^"]*)"', result["content"])
-        self.assertIsNotNone(alt_match, "alt attribute not found or malformed by unescaped quotes")
-
-    def test_cvss_float_conversion_resilience(self):
-        from automation.authority_transformer import _generate_svg_thumbnail
-        try:
-            result = _generate_svg_thumbnail("Test Title", ["Ransomware"], cvss="not-a-number")
-            self.assertIn("<img", result)
-        except (ValueError, TypeError):
-            self.fail("_generate_svg_thumbnail raised on malformed CVSS input")
-
-    def test_svg_thumbnail_category_palette_ransomware(self):
-        import base64
-        from automation.authority_transformer import _generate_svg_thumbnail
-        result = _generate_svg_thumbnail("Ransomware Attack", ["Ransomware"])
-        svg_text = base64.b64decode(result.split("base64,")[1].split('"')[0]).decode("utf-8")
-        self.assertIn("#f59e0b", svg_text)  # Ransomware amber accent
-
-    def test_svg_thumbnail_category_palette_ai(self):
-        import base64
-        from automation.authority_transformer import _generate_svg_thumbnail
-        result = _generate_svg_thumbnail("LLM Prompt Injection", ["AI Security"])
-        svg_text = base64.b64decode(result.split("base64,")[1].split('"')[0]).decode("utf-8")
-        self.assertIn("#a855f7", svg_text)  # AI Security purple accent
-
-    def test_content_contains_all_required_sections(self):
-        article = _make_article()
-        result = self.transformer.transform(article)
-        content = result["content"]
-        required = [
-            "Executive Summary", "Verified Facts", "Threat Classification & Severity",
-            "Business Impact", "Technical Analysis", "CVE Analysis",
-            "MITRE ATT&CK Mapping", "IOC Intelligence", "Detection Engineering Guidance",
-            "Sigma Detection Rule", "Threat Hunting Queries", "SOC Analyst Playbook",
-            "Executive Decision Matrix", "Executive Recommendations", "Predictive Intelligence",
-            "MSSP Partner Advisory",
-            "SENTINEL APEX Intelligence Correlation", "Long-Term Strategic Risk", "References",
-        ]
-        for section in required:
-            self.assertIn(section, content, f"Section missing from assembled Blogger HTML: {section}")
-
-    def test_cve_ids_normalised_to_uppercase(self):
-        from automation.seo_optimizer import _extract_cve_ids
-        ids = _extract_cve_ids("cve-2026-1234 and CVE-2025-9999 and Cve-2024-0001")
-        self.assertTrue(all(c == c.upper() for c in ids), f"Non-uppercase CVE IDs: {ids}")
-        self.assertIn("CVE-2026-1234", ids)
-        self.assertIn("CVE-2025-9999", ids)
-
-
-class TestBuildDynamicOgImageUrl(unittest.TestCase):
-    """_build_dynamic_og_image_url — must mirror api/og.js's query contract exactly."""
-
-    def setUp(self):
-        self.config = Config()
-
-    def test_includes_cve_and_cvss_when_given(self):
-        from automation.authority_transformer import _build_dynamic_og_image_url
-        url = _build_dynamic_og_image_url(
-            self.config, title="Critical Windows RCE", severity="CRITICAL",
-            cve_id="CVE-2026-9999", cvss="9.8", type_label="Vulnerabilities",
-        )
-        from urllib.parse import urlparse, parse_qs
-        q = parse_qs(urlparse(url).query)
-        self.assertEqual(q["cve"], ["CVE-2026-9999"])
-        self.assertEqual(q["cvss"], ["9.8"])
-        self.assertEqual(q["severity"], ["CRITICAL"])
-        self.assertEqual(q["type"], ["Vulnerabilities"])
-
-    def test_omits_cve_and_cvss_when_falsy(self):
-        from automation.authority_transformer import _build_dynamic_og_image_url
-        url = _build_dynamic_og_image_url(
-            self.config, title="General Advisory", severity=None,
-            cve_id="", cvss=None, type_label="Threat Intel",
-        )
-        from urllib.parse import urlparse, parse_qs
-        q = parse_qs(urlparse(url).query)
-        self.assertNotIn("cve", q)
-        self.assertNotIn("cvss", q)
-        self.assertEqual(q["severity"], ["HIGH"])  # falsy severity defaults to HIGH, same as api/og.js itself
-
-    def test_url_targets_the_real_api_og_endpoint(self):
-        from automation.authority_transformer import _build_dynamic_og_image_url
-        url = _build_dynamic_og_image_url(
-            self.config, title="T", severity="HIGH", cve_id="", cvss=None, type_label="X",
-        )
-        self.assertEqual(url.split("?")[0], f"{self.config.source_base_url}/api/og")
-
-
-class TestRiskCommandCenter(unittest.TestCase):
-    """Executive Risk Command Center — must show only verified data, never fabricate."""
-
-    def setUp(self):
-        self.config = Config()
-        self.config.anthropic_api_key = ""
-        self.transformer = AuthorityTransformer(self.config)
-
-    def test_omitted_entirely_when_no_verified_data(self):
-        article = _make_article(
-            title="Generic Ransomware Campaign", summary="A ransomware group claimed victims.",
-            labels=["Ransomware"],
-        )
-        content = self.transformer.transform(article)["content"]
-        self.assertNotIn("Executive Risk Command Center", content)
-
-    def test_renders_cvss_only_when_no_enrichment(self):
-        """A plain CVE title (regex-extractable CVSS) still gets a dashboard,
-        but must not show EPSS/KEV tile values that were never fetched.
-        Note: the article's own "CISA KEV" *label* and the fixed "CISA Known
-        Exploited Vulnerabilities Catalog" reference link legitimately appear
-        elsewhere on the page — this checks the dashboard's own KEV tile
-        values specifically, not the substring "CISA KEV" anywhere at all."""
-        article = _make_article()  # default fixture: CVE-2026-9999, CVSS 9.8, no enrichment fields
-        content = self.transformer.transform(article)["content"]
-        self.assertIn("Executive Risk Command Center", content)
-        self.assertIn("CVE-2026-9999", content)
-        self.assertIn("9.8", content)
-        self.assertNotIn("EPSS Score", content)
-        self.assertNotIn("Not Listed", content)
-        self.assertNotIn(">LISTED<", content)
-
-    def test_full_enrichment_renders_all_verified_fields(self):
-        article = _make_article(
-            cve_id="CVE-2021-44228", cvss_score=10.0,
-            epss_score=0.99999, epss_percentile=1.0,
-            kev_listed=True, kev_due_date="2021-12-24",
-            kev_required_action="Apply updates per vendor instructions.",
-            affected_vendor="Apache", affected_product="Log4j",
-        )
-        content = self.transformer.transform(article)["content"]
-        self.assertIn("Executive Risk Command Center", content)
-        self.assertIn("10.0", content)
-        self.assertIn("100.0%", content)
-        self.assertIn("LISTED", content)
-        self.assertIn("Remediation due 2021-12-24", content)
-        self.assertIn("Exploitation confirmed?", content)
-        self.assertIn("Apply updates per vendor instructions.", content)
-
-    def test_kev_unknown_does_not_render_as_not_listed(self):
-        """kev_listed=None (lookup failed/never ran) must not be shown as a
-        false 'Not Listed' — that would misrepresent an unknown as verified."""
-        article = _make_article(cve_id="CVE-2026-9999", cvss_score=9.8, kev_listed=None)
-        content = self.transformer.transform(article)["content"]
-        self.assertNotIn("Not Listed", content)
-        self.assertNotIn(">LISTED<", content)
-
-    def test_kev_confirmed_absent_renders_not_listed(self):
-        article = _make_article(cve_id="CVE-2026-9999", cvss_score=5.0, kev_listed=False)
-        content = self.transformer.transform(article)["content"]
-        self.assertIn("Not Listed", content)
-
-    def test_low_severity_cvss_does_not_trigger_patch_now_decision(self):
-        article = _make_article(cve_id="CVE-2026-1111", cvss_score=3.1, kev_listed=False)
-        content = self.transformer.transform(article)["content"]
-        self.assertNotIn("Patch immediately?", content)
-
-
-class TestMultiSiemDetectionQueries(unittest.TestCase):
-    """Every detection branch must emit Splunk/Elastic/Sentinel/QRadar/Chronicle
-    queries derived from the same logic as its Sigma rule — not just Sigma alone."""
-
-    def setUp(self):
-        self.config = Config()
-        self.config.anthropic_api_key = ""
-        self.transformer = AuthorityTransformer(self.config)
-
-    def _content_for(self, title, summary, labels):
-        article = _make_article(title=title, summary=summary, labels=labels)
-        return self.transformer.transform(article)["content"]
-
-    def test_all_five_platforms_present_for_ransomware(self):
-        content = self._content_for(
-            "LockBit Ransomware Hits Healthcare Sector",
-            "LockBit ransomware group encrypted hospital systems.",
-            ["Ransomware"],
-        )
-        self.assertIn("Multi-SIEM Detection Queries", content)
-        for label in ["Splunk SPL", "Elastic EQL", "Microsoft Sentinel KQL", "IBM QRadar AQL", "Google Chronicle YARA-L"]:
-            self.assertIn(label, content, f"Missing platform: {label}")
-        self.assertIn("vssadmin", content.lower())
-
-    def test_ot_branch_has_industrial_ports_in_queries(self):
-        content = self._content_for(
-            "SCADA Historian Compromise at Water Treatment Facility",
-            "Attackers accessed the OT network via unprotected industrial control systems.",
-            ["OT Security"],
-        )
-        self.assertIn("Multi-SIEM Detection Queries", content)
-        self.assertIn("502", content)  # Modbus port, shared across all 5 platform queries
-
-    def test_cve_branch_present(self):
-        content = self._content_for(
-            "CVE-2026-9999 Critical Windows RCE", "Critical RCE vulnerability CVSS 9.8.", ["Vulnerabilities"],
-        )
-        self.assertIn("Multi-SIEM Detection Queries", content)
-
-    def test_general_fallback_branch_present(self):
-        content = self._content_for(
-            "Phishing Campaign Targets Finance Employees", "A generic phishing email campaign was observed.", ["Phishing"],
-        )
-        self.assertIn("Multi-SIEM Detection Queries", content)
-
-    def test_deployment_validation_disclaimer_present(self):
-        content = self._content_for(
-            "CVE-2026-9999 Critical Windows RCE", "Critical RCE vulnerability CVSS 9.8.", ["Vulnerabilities"],
-        )
-        self.assertIn("VALIDATE FIELD NAMES AGAINST YOUR ENVIRONMENT", content)
-
-
-class TestRecommendedServicesWiring(unittest.TestCase):
-    def setUp(self):
-        self.config = Config()
-        self.config.anthropic_api_key = ""
-        self.transformer = AuthorityTransformer(self.config)
-
-    def test_ransomware_report_recommends_incident_response(self):
-        article = _make_article(
-            title="LockBit Ransomware Hits Healthcare", summary="LockBit ransomware group encrypted hospital systems.",
-            labels=["Ransomware", "CYBERDUDEBIVASH", "Threat Intelligence"],
-        )
-        content = self.transformer.transform(article)["content"]
-        self.assertIn("Recommended For This Threat", content)
-        self.assertIn("Incident Response", content)
-
-    def test_uses_existing_service_css_classes(self):
-        article = _make_article(labels=["Vulnerabilities", "CYBERDUDEBIVASH"])
-        content = self.transformer.transform(article)["content"]
-        self.assertIn('class="apex-services"', content)
-        self.assertIn('class="apex-svc-item"', content)
-
-
-class TestIndustryIntelligenceWiring(unittest.TestCase):
-    def setUp(self):
-        self.config = Config()
-        self.config.anthropic_api_key = ""
-        self.transformer = AuthorityTransformer(self.config)
-
-    def test_healthcare_report_renders_industry_block(self):
-        article = _make_article(
-            title="Ransomware Group Hits Regional Hospital Network",
-            summary="A ransomware group encrypted patient records at a healthcare system.",
-            labels=["Ransomware"],
-        )
-        content = self.transformer.transform(article)["content"]
-        self.assertIn("Industry Impact Intelligence", content)
-        self.assertIn("Healthcare", content)
-        self.assertIn("HIPAA", content)
-
-    def test_generic_cve_report_omits_industry_block(self):
-        article = _make_article(title="CVE-2026-9999 Critical RCE", summary="Critical remote code execution.", labels=["Vulnerabilities"])
-        content = self.transformer.transform(article)["content"]
-        self.assertNotIn("Industry Impact Intelligence", content)
-
-
-class TestExecutiveDecisionCenter(unittest.TestCase):
-    def setUp(self):
-        self.config = Config()
-        self.config.anthropic_api_key = ""
-        self.transformer = AuthorityTransformer(self.config)
-
-    def test_all_six_audiences_present(self):
-        article = _make_article(cvss_score=9.8)
-        content = self.transformer.transform(article)["content"]
-        for role in ["CEO Summary", "Board Summary", "CISO Summary", "SOC Summary", "DevSecOps Summary", "Cloud Summary"]:
-            self.assertIn(role, content, f"{role} missing")
-
-    def test_always_present_even_without_cvss(self):
-        article = _make_article(title="Generic Ransomware News", summary="A ransomware group claimed victims.", labels=["Ransomware"])
-        content = self.transformer.transform(article)["content"]
-        self.assertIn("Executive Decision Center", content)
-
-    def test_summaries_are_not_identical_text(self):
-        """Each audience card must say something genuinely different."""
-        article = _make_article(cvss_score=9.8)
-        content = self.transformer.transform(article)["content"]
-        from automation.authority_transformer import _build_executive_decision_center
-        block = _build_executive_decision_center("Vulnerabilities", "CVE-2026-9999", "CRITICAL", self.config)
-        import re
-        texts = re.findall(r'letter-spacing:1px;\s*text-transform:uppercase;margin-bottom:8px">([^<]+)</div>\s*<div[^>]*>([^<]+)</div>', block)
-        bodies = [t[1] for t in texts]
-        self.assertEqual(len(bodies), len(set(bodies)), "Two or more audience summaries are identical text")
-
-
-class TestTrustStatsBlock(unittest.TestCase):
-    """Real numbers only, read from data/published_posts.json — never fabricated."""
-
-    def setUp(self):
-        import tempfile
-        self.tmpdir = tempfile.mkdtemp()
-        self.state_path = os.path.join(self.tmpdir, "published_posts.json")
-        self.config = Config()
-        self.config.anthropic_api_key = ""
-        self.config.state_file = self.state_path
-        self.transformer = AuthorityTransformer(self.config)
-
-    def _write_state(self, data):
-        with open(self.state_path, "w") as f:
-            json.dump(data, f)
-
-    def test_renders_real_published_count(self):
-        self._write_state({"total_published": 2378, "posts": {}})
-        article = _make_article()
-        content = self.transformer.transform(article)["content"]
-        self.assertIn("Threat Reports Published", content)
-        self.assertIn("2,378", content)
-
-    def test_renders_detection_rules_and_siem_platform_count(self):
-        from automation.authority_transformer import SIEM_PLATFORM_LABELS
-        self._write_state({"total_published": 100, "posts": {}})
-        article = _make_article()
-        content = self.transformer.transform(article)["content"]
-        self.assertIn("Detection Rules Generated", content)
-        self.assertIn("Supported SIEM Platforms", content)
-        self.assertIn(str(len(SIEM_PLATFORM_LABELS)), content)
-
-    def test_renders_unique_cve_count_when_present(self):
-        self._write_state({
-            "total_published": 5,
-            "posts": {
-                "a": {"cves": ["CVE-2021-44228"]},
-                "b": {"cves": ["CVE-2021-44228", "CVE-2026-9999"]},
-            },
-        })
-        article = _make_article()
-        content = self.transformer.transform(article)["content"]
-        self.assertIn("Unique CVEs Tracked", content)
-
-    def test_omitted_when_state_file_missing(self):
-        # Deliberately never write self.state_path
-        article = _make_article()
-        content = self.transformer.transform(article)["content"]
-        self.assertNotIn("Threat Reports Published", content)
-
-    def test_omitted_when_total_published_zero(self):
-        self._write_state({"total_published": 0, "posts": {}})
-        article = _make_article()
-        content = self.transformer.transform(article)["content"]
-        self.assertNotIn("Threat Reports Published", content)
-
-
-class TestHowToSchemaWiring(unittest.TestCase):
-    def setUp(self):
-        self.config = Config()
-        self.config.anthropic_api_key = ""
-        self.transformer = AuthorityTransformer(self.config)
-
-    def test_howto_schema_present_for_ransomware(self):
-        article = _make_article(
-            title="LockBit Ransomware Hits Healthcare", summary="LockBit ransomware group encrypted hospital systems.",
-            labels=["Ransomware"],
-        )
-        content = self.transformer.transform(article)["content"]
-        self.assertIn('"@type": "HowTo"', content)
-
-    def test_no_howto_script_block_for_generic_content(self):
-        article = _make_article(
-            title="General Security News", summary="Nothing specific here.", labels=["Threat Intelligence"],
-        )
-        content = self.transformer.transform(article)["content"]
+    def test_structured_data_has_automated_author_and_no_fake_counts(self):
+        content = self.transformer.transform(_make_article())["content"]
+        self.assertIn("SENTINEL APEX Automated Intelligence Engine", content)
+        self.assertNotIn("2,400+", content)
+        self.assertNotIn("production-ready Sigma", content)
         self.assertNotIn('"@type": "HowTo"', content)
+        self.assertNotIn('"@type": "FAQPage"', content)
 
+    def test_svg_thumbnail_and_dynamic_image_contract(self):
+        result = self.transformer.transform(_make_article())
+        self.assertIn("data:image/svg+xml;base64,", result["content"])
+        params = parse_qs(urlparse(result["image_url"]).query)
+        self.assertEqual(params["cve"], ["CVE-2026-9999"])
+        self.assertEqual(params["severity"], ["CRITICAL"])
 
-class TestAiSecurityImpactStyling(unittest.TestCase):
-    def setUp(self):
-        self.config = Config()
-        self.config.anthropic_api_key = ""
-        self.transformer = AuthorityTransformer(self.config)
+    def test_svg_alt_is_well_formed_and_palette_is_category_specific(self):
+        tag = _generate_svg_thumbnail('Windows "RCE"', ["Ransomware"], "not-a-number")
+        self.assertRegex(tag, r'alt="[^"]*"')
+        svg = base64.b64decode(tag.split("base64,")[1].split('"')[0]).decode("utf-8")
+        self.assertIn("#f59e0b", svg)
 
-    def test_uses_shared_section_header_not_bare_h3(self):
-        article = _make_article(
-            title="LLM Prompt Injection Attack on Enterprise AI Agents",
-            summary="AI systems vulnerable to prompt injection targeting RAG pipelines.",
-            labels=["AI Security"],
+    def test_og_builder_omits_unknown_values(self):
+        url = _build_dynamic_og_image_url(
+            self.config,
+            title="General intelligence",
+            severity=None,
+            cve_id="",
+            cvss=None,
+            type_label="Threat Intel",
         )
-        content = self.transformer.transform(article)["content"]
-        self.assertNotIn("<h3>AI Security Impact</h3>", content)
-        self.assertIn("AI Security Impact", content)
-        self.assertIn("border-left:3px solid #a855f7", content)
-
-    def test_omitted_when_not_ai_related(self):
-        article = _make_article(title="Windows RCE Vulnerability", labels=["Vulnerabilities"])
-        content = self.transformer.transform(article)["content"]
-        self.assertNotIn("AI Security Impact", content)
+        params = parse_qs(urlparse(url).query)
+        self.assertNotIn("cve", params)
+        self.assertNotIn("cvss", params)
 
 
 if __name__ == "__main__":

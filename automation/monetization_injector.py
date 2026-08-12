@@ -3,6 +3,8 @@ CYBERDUDEBIVASH® SENTINEL APEX — Monetization Injection Module
 Injects product/service CTAs, ecosystem links, and conversion blocks into articles.
 """
 
+import html
+
 from .config import Config
 
 # Inline CSS for Blogger compatibility (no external stylesheets available)
@@ -46,18 +48,11 @@ class MonetizationInjector:
         return f"""
 <div class="apex-banner">
   <h3>⚡ CYBERDUDEBIVASH® SENTINEL APEX</h3>
-  <p>AI-Powered Cyber Threat Intelligence · Live CVE &amp; APT Tracking · Enterprise SOC Intelligence</p>
+  <p>Source-linked automated security intelligence with explicit evidence status and provenance.</p>
   <div class="apex-ecosystem">
-    <a class="apex-btn apex-btn-primary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">🛡 Launch Sentinel APEX</a>
-    <a class="apex-btn apex-btn-secondary" href="{self.config.api_url}" target="_blank" rel="noopener">⎋ Free API Key</a>
-    <a class="apex-btn apex-btn-upgrade" href="{self.config.sentinel_apex_url}/upgrade" target="_blank" rel="noopener">▲ Enterprise Plans</a>
-  </div>
-  <div class="apex-ecosystem" style="margin-top:10px">
-    <a class="apex-eco-item" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">Sentinel APEX ↗</a>
-    <a class="apex-eco-item" href="{self.config.api_url}" target="_blank" rel="noopener">Threat Intel API ↗</a>
-    <a class="apex-eco-item" href="{self.config.tools_url}" target="_blank" rel="noopener">Security Tools ↗</a>
-    <a class="apex-eco-item" href="{self.config.corporate_url}" target="_blank" rel="noopener">Enterprise Portal ↗</a>
-    <a class="apex-eco-item" href="{self.config.source_base_url}" target="_blank" rel="noopener">Research Blog ↗</a>
+    <a class="apex-btn apex-btn-primary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">Explore Sentinel APEX</a>
+    <a class="apex-btn apex-btn-secondary" href="{self.config.api_url}/docs" target="_blank" rel="noopener">API Documentation</a>
+    <a class="apex-btn apex-btn-upgrade" href="mailto:{self.config.contact_email}">Contact Enterprise Team</a>
   </div>
 </div>
 """.strip()
@@ -67,7 +62,7 @@ class MonetizationInjector:
         return f"""
 <div class="apex-cta-block">
   <h4>🛡 SENTINEL APEX ECOSYSTEM</h4>
-  <p>Get real-time threat intelligence, CVE analysis, YARA/Sigma rules, and SOC-ready intelligence feeds trusted by 2,400+ security professionals worldwide.</p>
+  <p>Access source-linked threat intelligence, CVE analysis, detection engineering resources, and SOC decision support with explicit evidence boundaries.</p>
   <div class="apex-cta-grid">
     <a class="apex-btn apex-btn-primary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">🛡 Sentinel APEX Platform</a>
     <a class="apex-btn apex-btn-secondary" href="{self.config.api_url}" target="_blank" rel="noopener">⎋ Threat Intelligence API</a>
@@ -90,7 +85,7 @@ class MonetizationInjector:
     <div class="apex-svc-item"><strong>AI Governance Consulting</strong><span>NIST AI RMF · ISO 42001 · OWASP LLM</span></div>
     <div class="apex-svc-item"><strong>DevSecOps Optimization</strong><span>CI/CD Security · Pipeline Hardening</span></div>
     <div class="apex-svc-item"><strong>Incident Response</strong><span>Digital Forensics · IR Retainer</span></div>
-    <div class="apex-svc-item"><strong>Detection Engineering</strong><span>2,400+ Sigma · YARA · SIEM Rules</span></div>
+    <div class="apex-svc-item"><strong>Detection Engineering</strong><span>Versioned Sigma · YARA · SIEM Content</span></div>
   </div>
   <div style="margin-top:14px">
     <a class="apex-btn apex-btn-primary" href="{self.config.corporate_url}" target="_blank" rel="noopener">View All Services →</a>
@@ -100,23 +95,14 @@ class MonetizationInjector:
 """.strip()
 
     def inject_detection_packs_cta(self) -> str:
-        """Detection Engineering pack promotion with YARA/Sigma preview."""
+        """Detection Engineering promotion without report-specific claims."""
         return f"""
 <div class="apex-cta-block">
-  <h4>🎯 Detection Engineering Packs — Instant Download</h4>
-  <p>2,400+ production-ready Sigma detection rules, YARA malware signatures, and IR playbooks — mapped to MITRE ATT&CK. Deploy to Splunk, Elastic, or Microsoft Sentinel in minutes. Updated weekly by CYBERDUDEBIVASH® analysts.</p>
-  <div style="background:#020810;border:1px solid #1e3a5f;border-radius:4px;padding:10px 14px;margin:10px 0;font-family:monospace;font-size:11px;color:#00d4ff;overflow-x:auto">
-    <div style="color:#64748b;font-size:10px;margin-bottom:4px"># SAMPLE — CYBERDUDEBIVASH® YARA Rule (SOC Pro tier)</div>
-    rule APT_Lateral_Movement_SMB &#123;<br>
-    &nbsp;&nbsp;meta: author = "CYBERDUDEBIVASH® SENTINEL APEX" severity = "CRITICAL"<br>
-    &nbsp;&nbsp;strings: $smb_pipe = "\\\\IPC$" $psexec = "PSEXESVC"<br>
-    &nbsp;&nbsp;condition: all of them<br>
-    &#125;
-  </div>
+  <h4>🎯 Detection Engineering Resources</h4>
+  <p>Versioned Sigma rules, YARA signatures, and incident-response playbooks mapped to MITRE ATT&amp;CK. Validate field mappings, telemetry coverage, and false positives in a non-production environment before deployment.</p>
   <div class="apex-cta-grid">
-    <a class="apex-btn apex-btn-primary" href="{self.config.sentinel_apex_url}/detections" target="_blank" rel="noopener">Browse Detection Packs →</a>
-    <a class="apex-btn apex-btn-upgrade" href="{self.config.sentinel_apex_url}/upgrade" target="_blank" rel="noopener">▲ SOC Pro — $49/mo</a>
-    <a class="apex-btn apex-btn-secondary" href="mailto:{self.config.contact_email}">Get Free Sample Pack</a>
+    <a class="apex-btn apex-btn-primary" href="{self.config.sentinel_apex_url}/detections" target="_blank" rel="noopener">Review Detection Resources →</a>
+    <a class="apex-btn apex-btn-secondary" href="mailto:{self.config.contact_email}">Discuss Validation Support</a>
   </div>
 </div>
 """.strip()
@@ -126,7 +112,7 @@ class MonetizationInjector:
         return f"""
 <div class="apex-cta-block" style="border-left-color:#a855f7;background:linear-gradient(135deg,#0d0a1e 0%,#0a0f1e 100%)">
   <h4 style="color:#a855f7">📩 WEEKLY THREAT INTELLIGENCE BRIEFING</h4>
-  <p>Join 2,400+ security professionals receiving CYBERDUDEBIVASH® weekly intelligence briefings — curated CVE alerts, APT campaign updates, AI security advisories, detection rule drops, and SOC operational intelligence.</p>
+  <p>Receive source-linked weekly intelligence briefings covering CVE alerts, threat activity, AI security, detection engineering, and SOC operational decisions.</p>
   <p style="font-size:12px;color:#64748b;margin:-6px 0 12px">Free tier · No spam · Unsubscribe anytime · Enterprise tier available</p>
   <div class="apex-cta-grid">
     <a class="apex-btn" style="background:#a855f7;color:#fff" href="{self.config.newsletter_signup_url}" target="_blank" rel="noopener">Subscribe Free →</a>
@@ -157,9 +143,10 @@ class MonetizationInjector:
 
     def inject_read_more_cta(self, source_url: str) -> str:
         """Bottom CTA directing readers to the full original report."""
+        safe_source_url = html.escape(source_url, quote=True)
         return f"""
 <div class="apex-read-more">
-  <a href="{source_url}" target="_blank" rel="noopener">📄 Read Full Intelligence Report on SENTINEL APEX →</a>
+  <a href="{safe_source_url}" target="_blank" rel="noopener noreferrer">📄 Open Cited Source Record →</a>
 </div>
 """.strip()
 
@@ -180,11 +167,13 @@ class MonetizationInjector:
 </div>
 """.strip()
 
-    def inject_urgency_cta(self, labels: list) -> str:
+    def inject_urgency_cta(self, labels: list, kev_listed: bool | None = None) -> str:
         """Return a category-specific high-conversion CTA block."""
         label_set = set(l.lower() for l in labels)
 
-        if "cisa kev" in label_set:
+        # A label alone is not evidence of KEV inclusion. The urgent KEV CTA
+        # is rendered only from the structured catalog result.
+        if kev_listed is True:
             return f"""
 <div class="apex-cta-block" style="border-left-color:#ef4444;background:linear-gradient(135deg,#1a0505 0%,#0d0505 100%)">
   <h4 style="color:#ef4444">🚨 CISA FEDERAL MANDATE — ACTIVE EXPLOITATION CONFIRMED</h4>
@@ -199,7 +188,7 @@ class MonetizationInjector:
             return f"""
 <div class="apex-cta-block" style="border-left-color:#f59e0b">
   <h4 style="color:#f59e0b">🔒 RANSOMWARE PROTECTION ASSESSMENT</h4>
-  <p>Ransomware groups are actively targeting organizations like yours. CYBERDUDEBIVASH® provides rapid ransomware readiness assessments — backup integrity validation, network segmentation review, endpoint detection coverage, and IR playbook development.</p>
+  <p>A public ransomware claim does not establish customer-specific exposure. CYBERDUDEBIVASH® provides ransomware readiness assessments covering backup integrity, network segmentation, identity controls, detection coverage, and incident-response playbooks.</p>
   <div class="apex-cta-grid">
     <a class="apex-btn apex-btn-upgrade" href="mailto:{self.config.contact_email}">Get Ransomware Assessment →</a>
     <a class="apex-btn apex-btn-secondary" href="{self.config.sentinel_apex_url}" target="_blank" rel="noopener">Monitor Ransomware Threats</a>

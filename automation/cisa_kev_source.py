@@ -85,7 +85,10 @@ class CISAKEVSource:
                 f"?search_api_fulltext={cve_id}"
             )
 
-            content_hash = _compute_hash(f"cisa-kev-{cve_id}", title)
+            # A KEV listing is a material exploitation-status update and must
+            # not be suppressed merely because an older NVD advisory exists.
+            # Use a stable KEV-specific identity to prevent repeat alerts.
+            content_hash = _compute_hash(f"cisa-kev-{cve_id}", cve_id)
 
             if state.is_published(content_hash):
                 continue

@@ -221,7 +221,7 @@ class BloggerPublisher:
         raise BloggerPublishError(f"All retry attempts exhausted — last error: {last_error}")
 
     def update_post(self, post_id: str, title: str, content: str, labels: list[str]) -> dict:
-        """Update an existing Blogger post."""
+        """Update an existing Blogger post with bounded retry and auth recovery."""
         payload = {
             "kind": "blogger#post",
             "id": post_id,
@@ -230,9 +230,43 @@ class BloggerPublisher:
             "labels": labels,
         }
         url = f"{BLOGGER_API_BASE}/blogs/{self.config.blogger_blog_id}/posts/{post_id}"
-        resp = requests.put(url, headers=self._headers(), json=payload, timeout=30)
-        resp.raise_for_status()
-        return resp.json()
+        last_error = "no attempt made"
+        auth_refreshed = False
+
+        for attempt in range(1, self.config.retry_attempts + 1):
+            try:
+                resp = requests.put(url, headers=self._headers(), json=payload, timeout=30)
+                if resp.status_code == 429:
+                    last_error = f"HTTP 429 rate limited: {resp.text[:300]}"
+                    if attempt < self.config.retry_attempts:
+                        time.sleep(self.config.retry_base_delay * (2 ** attempt))
+                    continue
+                if resp.status_code == 401:
+                    if auth_refreshed:
+                        raise BloggerAuthError(
+                            f"Blogger API rejected refreshed token (HTTP 401): {resp.text[:300]}"
+                        )
+                    self._access_token = None
+                    auth_refreshed = True
+                    last_error = f"HTTP 401 unauthorized: {resp.text[:300]}"
+                    continue
+                if not resp.ok:
+                    last_error = f"HTTP {resp.status_code}: {resp.text[:300]}"
+                resp.raise_for_status()
+                return resp.json()
+            except requests.RequestException as exc:
+                last_error = str(exc)
+                if attempt == self.config.retry_attempts:
+                    raise BloggerPublishError(
+                        f"Update failed after {attempt} attempts: {last_error}"
+                    ) from exc
+                time.sleep(self.config.retry_base_delay * (2 ** attempt))
+
+        if last_error.startswith("HTTP 429"):
+            raise BloggerRateLimitError(
+                f"Update retry attempts exhausted — last error: {last_error}"
+            )
+        raise BloggerPublishError(f"Update retry attempts exhausted — last error: {last_error}")
 
     def health_check(self) -> bool:
         """Verify Blogger API connectivity and credentials."""

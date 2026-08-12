@@ -9,7 +9,7 @@ import json
 import os
 import re
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Optional
@@ -72,6 +72,12 @@ class DiscoveredArticle:
     def to_dict(self) -> dict:
         return asdict(self)
 
+    @classmethod
+    def from_dict(cls, value: dict) -> "DiscoveredArticle":
+        """Rehydrate only declared fields from persisted retry/state data."""
+        allowed = {field.name for field in fields(cls)}
+        return cls(**{key: item for key, item in value.items() if key in allowed})
+
 
 class PublicationState:
     """Persistent store preventing duplicate publications."""
@@ -113,9 +119,15 @@ class PublicationState:
                 return True
         return False
 
-    def mark_published(self, article: DiscoveredArticle, blogger_post_id: str, blogger_url: str) -> None:
+    def mark_published(
+        self,
+        article: DiscoveredArticle,
+        blogger_post_id: str,
+        blogger_url: str,
+        publication_metadata: Optional[dict] = None,
+    ) -> None:
         cves = _extract_cve_ids_from_text(article.title + " " + article.summary)
-        self._state["posts"][article.content_hash] = {
+        entry = {
             "source_url": article.url,
             "source_title": article.title,
             "blogger_post_id": blogger_post_id,
@@ -125,6 +137,18 @@ class PublicationState:
             "content_hash": article.content_hash,
             "cves": cves,
         }
+        if publication_metadata:
+            safe_fields = {
+                "report_id",
+                "source_record_hash",
+                "report_family",
+                "review_status",
+                "certification_status",
+                "detection_status",
+                "generated_at",
+            }
+            entry.update({key: publication_metadata[key] for key in safe_fields if key in publication_metadata})
+        self._state["posts"][article.content_hash] = entry
         self._state["total_published"] = len(self._state["posts"])
         # Remove from retry queue on success
         self._remove_from_retry_queue(article.content_hash)
@@ -152,14 +176,7 @@ class PublicationState:
             0,
         )
         queue.append({
-            "content_hash": article.content_hash,
-            "url": article.url,
-            "title": article.title,
-            "summary": article.summary,
-            "published_at": article.published_at,
-            "labels": article.labels,
-            "source": article.source,
-            "full_content": article.full_content,
+            **article.to_dict(),
             "last_error": error,
             "attempts": existing_attempts + 1,
             "added_at": datetime.now(timezone.utc).isoformat(),
