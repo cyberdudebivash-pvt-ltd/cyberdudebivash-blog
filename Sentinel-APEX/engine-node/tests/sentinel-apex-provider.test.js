@@ -86,7 +86,10 @@ test('normalizeSentinelApexRecord maps a rich, STIX-flavored record', () => {
   assert.strictEqual(item.source, 'sentinel_apex');
   assert.strictEqual(item.id, 'CVE-2026-40001');
   assert.strictEqual(item.title, 'Acme Gateway Auth Bypass');
-  assert.strictEqual(item.cvss, 9.5); // 'critical' label -> approximated score
+  // A severity label is not a CVSS measurement. Preserve the label while
+  // keeping CVSS unknown until the source supplies an explicit valid score.
+  assert.strictEqual(item.cvss, null);
+  assert.strictEqual(item.severityLabel, 'critical');
   assert.strictEqual(item.vendor, 'Acme');
   assert.strictEqual(item.product, 'Gateway');
   assert.strictEqual(item.exploited, true);
@@ -105,7 +108,8 @@ test('normalizeSentinelApexRecord tolerates an alternate field-name variant of t
     in_the_wild: true, created: '2026-06-01T00:00:00Z',
   }, 'latest');
   assert.strictEqual(item.id, 'CVE-2026-40001');
-  assert.strictEqual(item.cvss, 9.5);
+  assert.strictEqual(item.cvss, null);
+  assert.strictEqual(item.severityLabel, 'critical');
   assert.strictEqual(item.vendor, 'Acme');
   assert.strictEqual(item.exploited, true);
   assert.strictEqual(item.pubDate, '2026-06-01');
@@ -119,11 +123,11 @@ test('normalizeSentinelApexRecord extracts a CVE embedded only in free text', ()
   assert.strictEqual(item.id, 'CVE-2026-55555');
 });
 
-test('normalizeSentinelApexRecord falls back to text-extracted IOCs when no explicit IOC array is present', () => {
+test('normalizeSentinelApexRecord does not promote unstructured text into an IOC without an explicit indicator', () => {
   const item = gen.normalizeSentinelApexRecord({
     title: 'C2 activity observed', description: 'Beaconing traffic to 203.0.113.45 during the campaign.',
   }, 'feed');
-  assert.ok(item.iocs.some(i => i.type === 'ipv4' && i.value === '203.0.113.45'));
+  assert.deepStrictEqual(item.iocs, []);
 });
 
 test('normalizeSentinelApexRecord maps an explicit IOC array with a legitimate zero confidence score', () => {
