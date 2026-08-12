@@ -12,6 +12,8 @@ from datetime import datetime, timezone
 from typing import Optional
 from urllib.parse import urlencode
 
+from bs4 import BeautifulSoup
+
 from .category_mapper import primary_category
 from .config import Config
 from .content_discovery import DiscoveredArticle
@@ -53,6 +55,47 @@ def _sanitize_summary(text: str) -> str:
         return text
     cleaned = _SCORE_ARTIFACT_RE.sub("", text)
     return re.sub(r"\s{2,}", " ", cleaned).strip()
+
+
+# RX-PR0 follow-up (CodeRabbit): the analyst prompt (_build_analyst_prompt)
+# tells the LLM to use only these tags and explicitly "NO inline styles on
+# individual elements, only structure" — this allowlist enforces that
+# contract server-side rather than trusting the model (or a prompt-injected
+# source article) to follow it. The deterministic template path does not use
+# this — its HTML is self-authored, not model output.
+_LLM_HTML_ALLOWED_TAGS = frozenset({
+    "h3", "p", "ul", "ol", "li", "table", "thead", "tbody", "tr", "th", "td",
+    "pre", "code", "strong", "em", "b", "i", "br", "a",
+})
+_LLM_HTML_REMOVE_ENTIRELY = frozenset({
+    "script", "style", "iframe", "object", "embed", "link", "meta", "form",
+    "input", "button", "svg", "video", "audio", "source", "noscript",
+})
+
+
+def _sanitize_llm_html(raw_html: str) -> str:
+    """Reduce LLM-authored HTML to the fixed tag allowlist the prompt requests.
+
+    Untrusted source-article text is embedded in the analyst prompt, so the
+    model's output is not implicitly trusted — this strips anything outside
+    the prompt's own contract (structure tags only, no attributes, no
+    scripts/styles/embeds) before it ever reaches _assemble_html().
+    """
+    if not raw_html:
+        return raw_html
+    soup = BeautifulSoup(raw_html, "html.parser")
+    for tag in soup.find_all(_LLM_HTML_REMOVE_ENTIRELY):
+        tag.decompose()
+    for tag in soup.find_all(True):
+        if tag.name not in _LLM_HTML_ALLOWED_TAGS:
+            tag.unwrap()
+            continue
+        if tag.name == "a":
+            href = tag.attrs.get("href", "")
+            tag.attrs = {"href": href, "target": "_blank", "rel": "noopener noreferrer"} if re.match(r"^https?://", href, re.IGNORECASE) else {}
+        else:
+            tag.attrs = {}
+    return str(soup)
 
 
 # Real, fixed count of SIEM platforms this pipeline generates detection
@@ -1315,7 +1358,14 @@ def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
     _nvd_refs = ''.join(f'<li>NVD — {cve} — <a href="https://nvd.nist.gov/vuln/detail/{cve}" target="_blank" rel="noopener">https://nvd.nist.gov/vuln/detail/{cve}</a></li>' for cve in cves) if cves else '<li>NIST National Vulnerability Database — <a href="https://nvd.nist.gov" target="_blank" rel="noopener">https://nvd.nist.gov</a></li>'
     _cvss_plain = cvss if cvss else "pending — see NVD entry"
     _cve_analysis = ('<ul>' + '\n'.join(f'<li><strong>{cve}</strong> — {category} vulnerability. CVSS: {_cvss_plain}. Monitor NVD entry at https://nvd.nist.gov/vuln/detail/{cve} and vendor security advisory for authoritative CVSS vector string, affected version range, and patch availability.</li>' for cve in cves) + '</ul>') if cves else ''
-    _cisa_sentence = 'CISA has added this to the Known Exploited Vulnerabilities catalog, imposing mandatory patching deadlines for U.S. federal agencies.' if article.kev_listed is True else 'CYBERDUDEBIVASH® SENTINEL APEX has classified this as a priority intelligence item requiring immediate defensive action.'
+    # RX-PR0 follow-up (CodeRabbit): distinguish "confirmed not in KEV" from
+    # "KEV status unknown" instead of collapsing both into the same
+    # unconditional "requires immediate defensive action" framing.
+    _cisa_sentence = (
+        'CISA has added this to the Known Exploited Vulnerabilities catalog, imposing mandatory patching deadlines for U.S. federal agencies.' if article.kev_listed is True else
+        'This item is not present in the verified CISA KEV catalog snapshot; absence does not rule out exploitation. CYBERDUDEBIVASH® SENTINEL APEX has classified this as a priority intelligence item warranting evaluation.' if article.kev_listed is False else
+        'CISA KEV status is unknown or unavailable at time of publication. CYBERDUDEBIVASH® SENTINEL APEX has classified this as a priority intelligence item warranting evaluation.'
+    )
     _cve_facts = (f'<li>CVE identifiers: {", ".join(cves)} — extracted from article content</li>' + '\n') if cves else ''
     _cvss_fact = (f'<li>CVSS score: {cvss} — extracted from article or vendor advisory</li>' + '\n') if cvss else ''
     _cvss_severity = f'based on CVSS score {cvss}' if cvss else 'based on threat category, exploitation status, and operational impact assessment'
@@ -1501,12 +1551,18 @@ def _legacy_template_enhance(article: DiscoveredArticle, config: Config) -> str:
     elif is_cve:
         # KEV-aware: never forecast a KEV addition for a CVE the report already
         # states is in the KEV catalog — that contradiction destroys analyst credibility.
+        # RX-PR0 follow-up (CodeRabbit): a "confirmed exploitation" KEV-addition
+        # forecast must not fire for kev_listed=False (positively confirmed NOT
+        # listed) or kev_listed=None (unknown) with no other exploitation
+        # evidence — only when context.exploitation_status is actually
+        # "confirmed" (KEV-true or a confirmed-exploitation text match).
         _kev_listed = article.kev_listed is True
-        _kev_paragraph = (
-            "<p><strong>KEV remediation deadline pressure (HIGH CONFIDENCE):</strong> With this vulnerability already listed in the CISA Known Exploited Vulnerabilities catalog, U.S. federal agencies face a mandatory remediation deadline — expect intensified adversary scanning for unpatched instances as the deadline approaches and public attention peaks.</p>"
-            if _kev_listed else
-            "<p><strong>CISA KEV addition (MEDIUM CONFIDENCE):</strong> Vulnerabilities with confirmed exploitation and public PoC availability are typically added to CISA KEV within 7-14 days of that confirmation — monitor KEV for mandatory patching deadline implications.</p>"
-        )
+        if _kev_listed:
+            _kev_paragraph = "<p><strong>KEV remediation deadline pressure (HIGH CONFIDENCE):</strong> With this vulnerability already listed in the CISA Known Exploited Vulnerabilities catalog, U.S. federal agencies face a mandatory remediation deadline — expect intensified adversary scanning for unpatched instances as the deadline approaches and public attention peaks.</p>"
+        elif context.exploitation_status == "confirmed":
+            _kev_paragraph = "<p><strong>CISA KEV addition (MEDIUM CONFIDENCE):</strong> Vulnerabilities with confirmed exploitation and public PoC availability are typically added to CISA KEV within 7-14 days of that confirmation — monitor KEV for mandatory patching deadline implications.</p>"
+        else:
+            _kev_paragraph = "<p><strong>KEV status (LOW CONFIDENCE):</strong> No confirmed exploitation evidence is available at time of publication to support a KEV-addition timeline forecast — monitor the CISA KEV catalog for status changes.</p>"
         predictive = f"<p><strong>Active exploitation escalation (HIGH CONFIDENCE):</strong> Based on historical patterns for vulnerabilities in this class, {cve_str} will be incorporated into exploit kits and automated scanning tools within 72 hours of PoC publication, dramatically expanding the threat actor population able to exploit it.</p>{_kev_paragraph}<p><strong>RaaS initial access broker adoption (MEDIUM CONFIDENCE):</strong> High-CVSS network-exploitable vulnerabilities are routinely adopted by ransomware initial access brokers within 30 days of public exploit availability.</p>"
     else:
         predictive = "<p><strong>Threat vector persistence (MEDIUM CONFIDENCE):</strong> Based on the attack methodology described, this threat vector is likely to remain active for the next 60-90 days as threat actors exhaust the target population or shift to alternative delivery mechanisms.</p><p><strong>Detection evasion evolution (MEDIUM CONFIDENCE):</strong> Threat actors actively monitor public detection rule releases and typically modify malware signatures within 24-48 hours of public Sigma/YARA rule publication to evade new detections.</p><p><strong>Targeting scope (LOW CONFIDENCE):</strong> Without confirmed attribution or explicit campaign scope disclosure in the source material, targeting scope projection carries significant uncertainty — maintain standard monitoring posture while avoiding over-scoping defensive response.</p>"
@@ -1731,7 +1787,8 @@ class AuthorityTransformer:
         llm_attempts: list = []
         llm_result = call_llm(self.config, _build_analyst_prompt(article), attempts=llm_attempts)
         if llm_result:
-            body_content, content_source = llm_result
+            raw_llm_content, content_source = llm_result
+            body_content = _sanitize_llm_html(raw_llm_content)
         else:
             body_content = _legacy_template_enhance(article, self.config)
             content_source = "template"
