@@ -15,7 +15,10 @@
     // 'resend' is the production-grade ESP — set RESEND_API_KEY + RESEND_AUDIENCE_ID
     // in Vercel, then flip this to 'resend'. The API key never touches the browser;
     // this just calls our own /api/v1/newsletter endpoint, which holds the secret.
-    provider: 'formsubmit',
+    // The first-party endpoint records every consented lead in the server-side
+    // lead store and subscribes it to Resend when the audience is configured.
+    // FormSubmit remains the explicit fallback inside FORM_WIRER.
+    provider: 'resend',
 
     mailchimp: {
       // Get from: Mailchimp → Audience → Signup Forms → Embedded Form

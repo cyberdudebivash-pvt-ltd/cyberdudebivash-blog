@@ -164,10 +164,10 @@ jobs:
           git config user.email "sentinel-apex@cyberdudebivash.com"
           # Remove lock file from git tracking (should never be committed)
           rm -f pipeline.lock
-          CHANGED=$(git status --short | grep -v "pipeline.lock" | wc -l | tr -d ' ')
+          CHANGED=$(git status --short | awk '$0 !~ /pipeline\.lock$/ {c++} END {print c+0}')
           echo "changed=$CHANGED" >> $GITHUB_OUTPUT
           echo "📊 Changed files: $CHANGED"
-          git status --short | grep -v "pipeline.lock" | head -20
+          git status --short | awk '$0 !~ /pipeline\.lock$/ {print}' | head -20
 
       - name: "Commit and push intel (always commit for heartbeat)"
         run: |
@@ -176,7 +176,20 @@ jobs:
           git reset HEAD pipeline.lock 2>/dev/null || true
 
           # Check if there are changes (including heartbeat)
-          CHANGED=$(git status --cached --short | grep -v "pipeline.lock" | wc -l | tr -d ' ')
+          # `git status` has no --cached option.  The former command failed,
+          # returned an empty stream, and silently discarded every generated
+          # report while the job still concluded "success".  Inspect the
+          # staged index directly and fail if Git itself cannot do so.
+          if git diff --cached --quiet --exit-code; then
+            CHANGED=0
+          else
+            DIFF_EXIT=$?
+            if [ "$DIFF_EXIT" -ne 1 ]; then
+              echo "❌ Unable to inspect the staged publication set (git exit $DIFF_EXIT)"
+              exit "$DIFF_EXIT"
+            fi
+            CHANGED=$(git diff --cached --name-only | awk '$0 != "pipeline.lock" {c++} END {print c+0}')
+          fi
 
           if [ "$CHANGED" = "0" ]; then
             echo "ℹ️ No changes detected — skipping commit (feed already up-to-date)"
@@ -184,9 +197,9 @@ jobs:
           fi
 
           echo "📝 Preparing commit for $CHANGED changed file(s)..."
-          NEW_POSTS=$(git status --cached --short | grep "^A.*posts/" | wc -l | tr -d ' ')
-          API_FILES=$(git status --cached --short | grep "^A.*api/" | wc -l | tr -d ' ')
-          MOD_FILES=$(git status --cached --short | grep "^M" | wc -l | tr -d ' ')
+          NEW_POSTS=$(git diff --cached --name-status | awk '$1=="A" && $2 ~ /^posts\// {c++} END {print c+0}')
+          API_FILES=$(git diff --cached --name-status | awk '$1=="A" && $2 ~ /^api\// {c++} END {print c+0}')
+          MOD_FILES=$(git diff --cached --name-status | awk '$1=="M" {c++} END {print c+0}')
           TOTAL_PUB=$(node -e "try{const s=require('./intel-state.json');console.log(s.totalPublished||0)}catch(e){console.log(0)}" 2>/dev/null || echo 0)
           SOURCES=$(node -e "try{const d=require('./live-intel.json');const u=[...new Set(d.items.map(i=>i.source))];console.log(u.length+'srcs')}catch(e){console.log('?srcs')}" 2>/dev/null || echo '?srcs')
 

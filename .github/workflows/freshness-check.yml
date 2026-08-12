@@ -113,8 +113,7 @@ jobs:
             // - Feed should refresh every 30 min (APEX pipeline runs :00/:30)
             // - WARN at 90 min (3+ missed runs, likely backlog/delays)
             // - CRITICAL at 180 min (6+ missed runs, definite pipeline failure)
-            // - Note: Freshness check ALWAYS succeeds (does not exit non-zero)
-            // - Recovery coordination happens in separate auto-recovery step
+            // - CRITICAL exits non-zero so recovery and alert steps actually run
             let statusLevel = 'HEALTHY';
             if (ageMinutes > 180) {
               console.warn('::warning title=Pipeline Down (CRITICAL - AUTO-RECOVERY)::Latest items ' + ageMinutes + ' minutes old — pipeline stalled. Auto-recovery will trigger.');
@@ -128,7 +127,7 @@ jobs:
             }
 
             console.log('Status level: ' + statusLevel);
-            // Always exit successfully so workflow proceeds to auto-recovery step
+            if (statusLevel === 'CRITICAL') process.exit(2);
             process.exit(0);
           " 2>&1
 

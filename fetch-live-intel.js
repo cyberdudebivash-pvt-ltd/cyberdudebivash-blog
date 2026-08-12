@@ -4,7 +4,7 @@
  * HIGH-FREQUENCY MULTI-SOURCE NEAR REAL-TIME INTELLIGENCE ENGINE
  * 28 live sources | Tiered parallel ingestion | Stream-like writes
  * Source health monitoring | Lock mechanism | 5-min cadence
- * © 2026 CYBERDUDEBIVASH PRIVATE LIMITED
+ * © 2026 CYBERDUDEBIVASH
  */
 'use strict';
 const https  = require('https');
@@ -244,6 +244,32 @@ function decodeEntities(str) {
 function stripHtml(str) {
   return decodeEntities(str).replace(/<[^>]*>/g,' ').replace(/\s{2,}/g,' ').trim();
 }
+// References are evidence, not display text. Extract only absolute HTTP(S)
+// URLs from free-form source notes and reject malformed/combined values.
+function extractHttpUrls(value) {
+  const matches = decodeEntities(Array.isArray(value) ? value.join(' ') : value)
+    .match(/https?:\/\/[^\s<>"'`;,)\]]+/gi) || [];
+  return [...new Set(matches.map(candidate => {
+    const clean = candidate.replace(/[.!?:}\]]+$/g, '');
+    try {
+      const parsed = new url.URL(clean);
+      return /^https?:$/.test(parsed.protocol) ? parsed.href : null;
+    } catch (_) { return null; }
+  }).filter(Boolean))];
+}
+
+function parseCvssFromText(text) {
+  const match = String(text||'').match(/\bCVSS(?:\s*(?:v?[234]\.\d|base))?\s*(?:score)?\s*[:=]?\s*(10(?:\.0)?|[0-9](?:\.[0-9])?)\b/i);
+  if (!match) return null;
+  const score = Number(match[1]);
+  return Number.isFinite(score) && score >= 0 && score <= 10 ? score : null;
+}
+
+// A public exploit, exploit discussion, or the word "active" alone is not
+// evidence of exploitation. Only explicit observed/confirmed language is.
+function hasConfirmedExploitation(text) {
+  return /\b(actively exploited|active exploitation|exploited in the wild|in-the-wild exploitation|observed exploitation|confirmed exploitation|under active exploitation)\b/i.test(String(text||''));
+}
 function extractCVEs(text) {
   const m = (text||'').match(/CVE-\d{4}-\d{4,7}/gi)||[];
   return [...new Set(m.map(c=>c.toUpperCase()))];
@@ -474,11 +500,13 @@ async function fetchCISAKev(state) {
     const raw = await fetchWithRetry(CFG.cisaKevUrl);
     const data = JSON.parse(raw);
     const items = (data.vulnerabilities||[]).filter(v => new Date(v.dateAdded) >= cutoff).map(v => {
-      const iocs = extractIOCs(v.shortDescription||'', []);
+      const iocs = []; // KEV descriptions contain reference domains, not vetted malicious indicators.
       return { source:'cisa_kev', type:'CVE_REPORT', id:v.cveID,
         title:`${v.cveID}: ${v.vulnerabilityName} — CISA KEV Active Exploitation`,
-        desc:v.shortDescription||v.vulnerabilityName, cvss:9.5, vector:'', cweId:'',
-        refs:[v.notes].filter(Boolean), pubDate:v.dateAdded, vendor:v.vendorProject, product:v.product,
+        // CISA KEV confirms exploitation but does not publish a CVSS score.
+        // Keep severity unknown until a scored primary record is correlated.
+        desc:v.shortDescription||v.vulnerabilityName, cvss:null, vector:'', cweId:'',
+        refs:[...extractHttpUrls(v.notes), 'https://www.cisa.gov/known-exploited-vulnerabilities-catalog'], pubDate:v.dateAdded, vendor:v.vendorProject, product:v.product,
         vulnName:v.vulnerabilityName, exploited:true, cisaKev:true,
         ransomware:v.knownRansomwareCampaignUse==='Known', dueDate:v.dueDate,
         reqAction:v.requiredAction, iocs, sourceCount:1,
@@ -529,12 +557,12 @@ async function fetchCISAAlerts(state) {
       })
       .slice(0, CFG.maxRssItems).map(item => {
         const text = (item.title||'')+' '+(item.desc||'');
-        const iocs = extractIOCs(text, []);
+        const iocs = [];
         return { source:'cisa_alerts', type:'ADVISORY', id:'CISA-'+md5(item.link),
-          title:item.title, desc:(item.desc||'').slice(0,600), cvss:8.5, refs:[item.link],
+          title:item.title, desc:(item.desc||'').slice(0,600), cvss:parseCvssFromText(text), refs:extractHttpUrls(item.link),
           pubDate:item.pubDate?new Date(item.pubDate).toISOString().slice(0,10):isoNow(),
           vendor:'CISA US-CERT', product:'Multiple Products',
-          exploited:/exploit|active/i.test(text), cisaKev:false,
+          exploited:hasConfirmedExploitation(text), cisaKev:false,
           ransomware:/ransomware/i.test(text),
           cves:extractCVEs(text), link:item.link, iocs, sourceCount:1,
           daysOld: item.pubDate ? Math.floor((Date.now()-new Date(item.pubDate).getTime())/86400000) : 0 };
@@ -554,7 +582,8 @@ async function fetchGitHubAdvisories(state) {
     const raw = await fetchWithRetry(CFG.ghAdvisoryUrl);
     const data = JSON.parse(raw);
     const items = (Array.isArray(data)?data:[]).filter(a => new Date(a.published_at||a.updated_at) >= cutoff).slice(0,10).map(a => {
-      const cvss = a.cvss?.score||(a.severity==='critical'?9.0:7.5);
+      const cvssRaw = Number(a.cvss?.score);
+      const cvss = Number.isFinite(cvssRaw) && cvssRaw >= 0 && cvssRaw <= 10 ? cvssRaw : null;
       const cves = (a.cve_id?[a.cve_id]:[]).concat((a.identifiers||[]).filter(i=>i.type==='CVE').map(i=>i.value));
       const primaryId = cves[0]||('GHSA-'+md5(a.ghsa_id||a.url));
       const desc = stripHtml(a.description||a.summary||'').slice(0,800);
@@ -562,7 +591,7 @@ async function fetchGitHubAdvisories(state) {
       return { source:'github_advisories', type:'CVE_REPORT', id:primaryId,
         title:a.summary||`${primaryId} — GitHub Security Advisory`,
         desc, cvss, vector:a.cvss?.vector_string||'', cweId:(a.cwes||[])[0]?.cwe_id||'',
-        refs:[a.html_url,...(a.references||[])].filter(Boolean).slice(0,5),
+        refs:[a.html_url,...(a.references||[])].flatMap(extractHttpUrls).slice(0,5),
         pubDate:(a.published_at||isoNow()).slice(0,10),
         vendor:(a.vulnerabilities||[])[0]?.package?.ecosystem||'Open Source',
         product:(a.vulnerabilities||[])[0]?.package?.name||'Unknown Package',
@@ -735,15 +764,17 @@ function rssToIntel(item, source) {
   const id    = cves[0]||(source.toUpperCase()+'-'+md5(item.link||item.title));
   const pubDate = (() => { try { return item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : isoNow(); } catch(e){ return isoNow(); } })();
   const srcLabels = { bleepingcomputer:'BleepingComputer', thehackernews:'The Hacker News', krebsonsecurity:'KrebsOnSecurity', securityweek:'SecurityWeek', sans_isc:'SANS ISC' };
-  const iocs = extractIOCs(text, []);
+  // Editorial/RSS links are references, not automatically malicious IOCs.
+  const iocs = [];
   return {
     source, type, id,
     title:item.title||'Security Intelligence Report',
-    desc:(item.desc||'').slice(0,800), cvss:cves.length?8.0:6.5,
-    refs:[item.link].filter(Boolean), pubDate,
+    desc:(item.desc||'').slice(0,800), cvss:parseCvssFromText(text),
+    refs:extractHttpUrls(item.link), pubDate,
     vendor:srcLabels[source]||source, product:'Threat Intelligence',
-    exploited:/exploit|active|in the wild|itw|0.?day|zero.?day/i.test(text),
-    cisaKev:/cisa kev|known exploited/i.test(text),
+    exploited:hasConfirmedExploitation(text),
+    // Generic coverage mentioning KEV is not itself a structured KEV record.
+    cisaKev:false,
     ransomware:/ransomware|ransom|lockbit|qilin|akira|blackcat/i.test(text),
     cves, link:item.link, iocs, sourceCount:1,
     daysOld: item.pubDate ? Math.floor((Date.now()-new Date(item.pubDate).getTime())/86400000) : 0,
@@ -790,10 +821,10 @@ async function fetchURLhaus() {
       id:'URLHAUS-'+md5(tag+dailyDate),
       title:`Abuse.ch Malware Alert: ${tag} — ${info.count} Payloads Tracked (URLhaus)`,
       desc:`URLhaus tracking ${info.count} active payloads for ${tag} malware family. Fresh IOCs confirmed. Deploy to SIEM/firewall immediately.`,
-      cvss:7.5, refs:['https://urlhaus.abuse.ch/'],
+      cvss:null, refs:['https://urlhaus.abuse.ch/'],
       pubDate:info.date?String(info.date).slice(0,10):isoNow(),
       vendor:'Abuse.ch', product:'URLhaus Intelligence',
-      exploited:true, cisaKev:false,
+      exploited:false, cisaKev:false,
       ransomware:/ransomware|ransom/i.test(tag),
       iocs:info.hashes.slice(0,10), sourceCount:1, malwareTag:tag, daysOld:0,
     }));
@@ -825,10 +856,10 @@ async function fetchThreatFox() {
       id:'THREATFOX-'+md5(family+dailyDate),
       title:`ThreatFox IOC Alert: ${family} — Fresh Indicators Published`,
       desc:`Abuse.ch ThreatFox published ${info.iocs.length} fresh IOCs for ${family}. Active threat infrastructure. Deploy to SIEM/firewall/EDR immediately.`,
-      cvss:7.8, refs:['https://threatfox.abuse.ch/'],
+      cvss:null, refs:['https://threatfox.abuse.ch/'],
       pubDate:info.firstSeen?info.firstSeen.slice(0,10):isoNow(),
       vendor:'Abuse.ch', product:'ThreatFox Intelligence',
-      exploited:true, cisaKev:false,
+      exploited:false, cisaKev:false,
       ransomware:/ransomware|ransom|locker/i.test(family),
       iocs:info.iocs.slice(0,10), sourceCount:1, malwareFamily:family, daysOld:0,
     }));
@@ -848,7 +879,7 @@ async function fetchMSRC() {
       id:'MSRC-'+md5(u.ID||u.Alias||String(Math.random())),
       title:`Microsoft Security Update: ${u.DocumentTitle?.Value||u.Alias||'Security Advisory'} — Analysis`,
       desc:`Microsoft released security updates: ${u.DocumentTitle?.Value||''}. Review and apply immediately.`,
-      cvss:8.0, refs:[`https://msrc.microsoft.com/update-guide/`],
+      cvss:null, refs:[`https://msrc.microsoft.com/update-guide/`],
       pubDate:(u.InitialReleaseDate||isoNow()).slice(0,10),
       vendor:'Microsoft', product:'Multiple Microsoft Products',
       exploited:false, cisaKev:false, ransomware:false, iocs:[], sourceCount:1, daysOld:0,
@@ -983,16 +1014,17 @@ function normalizeSentinelApexRecord(raw, endpointKey) {
   const id = sapexCanonicalId(cves, raw, title);
   if (!id) { sapexUnknownShapeCount++; return null; }
 
-  const sevRaw    = sapexPick(raw, ['cvss', 'cvss_score', 'severity_score', 'score']);
+  const sevRaw    = sapexPick(raw, ['cvss', 'cvss_score']);
   const sevLabel  = String(sapexPick(raw, ['severity', 'threat_level', 'priority']) || '').toLowerCase();
-  const sevFromLabel = { critical: 9.5, high: 7.8, medium: 5.5, low: 3.2 }[sevLabel];
-  const cvss = Number.isFinite(Number(sevRaw)) ? Number(sevRaw) : (sevFromLabel || (cves.length ? 7.5 : 6.0));
+  const numericCvss = Number(sevRaw);
+  const cvss = sevRaw !== undefined && sevRaw !== null && sevRaw !== '' && Number.isFinite(numericCvss) && numericCvss >= 0 && numericCvss <= 10
+    ? numericCvss : null;
 
   const refs = [
     ...sapexPickArray(raw, ['references', 'refs', 'links', 'sources']).map(r => (typeof r === 'string') ? r : (r && (r.url || r.source_name))),
     ...sapexPickArray(raw, ['external_references']).map(r => r && r.url),
     sapexPick(raw, ['url', 'link', 'report_url']),
-  ].filter(Boolean).slice(0, 8);
+  ].flatMap(extractHttpUrls).filter(Boolean).slice(0, 8);
 
   const rawIocs = sapexPickArray(raw, ['iocs', 'indicators', 'observables']);
   const iocs = rawIocs.length
@@ -1008,7 +1040,7 @@ function normalizeSentinelApexRecord(raw, endpointKey) {
           source_count: 1,
         };
       }).filter(Boolean).slice(0, 20)
-    : extractIOCs(text, []);
+    : [];
 
   const nativeType = String(sapexPick(raw, ['type', 'category', 'classification']) || '').toLowerCase().replace(/[\s-]+/g, '_');
   const type = SAPEX_TYPE_MAP[nativeType] || classifyNews(text);
@@ -1018,7 +1050,7 @@ function normalizeSentinelApexRecord(raw, endpointKey) {
   const validDate  = pubDateObj && !isNaN(pubDateObj);
   const pubDate    = validDate ? pubDateObj.toISOString().slice(0, 10) : isoNow();
 
-  const exploited  = !!sapexPick(raw, ['exploited', 'in_the_wild', 'active_exploitation']) || /exploit|in.the.wild/i.test(text);
+  const exploited  = !!sapexPick(raw, ['exploited', 'in_the_wild', 'active_exploitation']) || hasConfirmedExploitation(text);
   const cisaKev    = !!sapexPick(raw, ['cisa_kev', 'cisaKev', 'kev_listed']);
   const ransomware = !!sapexPick(raw, ['ransomware']) || /ransomware/i.test(text) || type === 'RANSOMWARE';
 
@@ -1026,7 +1058,7 @@ function normalizeSentinelApexRecord(raw, endpointKey) {
     source: 'sentinel_apex', type, id,
     title: title || `Sentinel APEX Intelligence: ${id}`,
     desc: desc || title,
-    cvss, refs, pubDate,
+    cvss, severityLabel: sevLabel || null, refs, pubDate,
     // Leave blank rather than a literal "Unknown Vendor"/"Unknown Product"
     // string — every live consumer (genExecutiveSummary, genBusinessImpact,
     // genAttackChain, genCommentary, genPlaybook) already has its own
@@ -1114,11 +1146,11 @@ async function fetchExploitDB(state) {
         return {
           source:'exploitdb', type: cves.length ? 'CVE_REPORT' : 'ZERO_DAY',
           id, title: item.title || 'ExploitDB Public Exploit', desc: (item.desc||'').slice(0,600),
-          cvss: cves.length ? 8.5 : 7.5, refs: [item.link].filter(Boolean),
+          cvss: parseCvssFromText(text), refs: extractHttpUrls(item.link),
           pubDate: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : isoNow(),
           vendor: 'ExploitDB', product: 'Multiple Targets',
-          exploited: true, cisaKev: false, ransomware: false,
-          cves, iocs: extractIOCs(text, []), sourceCount: 1,
+          exploited: false, cisaKev: false, ransomware: false,
+          cves, iocs: [], sourceCount: 1,
           daysOld: item.pubDate ? Math.floor((Date.now()-new Date(item.pubDate).getTime())/86400000) : 0,
         };
       });
@@ -1144,11 +1176,11 @@ async function fetchPacketStorm(state) {
         return {
           source:'packetstorm', type: /exploit|poc|proof.of.concept/i.test(text) ? 'ZERO_DAY' : 'CVE_REPORT',
           id, title: item.title || 'PacketStorm Security Advisory', desc: (item.desc||'').slice(0,600),
-          cvss: 8.0, refs: [item.link].filter(Boolean),
+          cvss: parseCvssFromText(text), refs: extractHttpUrls(item.link),
           pubDate: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : isoNow(),
           vendor: 'PacketStorm', product: 'Multiple Targets',
-          exploited: /exploit|poc/i.test(text), cisaKev: false, ransomware: false,
-          cves, iocs: extractIOCs(text, []), sourceCount: 1,
+          exploited: hasConfirmedExploitation(text), cisaKev: false, ransomware: false,
+          cves, iocs: [], sourceCount: 1,
           daysOld: item.pubDate ? Math.floor((Date.now()-new Date(item.pubDate).getTime())/86400000) : 0,
         };
       });
@@ -1174,11 +1206,11 @@ async function fetchFullDisclosure(state) {
         return {
           source:'fulldisclosure', type: 'ZERO_DAY',
           id, title: item.title || 'Full Disclosure Vulnerability Report', desc: (item.desc||'').slice(0,600),
-          cvss: cves.length ? 8.0 : 6.5, refs: [item.link].filter(Boolean),
+          cvss: parseCvssFromText(text), refs: extractHttpUrls(item.link),
           pubDate: item.pubDate ? new Date(item.pubDate).toISOString().slice(0,10) : isoNow(),
           vendor: 'SecLists', product: 'Multiple Targets',
-          exploited: /exploit|poc|0day/i.test(text), cisaKev: false, ransomware: false,
-          cves, iocs: extractIOCs(text, []), sourceCount: 1,
+          exploited: hasConfirmedExploitation(text), cisaKev: false, ransomware: false,
+          cves, iocs: [], sourceCount: 1,
           daysOld: item.pubDate ? Math.floor((Date.now()-new Date(item.pubDate).getTime())/86400000) : 0,
         };
       });
@@ -1247,9 +1279,9 @@ async function fetchMalwareBazaar() {
               source:'malwarebazaar', type:'MALWARE_REPORT',
               id:`MALWAREBAZAAR-${s.sha256_hash?.slice(0,16)||md5(s.file_name||Math.random().toString())}`,
               title:`Malware Sample: ${s.tags?.join(' / ')||'Unknown Malware'} (${s.file_type||'binary'})`,
-              desc:text, cvss:7.5, refs:[`https://bazaar.abuse.ch/sample/${s.sha256_hash}/`].filter(Boolean),
+              desc:text, cvss:null, refs:[`https://bazaar.abuse.ch/sample/${s.sha256_hash}/`].filter(Boolean),
               pubDate:s.first_seen?.slice(0,10)||isoNow(), vendor:'MalwareBazaar', product:'Malware Sample',
-              exploited:true, ransomware:/ransomware|ransom/i.test(text),
+              exploited:false, ransomware:/ransomware|ransom/i.test(text),
               iocs:[{ type:'sha256', value:s.sha256_hash, confidence_score:0.95, first_seen:s.first_seen||isoNow() }].filter(i=>i.value),
               sourceCount:1, malwareFamily:s.signature||null, malwareTag:s.tags?.[0]||null,
             };
@@ -1265,7 +1297,7 @@ async function fetchMalwareBazaar() {
 
 async function fetchNCSCUK(state) {
   const items = await fetchRSS('https://www.ncsc.gov.uk/api/1/services/v1/report-rss-feed.xml', 'ncsc_uk', 10, state);
-  return items.map(i=>({...i, type:classifyNews((i.title||'')+(i.desc||'')), cvss:Math.max(i.cvss||7.0,7.5)}));
+  return items.map(i=>({...i, type:classifyNews((i.title||'')+(i.desc||''))}));
 }
 
 async function fetchCiscoPSIRT(state) {
@@ -1293,7 +1325,7 @@ async function fetchCiscoPSIRT(state) {
             items.push({
               source:'cisco_psirt', type:'CVE_REPORT', id,
               title:titles[i]||'Cisco Security Advisory', desc:(descs[i]||'').replace(/&lt;[^>]*&gt;/g,'').slice(0,600),
-              cvss:8.0, refs:[links[i]].filter(Boolean), pubDate:isoNow(),
+              cvss:parseCvssFromText(text), refs:extractHttpUrls(links[i]), pubDate:isoNow(),
               vendor:'Cisco', product:'Cisco Products', exploited:false, cisaKev:false,
               ransomware:false, cves, sourceCount:1,
             });
@@ -1328,9 +1360,9 @@ async function fetchOTX(state) {
             return {
               source:'otx', type:classifyNews(text), id,
               title:p.name||'OTX Threat Pulse', desc:(p.description||'').slice(0,600),
-              cvss:cves.length?7.5:6.0, refs:[`https://otx.alienvault.com/pulse/${p.id}`].filter(Boolean),
+              cvss:parseCvssFromText(text), refs:[`https://otx.alienvault.com/pulse/${p.id}`].filter(Boolean),
               pubDate:p.created?.slice(0,10)||isoNow(), vendor:'AlienVault OTX', product:'Threat Intelligence',
-              exploited:/exploit|in the wild/i.test(text), ransomware:/ransomware/i.test(text),
+              exploited:hasConfirmedExploitation(text), ransomware:/ransomware/i.test(text),
               cves, iocs, sourceCount:1,
             };
           }).filter(Boolean);
@@ -1367,9 +1399,9 @@ async function fetchRansomWatch(state) {
               source:'ransomwatch', type:'RANSOMWARE', id,
               title:`Ransomware Victim Listed: ${title}`,
               desc:`RansomWatch dark web monitoring: ${group} ransomware group has listed a new victim. Data leak site activity detected. Organizations should verify exposure.`,
-              cvss:8.5, refs:[links[i]].filter(Boolean),
+              cvss:null, refs:extractHttpUrls(links[i]),
               pubDate:pubs[i]?new Date(pubs[i]).toISOString().slice(0,10):isoNow(),
-              vendor:group, product:'Ransomware Victim', exploited:true, ransomware:true,
+              vendor:group, product:'Ransomware Victim', exploited:false, ransomware:true,
               cisaKev:false, cves:[], sourceCount:1,
               darkweb_tags:['ransomware-leak','dark-web'],
             });
@@ -1406,7 +1438,7 @@ async function fetchAIIncidentDB(state) {
               source:'ai_incident_db', type:'AI_SECURITY', id,
               title:`AI Security Incident: ${title}`,
               desc:(descs[i]||title).slice(0,600),
-              cvss:6.5, refs:[links[i]].filter(Boolean),
+              cvss:parseCvssFromText(`${title} ${descs[i]||''}`), refs:extractHttpUrls(links[i]),
               pubDate:isoNow(), vendor:'AI Incident Database', product:'AI Systems',
               exploited:false, ransomware:false, cisaKev:false,
               cves:[], sourceCount:1, ai_security_tags:['ai-incident','llm'],
@@ -1427,6 +1459,18 @@ function computePriorityScore(item) {
   // CVSS base (0-40 pts)
   const cvss = item.cvss || 0;
   score += Math.min(40, Math.round(cvss * 4.2));
+
+  // Priority is an editorial routing score, not a substitute CVSS. Preserve
+  // authoritative and indicator-feed signal without inventing vulnerability
+  // severity values for sources that do not publish them.
+  const sourceSignal = {
+    cisa_kev:25, cisa_alerts:25, nvd:20, github_advisories:18,
+    msrc:18, cisco_psirt:18, ncsc_uk:16,
+    urlhaus:16, threatfox:16, malwarebazaar:16,
+    exploitdb:12, packetstorm:10, fulldisclosure:8,
+    ransomwatch:14, otx:10, ai_incident_db:8,
+  };
+  score += sourceSignal[item.source] || 0;
 
   // ── PHASE 5: SIGNAL BOOSTING ─────────────────────────────────────
   // CISA KEV confirmation (25 pts) — highest single signal
@@ -1520,8 +1564,10 @@ function correlateAndMerge(sources) {
         // Track all sources
         base._sources = [...new Set([...(existing._sources||[existing.source]), item.source])];
         base.sourceCount = base._sources.length;
-        // Better CVSS
-        base.cvss = Math.max(existing.cvss||0, item.cvss||0);
+        // Best verified CVSS; preserve unknown rather than manufacturing 0.
+        const cvssValues = [existing.cvss, item.cvss]
+          .filter(v => typeof v === 'number' && v >= 0 && v <= 10);
+        base.cvss = cvssValues.length ? Math.max(...cvssValues) : null;
         // Recency — take newer date
         const ed = new Date(existing.pubDate||0), id = new Date(item.pubDate||0);
         base.pubDate  = ed > id ? existing.pubDate : item.pubDate;
@@ -1727,7 +1773,7 @@ function genMultiPlatformDetections(item, esc) {
       splunk: 'Splunk (SPL)', osquery: 'OSQuery (Endpoint)',
     };
     let html = `<h2 class="sh"><span>🧠</span> Multi-Platform Detection Engineering</h2>`;
-    html += `<p class="bp">Evidence-driven detections mapped to MITRE ATT&amp;CK, generated by the SENTINEL APEX Detection Engine — one validated rule per technique across SIEM, EDR, and network platforms. <strong>SOC Pro subscribers</strong> receive these as deploy-ready rule packs with each pipeline run.</p>`;
+    html += `<p class="bp">Reference detection drafts mapped to MITRE ATT&amp;CK by the SENTINEL APEX Detection Engine. These rules are not environment-validated: review source evidence, test syntax, establish a baseline, and tune before deployment.</p>`;
     for (const d of detections) {
       html += `<h3 style="font-size:1rem;color:var(--apex-cyan);margin:1.2rem 0 .5rem">${esc(d.technique_id)} — ${esc(d.title)}</h3>`;
       for (const fmt of ['sigma', 'kql', 'splunk', 'osquery']) {
@@ -1882,7 +1928,9 @@ function genExecutiveSummary(item) {
   // fallback phrases.
   const vendorProduct = item.vendor && item.product ? `${item.vendor} ${item.product}`
     : item.vendor || item.product || 'a system not yet identified in available sources';
-  const cvss=item.cvss||7.0, tl=item.threatLevel||'HIGH';
+  const hasCvss = typeof item.cvss === 'number' && item.cvss >= 0 && item.cvss <= 10;
+  const cvssText = hasCvss ? `CVSS ${item.cvss}` : 'CVSS not assigned in the available primary sources';
+  const tl=item.threatLevel||item.severityLabel||'UNASSESSED';
   const srcList = (item._sources||[item.source]).join(', ');
   // Exploitation status is stated ONLY from verifiable signals (KEV / reported
   // exploitation). Absent those, we say so plainly rather than asserting a
@@ -1891,95 +1939,65 @@ function genExecutiveSummary(item) {
     ? 'CISA has confirmed active exploitation in the wild (listed in the Known Exploited Vulnerabilities catalog).'
     : item.exploited
     ? 'Active exploitation has been reported in the wild — prioritize accordingly.'
-    : 'No confirmed in-the-wild exploitation at the time of writing; prioritize on exposure, privilege, and CVSS.';
+    : 'Available sources do not confirm in-the-wild exploitation at the time of writing; prioritize using exposure, privilege, and verified severity data.';
   const ransomLine = item.ransomware ? ' Source reporting associates this with known ransomware activity.' : '';
-  return `This report analyzes ${item.id} affecting ${vendorProduct} (CVSS ${cvss}, ${tl} severity). ${exploitLine}${ransomLine} Corroborated across ${item.sourceCount||1} source(s): ${srcList}. Verify all specifics against the primary sources linked below before acting.`;
+  return `This report covers ${item.id} affecting ${vendorProduct} (${cvssText}; ${tl} priority). ${exploitLine}${ransomLine} Evidence was collected from ${item.sourceCount||1} source(s): ${srcList}. Verify all specifics against the primary sources linked below before acting.`;
 }
 
 function genBusinessImpact(item) {
-  const product=item.product||'affected product', vendor=item.vendor||'vendor';
-  const cvss=item.cvss||7.0;
+  const product=item.product||'affected product';
   const impacts = [];
-  if (cvss>=9.0||item.cisaKev) impacts.push('Complete system compromise possible — treat as active incident');
-  if (item.ransomware) impacts.push('Ransomware deployment risk — offline backup integrity verification required immediately');
-  if (item.exploited) impacts.push('Threat actors actively targeting this vulnerability — attack window is open now');
-  if (/rce|remote code/i.test((item.desc||'')+(item.title||''))) impacts.push('Remote code execution — full server takeover without authentication possible');
-  if (/priv|escalation|lpe|eop/i.test((item.desc||'')+(item.title||''))) impacts.push('Privilege escalation — local attacker can become SYSTEM/root');
-  if (/auth bypass|unauthenticated/i.test((item.desc||'')+(item.title||''))) impacts.push('Authentication bypass — all access controls circumvented');
-  if (/data breach|exfiltrat/i.test((item.desc||'')+(item.title||''))) impacts.push('Data exfiltration risk — customer and sensitive data at risk');
-  if (/supply chain/i.test((item.desc||'')+(item.title||''))) impacts.push('Supply chain compromise — downstream customers may be affected');
-  if (!impacts.length) impacts.push(`${vendor} ${product} users face material security risk requiring immediate remediation`);
+  const text=(item.desc||'')+' '+(item.title||'');
+  if (item.cisaKev || item.exploited) impacts.push('Confirmed exploitation raises remediation priority; organization-specific impact depends on exposure and affected privileges');
+  if (item.ransomware) impacts.push('Source material associates this activity with ransomware; validate backup, segmentation, and incident-response readiness');
+  if (/rce|remote code execution/i.test(text)) impacts.push('Source material describes remote code execution; validate authentication, network reachability, and execution prerequisites');
+  if (/privilege escalation|\blpe\b|elevation of privilege/i.test(text)) impacts.push('Source material describes privilege escalation; impact depends on the access an attacker must already possess');
+  if (/auth(?:entication)? bypass|unauthenticated/i.test(text)) impacts.push('Source material describes an authentication-control weakness; confirm the exact affected interface and prerequisites');
+  if (/data breach|exfiltrat/i.test(text)) impacts.push('Source material describes possible data exposure; determine whether sensitive data and affected systems intersect');
+  if (/supply chain/i.test(text)) impacts.push('Source material describes a supply-chain issue; identify affected dependencies and downstream deployments');
+  if (!impacts.length) impacts.push(`Available sources do not establish organization-specific business impact; inventory ${product}, validate exposure, and use the primary advisory for scope`);
   return impacts;
 }
 
 function genAttackChain(item) {
   const t = ((item.desc||'')+(item.title||'')).toLowerCase();
   const chain = [];
-  chain.push({ phase:'Reconnaissance', detail:`Attacker identifies exposed ${item.product||'target'} instances via Shodan, Censys, or targeted scanning`, tactic:'TA0043' });
-  if (/unauthenticated|no auth|auth bypass/i.test(t)) {
-    chain.push({ phase:'Initial Access', detail:'Unauthenticated exploitation — no credentials required. Single HTTP request sufficient', tactic:'T1190' });
-  } else if (/phishing|email|attachment/i.test(t)) {
-    chain.push({ phase:'Initial Access', detail:`Spear-phishing with malicious attachment or link targeting ${item.vendor||'the affected'} users`, tactic:'T1566' });
-  } else {
-    chain.push({ phase:'Initial Access', detail:`Exploitation of ${item.id} in ${item.vendor} ${item.product}`, tactic:'T1190' });
-  }
-  if (/rce|remote code|code execution/i.test(t)) chain.push({ phase:'Execution', detail:'Remote code execution achieved — attacker runs arbitrary commands on target system', tactic:'T1203' });
-  if (/escalation|lpe|eop|priv/i.test(t)) chain.push({ phase:'Privilege Escalation', detail:'Local privilege escalation to SYSTEM/root for full control', tactic:'T1068' });
-  chain.push({ phase:'Persistence', detail:'Backdoor, scheduled task, or new admin account created for persistent access', tactic:'T1053' });
-  if (item.ransomware) {
-    chain.push({ phase:'Lateral Movement', detail:'Credential harvesting and network spread using Mimikatz, BloodHound, or living-off-the-land techniques', tactic:'T1550' });
-    chain.push({ phase:'Impact', detail:'Data encrypted with double-extortion — exfiltration before encryption. Ransomware demand issued', tactic:'T1486' });
-  } else if (item.type==='DATA_BREACH') {
-    chain.push({ phase:'Collection', detail:'Sensitive data harvested from databases, file shares, and cloud storage', tactic:'T1005' });
-    chain.push({ phase:'Exfiltration', detail:'Data exfiltrated via encrypted C2 channel to attacker-controlled infrastructure', tactic:'T1041' });
-  } else {
-    chain.push({ phase:'Command & Control', detail:'Attacker establishes persistent C2 channel using HTTPS or DNS tunneling', tactic:'T1071' });
-    chain.push({ phase:'Impact / Objectives', detail:'Intellectual property theft, espionage, cryptomining, or preparation for future attack stage', tactic:'T1657' });
-  }
+  if (/phishing|malicious (?:email|attachment|link)/i.test(t)) chain.push({ phase:'Initial Access', detail:'The source describes a phishing or malicious-content delivery path; validate the linked advisory for prerequisites', tactic:'T1566' });
+  if (/exploit(?:ation)? of (?:a )?public-facing|internet-facing|remote code execution|\brce\b/i.test(t)) chain.push({ phase:'Initial Access / Execution', detail:`The source describes exploitation of ${item.id}; the exact reachability and execution prerequisites must be validated`, tactic:'T1190 / T1203' });
+  if (/privilege escalation|elevation of privilege|\blpe\b/i.test(t)) chain.push({ phase:'Privilege Escalation', detail:'The source describes elevation of privilege; required prior access is not inferred here', tactic:'T1068' });
+  if (item.ransomware && /encrypt|ransomware deployment|ransom demand/i.test(t)) chain.push({ phase:'Impact', detail:'The source describes ransomware or encryption impact; no unreported lateral-movement path is assumed', tactic:'T1486' });
+  if (!chain.length) chain.push({ phase:'Evidence boundary', detail:'Available sources do not establish a complete attack chain. No reconnaissance, persistence, lateral-movement, or command-and-control steps are inferred.', tactic:'Not assigned' });
   return chain;
 }
 
 function genCommentary(item) {
-  const vendor=item.vendor||'the affected vendor', product=item.product||'the affected product', cvss=item.cvss||7.0;
-  const urgency = cvss>=9.5?'MAXIMUM':cvss>=9.0?'CRITICAL':cvss>=8.0?'HIGH':'ELEVATED';
-  const typeCommentary = {
-    CVE_REPORT:     `This ${cvss>=9?'critical':'high-severity'} vulnerability in ${vendor} ${product} (CVSS ${cvss}) represents a significant attack surface. SENTINEL APEX assesses exploitation to be technically feasible with moderate effort. Organizations running ${product} in internet-facing or privileged positions face immediate risk.`,
-    ZERO_DAY:       `This zero-day vulnerability is being actively exploited before a vendor patch is available. SENTINEL APEX intelligence shows unpatched vulnerabilities are consistently weaponized within 24-72 hours of public disclosure. Nation-state APT groups and ransomware operators actively monitor disclosures and race to weaponize.`,
-    RANSOMWARE:     `SENTINEL APEX is tracking active ransomware campaign activity. Modern ransomware operations are double-extortion campaigns combining data theft with encryption. Incident response readiness, offline backups, and network segmentation are non-negotiable defensive requirements.`,
-    MALWARE_REPORT: `Active malware campaign infrastructure has been identified and confirmed. This campaign is using live distribution infrastructure currently serving payloads. The IOCs in this report should be blocked immediately across all security controls — firewall, proxy, EDR, and email gateway.`,
-    DATA_BREACH:    `A data breach or significant data exposure event has been identified. SENTINEL APEX recommends immediate assessment of third-party data sharing relationships. Credential stuffing attacks typically follow major breach disclosures within 48-72 hours.`,
-    THREAT_ACTOR:   `Nation-state or APT actor activity has been observed. State-sponsored cyber operations have dramatically increased in targeting critical infrastructure, defense supply chains, and financial systems. TTPs include living-off-the-land techniques, supply chain compromise, and persistence through legitimate tooling.`,
-    AI_SECURITY:    `AI and machine learning security vulnerabilities represent an emerging attack surface that most organizations are unprepared to defend. SENTINEL APEX tracks AI security threats including prompt injection, model poisoning, and AI-assisted cyberattacks.`,
-    NEWS_REPORT:    `SENTINEL APEX is monitoring this developing security event. We are tracking indicators, attribution signals, and potential downstream impact, and will update this report as verified details emerge. Treat early details as provisional until confirmed against the primary sources below.`,
-    ADVISORY:       `This security advisory from ${vendor} covers critical remediation requirements. SENTINEL APEX recommends treating all vendor advisories as actionable intelligence requiring timely response.`,
-  };
-  const base = typeCommentary[item.type]||typeCommentary['NEWS_REPORT'];
-  const kevNote = item.cisaKev ? `\n\nCISA KNOWN EXPLOITED VULNERABILITY: Added to KEV catalog confirming active exploitation. ${item.dueDate?`Federal agencies must remediate by ${item.dueDate}.`:'All organizations must patch immediately.'} Required action: ${item.reqAction||'Apply vendor patch immediately.'}` : '';
-  const rsNote  = item.ransomware ? `\n\nRANSOMWARE CORRELATION: Ransomware-as-a-service groups have been observed using this attack vector.` : '';
-  const multiSrc = (item.sourceCount||1)>=2 ? `\n\nMULTI-SOURCE CORROBORATION: This intelligence has been confirmed across ${item.sourceCount} independent sources — ${(item._sources||[]).join(', ')} — elevating confidence rating to HIGH.` : '';
-  const urgencyNote = `\n\nSENTINEL APEX URGENCY: ${urgency}. Score: ${item.priority||0}/100 ${item.threatLevel||'HIGH'}. ${item.exploited?'Active exploitation confirmed — treat as active incident requiring immediate response.':'Patch before exploitation activity begins.'}`;
-  return base+kevNote+rsNote+multiSrc+urgencyNote;
+  const vendorProduct=[item.vendor,item.product].filter(Boolean).join(' ')||'the affected technology';
+  const scoreText=typeof item.cvss==='number'?`CVSS ${item.cvss}`:'no verified CVSS score in the ingested sources';
+  const evidence=`This automated assessment covers ${vendorProduct} using ${item.sourceCount||1} collected source(s) and ${scoreText}. It does not claim direct telemetry, incident-response observation, or independent exploit validation.`;
+  const kevNote=item.cisaKev
+    ? ` CISA KEV listing confirms in-the-wild exploitation.${item.dueDate?` The binding federal remediation date is ${item.dueDate}.`:''}${item.reqAction?` CISA required action: ${item.reqAction}`:''}`
+    : item.exploited ? ' Source language explicitly reports exploitation; validate that claim in the linked primary reference.' : ' In-the-wild exploitation is not confirmed by the available evidence.';
+  const correlation=(item.sourceCount||1)>=2
+    ? ` The item appeared in ${(item.sourceCount||1)} sources (${(item._sources||[]).join(', ')}); source count is corroboration of reporting, not proof of every technical claim.` : '';
+  return evidence+kevNote+correlation;
 }
 
 function genPlaybook(item) {
   const p = item.product||'affected product', v = item.vendor||'vendor';
   const base = [
-    `IMMEDIATE (0-1hr): Identify all instances of ${p} in your environment via CMDB/asset inventory`,
-    `IMMEDIATE (0-1hr): Apply vendor patch — no maintenance window exception for ${item.threatLevel||'HIGH'} threats`,
-    `IMMEDIATE (1-2hr): If no patch available: implement WAF rules, ACLs, or network-level compensating controls`,
-    `SHORT-TERM (2-4hr): Deploy Sigma detection rule to SIEM — validate alert generation in test environment`,
-    `SHORT-TERM (4-8hr): Review logs for exploitation indicators (anomalous ${p} requests, error spikes)`,
-    `SHORT-TERM (8-24hr): Hunt for post-exploitation: new admin accounts, scheduled tasks, lateral movement`,
-    item.cisaKev ? `MANDATORY: CISA KEV remediation deadline ${item.dueDate||'TBD'} — document for compliance reporting` : `MONITOR: Subscribe to ${v} security advisories for patch updates`,
-    `ONGOING: Track SENTINEL APEX intelligence feed for follow-on campaigns targeting ${p}`,
+    `Inventory ${p} and identify internet exposure, privileges, versions, and business criticality`,
+    `Open the linked ${v} or primary advisory and verify affected versions, prerequisites, and available remediation`,
+    `Test the vendor remediation or documented compensating control before controlled deployment`,
+    `Preserve relevant logs and review the primary advisory for concrete detection artifacts; do not treat reference rules as validated`,
+    item.cisaKev ? `Track the CISA KEV remediation date ${item.dueDate||'listed in the catalog'} where it applies to your organization` : `Monitor ${v} advisories for material updates`,
+    `Document the decision, evidence sources, asset scope, validation result, and residual risk`,
   ];
   if (item.ransomware) {
     base.push('VALIDATE: Offline backup integrity — test restoration procedures NOW before encryption event');
-    base.push('HUNT: PowerShell/WMI anomalies, vssadmin delete shadows, Cobalt Strike, Mimikatz indicators');
-    base.push('ISOLATE: If compromise suspected — isolate affected systems before ransomware spreads laterally');
+    base.push('If compromise is suspected, invoke the approved incident-response process and isolate systems according to your containment plan');
   }
   if ((item.iocs||[]).length) {
-    base.splice(1, 0, `IMMEDIATE: Block all ${item.iocs.length} IOCs in this report at firewall, proxy, DNS, and EDR simultaneously`);
+    base.splice(1, 0, `Validate the provenance, context, and expected false-positive impact of all ${item.iocs.length} indicators before enforcement`);
   }
   if ((item.sourceCount||1) >= 2) {
     base.push(`INTEL: Multi-source confirmed (${(item._sources||[]).join(', ')}) — share IOCs with your ISAC/ISAO partners`);
@@ -2038,9 +2056,9 @@ function qualityGate(item) {
   if (!hasCvss && !hasTl) reasons.push('Missing: cvss or threatLevel');
 
   // Must have at least one reference or link
-  const refs = item.refs || item.references || [];
+  const refs = (item.refs || item.references || []).flatMap(extractHttpUrls);
   const link = item.link;
-  if (refs.length === 0 && !link) reasons.push('Missing: references / link');
+  if (refs.length === 0 && extractHttpUrls(link).length === 0) reasons.push('Missing/invalid: references / link');
 
   // Intelligence score must be calculable
   if (typeof item.priority !== 'number') reasons.push('Missing: priority score');
@@ -2231,9 +2249,11 @@ function generatePostHTML(item) {
   const priorIntel = genPriorIntelligence(item, escHtml);
   const structuredReasoning = genStructuredReasoning(item, escHtml);
   const pubDateFmt = fmtDate(item.pubDate||isoNow()), today = isoNow();
-  const cvss = item.cvss||7.0;
-  const cvssColor = cvss>=9.0?'#ff3b3b':cvss>=7.0?'#ff8c00':'#ffe000';
-  const sevLabel = cvss>=9.5?'CRITICAL':cvss>=9.0?'CRITICAL':cvss>=7.0?'HIGH':'MEDIUM';
+  const hasCvss = typeof item.cvss === 'number' && item.cvss >= 0 && item.cvss <= 10;
+  const cvss = hasCvss ? item.cvss : null;
+  const cvssDisplay = hasCvss ? String(cvss) : 'Not assigned';
+  const cvssColor = !hasCvss?'#8b949e':cvss>=9.0?'#ff3b3b':cvss>=7.0?'#ff8c00':'#ffe000';
+  const sevLabel = hasCvss ? (cvss>=9.0?'CRITICAL':cvss>=7.0?'HIGH':cvss>=4.0?'MEDIUM':'LOW') : String(item.severityLabel||'UNASSESSED').toUpperCase();
   const tl = item.threatLevel||sevLabel;
   const score = item.priority||0;
   const typeLabels = { CVE_REPORT:'🔴 CVE ANALYSIS', ZERO_DAY:'💀 ZERO-DAY', RANSOMWARE:'🏴 RANSOMWARE', MALWARE_REPORT:'🦠 MALWARE', DATA_BREACH:'⚠️ DATA BREACH', THREAT_ACTOR:'🎯 THREAT ACTOR', AI_SECURITY:'🤖 AI SECURITY', NEWS_REPORT:'📡 INTEL', ADVISORY:'🛡️ ADVISORY' };
@@ -2251,7 +2271,7 @@ function generatePostHTML(item) {
   // escHtml()-wrapped in HTML attributes below, but raw in the JSON-LD block
   // — script-tag content isn't HTML-entity-decoded, so escHtml would corrupt
   // the query string's "&" separators into literal "&amp;" text there.
-  const ogImageUrl = `${CFG.baseUrl}/api/og?title=${encodeURIComponent(safeTitle)}&severity=${encodeURIComponent(sevLabel)}&cve=${encodeURIComponent(item.id||'')}&cvss=${encodeURIComponent(cvss)}&type=${encodeURIComponent(typeLabel)}`;
+  const ogImageUrl = `${CFG.baseUrl}/api/og?title=${encodeURIComponent(safeTitle)}&severity=${encodeURIComponent(sevLabel)}&cve=${encodeURIComponent(item.id||'')}&cvss=${encodeURIComponent(hasCvss?cvss:'')}&type=${encodeURIComponent(typeLabel)}`;
   const isCVEItem = /^CVE-/i.test(item.id);
   const cleanDescText = stripHtml(item.desc||'')
     .replace(/```[\s\S]*?```/g,' ')
@@ -2263,22 +2283,22 @@ function generatePostHTML(item) {
   // Truncate at a word boundary so Google/social snippets never end mid-word
   const truncAtWord = (s,n)=> s.length<=n ? s : s.slice(0,n+1).replace(/\s+\S*$/,'').slice(0,n);
   const metaDesc = isCVEItem
-    ? `${item.id} (CVSS ${cvss}) — ${truncAtWord(cleanDescText,130)}. Analysis, IOCs and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.`
+    ? `${item.id}${hasCvss?` (CVSS ${cvss})`:''} — ${truncAtWord(cleanDescText,130)}. Source-attributed analysis and response guidance by CYBERDUDEBIVASH SENTINEL APEX.`
     : `${(truncAtWord(cleanDescText,155)||truncAtWord(item.title,155))}. Cybersecurity analysis, IOCs, and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.`;
   const badges = [
     item.cisaKev?`<span class="badge bdg-cisa">⚠️ CISA KEV</span>`:'',
     item.exploited?`<span class="badge bdg-red">⚡ ACTIVELY EXPLOITED</span>`:'',
     item.ransomware?`<span class="badge bdg-purple">🏴 RANSOMWARE</span>`:'',
     `<span class="badge bdg-score">${score}/100</span>`,
-    `<span class="badge bdg-red">CVSS ${cvss}</span>`,
+    `<span class="badge ${hasCvss?'bdg-red':'bdg-cyan'}">CVSS ${cvssDisplay}</span>`,
     `<span class="badge bdg-cyan">${typeLabel}</span>`,
     (item.sourceCount||1)>=2?`<span class="badge bdg-green">✓ ${item.sourceCount}x CONFIRMED</span>`:'',
   ].filter(Boolean).join('\n      ');
   const cveIds  = item.cves||(item.id?.startsWith('CVE')?[item.id]:[]);
-  const cveRows = cveIds.slice(0,5).map(cve=>`<tr><td style="font-family:var(--mono);color:var(--apex-cyan)">${escHtml(cve)}</td><td><a href="https://nvd.nist.gov/vuln/detail/${escHtml(cve)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">NVD →</a></td><td>${cvss}</td></tr>`).join('\n');
+  const cveRows = cveIds.slice(0,5).map(cve=>`<tr><td style="font-family:var(--mono);color:var(--apex-cyan)">${escHtml(cve)}</td><td><a href="https://nvd.nist.gov/vuln/detail/${escHtml(cve)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">NVD →</a></td><td>${cvssDisplay}</td></tr>`).join('\n');
   const iocRows = (item.iocs||[]).filter(ioc=>ioc&&ioc.value).slice(0,10).map(ioc=>`<tr><td style="font-family:var(--mono);font-size:11px;color:var(--apex-cyan)">${escHtml(String(ioc.value||'').slice(0,80))}</td><td>${escHtml(ioc.type||'ioc')}</td><td style="text-align:center">${Math.round((ioc.confidence_score||0.8)*100)}%</td><td style="color:var(--apex-muted);font-size:11px">${escHtml(ioc.first_seen||isoNow())}</td></tr>`).join('\n');
   // v5.1: Filter refs to valid URLs only — prevents NVD GHSA description strings leaking into hrefs
-  const validRefs = (item.refs||[]).filter(r => typeof r === 'string' && /^https?:\/\//i.test(r.trim()));
+  const validRefs = (item.refs||[]).flatMap(extractHttpUrls);
   const refLinks = validRefs.slice(0,5).map(r=>`<li><a href="${escHtml(r)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">${escHtml(r.replace(/https?:\/\//,'').slice(0,70))}</a></li>`).join('\n');
   const playbookItems = playbook.map((s,i)=>`<li class="action-item"><span class="action-num">${i+1}</span>${escHtml(s)}</li>`).join('\n      ');
   const bizImpactItems = bizImpact.map(b=>`<li class="impact-item">⚠️ ${escHtml(b)}</li>`).join('\n');
@@ -2398,7 +2418,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
   <span class="ticker-item">⚡ ${escHtml(item.id)}${vendorProductLabel?` — ${escHtml(vendorProductLabel)}`:''} — Score ${score}/100 ${tl}</span>
   <span class="ticker-item">🛡️ CYBERDUDEBIVASH SENTINEL APEX — 24/7 Global Threat Intelligence v4.0</span>
   <span class="ticker-item">⚠️ ${item.cisaKev?'CISA KEV CONFIRMED — ACTIVE EXPLOITATION':item.exploited?'ACTIVE EXPLOITATION DETECTED':'HIGH-PRIORITY SECURITY ADVISORY'}</span>
-  <span class="ticker-item">⚡ ${escHtml(item.id)} — CVSS ${cvss} — ${(item.sourceCount||1)} Source(s) Confirmed</span>
+  <span class="ticker-item">⚡ ${escHtml(item.id)} — CVSS ${cvssDisplay} — ${(item.sourceCount||1)} Source(s) Collected</span>
   <span class="ticker-item">🛡️ CYBERDUDEBIVASH SENTINEL APEX — 24/7 Global Threat Intelligence v4.0</span>
   <span class="ticker-item">⚠️ ${item.cisaKev?'CISA KEV CONFIRMED — ACTIVE EXPLOITATION':item.exploited?'ACTIVE EXPLOITATION DETECTED':'HIGH-PRIORITY SECURITY ADVISORY'}</span>
 </div></div>
@@ -2443,9 +2463,9 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
       <tr><td>Source(s)</td><td>${srcBadges}</td></tr>
     </tbody></table>
     ${cveIds.length>0?`<h2 class="sh"><span>🔴</span> CVE Reference</h2><table class="tbl"><thead><tr><th>CVE ID</th><th>Reference</th><th>Score</th></tr></thead><tbody>${cveRows||`<tr><td style="font-family:var(--mono);color:var(--apex-cyan)">${escHtml(item.id)}</td><td><a href="https://nvd.nist.gov/vuln/detail/${escHtml(item.id)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">NVD →</a></td><td>CVSS ${cvss}</td></tr>`}</tbody></table>`:''}
-    ${iocRows?`<h2 class="sh"><span>🏷️</span> Indicators of Compromise — Enriched IOC Feed</h2><p class="bp">Normalized IOCs with confidence scoring. Block immediately across all enforcement points. <strong>SOC Pro subscribers</strong> receive enriched IOC bundles with full attribution and STIX 2.1 feeds.</p><table class="tbl"><thead><tr><th>Indicator Value</th><th>Type</th><th>Confidence</th><th>First Seen</th></tr></thead><tbody>${iocRows}</tbody></table>`:''}
-    ${showDetection?`<h2 class="sh"><span>🔍</span> Detection Rules — Sigma (SIEM)</h2><p class="bp">Deploy to Splunk, Elastic, Microsoft Sentinel, or QRadar. SOC Pro subscribers receive pre-compiled SIEM-native query packs updated with each pipeline run.</p><div class="code-block"><span class="code-lbl">Sigma YAML</span>${escHtml(sigma)}</div>
-    <h2 class="sh"><span>📡</span> Detection Rules — YARA (Endpoint)</h2><p class="bp">Deploy to endpoint detection platforms. Enterprise subscribers receive tuned, FP-validated YARA rule packs.</p><div class="code-block"><span class="code-lbl">YARA</span>${escHtml(yara)}</div>`:''}
+    ${iocRows?`<h2 class="sh"><span>🏷️</span> Source-Provided Indicators</h2><p class="bp">Indicators are normalized from structured source fields. Validate ownership, context, freshness, and false-positive impact before monitoring or blocking.</p><table class="tbl"><thead><tr><th>Indicator Value</th><th>Type</th><th>Source Confidence</th><th>First Seen</th></tr></thead><tbody>${iocRows}</tbody></table>`:''}
+    ${showDetection?`<h2 class="sh"><span>🔍</span> Reference Detection Draft — Sigma</h2><p class="bp">Not production-validated. Review the evidence basis, test syntax, baseline expected activity, and tune in a non-production environment.</p><div class="code-block"><span class="code-lbl">Sigma YAML — reference draft</span>${escHtml(sigma)}</div>
+    <h2 class="sh"><span>📡</span> Reference Detection Draft — YARA</h2><p class="bp">Not false-positive validated. Confirm that strings identify malicious behavior rather than the vulnerability name or normal product artifacts.</p><div class="code-block"><span class="code-lbl">YARA — reference draft</span>${escHtml(yara)}</div>`:''}
     ${showDetection?multiDetections:''}
     ${showDetection?intelligenceProducts:''}
     <h2 class="sh"><span>🛡️</span> SOC Response Playbook</h2>
@@ -2457,12 +2477,12 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
     <div style="background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(0,153,255,0.06));border:1px solid rgba(139,92,246,0.3);border-radius:14px;padding:1.75rem;margin:2.5rem 0;text-align:center">
       <div style="font-size:10px;color:#8b5cf6;font-weight:800;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.6rem">SENTINEL INTEL BRIEF — FREE</div>
       <h3 style="font-size:1.15rem;font-weight:800;color:#fff;margin:.4rem 0">Get Critical CVE Alerts Before They Become Incidents</h3>
-      <p style="font-size:.85rem;color:#94a3b8;margin:.5rem 0 1rem;line-height:1.6">Join 10,000+ SOC analysts receiving daily threat intelligence, detection rules &amp; CVE alerts. Free. No spam. Unsubscribe anytime.</p>
-      <form action="https://app.beehiiv.com/subscribe" method="POST" target="_blank" style="display:flex;gap:.5rem;justify-content:center;max-width:420px;margin:0 auto 1rem" onsubmit="typeof trackEvent==='function'&&trackEvent('post_newsletter_capture','subscribe','submit')">
+      <p style="font-size:.85rem;color:#94a3b8;margin:.5rem 0 1rem;line-height:1.6">Receive source-attributed CVE alerts and practical response guidance. Free. No spam. Unsubscribe anytime.</p>
+      <form action="/newsletter.html" method="GET" style="display:flex;gap:.5rem;justify-content:center;max-width:420px;margin:0 auto 1rem" onsubmit="typeof trackEvent==='function'&&trackEvent('post_newsletter_capture','subscribe','open_form')">
         <input type="email" name="email" placeholder="soc@yourcompany.com" required style="flex:1;padding:.65rem 1rem;border-radius:8px;background:#0a0f1a;border:1px solid rgba(255,255,255,.15);color:#fff;font-size:.9rem;min-width:0">
         <button type="submit" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;padding:.65rem 1.25rem;border-radius:8px;border:none;font-weight:800;font-size:.85rem;cursor:pointer;white-space:nowrap">Subscribe Free →</button>
       </form>
-      <p style="font-size:.7rem;color:#475569;margin:0">Read by 10,000+ security professionals worldwide · Unsubscribe at any time</p>
+      <p style="font-size:.7rem;color:#475569;margin:0">Consent-based subscription · Unsubscribe at any time</p>
     </div>
     <!-- Related Resources: Hub internal links -->
     <div style="background:rgba(0,212,255,0.04);border:1px solid rgba(0,212,255,0.12);border-radius:12px;padding:1.5rem;margin:2rem 0">
@@ -2476,17 +2496,17 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
         <a href="/contact.html" style="display:flex;align-items:center;gap:.5rem;padding:.7rem 1rem;background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.15);border-radius:8px;text-decoration:none;color:#94a3b8;font-size:.8rem;transition:.2s" onmouseover="this.style.color='#00d4ff'" onmouseout="this.style.color='#94a3b8'"><span>🏢</span>Enterprise Contact</a>
       </div>
     </div>
-    <div class="intel-sig"><div class="isb">⚡ CYBERDUDEBIVASH SENTINEL APEX v4.0</div><div class="iss">Intelligence report generated by CYBERDUDEBIVASH SENTINEL APEX v4.0<br>Report ID: SENTINEL-${escHtml(item.id)}-${today} | Priority: ${score}/100 ${tl} | Sources: ${item.sourceCount||1}<br>&copy; ${new Date().getFullYear()} CYBERDUDEBIVASH PRIVATE LIMITED<br><strong style="color:var(--apex-cyan)">Republication requires written attribution to CYBERDUDEBIVASH SENTINEL APEX</strong></div></div>
+    <div class="intel-sig"><div class="isb">⚡ CYBERDUDEBIVASH SENTINEL APEX</div><div class="iss">Automated, source-attributed intelligence report<br>Report ID: SENTINEL-${escHtml(item.id)}-${today} | Editorial priority: ${score}/100 ${tl} | Sources collected: ${item.sourceCount||1}<br>&copy; ${new Date().getFullYear()} CYBERDUDEBIVASH<br><strong style="color:var(--apex-cyan)">Verify technical claims in the linked primary sources before operational use</strong></div></div>
     <div class="ecta">
       <h3>🏢 ENTERPRISE THREAT INTELLIGENCE PLATFORM</h3>
-      <p class="ep">Pre-disclosure intel, enriched IOC bundles, deploy-ready SIEM packs, and dedicated analyst support — before threats become headlines.</p>
+      <p class="ep">Request a scoped intelligence briefing, evidence review, custom IOC ingestion assessment, or detection-engineering engagement.</p>
       <div class="cta-grid">
         <a href="/pricing.html" class="btn-p">⚡ SOC Pro — $18/mo</a>
         <a href="/enterprise.html" class="btn-e">🏢 Enterprise — Custom Pricing</a>
         <a href="/api.html" class="btn-s">🔌 Threat Intel API Access</a>
         <a href="/products.html" class="btn-g">📦 Detection Pack Store</a>
       </div>
-      <p style="font-size:12px;color:var(--apex-muted);margin:0">48hr pre-disclosure · Enriched IOC feeds · Custom advisories · White-label reports · Dedicated analyst · MSSP licensing</p>
+      <p style="font-size:12px;color:var(--apex-muted);margin:0">Source review · Custom advisories · Detection assessment · API and MSSP licensing discussions</p>
     </div>
   </article>
   <aside class="sidebar">
@@ -2508,12 +2528,12 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
     </div>
     <div class="sw" style="background:linear-gradient(135deg,#001a14,#0d1117);border-color:rgba(0,255,224,.15)">
       <div class="wt">⚡ SOC Pro Intelligence</div>
-      <p style="font-size:13px;color:var(--apex-muted);margin-bottom:16px;line-height:1.6">48hr pre-disclosure. Compiled Sigma/YARA packs. Enriched IOC feeds. Custom advisories. Deploy-ready SIEM queries.</p>
+      <p style="font-size:13px;color:var(--apex-muted);margin-bottom:16px;line-height:1.6">Source-attributed alerts, reference detection drafts, enriched IOC feeds, and response guidance. Validate detections in your environment before deployment.</p>
       <a href="/pricing.html" style="display:block;background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000;font-weight:800;font-size:13px;padding:12px;border-radius:8px;text-decoration:none;text-align:center">Start Free Trial →</a>
     </div>
     <div class="sw" style="background:linear-gradient(135deg,#1a0a2e,#0d1117);border-color:rgba(168,85,247,.2)">
       <div class="wt" style="color:#a855f7">🏢 Enterprise Access</div>
-      <p style="font-size:13px;color:var(--apex-muted);margin-bottom:14px;line-height:1.6">Dedicated analyst. Custom IOC ingestion. White-label reports. API access. MSSP licensing.</p>
+      <p style="font-size:13px;color:var(--apex-muted);margin-bottom:14px;line-height:1.6">Request a scoped intelligence briefing, custom IOC ingestion assessment, API access, or MSSP licensing discussion.</p>
       <a href="/enterprise.html" style="display:block;background:rgba(168,85,247,.2);border:1px solid rgba(168,85,247,.4);color:#a855f7;font-weight:700;font-size:13px;padding:12px;border-radius:8px;text-decoration:none;text-align:center">Get Enterprise Proposal →</a>
     </div>
     <div class="sw">
@@ -2526,13 +2546,13 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
       <ul style="list-style:none;padding:0">
         ${item.id?.startsWith('CVE')?`<li style="margin-bottom:8px;font-size:13px"><a href="https://nvd.nist.gov/vuln/detail/${escHtml(item.id)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">📌 NVD — ${escHtml(item.id)}</a></li>`:''}
         ${item.cisaKev?`<li style="margin-bottom:8px;font-size:13px"><a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener" style="color:var(--apex-red)">⚠️ CISA KEV Catalog</a></li>`:''}
-        ${(item.refs||[]).slice(0,4).map(r=>`<li style="margin-bottom:6px;font-size:12px"><a href="${escHtml(r)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">${escHtml(String(r).replace(/https?:\/\//,'').slice(0,42))}</a></li>`).join('\n')}
+        ${validRefs.slice(0,4).map(r=>`<li style="margin-bottom:6px;font-size:12px"><a href="${escHtml(r)}" target="_blank" rel="noopener" style="color:var(--apex-cyan)">${escHtml(String(r).replace(/https?:\/\//,'').slice(0,42))}</a></li>`).join('\n')}
       </ul>
     </div>
   </aside>
 </main>
 <footer>
-  <p>&copy; ${new Date().getFullYear()} CYBERDUDEBIVASH PRIVATE LIMITED. Intelligence aggregation, analysis and enrichment by CYBERDUDEBIVASH SENTINEL APEX v4.0 — sourcing standards at <a href="/about.html">About &amp; Editorial Standards</a>.<br>
+  <p>&copy; ${new Date().getFullYear()} CYBERDUDEBIVASH. Intelligence aggregation, analysis and enrichment by CYBERDUDEBIVASH SENTINEL APEX — sourcing standards at <a href="/about.html">About &amp; Editorial Standards</a>.<br>
   Unauthorized reproduction without attribution is prohibited.<br>
   <a href="/">Blog</a> · <a href="/products.html">Detection Packs</a> · <a href="/pricing.html">SOC Pro</a> · <a href="/api.html">API</a> · <a href="/enterprise.html">Enterprise</a> · <a href="/contact.html">Contact Sales</a> · <a href="/rss.xml">RSS</a> · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></p>
 </footer>
@@ -2547,8 +2567,10 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
 
 // ── POST CARD GENERATOR ────────────────────────────────────────────────
 function generatePostCard(item, slug, title) {
-  const cvss = item.cvss||7.0;
-  const sevLabel = cvss>=9.5?'CRITICAL':cvss>=9.0?'CRITICAL':cvss>=7.0?'HIGH':'MEDIUM';
+  const hasCvss = typeof item.cvss === 'number' && item.cvss >= 0 && item.cvss <= 10;
+  const cvss = hasCvss ? item.cvss : null;
+  const cvssDisplay = hasCvss ? String(cvss) : 'Not assigned';
+  const sevLabel = hasCvss ? (cvss>=9.0?'CRITICAL':cvss>=7.0?'HIGH':cvss>=4.0?'MEDIUM':'LOW') : String(item.severityLabel||'UNASSESSED').toUpperCase();
   const tl = item.threatLevel||sevLabel;
   const score = item.priority||0;
   const todayFmt = fmtDate(item.pubDate||isoNow());
@@ -2561,7 +2583,7 @@ function generatePostCard(item, slug, title) {
     <!-- AUTO-GENERATED: ${item.id} — ${isoNow()} -->
     <a href="posts/${escHtml(slug)}.html" class="post-card" data-intel-auto="${escHtml(item.id)}" data-score="${score}" data-threat="${tl}">
       <div class="post-card-header">
-        <span class="post-badge badge-crit">CVSS ${cvss}</span>
+        <span class="post-badge badge-crit">CVSS ${cvssDisplay}</span>
         ${item.cisaKev?`<span class="post-badge badge-cisa">CISA KEV</span>`:''}
         ${item.exploited?`<span class="post-badge badge-new">● Live Exploit</span>`:''}
         ${item.ransomware?`<span class="post-badge" style="background:#a855f722;color:#a855f7;border:1px solid #a855f744;font-size:10px;padding:3px 7px;border-radius:3px;font-weight:700">RANSOMWARE</span>`:''}
@@ -2756,7 +2778,7 @@ async function writeAPIFiles(allItems, state) {
       items: ransomItems.slice(0,20).map(i=>({
         id:i.id, title:(i.title||'').slice(0,100),
         final_ps: i.final_ps||0, quality_score: i.quality_score||0,
-        threat_level: finalThreatLevel(i.final_ps||0), cvss:i.cvss||0,
+        threat_level: finalThreatLevel(i.final_ps||0), cvss:typeof i.cvss==='number'?i.cvss:null,
         cisa_kev:!!i.cisa_kev, vendor:i.vendor||'', product:i.product||'',
         ioc_count:i.ioc_count||(i.iocs||[]).length, report_url:i.report_url||null,
       })),
@@ -2777,7 +2799,7 @@ async function writeAPIFiles(allItems, state) {
         safeWriteSync(cveFile, JSON.stringify({
           ...apiMeta, endpoint: `/api/intel/cve/${item.id}.json`,
           id: item.id, title: item.title, description: item.description||orig.desc,
-          cvss: item.cvss||0, final_ps: item.final_ps||0, quality_score: item.quality_score||0,
+          cvss: typeof item.cvss==='number'?item.cvss:null, final_ps: item.final_ps||0, quality_score: item.quality_score||0,
           threat_level: finalThreatLevel(item.final_ps||0),
           epss_score: epss ? epss.score : null, epss_percentile: epss ? epss.percentile : null,
           type: orig.type, sources: item.merged_sources||[item.source],
@@ -2825,7 +2847,7 @@ function writeLiveIntel(allItems, state) {
       const addedAt = isNewToFeed ? nowTs : (existingItem?._addedAt || nowTs);
       return {
       id: item.id, title: (item.title||'').slice(0,120), desc: (item.desc||'').slice(0,200),
-      cvss: item.cvss||0, type: item.type||'INTEL', source: item.source||'',
+      cvss: typeof item.cvss==='number'?item.cvss:null, type: item.type||'INTEL', source: item.source||'',
       pubDate: item.pubDate||isoNow(), exploited: !!item.exploited, cisaKev: !!item.cisaKev,
       ransomware: !!item.ransomware, vendor: item.vendor||'', product: item.product||'',
       dueDate: item.dueDate||null, refs: (item.refs||[]).slice(0,2),
@@ -3213,5 +3235,14 @@ if (require.main === module) {
     process.exit(1);
   });
 } else {
-  module.exports = { generatePostHTML, genMultiPlatformDetections, genPriorIntelligence, genStructuredReasoning, genIntelligenceProducts, buildProductApiJSON, genSigma, genYARA, getMitre, stripHtml, decodeEntities, correlateAndMerge, extractSentinelApexRecords, normalizeSentinelApexRecord, sapexCanonicalId, sapexNativeMitre, fetchSentinelApex };
+  module.exports = {
+    generatePostHTML, genMultiPlatformDetections, genPriorIntelligence,
+    genStructuredReasoning, genIntelligenceProducts, buildProductApiJSON,
+    genSigma, genYARA, getMitre, stripHtml, decodeEntities,
+    extractHttpUrls, parseCvssFromText, hasConfirmedExploitation,
+    rssToIntel, qualityGate, genExecutiveSummary, genBusinessImpact,
+    genAttackChain, computePriorityScore, correlateAndMerge,
+    extractSentinelApexRecords, normalizeSentinelApexRecord,
+    sapexCanonicalId, sapexNativeMitre, fetchSentinelApex,
+  };
 }

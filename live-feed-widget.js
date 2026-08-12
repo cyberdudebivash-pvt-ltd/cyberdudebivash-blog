@@ -1,15 +1,14 @@
 /**
  * CYBERDUDEBIVASH — LIVE FEED WIDGET v4.0
  * ═══════════════════════════════════════════════════════════
- * Production-stable. Multi-source, multi-fallback.
- * GUARANTEED to show data on every page load.
+ * Multi-source, evidence-preserving feed renderer.
  *
  * Source chain (each tried in order until data found):
  *   1. /live-intel.json  — same-origin, GitHub Actions-generated
  *   2. CISA KEV (direct) — public CORS-enabled CDN
  *   3. CISA KEV (proxy1) — corsproxy.io
  *   4. CISA KEV (proxy2) — allorigins
- *   5. Built-in fallback  — curated static intel (always works)
+ *   5. Explicit unavailable state — never fabricate a healthy feed
  *
  * © 2025 CYBERDUDEBIVASH. All rights reserved.
  * ═══════════════════════════════════════════════════════════
@@ -30,16 +29,6 @@
     MAX_CARDS:   15,               // v5: show more cards
     LOOKBACK_DAYS: 30
   };
-
-  /* ── STATIC FALLBACK — always works, never empty ─────────── */
-  var STATIC_INTEL = [
-    { id:'CVE-2026-33825', desc:'Microsoft Defender Zero-Day (BlueHammer/RedSun) — TOCTOU race condition in threat remediation engine enables local privilege escalation to SYSTEM. 2 variants unpatched.', score:'8.8', published:'2026-04-22', vendors:['Microsoft'], product:'Windows Defender', source:'SENTINEL-APEX', exploited:true },
-    { id:'CVE-2026-35616', desc:'Fortinet FortiClient EMS Pre-Auth API Bypass — unauthenticated remote attackers can execute arbitrary commands. Exploited since March 31 2026. CISA KEV.', score:'9.8', published:'2026-04-06', vendors:['Fortinet'], product:'FortiClient EMS 7.4.x', source:'CISA-KEV', exploited:true },
-    { id:'CVE-2026-28401', desc:'Ivanti Connect Secure Supply Chain RCE — 3 nation-state APT groups actively exploiting. CVSS 10.0. Affects all Connect Secure versions prior to patch.', score:'10.0', published:'2026-03-28', vendors:['Ivanti'], product:'Connect Secure', source:'CISA-KEV', exploited:true },
-    { id:'CVE-2026-33824', desc:'Windows IKE Service Double-Free — unauthenticated network-based RCE via UDP 500/4500. Affects ALL Windows 10/11 and Server variants. Patch released April 14 2026.', score:'9.8', published:'2026-04-14', vendors:['Microsoft'], product:'Windows IKE Service', source:'NVD', exploited:false },
-    { id:'CVE-2026-5281',  desc:'Chrome Dawn WebGPU Use-After-Free — all Chromium-based browsers at risk. 3 billion users affected. CISA Federal Deadline April 15 2026.', score:null, published:'2026-04-01', vendors:['Google'], product:'Chrome / Chromium', source:'CISA-KEV', exploited:true },
-    { id:'CVE-2026-32201', desc:'Microsoft SharePoint Server Spoofing Zero-Day — CISA KEV. Federal patch deadline April 28 2026. Part of April 2026 Patch Tuesday (163 CVEs).', score:'6.5', published:'2026-04-14', vendors:['Microsoft'], product:'SharePoint Server', source:'CISA-KEV', exploited:true }
-  ];
 
   /* ── HELPERS ─────────────────────────────────────────────── */
   function timeAgo(d) {
@@ -72,6 +61,16 @@
 
   function setCache(data) {
     try { sessionStorage.setItem(CFG.CACHE_KEY, JSON.stringify({ts:Date.now(),data:data})); } catch(e){}
+  }
+
+  function firstHttpUrl(values) {
+    var text = Array.isArray(values) ? values.join(' ') : String(values||'');
+    var match = text.match(/https?:\/\/[^\s<>"'`;,)\]]+/i);
+    if (!match) return null;
+    try {
+      var parsed = new URL(match[0].replace(/[.!?:}\]]+$/g,''));
+      return /^https?:$/.test(parsed.protocol) ? parsed.href : null;
+    } catch(e) { return null; }
   }
 
   /* ── THREAT CLASSIFIER ───────────────────────────────────── */
@@ -178,8 +177,8 @@
     return {
       id:       item.id||item.cveID||'—',
       desc:     desc,
-      score:    item.score!=null?item.score:null,
-      published:item.published||item.dateAdded||null,
+      score:    item.cvss!=null?item.cvss:(item.score!=null?item.score:null),
+      published:item.pubDate||item.published||item.dateAdded||null,
       vendors:  item.vendors||[item.vendor||'Unknown'],
       product:  item.product||'',
       source:   item.source||'SENTINEL',
@@ -198,42 +197,36 @@
     return xhrFetch(CFG.LOCAL_JSON+'?_='+Math.floor(Date.now()/60000), 8000)
       .then(function(data) {
         if (data && data.items && data.items.length) {
-          return data.items.map(normaliseLocal).filter(Boolean);
+          var generated = (data.metadata&&data.metadata.generated)||data._heartbeat||data.lastUpdated||null;
+          return data.items.map(normaliseLocal).filter(Boolean).map(function(item){ item._feedGenerated=generated; return item; });
         }
         // 2. CISA direct
         return xhrFetch(CFG.CISA_DIRECT, 10000).then(function(d) {
           var items = parseCISA(d);
-          if (items && items.length) return items;
+          if (items && items.length) return items.map(function(item){item._feedGenerated=new Date().toISOString();return item;});
           // 3. CISA proxy 1
           return xhrFetch(CFG.CISA_PROXY1, 10000).then(function(d2) {
             var items2 = parseCISA(d2);
-            if (items2 && items2.length) return items2;
+            if (items2 && items2.length) return items2.map(function(item){item._feedGenerated=new Date().toISOString();return item;});
             // 4. CISA proxy 2
             return xhrFetch(CFG.CISA_PROXY2, 10000).then(function(d3) {
               var items3 = parseCISA(d3);
-              if (items3 && items3.length) return items3;
-              // 5. Static fallback — ALWAYS works
-              return STATIC_INTEL.map(function(item) {
-                return Object.assign({}, item, { threat: classify(item.desc) });
-              });
+              if (items3 && items3.length) return items3.map(function(item){item._feedGenerated=new Date().toISOString();return item;});
+              return [];
             });
           });
         });
       })
-      .catch(function() {
-        return STATIC_INTEL.map(function(item) {
-          return Object.assign({}, item, { threat: classify(item.desc) });
-        });
-      });
+      .catch(function() { return []; });
   }
 
   /* ── RENDER CARD ─────────────────────────────────────────── */
   function stripEntities(s) {
-    // Decode common HTML entities and strip tags so desc renders as plain text
-    return (s||'').replace(/<[^>]+>/g,'')
-      .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')
-      .replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&nbsp;/g,' ')
-      .replace(/\s+/g,' ').trim();
+    // Decode multiple entity layers before stripping tags (Reddit/SANS feeds
+    // often double-encode HTML fragments).
+    var out=String(s||'');
+    for(var i=0;i<3;i++) out=out.replace(/&lt;/gi,'<').replace(/&gt;/gi,'>').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&nbsp;/gi,' ');
+    return out.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
   }
 
   function card(item) {
@@ -248,6 +241,7 @@
     // avoiding the ID-hash fallback that generates non-existent post URLs.
     var slug   = item.slug || slugify((item.id||'')+(vendor?'-'+vendor:'')+(product&&product!==vendor?'-'+product:''));
     var href   = item.link || (item.slug ? '/posts/'+item.slug+'.html' : null) || '#';
+    var sourceHref = firstHttpUrl(item.refs);
 
     var badges = '';
     if (item.exploited) badges += '<span class="lfw-b lfw-b-exploit">⚡ ACTIVELY EXPLOITED</span>';
@@ -273,7 +267,7 @@
       +'</div>'
       +'<div class="lfw-cf">'
         +'<a href="'+esc(href)+'" class="lfw-read">🔍 Full Intel Report →</a>'
-        +((item.refs&&item.refs[0])?'<a href="'+esc(item.refs[0])+'" class="lfw-ref" target="_blank" rel="noopener">Source ↗</a>':'')
+        +(sourceHref?'<a href="'+esc(sourceHref)+'" class="lfw-ref" target="_blank" rel="noopener noreferrer">Source ↗</a>':'')
       +'</div>'
     +'</article>';
   }
@@ -282,7 +276,11 @@
   function render(items, container, animate) {
     var exploited = items.filter(function(i){return i.exploited;}).length;
     var critical  = items.filter(function(i){return parseFloat(i.score)>=9;}).length;
-    var ts        = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    var feedDate  = items[0]&&items[0]._feedGenerated ? new Date(items[0]._feedGenerated) : null;
+    var feedValid = feedDate && !isNaN(feedDate.getTime());
+    var stale     = feedValid && (Date.now()-feedDate.getTime()) > 180*60000;
+    var ts        = feedValid ? timeAgo(feedDate) : 'timestamp unavailable';
+    _lastFetchAt  = feedValid ? feedDate.getTime() : null;
     var grid      = items.map(card).join('');
 
     if (animate) {
@@ -295,7 +293,7 @@
           if(ns[0]) ns[0].textContent=exploited;
           if(ns[1]) ns[1].textContent=critical;
           if(ns[2]) ns[2].textContent=items.length;
-          var u=container.querySelector('.lfw-upd'); if(u) u.textContent='Updated '+ts;
+          var u=container.querySelector('.lfw-upd'); if(u) u.textContent=(stale?'Feed stale · ':'Feed updated · ')+ts;
         }, 300);
         return;
       }
@@ -305,20 +303,20 @@
       '<div class="lfw-wrap">'
       +'<div class="lfw-hdr">'
         +'<div class="lfw-hdr-r1">'
-          +'<div class="lfw-brand"><span class="lfw-dot"></span><span class="lfw-bt">LIVE THREAT INTEL</span><span class="lfw-bs">SENTINEL APEX</span></div>'
+          +'<div class="lfw-brand"><span class="lfw-dot'+(stale?' lfw-dot-load':'')+'"></span><span class="lfw-bt">'+(stale?'STALE FEED — LAST VERIFIED INTEL':'VERIFIED THREAT INTEL')+'</span><span class="lfw-bs">SENTINEL APEX</span></div>'
           +'<button class="lfw-btn-r" id="lfw-refresh-btn" title="Refresh">⟳</button>'
         +'</div>'
         +'<div class="lfw-hdr-r2">'
           +'<span class="lfw-stat"><span class="lfw-sn lfw-sn-e">'+exploited+'</span> Exploited</span>'
           +'<span class="lfw-stat"><span class="lfw-sn lfw-sn-c">'+critical+'</span> Critical</span>'
           +'<span class="lfw-stat"><span class="lfw-sn lfw-sn-t">'+items.length+'</span> Threats</span>'
-          +'<span class="lfw-stat lfw-upd">Updated '+ts+'</span>'
+          +'<span class="lfw-stat lfw-upd">'+(stale?'Feed stale · ':'Feed updated · ')+ts+'</span>'
         +'</div>'
       +'</div>'
       +'<div class="lfw-grid" style="transition:opacity .3s">'+grid+'</div>'
       +'<div class="lfw-foot">'
         +'<span class="lfw-copy">© 2025 CYBERDUDEBIVASH · Sentinel APEX · cyberdudebivash.com</span>'
-        +'<span class="lfw-note">Auto-refreshes every 10 min</span>'
+        +'<span class="lfw-note">Status reflects the source feed timestamp</span>'
       +'</div>'
     +'</div>';
 
@@ -336,6 +334,10 @@
     container.innerHTML='<div class="lfw-wrap"><div class="lfw-hdr"><div class="lfw-hdr-r1"><div class="lfw-brand"><span class="lfw-dot lfw-dot-load"></span><span class="lfw-bt">FETCHING LIVE INTEL…</span></div></div></div><div class="lfw-grid">'+s+'</div></div>';
   }
 
+  function renderUnavailable(container) {
+    container.innerHTML='<div class="lfw-wrap"><div class="lfw-hdr"><div class="lfw-brand"><span class="lfw-dot lfw-dot-load"></span><span class="lfw-bt">INTELLIGENCE FEED UNAVAILABLE</span><span class="lfw-bs">SENTINEL APEX</span></div></div><div style="padding:24px;color:#8899aa;font-size:13px;line-height:1.6">No verified feed could be loaded. Use the <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog" rel="noopener" target="_blank" style="color:#00b4d8">CISA KEV catalog</a> while service recovery is in progress.</div></div>';
+  }
+
   /* ── DO FETCH ────────────────────────────────────────────── */
   function doFetch(container, refresh) {
     if (!refresh) {
@@ -348,8 +350,9 @@
         setCache(items);
         render(items, container, refresh);
       } else {
-        render(STATIC_INTEL.map(function(i){ return Object.assign({},i,{threat:classify(i.desc)}); }), container, refresh);
+        renderUnavailable(container);
       }
+      return items;
     });
   }
 
@@ -447,17 +450,16 @@
     if (!container) return;    injectCSS();
     injectLabel(container);
     doFetch(container, false).then(function(){
-      _lastFetchAt = Date.now();
       var ts=document.getElementById('lfw-label-ts');
-      if(ts) ts.textContent='Updated just now';
+      if(ts) ts.textContent=_lastFetchAt?'Feed updated '+timeAgo(_lastFetchAt):'Feed timestamp unavailable';
       startFreshnessTicker();
     });
-    // Phase 10: 60s auto-refresh — pipeline publishes every 5 min
+    // Refresh the displayed source state; do not relabel browser fetch time as
+    // intelligence publication time.
     setInterval(function(){
       doFetch(container,true).then(function(){
-        _lastFetchAt = Date.now();
         var ts=document.getElementById('lfw-label-ts');
-        if(ts) ts.textContent='Updated just now';
+        if(ts) ts.textContent=_lastFetchAt?'Feed updated '+timeAgo(_lastFetchAt):'Feed timestamp unavailable';
       });
     }, CFG.REFRESH_MS);
   }
@@ -468,5 +470,5 @@
     setTimeout(boot, 800);
   }
 
-  window.LIVE_FEED_WIDGET = { refresh: function(){ var c=document.getElementById(CFG.CONTAINER_ID); if(c) doFetch(c,true).then(function(){_lastFetchAt=Date.now();}); }, cfg: CFG };
+  window.LIVE_FEED_WIDGET = { refresh: function(){ var c=document.getElementById(CFG.CONTAINER_ID); if(c) doFetch(c,true); }, cfg: CFG };
 })();

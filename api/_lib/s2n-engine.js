@@ -274,8 +274,13 @@ function mergeDuplicates(a, b) {
     dueDate:      winner.dueDate      || loser.dueDate,
     reqAction:    winner.reqAction    || loser.reqAction,
 
-    // Numeric: best
-    cvss:         Math.max(winner.cvss || 0, loser.cvss || 0),
+    // Numeric: best verified value. Unknown remains null; zero must not be
+    // manufactured by the merge because consumers present this as CVSS.
+    cvss:         (() => {
+      const scores = [winner.cvss, loser.cvss]
+        .filter(v => typeof v === 'number' && v >= 0 && v <= 10);
+      return scores.length ? Math.max(...scores) : null;
+    })(),
     daysOld:      Math.min(winner.daysOld || 999, loser.daysOld || 999),
 
     // Set unions
@@ -481,7 +486,7 @@ function formatItem(item, includeRaw) {
     id:                item.id,
     title:             (item.title || '').slice(0, 120),
     description:       (item.desc  || '').slice(0, 300),
-    cvss:              item.cvss || 0,
+    cvss:              typeof item.cvss === 'number' ? item.cvss : null,
     final_ps:          item.final_ps || 0,
     quality_score:     item.quality_score || 0,
     threat_level:      finalThreatLevel(item.final_ps || 0),
