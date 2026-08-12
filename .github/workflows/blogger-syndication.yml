@@ -8,6 +8,13 @@ on:
     # intel pipeline (:00/:30) so pushes never collide. Syndication 12×/day
     # is ample for SEO freshness; use "Run workflow" for an immediate push.
     - cron: "15 */2 * * *"
+  # Production deployment runs immediately after the dedicated evidence gate
+  # passes on main. State/log-only publication commits do not retrigger that
+  # gate, so this cannot create a workflow loop.
+  workflow_run:
+    workflows: ["Blogger Evidence Integrity CI"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -33,6 +40,7 @@ permissions:
 jobs:
   syndicate:
     name: "📡 Syndicate to Blogger"
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
