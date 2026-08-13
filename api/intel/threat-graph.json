@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-13T13:18:46.867Z",
+  "generated": "2026-08-13T14:21:36.141Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 10772,
+    "total_nodes": 10774,
     "actors": 8,
-    "cves": 3314,
-    "campaigns": 1120,
+    "cves": 3315,
+    "campaigns": 1121,
     "malware": 0,
     "iocs": 878,
-    "edges": 3675
+    "edges": 3676
   },
   "nodes": {
     "actor:lockbit": {
@@ -202589,14 +202589,14 @@
       "name": "Hackers exploit critical Adobe Commerce flaw to hijack customer accounts",
       "attributes": {
         "cvss": 9.1,
-        "threat_level": "MEDIUM",
-        "priority_score": 49,
+        "threat_level": "LOW",
+        "priority_score": 44,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
         "vendor": "",
         "product": "",
-        "published": "2026-08-12",
+        "published": "2026-08-13",
         "type": "CVE_REPORT"
       },
       "connections": []
@@ -204652,6 +204652,44 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "CVE-2026-55072": {
+      "id": "CVE-2026-55072",
+      "type": "CVE",
+      "name": "Pimcore: ClassDefinition UID regex missing end anchor allows SQL injection via Block.php unquoted table name",
+      "attributes": {
+        "cvss": 8.5,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "pimcore/pimcore",
+        "published": "2026-08-13",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-55072": {
+      "id": "campaign:cve-2026-55072",
+      "type": "Campaign",
+      "name": "composer pimcore/pimcore Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-13",
+        "last_seen": "2026-08-13",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55072"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55072",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -237890,6 +237928,15 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-12",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55072→includes→CVE-2026-55072",
+      "source": "campaign:cve-2026-55072",
+      "target": "CVE-2026-55072",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-13",
       "sources": []
     }
   ]
