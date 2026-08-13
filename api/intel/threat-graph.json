@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-13T20:36:14.865Z",
+  "generated": "2026-08-13T20:49:23.099Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 10803,
+    "total_nodes": 10806,
     "actors": 8,
-    "cves": 3344,
-    "campaigns": 1121,
+    "cves": 3345,
+    "campaigns": 1122,
     "malware": 0,
     "iocs": 878,
-    "edges": 3676
+    "edges": 3677
   },
   "nodes": {
     "actor:lockbit": {
@@ -205212,6 +205212,62 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-12243": {
+      "id": "CVE-2026-12243",
+      "type": "CVE",
+      "name": "nltk: Arbitrary File Read via Path Traversal in nltk.data.load() through Percent-Encoded Sequences",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "nltk",
+        "published": "2026-08-13",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "BLEEPINGCOMPUTER-b47a05616e364446": {
+      "id": "BLEEPINGCOMPUTER-b47a05616e364446",
+      "type": "Intel",
+      "name": "Akira hackers disable EDR with Safe Mode, steal data but fail to encrypt",
+      "attributes": {
+        "cvss": 0,
+        "threat_level": "LOW",
+        "priority_score": 26,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "BleepingComputer",
+        "product": "Threat Intelligence",
+        "published": "2026-08-13",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-12243": {
+      "id": "campaign:cve-2026-12243",
+      "type": "Campaign",
+      "name": "pip nltk Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-13",
+        "last_seen": "2026-08-13",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-12243"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-12243",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -238456,6 +238512,15 @@
       "id": "campaign:cve-2026-55072→includes→CVE-2026-55072",
       "source": "campaign:cve-2026-55072",
       "target": "CVE-2026-55072",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-13",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-12243→includes→CVE-2026-12243",
+      "source": "campaign:cve-2026-12243",
+      "target": "CVE-2026-12243",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-13",
