@@ -2,10 +2,10 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-08-13T16:57:53.138Z",
+  "generated": "2026-08-13T19:05:09.803Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 11,
+    "published": 12,
     "p1": 0,
     "leadsHeld": 3,
     "analystReports": 0,
@@ -29,11 +29,11 @@
         "error": null
       },
       {
-        "name": "NVD (prompt injection)",
-        "key": "nvd_pi",
-        "tier": 1,
+        "name": "r/MachineLearning",
+        "key": "reddit_ml",
+        "tier": 3,
         "status": "ok",
-        "items": 40,
+        "items": 25,
         "error": null
       },
       {
@@ -45,11 +45,11 @@
         "error": null
       },
       {
-        "name": "r/MachineLearning",
-        "key": "reddit_ml",
-        "tier": 3,
+        "name": "NVD (prompt injection)",
+        "key": "nvd_pi",
+        "tier": 1,
         "status": "ok",
-        "items": 25,
+        "items": 40,
         "error": null
       },
       {
@@ -61,7 +61,7 @@
         "error": null
       }
     ],
-    "runtimeMs": 7489
+    "runtimeMs": 11534
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,7 +88,7 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 11,
+  "count": 12,
   "items": [
     {
       "id": "c15e48601c02a9a0",
@@ -143,6 +143,62 @@
       "detection": {
         "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
         "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "accd915ee18d4d11",
+      "title": "vLLM: Completion prompt lists fan out into unbounded engine requests",
+      "url": "https://github.com/advisories/GHSA-87x5-vmc3-756j",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-08-13T18:40:06Z",
+      "cve": "CVE-2026-73559",
+      "severity": "medium",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "infra",
+          "label": "AI Infrastructure / Inference Server"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM05",
+          "name": "Supply Chain Vulnerabilities"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0010",
+          "name": "ML Supply Chain Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": false,
+          "rag": true,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 40,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Expose-check inference servers (Triton/vLLM/Ollama/MLflow/Ray) for unauthenticated management endpoints.",
+        "hunt": "Shodan/asset-inventory sweep for AI infra bound to 0.0.0.0 without auth."
       },
       "has_analyst_report": false
     },
