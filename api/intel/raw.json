@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-14T05:28:14.244Z",
+  "generated": "2026-08-14T06:54:19.252Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 105,
+  "count": 109,
   "items": [
     {
       "id": "SENTINELAPEX-06294cf4238c",
@@ -60,8 +60,8 @@
       "title": "Microsoft Patch Tuesday for August 2026 Fixed a Zero-Day and Wormable RCE",
       "description": "Microsoft Patch Tuesday for August 2026 fixes 398 CVEs, including an actively exploited zero-day and a wormable DNS flaw enabling remote code execution. Microsoft released its Patch Tuesday security updates for August 2026 on Tuesday, covering 398 new CVEs across Windows, Office,... [Full analysis a",
       "cvss": 0,
-      "final_ps": 55,
-      "quality_score": 0.418,
+      "final_ps": 53,
+      "quality_score": 0.398,
       "threat_level": "MEDIUM",
       "type": "ZERO_DAY",
       "source": "sentinel_apex",
@@ -84,8 +84,8 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.25",
-          "recency=1d (score=0.85)",
-          "QS=0.418"
+          "recency=2d (score=0.65)",
+          "QS=0.398"
         ],
         "priority": [
           "+8 exploited_in_wild",
@@ -281,6 +281,50 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-59109",
+      "title": "CVE-2026-59109 - Zalktis: SQL injection via partner-controlled fields in imported e-invoices",
+      "description": "CVE ID : CVE-2026-59109\n \n Published : Aug. 13, 2026, 5:17 p.m. | 36minutes ago\n \n Description : SQL injection in the Zalktis accounting application via\ntrading-partner-controlled text fields in received electronic invoices. When\nimporting a received e-invoice (UBL/PEPPOL) or an ... [Full analysis a",
+      "cvss": 8.8,
+      "final_ps": 48,
+      "quality_score": 0.473,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-13",
+      "last_seen": "2026-08-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59109"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=48 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "EXPLOITDB-13fc423caf742505",
       "title": "[webapps] OpenCATS 0.9.7.4 - SQL Injection",
       "description": "",
@@ -460,6 +504,94 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-73266",
+      "title": "CVE-2026-73266 - Clusterclaims-controller: clusterclaims-controller: tenant-controlled clusterclaim labels propagated to",
+      "description": "CVE ID : CVE-2026-73266\n \n Published : Aug. 13, 2026, 5:17 p.m. | 36minutes ago\n \n Description : A flaw was found in the clusterclaims-controller component of Multicluster Engine (MCE). An authenticated tenant can exploit this vulnerability by manipulating ClusterClaim labels. Th... [Full analysis a",
+      "cvss": 7.1,
+      "final_ps": 44,
+      "quality_score": 0.473,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-13",
+      "last_seen": "2026-08-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73266"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.473"
+        ],
+        "priority": [
+          "base_ps=44 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-73559",
+      "title": "vLLM: Completion prompt lists fan out into unbounded engine requests",
+      "description": "## Summary\n\nThe `/v1/completions` request model accepts `prompt` as a list of text prompts or a list of token-id prompts without any outer prompt-count bound. The serving path turns each element into a separate engine input, creates one engine generator per element, merges all ge... [Full analysis a",
+      "cvss": 6.5,
+      "final_ps": 43,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-13",
+      "last_seen": "2026-08-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73559"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=43 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -1595,6 +1727,50 @@
         "priority": [
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-55087",
+      "title": "ep_etherpad-lite: Cache-poisoning Cross-site Scripting and Open Redirect viax-proxy-path Header",
+      "description": "# GHSA-03 `x-proxy-path` header reflected into admin HTML/JS/CSS (cache-poisoning XSS) and concatenated into redirect (open-redirect)\n\n**Severity:** Medium\n**CVSS v3.1 vector:** `CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N`\n**CVSS suggested base score:** ~6.1 Medium\n *(Re-valida... [Full analysis a",
+      "cvss": 6.1,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-13",
+      "last_seen": "2026-08-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55087"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2824,6 +3000,50 @@
         "priority": [
           "+7 zero_day",
           "+5 nation_state"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-20147",
+      "title": "ZDI-26-581: Cisco Identity Services Engine invokeScript Command Injection Remote Code Execution Vulnerability",
+      "description": "",
+      "cvss": 9.9,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-13",
+      "last_seen": "2026-08-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-20147"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -4083,6 +4303,402 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-19767",
+      "title": "CVE-2026-19767 - itsourcecode Hospital Management System viewdoctortimings.php sql injection",
+      "description": "",
+      "cvss": 6.3,
+      "final_ps": 19,
+      "quality_score": 0.378,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19767"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.15",
+          "recency=0d (score=1.00)",
+          "QS=0.378"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-19788",
+      "title": "CVE-2026-19788 - Tenda AC1206 httpd web management interface SetOnlineDevName set_device_name stack-based overflow",
+      "description": "",
+      "cvss": 7.2,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19788"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-19789",
+      "title": "CVE-2026-19789 - Tenda AC1206 httpd web management interface WifiGuestSet set_wl_guest_iplist stack-based overflow",
+      "description": "",
+      "cvss": 7.2,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19789"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-18109",
+      "title": "CVE-2026-18109 - W3 Total Cache <= 2.10.3 - Unauthenticated Stored Cross-Site Scripting via Comment Author Name",
+      "description": "",
+      "cvss": 7.2,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-18109"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-19790",
+      "title": "CVE-2026-19790 - Tenda G0 httpd Web Management module formSetPortMirror stack-based overflow",
+      "description": "",
+      "cvss": 7.2,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19790"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-27654",
+      "title": "ZDI-26-578: NGINX HTTP Dav Module Alias Directive Integer Underflow Remote Code Execution Vulnerability",
+      "description": "",
+      "cvss": 8.2,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-13",
+      "last_seen": "2026-08-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-27654"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-20190",
+      "title": "ZDI-26-580: Cisco Identity Services Engine Missing Authentication for Critical Function Information Disclosure Vulnerabi",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-13",
+      "last_seen": "2026-08-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-20190"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-4890",
+      "title": "ZDI-26-584: dnsmasq DNSSEC NSEC/NSEC3 Type Bitmap Processing Infinite Loop Denial-of-Service Vulnerability",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-13",
+      "last_seen": "2026-08-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-4890"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-19771",
+      "title": "CVE-2026-19771 - Baicells EG3661M LuCI Web luci os command injection",
+      "description": "",
+      "cvss": 7.2,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19771"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-19764",
       "title": "CVE-2026-19764 - Raisecom Communication Command and Dispatch Management Platform getpwd.php sql injection",
       "description": "",
@@ -4172,490 +4788,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-19753",
-      "title": "CVE-2026-19753 - Model Context Protocol mcp-rdf-explorer MCP Server server.py explore_url server-side request forgery",
-      "description": "",
-      "cvss": 7.3,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-13",
-      "last_seen": "2026-08-13",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19753"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-73266",
-      "title": "CVE-2026-73266 - Clusterclaims-controller: clusterclaims-controller: tenant-controlled clusterclaim labels propagated to",
-      "description": "",
-      "cvss": 7.1,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-13",
-      "last_seen": "2026-08-13",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-73266"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-59109",
-      "title": "CVE-2026-59109 - Zalktis: SQL injection via partner-controlled fields in imported e-invoices",
-      "description": "",
-      "cvss": 8.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-13",
-      "last_seen": "2026-08-13",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59109"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-19756",
-      "title": "CVE-2026-19756 - Dromara lamp-cloud Code Generator DefGenProjectController.java path traversal",
-      "description": "",
-      "cvss": 6.3,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-13",
-      "last_seen": "2026-08-13",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19756"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-19757",
-      "title": "CVE-2026-19757 - Dromara lamp-cloud File-Upload Controller FileAnyoneController.java path traversal",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19757"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-19758",
-      "title": "CVE-2026-19758 - dromara lamp-cloud chunk-check endpoint FileChunkController.java path traversal",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19758"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-19761",
-      "title": "CVE-2026-19761 - DTStack Taier Upload Controller UploadController.java MultipartFile.getOriginalFilename path traversal",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19761"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-19762",
-      "title": "CVE-2026-19762 - DTStack Taier Chunk-Check Endpoint FileChunkController.java Paths.ge path traversal",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19762"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-19763",
-      "title": "CVE-2026-19763 - DTStack Taier Cluster Creation ClusterController.java FileUtils.deleteDirectory path traversal",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19763"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-55087",
-      "title": "ep_etherpad-lite: Cache-poisoning Cross-site Scripting and Open Redirect viax-proxy-path Header",
-      "description": "",
-      "cvss": 6.1,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-13",
-      "last_seen": "2026-08-13",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55087"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-73559",
-      "title": "vLLM: Completion prompt lists fan out into unbounded engine requests",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-13",
-      "last_seen": "2026-08-13",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-73559"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-55088",
       "title": "ep_etherpad-lite: Device-to-device author-token transfer endpoint is replayable, never expires, and exposes the cleartex",
       "description": "",
@@ -4679,6 +4811,50 @@
       "due_date": null,
       "cves": [
         "CVE-2026-55088"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.15",
+          "recency=0d (score=1.00)",
+          "QS=0.378"
+        ],
+        "priority": [
+          "base_ps=15 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-19785",
+      "title": "CVE-2026-19785 - francoisjacquet RosarioSIS Student Medical Medical.inc.php sql injection",
+      "description": "",
+      "cvss": 6.3,
+      "final_ps": 15,
+      "quality_score": 0.378,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19785"
       ],
       "ioc_count": 0,
       "refs": [],
