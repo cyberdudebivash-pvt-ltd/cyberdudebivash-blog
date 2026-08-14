@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-14T21:19:41.247Z",
+  "generated": "2026-08-14T21:48:04.384Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 10890,
+    "total_nodes": 10892,
     "actors": 8,
-    "cves": 3421,
-    "campaigns": 1123,
+    "cves": 3422,
+    "campaigns": 1124,
     "malware": 0,
     "iocs": 879,
-    "edges": 3680
+    "edges": 3681
   },
   "nodes": {
     "actor:lockbit": {
@@ -206785,6 +206785,44 @@
         "type": "AI_SECURITY"
       },
       "connections": []
+    },
+    "CVE-2026-55157": {
+      "id": "CVE-2026-55157",
+      "type": "CVE",
+      "name": "Token Optimizer MCP: OS command injection in smart_user via username in get-user-info",
+      "attributes": {
+        "cvss": 8.4,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "@ooples/token-optimizer-mcp",
+        "published": "2026-08-14",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-55157": {
+      "id": "campaign:cve-2026-55157",
+      "type": "Campaign",
+      "name": "npm @ooples/token-optimizer-mcp Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-14",
+        "last_seen": "2026-08-14",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55157"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55157",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -240067,6 +240105,15 @@
       "target": "ioc:sha1:8a45892378d22f40505c31a38f786a07701b6d50",
       "relationship": "linked_to",
       "confidence": 0.9,
+      "first_seen": "2026-08-14",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55157→includes→CVE-2026-55157",
+      "source": "campaign:cve-2026-55157",
+      "target": "CVE-2026-55157",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-08-14",
       "sources": []
     }
