@@ -142,3 +142,55 @@ compatibility-shim and Worker-routing-logic build (mirroring
 blocking at the point of actually deploying a staging Worker and binding
 it to a route — that is where DNS visibility and deploy-capable
 credentials become required, not before.
+
+## 8. Local deploy-capable access (user's machine, not this session)
+
+2026-08-16, later the same day: the user confirmed a working, authenticated
+`wrangler` CLI on their own local Windows machine (evidence: a pasted
+terminal transcript, not independently re-verified by this session since
+the Cloudflare Developer Platform MCP connector §0–§6 relied on has since
+disconnected — see the note at the end of this section).
+
+- `npx wrangler whoami` → authenticated via OAuth, account
+  **`Iambivash.bn@gmail.com's Account`**, account ID
+  **`055c68d5d664747ff6c9e1093cd9673f`**. This is the first point in this
+  migration where a concrete account ID has been confirmed at all —
+  §1–§6 above were produced through the MCP connector without ever
+  surfacing the raw ID.
+- Token scope includes `workers (write)`, `workers_scripts (write)`,
+  `workers_routes (write)`, `workers_kv (write)`, `d1 (write)`,
+  `pages (write)` — real deploy capability, unlike anything available in
+  this session so far.
+- **`zone (read)` only — no zone/DNS write scope is granted.** This
+  matters: it means this token physically cannot edit DNS even by
+  accident, which lines up exactly with the "never touch DNS until
+  Cloudflare staging is proven" rule this migration is operating under.
+  Being unable to list DNS records in detail (§6's gap) is still true,
+  but the sharper risk that mattered more — accidental DNS writes — is
+  structurally foreclosed by this token regardless.
+- The token also carries a long tail of scopes unrelated to this
+  migration (`ai (write)`, `containers (write)`, `cloudchamber (write)`,
+  `email_sending (write)`, `connectivity (admin)`, etc.) — consistent
+  with this being a general-purpose account token already used across the
+  user's other CYBERDUDEBIVASH platforms (`cyberdudebivash-ai-security-hub`,
+  `CYBERDUDEBIVASH-ENTERPRISE-PRODUCTION`,
+  `CYBERDUDEBIVASH-SENTINEL-APEX-ACADEMY`,
+  `CYBERDUDEBIVASH-TRUSTX-IDENTITY-THREAT-DEFENSE` — sibling directories
+  visible in the same transcript), not a token freshly minted and scoped
+  down for this task specifically. Not a blocker, just worth naming: this
+  session still has no way to independently confirm the account ID above
+  matches the one §1–§6 were gathered from, since neither `workers_list`
+  output nor this transcript carries a shared identifier to cross-check
+  against directly. `NOT VERIFIED` that it's the same account, though the
+  same 13-Worker names would be the way to confirm it (`wrangler
+  deployments list` or equivalent, run locally, should reproduce §1's
+  list if it is).
+
+**Note on the MCP connector**: the Cloudflare Developer Platform MCP tools
+this document's §1–§6 were built from are no longer attached to this
+session as of this writing (disconnected sometime after the account
+inventory work). This document's earlier findings remain what they were —
+tool output already captured, not invalidated — but this session cannot
+currently re-run or extend that live inventory itself; anything further
+needs either that connector reattaching or the user's local wrangler
+session (§8) as the access path going forward.
