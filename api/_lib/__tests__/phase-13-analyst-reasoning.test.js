@@ -108,8 +108,8 @@ describe('Phase 13 — Advanced Analyst Reasoning & Intelligence Methodology Eng
       expect(analysis.keyJudgements.length).toBeGreaterThan(0);
     });
 
-    test('should include reasoning chain for each judgement', () => {
-      const analysis = reasoningEngine.analyzeAllJudgements(
+    test('should include reasoning chain for each judgement', async () => {
+      const analysis = await reasoningEngine.analyzeAllJudgements(
         mockProduct,
         mockInvestigation,
         mockReport

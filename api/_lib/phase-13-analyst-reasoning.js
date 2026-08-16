@@ -52,6 +52,18 @@ class Phase13AnalystReasoning {
       status: 'reasoning',
     };
 
+    if (!product.id) {
+      // Every downstream engine reads product fields defensively (optional
+      // chaining throughout), so a product with no real identity doesn't
+      // throw -- it silently flows all the way through to a normal
+      // certification, producing a "certified" enhancement for something
+      // that was never a valid product to begin with. Reject it here
+      // instead, using the same error shape the catch block below uses.
+      enhancement.status = 'error';
+      enhancement.error = 'Product is missing a required id — cannot enhance with analyst reasoning';
+      return enhancement;
+    }
+
     try {
       // 1. Intelligence Reasoning Engine
       enhancement.modules.reasoning = await this.reasoningEngine.analyzeAllJudgements(
@@ -1627,7 +1639,7 @@ class EnterpriseIntelligenceQualityGates {
 
   checkConfidenceExplainability(enhancement) {
     const confidence = enhancement.modules.confidence;
-    const isExplainable = confidence?.confidenceNarrative && confidence?.uncertaintyFactors;
+    const isExplainable = !!(confidence?.confidenceNarrative && confidence?.uncertaintyFactors);
 
     return {
       gate: 'Confidence Explainability',
@@ -1690,7 +1702,7 @@ class EnterpriseIntelligenceQualityGates {
   checkTechnicalUsefulness(enhancement) {
     const detection = enhancement.modules.audiences?.detectionEngineering;
     const hunting = enhancement.modules.audiences?.threatHunting;
-    const isUseful = detection && hunting;
+    const isUseful = !!(detection && hunting);
 
     return {
       gate: 'Technical Usefulness',

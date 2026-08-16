@@ -429,6 +429,7 @@ describe('Pipeline Health Certification Engine', () => {
     });
 
     test('should retry on recovery failure', async () => {
+      health.recordSourceResult('nvd', { status: 'failure', type: 'TIMEOUT', error: 'Timeout' });
       let attemptCount = 0;
 
       const result = await health.attemptSourceRecovery('nvd', async (source) => {
@@ -442,6 +443,7 @@ describe('Pipeline Health Certification Engine', () => {
     });
 
     test('should exhaust retry limit', async () => {
+      health.recordSourceResult('nvd', { status: 'failure', type: 'TIMEOUT', error: 'Timeout' });
       const result = await health.attemptSourceRecovery('nvd', async (source) => {
         throw new Error('Persistent failure');
       });
