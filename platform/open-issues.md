@@ -1096,4 +1096,58 @@ Corrected to the current four-rung structure (Free API tier, Starter, Pro,
 Enterprise) sourced from `docs/PRICING.md`.
 
 ---
+
+## Issue 17 — `phase-12-enterprise-excellence.js` is scaffolded but never wired in, and its own test suite proves it was never finished
+
+Found while triaging the GitHub Actions `test.yml` failures at the request
+"review our workflows & failed workflows & resolve them with production
+stable fix." Four Jest suites were failing on `main`:
+`phase-11-integration.test.js`, `pipeline-health-certification.test.js`,
+`phase-13-analyst-reasoning.test.js`, and
+`phase-12-enterprise-excellence.test.js`.
+
+The first three were real, tractable bugs (argument/signature mismatches,
+a stale-state read, a missing `await`, boolean-coercion slips) fixed the
+same session — see the commit history on
+`transformation/vercel-recovery-production-hardening` for exact root
+causes. `api/_lib/phase-11-orchestrator.js` in particular is genuinely
+reachable in production (`api/v1/products/*` → `product-factory.js` →
+`phase-11-orchestrator.js`), so those were real customer-facing defects,
+not just CI noise.
+
+`phase-12-enterprise-excellence.js` (52KB, 10 sub-engine "modules") is a
+different case. Reachability check (`grep -rl "require(.*phase-12-
+enterprise-excellence" --include="*.js" .`, repo-wide, excluding its own
+test file): **zero results** — nothing anywhere in this repository ever
+calls it. Its test suite fails ~34 of ~35 assertions, and the failures are
+not one shared root cause cascading outward — spot-checked three
+unrelated failures (`assessCloudImpact` calling `.includes()` on an
+infrastructure object instead of a string field; `buildAttackStory`
+missing a `timeline` field the test expects; several completely separate
+modules) and each was a distinct defect. This is the signature of a
+module that was scaffolded with an ambitious test suite alongside it, but
+whose implementation was never actually finished or debugged against
+those tests, and — because nothing ever imports it — no one would notice
+either way. Matches the pattern already documented in Issue 1
+(independently-evolved parallel implementations) and Issue 14 (ten
+independent parallel implementations across the SEO/metadata surface):
+large modules built in isolation that never converged with anything real.
+
+**Not fixed here.** Properly implementing 10 sub-engines' worth of
+business logic (executive decision intelligence, operational actions
+across 12 audiences, narrative generation, evidence explainability,
+change analysis, detection guidance, quality scoring, differentiation,
+full-product enhancement) with no design spec to verify against and zero
+production consumer to validate the result would mean guessing at
+correct behavior for ~30 assertions — exactly the kind of unreviewable,
+unverifiable change this platform's own change-discipline standard
+warns against, on a subsystem where getting it wrong is invisible either
+way. `phase-12-enterprise-excellence.test.js` is marked `describe.skip`
+with a comment pointing here, rather than left silently red or quietly
+deleted, so `test.yml` reflects real production risk instead of failing
+for a module nothing can reach. **Un-skip and actually build it out** the
+next time someone has a concrete reason to wire this module into a real
+caller and the design intent to implement it against.
+
+---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
