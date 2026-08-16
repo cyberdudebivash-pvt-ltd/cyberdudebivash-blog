@@ -109,8 +109,14 @@ async function authenticate(req, res) {
     userData = {};
     for (let i = 0; i < raw.length; i += 2) userData[raw[i]] = raw[i + 1];
   } catch (e) {
-    // Redis unavailable — allow in dev mode only
-    if (process.env.NODE_ENV === 'development') {
+    // Redis unavailable — allow a synthetic dev user ONLY when BOTH
+    // NODE_ENV=development AND ALLOW_DEV_AUTH_BYPASS=true are set.
+    // NODE_ENV alone is not sufficient: Vercel doesn't set
+    // NODE_ENV=development on Production/Preview on its own, but an env
+    // reconstruction (e.g. rebuilding a Vercel project's variables after
+    // an account-recovery migration) could introduce it accidentally,
+    // and that alone must never grant a live tier bypass.
+    if (process.env.NODE_ENV === 'development' && process.env.ALLOW_DEV_AUTH_BYPASS === 'true') {
       return { tier: 'pro', userId: 'dev', email: 'dev@local', keyHash: hash };
     }
     // Safe error — never expose Redis internals

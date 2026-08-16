@@ -15,6 +15,7 @@
  * Backward-compat: vercel.json rewrites old /api/v1/billing/* paths here.
  */
 'use strict';
+const crypto    = require('crypto');
 const redis     = require('../_lib/redis');
 const stripe    = require('../_lib/stripe');
 const razorpay  = require('../_lib/razorpay');
@@ -645,20 +646,36 @@ async function handleVerifyRazorpayPayment(req, res) {
       orderId,
     });
 
-    /* ── W4-P0-003: Bridge — provision APEX API key in Cloudflare KV ─ */
+    /* ── W4-P0-003: Bridge — provision APEX API key in Cloudflare KV ─
+     * This call carries no auth today beyond being reachable — anyone who
+     * can send this exact POST body to APEX_API_BASE gets the same
+     * response this backend would. APEX_BRIDGE_SECRET below signs the
+     * body so the receiving service (a separate repo, not this one) CAN
+     * verify the call genuinely came from here, but it only closes the
+     * gap once that service is updated to check it — sending the header
+     * from this side alone is necessary but not sufficient. Until then
+     * this remains a cross-service trust boundary, not a fixed one. */
     let apexApiKey = null;
     try {
       const apexTier = { starter: 'PRO', pro: 'PRO', enterprise: 'ENTERPRISE' }[planType] || 'PRO';
-      const apexRes  = await fetch(`${APEX_API_BASE}/api/payment/razorpay/verify`, {
+      const apexBody = JSON.stringify({
+        razorpay_order_id:   orderId,
+        razorpay_payment_id: paymentId,
+        razorpay_signature:  signature,
+        tier:                apexTier,
+        email,
+      });
+      const apexHeaders = { 'Content-Type': 'application/json' };
+      if (process.env.APEX_BRIDGE_SECRET) {
+        apexHeaders['X-Sentinel-Bridge-Signature'] = crypto
+          .createHmac('sha256', process.env.APEX_BRIDGE_SECRET)
+          .update(apexBody)
+          .digest('hex');
+      }
+      const apexRes = await fetch(`${APEX_API_BASE}/api/payment/razorpay/verify`, {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({
-          razorpay_order_id:   orderId,
-          razorpay_payment_id: paymentId,
-          razorpay_signature:  signature,
-          tier:                apexTier,
-          email,
-        }),
+        headers: apexHeaders,
+        body:    apexBody,
       });
       if (apexRes.ok) {
         const apexData = await apexRes.json();
