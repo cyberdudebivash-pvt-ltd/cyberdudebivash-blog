@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-16T01:35:02.931Z",
+  "generated": "2026-08-16T02:21:06.282Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,11 +9,93 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 2952,
   "s2n_stats": {
-    "passed": 99,
-    "suppressed": 7,
-    "avg_qs": 0.491
+    "passed": 121,
+    "suppressed": 5,
+    "avg_qs": 0.481
   },
   "items": [
+    {
+      "id": "CVE-2026-65400",
+      "title": "macOS Screen Sharing Flaw Exploited to Deploy Monero Miners",
+      "description": "Hackers are exploiting a macOS Screen Sharing flaw to gain root access and install Monero miners on Macs with port 5900 exposed online. The Dutch National Cyber Security Centre confirmed active exploitation of a critical macOS authentication flaw, tracked as CVE-2026-65400 (CVSS ... [Full analysis a",
+      "cvss": 7.1,
+      "final_ps": 66,
+      "quality_score": 0.533,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-65400"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=0d (score=1.00)",
+          "QS=0.532"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-71362",
+      "title": "Adobe Commerce CVE-2026-71362 Comes Under Attack Shortly After Public Disclosure",
+      "description": "Hackers began targeting a critical Adobe Commerce flaw that could let unauthenticated attackers hijack customer accounts and access private data. Hackers began targeting CVE-2026-71362 (CVSS score of 9.1), a critical Adobe Commerce flaw, shortly after its public disclosure. The v... [Full analysis a",
+      "cvss": 9.1,
+      "final_ps": 55,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-13",
+      "last_seen": "2026-08-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-71362"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=2d (score=0.65)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
     {
       "id": "CVE-2026-50522",
       "title": "Critical SharePoint RCE CVE-2026-50522 Under Active Exploitation After Public PoC",
@@ -318,6 +400,47 @@
       }
     },
     {
+      "id": "CVE-2026-55157",
+      "title": "Token Optimizer MCP: OS command injection in smart_user via username in get-user-info",
+      "description": "### Summary\n\n`token-optimizer-mcp` is vulnerable to OS command injection in the `smart_user` tool.\n\nThe `get-user-info` operation accepts a user-controlled `username` argument and later interpolates it into a shell command executed through `execAsync()`:\n\n```ts\ngetent passwd \"${u... [Full analysis a",
+      "cvss": 8.4,
+      "final_ps": 45,
+      "quality_score": 0.458,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55157"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=1d (score=0.85)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=45 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2026-53359",
       "title": "Januscape (CVE-2026-53359): 16 year old Critical Linux KVM Guest-to-Host Escape, PoC Public",
       "description": "",
@@ -357,6 +480,129 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-53657",
+      "title": "Lima: An arbitrary user in a QEMU VM could gain the root privilege in the VM via the guest agent socket",
+      "description": "### Impact\nOn an instance of Lima running with `qemu` driver, an arbitrary user in the VM could access `/run/lima-guestagent.sock` when the guest agent is enabled.\n\nThis could result in running an arbitrary command with the root privileges in the VM (**not on the host**), as `lim... [Full analysis a",
+      "cvss": 8.2,
+      "final_ps": 44,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53657"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=1d (score=0.85)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=44 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-53660",
+      "title": "OpenAM Insecure SSO Cookie Initialization",
+      "description": "## Summary\n\n**Description**\nAn Insecure Default Initialization of Resource (CWE-1188) issue in the OpenAM default configuration ships the `iPlanetDirectoryPro` SSO cookie with `HttpOnly=false`. Also, the `iPlanetDirectoryPro` SSO cookie is used as a CSRF token in OAuth/OIDC flows... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 43,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53660"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=1d (score=0.85)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=43 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-55153",
+      "title": "mchange-commons-java contains elements susceptible to abuse via JNDI injection and \"deserialization gadgets\"",
+      "description": "### Impact\nPrior to version 0.6.0, mchange-commons-java includes a JNDI `ObjectFactory` implementation (`com.mchange.v2.naming.JavaBeanObjectFactory`) willing to construct objects of arbitrary classes and initialize \"JavaBean\"-style properties. There are classes for which this ki... [Full analysis a",
+      "cvss": 7.1,
+      "final_ps": 42,
+      "quality_score": 0.458,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55153"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=1d (score=0.85)",
+          "QS=0.458"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -529,6 +775,170 @@
         "priority": [
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-12243",
+      "title": "nltk: Arbitrary File Read via Path Traversal in nltk.data.load() through Percent-Encoded Sequences",
+      "description": "# Summary\nnltk.data.load() and nltk.data.find() resolve user-supplied resource names to filesystem paths using url2pathname(), which decodes percent-encoded sequences (e.g. %2e%2e to ..). Path safety checks are performed on the raw, still-encoded string before decoding occurs. An... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 41,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-13",
+      "last_seen": "2026-08-13",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-12243"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=2d (score=0.65)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-14866",
+      "title": "CVE-2026-14866: IBM i Access Client Solutions 1.1.2.0 through 1.1.9.13 is vulnerable to injection of rogue certificate a",
+      "description": "IBM i Access Client Solutions 1.1.2.0 through 1.1.9.13 is vulnerable to injection of rogue certificate authority due to publicly writeable truststore.",
+      "cvss": 7.7,
+      "final_ps": 41,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-12",
+      "last_seen": "2026-08-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-14866"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=3d (score=0.65)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-73326",
+      "title": "CVE-2026-73326: CamaleonCMS contains a missing authorization vulnerability that allows any authenticated low-privileged ",
+      "description": "CamaleonCMS contains a missing authorization vulnerability that allows any authenticated low-privileged user to access and modify plugin settings by reaching four unprotected plugin-administration endpoints without administrator-level authorization. Attackers can manipulate plugi... [Full analysis a",
+      "cvss": 7.6,
+      "final_ps": 41,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-12",
+      "last_seen": "2026-08-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73326"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=3d (score=0.65)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-71469",
+      "title": "CVE-2026-71469: A flaw was found in search-v2-api. An unauthenticated attacker can exploit this by sending requests with",
+      "description": "A flaw was found in search-v2-api. An unauthenticated attacker can exploit this by sending requests with unique random bearer tokens. Each unique token creates a permanent entry in the unbounded tokenReviews cache, which is not properly cleared. This can lead to memory exhaustion... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 41,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-12",
+      "last_seen": "2026-08-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-71469"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=3d (score=0.65)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -1306,6 +1716,252 @@
       }
     },
     {
+      "id": "CVE-2026-19922",
+      "title": "CVE-2026-19922 - code-projects Online Shopping System checkout.php cross site scripting",
+      "description": "CVE-2026-19922 - code-projects Online Shopping System checkout.php cross site scripting",
+      "cvss": 6.1,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-16",
+      "last_seen": "2026-08-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19922"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-19918",
+      "title": "CVE-2026-19918 - SpaceX Starlink Router Gen 3 gRPC Management get_status access control",
+      "description": "CVE-2026-19918 - SpaceX Starlink Router Gen 3 gRPC Management get_status access control",
+      "cvss": 6.3,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-16",
+      "last_seen": "2026-08-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19918"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-19921",
+      "title": "CVE-2026-19921 - code-projects Online Shopping System homeaction.php sql injection",
+      "description": "CVE-2026-19921 - code-projects Online Shopping System homeaction.php sql injection",
+      "cvss": 6.3,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-16",
+      "last_seen": "2026-08-16",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19921"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-19917",
+      "title": "CVE-2026-19917 - code-projects Online Food Order System delete_food_items1.php sql injection",
+      "description": "CVE-2026-19917 - code-projects Online Food Order System delete_food_items1.php sql injection",
+      "cvss": 6.3,
+      "final_ps": 40,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19917"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-73495",
+      "title": "CVE-2026-73495: blaze is a Scala library for building asynchronous pipelines, with a focus on network IO. Prior to 0.23.",
+      "description": "blaze is a Scala library for building asynchronous pipelines, with a focus on network IO. Prior to 0.23.18 and 1.0.0-M42, blaze-server can merge HTTP/1.1 chunked-body trailer fields into Request.headers. Because trailer fields are attacker-controlled, an unauthenticated remote cl... [Full analysis a",
+      "cvss": 7.4,
+      "final_ps": 40,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-12",
+      "last_seen": "2026-08-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73495"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=3d (score=0.65)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-73331",
+      "title": "CVE-2026-73331: CamaleonCMS 2.9.1 contains an authenticated SQL injection vulnerability that allows authenticated attack",
+      "description": "CamaleonCMS 2.9.1 contains an authenticated SQL injection vulnerability that allows authenticated attackers with post creation or editing privileges to submit a crafted slug value containing SQL syntax that the database backend evaluates as part of an inadequately parameterized q... [Full analysis a",
+      "cvss": 7.1,
+      "final_ps": 40,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-12",
+      "last_seen": "2026-08-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73331"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=3d (score=0.65)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2026-12495",
       "title": "CVE-2026-12495: Denial-of-service (DoS) vulnerability due to a stack buffer overflow in the http_gdpr_decrypt function o",
       "description": "",
@@ -1600,7 +2256,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2024-24919",
@@ -1644,7 +2302,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-13001",
@@ -1686,7 +2346,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-56121",
@@ -1728,7 +2390,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2025-2783",
@@ -1772,7 +2436,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-16232",
@@ -1814,7 +2480,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-60367",
@@ -1856,7 +2524,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-60369",
@@ -1898,7 +2568,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-60366",
@@ -1940,7 +2612,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-16630",
@@ -1982,7 +2656,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-62144",
@@ -2024,7 +2700,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-58138",
@@ -2066,7 +2744,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-29059",
@@ -2108,7 +2788,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-9198",
@@ -2150,7 +2832,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-13233",
@@ -2192,7 +2876,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2022-30190",
@@ -2236,7 +2922,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-15901",
@@ -2365,6 +3053,50 @@
         "priority": [
           "+12 PoC_available",
           "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-58231",
+      "title": "SAP Commerce Cloud CVE-2026-58231 Exploited in the Wild",
+      "description": "Attackers are actively exploiting a maximum severity SAP Commerce Cloud vulnerability, tracked as CVE-2026-58231, just days after SAP released a patch. A critical SAP Commerce Cloud vulnerability, tracked as CVE-2026-58231 (CVSS score of 10.0), is under active exploitation just d... [Full analysis a",
+      "cvss": 10,
+      "final_ps": 37,
+      "quality_score": 0.477,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-58231"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.477"
+        ],
+        "priority": [
+          "+10 CVSS≥9",
+          "+8 exploited_in_wild"
         ],
         "suppression": null,
         "merge": null
@@ -2552,100 +3284,13 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-47234",
-      "title": "CVE-2026-47234: Admidio is an open-source user management solution. Prior to version 5.0.10, when debug logging is enabl",
-      "description": "Admidio is an open-source user management solution. Prior to version 5.0.10, when debug logging is enabled, `Session::setCookie()` logs full cookie values and `Session::start()` logs the current session ID. In a real Admidio deployment this includes both the active session cookie... [Full analysis a",
-      "cvss": 9.8,
-      "final_ps": 30,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-12",
-      "last_seen": "2026-08-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-47234"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9",
-          "+3 supply_chain"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-46300",
-      "title": "Metasploit Wrap Up: Lot of summer shells and fit http profiles",
-      "description": "This wrap-up brings a full-on shell parade. Thirteen shiny new modules landed, starting with a buffet of RCEs. WordPress WP2Shell, Ghost CMS, Joomla JCE, Langflow, OpenCATS, Pterodactyl Panel, SonicWall SMA1000, Ray Dashboard, a Pix-for-WooCommerce, and for those who like their e... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 29,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-46300"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+12 PoC_available"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2017-7494",
-      "title": "Exploit for Code Injection in Samba",
-      "description": "Proof-of-concept exploit for CVE-2017-7494. CVSS 10.",
-      "cvss": 9.8,
+      "id": "CVE-2026-74764",
+      "title": "CVE-2026-74764 - Path Traversal in TAR Archive Extraction Allows Arbitrary File Write in Pandora",
+      "description": "CVE-2026-74764 - Path Traversal in TAR Archive Extraction Allows Arbitrary File Write in Pandora",
+      "cvss": 9.5,
       "final_ps": 27,
       "quality_score": 0.418,
-      "threat_level": "HIGH",
+      "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
@@ -2661,7 +3306,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2017-7494"
+        "CVE-2026-74764"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -2682,95 +3327,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-65400",
-      "title": "macOS Screen Sharing Flaw Exploited to Deploy Monero Miners",
-      "description": "Hackers are exploiting a macOS Screen Sharing flaw to gain root access and install Monero miners on Macs with port 5900 exposed online. The Dutch National Cyber Security Centre confirmed active exploitation of a critical macOS authentication flaw, tracked as CVE-2026-65400 (CVSS ... [Full analysis a",
-      "cvss": 7.1,
-      "final_ps": 27,
-      "quality_score": 0.477,
-      "threat_level": "HIGH",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-65400"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.477"
-        ],
-        "priority": [
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-15826",
-      "title": "CVE-2026-15826 - User Profile Builder <= 3.16.4 - Unauthenticated Authentication Bypass via Type Confusion to Administra",
-      "description": "CVE-2026-15826 - User Profile Builder <= 3.16.4 - Unauthenticated Authentication Bypass via Type Confusion to Administrator Account Takeover via 'username' Parameter",
-      "cvss": 9.1,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15826"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-15303",
-      "title": "CVE-2026-15303 - 6Storage Rentals <= 2.27.0 - Unauthenticated Account Takeover via 'email' Parameter",
-      "description": "CVE-2026-15303 - 6Storage Rentals <= 2.27.0 - Unauthenticated Account Takeover via 'email' Parameter",
+      "id": "CVE-2026-19598",
+      "title": "CVE-2026-19598 - Pods <= 3.3.9 - Unauthenticated Privilege Escalation via Authorization Bypass to Admin Methods via 'pod",
+      "description": "CVE ID : CVE-2026-19598\n \n Published : Aug. 15, 2026, 5:25 p.m. | 15minutes ago\n \n Description : The Pods Custom Content Types and Fields plugin for WordPress is vulnerable to Privilege Escalation via Authorization Bypass in all versions up to, and including, 3.3.9. The vulnerabi... [Full analysis a",
       "cvss": 9.8,
       "final_ps": 27,
       "quality_score": 0.418,
@@ -2790,7 +3349,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-15303"
+        "CVE-2026-19598"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -2811,9 +3370,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-15341",
-      "title": "CVE-2026-15341 - User Session Synchronizer <= 1.4.0 - Unauthenticated Authentication Bypass to Account Takeover via 'uss",
-      "description": "CVE-2026-15341 - User Session Synchronizer <= 1.4.0 - Unauthenticated Authentication Bypass to Account Takeover via 'ussync-key', 'ussync-token', and 'ussync-ref' Parameters",
+      "id": "CVE-2026-73046",
+      "title": "CVE-2026-73046 - SiYuan before v3.7.4 Authentication Bypass via HTTP Basic Auth",
+      "description": "CVE-2026-73046 - SiYuan before v3.7.4 Authentication Bypass via HTTP Basic Auth",
       "cvss": 9.8,
       "final_ps": 27,
       "quality_score": 0.418,
@@ -2833,7 +3392,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-15341"
+        "CVE-2026-73046"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -2854,482 +3413,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-14484",
-      "title": "CVE-2026-14484 - RapiSafe <= 1.0.4 - Unauthenticated Arbitrary File Deletion via 'rsmfcf7_session' and 'file_name' Param",
-      "description": "CVE-2026-14484 - RapiSafe <= 1.0.4 - Unauthenticated Arbitrary File Deletion via 'rsmfcf7_session' and 'file_name' Parameters",
-      "cvss": 9.1,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-14484"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-16145",
-      "title": "CVE-2026-16145 - Invisible Anti-Spam & CAPTCHA <= 5.1 - Unauthenticated Stored Cross-Site Scripting via 'action' Paramet",
-      "description": "CVE-2026-16145 - Invisible Anti-Spam & CAPTCHA <= 5.1 - Unauthenticated Stored Cross-Site Scripting via 'action' Parameter",
-      "cvss": 9.1,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16145"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2024-1709",
-      "title": "Exploit for Authentication Bypass Using an Alternate Path or Channel in Connectwise Screenconnect",
-      "description": "Proof-of-concept exploit for CVE-2024-1709. CVSS 10.",
-      "cvss": 10,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "HIGH",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-1709"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-52715",
-      "title": "Exploit for CVE-2026-52715",
-      "description": "Proof-of-concept exploit for CVE-2026-52715. CVSS 9.3.",
-      "cvss": 9.3,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "HIGH",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-52715"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-73678",
-      "title": "CVE-2026-73678 MindsDB Minds Platform v26.1.0 Unauthenticated RCE via scratchpad exec()",
-      "description": "CVE-2026-73678 MindsDB Minds Platform v26.1.0 Unauthenticated RCE via scratchpad exec()",
-      "cvss": 9.8,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-73678"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-50027",
-      "title": "CVE-2026-50027 mcp-memory-service: Missing Authentication on Document API Endpoints Allows Unauthenticated Memory Read/W",
-      "description": "CVE-2026-50027 mcp-memory-service: Missing Authentication on Document API Endpoints Allows Unauthenticated Memory Read/Write/Delete",
-      "cvss": 9.8,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-50027"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-73679",
-      "title": "CVE-2026-73679 ImpressCMS Authenticated RCE via PHP Custom Tag eval()",
-      "description": "CVE-2026-73679 ImpressCMS Authenticated RCE via PHP Custom Tag eval()",
-      "cvss": 9.8,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-73679"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-19681",
-      "title": "CVE-2026-19681 - Command Injection",
-      "description": "CVE-2026-19681 - Command Injection",
-      "cvss": 9.9,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19681"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-19682",
-      "title": "CVE-2026-19682 - Command Injection",
-      "description": "CVE-2026-19682 - Command Injection",
-      "cvss": 9.9,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19682"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-73849",
-      "title": "CVE-2026-73849 - emlog allows unauthenticated reinstallation via `install.php?action=reinstall`.",
-      "description": "CVE-2026-73849 - emlog allows unauthenticated reinstallation via `install.php?action=reinstall`.",
-      "cvss": 9.1,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-73849"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-48528",
-      "title": "CVE-2026-48528 - Metacat has an unauthenticated SQL injection vulnerability",
-      "description": "CVE-2026-48528 - Metacat has an unauthenticated SQL injection vulnerability",
-      "cvss": 9.1,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-48528"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-19188",
-      "title": "CVE-2026-19188 - Haiwell IoT Cloud HMI Gateway OS Command Injection",
-      "description": "CVE-2026-19188 - Haiwell IoT Cloud HMI Gateway OS Command Injection",
+      "id": "CVE-2026-73043",
+      "title": "CVE-2026-73043 - SiYuan before v3.7.4 Remote Code Execution via Template Calculation",
+      "description": "CVE-2026-73043 - SiYuan before v3.7.4 Remote Code Execution via Template Calculation",
       "cvss": 9,
       "final_ps": 27,
       "quality_score": 0.418,
@@ -3340,8 +3426,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3349,7 +3435,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-19188"
+        "CVE-2026-73043"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3370,9 +3456,224 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59310",
-      "title": "Critical VMware vCenter RCE flaw exploited for reverse SSH access",
-      "description": "A recently patched critical vulnerability (CVE-2026-59310) in VMware vCenter Syslog Server is being exploited in an active campaign to deploy a reverse SSH tool for persistence and remote access. [...]",
+      "id": "CVE-2026-73044",
+      "title": "CVE-2026-73044 - SiYuan before v3.7.4 Stored Cross-Site Scripting via Column Width",
+      "description": "CVE-2026-73044 - SiYuan before v3.7.4 Stored Cross-Site Scripting via Column Width",
+      "cvss": 9,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73044"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-73042",
+      "title": "CVE-2026-73042 - SiYuan before v3.7.4 Remote Code Execution via Menu Metadata",
+      "description": "CVE-2026-73042 - SiYuan before v3.7.4 Remote Code Execution via Menu Metadata",
+      "cvss": 9,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73042"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-73050",
+      "title": "CVE-2026-73050 - SiYuan before v3.7.4 Stored XSS via select option color",
+      "description": "CVE-2026-73050 - SiYuan before v3.7.4 Stored XSS via select option color",
+      "cvss": 9,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73050"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-73052",
+      "title": "CVE-2026-73052 - SiYuan before v3.7.4 Stored XSS via Attribute-View Field Names",
+      "description": "CVE-2026-73052 - SiYuan before v3.7.4 Stored XSS via Attribute-View Field Names",
+      "cvss": 9,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73052"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-73053",
+      "title": "CVE-2026-73053 - SiYuan before v3.7.4 Cross-Site Scripting via unicode2Emoji",
+      "description": "CVE-2026-73053 - SiYuan before v3.7.4 Cross-Site Scripting via unicode2Emoji",
+      "cvss": 9,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73053"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-19001",
+      "title": "CVE-2026-19001: The MongoDB BI Connector ODBC Driver may write outside the bounds of a fixed-size buffer when an applica",
+      "description": "The MongoDB BI Connector ODBC Driver may write outside the bounds of a fixed-size buffer when an application supplies an unusually long catalog, schema, or object name to a metadata retrieval function. This may result in memory corruption within the calling application's process,... [Full analysis a",
       "cvss": 9.8,
       "final_ps": 27,
       "quality_score": 0.418,
@@ -3383,8 +3684,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-13",
-      "last_seen": "2026-08-13",
+      "first_seen": "2026-08-12",
+      "last_seen": "2026-08-12",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3392,7 +3693,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-59310"
+        "CVE-2026-19001"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3413,9 +3714,95 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-71362",
-      "title": "Adobe Commerce CVE-2026-71362 Comes Under Attack Shortly After Public Disclosure",
-      "description": "Hackers began targeting a critical Adobe Commerce flaw that could let unauthenticated attackers hijack customer accounts and access private data. Hackers began targeting CVE-2026-71362 (CVSS score of 9.1), a critical Adobe Commerce flaw, shortly after its public disclosure. The v... [Full analysis a",
+      "id": "CVE-2026-18749",
+      "title": "CVE-2026-18749: The type=track branch authorises on _is_my_case(t_attach.case) only and never checks VinceTrackAttachmen",
+      "description": "The type=track branch authorises on _is_my_case(t_attach.case) only and never checks VinceTrackAttachment.shared. A coordinator-uploaded case artefact that has NOT been marked shared is still retrievable by any case member who has (or is sent) its uuid leaks not-yet-released coor... [Full analysis a",
+      "cvss": 9.8,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-12",
+      "last_seen": "2026-08-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-18749"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2024-27253",
+      "title": "CVE-2024-27253: IBM DOORS Next 7.0.3 through 7.0.3 Interim Fix 018 could allow an authenticated user to bypass security ",
+      "description": "IBM DOORS Next 7.0.3 through 7.0.3 Interim Fix 018 could allow an authenticated user to bypass security logic to perform unauthorized activities.",
+      "cvss": 10,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-12",
+      "last_seen": "2026-08-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2024-27253"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-19654",
+      "title": "CVE-2026-19654: A unauthenticated remote peer may lead rsyslogd to crash due to a flaw in the optional imptcp module. A ",
+      "description": "A unauthenticated remote peer may lead rsyslogd to crash due to a flaw in the optional imptcp module. A crafted input sequence during oversize-frame recovery can cause an invalid internal message length and terminate rsyslogd. No confidentiality or integrity impact, privilege esc... [Full analysis a",
       "cvss": 9.1,
       "final_ps": 27,
       "quality_score": 0.418,
@@ -3426,49 +3813,6 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-13",
-      "last_seen": "2026-08-13",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-71362"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-17218",
-      "title": "CVE-2026-17218: IBM i 7.6, 7.5, 7.4, and 7.3 could allow a remote attacker to execute arbitrary code due to an out-of-bo",
-      "description": "IBM i 7.6, 7.5, 7.4, and 7.3 could allow a remote attacker to execute arbitrary code due to an out-of-bounds write.",
-      "cvss": 9.8,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
       "first_seen": "2026-08-12",
       "last_seen": "2026-08-12",
       "exploited": false,
@@ -3478,7 +3822,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-17218"
+        "CVE-2026-19654"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3499,229 +3843,14 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-16956",
-      "title": "CVE-2026-16956: IBM Db2 Mirror for i 7.4, 7.5, and 7.6 could allow a remote attacker to execute arbitrary commands due t",
-      "description": "IBM Db2 Mirror for i 7.4, 7.5, and 7.6 could allow a remote attacker to execute arbitrary commands due to improper neutralization of special elements used in an OS command.",
-      "cvss": 9.8,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-12",
-      "last_seen": "2026-08-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16956"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-73263",
-      "title": "CVE-2026-73263: Prowler is a cloud security platform. Prior to 5.36.0, the Kubernetes provider connection test accepted ",
-      "description": "Prowler is a cloud security platform. Prior to 5.36.0, the Kubernetes provider connection test accepted kubeconfig_content containing a legacy gcp auth-provider with config.cmd-path and config.cmd-args because kubeconfig_contains_exec_auth in api/src/backend/api/v1/serializers.py... [Full analysis a",
-      "cvss": 9.8,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "SOCIAL_ENGINEERING",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-12",
-      "last_seen": "2026-08-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-73263"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-73262",
-      "title": "CVE-2026-73262: Prowler is a cloud security platform. Prior to 5.37.0, Prowler's HTML output formatter in prowler/lib/ou",
-      "description": "Prowler is a cloud security platform. Prior to 5.37.0, Prowler's HTML output formatter in prowler/lib/outputs/html/html.py inserted finding.resource_tags, assembled by unroll_dict and parse_html_string, into generated reports without HTML escaping, allowing a cloud principal who ... [Full analysis a",
-      "cvss": 9.8,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-12",
-      "last_seen": "2026-08-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-73262"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-49262",
-      "title": "CVE-2026-49262: In the Aimeos Pagible content management system prior to version 0.10.4, the administrative proxy route ",
-      "description": "In the Aimeos Pagible content management system prior to version 0.10.4, the administrative proxy route (`cmsproxy`) is vulnerable to a Server-Side Request Forgery (SSRF) attack via DNS Rebinding. A Time-of-Check to Time-of-Use (TOCTOU) race condition exists between the URL valid... [Full analysis a",
-      "cvss": 9.8,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-12",
-      "last_seen": "2026-08-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-49262"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-67286",
-      "title": "CVE-2026-67286: Joomla Extension - joomshaper.com - Unauthenticated arbitrary directory creation and file write in SP Pa",
-      "description": "Joomla Extension - joomshaper.com - Unauthenticated arbitrary directory creation and file write in SP Page Builder < 6.8.0 - An unauthenticated attacker can create arbitrary directories and files with a predefined name.",
-      "cvss": 9.1,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-12",
-      "last_seen": "2026-08-12",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-67286"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-19895",
-      "title": "CVE-2026-19895 - opensourcepos Open Source Point of Sale Login Endpoint Filters.php index excessive authentication",
-      "description": "CVE-2026-19895 - opensourcepos Open Source Point of Sale Login Endpoint Filters.php index excessive authentication",
+      "id": "CVE-2026-19898",
+      "title": "CVE-2026-19898 - VictoriaMetrics VMAuth Authentication Endpoint main.go requestHandler excessive authentication",
+      "description": "CVE ID : CVE-2026-19898\n \n Published : Aug. 15, 2026, 4:16 p.m. | 1hour, 24minutes ago\n \n Description : A vulnerability was found in VictoriaMetrics up to 1.146.0. Impacted is the function requestHandler of the file app/vmauth/main.go of the component VMAuth Authentication Endpoi... [Full analysis a",
       "cvss": 3.7,
-      "final_ps": 18,
+      "final_ps": 19,
       "quality_score": 0.378,
       "threat_level": "LOW",
-      "type": "CVE_REPORT",
+      "type": "CRITICAL_INFRASTRUCTURE",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -3736,7 +3865,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-19895"
+        "CVE-2026-19898"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3748,7 +3877,7 @@
           "QS=0.378"
         ],
         "priority": [
-          "+3 supply_chain"
+          "+4 critical_infra"
         ],
         "suppression": null,
         "merge": null
@@ -3757,10 +3886,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2022-1471",
-      "title": "Exploit for Deserialization of Untrusted Data in Snakeyaml_Project Snakeyaml",
-      "description": "Proof-of-concept exploit for CVE-2022-1471. CVSS 9.8.",
-      "cvss": 8.3,
+      "id": "CVE-2026-19923",
+      "title": "CVE-2026-19923 - code-projects Online Shopping System checkout_process.php sql injection",
+      "description": "CVE-2026-19923 - code-projects Online Shopping System checkout_process.php sql injection",
+      "cvss": 8.8,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "MEDIUM",
@@ -3770,8 +3899,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
+      "first_seen": "2026-08-16",
+      "last_seen": "2026-08-16",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3779,7 +3908,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2022-1471"
+        "CVE-2026-19923"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3800,21 +3929,21 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2025-70559",
-      "title": "Exploit for CVE-2025-70559",
-      "description": "Proof-of-concept exploit for CVE-2025-70559. CVSS 6.5.",
-      "cvss": 7.8,
+      "id": "CVE-2026-19919",
+      "title": "CVE-2026-19919 - code-projects Online Shopping System Login login.php sql injection",
+      "description": "CVE-2026-19919 - code-projects Online Shopping System Login login.php sql injection",
+      "cvss": 7.3,
       "final_ps": 17,
       "quality_score": 0.418,
-      "threat_level": "MEDIUM",
+      "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
+      "first_seen": "2026-08-16",
+      "last_seen": "2026-08-16",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3822,7 +3951,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2025-70559"
+        "CVE-2026-19919"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3843,9 +3972,95 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2024-56426",
-      "title": "Exploit for Out-of-bounds Write in Samsung Exynos_1080_Firmware",
-      "description": "Proof-of-concept exploit for CVE-2024-56426. CVSS 7.5.",
+      "id": "CVE-2026-19901",
+      "title": "CVE-2026-19901 - LB-LINK X-PRO easycwmp hard-coded credentials",
+      "description": "CVE ID : CVE-2026-19901\n \n Published : Aug. 15, 2026, 5:15 p.m. | 26minutes ago\n \n Description : A security flaw has been discovered in LB-LINK X-PRO 1.0.22-20231206. This affects an unknown function of the file /etc/config/easycwmp. The manipulation results in hard-coded credent... [Full analysis a",
+      "cvss": 8.1,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19901"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-19900",
+      "title": "CVE-2026-19900 - LB-LINK X-PRO shadow hard-coded credentials",
+      "description": "CVE ID : CVE-2026-19900\n \n Published : Aug. 15, 2026, 5:16 p.m. | 24minutes ago\n \n Description : A vulnerability was identified in LB-LINK X-PRO 1.0.22-20231206. The impacted element is an unknown function of the file /etc/shadow. The manipulation leads to hard-coded credentials.... [Full analysis a",
+      "cvss": 8.1,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19900"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-74767",
+      "title": "CVE-2026-74767 - Unbounded DAA Decompression in Pandora Allows Denial of Service via Decompression Bomb",
+      "description": "CVE-2026-74767 - Unbounded DAA Decompression in Pandora Allows Denial of Service via Decompression Bomb",
       "cvss": 7.5,
       "final_ps": 17,
       "quality_score": 0.418,
@@ -3865,7 +4080,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2024-56426"
+        "CVE-2026-74767"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3886,13 +4101,56 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-18500",
-      "title": "CVE-2026-18500 - @fastify/jwt vulnerable to authorization bypass via global secret overriding the per-request key",
-      "description": "CVE-2026-18500 - @fastify/jwt vulnerable to authorization bypass via global secret overriding the per-request key",
+      "id": "CVE-2026-19899",
+      "title": "CVE-2026-19899 - SourceCodester Class and Exam Timetabling System edit_teacher.php sql injection",
+      "description": "CVE ID : CVE-2026-19899\n \n Published : Aug. 15, 2026, 5:16 p.m. | 24minutes ago\n \n Description : A vulnerability was determined in SourceCodester Class and Exam Timetabling System 1.0. The affected element is an unknown function of the file /edit_teacher.php. Executing a manipula... [Full analysis a",
+      "cvss": 7.3,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19899"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-73045",
+      "title": "CVE-2026-73045 - SiYuan before 3.7.4 Brute-Force via authFilePublishAccess",
+      "description": "CVE-2026-73045 - SiYuan before 3.7.4 Brute-Force via authFilePublishAccess",
       "cvss": 7.5,
       "final_ps": 17,
       "quality_score": 0.418,
-      "threat_level": "MEDIUM",
+      "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
@@ -3908,7 +4166,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-18500"
+        "CVE-2026-73045"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3929,13 +4187,13 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-13610",
-      "title": "Exploit for CVE-2026-13610",
-      "description": "Proof-of-concept exploit for CVE-2026-13610.",
+      "id": "CVE-2026-73054",
+      "title": "CVE-2026-73054 - SiYuan before v3.7.4 Authentication Bypass via WebSocket",
+      "description": "CVE-2026-73054 - SiYuan before v3.7.4 Authentication Bypass via WebSocket",
       "cvss": 7.5,
       "final_ps": 17,
       "quality_score": 0.418,
-      "threat_level": "MEDIUM",
+      "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
@@ -3951,7 +4209,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-13610"
+        "CVE-2026-73054"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -3972,96 +4230,10 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-14279",
-      "title": "CVE-2026-14279 - Wholesale Market <= 2.2.2 - Authenticated (Subscriber+) Privilege Escalation via 'role_required' Parame",
-      "description": "CVE-2026-14279 - Wholesale Market <= 2.2.2 - Authenticated (Subscriber+) Privilege Escalation via 'role_required' Parameter",
-      "cvss": 7.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-14279"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-16007",
-      "title": "CVE-2026-16007 - Authenticated SQL Injection in AppFlowy",
-      "description": "CVE ID : CVE-2026-16007\n \n Published : Aug. 15, 2026, 5:21 a.m. | 34minutes ago\n \n Description : AppFlowy's qcuiknote feature is affected by a SQL injection vulnerability. Authenticated users with access to the feature can inject arbitrary SQL to exfiltrate data in the underlying... [Full analysis a",
+      "id": "CVE-2026-53653",
+      "title": "Grav: Unauthenticated denial of service via unbounded image derivative dimensions",
+      "description": "### Summary\nAn unauthenticated visitor exhausts server memory and CPU by requesting an image with oversized resize dimensions. One request drives a worker to several gigabytes of RAM and tens of seconds of CPU. A few concurrent requests take the host down.\n\n### Details\n`Grav::fal... [Full analysis a",
       "cvss": 7.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16007"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53657",
-      "title": "Lima: An arbitrary user in a QEMU VM could gain the root privilege in the VM via the guest agent socket",
-      "description": "### Impact\nOn an instance of Lima running with `qemu` driver, an arbitrary user in the VM could access `/run/lima-guestagent.sock` when the guest agent is enabled.\n\nThis could result in running an arbitrary command with the root privileges in the VM (**not on the host**), as `lim... [Full analysis a",
-      "cvss": 8.2,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "LOW",
@@ -4080,7 +4252,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-53657"
+        "CVE-2026-53653"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4093,178 +4265,6 @@
         ],
         "priority": [
           "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55157",
-      "title": "Token Optimizer MCP: OS command injection in smart_user via username in get-user-info",
-      "description": "### Summary\n\n`token-optimizer-mcp` is vulnerable to OS command injection in the `smart_user` tool.\n\nThe `get-user-info` operation accepts a user-controlled `username` argument and later interpolates it into a shell command executed through `execAsync()`:\n\n```ts\ngetent passwd \"${u... [Full analysis a",
-      "cvss": 8.4,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55157"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-53660",
-      "title": "OpenAM Insecure SSO Cookie Initialization",
-      "description": "## Summary\n\n**Description**\nAn Insecure Default Initialization of Resource (CWE-1188) issue in the OpenAM default configuration ships the `iPlanetDirectoryPro` SSO cookie with `HttpOnly=false`. Also, the `iPlanetDirectoryPro` SSO cookie is used as a CSRF token in OAuth/OIDC flows... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53660"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55153",
-      "title": "mchange-commons-java contains elements susceptible to abuse via JNDI injection and \"deserialization gadgets\"",
-      "description": "### Impact\nPrior to version 0.6.0, mchange-commons-java includes a JNDI `ObjectFactory` implementation (`com.mchange.v2.naming.JavaBeanObjectFactory`) willing to construct objects of arbitrary classes and initialize \"JavaBean\"-style properties. There are classes for which this ki... [Full analysis a",
-      "cvss": 7.1,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55153"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-74243",
-      "title": "CVE-2026-74243 - Quay: unauthenticated secscan notification endpoint in quay when psk is unset",
-      "description": "CVE ID : CVE-2026-74243\n \n Published : Aug. 14, 2026, 11:16 p.m. | 2hours, 38minutes ago\n \n Description : A flaw was found in Red Hat Quay. When the SECURITY_SCANNER_V4_PSK (pre-shared key) is not set, a remote unauthenticated attacker can send POST requests to the security scann... [Full analysis a",
-      "cvss": 6.5,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-74243"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "base_ps=15 (no boosts)"
         ],
         "suppression": null,
         "merge": null
