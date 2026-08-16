@@ -346,6 +346,18 @@ exports.applySecurityHeaders = applySecurityHeaders;
    and call this to read the true raw stream for signature verification.
 ══════════════════════════════════════════════════════════════════ */
 function readRawBody(req, maxBytes = 262144) {
+  // Cloudflare Workers path: workers/lib/node-compat.js's toNodeRequest()
+  // attaches the original Web Request here for bodyParser:false routes,
+  // since Workers' Request has no Node stream-event API. A real Node
+  // IncomingMessage never has this property, so the existing stream-read
+  // path below is completely unreached and unchanged when it's absent.
+  if (req.__cfRequest) {
+    return req.__cfRequest.arrayBuffer().then(buf => {
+      if (buf.byteLength > maxBytes) throw new Error('PAYLOAD_TOO_LARGE');
+      return Buffer.from(buf).toString('utf8');
+    });
+  }
+
   return new Promise((resolve, reject) => {
     let data = '';
     let bytes = 0;
