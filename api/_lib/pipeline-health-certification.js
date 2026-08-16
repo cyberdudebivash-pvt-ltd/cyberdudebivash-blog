@@ -355,10 +355,14 @@ class PipelineHealthCertification {
       const failedChecks = Object.entries(checks).filter(([k, v]) => v === false).map(([k]) => k);
       if (failedChecks.includes('pipelineExecuted')) {
         this.healthStatus = 'PIPELINE_FAILURE';
+      } else if (failedChecks.includes('sourcesEvaluated')) {
+        // Checked before publicationSuccessful: zero sources evaluated is
+        // the root cause, and publication trivially also fails downstream
+        // of it -- reporting SOURCE_FAILURE here points at what actually
+        // needs fixing instead of the symptom.
+        this.healthStatus = 'SOURCE_FAILURE';
       } else if (failedChecks.includes('publicationSuccessful')) {
         this.healthStatus = 'PUBLICATION_FAILURE';
-      } else if (failedChecks.includes('sourcesEvaluated')) {
-        this.healthStatus = 'SOURCE_FAILURE';
       } else if (failedChecks.includes('freshnessVerified')) {
         this.healthStatus = 'DEGRADED';
       } else {
@@ -631,6 +635,11 @@ class PipelineHealthCertification {
   }
 
   toJSON() {
+    // this.healthStatus is only updated as a side effect of certifyHealth()
+    // -- call it here too (generateDashboard()/generateNotifications()
+    // already do) so a caller who serializes without having explicitly
+    // certified first doesn't get the constructor's 'INITIALIZING' default.
+    this.certifyHealth();
     return {
       status: this.healthStatus,
       timestamp: this.certificationTimestamp,
