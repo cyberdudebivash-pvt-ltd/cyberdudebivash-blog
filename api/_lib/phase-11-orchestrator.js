@@ -72,7 +72,15 @@ class Phase11Orchestrator {
       portfolio.products.collections = await this.buildIntelligenceCollections(investigation, report);
 
       console.log('[PHASE 11] Building customer packages');
-      portfolio.products.customerPackages = await this.buildCustomerPackages(investigation, report);
+      const allComposedProducts = [
+        ...portfolio.products.executive,
+        ...portfolio.products.technical,
+        ...portfolio.products.threatActor,
+        ...portfolio.products.sectorRegional,
+        ...portfolio.products.vulnerabilityDetection,
+        ...portfolio.products.collections,
+      ];
+      portfolio.products.customerPackages = await this.buildCustomerPackages(investigation, report, allComposedProducts);
 
       portfolio.metadata.compositionStats = { ...this.compositionStats };
       portfolio.metadata.totalProducts = Object.values(portfolio.products).reduce((sum, arr) => sum + arr.length, 0);
@@ -105,19 +113,30 @@ class Phase11Orchestrator {
         this.recordComposition(true);
       }
 
-      const weeklyDigest = await this.executive.composeWeeklyExecutiveDigest(investigation, report);
-      if (weeklyDigest) {
-        products.push(weeklyDigest);
-        this.recordComposition(true);
-      }
+      // composeWeeklyExecutiveDigest(recentIntelligence, metrics) and
+      // composeMonthlyExecutiveOutlook(monthlyIntelligence, trends, riskMetrics)
+      // are cross-investigation, time-windowed aggregates -- they were being
+      // called here with (investigation, report), which don't match either
+      // signature. Neither call threw (defensive `Array.isArray(...) ? : []`
+      // and `|| {}` fallbacks absorbed the mismatch), so they silently
+      // produced a "digest"/"outlook" product with empty threat data and
+      // zeroed metrics on every single investigation -- shipped to
+      // customers looking complete while carrying no real content, and
+      // also why their lineage.investigation/lineage.report were never
+      // set (these functions don't take an investigation/report at all).
+      // There's no per-investigation source for "recent intelligence this
+      // week across the platform", and fabricating one here would violate
+      // this platform's zero-hallucination standard, so these two are not
+      // called from this per-investigation flow. The underlying methods
+      // are untouched in executive-intelligence-engine.js, ready for a
+      // real caller with genuine cross-investigation, time-windowed data
+      // once one exists.
 
-      const monthlyOutlook = await this.executive.composeMonthlyExecutiveOutlook(investigation, report);
-      if (monthlyOutlook) {
-        products.push(monthlyOutlook);
-        this.recordComposition(true);
-      }
-
-      const industryAdvisory = await this.executive.composeIndustryExecutiveAdvisory(investigation, report);
+      const industryAdvisory = await this.executive.composeIndustryExecutiveAdvisory(
+        investigation,
+        report,
+        investigation.targetedSectors
+      );
       if (industryAdvisory) {
         products.push(industryAdvisory);
         this.recordComposition(true);
@@ -340,16 +359,16 @@ class Phase11Orchestrator {
     return collections;
   }
 
-  async buildCustomerPackages(investigation, report) {
+  async buildCustomerPackages(investigation, report, allProducts) {
     const packages = [];
 
     try {
-      if (!this.collectionsPackages || typeof this.collectionsPackages.buildCustomerPackages !== 'function') {
+      if (!this.collectionsPackages || typeof this.collectionsPackages.buildCustomerIntelligencePackages !== 'function') {
         this.recordComposition(false, true);
         return packages;
       }
 
-      const customerPackages = await this.collectionsPackages.buildCustomerPackages(investigation, report);
+      const customerPackages = await this.collectionsPackages.buildCustomerIntelligencePackages(investigation, report, allProducts || []);
 
       if (customerPackages && Array.isArray(customerPackages) && customerPackages.length > 0) {
         packages.push(...customerPackages);

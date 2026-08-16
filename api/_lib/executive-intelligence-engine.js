@@ -166,7 +166,7 @@ class ExecutiveIntelligenceEngine {
     return product;
   }
 
-  async composeIndustryExecutiveAdvisory(investigation, targetedSectors, industryTrends) {
+  async composeIndustryExecutiveAdvisory(investigation, report, targetedSectors, industryTrends) {
     const product = {
       id: `industry-advisory-${investigation.id}`,
       productId: 'industry-executive-advisory',
@@ -193,6 +193,7 @@ class ExecutiveIntelligenceEngine {
       },
       lineage: {
         investigation: investigation.id,
+        report: report.id,
         source: 'phase-11-executive-intelligence',
       },
     };
@@ -201,7 +202,7 @@ class ExecutiveIntelligenceEngine {
     return product;
   }
 
-  async composeCriticalThreatAlert(investigation) {
+  async composeCriticalThreatAlert(investigation, report) {
     const product = {
       id: `alert-${investigation.id}-${Date.now()}`,
       productId: 'critical-threat-alert',
@@ -236,6 +237,7 @@ class ExecutiveIntelligenceEngine {
       },
       lineage: {
         investigation: investigation.id,
+        report: report.id,
         source: 'phase-11-executive-intelligence',
       },
     };
