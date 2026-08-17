@@ -20,6 +20,7 @@ from .claim_model import EpistemicState, EvidenceGraph
 from .claim_support_matrix import STATUSES_REQUIRING_EVIDENCE, evaluate_claim_support_gate
 from .contradiction_engine import find_all_contradictions
 from .detection_validation import DetectionRule, DetectionValidationState, check_all_rules, check_withheld_rules_have_rationale
+from .evidence_integrity import evaluate_source_integrity_gate
 from .forecast import Forecast, WithheldForecast, evaluate_forecast_gate
 from .human_review import CertificationState, ReviewRecord, resolve_certification_state
 from .metrics_registry import MetricsRegistry, evaluate_statistics_gate
@@ -93,18 +94,23 @@ def evaluate_commercial_readiness(bundle: ReportBundle, as_of: date | None = Non
         results.append(_pass_fail("source_provenance", "Source provenance", not missing,
                                    f"{len(graph.sources)} sources registered, {len(missing)} incomplete.", missing))
 
-    # 2. Evidence hash — content_sha256 present where technically feasible.
-    # "Where feasible" is judged conservatively: a source with no content
-    # captured at all (empty notes/url) can't be hashed; that's excluded
-    # from the denominator rather than counted as a failure to hash it.
+    # 2. Evidence hash — content_sha256 (full retrieved content) OR the
+    # explicit, reasoned excerpt_fingerprint_sha256 fallback (Section 33's
+    # source-integrity policy, evidence_integrity.py) present for every
+    # hashable source. A source with no url can't be hashed; that's
+    # excluded from the denominator rather than counted as a failure.
     if not graph.sources:
         results.append(_blocked("evidence_hash", "Evidence hash", "No sources registered in this bundle."))
     else:
-        hashable = [s for s in graph.sources.values() if s.url]
-        missing_hash = [s.source_id for s in hashable if not s.content_sha256]
-        results.append(_pass_fail("evidence_hash", "Evidence hash", not missing_hash,
-                                   f"{len(hashable) - len(missing_hash)}/{len(hashable)} hashable sources carry content_sha256.",
-                                   missing_hash))
+        integrity_gate = evaluate_source_integrity_gate(list(graph.sources.values()))
+        hashable_count = integrity_gate.full_content_hash_count + integrity_gate.excerpt_fingerprint_count + len(integrity_gate.findings)
+        results.append(_pass_fail(
+            "evidence_hash", "Evidence hash", integrity_gate.passed,
+            f"{integrity_gate.full_content_hash_count}/{hashable_count} hashable sources carry a full "
+            f"content_sha256; {integrity_gate.excerpt_fingerprint_count}/{hashable_count} use the reasoned "
+            f"excerpt-fingerprint fallback.",
+            [f.reason for f in integrity_gate.findings],
+        ))
 
     # 3. Automated-review disclosure
     if bundle.review is None:

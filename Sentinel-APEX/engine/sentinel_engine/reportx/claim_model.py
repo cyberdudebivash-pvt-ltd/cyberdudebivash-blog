@@ -135,11 +135,20 @@ class SourceRecord:
     retrieved_at: str  # ISO-8601 exact timestamp — this IS exact, it's our own retrieval clock, not the source's
     source_date: Optional[str] = None       # verbatim as the source expresses it, e.g. "2026-08-18"
     temporal_precision: TemporalPrecision = TemporalPrecision.UNKNOWN
-    content_sha256: Optional[str] = None
+    content_sha256: Optional[str] = None  # SHA-256 of the full raw retrieved content, when actually captured
     reliability: Reliability = Reliability.UNKNOWN
     independence_group: str = ""  # sources sharing this string are NOT independent of each other (Section 10)
     accessibility: str = "PUBLIC"
     notes: str = ""
+    # Source-integrity fallback (evidence_integrity.py, Section 33 row 2):
+    # when the full page content genuinely cannot be archived (JS-only
+    # rendering, access blocked, legal/ToS constraint), these four fields
+    # together form a reproducible, non-fabricated alternate fingerprint --
+    # never a substitute for content_sha256 when that IS obtainable.
+    etag: Optional[str] = None
+    last_modified: Optional[str] = None
+    excerpt_fingerprint_sha256: Optional[str] = None  # SHA-256 of the canonical excerpt(s) actually captured for this source
+    fingerprint_fallback_reason: Optional[str] = None  # required whenever excerpt_fingerprint_sha256 is used without content_sha256
 
     def __post_init__(self):
         if self.source_date and self.temporal_precision == TemporalPrecision.UNKNOWN:

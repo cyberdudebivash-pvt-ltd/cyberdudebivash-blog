@@ -176,6 +176,9 @@ def bundle_from_dict(d: dict) -> ReportBundle:
             reliability=_enum(Reliability, s.get("reliability"), Reliability.UNKNOWN),
             independence_group=s.get("independence_group", ""),
             accessibility=s.get("accessibility", "PUBLIC"), notes=s.get("notes", ""),
+            etag=s.get("etag"), last_modified=s.get("last_modified"),
+            excerpt_fingerprint_sha256=s.get("excerpt_fingerprint_sha256"),
+            fingerprint_fallback_reason=s.get("fingerprint_fallback_reason"),
         ))
     for e in d.get("evidence", []):
         graph.add_evidence(EvidenceRecord(evidence_id=e["evidence_id"], source_id=e["source_id"],

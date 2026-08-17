@@ -344,6 +344,33 @@ class TestGovernedWithholdingIsAValidPassPath:
         row = next(r for r in results if r.control_id == "regulatory_specificity")
         assert row.status == "PASS"
 
+    def test_evidence_hash_passes_with_excerpt_fingerprint_fallback(self):
+        graph = EvidenceGraph()
+        graph.add_source(SourceRecord(
+            source_id="s1", url="https://example.com/spa", publisher="Example",
+            source_type=SourceType.JOURNALISM, source_role=SourceRole.PRIMARY_EVENT_SOURCE,
+            retrieved_at="2026-08-18T00:00:00Z",
+            excerpt_fingerprint_sha256="b" * 64,
+            fingerprint_fallback_reason="JS-rendered SPA; direct fetch could not retrieve raw content.",
+        ))
+        bundle = ReportBundle(report_id="hash-fallback-ok", graph=graph)
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "evidence_hash")
+        assert row.status == "PASS"
+
+    def test_evidence_hash_fails_with_unexplained_excerpt_fingerprint(self):
+        graph = EvidenceGraph()
+        graph.add_source(SourceRecord(
+            source_id="s1", url="https://example.com/spa", publisher="Example",
+            source_type=SourceType.JOURNALISM, source_role=SourceRole.PRIMARY_EVENT_SOURCE,
+            retrieved_at="2026-08-18T00:00:00Z",
+            excerpt_fingerprint_sha256="b" * 64,  # no fingerprint_fallback_reason
+        ))
+        bundle = ReportBundle(report_id="hash-fallback-unexplained", graph=graph)
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "evidence_hash")
+        assert row.status == "FAIL"
+
     def test_regulatory_not_assessed_without_basis_fails(self):
         bundle = ReportBundle(
             report_id="reg-not-assessed-empty", graph=EvidenceGraph(),
