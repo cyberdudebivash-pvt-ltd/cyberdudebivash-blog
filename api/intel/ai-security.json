@@ -2,10 +2,10 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-08-17T12:47:49.683Z",
+  "generated": "2026-08-17T14:29:43.163Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 13,
+    "published": 14,
     "p1": 0,
     "leadsHeld": 8,
     "analystReports": 0,
@@ -21,19 +21,19 @@
         "error": "HTTP 429"
       },
       {
-        "name": "NVD (prompt injection)",
-        "key": "nvd_pi",
-        "tier": 1,
-        "status": "ok",
-        "items": 40,
-        "error": null
-      },
-      {
         "name": "arXiv cs.CR (LLM security)",
         "key": "arxiv_sec",
         "tier": 2,
         "status": "ok",
         "items": 30,
+        "error": null
+      },
+      {
+        "name": "NVD (prompt injection)",
+        "key": "nvd_pi",
+        "tier": 1,
+        "status": "ok",
+        "items": 40,
         "error": null
       },
       {
@@ -61,7 +61,7 @@
         "error": null
       }
     ],
-    "runtimeMs": 5544
+    "runtimeMs": 4267
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,7 +88,7 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 13,
+  "count": 14,
   "items": [
     {
       "id": "a9d01f0a65cdfd1b",
@@ -199,6 +199,62 @@
       "detection": {
         "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
         "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "58e3ac763606e302",
+      "title": "Medplum: Improper Validation of Redirect URI in External Auth Callback allows Authorization Code Leakage",
+      "url": "https://github.com/advisories/GHSA-m44r-7c5h-m6mj",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-08-17T13:36:17Z",
+      "cve": "CVE-2026-53728",
+      "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "sensitive_disclosure",
+          "label": "Sensitive Information Disclosure"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0057",
+          "name": "LLM Data Leakage"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": false,
+          "rag": true,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 53,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "HIGH",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "DLP on LLM responses for secrets/PII patterns; alert on repeated boundary-probing queries.",
+        "hunt": "Look for membership-inference / extraction query cadences against model or embedding APIs."
       },
       "has_analyst_report": false
     },
