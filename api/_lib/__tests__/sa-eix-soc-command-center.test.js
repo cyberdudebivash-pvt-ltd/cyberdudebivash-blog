@@ -293,6 +293,19 @@ describe('Sentinel APEX SA-EIX SOC Command Center', () => {
     expect(result.metadata.timestamp).toBe(timestamp);
   });
 
+  // Product contract: this badge always displays UTC, deliberately not the
+  // runtime's local time — see the comment at the source call site. Picks a
+  // timestamp within 5.5h of midnight UTC (IST is UTC+5:30) specifically
+  // because it would land on a different clock time AND calendar day under
+  // Asia/Kolkata local time — the exact case that made this non-deterministic
+  // across a UTC CI runner vs. a dev machine set to IST before the fix.
+  test('displays UTC regardless of the host runtime timezone', () => {
+    const timestamp = '2026-07-31T23:45:00Z';
+    const result = soc.generateLiveIntelligenceBadge('active', timestamp);
+
+    expect(result.html).toContain('23:45:00');
+  });
+
   test('should render pulse animation for active status', () => {
     const result = soc.generateLiveIntelligenceBadge('active');
 

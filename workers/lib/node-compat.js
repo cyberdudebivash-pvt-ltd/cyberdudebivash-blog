@@ -108,6 +108,14 @@ function createNodeResponse() {
     resolveResponse(new Response(finalBody, { status: statusCode, headers }));
   }
 
+  // Binary-safe: api/og.js's success path does res.end(pngBuffer) — a
+  // Buffer (Node's Buffer extends Uint8Array, so this check catches both)
+  // must reach the Response untouched, never String()-coerced, or PNG
+  // bytes come out corrupted. Only string/undefined bodies get coerced.
+  function isBinary(body) {
+    return body instanceof Uint8Array || body instanceof ArrayBuffer;
+  }
+
   const res = {
     setHeader(key, value) {
       headers.set(key, String(value));
@@ -120,6 +128,16 @@ function createNodeResponse() {
     set(key, value) {
       return res.setHeader(key, value);
     },
+    // api/og.js sets res.statusCode = 200 directly (a raw property
+    // assignment) rather than calling res.status(200) — Vercel's real res
+    // object supports both, so this shim must too. Both forms write the
+    // same underlying statusCode the other reads.
+    get statusCode() {
+      return statusCode;
+    },
+    set statusCode(code) {
+      statusCode = code;
+    },
     status(code) {
       statusCode = code;
       return res;
@@ -131,13 +149,15 @@ function createNodeResponse() {
       return res;
     },
     send(body) {
+      if (isBinary(body)) { bodyText = body; finish(); return res; }
       if (typeof body === 'object' && body !== null) return res.json(body);
       bodyText = body === undefined ? '' : String(body);
       finish();
       return res;
     },
     end(body) {
-      if (body !== undefined) bodyText = String(body);
+      if (isBinary(body)) bodyText = body;
+      else if (body !== undefined) bodyText = String(body);
       finish();
       return res;
     },

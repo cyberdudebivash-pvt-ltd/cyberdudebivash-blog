@@ -274,7 +274,12 @@ class SentinelApexSOCCommandCenter {
     };
 
     const config = statusConfig[status] || statusConfig.offline;
-    const timeString = timestamp ? new Date(timestamp).toLocaleTimeString() : 'Unknown';
+    // UTC, not toLocaleTimeString(): a SOC dashboard is read across
+    // analyst timezones sharing one incident timeline, and the runtime's
+    // local TZ (CI box, a dev's laptop, this Worker's edge location) must
+    // never change what time is displayed for the same underlying
+    // timestamp. .toISOString() is always UTC regardless of host TZ.
+    const timeString = timestamp ? new Date(timestamp).toISOString().slice(11, 19) : 'Unknown';
     const t = this.designTokens;
 
     return {
