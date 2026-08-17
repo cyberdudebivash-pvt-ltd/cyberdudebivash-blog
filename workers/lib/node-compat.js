@@ -32,20 +32,46 @@ const NULL_BODY_STATUSES = new Set([101, 204, 205, 304]);
 const MAX_BODY_BYTES = 4.5 * 1024 * 1024;
 
 /**
- * Reads `request`'s body as text, enforcing MAX_BODY_BYTES. Buffers fully
- * before checking (via arrayBuffer(), same idiom already established and
- * accepted by security.js#readRawBody's Workers branch) rather than
- * aborting mid-stream -- Workers' Request API has no cheap early-abort
- * primitive here, and the platform's own much larger ceiling already
- * bounds the worst case; see LOCAL-TEST-RESULTS.md §2 for why that
- * trade-off was accepted for the webhook path this mirrors.
+ * Reads `request`'s body as text, enforcing MAX_BODY_BYTES. Rejects on
+ * declared Content-Length before reading anything, then enforces the same
+ * limit incrementally via the body's own reader -- cancelling it the
+ * moment the accumulated size crosses the limit -- rather than buffering
+ * the full body first via arrayBuffer(). Workers' Request.body is a
+ * standard ReadableStream and reader.cancel() is fully supported
+ * (confirmed against Cloudflare's own runtime API docs), so an oversized
+ * request with a missing/lying Content-Length no longer has to be fully
+ * allocated in memory before this check can reject it.
  */
 async function readBoundedText(request) {
-  const buf = await request.arrayBuffer();
-  if (buf.byteLength > MAX_BODY_BYTES) {
+  const declaredLength = Number(request.headers.get('content-length'));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
     throw Object.assign(new Error('Request body too large'), { isBodyTooLargeError: true });
   }
-  return new TextDecoder('utf-8').decode(buf);
+  const reader = request.body?.getReader();
+  if (!reader) return '';
+  const chunks = [];
+  let length = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length > MAX_BODY_BYTES) {
+        await reader.cancel();
+        throw Object.assign(new Error('Request body too large'), { isBodyTooLargeError: true });
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(length);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder('utf-8').decode(bytes);
 }
 
 /**

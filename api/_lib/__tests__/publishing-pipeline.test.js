@@ -38,7 +38,7 @@ describe('PublishingPipeline#getPipelineStatus', () => {
 
   test('timeline uses the correct submittedForReview key', async () => {
     const redis = fakeRedis({
-      status: 'REVIEW',
+      status: 'review',
       title: 'Test Intelligence',
       type: 'threat-actor',
       confidence: 'high',
@@ -54,5 +54,6 @@ describe('PublishingPipeline#getPipelineStatus', () => {
     expect(status.timeline).toHaveProperty('submittedForReview');
     expect(status.timeline.submittedForReview).toEqual({ at: '2026-08-02T00:00:00Z', by: 'reviewer1' });
     expect(status.timeline).not.toHaveProperty('submittedFor');
+    expect(status.nextActions).toEqual(['Request changes', 'Approve for publication']);
   });
 });

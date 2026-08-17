@@ -259,15 +259,22 @@ function getIntel(type, tier, query = {}) {
 // CVE detail lookup across all intel files
 function getCVEDetail(cveId, tier) {
   const normalized = cveId.toUpperCase().trim();
-  // Try dedicated CVE file first
-  const cvePath = path.join(BASE, 'api', 'intel', 'cve', `${normalized}.json`);
-  if (fs.existsSync(cvePath)) {
-    const data = loadJSON(cvePath);
-    if (data) {
-      const item = tier === 'enterprise' ? filterEnterprise(data)
-                  : tier === 'pro'        ? filterPro(data)
-                  : filterFree(data);
-      return { found: true, item: attestItem(item) };
+  // Try dedicated CVE file first (Node/Vercel only -- `path`/`BASE`/`fs`
+  // above are block-scoped to the non-Workers branch, and Workers has no
+  // filesystem anyway; PATHS.live's bundled data below covers Workers).
+  if (!isCloudflareWorkers()) {
+    const path = require('path');
+    const fs = require('fs');
+    const BASE = path.resolve(__dirname, '../../');
+    const cvePath = path.join(BASE, 'api', 'intel', 'cve', `${normalized}.json`);
+    if (fs.existsSync(cvePath)) {
+      const data = loadJSON(cvePath);
+      if (data) {
+        const item = tier === 'enterprise' ? filterEnterprise(data)
+                    : tier === 'pro'        ? filterPro(data)
+                    : filterFree(data);
+        return { found: true, item: attestItem(item) };
+      }
     }
   }
   // Fall back to scanning live feed

@@ -49,6 +49,7 @@ async function stripeRequest(method, path, body = null) {
 // Verify Stripe webhook signature
 function verifyWebhook(rawBody, signature) {
   if (!WEBHOOK_SECRET) return false;
+  if (typeof signature !== 'string') return false;
   const parts = {};
   signature.split(',').forEach(p => {
     const [k, v] = p.split('=');
