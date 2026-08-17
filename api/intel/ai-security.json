@@ -2,10 +2,10 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-08-17T20:29:13.376Z",
+  "generated": "2026-08-17T22:26:19.343Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 14,
+    "published": 15,
     "p1": 0,
     "leadsHeld": 8,
     "analystReports": 0,
@@ -29,11 +29,11 @@
         "error": null
       },
       {
-        "name": "arXiv cs.CR (LLM security)",
-        "key": "arxiv_sec",
-        "tier": 2,
+        "name": "r/MachineLearning",
+        "key": "reddit_ml",
+        "tier": 3,
         "status": "ok",
-        "items": 30,
+        "items": 25,
         "error": null
       },
       {
@@ -45,11 +45,11 @@
         "error": null
       },
       {
-        "name": "r/MachineLearning",
-        "key": "reddit_ml",
-        "tier": 3,
+        "name": "arXiv cs.CR (LLM security)",
+        "key": "arxiv_sec",
+        "tier": 2,
         "status": "ok",
-        "items": 25,
+        "items": 30,
         "error": null
       },
       {
@@ -61,7 +61,7 @@
         "error": null
       }
     ],
-    "runtimeMs": 3424
+    "runtimeMs": 2022
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,7 +88,7 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 14,
+  "count": 15,
   "items": [
     {
       "id": "a9d01f0a65cdfd1b",
@@ -98,62 +98,6 @@
       "tier": 1,
       "published": "2026-08-14T21:42:06Z",
       "cve": "CVE-2026-55157",
-      "severity": "high",
-      "cvss": null,
-      "evidence_label": "VERIFIED_ADVISORY",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": false,
-          "mcp": true,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 63,
-        "priority": "P2"
-      },
-      "confidence": {
-        "source": "HIGH",
-        "evidence": "HIGH",
-        "overall": "HIGH",
-        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "c15e48601c02a9a0",
-      "title": "MCP-for-Stata: Stata Command Injection via Unsanitized `package` in `ado_package_install`",
-      "url": "https://github.com/advisories/GHSA-49m4-vp58-wgc9",
-      "source": "GitHub Security Advisories",
-      "tier": 1,
-      "published": "2026-08-12T19:23:38Z",
-      "cve": "CVE-2026-55071",
       "severity": "high",
       "cvss": null,
       "evidence_label": "VERIFIED_ADVISORY",
@@ -259,6 +203,62 @@
       "has_analyst_report": false
     },
     {
+      "id": "b5261f73b882f5ac",
+      "title": "atomic-agents-stack: HTTP MCP catalog accepts cleartext http and spawns catalog-supplied commands (MITM to RCE)",
+      "url": "https://github.com/advisories/GHSA-xhcr-cqfr-m3hv",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-08-17T21:49:55Z",
+      "cve": null,
+      "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "agent_tool",
+          "label": "Agentic / Tool / MCP Exploitation"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM06",
+          "name": "Sensitive Information Disclosure / Excessive Agency"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0053",
+          "name": "LLM Plugin Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": true,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "elevated"
+      },
+      "enterprise_impact": {
+        "score": 48,
+        "priority": "P2"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "MODERATE",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories)."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
+        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
+      },
+      "has_analyst_report": false
+    },
+    {
       "id": "accd915ee18d4d11",
       "title": "vLLM: Completion prompt lists fan out into unbounded engine requests",
       "url": "https://github.com/advisories/GHSA-87x5-vmc3-756j",
@@ -306,6 +306,62 @@
         "evidence": "HIGH",
         "overall": "HIGH",
         "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
+      },
+      "corroboration": 1,
+      "detection": {
+        "detect": "Expose-check inference servers (Triton/vLLM/Ollama/MLflow/Ray) for unauthenticated management endpoints.",
+        "hunt": "Shodan/asset-inventory sweep for AI infra bound to 0.0.0.0 without auth."
+      },
+      "has_analyst_report": false
+    },
+    {
+      "id": "cee19926b0964d9b",
+      "title": "atomic-agents-stack: Parallel helper/delegate batch reserves $0 for models absent from the pricing table, bypassing the cost-cap fan-out guard",
+      "url": "https://github.com/advisories/GHSA-j659-8xh6-5pq5",
+      "source": "GitHub Security Advisories",
+      "tier": 1,
+      "published": "2026-08-17T21:50:01Z",
+      "cve": null,
+      "severity": "high",
+      "cvss": null,
+      "evidence_label": "VERIFIED_ADVISORY",
+      "categories": [
+        {
+          "id": "infra",
+          "label": "AI Infrastructure / Inference Server"
+        }
+      ],
+      "owasp_llm": [
+        {
+          "id": "LLM05",
+          "name": "Supply Chain Vulnerabilities"
+        }
+      ],
+      "mitre_atlas": [
+        {
+          "id": "AML.T0010",
+          "name": "ML Supply Chain Compromise"
+        }
+      ],
+      "agent_risk": {
+        "flags": {
+          "agentic": false,
+          "mcp": false,
+          "rag": false,
+          "tool_use": false,
+          "supply_chain": false
+        },
+        "level": "standard"
+      },
+      "enterprise_impact": {
+        "score": 28,
+        "priority": "P3"
+      },
+      "confidence": {
+        "source": "HIGH",
+        "evidence": "MODERATE",
+        "overall": "HIGH",
+        "rationale": "Authoritative source (GitHub Security Advisories)."
       },
       "corroboration": 1,
       "detection": {
