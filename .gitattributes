@@ -1,0 +1,32 @@
+# Pin line endings to LF regardless of the checkout platform's core.autocrlf
+# setting. Without this file, a Windows checkout (core.autocrlf=true, the
+# default in Git for Windows) silently rewrites every text file's LF line
+# endings to CRLF on checkout. scripts/build-cloudflare-assets.js then
+# fs.copyFileSync()'s those already-converted files into dist-public/
+# byte-for-byte, and wrangler deploy uploads them as-is -- so a staging
+# deploy built on Windows ends up serving CRLF assets while the git-committed
+# blobs (and any Linux/Mac checkout) are LF-only.
+#
+# Found via a real live-staging probe during Stage 5 certification: the
+# deployed api/intel/threat-graph.json was 7,778,626 bytes / md5
+# 1f370a1b5c16da8a2606540d41dd6d19 versus the committed blob's 7,534,017
+# bytes / md5 755f0cc235521989b92cea5599681fbd -- a 244,609-byte gap that
+# matched the file's own newline count exactly (one injected \r per line).
+# util.isDeepStrictEqual on the parsed JSON confirmed the data itself was
+# byte-for-byte semantically identical (JSON.parse() treats the extra \r as
+# insignificant whitespace) -- so this was never a data-corruption bug, but
+# it is a real, repo-wide asset-integrity gap: sitemap.xml (34,049 injected
+# \r bytes) and iocs.json (12 injected \r bytes) showed the same pattern on
+# the same live deployment, confirming it isn't isolated to one file.
+#
+# eol=lf overrides core.autocrlf for every pattern it matches, so this is
+# suffient on its own without requiring any operator-side git config change.
+* text=auto eol=lf
+
+# Defensive, explicit binary declarations for this repo's known binary
+# asset types (confirmed present via `git ls-files`) -- redundant with
+# Git's own content-sniffing under text=auto, but removes any ambiguity for
+# exactly the file types this repository actually ships.
+*.png  binary
+*.woff binary
+*.ico  binary

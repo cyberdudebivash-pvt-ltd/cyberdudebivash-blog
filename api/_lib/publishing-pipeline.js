@@ -351,7 +351,16 @@ class PublishingPipeline {
       return null;
     }
 
-    const reviewChecklist = await this.redis.hgetall(`intelligence:review:${intelligenceId}`);
+    const reviewChecklistFlat = await this.redis.hgetall(`intelligence:review:${intelligenceId}`);
+    // hgetall returns Upstash's flat [field, value, field, value, ...] array,
+    // not an object -- same reduction IntelligenceManager#getIntelligence
+    // already applies to its own hgetall call. submitForReview() writes this
+    // hash with a single 'checklist' field (JSON.stringify'd) -- see
+    // submitForReview() above.
+    const reviewChecklist = {};
+    for (let i = 0; i < reviewChecklistFlat.length; i += 2) {
+      reviewChecklist[reviewChecklistFlat[i]] = reviewChecklistFlat[i + 1];
+    }
     const approvals = await this.redis.zrange(`intelligence:approvals:${intelligenceId}`, 0, -1);
 
     return {
