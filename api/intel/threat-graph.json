@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-17T14:21:27.992Z",
+  "generated": "2026-08-17T14:52:17.880Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11141,
+    "total_nodes": 11143,
     "actors": 8,
-    "cves": 3656,
-    "campaigns": 1127,
+    "cves": 3657,
+    "campaigns": 1128,
     "malware": 0,
     "iocs": 879,
-    "edges": 3687
+    "edges": 3688
   },
   "nodes": {
     "actor:lockbit": {
@@ -211326,6 +211326,44 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2025-62593": {
+      "id": "CVE-2025-62593",
+      "type": "CVE",
+      "name": "CVE-2025-62593: Ray-Project Ray Code Injection Vulnerability — CISA KEV Active Exploitation",
+      "attributes": {
+        "cvss": 0,
+        "threat_level": "HIGH",
+        "priority_score": 79,
+        "exploited": true,
+        "cisa_kev": true,
+        "ransomware": false,
+        "vendor": "Ray-Project",
+        "product": "Ray",
+        "published": "2026-08-18",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2025-62593": {
+      "id": "campaign:cve-2025-62593",
+      "type": "Campaign",
+      "name": "Ray-Project Ray Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2025-62593 | 1 CISA KEV item(s), 1 confirmed exploited — elevated campaign priority"
+      },
+      "connections": [
+        {
+          "target": "CVE-2025-62593",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -244671,6 +244709,15 @@
       "target": "BLEEPINGCOMPUTER-26d7db41bc0a44fb",
       "relationship": "exploits",
       "confidence": 0.85,
+      "first_seen": "2026-08-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2025-62593→includes→CVE-2025-62593",
+      "source": "campaign:cve-2025-62593",
+      "target": "CVE-2025-62593",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-08-17",
       "sources": []
     }

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-17T14:21:28.068Z",
+  "generated": "2026-08-17T14:52:17.951Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,7 +8,7 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 110,
+  "count": 111,
   "items": [
     {
       "id": "CVE-2026-50522",
@@ -469,94 +469,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-55157",
-      "title": "Token Optimizer MCP: OS command injection in smart_user via username in get-user-info",
-      "description": "### Summary\n\n`token-optimizer-mcp` is vulnerable to OS command injection in the `smart_user` tool.\n\nThe `get-user-info` operation accepts a user-controlled `username` argument and later interpolates it into a shell command executed through `execAsync()`:\n\n```ts\ngetent passwd \"${u... [Full analysis a",
-      "cvss": 8.4,
-      "final_ps": 43,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55157"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=2d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=43 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-53657",
-      "title": "Lima: An arbitrary user in a QEMU VM could gain the root privilege in the VM via the guest agent socket",
-      "description": "### Impact\nOn an instance of Lima running with `qemu` driver, an arbitrary user in the VM could access `/run/lima-guestagent.sock` when the guest agent is enabled.\n\nThis could result in running an arbitrary command with the root privileges in the VM (**not on the host**), as `lim... [Full analysis a",
-      "cvss": 8.2,
-      "final_ps": 42,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53657"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=2d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=42 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-54121",
       "title": "PoC exploit released for critical AD CS domain-takeover flaw (CVE-2026-54121)",
       "description": "",
@@ -736,6 +648,94 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-53653",
+      "title": "Grav: Unauthenticated denial of service via unbounded image derivative dimensions",
+      "description": "### Summary\nAn unauthenticated visitor exhausts server memory and CPU by requesting an image with oversized resize dimensions. One request drives a worker to several gigabytes of RAM and tens of seconds of CPU. A few concurrent requests take the host down.\n\n### Details\n`Grav::fal... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 41,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53653"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=2d (score=0.65)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-35219",
+      "title": "Budibase: SSRF in Automation Steps - Webhook, Zapier, N8N, Slack, Discord Bypass IP Blacklist",
+      "description": "## Summary\n\nBudibase automation steps (outgoing webhook, Zapier, n8n, Slack, Discord, Make.com) make server-side HTTP requests to user-provided URLs using `node-fetch` directly, completely bypassing the IP blacklist protection that exists in the REST API integration. Additionally... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 41,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-35219"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=2d (score=0.65)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=41 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -1640,6 +1640,50 @@
           "data_confidence=0.40",
           "recency=0d (score=1.00)",
           "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-55153",
+      "title": "mchange-commons-java contains elements susceptible to abuse via JNDI injection and \"deserialization gadgets\"",
+      "description": "### Impact\nPrior to version 0.6.0, mchange-commons-java includes a JNDI `ObjectFactory` implementation (`com.mchange.v2.naming.JavaBeanObjectFactory`) willing to construct objects of arbitrary classes and initialize \"JavaBean\"-style properties. There are classes for which this ki... [Full analysis a",
+      "cvss": 7.1,
+      "final_ps": 40,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-14",
+      "last_seen": "2026-08-14",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55153"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.60",
+          "recency=2d (score=0.65)",
+          "QS=0.438"
         ],
         "priority": [
           "base_ps=40 (no boosts)"
@@ -3232,6 +3276,53 @@
       "iocs": []
     },
     {
+      "id": "CVE-2025-62593",
+      "title": "CVE-2025-62593: Ray-Project Ray Code Injection Vulnerability — CISA KEV Active Exploitation",
+      "description": "",
+      "cvss": null,
+      "final_ps": 29,
+      "quality_score": 0.515,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "cisa_kev",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "cisa_kev"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "Ray-Project",
+      "product": "Ray",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/ray-project/ray/security/advisories/GHSA-q279-jhrf-cc6v",
+        "https://github.com/ray-project/ray/commit/70e7c72780bdec075dba6cad1afe0832772bfe09",
+        "https://www.cisa.gov/news-events/directives/bod-26-04-prioritizing-security-updates-based-risk",
+        "https://www.cisa.gov/news-events/directives/bod-26-04-implementation-guidance-prioritizing-security-updates-based-risk"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=1.00 (cisa_kev)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.515"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-14832",
       "title": "CVE-2026-14832 - ShopSmart Loyalty for WooCommerce <= 1.0.0 - Unauthenticated Sensitive Information Disclosure via shops",
       "description": "",
@@ -4030,14 +4121,14 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-53660",
-      "title": "OpenAM Insecure SSO Cookie Initialization",
+      "id": "CVE-2026-35511",
+      "title": "Authorizer: Zero-click account takeover via OAuth identity linking to unverified email accounts",
       "description": "",
       "cvss": 7.5,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "LOW",
-      "type": "NEWS_REPORT",
+      "type": "AI_SECURITY",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -4052,7 +4143,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-53660"
+        "CVE-2026-35511"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4690,10 +4781,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-53653",
-      "title": "Grav: Unauthenticated denial of service via unbounded image derivative dimensions",
+      "id": "CVE-2026-55157",
+      "title": "Token Optimizer MCP: OS command injection in smart_user via username in get-user-info",
       "description": "",
-      "cvss": 7.5,
+      "cvss": 8.4,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "LOW",
@@ -4712,7 +4803,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-53653"
+        "CVE-2026-55157"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4734,10 +4825,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-35219",
-      "title": "Budibase: SSRF in Automation Steps - Webhook, Zapier, N8N, Slack, Discord Bypass IP Blacklist",
+      "id": "CVE-2026-53657",
+      "title": "Lima: An arbitrary user in a QEMU VM could gain the root privilege in the VM via the guest agent socket",
       "description": "",
-      "cvss": 7.5,
+      "cvss": 8.2,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "LOW",
@@ -4756,7 +4847,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-35219"
+        "CVE-2026-53657"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4778,10 +4869,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-55153",
-      "title": "mchange-commons-java contains elements susceptible to abuse via JNDI injection and \"deserialization gadgets\"",
+      "id": "CVE-2026-53660",
+      "title": "OpenAM Insecure SSO Cookie Initialization",
       "description": "",
-      "cvss": 7.1,
+      "cvss": 7.5,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "LOW",
@@ -4800,51 +4891,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-55153"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-35511",
-      "title": "Authorizer: Zero-click account takeover via OAuth identity linking to unverified email accounts",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-35511"
+        "CVE-2026-53660"
       ],
       "ioc_count": 0,
       "refs": [],
