@@ -43,6 +43,14 @@ Usage (from Sentinel-APEX/engine/):
       NormalizedDoc; this is the equivalent for a final, hand-authored
       report file, which had no path into the graph before. Prints any
       prior context the graph already had, then the graph's stats as JSON.
+
+  python3 cli.py reportx-gate <bundle.json> [--as-of YYYY-MM-DD] [--json]
+      ReportX commercial-readiness validator (docs/reportx/). Loads a
+      ReportBundle from JSON (sentinel_engine.reportx.bundle_io schema),
+      evaluates all 23 commercial-readiness controls, and prints the
+      COMMERCIAL READINESS matrix. Add --json for the machine-readable
+      form. Exit 0 only on a true 23/23 PASS; exit 1 otherwise (any FAIL
+      or BLOCKED row) -- never exits 0 on a partial result.
 """
 
 from __future__ import annotations
@@ -176,6 +184,17 @@ def cmd_certify(args: argparse.Namespace) -> int:
     return 1 if cert.decision == "NOT CERTIFIED" else 0
 
 
+def cmd_reportx_gate(args: argparse.Namespace) -> int:
+    from datetime import date as date_cls
+
+    from sentinel_engine.reportx.bundle_io import run_gate_on_file
+
+    as_of = date_cls.fromisoformat(args.as_of) if args.as_of else None
+    markdown, as_json = run_gate_on_file(args.bundle, as_of=as_of)
+    print(as_json if args.json else markdown)
+    return 0 if "FINAL VERDICT: COMMERCIAL-READY (23/23 PASS)" in markdown else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -228,6 +247,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--index", default="", help="path to index.html, for the Publication Quality domain")
     p.add_argument("--node", default="node", help="node binary to invoke for the Rendering Quality domain")
     p.set_defaults(func=cmd_certify)
+
+    p = sub.add_parser("reportx-gate", help="ReportX commercial-readiness validator (23-control matrix)")
+    p.add_argument("bundle", help="path to a ReportBundle JSON file")
+    p.add_argument("--as-of", default="", help="ISO date to evaluate statistics freshness against (default: today)")
+    p.add_argument("--json", action="store_true", help="print the machine-readable JSON form instead of Markdown")
+    p.set_defaults(func=cmd_reportx_gate)
 
     args = parser.parse_args(argv)
     return args.func(args)
