@@ -1,0 +1,108 @@
+'use strict';
+
+const { test, describe } = require('node:test');
+const assert = require('node:assert/strict');
+const { handleFetch, dispatch, HANDLER_MODULES } = require('./router');
+const { DIRECT_API_HANDLERS, DYNAMIC_API_HANDLERS } = require('./route-table');
+
+function fakeEnv(assetsFetchImpl) {
+  const calls = [];
+  return {
+    calls,
+    env: {
+      ASSETS: {
+        async fetch(req) {
+          calls.push(req);
+          return assetsFetchImpl ? assetsFetchImpl(req) : new Response('asset-body', { status: 200 });
+        },
+      },
+    },
+  };
+}
+
+describe('router — HANDLER_MODULES parity with route-table.js', () => {
+  test('every DIRECT_API_HANDLERS entry has a static require() in HANDLER_MODULES', () => {
+    for (const p of DIRECT_API_HANDLERS) {
+      assert.ok(p in HANDLER_MODULES, `${p} is in route-table.js's DIRECT_API_HANDLERS but missing from router.js's HANDLER_MODULES`);
+    }
+  });
+
+  test('every DYNAMIC_API_HANDLERS entry has a static require() in HANDLER_MODULES', () => {
+    for (const [, handlerPath] of DYNAMIC_API_HANDLERS) {
+      assert.ok(handlerPath in HANDLER_MODULES, `${handlerPath} is in route-table.js's DYNAMIC_API_HANDLERS but missing from router.js's HANDLER_MODULES`);
+    }
+  });
+
+  test('HANDLER_MODULES has no keys route-table.js does not know about', () => {
+    const known = new Set([...DIRECT_API_HANDLERS, ...DYNAMIC_API_HANDLERS.map(([, p]) => p)]);
+    for (const key of Object.keys(HANDLER_MODULES)) {
+      assert.ok(known.has(key), `HANDLER_MODULES has ${key}, which route-table.js does not resolve to any route`);
+    }
+  });
+});
+
+describe('handleFetch — routing by type', () => {
+  test('unmatched path defers to env.ASSETS.fetch with the original request', async () => {
+    const { env, calls } = fakeEnv();
+    const request = new Request('https://blog.cyberdudebivash.in/posts/some-article.html');
+    const response = await handleFetch(request, env);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0], request);
+    assert.equal(response.status, 200);
+  });
+
+  test('blocked path returns 404 without ever calling env.ASSETS', async () => {
+    const { env, calls } = fakeEnv();
+    const request = new Request('https://blog.cyberdudebivash.in/CLAUDE.md');
+    const response = await handleFetch(request, env);
+    assert.equal(response.status, 404);
+    assert.equal(calls.length, 0);
+  });
+
+  test('/rss redirects to /rss.xml with a 308, without calling env.ASSETS', async () => {
+    const { env, calls } = fakeEnv();
+    const request = new Request('https://blog.cyberdudebivash.in/rss');
+    const response = await handleFetch(request, env);
+    assert.equal(response.status, 308);
+    assert.equal(new URL(response.headers.get('location')).pathname, '/rss.xml');
+    assert.equal(calls.length, 0);
+  });
+
+  test('/feed.xml resolves as an asset rewrite to /rss.xml, fetched via env.ASSETS', async () => {
+    const { env, calls } = fakeEnv();
+    const request = new Request('https://blog.cyberdudebivash.in/feed.xml');
+    await handleFetch(request, env);
+    assert.equal(calls.length, 1);
+    assert.equal(new URL(calls[0].url).pathname, '/rss.xml');
+  });
+});
+
+describe('handleFetch — real end-to-end handler dispatch', () => {
+  test('GET /api/v1/intel?action=stats runs the real handler through the compat shim', async () => {
+    const { env } = fakeEnv();
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/intel?action=stats');
+    const response = await handleFetch(request, env);
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.equal(body.success, true);
+    assert.ok(body.stats);
+  });
+
+  test('GET /api/v1/intel/live is rewritten to action=live and reaches the same real handler', async () => {
+    const { env } = fakeEnv();
+    // No API key configured in this environment -- expect the handler's
+    // own real 401, not a routing failure. Proves the rewrite→dispatch
+    // path reaches actual application logic, not just a 200/404 shortcut.
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/intel/live');
+    const response = await handleFetch(request, env);
+    assert.equal(response.status, 401);
+    const body = await response.json();
+    assert.equal(body.error.code, 'UNAUTHORIZED');
+  });
+
+  test('dispatch() to an unknown handlerPath fails closed with 404', async () => {
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/does-not-exist');
+    const response = await dispatch('api/v1/does-not-exist', request, {});
+    assert.equal(response.status, 404);
+  });
+});
