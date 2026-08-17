@@ -17,7 +17,7 @@ from datetime import date
 
 from .analytic_scaffolding import HypothesisSet, IntelligenceGap, build_bibliography, find_orphan_citations
 from .claim_model import EpistemicState, EvidenceGraph
-from .claim_support_matrix import evaluate_claim_support_gate
+from .claim_support_matrix import STATUSES_REQUIRING_EVIDENCE, evaluate_claim_support_gate
 from .contradiction_engine import find_all_contradictions
 from .detection_validation import DetectionRule, check_all_rules
 from .forecast import Forecast, WithheldForecast, evaluate_forecast_gate
@@ -118,10 +118,21 @@ def evaluate_commercial_readiness(bundle: ReportBundle, as_of: date | None = Non
 
     # 4. Source-specific facts — every claim tagged OBSERVED must carry
     # evidence/source refs of its own (not borrowed from a CONTEXT claim).
+    # Scoped to ASSERTIVE epistemic states only, via the same
+    # STATUSES_REQUIRING_EVIDENCE frozenset claim_support_matrix.py's own
+    # gate already uses -- imported, not re-listed, so the two policies
+    # cannot drift apart again. A claim honestly declaring a gap
+    # (UNKNOWN/NOT_ASSESSED/NOT_APPLICABLE/HYPOTHESIS) is not asserting
+    # anything, so the absence of evidence is the correct representation,
+    # not a defect: "did a compromise actually occur?" answered UNKNOWN
+    # with no evidence is exactly what Section 10 requires, not a failure
+    # of this row.
     from .claim_model import ObservedVsContext
     observed_without_evidence = [
         cid for cid, c in graph.claims.items()
-        if c.observed_vs_context == ObservedVsContext.OBSERVED and not c.has_evidence()
+        if c.observed_vs_context == ObservedVsContext.OBSERVED
+        and c.status in STATUSES_REQUIRING_EVIDENCE
+        and not c.has_evidence()
     ]
     results.append(_pass_fail("source_specific_facts", "Source-specific facts", not observed_without_evidence,
                                f"{sum(1 for c in graph.claims.values() if c.observed_vs_context == ObservedVsContext.OBSERVED)} "
