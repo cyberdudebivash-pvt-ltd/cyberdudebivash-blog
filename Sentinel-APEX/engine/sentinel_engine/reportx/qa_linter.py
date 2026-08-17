@@ -43,7 +43,17 @@ _RE_UNRESOLVED_TEMPLATE = re.compile(
 _RE_EMPTY_PLACEHOLDER = re.compile(
     r"\[PLACEHOLDER\]|\bTODO\b|\bTBD\b|\bFIXME\b|\bundefined\b|\bNaN\b",
 )
-_RE_PYTHON_NONE_LEAK = re.compile(r"(?<![A-Za-z0-9_])None(?![A-Za-z0-9_])")
+# Only flags "None" in a field-value context (preceded by a colon, an "is"/
+# "was"/"are"/"were" copula, or "=") -- a bare standalone "None" elsewhere is
+# far more often legitimate English ("None of the sources...", "None was
+# found to corroborate...") than a leaked Python object. Caught as a real
+# false positive by the Qilin/Spoonful of Comfort fixture's own prose
+# ("None of this historical context is evidence...").
+_RE_PYTHON_NONE_LEAK = re.compile(
+    r"(?::\s*None(?![A-Za-z0-9_]))"
+    r"|(?:\b(?:is|was|are|were)\s+None(?![A-Za-z0-9_]))"
+    r"|(?:=\s*None(?![A-Za-z0-9_]))"
+)
 
 # ============================================================
 # Structural defects.

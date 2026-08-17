@@ -321,11 +321,18 @@ class EvidenceGraph:
         if not groups:
             state = CorroborationState.UNCORROBORATED
         elif len(groups) == 1:
-            # could still be >1 physical source, but they're not independent
-            total_sources = len(claim.source_refs) + len({
+            # could still be >1 physical source, but they're not independent.
+            # Deduplicate by actual source_id -- a claim that cites a source
+            # both directly (source_refs) AND via a quoted excerpt from that
+            # same source (evidence_refs) is still ONE physical source, not
+            # two; summing list lengths instead of counting distinct IDs was
+            # a real bug (caught by the Qilin/Spoonful of Comfort fixture,
+            # which does exactly this) that misclassified that common case
+            # as MULTI_SOURCE_DEPENDENT.
+            distinct_source_ids = set(claim.source_refs) | {
                 self.evidence[e].source_id for e in claim.evidence_refs if e in self.evidence
-            })
-            state = CorroborationState.SINGLE_SOURCE if total_sources <= 1 else CorroborationState.MULTI_SOURCE_DEPENDENT
+            }
+            state = CorroborationState.SINGLE_SOURCE if len(distinct_source_ids) <= 1 else CorroborationState.MULTI_SOURCE_DEPENDENT
         else:
             state = CorroborationState.MULTI_SOURCE_INDEPENDENT
         claim.corroboration_state = state
