@@ -1149,5 +1149,49 @@ for a module nothing can reach. **Un-skip and actually build it out** the
 next time someone has a concrete reason to wire this module into a real
 caller and the design intent to implement it against.
 
+## Issue 18 — `PublishingPipeline#getPipelineStatus` always reports `reviewChecklist: null`
+
+Found while bundling `api/v1/intelligence/publish.js` for the Cloudflare
+Workers migration (`workers/entry.js`'s dependency graph pulled in
+`api/_lib/publishing-pipeline.js`, and esbuild's whole-file parse hit a
+real syntax error at line 366 — `submittedFor Review:` with a literal
+space instead of `submittedForReview:`. Confirmed with a direct Node
+`require()` that this also broke on plain Node, independent of
+Cloudflare — meaning this handler has been completely broken on
+production Vercel, throwing at cold start, regardless of platform. Fixed
+in the same commit as the Cloudflare migration work; see
+`api/_lib/__tests__/publishing-pipeline.test.js` for the regression
+test).
+
+While adding that regression test, a second, separate defect surfaced in
+the same method (`api/_lib/publishing-pipeline.js:354`):
+
+```js
+const reviewChecklist = await this.redis.hgetall(`intelligence:review:${intelligenceId}`);
+...
+reviewChecklist: reviewChecklist.checklist ? JSON.parse(reviewChecklist.checklist) : null,
+```
+
+`api/_lib/redis.js`'s `hgetall` returns Upstash's real REST API shape — a
+flat `[field, value, field, value, ...]` array (confirmed by reading
+`redisCmd()`), not a plain object. `IntelligenceManager#getIntelligence`
+(same file family, `api/_lib/intelligence-manager.js:73-86`) correctly
+reduces that flat array into an object before use. This method does not
+— it reads `reviewChecklist.checklist` directly off the array, which is
+always `undefined` on a JS array regardless of what's actually stored in
+Redis, so this branch silently and unconditionally returns `null`. Any
+real review checklist ever recorded for an intelligence object is
+invisible through this endpoint.
+
+**Not fixed here** — out of scope for the Cloudflare migration task that
+surfaced it, and unlike Issue 17's module this one has a real, reachable
+production caller, so the fix needs someone to confirm the intended
+consumer contract (does `reviewChecklist` need the full flat-to-object
+reduction `IntelligenceManager` already does, or was a different Redis
+key/shape intended here?) rather than a guessed one-line patch.
+**Fix**: mirror `IntelligenceManager#getIntelligence`'s flat-array
+reduction before reading `.checklist`, then confirm against a real
+stored checklist.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

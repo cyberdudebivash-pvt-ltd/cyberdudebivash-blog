@@ -22,10 +22,9 @@
  */
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
+const { getResvg } = require('../workers/lib/resvg-wasm-init');
+const { loadFontsForRuntime } = require('../workers/lib/og-fonts-init');
 
-const FONT_DIR = path.join(__dirname, '_lib', 'fonts');
 const SEVERITY_COLORS = {
   CRITICAL: '#ff3b3b',
   HIGH: '#ff8c00',
@@ -47,17 +46,6 @@ function sanitizeText(value, maxLen) {
 
 function truncateAtWord(s, n) {
   return s.length <= n ? s : s.slice(0, n + 1).replace(/\s+\S*$/, '').slice(0, n);
-}
-
-let fontCache = null;
-function loadFonts() {
-  if (fontCache) return fontCache;
-  fontCache = [
-    { name: 'Inter', data: fs.readFileSync(path.join(FONT_DIR, 'Inter-Regular.woff')), weight: 400, style: 'normal' },
-    { name: 'Inter', data: fs.readFileSync(path.join(FONT_DIR, 'Inter-Bold.woff')), weight: 700, style: 'normal' },
-    { name: 'Inter', data: fs.readFileSync(path.join(FONT_DIR, 'Inter-ExtraBold.woff')), weight: 800, style: 'normal' },
-  ];
-  return fontCache;
 }
 
 function buildTree({ title, severity, cve, cvss, type }) {
@@ -153,12 +141,12 @@ module.exports = async (req, res) => {
 
     const satoriMod = require('satori');
     const satori = satoriMod.default || satoriMod;
-    const { Resvg } = require('@resvg/resvg-js');
+    const Resvg = await getResvg();
 
     const svg = await satori(buildTree({ title, severity, cve, cvss, type }), {
       width: 1200,
       height: 630,
-      fonts: loadFonts(),
+      fonts: await loadFontsForRuntime(),
     });
 
     const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });

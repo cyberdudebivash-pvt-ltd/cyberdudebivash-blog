@@ -19,10 +19,19 @@
  */
 
 const fs = require('fs');
-const path = require('path');
 const crypto = require('crypto');
+const { isCloudflareWorkers } = require('./runtime-env');
 
-const CANONICAL_PATH = path.join(__dirname, '..', '..', 'data', 'ioc-canonical.json');
+// Workers has no filesystem — __dirname-based CANONICAL_PATH throws
+// there (same failure mode already fixed in intel.js/threat-graph.js/
+// detection-rules.js). saveCanonical() below is left fs-only/unguarded:
+// a write path for the offline pipeline, not a live request handler.
+let CANONICAL_PATH = null;
+if (!isCloudflareWorkers()) {
+  const path = require('path');
+  CANONICAL_PATH = path.join(__dirname, '..', '..', 'data', 'ioc-canonical.json');
+}
+const WORKERS_CANONICAL_DATA = isCloudflareWorkers() ? require('../../data/ioc-canonical.json') : null;
 
 /**
  * IOC Type definitions (same as threat intel standard)
@@ -74,6 +83,7 @@ function generateIOCId(type, normalizedValue) {
  * Load canonical IOC store from disk
  */
 function loadCanonical() {
+  if (isCloudflareWorkers()) return WORKERS_CANONICAL_DATA;
   try {
     const data = fs.readFileSync(CANONICAL_PATH, 'utf8');
     return JSON.parse(data);
