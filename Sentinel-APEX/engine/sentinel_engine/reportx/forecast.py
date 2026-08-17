@@ -50,10 +50,19 @@ class Forecast:
 class WithheldForecast:
     """The explicit, honest alternative to a Forecast -- Section 16: 'If
     evidence does not support useful forecasting: WITHHOLD FORECAST.
-    Withholding an unsupported forecast is a PASS.'"""
+    Withholding an unsupported forecast is a PASS.' Governed withholding
+    means EXPLAINED withholding: ``reason`` is required at construction,
+    not just declared as a bare "withheld" flag with nothing behind it."""
 
     topic: str
     reason: str
+
+    def __post_init__(self):
+        if not self.reason:
+            raise ValueError(
+                f"WithheldForecast for {self.topic!r} has no reason -- governed "
+                "withholding requires an explicit rationale, not a bare withheld flag."
+            )
 
     def to_dict(self) -> dict:
         return {"topic": self.topic, "withheld": True, "reason": self.reason}

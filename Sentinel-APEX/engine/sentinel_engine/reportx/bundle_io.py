@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from datetime import date
 
-from .analytic_scaffolding import Hypothesis, HypothesisSet, IntelligenceGap
+from .analytic_scaffolding import Hypothesis, HypothesisSet, IntelligenceGap, NotApplicableHypothesisSet
 from .claim_model import Claim, ClaimType, CorroborationState, EpistemicState, EvidenceGraph, EvidenceRecord, ObservedVsContext, Reliability, SourceRecord, SourceRole, SourceType, TemporalPrecision
 from .commercial_readiness import ReportBundle, evaluate_commercial_readiness, render_matrix_report
 from .detection_validation import DetectionRule, DetectionValidationState
@@ -206,7 +206,7 @@ def bundle_from_dict(d: dict) -> ReportBundle:
     detection_rules = [
         DetectionRule(rule_id=r["rule_id"], technique_id=r.get("technique_id", ""), format=r.get("format", ""),
                       validation_state=_enum(DetectionValidationState, r.get("validation_state"), DetectionValidationState.DRAFT),
-                      body=r.get("body", ""))
+                      body=r.get("body", ""), evidence_gap_rationale=r.get("evidence_gap_rationale", ""))
         for r in d.get("detection_rules", [])
     ]
 
@@ -233,16 +233,18 @@ def bundle_from_dict(d: dict) -> ReportBundle:
                 confidence=f.get("confidence", ""), confidence_rationale=f.get("confidence_rationale", ""),
             ))
 
-    hypothesis_sets = [
-        HypothesisSet(question=hs["question"], hypotheses=tuple(
-            Hypothesis(h["hypothesis_id"], h["label"], h["statement"],
-                       supporting_evidence_claim_ids=tuple(h.get("supporting_evidence_claim_ids", [])),
-                       contradicting_evidence_claim_ids=tuple(h.get("contradicting_evidence_claim_ids", [])),
-                       confidence=h.get("confidence", ""), collection_requirement=h.get("collection_requirement", ""))
-            for h in hs.get("hypotheses", [])
-        ))
-        for hs in d.get("hypothesis_sets", [])
-    ]
+    hypothesis_sets = []
+    for hs in d.get("hypothesis_sets", []):
+        if hs.get("applicable") is False:
+            hypothesis_sets.append(NotApplicableHypothesisSet(question=hs["question"], rationale=hs.get("rationale", "")))
+        else:
+            hypothesis_sets.append(HypothesisSet(question=hs["question"], hypotheses=tuple(
+                Hypothesis(h["hypothesis_id"], h["label"], h["statement"],
+                           supporting_evidence_claim_ids=tuple(h.get("supporting_evidence_claim_ids", [])),
+                           contradicting_evidence_claim_ids=tuple(h.get("contradicting_evidence_claim_ids", [])),
+                           confidence=h.get("confidence", ""), collection_requirement=h.get("collection_requirement", ""))
+                for h in hs.get("hypotheses", [])
+            )))
 
     intelligence_gaps = [
         IntelligenceGap(description=g["description"], category=g.get("category", "KNOWN_UNKNOWN"),
@@ -299,8 +301,10 @@ def _detection_rule_to_dict(rule: DetectionRule) -> dict:
     }
 
 
-def _hypothesis_set_to_dict(hs: HypothesisSet) -> dict:
-    return {"question": hs.question, "hypotheses": [h.to_dict() for h in hs.hypotheses]}
+def _hypothesis_set_to_dict(hs) -> dict:
+    if isinstance(hs, NotApplicableHypothesisSet):
+        return hs.to_dict()
+    return {"question": hs.question, "applicable": True, "hypotheses": [h.to_dict() for h in hs.hypotheses]}
 
 
 def _forecast_to_dict(f) -> dict:

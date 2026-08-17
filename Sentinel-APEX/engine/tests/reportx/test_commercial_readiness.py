@@ -219,6 +219,142 @@ class TestSourceSpecificFactsEpistemicStatePolicy:
         assert row.status == "PASS"
 
 
+class TestGovernedWithholdingIsAValidPassPath:
+    """A commercial-readiness control assesses whether the system handled
+    the domain correctly, not whether it manufactured content. Explicit,
+    reasoned withholding must PASS -- but only when the withholding is
+    actually explained and the evidence gap actually recorded, never as a
+    silent default."""
+
+    def test_withheld_detection_rule_with_rationale_and_gap_passes(self):
+        bundle = ReportBundle(
+            report_id="withheld-detection-ok", graph=EvidenceGraph(),
+            rendered_text="No detection status claims are made in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="T1486", format="sigma",
+                validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+                evidence_gap_rationale="No incident-specific telemetry located; withheld pending confirmed exploitation evidence.",
+            )],
+            intelligence_gaps=[IntelligenceGap("No telemetry sample available for this technique.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "PASS"
+
+    def test_withheld_detection_rule_without_rationale_fails(self):
+        bundle = ReportBundle(
+            report_id="withheld-detection-no-rationale", graph=EvidenceGraph(),
+            rendered_text="No detection status claims are made in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="T1486", format="sigma",
+                validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+            )],
+            intelligence_gaps=[IntelligenceGap("No telemetry sample available.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "FAIL"
+        assert any("no recorded evidence_gap_rationale" in f for f in row.failures)
+
+    def test_withheld_detection_rule_without_recorded_gap_fails(self):
+        bundle = ReportBundle(
+            report_id="withheld-detection-no-gap", graph=EvidenceGraph(),
+            rendered_text="No detection status claims are made in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="T1486", format="sigma",
+                validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+                evidence_gap_rationale="No telemetry located.",
+            )],
+            intelligence_gaps=[],  # the gap was never actually recorded at the report level
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "FAIL"
+        assert any("no intelligence_gaps are recorded" in f for f in row.failures)
+
+    def test_withheld_detection_rule_still_fails_if_downstream_text_overclaims(self):
+        # Governed withholding does not weaken the existing promotion check
+        # -- rationale + a recorded gap does not excuse language elsewhere
+        # in the product claiming the withheld rule is validated.
+        bundle = ReportBundle(
+            report_id="withheld-detection-overclaim", graph=EvidenceGraph(),
+            rendered_text="rule-1 is production-validated and ready for immediate deployment.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="T1486", format="sigma",
+                validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+                evidence_gap_rationale="No telemetry located.",
+            )],
+            intelligence_gaps=[IntelligenceGap("No telemetry sample available.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "FAIL"
+
+    def test_withheld_forecast_with_gap_recorded_passes(self):
+        bundle = ReportBundle(
+            report_id="withheld-forecast-ok", graph=EvidenceGraph(),
+            forecasts=[WithheldForecast(topic="exploitation trend", reason="Insufficient historical baseline.")],
+            intelligence_gaps=[IntelligenceGap("No baseline exploitation-rate data available.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "forecast_methodology")
+        assert row.status == "PASS"
+
+    def test_withheld_forecast_without_gap_recorded_fails(self):
+        bundle = ReportBundle(
+            report_id="withheld-forecast-no-gap", graph=EvidenceGraph(),
+            forecasts=[WithheldForecast(topic="exploitation trend", reason="Insufficient historical baseline.")],
+            intelligence_gaps=[],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "forecast_methodology")
+        assert row.status == "FAIL"
+        assert any("no intelligence_gaps are recorded" in f for f in row.failures)
+
+    def test_withheld_forecast_construction_requires_a_reason(self):
+        import pytest
+        with pytest.raises(ValueError, match="no reason"):
+            WithheldForecast(topic="exploitation trend", reason="")
+
+    def test_not_applicable_hypothesis_set_with_rationale_passes(self):
+        from sentinel_engine.reportx.analytic_scaffolding import NotApplicableHypothesisSet
+        bundle = ReportBundle(
+            report_id="hyp-not-applicable-ok", graph=EvidenceGraph(),
+            hypothesis_sets=[NotApplicableHypothesisSet(
+                question="Is a rival actor group responsible instead?",
+                rationale="A single, uncontested named actor claimed this incident; no rival attribution theory has circulated in any source located.",
+            )],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "alternative_hypotheses")
+        assert row.status == "PASS"
+
+    def test_not_applicable_hypothesis_set_construction_requires_a_rationale(self):
+        import pytest
+        from sentinel_engine.reportx.analytic_scaffolding import NotApplicableHypothesisSet
+        with pytest.raises(ValueError, match="no rationale"):
+            NotApplicableHypothesisSet(question="Is a rival actor group responsible?", rationale="")
+
+    def test_regulatory_not_assessed_with_basis_passes(self):
+        bundle = ReportBundle(
+            report_id="reg-not-assessed-ok", graph=EvidenceGraph(),
+            regulatory_applicabilities=[not_assessed("GDPR", reason="No EU nexus established by any source located.")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "regulatory_specificity")
+        assert row.status == "PASS"
+
+    def test_regulatory_not_assessed_without_basis_fails(self):
+        bundle = ReportBundle(
+            report_id="reg-not-assessed-empty", graph=EvidenceGraph(),
+            regulatory_applicabilities=[not_assessed("GDPR", reason="")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "regulatory_specificity")
+        assert row.status == "FAIL"
+        assert "GDPR" in row.failures
+
+
 class TestBrokenBundleCorrectlyFails:
     def test_schema_contamination_causes_fail_not_silent_pass(self):
         bundle = _build_fully_supported_bundle()

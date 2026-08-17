@@ -15,11 +15,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 
-from .analytic_scaffolding import HypothesisSet, IntelligenceGap, build_bibliography, find_orphan_citations
+from .analytic_scaffolding import HypothesisSet, IntelligenceGap, NotApplicableHypothesisSet, build_bibliography, find_orphan_citations
 from .claim_model import EpistemicState, EvidenceGraph
 from .claim_support_matrix import STATUSES_REQUIRING_EVIDENCE, evaluate_claim_support_gate
 from .contradiction_engine import find_all_contradictions
-from .detection_validation import DetectionRule, check_all_rules
+from .detection_validation import DetectionRule, DetectionValidationState, check_all_rules, check_withheld_rules_have_rationale
 from .forecast import Forecast, WithheldForecast, evaluate_forecast_gate
 from .human_review import CertificationState, ReviewRecord, resolve_certification_state
 from .metrics_registry import MetricsRegistry, evaluate_statistics_gate
@@ -47,7 +47,7 @@ class ReportBundle:
     rendered_metric_ids: list[str] = field(default_factory=list)
     regulatory_applicabilities: list[RegulatoryApplicability] = field(default_factory=list)
     forecasts: list = field(default_factory=list)  # Forecast | WithheldForecast
-    hypothesis_sets: list[HypothesisSet] = field(default_factory=list)
+    hypothesis_sets: list = field(default_factory=list)  # HypothesisSet | NotApplicableHypothesisSet
     intelligence_gaps: list[IntelligenceGap] = field(default_factory=list)
     threat_products: list[ThreatProduct] = field(default_factory=list)
     review: ReviewRecord | None = None
@@ -217,14 +217,29 @@ def evaluate_commercial_readiness(bundle: ReportBundle, as_of: date | None = Non
                                    f"{bundle.technical_recommendations_with_evidence_basis}/"
                                    f"{bundle.technical_recommendation_count} recommendations carry an evidence_basis."))
 
-    # 13. Detection evidence discipline
+    # 13. Detection evidence discipline. Governed withholding is a valid
+    # PASS path here (not a BLOCKED/FAIL): a WITHHELD_INSUFFICIENT_EVIDENCE
+    # rule with an explicit rationale, no promotion language anywhere in
+    # the rendered product, and a recorded evidence gap is the CORRECT
+    # outcome when evidence genuinely doesn't support a rule yet -- it is
+    # not a defect to be penalized the same as a fabricated one.
     if not bundle.detection_rules:
         results.append(_blocked("detection_evidence_discipline", "Detection evidence discipline", "No detection rules in this bundle."))
     else:
         promotions = check_all_rules(bundle.detection_rules, bundle.rendered_text)
-        results.append(_pass_fail("detection_evidence_discipline", "Detection evidence discipline", not promotions,
-                                   f"{len(bundle.detection_rules)} detection rules checked for state-promotion language.",
-                                   [f"{v.rule_id}: {v.matched_phrase!r}" for v in promotions]))
+        missing_rationale = check_withheld_rules_have_rationale(bundle.detection_rules)
+        withheld_present = any(
+            r.validation_state == DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE
+            for r in bundle.detection_rules
+        )
+        gap_recorded = bool(bundle.intelligence_gaps)
+        failures = [f"{v.rule_id}: {v.matched_phrase!r}" for v in promotions]
+        failures += [f"{rid}: withheld rule has no recorded evidence_gap_rationale" for rid in missing_rationale]
+        if withheld_present and not gap_recorded:
+            failures.append("a rule is WITHHELD_INSUFFICIENT_EVIDENCE but no intelligence_gaps are recorded in the bundle")
+        results.append(_pass_fail("detection_evidence_discipline", "Detection evidence discipline", not failures,
+                                   f"{len(bundle.detection_rules)} detection rules checked for state-promotion language "
+                                   f"and governed-withholding discipline.", failures))
 
     # 14. Temporal integrity — no source with EXACT_TIMESTAMP precision
     # whose retrieved_at predates its own source_date's plausible range is
@@ -254,14 +269,24 @@ def evaluate_commercial_readiness(bundle: ReportBundle, as_of: date | None = Non
                                    f"{len(qa_findings)} QA findings, {n_critical} critical.",
                                    [f.message for f in qa_findings if f.severity == "block"]))
 
-    # 16. Forecast methodology
+    # 16. Forecast methodology. WithheldForecast is itself a governed PASS
+    # path (Section 16) -- its ``reason`` is already required at
+    # construction (WithheldForecast.__post_init__), and it has no
+    # confidence field at all, so there is no confidence judgment to
+    # fabricate. The one thing checked here that construction alone can't
+    # guarantee: when a forecast is withheld, the report must actually
+    # record the evidence gap that caused the withholding, not just the
+    # withholding itself.
     if not bundle.forecasts:
         results.append(_blocked("forecast_methodology", "Forecast methodology", "No forecasts attempted in this bundle."))
     else:
         forecast_gate = evaluate_forecast_gate(bundle.forecasts)
-        results.append(_pass_fail("forecast_methodology", "Forecast methodology", forecast_gate.passed,
-                                   f"{len(bundle.forecasts)} forecast items checked.",
-                                   forecast_gate.unsupported_forecasts))
+        withheld_present = any(isinstance(f, WithheldForecast) for f in bundle.forecasts)
+        failures = list(forecast_gate.unsupported_forecasts)
+        if withheld_present and not bundle.intelligence_gaps:
+            failures.append("a forecast is withheld but no intelligence_gaps are recorded in the bundle")
+        results.append(_pass_fail("forecast_methodology", "Forecast methodology", not failures,
+                                   f"{len(bundle.forecasts)} forecast items checked.", failures))
 
     # 17. Evidence ledger — every claim has evidence_refs or source_refs OR
     # is in an honestly-unresolved state (this is the same rule
@@ -271,11 +296,20 @@ def evaluate_commercial_readiness(bundle: ReportBundle, as_of: date | None = Non
                                f"{len(graph.claims)} claims in the ledger.",
                                claim_support.material_claims_without_evidence))
 
-    # 18. Alternative hypotheses
+    # 18. Alternative hypotheses. NotApplicableHypothesisSet is a governed
+    # PASS path: a real analytic question genuinely may not need competing
+    # hypotheses (e.g. a leak-site claim with a single, uncontested named
+    # actor and no rival attribution theory in circulation) -- its
+    # ``rationale`` is already required at construction
+    # (NotApplicableHypothesisSet.__post_init__), so reaching this point
+    # with one means the "why" was explicit, not silently skipped.
     if not bundle.hypothesis_sets:
         results.append(_blocked("alternative_hypotheses", "Alternative hypotheses", "No hypothesis sets in this bundle."))
     else:
-        malformed = [hs.question for hs in bundle.hypothesis_sets if not hs.is_well_formed()]
+        malformed = [
+            hs.question for hs in bundle.hypothesis_sets
+            if not isinstance(hs, NotApplicableHypothesisSet) and not hs.is_well_formed()
+        ]
         results.append(_pass_fail("alternative_hypotheses", "Alternative hypotheses", not malformed,
                                    f"{len(bundle.hypothesis_sets)} hypothesis sets checked.", malformed))
 
