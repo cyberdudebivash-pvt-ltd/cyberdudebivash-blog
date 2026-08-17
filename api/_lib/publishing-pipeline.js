@@ -363,7 +363,7 @@ class PublishingPipeline {
       createdAt: obj.createdAt,
       createdBy: obj.createdBy,
       timeline: {
-        submittedFor Review: obj.reviewedAt ? { at: obj.reviewedAt, by: obj.reviewedBy } : null,
+        submittedForReview: obj.reviewedAt ? { at: obj.reviewedAt, by: obj.reviewedBy } : null,
         approved: obj.approvedAt ? { at: obj.approvedAt, by: obj.approvedBy } : null,
         published: obj.publishedAt ? { at: obj.publishedAt, by: obj.publishedBy } : null,
       },

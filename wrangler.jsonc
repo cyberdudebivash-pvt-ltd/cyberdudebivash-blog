@@ -1,0 +1,73 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+
+  // Deliberately incapable of a production DNS takeover at this stage:
+  // no routes, no custom_domains, no production hostname, no production
+  // storage bindings, no cron. See PRE-MIGRATION-FORENSICS.md and
+  // CLOUDFLARE-ACCOUNT-INVENTORY.md for why each of those is deferred.
+  // Safe to build, dry-run, and run under a local Workerd only.
+
+  "name": "cyberdudebivash-blog",
+  "main": "workers/entry.js",
+
+  // Set to the date this config was authored. Cloudflare recommends
+  // matching this to "today" at write time and only advancing it after
+  // deliberately reviewing the compatibility-flag changelog between
+  // dates — not on every deploy. Revisit before the first real staging
+  // deploy if time has passed since this was written.
+  "compatibility_date": "2026-08-17",
+
+  // Required, not optional: api/_lib/security.js, api/_lib/middleware.js
+  // and others call require('crypto') and use Buffer directly (HMAC
+  // signing/verification, API key hashing, raw webhook body handling —
+  // see PRE-MIGRATION-FORENSICS.md Sec3). Without nodejs_compat those
+  // requires fail to resolve at all. This flag does NOT provide a real
+  // filesystem — Sec7's certification work covers what that means for
+  // the fs/path-using modules separately; nodejs_compat alone does not
+  // make fs.readFileSync work against files that don't exist in the
+  // Worker's isolate.
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Points at the generated allowlist build (scripts/build-cloudflare-
+  // assets.js), never the repository root — see that script's header
+  // comment for why. Not committed; run `npm run build:cloudflare-assets`
+  // (or the script directly) before any wrangler command that needs it.
+  "assets": {
+    "directory": "./dist-public",
+    "binding": "ASSETS"
+  },
+
+  // .woff → Data module: api/og.js's 3 Inter font weights, embedded into
+  // the Worker bundle at build time (workers/lib/og-fonts-init.js's
+  // Cloudflare branch require()s them by literal path so this rule can
+  // resolve them). Data modules come back as ArrayBuffer, which satori's
+  // fonts option accepts the same as the Buffer fs.readFileSync returns
+  // on the unchanged Vercel/Node path.
+  "rules": [
+    { "type": "Data", "globs": ["**/*.woff"], "fallthrough": true }
+  ],
+
+  "observability": {
+    "enabled": true
+  }
+
+  // Intentionally absent (do not add without a separate, explicit
+  // authorization step):
+  //   routes                — would start claiming a hostname/path
+  //   custom_domains        — would touch DNS
+  //   kv_namespaces          — no blog-owned namespace exists yet (see
+  //                            CLOUDFLARE-ACCOUNT-INVENTORY.md Sec17
+  //                            policy: reuse is not automatic)
+  //   d1_databases           — none needed; the blog has no relational
+  //                            data dependency
+  //   r2_buckets              — none proven needed yet (see Sec17)
+  //   services                — no service bindings to other
+  //                            CYBERDUDEBIVASH platforms are justified yet
+  //   triggers.crons          — scheduling authority is undecided (see
+  //                            the cron-deduplication decision doc);
+  //                            adding a schedule here would start real
+  //                            remote execution
+  //   vars / secrets with real values — local/dry-run testing uses
+  //                            synthetic values passed via `wrangler dev
+  //                            --var`/`.dev.vars`, never committed here
+}
