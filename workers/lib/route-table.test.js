@@ -39,6 +39,16 @@ describe('resolveRoute — feed asset aliases', () => {
   }
 });
 
+describe('resolveRoute — root index alias', () => {
+  test('/ resolves to the /index.html asset (compensates for html_handling: "none" disabling Cloudflare\'s automatic root resolution — see wrangler.jsonc and ASSET_REWRITES\' comment)', () => {
+    assert.deepEqual(resolveRoute('/'), { type: 'asset', path: '/index.html' });
+  });
+
+  test('does not rewrite a non-root path that merely starts with /', () => {
+    assert.equal(resolveRoute('/about.html'), null);
+  });
+});
+
 describe('resolveRoute — pretty-URL rewrites', () => {
   const cases = [
     ['/api/v1/intel/live', 'api/v1/intel', { action: 'live' }],

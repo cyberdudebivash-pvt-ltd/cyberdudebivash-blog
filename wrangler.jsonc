@@ -32,9 +32,31 @@
   // assets.js), never the repository root — see that script's header
   // comment for why. Not committed; run `npm run build:cloudflare-assets`
   // (or the script directly) before any wrangler command that needs it.
+  // html_handling: "none" matches vercel.json's cleanUrls: false exactly
+  // — /posts/foo.html is served directly at that literal path, 200, no
+  // redirect. The Cloudflare default (auto-trailing-slash) does NOT
+  // match this: it 307-redirects /posts/foo.html -> /posts/foo, a real
+  // parity break caught via a real local Workerd probe (every posts/**
+  // and cve/**.html request came back 307, not 200) and confirmed
+  // against Cloudflare's own html-handling docs before fixing, not
+  // assumed from the symptom alone.
+  //
+  // Side effect, also caught via a real probe (not assumed): "none"
+  // disables Cloudflare's automatic "/" -> index.html resolution too, not
+  // just the .html-suffix redirect -- GET / 404'd with this flag set,
+  // even though GET /index.html served the same file at 200 the whole
+  // time. Fixed at the Worker level instead of by dropping this flag:
+  // workers/lib/route-table.js's ASSET_REWRITES rewrites "/" to
+  // "/index.html" before it ever reaches env.ASSETS.fetch(), reusing the
+  // exact mechanism /feed -> /rss.xml already relied on. Reverting this
+  // flag would silently reintroduce the far larger .html 307 regression
+  // (5000+ pages) to avoid a single-path problem that's already fixed
+  // elsewhere -- do not revert without also removing that route-table
+  // entry and re-verifying both paths.
   "assets": {
     "directory": "./dist-public",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    "html_handling": "none"
   },
 
   // .wasm → CompiledWasm: @resvg/resvg-wasm's index_bg.wasm, imported at

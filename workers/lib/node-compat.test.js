@@ -72,6 +72,65 @@ describe('toNodeRequest', () => {
     assert.deepEqual(req.body, { plan: 'pro', email: 'a@b.com' });
   });
 
+  test('malformed JSON throws a recognizable isBodyParseError instead of an uncaught SyntaxError', async () => {
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{"email": "a@b.com", not valid json',
+    });
+    await assert.rejects(
+      () => toNodeRequest(request),
+      err => {
+        assert.equal(err.isBodyParseError, true);
+        return true;
+      }
+    );
+  });
+
+  test('a request body over MAX_BODY_BYTES throws a recognizable isBodyTooLargeError (JSON content-type)', async () => {
+    const oversized = 'a'.repeat(5 * 1024 * 1024); // 5 MB > the 4.5 MB cap
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ note: oversized }),
+    });
+    await assert.rejects(
+      () => toNodeRequest(request),
+      err => {
+        assert.equal(err.isBodyTooLargeError, true);
+        return true;
+      }
+    );
+  });
+
+  test('an oversized body is rejected for form-urlencoded and plain-text content types too', async () => {
+    const oversized = 'a'.repeat(5 * 1024 * 1024);
+    const formRequest = new Request('https://blog.cyberdudebivash.in/api/v1/billing?action=subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `note=${oversized}`,
+    });
+    await assert.rejects(() => toNodeRequest(formRequest), err => err.isBodyTooLargeError === true);
+
+    const textRequest = new Request('https://blog.cyberdudebivash.in/api/v1/billing?action=subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: oversized,
+    });
+    await assert.rejects(() => toNodeRequest(textRequest), err => err.isBodyTooLargeError === true);
+  });
+
+  test('a body just under MAX_BODY_BYTES is accepted normally', async () => {
+    const justUnder = 'a'.repeat(1024 * 1024); // 1 MB, comfortably under the cap
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ note: justUnder }),
+    });
+    const req = await toNodeRequest(request);
+    assert.equal(req.body.note, justUnder);
+  });
+
   test('bodyParser:false config defers to __cfRequest instead of parsing JSON', async () => {
     const request = new Request('https://blog.cyberdudebivash.in/api/v1/billing/webhook', {
       method: 'POST',

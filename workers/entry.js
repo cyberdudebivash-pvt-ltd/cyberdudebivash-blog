@@ -18,21 +18,38 @@
  * default, confirmed against Cloudflare's own docs after a real
  * `wrangler dev` failure without it).
  *
- * KNOWN LIMITATION, verified via a diagnostic instanceof check then
- * removed: even though `wasmModule` here genuinely is a
- * WebAssembly.Module (not raw bytes), @resvg/resvg-wasm's initWasm()
- * still fails at request time with "Wasm code generation disallowed by
- * embedder". This is a documented, widely-reported Cloudflare Workers
- * platform restriction affecting multiple WASM packages generally
- * (github.com/cloudflare/workers-sdk#1366, cloudflare/next-on-pages#704,
- * prisma#28657), not specific to this import mechanism, and not resolved
- * as of this writing. api/og.js's existing render-failure fallback (a
- * 302 to the static /og-image.png) already handles this gracefully and
- * correctly — verified via a real local Workerd HTTP request, not
- * assumed — which is an explicitly acceptable outcome for this stage,
- * not a bug to keep chasing blindly. Revisit if @resvg/resvg-wasm ships
- * a Workers-specific fix, or evaluate an alternative renderer, before
- * treating OG images as fully at parity on Cloudflare.
+ * PLATFORM SUPPORT vs. PACKAGE COMPATIBILITY — do not conflate these.
+ * Workers DOES support WebAssembly: the supported model is a precompiled
+ * WebAssembly.Module resolved at build time (exactly what the static
+ * import above produces and what workers/lib/resvg-wasm-init.js's
+ * setWasmModule() receives — verified directly via an
+ * `instanceof WebAssembly.Module` check, not assumed, before ruling out
+ * an import-mechanism bug). What Workers restricts is *compiling* new
+ * Wasm from raw bytes at request time, which is a deliberate, documented
+ * platform security boundary, not a missing feature.
+ *
+ * The actual finding is narrower: @resvg/resvg-wasm's own initWasm()
+ * still fails at request time — "Wasm code generation disallowed by
+ * embedder" — even when handed a genuine precompiled Module. That is a
+ * PACKAGE-level incompatibility with the tested Workers execution model
+ * (this specific package's internal init path, on the version pinned
+ * here), not evidence that Workers can't run WebAssembly generally.
+ * Other WASM packages hit the same symptom for their own internal
+ * reasons (github.com/cloudflare/workers-sdk#1366,
+ * cloudflare/next-on-pages#704, prisma#28657) — cited as prior art that
+ * this class of failure is real and known, not as proof this package's
+ * specific cause is identical to theirs.
+ *
+ * Decision for this migration: B — INTENTIONAL STATIC OG FALLBACK, not
+ * further experimentation toward dynamic rendering. api/og.js's existing
+ * render-failure fallback (302 to the static /og-image.png) already
+ * handles this correctly — verified via a real local Workerd HTTP
+ * request: 302 status, correct Location, correct Cache-Control, no 500.
+ * Dynamic OG rendering is classified INTENTIONALLY-CHANGED in
+ * VERCEL-CLOUDFLARE-PARITY-MATRIX.md, not PASS. Revisit only if
+ * @resvg/resvg-wasm ships a fix verified against this exact runtime, or
+ * a different renderer is evaluated — not by continuing to retry this
+ * one.
  */
 const { handleFetch } = require('./lib/router');
 const { setWasmModule } = require('./lib/resvg-wasm-init');

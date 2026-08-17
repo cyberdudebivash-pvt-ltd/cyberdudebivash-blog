@@ -16,6 +16,64 @@
 const RAW_BODY_METHODS_WITHOUT_BODY = new Set(['GET', 'HEAD', 'OPTIONS']);
 const NULL_BODY_STATUSES = new Set([101, 204, 205, 304]);
 
+// Vercel's own documented, non-configurable platform ceiling for a
+// Serverless Function request body (confirmed against Vercel's own docs:
+// exceeding it returns FUNCTION_PAYLOAD_TOO_LARGE) -- used verbatim here,
+// not an arbitrary new number, so this shim is deliberately at parity with
+// what every one of these handlers is already backstopped by today. Only
+// the bodyParser!==false path needs this: Cloudflare Workers' own platform
+// ceiling is 100 MB+ (vs. Vercel's 4.5 MB), and unlike Vercel, nothing in
+// this Worker enforces Vercel's smaller limit on its behalf -- without
+// this, every non-webhook JSON/form/text handler would silently accept
+// request bodies over 20x larger than they can ever receive on Vercel
+// today. The two bodyParser:false webhook routes already enforce their
+// own tighter, independent limit via security.js#readRawBody and are
+// unaffected by this constant.
+const MAX_BODY_BYTES = 4.5 * 1024 * 1024;
+
+/**
+ * Reads `request`'s body as text, enforcing MAX_BODY_BYTES. Rejects on
+ * declared Content-Length before reading anything, then enforces the same
+ * limit incrementally via the body's own reader -- cancelling it the
+ * moment the accumulated size crosses the limit -- rather than buffering
+ * the full body first via arrayBuffer(). Workers' Request.body is a
+ * standard ReadableStream and reader.cancel() is fully supported
+ * (confirmed against Cloudflare's own runtime API docs), so an oversized
+ * request with a missing/lying Content-Length no longer has to be fully
+ * allocated in memory before this check can reject it.
+ */
+async function readBoundedText(request) {
+  const declaredLength = Number(request.headers.get('content-length'));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
+    throw Object.assign(new Error('Request body too large'), { isBodyTooLargeError: true });
+  }
+  const reader = request.body?.getReader();
+  if (!reader) return '';
+  const chunks = [];
+  let length = 0;
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length > MAX_BODY_BYTES) {
+        await reader.cancel();
+        throw Object.assign(new Error('Request body too large'), { isBodyTooLargeError: true });
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(length);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
 /**
  * @param {Request} request Web-standard Request from the Worker's fetch handler
  * @param {{ api?: { bodyParser?: boolean } }} [handlerConfig] the target
@@ -76,13 +134,30 @@ async function toNodeRequest(request, handlerConfig = {}) {
 
   const contentType = headers['content-type'] || '';
   if (contentType.includes('application/json')) {
-    const text = await request.text();
-    req.body = text ? JSON.parse(text) : {};
+    const text = await readBoundedText(request);
+    try {
+      req.body = text ? JSON.parse(text) : {};
+    } catch (_) {
+      // On Vercel, malformed JSON never reaches handler code at all --
+      // Vercel's own platform body-parser rejects it before invoking the
+      // function. This manual JSON.parse is new code this shim introduced
+      // to reproduce that parsing on Workers, so it must reproduce the
+      // failure handling too: throw a recognizable, typed error rather
+      // than letting a raw SyntaxError escape uncaught. Confirmed via a
+      // real request that an uncaught throw here reaches neither
+      // dispatch()'s own error handling nor applyBaselineHeaders() --
+      // Wrangler's own dev-mode handler catches it first and returns a
+      // raw stack trace (internal file paths included) as `text/plain`,
+      // which is exactly the internal-infrastructure disclosure Security
+      // First forbids. See router.js#dispatch()'s catch for where this
+      // becomes a clean 400.
+      throw Object.assign(new Error('Invalid JSON body'), { isBodyParseError: true });
+    }
   } else if (contentType.includes('application/x-www-form-urlencoded')) {
-    const text = await request.text();
+    const text = await readBoundedText(request);
     req.body = Object.fromEntries(new URLSearchParams(text));
   } else if (contentType) {
-    req.body = await request.text();
+    req.body = await readBoundedText(request);
   }
 
   return req;

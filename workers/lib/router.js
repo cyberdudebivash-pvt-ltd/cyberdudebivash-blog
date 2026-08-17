@@ -12,6 +12,7 @@
 
 const { toNodeRequest, createNodeResponse } = require('./node-compat');
 const { resolveRoute } = require('./route-table');
+const { applyBaselineHeaders } = require('./security-headers');
 
 // Static require() map, not a dynamic require(computedPath) — esbuild
 // must see each module reference at build time to bundle it; a
@@ -67,12 +68,33 @@ async function dispatch(handlerPath, request, routeQuery) {
   const handler = typeof handlerModule === 'function' ? handlerModule : handlerModule.default;
   const handlerConfig = handlerModule.config;
 
-  const req = await toNodeRequest(request, handlerConfig);
+  let req;
+  try {
+    req = await toNodeRequest(request, handlerConfig);
+  } catch (err) {
+    // Both branches match api/_lib/middleware.js#apiError()'s response
+    // shape exactly -- the shared helper most handlers already use for
+    // every other 4xx -- so these get the same contract as any other
+    // validation failure instead of a platform-specific error page.
+    if (err && err.isBodyParseError) {
+      return applyBaselineHeaders(new Response(JSON.stringify({
+        error: { code: 'INVALID_JSON', message: 'Request body is not valid JSON.' },
+        meta:  { platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', timestamp: new Date().toISOString() },
+      }), { status: 400, headers: { 'content-type': 'application/json' } }));
+    }
+    if (err && err.isBodyTooLargeError) {
+      return applyBaselineHeaders(new Response(JSON.stringify({
+        error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request body exceeds the maximum allowed size.' },
+        meta:  { platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', timestamp: new Date().toISOString() },
+      }), { status: 413, headers: { 'content-type': 'application/json' } }));
+    }
+    throw err; // genuinely unexpected -- surface it, don't mask a real bug
+  }
   req.query = { ...req.query, ...routeQuery };
 
   const { res, response } = createNodeResponse();
   await handler(req, res);
-  return response;
+  return applyBaselineHeaders(await response);
 }
 
 /**
@@ -83,17 +105,30 @@ async function handleFetch(request, env) {
   const url = new URL(request.url);
   const route = resolveRoute(url.pathname);
 
+  // Static-asset paths (no route match, or an explicit alias to another
+  // static file) never pass through applyBaselineHeaders() — those are
+  // genuinely static responses and get their security headers from
+  // dist-public/_headers instead, not duplicated here. See security-
+  // headers.js's header comment for why the two must stay separate.
   if (!route) {
     return env.ASSETS.fetch(request);
   }
 
   switch (route.type) {
     case 'blocked':
-      return new Response('Not Found', { status: 404 });
+      return applyBaselineHeaders(new Response('Not Found', { status: 404 }));
 
     case 'redirect': {
+      // Not Response.redirect(): per the Fetch spec, the Headers on a
+      // Response.redirect() result have an "immutable" guard, so
+      // applyBaselineHeaders()'s .set() calls throw on it (confirmed via
+      // a real test failure, not assumed). Constructing the Response
+      // directly gives a normal, mutable Headers object instead.
       const destination = new URL(route.to, url);
-      return Response.redirect(destination.toString(), route.status);
+      return applyBaselineHeaders(new Response(null, {
+        status: route.status,
+        headers: { Location: destination.toString() },
+      }));
     }
 
     case 'asset': {
@@ -105,7 +140,7 @@ async function handleFetch(request, env) {
       return dispatch(route.handlerPath, request, route.query);
 
     default:
-      return new Response('Not Found', { status: 404 });
+      return applyBaselineHeaders(new Response('Not Found', { status: 404 }));
   }
 }
 

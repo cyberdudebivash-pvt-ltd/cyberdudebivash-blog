@@ -106,3 +106,48 @@ describe('handleFetch — real end-to-end handler dispatch', () => {
     assert.equal(response.status, 404);
   });
 });
+
+describe('handleFetch — malformed/oversized body handling (real handler dispatch)', () => {
+  test('malformed JSON to a real handler returns a clean 400, not an uncaught exception', async () => {
+    const { env } = fakeEnv();
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{"email": "a@b.com", not valid json',
+    });
+    const response = await handleFetch(request, env);
+    assert.equal(response.status, 400);
+    const body = await response.json();
+    assert.equal(body.error.code, 'INVALID_JSON');
+    // Confirms this went through applyBaselineHeaders(), not a bare Response
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
+  });
+
+  test('an oversized body to a real handler returns a clean 413, not an uncaught exception', async () => {
+    const { env } = fakeEnv();
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ note: 'a'.repeat(5 * 1024 * 1024) }),
+    });
+    const response = await handleFetch(request, env);
+    assert.equal(response.status, 413);
+    const body = await response.json();
+    assert.equal(body.error.code, 'PAYLOAD_TOO_LARGE');
+  });
+
+  test('a bodyParser:false route (webhook) is unaffected by the generic body-parse error path', async () => {
+    const { env } = fakeEnv();
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/billing/webhook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'stripe-signature': 't=1,v1=deadbeef' },
+      body: '{"not":"valid json at all',
+    });
+    const response = await handleFetch(request, env);
+    // Reaches the handler's own signature check first (readRawBody never
+    // parses JSON) rather than tripping the generic INVALID_JSON path.
+    assert.equal(response.status, 400);
+    const body = await response.json();
+    assert.equal(body.error, 'Invalid signature');
+  });
+});
