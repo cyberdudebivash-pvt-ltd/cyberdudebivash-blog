@@ -49,8 +49,16 @@ const redis = {
   },
   hincrby: (key, field, n)   => redisCmd('HINCRBY', key, field, String(n)),
 
+  // Sets (entity/relationship indexes -- graph-engine.js, evidence-manager.js)
+  sadd:     (key, ...members) => redisCmd('SADD', key, ...members),
+  srem:     (key, ...members) => redisCmd('SREM', key, ...members),
+  smembers: key                => redisCmd('SMEMBERS', key),
+  scard:    key                => redisCmd('SCARD', key),
+
   // Sorted sets (for usage analytics)
   zadd:     (key, score, member) => redisCmd('ZADD', key, String(score), member),
+  zrem:     (key, ...members)    => redisCmd('ZREM', key, ...members),
+  zcard:    key                  => redisCmd('ZCARD', key),
   zrange:   (key, start, stop)   => redisCmd('ZRANGE', key, String(start), String(stop)),
   zrevrange:(key, start, stop, ws) => ws
     ? redisCmd('ZREVRANGE', key, String(start), String(stop), 'WITHSCORES')
