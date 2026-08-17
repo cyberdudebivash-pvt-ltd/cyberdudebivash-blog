@@ -263,6 +263,7 @@ def bundle_from_dict(d: dict) -> ReportBundle:
             reviewer_identity=r["reviewer_identity"], review_timestamp=r["review_timestamp"],
             decision=ReviewDecision(r["decision"]), review_version=r.get("review_version", 1),
             notes=r.get("notes", ""), is_test_only_fixture=r.get("is_test_only_fixture", False),
+            reviewer_role=r.get("reviewer_role", ""), gate_snapshot_sha256=r.get("gate_snapshot_sha256", ""),
         )
 
     depth = None
