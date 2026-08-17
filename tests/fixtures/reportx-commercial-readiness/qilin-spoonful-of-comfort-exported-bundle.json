@@ -1,0 +1,470 @@
+{
+  "bundle": {
+    "report_id": "qilin-spoonful-of-comfort-2026-08-16",
+    "is_premium_tier": false,
+    "sources": [
+      {
+        "source_id": "s-hendryadrian",
+        "url": "https://www.hendryadrian.com/ransom-spoonful-of-comfort-aug-2026/",
+        "publisher": "hendryadrian.com (ransomware leak-site aggregator)",
+        "source_type": "LEAK_SITE_AGGREGATOR",
+        "source_role": "PRIMARY_EVENT_SOURCE",
+        "retrieved_at": "2026-08-18T00:00:00Z",
+        "source_date": "2026-08-16T18:56:20Z",
+        "temporal_precision": "EXACT_TIMESTAMP",
+        "content_sha256": null,
+        "reliability": "MODERATE",
+        "independence_group": "qilin-leak-site-claim",
+        "accessibility": "PUBLIC",
+        "notes": "Aggregates the Qilin group's own Tor leak-site post; page's own disclaimer: \"This post is based on public claims made by the ransomware group 'qilin'. I cannot confirm the accuracy of the information.\""
+      },
+      {
+        "source_id": "s-wikipedia-qilin",
+        "url": "https://en.wikipedia.org/wiki/Qilin_(cybercrime_group)",
+        "publisher": "Wikipedia",
+        "source_type": "OTHER",
+        "source_role": "ACTOR_CONTEXT",
+        "retrieved_at": "2026-08-18T00:00:00Z",
+        "source_date": null,
+        "temporal_precision": "UNKNOWN",
+        "content_sha256": null,
+        "reliability": "MODERATE",
+        "independence_group": "wikipedia-qilin",
+        "accessibility": "PUBLIC",
+        "notes": "Tertiary source citing Trend Micro (August 2022 first detection) and Group-IB (March 2023 affiliate-panel infiltration, 80-85% affiliate revenue share)."
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "e-claim-post",
+        "source_id": "s-hendryadrian",
+        "excerpt": "Spoonful of Comfort listed on Qilin's leak site 2026-08-16 18:56:20 UTC; hospitality sector, United States; claim describes 'unauthorized access and disruption of operations' with no specific data described; no victim acknowledgement.",
+        "locator": ""
+      },
+      {
+        "evidence_id": "e-raas-model",
+        "source_id": "s-wikipedia-qilin",
+        "excerpt": "Group-IB's March 2023 infiltration of Qilin's affiliate panel found affiliates earn approximately 80-85% of each ransom payment.",
+        "locator": ""
+      },
+      {
+        "evidence_id": "e-tooling-history",
+        "source_id": "s-wikipedia-qilin",
+        "excerpt": "First detected by Trend Micro August 2022 as 'Agenda', written in Go, code resembling Black Basta/BlackMatter/REvil; rewritten in Rust by December 2022.",
+        "locator": ""
+      },
+      {
+        "evidence_id": "e-sector-history",
+        "source_id": "s-wikipedia-qilin",
+        "excerpt": "Since 2023, victims span energy/manufacturing, government/public sector, healthcare, charity/business, and other sectors across Asia, Europe, and North America; documented data theft ranging from 178 GB to over 1 TB.",
+        "locator": ""
+      }
+    ],
+    "claims": [
+      {
+        "claim_id": "c-leak-site-claim",
+        "claim_type": "VICTIM_IDENTITY",
+        "text": "A group calling itself Qilin listed 'Spoonful of Comfort' on its extortion leak site on 2026-08-16.",
+        "scope": "",
+        "status": "REPORTED",
+        "confidence": "LOW",
+        "evidence_refs": [
+          "e-claim-post"
+        ],
+        "source_refs": [
+          "s-hendryadrian"
+        ],
+        "corroboration_state": "SINGLE_SOURCE",
+        "source_independence": false,
+        "observed_vs_context": "OBSERVED",
+        "temporal_scope": null,
+        "applicability": "",
+        "contradictions": [],
+        "analyst_notes": "Single-source leak-site claim per Section 10 policy -- establishes the claim was made, not that compromise/encryption/theft actually occurred."
+      },
+      {
+        "claim_id": "c-compromise-occurred",
+        "claim_type": "DATA_THEFT",
+        "text": "Whether an actual compromise or data theft occurred at Spoonful of Comfort.",
+        "scope": "",
+        "status": "UNKNOWN",
+        "confidence": "LOW",
+        "evidence_refs": [],
+        "source_refs": [],
+        "corroboration_state": "UNCORROBORATED",
+        "source_independence": false,
+        "observed_vs_context": "OBSERVED",
+        "temporal_scope": null,
+        "applicability": "",
+        "contradictions": [],
+        "analyst_notes": "No independent confirmation, victim statement, regulator filing, or data sample was located. The leak-site claim alone does not establish this (Section 10) -- explicitly represented as UNKNOWN, not guessed."
+      },
+      {
+        "claim_id": "c-victim-ack",
+        "claim_type": "VICTIM_IDENTITY",
+        "text": "Victim acknowledgement of the incident.",
+        "scope": "",
+        "status": "NOT_ASSESSED",
+        "confidence": "LOW",
+        "evidence_refs": [
+          "e-claim-post"
+        ],
+        "source_refs": [
+          "s-hendryadrian"
+        ],
+        "corroboration_state": "SINGLE_SOURCE",
+        "source_independence": false,
+        "observed_vs_context": "OBSERVED",
+        "temporal_scope": null,
+        "applicability": "",
+        "contradictions": [],
+        "analyst_notes": ""
+      },
+      {
+        "claim_id": "c-raas-model",
+        "claim_type": "TTP_HISTORICAL",
+        "text": "Qilin operates a ransomware-as-a-service affiliate model in which affiliates retain approximately 80-85% of each ransom payment (per Group-IB's March 2023 affiliate-panel infiltration).",
+        "scope": "",
+        "status": "REPORTED",
+        "confidence": "LOW",
+        "evidence_refs": [
+          "e-raas-model"
+        ],
+        "source_refs": [
+          "s-wikipedia-qilin"
+        ],
+        "corroboration_state": "SINGLE_SOURCE",
+        "source_independence": false,
+        "observed_vs_context": "CONTEXT",
+        "temporal_scope": null,
+        "applicability": "",
+        "contradictions": [],
+        "analyst_notes": ""
+      },
+      {
+        "claim_id": "c-tooling-history",
+        "claim_type": "TTP_HISTORICAL",
+        "text": "Qilin's ransomware payload (originally 'Agenda', first detected August 2022, written in Go) was rewritten in Rust by December 2022.",
+        "scope": "",
+        "status": "REPORTED",
+        "confidence": "LOW",
+        "evidence_refs": [
+          "e-tooling-history"
+        ],
+        "source_refs": [
+          "s-wikipedia-qilin"
+        ],
+        "corroboration_state": "SINGLE_SOURCE",
+        "source_independence": false,
+        "observed_vs_context": "CONTEXT",
+        "temporal_scope": null,
+        "applicability": "",
+        "contradictions": [],
+        "analyst_notes": ""
+      },
+      {
+        "claim_id": "c-sector-history",
+        "claim_type": "TTP_HISTORICAL",
+        "text": "Since 2023, Qilin-attributed victims span energy/manufacturing, government, healthcare, and charity/business sectors across Asia, Europe, and North America, with documented exfiltration volumes from 178 GB to over 1 TB in various cases.",
+        "scope": "",
+        "status": "REPORTED",
+        "confidence": "LOW",
+        "evidence_refs": [
+          "e-sector-history"
+        ],
+        "source_refs": [
+          "s-wikipedia-qilin"
+        ],
+        "corroboration_state": "SINGLE_SOURCE",
+        "source_independence": false,
+        "observed_vs_context": "CONTEXT",
+        "temporal_scope": null,
+        "applicability": "",
+        "contradictions": [],
+        "analyst_notes": ""
+      }
+    ],
+    "rendered_text": "## Executive Summary\n\nOn 2026-08-16, a group identifying itself as Qilin listed 'Spoonful of Comfort' on its Tor extortion leak site. This is a single-source claim; no independent confirmation, victim statement, regulator filing, or data sample has been located.\n\n## Victim Claim Record\n\nClaim posted 2026-08-16 18:56:20 UTC. Sector: hospitality (per aggregator). Country: United States. The claim describes 'unauthorized access and disruption of operations' without specifying what data, if any, was taken. No proof sample was reviewed. Whether a compromise actually occurred is UNKNOWN on current evidence -- this report does not assert it did.\n\n## Actor Historical Context (Qilin, general -- not incident-specific)\n\nQilin (originally 'Agenda') was first detected in August 2022; a Group-IB affiliate-panel infiltration in March 2023 found affiliates retain approximately 80-85% of each ransom payment. The ransomware payload was rewritten from Go to Rust by December 2022. Since 2023, Qilin-attributed victims span energy/manufacturing, government, healthcare, and charity/business sectors across Asia, Europe, and North America. None of this historical context is evidence of what happened, if anything, at Spoonful of Comfort specifically.\n\n## Generic Defensive Readiness (GENERIC_DEFENSIVE_READINESS)\n\nStandard ransomware readiness guidance -- immutable backups, MFA, network segmentation, mass-encryption detection, shadow-copy-deletion monitoring, and a tested IR plan -- is provided as general hardening, not as evidence any specific technique was used against this victim.\n",
+    "dimension_tags": {},
+    "claim_sections": {},
+    "detection_rules": [],
+    "metrics": [],
+    "cited_metric_ids": [],
+    "rendered_metric_ids": [],
+    "regulatory_applicabilities": [],
+    "forecasts": [],
+    "hypothesis_sets": [],
+    "intelligence_gaps": [],
+    "threat_products": [
+      {
+        "product_id": "qilin-spoonful-of-comfort-2026-08-16",
+        "threat_type": "RANSOMWARE_VICTIM_CLAIM",
+        "victim_observation": {
+          "group_named_by_source": "Qilin",
+          "victim_name": "Spoonful of Comfort",
+          "victim_domain": null,
+          "country": "United States",
+          "sector": "Hospitality (per aggregator categorization)",
+          "claim_date": "2026-08-16T18:56:20Z",
+          "claim_temporal_precision": "EXACT_TIMESTAMP",
+          "leak_site_claim_status": "REPORTED",
+          "claimed_data_description": "Not specified by the source beyond 'unauthorized access and disruption of operations'.",
+          "sample_proof_status": "UNKNOWN",
+          "independent_confirmation": "NOT_ASSESSED",
+          "victim_acknowledgement": "NOT_ASSESSED",
+          "regulator_disclosure": "NOT_ASSESSED",
+          "source_claim_ids": [
+            "c-leak-site-claim",
+            "c-victim-ack"
+          ],
+          "observed_incident_ioc_claim_ids": [],
+          "observed_incident_ttp_claim_ids": []
+        },
+        "actor_context": {
+          "actor_aliases": [
+            "Agenda"
+          ],
+          "raas_model_claim_ids": [
+            "c-raas-model"
+          ],
+          "historical_ttp_claim_ids": [
+            "c-sector-history"
+          ],
+          "historical_tooling_claim_ids": [
+            "c-tooling-history"
+          ],
+          "initial_access_history_claim_ids": [],
+          "infrastructure_claim_ids": [],
+          "affiliate_behavior_claim_ids": [],
+          "victimology_claim_ids": [],
+          "sectors": [
+            "Energy/Manufacturing",
+            "Government/Public Sector",
+            "Healthcare",
+            "Charity/Business"
+          ],
+          "geographies": [
+            "Asia",
+            "Europe",
+            "North America"
+          ],
+          "campaign_history_claim_ids": []
+        },
+        "generic_readiness": {
+          "immutable_backups": "Maintain immutable, offline backups with tested restoration procedures.",
+          "identity_hardening": "Enforce MFA on all remote-access and privileged accounts.",
+          "segmentation": "Segment networks to limit lateral movement from an initial foothold.",
+          "mass_encryption_detection": "Deploy behavioral detection for mass file-modification/encryption activity.",
+          "recovery_inhibition_coverage": "Monitor for shadow-copy deletion and backup-service tampering (T1490).",
+          "ir_preparation": "Maintain a tested incident response plan with ransomware-specific playbooks.",
+          "label": "GENERIC_DEFENSIVE_READINESS"
+        },
+        "cisa_kev_state": "NOT_APPLICABLE",
+        "cvss_state": "NOT_APPLICABLE",
+        "patch_state": "NOT_APPLICABLE",
+        "exploit_cve_status": "NOT_APPLICABLE",
+        "linked_vulnerabilities": []
+      }
+    ],
+    "review": null,
+    "depth_assessment": null,
+    "technical_recommendation_count": 0,
+    "technical_recommendations_with_evidence_basis": 0
+  },
+  "commercial_readiness": {
+    "controls": [
+      {
+        "control_id": "source_provenance",
+        "name": "Source provenance",
+        "status": "PASS",
+        "evidence": "2 sources registered, 0 incomplete.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "evidence_hash",
+        "name": "Evidence hash",
+        "status": "FAIL",
+        "evidence": "0/2 hashable sources carry content_sha256.",
+        "failures": [
+          "s-hendryadrian",
+          "s-wikipedia-qilin"
+        ],
+        "warnings": []
+      },
+      {
+        "control_id": "automated_review_disclosure",
+        "name": "Automated-review disclosure",
+        "status": "PASS",
+        "evidence": "No review on file; resolved state TACTICAL_READY correctly withholds PREMIUM_CERTIFIED.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "source_specific_facts",
+        "name": "Source-specific facts",
+        "status": "FAIL",
+        "evidence": "3 incident-specific claims checked.",
+        "failures": [
+          "c-compromise-occurred"
+        ],
+        "warnings": []
+      },
+      {
+        "control_id": "cross_source_corroboration",
+        "name": "Cross-source corroboration",
+        "status": "PASS",
+        "evidence": "6 claims checked against the corroboration policy.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "threat_type_schema_correctness",
+        "name": "Threat-type schema correctness",
+        "status": "PASS",
+        "evidence": "1 threat products checked for cross-schema contamination.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "cross_section_consistency",
+        "name": "Cross-section consistency",
+        "status": "PASS",
+        "evidence": "0 contradictions found.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "actor_specific_analysis",
+        "name": "Actor-specific analysis",
+        "status": "PASS",
+        "evidence": "3 actor-context claims checked.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "victim_specific_analysis",
+        "name": "Victim-specific analysis",
+        "status": "PASS",
+        "evidence": "Victim-impact claims checked against the claim-support matrix.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "current_statistics",
+        "name": "Current statistics",
+        "status": "BLOCKED",
+        "evidence": "No quantitative claims rendered in this bundle.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "regulatory_specificity",
+        "name": "Regulatory specificity",
+        "status": "BLOCKED",
+        "evidence": "No regulatory applicability assessments in this bundle.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "technical_recommendations",
+        "name": "Technical recommendations",
+        "status": "BLOCKED",
+        "evidence": "No technical recommendations in this bundle.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "detection_evidence_discipline",
+        "name": "Detection evidence discipline",
+        "status": "BLOCKED",
+        "evidence": "No detection rules in this bundle.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "temporal_integrity",
+        "name": "Temporal integrity",
+        "status": "PASS",
+        "evidence": "2 sources checked for fabricated timestamp precision.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "grammar_synthesis_qa",
+        "name": "Grammar/synthesis QA",
+        "status": "PASS",
+        "evidence": "0 QA findings, 0 critical.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "forecast_methodology",
+        "name": "Forecast methodology",
+        "status": "BLOCKED",
+        "evidence": "No forecasts attempted in this bundle.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "evidence_ledger",
+        "name": "Evidence ledger",
+        "status": "PASS",
+        "evidence": "6 claims in the ledger.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "alternative_hypotheses",
+        "name": "Alternative hypotheses",
+        "status": "BLOCKED",
+        "evidence": "No hypothesis sets in this bundle.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "intelligence_gaps",
+        "name": "Intelligence gaps",
+        "status": "BLOCKED",
+        "evidence": "No intelligence gaps declared in this bundle.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "report_specific_bibliography",
+        "name": "Report-specific bibliography",
+        "status": "PASS",
+        "evidence": "2 cited sources, 0 orphaned.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "human_analyst_certification_governance",
+        "name": "Human analyst certification governance",
+        "status": "PASS",
+        "evidence": "Resolved certification state: TACTICAL_READY.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "premium_depth",
+        "name": "30-40 page premium depth",
+        "status": "BLOCKED",
+        "evidence": "No depth assessment computed for this bundle.",
+        "failures": [],
+        "warnings": []
+      },
+      {
+        "control_id": "fortune_500_commercial_deliverable",
+        "name": "Fortune-500 commercial deliverable",
+        "status": "FAIL",
+        "evidence": "12/22 controls PASS, 8 BLOCKED (not yet attempted).",
+        "failures": [],
+        "warnings": []
+      }
+    ],
+    "pass_count": 12,
+    "total_count": 23,
+    "verdict": "NOT COMMERCIAL-READY"
+  }
+}
