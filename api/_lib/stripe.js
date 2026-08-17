@@ -59,7 +59,18 @@ function verifyWebhook(rawBody, signature) {
   if (!timestamp || !sig) return false;
   const payload = `${timestamp}.${rawBody}`;
   const expected = crypto.createHmac('sha256', WEBHOOK_SECRET).update(payload).digest('hex');
-  return crypto.timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(sig, 'hex'));
+  try {
+    // crypto.timingSafeEqual throws (rather than returning false) when the
+    // two buffers differ in byte length -- and `sig` is attacker-supplied
+    // from the request header, so any signature whose hex doesn't decode
+    // to exactly 32 bytes (expected's fixed SHA-256 digest length) throws
+    // here, uncaught, for anyone who sends one -- no valid secret needed.
+    // Mirrors razorpay.js#verifyWebhookSignature's existing guard around
+    // the identical call; this function was simply missing it.
+    return crypto.timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(sig, 'hex'));
+  } catch (_) {
+    return false;
+  }
 }
 
 // Create or retrieve Stripe customer

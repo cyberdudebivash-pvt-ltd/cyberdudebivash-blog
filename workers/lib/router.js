@@ -68,7 +68,28 @@ async function dispatch(handlerPath, request, routeQuery) {
   const handler = typeof handlerModule === 'function' ? handlerModule : handlerModule.default;
   const handlerConfig = handlerModule.config;
 
-  const req = await toNodeRequest(request, handlerConfig);
+  let req;
+  try {
+    req = await toNodeRequest(request, handlerConfig);
+  } catch (err) {
+    // Both branches match api/_lib/middleware.js#apiError()'s response
+    // shape exactly -- the shared helper most handlers already use for
+    // every other 4xx -- so these get the same contract as any other
+    // validation failure instead of a platform-specific error page.
+    if (err && err.isBodyParseError) {
+      return applyBaselineHeaders(new Response(JSON.stringify({
+        error: { code: 'INVALID_JSON', message: 'Request body is not valid JSON.' },
+        meta:  { platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', timestamp: new Date().toISOString() },
+      }), { status: 400, headers: { 'content-type': 'application/json' } }));
+    }
+    if (err && err.isBodyTooLargeError) {
+      return applyBaselineHeaders(new Response(JSON.stringify({
+        error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request body exceeds the maximum allowed size.' },
+        meta:  { platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', timestamp: new Date().toISOString() },
+      }), { status: 413, headers: { 'content-type': 'application/json' } }));
+    }
+    throw err; // genuinely unexpected -- surface it, don't mask a real bug
+  }
   req.query = { ...req.query, ...routeQuery };
 
   const { res, response } = createNodeResponse();
