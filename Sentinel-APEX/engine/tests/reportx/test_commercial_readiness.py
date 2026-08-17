@@ -138,6 +138,250 @@ class TestFullySupportedBundlePasses:
         assert "FINAL VERDICT: COMMERCIAL-READY (23/23 PASS)" in report
 
 
+def _bundle_with_one_observed_claim(status: EpistemicState) -> ReportBundle:
+    """A minimal bundle whose only OBSERVED claim has the given status and
+    NO evidence -- isolates row 4 (source_specific_facts) from every other
+    control so each EpistemicState's effect on that one row is unambiguous."""
+    graph = EvidenceGraph()
+    graph.add_claim(Claim(
+        claim_id="c1", claim_type=ClaimType.VICTIM_IDENTITY, text="Some incident-specific claim.",
+        status=status, observed_vs_context=ObservedVsContext.OBSERVED,
+    ))
+    return ReportBundle(report_id="epistemic-state-probe", graph=graph)
+
+
+class TestSourceSpecificFactsEpistemicStatePolicy:
+    """Row 4 (source_specific_facts) must apply the SAME assertive/
+    non-assertive split claim_support_matrix.py's own gate already
+    enforces -- both import STATUSES_REQUIRING_EVIDENCE from the same
+    place, so this is really a test that the two policies cannot drift
+    apart, exercised across every EpistemicState value."""
+
+    ASSERTIVE_STATES = (
+        EpistemicState.CONFIRMED, EpistemicState.REPORTED,
+        EpistemicState.CORROBORATED, EpistemicState.ASSESSED,
+        EpistemicState.DISPUTED,
+    )
+    NON_ASSERTIVE_STATES = (
+        EpistemicState.UNKNOWN, EpistemicState.NOT_ASSESSED,
+        EpistemicState.NOT_APPLICABLE, EpistemicState.HYPOTHESIS,
+    )
+
+    def test_every_assertive_state_without_evidence_fails_row_4(self):
+        for status in self.ASSERTIVE_STATES:
+            bundle = _bundle_with_one_observed_claim(status)
+            results = evaluate_commercial_readiness(bundle)
+            row = next(r for r in results if r.control_id == "source_specific_facts")
+            assert row.status == "FAIL", f"{status.value} should require evidence and FAIL without it"
+            assert "c1" in row.failures
+
+    def test_every_non_assertive_state_without_evidence_passes_row_4(self):
+        for status in self.NON_ASSERTIVE_STATES:
+            bundle = _bundle_with_one_observed_claim(status)
+            results = evaluate_commercial_readiness(bundle)
+            row = next(r for r in results if r.control_id == "source_specific_facts")
+            assert row.status == "PASS", f"{status.value} is an honest gap, not an unsupported assertion"
+            assert row.failures == []
+
+    def test_row_4_and_claim_support_matrix_agree_on_every_state(self):
+        # The two policies must classify every single EpistemicState value
+        # identically -- this is the literal "align these policies"
+        # requirement, verified exhaustively rather than spot-checked.
+        from sentinel_engine.reportx.claim_support_matrix import STATUSES_REQUIRING_EVIDENCE
+        for status in EpistemicState:
+            bundle = _bundle_with_one_observed_claim(status)
+            results = evaluate_commercial_readiness(bundle)
+            row = next(r for r in results if r.control_id == "source_specific_facts")
+            requires_evidence = status in STATUSES_REQUIRING_EVIDENCE
+            expected = "FAIL" if requires_evidence else "PASS"
+            assert row.status == expected, (
+                f"{status.value}: row 4 says {row.status} but "
+                f"STATUSES_REQUIRING_EVIDENCE says {'requires' if requires_evidence else 'does not require'} evidence"
+            )
+
+    def test_an_assertive_claim_with_real_evidence_still_passes(self):
+        # The fix must not accidentally make row 4 permissive for
+        # legitimately-evidenced assertive claims.
+        graph = EvidenceGraph()
+        graph.add_source(SourceRecord(
+            source_id="s1", url="https://example.com", publisher="Example",
+            source_type=SourceType.JOURNALISM, source_role=SourceRole.PRIMARY_EVENT_SOURCE,
+            retrieved_at="2026-08-18T00:00:00Z",
+        ))
+        graph.add_claim(Claim(
+            claim_id="c1", claim_type=ClaimType.VICTIM_IDENTITY, text="A sourced claim.",
+            status=EpistemicState.REPORTED, source_refs=["s1"],
+            observed_vs_context=ObservedVsContext.OBSERVED,
+        ))
+        bundle = ReportBundle(report_id="evidenced-probe", graph=graph)
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "source_specific_facts")
+        assert row.status == "PASS"
+
+
+class TestGovernedWithholdingIsAValidPassPath:
+    """A commercial-readiness control assesses whether the system handled
+    the domain correctly, not whether it manufactured content. Explicit,
+    reasoned withholding must PASS -- but only when the withholding is
+    actually explained and the evidence gap actually recorded, never as a
+    silent default."""
+
+    def test_withheld_detection_rule_with_rationale_and_gap_passes(self):
+        bundle = ReportBundle(
+            report_id="withheld-detection-ok", graph=EvidenceGraph(),
+            rendered_text="No detection status claims are made in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="T1486", format="sigma",
+                validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+                evidence_gap_rationale="No incident-specific telemetry located; withheld pending confirmed exploitation evidence.",
+            )],
+            intelligence_gaps=[IntelligenceGap("No telemetry sample available for this technique.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "PASS"
+
+    def test_withheld_detection_rule_without_rationale_fails(self):
+        bundle = ReportBundle(
+            report_id="withheld-detection-no-rationale", graph=EvidenceGraph(),
+            rendered_text="No detection status claims are made in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="T1486", format="sigma",
+                validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+            )],
+            intelligence_gaps=[IntelligenceGap("No telemetry sample available.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "FAIL"
+        assert any("no recorded evidence_gap_rationale" in f for f in row.failures)
+
+    def test_withheld_detection_rule_without_recorded_gap_fails(self):
+        bundle = ReportBundle(
+            report_id="withheld-detection-no-gap", graph=EvidenceGraph(),
+            rendered_text="No detection status claims are made in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="T1486", format="sigma",
+                validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+                evidence_gap_rationale="No telemetry located.",
+            )],
+            intelligence_gaps=[],  # the gap was never actually recorded at the report level
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "FAIL"
+        assert any("no intelligence_gaps are recorded" in f for f in row.failures)
+
+    def test_withheld_detection_rule_still_fails_if_downstream_text_overclaims(self):
+        # Governed withholding does not weaken the existing promotion check
+        # -- rationale + a recorded gap does not excuse language elsewhere
+        # in the product claiming the withheld rule is validated.
+        bundle = ReportBundle(
+            report_id="withheld-detection-overclaim", graph=EvidenceGraph(),
+            rendered_text="rule-1 is production-validated and ready for immediate deployment.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="T1486", format="sigma",
+                validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+                evidence_gap_rationale="No telemetry located.",
+            )],
+            intelligence_gaps=[IntelligenceGap("No telemetry sample available.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "FAIL"
+
+    def test_withheld_forecast_with_gap_recorded_passes(self):
+        bundle = ReportBundle(
+            report_id="withheld-forecast-ok", graph=EvidenceGraph(),
+            forecasts=[WithheldForecast(topic="exploitation trend", reason="Insufficient historical baseline.")],
+            intelligence_gaps=[IntelligenceGap("No baseline exploitation-rate data available.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "forecast_methodology")
+        assert row.status == "PASS"
+
+    def test_withheld_forecast_without_gap_recorded_fails(self):
+        bundle = ReportBundle(
+            report_id="withheld-forecast-no-gap", graph=EvidenceGraph(),
+            forecasts=[WithheldForecast(topic="exploitation trend", reason="Insufficient historical baseline.")],
+            intelligence_gaps=[],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "forecast_methodology")
+        assert row.status == "FAIL"
+        assert any("no intelligence_gaps are recorded" in f for f in row.failures)
+
+    def test_withheld_forecast_construction_requires_a_reason(self):
+        import pytest
+        with pytest.raises(ValueError, match="no reason"):
+            WithheldForecast(topic="exploitation trend", reason="")
+
+    def test_not_applicable_hypothesis_set_with_rationale_passes(self):
+        from sentinel_engine.reportx.analytic_scaffolding import NotApplicableHypothesisSet
+        bundle = ReportBundle(
+            report_id="hyp-not-applicable-ok", graph=EvidenceGraph(),
+            hypothesis_sets=[NotApplicableHypothesisSet(
+                question="Is a rival actor group responsible instead?",
+                rationale="A single, uncontested named actor claimed this incident; no rival attribution theory has circulated in any source located.",
+            )],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "alternative_hypotheses")
+        assert row.status == "PASS"
+
+    def test_not_applicable_hypothesis_set_construction_requires_a_rationale(self):
+        import pytest
+        from sentinel_engine.reportx.analytic_scaffolding import NotApplicableHypothesisSet
+        with pytest.raises(ValueError, match="no rationale"):
+            NotApplicableHypothesisSet(question="Is a rival actor group responsible?", rationale="")
+
+    def test_regulatory_not_assessed_with_basis_passes(self):
+        bundle = ReportBundle(
+            report_id="reg-not-assessed-ok", graph=EvidenceGraph(),
+            regulatory_applicabilities=[not_assessed("GDPR", reason="No EU nexus established by any source located.")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "regulatory_specificity")
+        assert row.status == "PASS"
+
+    def test_evidence_hash_passes_with_excerpt_fingerprint_fallback(self):
+        graph = EvidenceGraph()
+        graph.add_source(SourceRecord(
+            source_id="s1", url="https://example.com/spa", publisher="Example",
+            source_type=SourceType.JOURNALISM, source_role=SourceRole.PRIMARY_EVENT_SOURCE,
+            retrieved_at="2026-08-18T00:00:00Z",
+            excerpt_fingerprint_sha256="b" * 64,
+            fingerprint_fallback_reason="JS-rendered SPA; direct fetch could not retrieve raw content.",
+        ))
+        bundle = ReportBundle(report_id="hash-fallback-ok", graph=graph)
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "evidence_hash")
+        assert row.status == "PASS"
+
+    def test_evidence_hash_fails_with_unexplained_excerpt_fingerprint(self):
+        graph = EvidenceGraph()
+        graph.add_source(SourceRecord(
+            source_id="s1", url="https://example.com/spa", publisher="Example",
+            source_type=SourceType.JOURNALISM, source_role=SourceRole.PRIMARY_EVENT_SOURCE,
+            retrieved_at="2026-08-18T00:00:00Z",
+            excerpt_fingerprint_sha256="b" * 64,  # no fingerprint_fallback_reason
+        ))
+        bundle = ReportBundle(report_id="hash-fallback-unexplained", graph=graph)
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "evidence_hash")
+        assert row.status == "FAIL"
+
+    def test_regulatory_not_assessed_without_basis_fails(self):
+        bundle = ReportBundle(
+            report_id="reg-not-assessed-empty", graph=EvidenceGraph(),
+            regulatory_applicabilities=[not_assessed("GDPR", reason="")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "regulatory_specificity")
+        assert row.status == "FAIL"
+        assert "GDPR" in row.failures
+
+
 class TestBrokenBundleCorrectlyFails:
     def test_schema_contamination_causes_fail_not_silent_pass(self):
         bundle = _build_fully_supported_bundle()

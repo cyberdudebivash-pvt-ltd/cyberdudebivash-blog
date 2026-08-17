@@ -56,6 +56,31 @@ class HypothesisSet:
         return all(h.supporting_evidence_claim_ids or h.contradicting_evidence_claim_ids for h in self.hypotheses)
 
 
+@dataclass(frozen=True)
+class NotApplicableHypothesisSet:
+    """The explicit, governed alternative to a HypothesisSet -- not every
+    analytic question genuinely has competing explanations worth weighing
+    (e.g. a leak-site claim with a single, uncontested named actor and no
+    rival attribution theory in circulation). Fabricating a second
+    "alternative" just to satisfy a >=2-hypotheses rule would be worse
+    than declaring the question doesn't need one -- but the declaration
+    itself must be reasoned, not a bare skip."""
+
+    question: str
+    rationale: str
+
+    def __post_init__(self):
+        if not self.rationale:
+            raise ValueError(
+                f"NotApplicableHypothesisSet for {self.question!r} has no rationale -- "
+                "declaring a question doesn't need competing hypotheses still requires "
+                "explaining why, not a bare skip."
+            )
+
+    def to_dict(self) -> dict:
+        return {"question": self.question, "applicable": False, "rationale": self.rationale}
+
+
 # ============================================================
 # Section 18 — Intelligence gaps / collection requirements
 # ============================================================

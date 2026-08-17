@@ -3,6 +3,7 @@ from sentinel_engine.reportx.detection_validation import (
     DetectionValidationState,
     check_all_rules,
     check_state_promotion,
+    check_withheld_rules_have_rationale,
 )
 
 
@@ -54,3 +55,25 @@ class TestNoPromotionBeyondStoredState:
         violations = check_all_rules(rules, text)
         assert any(v.rule_id == "r1" for v in violations)
         assert not any(v.rule_id == "r2" for v in violations)
+
+
+class TestWithheldRuleRationaleRequirement:
+    """Governed withholding is a PASS path, but only when the withholding
+    itself is explained -- an empty-rationale WITHHELD rule is
+    indistinguishable from one nobody finished filling in."""
+
+    def test_withheld_rule_without_rationale_is_flagged(self):
+        rule = DetectionRule(rule_id="r1", technique_id="T1486", format="sigma",
+                              validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE)
+        assert check_withheld_rules_have_rationale([rule]) == ["r1"]
+
+    def test_withheld_rule_with_rationale_is_not_flagged(self):
+        rule = DetectionRule(rule_id="r1", technique_id="T1486", format="sigma",
+                              validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+                              evidence_gap_rationale="No incident-specific telemetry located.")
+        assert check_withheld_rules_have_rationale([rule]) == []
+
+    def test_non_withheld_rules_are_never_flagged_regardless_of_rationale(self):
+        rule = DetectionRule(rule_id="r1", technique_id="T1486", format="sigma",
+                              validation_state=DetectionValidationState.DRAFT)
+        assert check_withheld_rules_have_rationale([rule]) == []

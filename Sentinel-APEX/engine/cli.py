@@ -56,6 +56,25 @@ Usage (from Sentinel-APEX/engine/):
       results to out.json -- the single self-contained artifact System 5
       (api/_lib/reportx-adapter.js) reads; it never recomputes anything
       this command already validated.
+
+  python3 cli.py reportx-review inspect <export.json> [--out pack.md]
+                                [--previous prior-export.json]
+      Renders the human-readable reviewer pack (sentinel_engine.reportx.
+      reviewer_pack) from a `reportx-gate --export` artifact -- the 23-
+      control matrix, sources, claims, statistics, regulatory
+      determinations, detections, forecasts, hypotheses, gaps, and any
+      existing review record. Prints to stdout, or writes to --out.
+
+  python3 cli.py reportx-review (approve|reject|request-changes) <export.json>
+                                --reviewer "Full Name" [--role ROLE]
+                                [--comments "..."] [--version N] --out review.json
+      Writes a real ReviewRecord bound to the artifact's exact
+      SHA-256 (and a gate-snapshot hash of the 23-control result the
+      reviewer saw). No default reviewer identity is ever assumed --
+      --reviewer is required. This is the ONLY manual step in the
+      ReportX pipeline; running this command IS the human-approval
+      event, so it must be run by the actual human reviewer, never
+      automated on their behalf.
 """
 
 from __future__ import annotations
@@ -210,6 +229,66 @@ def cmd_reportx_gate(args: argparse.Namespace) -> int:
     return 0 if "FINAL VERDICT: COMMERCIAL-READY (23/23 PASS)" in markdown else 1
 
 
+def cmd_reportx_review(args: argparse.Namespace) -> int:
+    from datetime import datetime, timezone
+
+    from sentinel_engine.reportx.human_review import (
+        ReviewDecision,
+        ReviewRecord,
+        compute_artifact_hash,
+        compute_gate_snapshot_hash,
+    )
+    from sentinel_engine.reportx.reviewer_pack import render_reviewer_pack_markdown
+
+    with open(args.export, encoding="utf-8") as fh:
+        export = json.load(fh)
+
+    if args.action == "inspect":
+        previous = None
+        if args.previous:
+            with open(args.previous, encoding="utf-8") as fh:
+                previous = json.load(fh)
+        pack = render_reviewer_pack_markdown(export, render_preview_path=args.render_preview, previous_export=previous)
+        if args.out:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                fh.write(pack)
+            print(f"Wrote reviewer pack to {args.out}", file=sys.stderr)
+        else:
+            print(pack)
+        return 0
+
+    decision_by_action = {
+        "approve": ReviewDecision.APPROVE,
+        "reject": ReviewDecision.REJECT,
+        "request-changes": ReviewDecision.REQUEST_CHANGES,
+    }
+    decision = decision_by_action[args.action]
+
+    artifact_sha256 = compute_artifact_hash(export["bundle"]["rendered_text"])
+    controls_json = json.dumps(export["commercial_readiness"]["controls"], sort_keys=True)
+    gate_snapshot_sha256 = compute_gate_snapshot_hash(controls_json)
+
+    review = ReviewRecord(
+        report_id=export["bundle"]["report_id"],
+        artifact_sha256=artifact_sha256,
+        reviewer_identity=args.reviewer,
+        reviewer_role=args.role or "",
+        review_timestamp=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        decision=decision,
+        review_version=args.version,
+        notes=args.comments or "",
+        gate_snapshot_sha256=gate_snapshot_sha256,
+        is_test_only_fixture=False,
+    )
+
+    with open(args.out, "w", encoding="utf-8") as fh:
+        json.dump(review.to_dict(), fh, indent=2)
+
+    print(f"Recorded {decision.value} by {args.reviewer!r} bound to artifact {artifact_sha256[:16]}... "
+          f"-> {args.out}", file=sys.stderr)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -269,6 +348,26 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--json", action="store_true", help="print the machine-readable JSON form instead of Markdown")
     p.add_argument("--export", default="", help="also write the full validated bundle + gate results to this path (for System 5 / JS consumers)")
     p.set_defaults(func=cmd_reportx_gate)
+
+    p = sub.add_parser("reportx-review", help="ReportX human-review workflow: inspect a reviewer pack, or record a real approve/reject/request-changes decision")
+    review_sub = p.add_subparsers(dest="action", required=True)
+
+    p_inspect = review_sub.add_parser("inspect", help="render the reviewer pack for an exported artifact")
+    p_inspect.add_argument("export", help="path to a reportx-gate --export artifact")
+    p_inspect.add_argument("--out", default="", help="write the pack here instead of stdout")
+    p_inspect.add_argument("--render-preview", default="", help="path to a rendered preview file, if one exists, to note in the pack")
+    p_inspect.add_argument("--previous", default="", help="a prior --export artifact, to show what changed since the last review")
+
+    for action in ("approve", "reject", "request-changes"):
+        p_action = review_sub.add_parser(action, help=f"record a real {action} decision, bound to the artifact's exact SHA-256")
+        p_action.add_argument("export", help="path to a reportx-gate --export artifact")
+        p_action.add_argument("--reviewer", required=True, help="the real reviewer's full name or identity -- no default is ever assumed")
+        p_action.add_argument("--role", default="", help="the reviewer's role (e.g. 'Senior CTI Analyst')")
+        p_action.add_argument("--comments", default="", help="review comments/notes")
+        p_action.add_argument("--version", type=int, default=1, help="review_version, if this artifact has been reviewed before")
+        p_action.add_argument("--out", required=True, help="path to write the resulting ReviewRecord JSON")
+
+    p.set_defaults(func=cmd_reportx_review)
 
     args = parser.parse_args(argv)
     return args.func(args)
