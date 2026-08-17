@@ -1149,7 +1149,28 @@ for a module nothing can reach. **Un-skip and actually build it out** the
 next time someone has a concrete reason to wire this module into a real
 caller and the design intent to implement it against.
 
-## Issue 18 — `PublishingPipeline#getPipelineStatus` always reports `reviewChecklist: null`
+## Issue 18 — `PublishingPipeline#getPipelineStatus` always reports `reviewChecklist: null` — RESOLVED
+
+**Update, Cloudflare migration Stage 4 Section 21**: the intended contract
+below has now been conclusively established, not guessed. `submitForReview()`
+(same file, ~line 58) is the *only* writer of the `intelligence:review:{id}`
+key anywhere in the codebase — a single-field hash,
+`hset(key, 'checklist', JSON.stringify(checklist))` — confirmed by a
+full-codebase grep finding zero other readers or writers of that key
+pattern. That pins down exactly what `hgetall` on it returns via Upstash's
+REST API (a flat `['checklist', '<json>']` array) and exactly what
+reduction is needed, which is the same one
+`IntelligenceManager#getIntelligence` already applies to its own `hgetall`
+call. Fixed by mirroring that established pattern locally (not by
+extracting a new shared helper — the same inline flat-to-object reduction
+already appears independently in 16 files across `api/_lib/`, so matching
+that existing convention is the smaller, more consistent change). Two new
+regression tests added: a populated checklist round-trips correctly, and
+the pre-existing not-yet-reviewed case still correctly returns `null`
+(not a crash). Fixed in `api/_lib/publishing-pipeline.js`, verified with
+1600 Jest passing, 0 failures.
+
+Original finding, preserved below for the record:
 
 Found while bundling `api/v1/intelligence/publish.js` for the Cloudflare
 Workers migration (`workers/entry.js`'s dependency graph pulled in
@@ -1192,6 +1213,76 @@ key/shape intended here?) rather than a guessed one-line patch.
 **Fix**: mirror `IntelligenceManager#getIntelligence`'s flat-array
 reduction before reading `.checklist`, then confirm against a real
 stored checklist.
+
+**Resolution**: fixed, see the update note at the top of this issue.
+
+---
+
+## Issue 19 — `api/v1/products/approvals.js` and `api/v1/workbench/cases.js` sub-path actions are unreachable on both platforms
+
+Found during Cloudflare migration Stage 4 Section 18 (parity-matrix
+certification) while probing every registered handler with a real
+Workerd request. `approvals.js` and `cases.js` both determine their
+`action` by parsing the URL **path segments**
+(`req.url.split('?')[0].split('/').filter(Boolean)`, taking the last 1-2
+segments as `action`/`resourceId`), expecting calls shaped like
+`/api/v1/products/approvals/pending` or
+`/api/v1/products/approvals/{productId}/approve`.
+
+Neither platform's routing configuration ever forwards a sub-path to
+these handlers:
+
+- `vercel.json` has zero rewrite rules mentioning `approvals` or `cases`
+  (confirmed by direct grep) — Vercel's filesystem routing only ever
+  invokes `api/v1/products/approvals.js` for the exact path
+  `/api/v1/products/approvals`, with no sub-path.
+- `workers/lib/route-table.js`'s `DIRECT_API_HANDLERS` is an **exact-path
+  Set lookup** (`DIRECT_API_HANDLERS.has(directPath)`), with no
+  wildcard/catch-all matching — the same limitation.
+
+Practical consequence: for `approvals.js`, every one of its 6 action
+branches requires a path segment (`submit-review`, `approve`, `reject`,
+`history`, `pending`, `status`) that can never arrive — the computed
+`action` is always literally `'approvals'` (the URL's own last segment at
+the only path either platform will ever route to this file), which
+matches none of them. The handler always falls through to its own
+`fail(res, 404, 'NOT_FOUND', 'Endpoint not found')`. **This means the
+entire approval workflow (submit/approve/reject/history/pending/status)
+is unreachable on production Vercel today**, independent of the
+Cloudflare migration. `cases.js` is partially affected the same way —
+its own-base-path `POST /api/v1/workbench/cases` (create) is reachable
+(since `'cases'` legitimately is the last path segment there), but any
+sub-path action (e.g. fetching a specific case by ID) is not.
+
+**Classification: PRE-EXISTING PRODUCT DEFECT, not migration-caused.**
+Verified via real Workerd probes that Cloudflare's behavior is **identical**
+to Vercel's — both equally unable to reach these actions — so this is
+confirmed parity, not a regression introduced by this migration.
+
+**Not fixed here** — the underlying contract is genuinely ambiguous in
+the same sense as Issue 18 originally was, but with a materially larger
+and riskier fix surface: resolving it would mean choosing between (a)
+adding real sub-path/catch-all routing to *both* `vercel.json` and
+`route-table.js` (touching production Vercel routing configuration,
+which this migration's own governance explicitly prohibits changing —
+Vercel "must remain unchanged"), or (b) rewriting these two handlers to
+use the query-parameter `?action=X` convention every other multi-action
+handler in this codebase already uses (a real behavior/URL-contract
+change for whatever callers, if any, currently know the *intended*
+path-segment shape). Neither option is a small, safe, unambiguous patch
+the way Issue 18's fix was.
+
+**Fix** (for whoever picks this up, not attempted here): confirm whether
+any current caller (internal dashboard code, external integration, or
+none at all — plausible, given this has apparently never worked) expects
+the path-segment URL shape. If none do, rewriting both handlers to the
+established `?action=X` query-parameter convention is very likely the
+smaller, lower-risk fix versus adding parallel sub-path routing support
+to two separate platforms' routing configs.
+
+**Staging-blocking?** No. Confirmed identical (broken) behavior on both
+platforms is true parity, not a Cloudflare-specific gap — does not block
+`VERCEL-CLOUDFLARE-PARITY-MATRIX.md`'s readiness verdict.
 
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

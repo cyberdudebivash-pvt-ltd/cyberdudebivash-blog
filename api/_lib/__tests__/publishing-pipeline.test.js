@@ -16,11 +16,12 @@ const { PublishingPipeline } = require('../publishing-pipeline');
 // REST API returns HGETALL as a flat [field, value, field, value, ...]
 // array (confirmed by reading redisCmd()'s implementation), not a plain
 // object -- IntelligenceManager#getIntelligence() reduces it into one.
-function fakeRedis(intelligenceRecord) {
+function fakeRedis(intelligenceRecord, reviewChecklist) {
   const flat = [];
   for (const [k, v] of Object.entries(intelligenceRecord)) flat.push(k, v);
+  const checklistFlat = reviewChecklist === undefined ? [] : ['checklist', JSON.stringify(reviewChecklist)];
   return {
-    hgetall: async key => (key.startsWith('intelligence:review:') ? [] : flat),
+    hgetall: async key => (key.startsWith('intelligence:review:') ? checklistFlat : flat),
     zrange: async () => [],
   };
 }
@@ -55,5 +56,47 @@ describe('PublishingPipeline#getPipelineStatus', () => {
     expect(status.timeline.submittedForReview).toEqual({ at: '2026-08-02T00:00:00Z', by: 'reviewer1' });
     expect(status.timeline).not.toHaveProperty('submittedFor');
     expect(status.nextActions).toEqual(['Request changes', 'Approve for publication']);
+  });
+
+  // Regression coverage for platform/open-issues.md Issue 18: hgetall's
+  // flat-array result was read as if it were already an object
+  // (reviewChecklist.checklist), which is always undefined on a JS array
+  // regardless of what's actually stored -- getPipelineStatus() silently
+  // and unconditionally returned reviewChecklist: null. Root-caused by
+  // finding submitForReview()'s own write (hset(key, 'checklist',
+  // JSON.stringify(checklist))) is the only writer of this key anywhere in
+  // the codebase, confirming the exact single-field-hash shape to reduce.
+  test('a populated review checklist is returned, not silently nulled (Issue 18)', async () => {
+    const checklist = { requiredFields: ['title', 'confidence'], missingFields: [], warnings: [] };
+    const redis = fakeRedis(
+      {
+        status: 'review',
+        title: 'Test Intelligence',
+        type: 'threat-actor',
+        confidence: 'high',
+        createdAt: '2026-08-01T00:00:00Z',
+        createdBy: 'analyst1',
+      },
+      checklist
+    );
+    const pipeline = new PublishingPipeline(redis);
+    const status = await pipeline.getPipelineStatus('test-id');
+
+    expect(status.reviewChecklist).toEqual(checklist);
+  });
+
+  test('an intelligence object with no review checklist yet still returns null (not a crash)', async () => {
+    const redis = fakeRedis({
+      status: 'draft',
+      title: 'Test Intelligence',
+      type: 'threat-actor',
+      confidence: 'high',
+      createdAt: '2026-08-01T00:00:00Z',
+      createdBy: 'analyst1',
+    });
+    const pipeline = new PublishingPipeline(redis);
+    const status = await pipeline.getPipelineStatus('test-id');
+
+    expect(status.reviewChecklist).toBeNull();
   });
 });
