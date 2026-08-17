@@ -254,12 +254,14 @@ reachability) · 3 of those 23 also carry a `NOT_VERIFIED` functional-depth
 caveat (Redis-dependent handlers, no Redis binding on isolated staging by
 design) · 1 `INTENTIONALLY_CHANGED` (OG dynamic rendering) · 0
 `CLOUDFLARE_REGRESSION`. Evidence tier: `LIVE-VERCEL-VERIFIED` +
-`LIVE-CLOUDFLARE-VERIFIED`, this session, against staging version
+`LIVE-CLOUDFLARE-VERIFIED`, this session, first run against staging version
 `6f243f31-a98a-4324-b2c1-32bb9b4a5bae` (pre-LF-fix — routing/reachability
 behavior is unaffected by the LF-encoding defect, which only alters static
-text-asset bytes, not the Worker's routing logic; re-run planned against the
-LF-corrected staging redeploy per Stage 5 protocol, see
-`CLOUDFLARE-STAGING-VALIDATION.md`).
+text-asset bytes, not the Worker's routing logic). **Re-run in full against
+the LF-corrected redeploy** (Version `09d20b10-ade1-486c-a8eb-e54ce42fb12c`)
+after the operator's redeploy: all 54 status codes diffed line-by-line
+against the first run — **zero differences**. See
+`CLOUDFLARE-STAGING-VALIDATION.md` §8–9 for the full re-run record.
 
 ### 6.2 OG dynamic rendering — live corroboration of the Stage 4 finding
 
@@ -314,7 +316,14 @@ build output for `api/intel/threat-graph.json`, `api/intel/iocs.json`,
 `sitemap.xml`, `index.html`, `banner-orchestrator.js`, `apex-v13.css` on
 this (Linux) session container — all six: **A == B == C, byte-identical**.
 Evidence tier: `BYTE-INTEGRITY-VERIFIED` (git blob / working tree / dist
-build only, this session's Linux container). Remote-vs-Git byte identity
-against the live redeployed staging Worker is the next step, pending the
-operator's redeploy (Section 10 of the Stage 5 task) — see the validation
-doc for the pending checklist.
+build only, this session's Linux container).
+
+**Update, following the operator's redeploy** (Version
+`09d20b10-ade1-486c-a8eb-e54ce42fb12c`): the same 6 files were re-hashed
+directly from live `*.workers.dev` response bytes and compared against the
+committed Git blob SHA-256 — **6/6 byte-identical**, including
+`api/intel/threat-graph.json`, the exact file the prior session found
+inflated by 244,609 injected `\r` bytes on the pre-fix deployment. Evidence
+tier upgraded to `BYTE-INTEGRITY-VERIFIED` (Git blob ↔ live remote response,
+raw bytes). **The LF/CRLF artifact-integrity defect is closed end-to-end.**
+Full table: `CLOUDFLARE-STAGING-VALIDATION.md` §6.5.
