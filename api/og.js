@@ -146,7 +146,7 @@ module.exports = async (req, res) => {
     const svg = await satori(buildTree({ title, severity, cve, cvss, type }), {
       width: 1200,
       height: 630,
-      fonts: loadFontsForRuntime(),
+      fonts: await loadFontsForRuntime(),
     });
 
     const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });

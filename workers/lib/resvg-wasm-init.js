@@ -15,34 +15,43 @@
  * "Already initialized". A Worker isolate is reused across requests, so
  * this must be memoized, not called per-request.
  *
- * The two branches below load the same .wasm bytes through the only
- * mechanism that actually works in each environment: Wrangler's bundler
- * resolves a require()'d .wasm file to a WebAssembly.Module at build
- * time (Cloudflare's documented pattern), which Node has no equivalent
- * for without --experimental-wasm-modules; Node instead reads the file
- * directly off the real disk in node_modules, which Workers has no
- * equivalent for (no filesystem). Both requires are string literals so
- * each bundler/loader can see them — see api/og.js's caller for why this
- * lives in its own CommonJS file rather than using a top-level ESM
- * import directly.
+ * Node reads the .wasm file directly off the real disk in node_modules
+ * (no equivalent under Workers — no filesystem). Workers needs a genuine
+ * WebAssembly.Module, supplied via setWasmModule() before the first
+ * request — workers/entry.js's own top-level `import wasmModule from
+ * '@resvg/resvg-wasm/index_bg.wasm'` is what Wrangler's bundler resolves
+ * to a real precompiled Module (that import can't live in this
+ * CommonJS file — it would break Node's require() of it).
+ *
+ * KNOWN LIMITATION even with a genuine Module supplied here: see
+ * workers/entry.js's comment. initWasm() still fails at request time
+ * under Workers with "Wasm code generation disallowed by embedder" — a
+ * documented, widely-reported platform restriction (not specific to
+ * this file's import mechanism, confirmed by directly checking
+ * `instanceof WebAssembly.Module` before ruling that out), not yet
+ * resolved. getResvg() below still throws in that case, on purpose —
+ * api/og.js's caller already has a correct, verified fallback for
+ * exactly this failure mode, so this file does not need its own.
  */
 
 const { initWasm, Resvg } = require('@resvg/resvg-wasm');
+const { isCloudflareWorkers } = require('../../api/_lib/runtime-env');
 
+let workersWasmModule = null;
 let initPromise = null;
 
-function isCloudflareWorkers() {
-  return typeof navigator !== 'undefined' && navigator.userAgent === 'Cloudflare-Workers';
+function setWasmModule(mod) {
+  workersWasmModule = mod;
 }
 
 async function getResvg() {
   if (!initPromise) {
     initPromise = isCloudflareWorkers()
-      ? initWasm(require('@resvg/resvg-wasm/index_bg.wasm'))
+      ? initWasm(workersWasmModule)
       : initWasm(require('fs').readFileSync(require.resolve('@resvg/resvg-wasm/index_bg.wasm')));
   }
   await initPromise;
   return Resvg;
 }
 
-module.exports = { getResvg, isCloudflareWorkers };
+module.exports = { getResvg, setWasmModule, isCloudflareWorkers };

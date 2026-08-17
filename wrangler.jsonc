@@ -37,13 +37,23 @@
     "binding": "ASSETS"
   },
 
-  // .woff → Data module: api/og.js's 3 Inter font weights, embedded into
-  // the Worker bundle at build time (workers/lib/og-fonts-init.js's
-  // Cloudflare branch require()s them by literal path so this rule can
-  // resolve them). Data modules come back as ArrayBuffer, which satori's
-  // fonts option accepts the same as the Buffer fs.readFileSync returns
-  // on the unchanged Vercel/Node path.
+  // .wasm → CompiledWasm: @resvg/resvg-wasm's index_bg.wasm, imported at
+  // the top of workers/entry.js. Without this explicit rule Wrangler
+  // does NOT auto-detect .wasm imports (confirmed via a real `wrangler
+  // dev` failure — "WebAssembly.instantiate(): Wasm code generation
+  // disallowed by embedder" — the import silently resolved to something
+  // that wasn't a real precompiled WebAssembly.Module, not assumed from
+  // docs alone) — Data/Text/CompiledWasm module types all require an
+  // explicit rule per Cloudflare's own docs, there is no zero-config
+  // default for any of them.
+  //
+  // .woff → Data: api/og.js's 3 Inter font weights, embedded into the
+  // Worker bundle at build time (workers/lib/og-fonts-init.js's
+  // Cloudflare branch dynamically imports them). Data modules resolve to
+  // an ArrayBuffer, which satori's fonts option accepts the same as the
+  // Buffer fs.readFileSync returns on the unchanged Vercel/Node path.
   "rules": [
+    { "type": "CompiledWasm", "globs": ["**/*.wasm"], "fallthrough": true },
     { "type": "Data", "globs": ["**/*.woff"], "fallthrough": true }
   ],
 

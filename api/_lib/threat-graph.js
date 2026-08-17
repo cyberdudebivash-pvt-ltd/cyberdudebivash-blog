@@ -16,13 +16,29 @@
  * © 2026 CYBERDUDEBIVASH PRIVATE LIMITED
  */
 'use strict';
-const fs   = require('fs');
-const path = require('path');
+const fs = require('fs');
+const { isCloudflareWorkers } = require('./runtime-env');
 
-const GRAPH_PATH      = path.resolve(__dirname, '../../api/intel/threat-graph.json');
+// Workers has no filesystem — GRAPH_PATH (__dirname-based) throws
+// ReferenceError there (confirmed via a real `wrangler dev` run, same
+// failure mode as api/_lib/intel.js). saveGraph() below is left
+// fs-only/unguarded: it's a write path meant for the offline generation
+// pipeline, not a live request handler, and Workers correctly has no
+// way to persist a file at runtime regardless — if a live request path
+// ever reaches it, throwing there is the right failure, not something
+// to silently paper over.
+let GRAPH_PATH = null;
+if (!isCloudflareWorkers()) {
+  const path = require('path');
+  GRAPH_PATH = path.resolve(__dirname, '../../api/intel/threat-graph.json');
+}
+
 const GRAPH_CACHE_TTL = 120000; // 2 min in-process cache
-let _graphCache     = null;
-let _graphCacheTime = 0;
+// Bundled at build time on Workers, same as api/_lib/intel.js's PATHS —
+// loadGraph() below never lets this expire/re-read on that branch, since
+// there's nothing to re-read without a redeploy anyway.
+let _graphCache     = isCloudflareWorkers() ? require('../intel/threat-graph.json') : null;
+let _graphCacheTime = isCloudflareWorkers() ? Date.now() : 0;
 
 /* ═══════════════════════════════════════════════════════════════════════
    UTILITY
@@ -407,6 +423,7 @@ function getDefaultGraph() {
 }
 
 function loadGraph() {
+  if (isCloudflareWorkers()) return _graphCache; // bundled once, no fs to re-read from
   const now = Date.now();
   if (_graphCache && (now - _graphCacheTime) < GRAPH_CACHE_TTL) return _graphCache;
   try {
