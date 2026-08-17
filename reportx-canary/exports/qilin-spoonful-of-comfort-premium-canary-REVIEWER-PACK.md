@@ -2,6 +2,7 @@
 
 **Artifact SHA-256:** `213eec33d30d4062e183699deea477e330c004463786a15aa3a9e49e0e1d1d0a`
 **Premium tier:** True
+**Render preview:** `reportx-canary/render-qa/qilin-spoonful-of-comfort-premium-canary-PREVIEW.pdf`
 
 ## 23-Control Commercial Readiness Matrix
 

@@ -2,6 +2,7 @@
 
 **Artifact SHA-256:** `4b986cdee8b3a17ecd567e4caf21a721fe0c75fc024207be06937d31da5436a8`
 **Premium tier:** True
+**Render preview:** `reportx-canary/render-qa/medusalocker-bija-industrie-premium-canary-PREVIEW.pdf`
 
 ## 23-Control Commercial Readiness Matrix
 

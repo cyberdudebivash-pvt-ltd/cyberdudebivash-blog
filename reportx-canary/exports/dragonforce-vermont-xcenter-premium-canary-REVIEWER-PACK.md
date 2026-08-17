@@ -2,6 +2,7 @@
 
 **Artifact SHA-256:** `4bac2b5c705835e4efb4f3f9c91863b1ac067ee088248a5b9940c04de577250b`
 **Premium tier:** True
+**Render preview:** `reportx-canary/render-qa/dragonforce-vermont-xcenter-premium-canary-PREVIEW.pdf`
 
 ## 23-Control Commercial Readiness Matrix
 
