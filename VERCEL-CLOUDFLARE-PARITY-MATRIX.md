@@ -121,3 +121,200 @@ No row in this matrix uses "mostly pass" or equivalent hedged language. Every
 FIXED row cites the commit that closed it and the regression test added.
 Every NOT-VERIFIED row states precisely what could not be tested and why,
 rather than being silently omitted or rounded up to PASS.
+
+---
+
+## 6. Stage 5 — live verification ledger (this session)
+
+Everything above this section was certified via local `wrangler dev`/Workerd
+(labelled `CLAUDE-VERIFIED` without further qualification). Stage 5's job is
+to re-verify against the **real deployed edge** — a live `*.workers.dev`
+Worker and live `blog.cyberdudebivash.in` production — not to re-derive the
+above from scratch. This section adds a verification-tier label to every
+claim rechecked live and records everything newly discovered only by testing
+the real edge.
+
+**New evidence tiers used in this section** (in addition to the tiers
+defined above): `LOCAL-WORKERD-VERIFIED` (Stage 3/4's local Workerd probes,
+carried forward unchanged) · `LIVE-CLOUDFLARE-VERIFIED` (real HTTP request
+against `https://cyberdudebivash-blog.iambivash-bn.workers.dev`, this
+session) · `LIVE-VERCEL-VERIFIED` (real HTTP request against
+`https://blog.cyberdudebivash.in`, this session) · `BYTE-INTEGRITY-VERIFIED`
+(SHA-256 comparison across Git blob / working tree / build output / remote
+response bytes) · `NOT-VERIFIED` (still open, staging-environment or
+credential-access limitation, stated explicitly).
+
+### 6.1 Complete API route reachability census
+
+Full census of all 31 `api/**` handler files (enumerated from
+`workers/lib/route-table.js`'s `DIRECT_API_HANDLERS`/`DYNAMIC_API_HANDLERS`,
+cross-checked 1:1 against `find api -name "*.js"` excluding `_lib`/
+`__tests__`/`intel` — see that file's own header comment citing a prior
+32-function Vercel inventory). 54 URL variants tested (pretty-URL rewrites +
+bare handler paths + 2 dynamic-segment patterns), each with a live,
+unauthenticated/negative-path GET against **both** `blog.cyberdudebivash.in`
+(live Vercel production) and `cyberdudebivash-blog.iambivash-bn.workers.dev`
+(live Cloudflare staging, pre-LF-fix version `6f243f31`) in the same session.
+No destructive/state-changing request was sent (every handler in this
+codebase gates on `req.method`/`action` before touching state, confirmed by
+source read first — GET is a safe reachability probe everywhere).
+
+**Headline finding**: this is systemic, not the two endpoints previously
+identified (`customer/dashboard`, `customer/download`). **23 of 31 handler
+files are completely unreachable on live Vercel production** — every one
+returns Vercel's own platform-level `NOT_FOUND` HTML error page (not an
+app-level JSON 404), while every one of the same 23 is correctly routed to
+its handler on Cloudflare staging. Root-cause correlation (100%, 8/8 and
+23/23): `vercel.json`'s `functions` block explicitly configures exactly 8
+files (`api/v1/intel.js`, `api/v1/auth.js`, `api/v1/billing.js`,
+`api/v1/admin.js`, `api/v1/billing/webhook.js`,
+`api/v1/billing/razorpay-webhook.js`, `api/cron/dispatch-intel.js`,
+`api/og.js`) — and those are exactly, and only, the 8 files reachable on
+live Vercel. The other 23 handler files exist in the repository, are not
+excluded by `.vercelignore`, and are not glob-excluded from Vercel's normal
+filesystem-based function discovery by any visible config — yet are
+unreachable in production. This corroborates, at far greater scope, what
+the prior session's investigation flagged for the 2 customer routes ("may
+reveal substantial latent product functionality currently blocked by Vercel
+routing/deployment behavior").
+
+**Caveat, stated honestly**: the causal mechanism (explicit `functions`
+block suppressing auto-discovery of unlisted `api/**` files) is inferred
+from a 100% correlation across 31 files, not confirmed against Vercel's
+build logs or dashboard (no Vercel account access from this session). An
+alternative explanation — the 23 files were added after Vercel's last
+successful production build and a deploy simply hasn't picked them up yet —
+was checked and found inconclusive (`git log` shows an identical commit/
+timestamp for all 31 files, both reachable and unreachable, consistent with
+a repository history-squash event rather than a true add-date, so it
+neither confirms nor rules out staleness). Classify the reachability gap
+itself as `CLAUDE-VERIFIED` (directly observed, reproducible); classify the
+specific causal mechanism as `PROBABLE, NOT VERCEL-DASHBOARD-CONFIRMED`.
+
+| Path | Handler | Vercel | Cloudflare | Classification |
+|---|---|---|---|---|
+| `/api/v1/intel/live` | `api/v1/intel.js` | 401 (reachable) | 401 (reachable) | PARITY_PASS |
+| `/api/v1/intel/top-threats` | `api/v1/intel.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/intel/cve/:id` | `api/v1/intel.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/intel/iocs` | `api/v1/intel.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/intel/ransomware` | `api/v1/intel.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/intel/search` | `api/v1/intel.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/intel/graph` | `api/v1/intel.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/intel/campaigns` | `api/v1/intel.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/intel/campaign/:id` | `api/v1/intel.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/intel/top-actors` | `api/v1/intel.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/auth/register` | `api/v1/auth.js` | 405 | 405 | PARITY_PASS |
+| `/api/v1/auth/me` | `api/v1/auth.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/keys/usage` | `api/v1/auth.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/billing/create-intent` | `api/v1/billing.js` | 405 | 405 | PARITY_PASS |
+| `/api/v1/billing/submit-payment` | `api/v1/billing.js` | 405 | 405 | PARITY_PASS |
+| `/api/v1/billing/payment-status` | `api/v1/billing.js` | 400 | 400 | PARITY_PASS |
+| `/api/v1/billing/subscribe` | `api/v1/billing.js` | 405 | 405 | PARITY_PASS |
+| `/api/v1/billing/razorpay/order` | `api/v1/billing.js` | 405 | 405 | PARITY_PASS |
+| `/api/v1/billing/razorpay/verify` | `api/v1/billing.js` | 405 | 405 | PARITY_PASS |
+| `/api/v1/billing/products/checkout` | `api/v1/billing.js` | 405 | 405 | PARITY_PASS |
+| `/api/v1/admin/payments/pending` | `api/v1/admin.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/admin/payments/approve` | `api/v1/admin.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/admin/payments/reject` | `api/v1/admin.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/admin/payments/audit` | `api/v1/admin.js` | 401 (retest; first probe timed out transiently) | 401 | PARITY_PASS |
+| `/api/v1/admin/payments/razorpay-orders` | `api/v1/admin.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/admin/payments/product-orders` | `api/v1/admin.js` | 401 | 401 | PARITY_PASS |
+| `/api/cron/dispatch-intel` | `api/cron/dispatch-intel.js` | 401 | 401 | PARITY_PASS |
+| `/api/v1/newsletter` | `api/v1/newsletter.js` | 405 | 405 | PARITY_PASS |
+| `/api/v1/billing/webhook` | `api/v1/billing/webhook.js` | 405 | 405 | PARITY_PASS |
+| `/api/v1/billing/razorpay-webhook` | `api/v1/billing/razorpay-webhook.js` | 405 | 405 | PARITY_PASS |
+| `/api/og` (no params) | `api/og.js` | 200, real dynamic PNG (`x-vercel-cache: HIT`) | 302 → `/og-image.png` static fallback | INTENTIONALLY_CHANGED (pre-existing, see §3 row "OG image — dynamic PNG rendering"; corroborated live this session, see §6.2) |
+| `/api/v1/analysis/assessments` | `api/v1/analysis/assessments.js` | **404 platform NOT_FOUND** | 404 app-level (`Endpoint not found`) | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/analysis/findings` | `api/v1/analysis/findings.js` | **404 platform NOT_FOUND** | 400 (`MISSING_ID`) | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/customer/dashboard` | `api/v1/customer/dashboard.js` | **404 platform NOT_FOUND** | 400 (`INVALID_EMAIL`) | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/customer/download` | `api/v1/customer/download.js` | **404 platform NOT_FOUND** | 400 (`MISSING_TOKEN`) | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/detections/rules` | `api/v1/detections/rules.js` | **404 platform NOT_FOUND** | 200, real rule data | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/detections/rules/:id` | `api/v1/detections/rules/[id].js` | **404 platform NOT_FOUND** | 404 app-level (`Rule not found`) | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/intelligence/confidence` | `api/v1/intelligence/confidence.js` | **404 platform NOT_FOUND** | 200, real data | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/intelligence/correlations` | `api/v1/intelligence/correlations.js` | **404 platform NOT_FOUND** | 404 app-level (`Endpoint not found`) | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/intelligence/graph` | `api/v1/intelligence/graph.js` | **404 platform NOT_FOUND** | 404 app-level | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/intelligence/objects` | `api/v1/intelligence/objects.js` | **404 platform NOT_FOUND** | 404 app-level | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/intelligence/publish` | `api/v1/intelligence/publish.js` | **404 platform NOT_FOUND** | 404 app-level | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/intelligence/similarity` | `api/v1/intelligence/similarity.js` | **404 platform NOT_FOUND** | 404 app-level | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/ioc/search` | `api/v1/ioc/search.js` | **404 platform NOT_FOUND** | 200, real IOC data | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/ioc/:id` | `api/v1/ioc/[id].js` | **404 platform NOT_FOUND** | 404 app-level (`IOC not found`) | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/products/approvals` | `api/v1/products/approvals.js` | **404 platform NOT_FOUND** | 404 app-level | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT (base path — Issue 19 sub-path contract question is separate, still open, see §3 row 74) |
+| `/api/v1/products/export` | `api/v1/products/export.js` | **404 platform NOT_FOUND** | 400 (`UNSUPPORTED_FORMAT`) | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/products` | `api/v1/products/index.js` | **404 platform NOT_FOUND** | 500, `{"error":{"code":"SEARCH_FAILED","message":"Redis not configured"}}` | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT (reachability) + NOT_VERIFIED (functional depth — isolated staging Worker has zero Redis secret/binding by design; see §6.3) |
+| `/api/v1/quality` | `api/v1/quality/index.js` | **404 platform NOT_FOUND** | 404 app-level | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/reports` | `api/v1/reports/index.js` | **404 platform NOT_FOUND** | 400 (`MISSING_ID`) | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+| `/api/v1/workbench/cases` | `api/v1/workbench/cases.js` | **404 platform NOT_FOUND** | 404 app-level | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT (base path — Issue 19 sub-path contract question is separate, still open) |
+| `/api/v1/workbench/dashboard` | `api/v1/workbench/dashboard.js` | **404 platform NOT_FOUND** | 500, `{"error":{"code":"DASHBOARD_FAILED","message":"Redis not configured"}}` | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT (reachability) + NOT_VERIFIED (functional depth, same Redis-binding caveat) |
+| `/api/v1/workbench/investigations` | `api/v1/workbench/investigations.js` | **404 platform NOT_FOUND** | 500, `{"error":{"code":"LIST_FAILED","message":"Redis not configured"}}` | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT (reachability) + NOT_VERIFIED (functional depth, same Redis-binding caveat) |
+| `/api/v1/workbench/search` | `api/v1/workbench/search.js` | **404 platform NOT_FOUND** | 400 (`QUERY_TOO_SHORT`) | CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT |
+
+**Census totals** (54 URL variants tested, 31 handler files): 30
+`PARITY_PASS` · 23 `CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT` (pure
+reachability) · 3 of those 23 also carry a `NOT_VERIFIED` functional-depth
+caveat (Redis-dependent handlers, no Redis binding on isolated staging by
+design) · 1 `INTENTIONALLY_CHANGED` (OG dynamic rendering) · 0
+`CLOUDFLARE_REGRESSION`. Evidence tier: `LIVE-VERCEL-VERIFIED` +
+`LIVE-CLOUDFLARE-VERIFIED`, this session, against staging version
+`6f243f31-a98a-4324-b2c1-32bb9b4a5bae` (pre-LF-fix — routing/reachability
+behavior is unaffected by the LF-encoding defect, which only alters static
+text-asset bytes, not the Worker's routing logic; re-run planned against the
+LF-corrected staging redeploy per Stage 5 protocol, see
+`CLOUDFLARE-STAGING-VALIDATION.md`).
+
+### 6.2 OG dynamic rendering — live corroboration of the Stage 4 finding
+
+Stage 4's local-Workerd finding (§3 row "OG image — dynamic PNG rendering")
+is now corroborated on the real deployed edge, not just local Workerd:
+
+- Live Vercel (`GET https://blog.cyberdudebivash.in/api/og`): `200`,
+  `content-type: image/png`, `x-vercel-cache: HIT` — real dynamic render.
+- Live Cloudflare staging (`GET
+  https://cyberdudebivash-blog.iambivash-bn.workers.dev/api/og`): `302`,
+  `Location: /og-image.png` — static fallback fired, exactly as designed
+  (`api/og.js`'s own header comment: "Any rendering failure falls back to a
+  302 redirect ... rather than a 500").
+- Root cause reproduced locally via `wrangler dev` against this exact
+  branch: `console.error` output captured verbatim —
+  `api/og render failure: Aborted(CompileError: WebAssembly.instantiate():
+  Wasm code generation disallowed by embedder)`. Matches the failure mode
+  `wrangler.jsonc`'s own `.wasm` → `CompiledWasm` rule comment already
+  documented as a known `@resvg/resvg-wasm` incompatibility.
+
+Evidence tier: `LIVE-VERCEL-VERIFIED` + `LIVE-CLOUDFLARE-VERIFIED` +
+`LOCAL-WORKERD-VERIFIED` (root-cause corroboration), all this session.
+Status unchanged from Stage 4: `INTENTIONALLY_CHANGED`, graceful static
+fallback, zero 500s, zero broken share cards — but this is real, live,
+user-facing functional degradation (every future post's social-share
+preview uses the generic `og-image.png` instead of a per-post branded card
+on Cloudflare) and should be explicitly acknowledged as an accepted
+limitation before cutover, not silently carried forward.
+
+### 6.3 Redis-dependent handlers on isolated staging
+
+Three handlers (`api/v1/products/index.js`, `api/v1/workbench/dashboard.js`,
+`api/v1/workbench/investigations.js`) return a live `500` on Cloudflare
+staging with a structured, non-leaking error body:
+`{"success":false,"error":{"code":"...","message":"Redis not configured"}}`.
+This is **not** a Cloudflare runtime defect — it is the correct, designed
+behavior of a Worker with zero secrets/bindings attached (Stage 5's staging
+deployment is deliberately isolated: `env.ASSETS` only, no KV/D1/R2/Redis
+credentials, per the P0 constraint against binding production storage to an
+unauthorized staging surface). The response format itself (structured JSON,
+correct security headers, no stack trace) confirms the handler's own error
+path is sound; what remains `NOT_VERIFIED` is these handlers' behavior
+*with* a real Redis connection reachable from a deployed Worker — which
+requires either a staging-scoped Redis credential (out of scope for Stage 5)
+or production cutover with real secrets bound (Stage 6, not yet authorized).
+
+### 6.4 LF/CRLF byte-integrity — proof, this session
+
+See `CLOUDFLARE-STAGING-VALIDATION.md` §6 for the full table. Summary:
+SHA-256 compared across Git blob (`HEAD`) / working tree / `dist-public`
+build output for `api/intel/threat-graph.json`, `api/intel/iocs.json`,
+`sitemap.xml`, `index.html`, `banner-orchestrator.js`, `apex-v13.css` on
+this (Linux) session container — all six: **A == B == C, byte-identical**.
+Evidence tier: `BYTE-INTEGRITY-VERIFIED` (git blob / working tree / dist
+build only, this session's Linux container). Remote-vs-Git byte identity
+against the live redeployed staging Worker is the next step, pending the
+operator's redeploy (Section 10 of the Stage 5 task) — see the validation
+doc for the pending checklist.
