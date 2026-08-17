@@ -16,10 +16,25 @@
  * every handler that calls them, and Section 4's own requirement is not
  * to duplicate/fight that existing, already-correct app-layer contract.
  * This baseline exists for headers the app layer generally does NOT set
- * (HSTS, nosniff, referrer-policy, permissions-policy) and as a safety
- * net for any response path that reaches router.js without having gone
- * through middleware.js at all (redirects, blocked-404, an unexpected
- * handler that forgets to call guardRequest).
+ * (HSTS, nosniff, referrer-policy, permissions-policy, cache-control) and
+ * as a safety net for any response path that reaches router.js without
+ * having gone through middleware.js at all (redirects, blocked-404, an
+ * unexpected handler that forgets to call guardRequest).
+ *
+ * Cache-Control is deliberately included here, unlike the other app-layer
+ * headers this baseline defers to: on Vercel, vercel.json's own
+ * `/api/v1/(.*)` rule applies `Cache-Control: no-store, no-cache,
+ * must-revalidate` to every response at the platform level, unconditionally
+ * -- regardless of whether the handler itself calls
+ * applySecurityHeaders(). Found via a real Workerd probe of
+ * api/v1/customer/dashboard.js (which returns purchase history and API-key/
+ * tier status, and does not call applySecurityHeaders()): its Cloudflare
+ * response had every other baseline header but no Cache-Control at all,
+ * because router.js has no equivalent platform-level safety net for
+ * dynamic responses. Every response this function ever applies to is an
+ * API/JSON/redirect/404 (see the comment below) -- never something that
+ * should be shared-cacheable -- so adding it here is safe unconditionally,
+ * not just a narrow fix for this one handler.
  */
 
 const BASELINE = {
@@ -27,6 +42,7 @@ const BASELINE = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  'Cache-Control': 'no-store, no-cache, must-revalidate',
 };
 
 // API/JSON/redirect/404 responses only — router.js never returns HTML

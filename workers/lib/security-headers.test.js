@@ -66,4 +66,27 @@ describe('applyBaselineHeaders', () => {
     const result = applyBaselineHeaders(response);
     assert.equal(result, response);
   });
+
+  // Regression guard: api/v1/customer/dashboard.js (returns purchase
+  // history and API-key/tier status) does not call
+  // api/_lib/security.js#applySecurityHeaders(), so on Vercel it relied
+  // entirely on vercel.json's platform-level `/api/v1/(.*)` rule for
+  // Cache-Control -- a safety net router.js has no equivalent of. Confirmed
+  // via a real Workerd probe before this baseline included Cache-Control:
+  // every other header was present, Cache-Control was not.
+  test('applies Cache-Control: no-store even when the handler sets nothing itself', () => {
+    const response = applyBaselineHeaders(new Response('{}', {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    }));
+    assert.equal(response.headers.get('cache-control'), 'no-store, no-cache, must-revalidate');
+  });
+
+  test('does not overwrite a handler-set Cache-Control (e.g. a deliberately public value)', () => {
+    const response = applyBaselineHeaders(new Response('ok', {
+      status: 200,
+      headers: { 'Cache-Control': 'public, max-age=600' },
+    }));
+    assert.equal(response.headers.get('cache-control'), 'public, max-age=600');
+  });
 });
