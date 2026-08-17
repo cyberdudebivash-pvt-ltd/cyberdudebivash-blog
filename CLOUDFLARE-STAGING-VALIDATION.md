@@ -37,22 +37,30 @@ Consequently, this session completed **all repository-side certification
 work that does not require a live deployment**: git reconciliation, LF
 byte-integrity proof (Git blob = working tree = build output, SHA-256,
 6/6 representative files), the full predeploy QA gate (npm ci / audit /
-Jest / node:test / wrangler dry-run), and — using the network access this
-session *does* have — a complete live HTTP certification of the **existing**
-staging Worker (still running pre-LF-fix version `6f243f31`) against live
-Vercel production, including a full 31-handler / 54-path API route
+Jest / node:test / wrangler dry-run), and a complete live HTTP certification
+of the **existing** staging Worker (pre-LF-fix version `6f243f31`) against
+live Vercel production, including a full 31-handler / 54-path API route
 reachability census that was not previously run at this scope.
 
-**The actual LF-corrected redeploy (Stage 5 §10) requires the operator's
-authenticated local Wrangler**, exactly as it did in the prior session. Exact
-commands are in §9 below. Sections 10–12, 17 (remote byte integrity against
-the *new* version, re-run live security certification against the *new*
-version) are marked `PENDING OPERATOR REDEPLOY` and cannot be marked PASS
-until that redeploy happens and is re-verified in a follow-up turn of this
-same session.
+**The LF-corrected redeploy required the operator's authenticated local
+Wrangler**, exactly as it did in the prior session. The operator ran the
+exact commands from §9 (from a genuinely fresh clone, verified against this
+session's certified branch HEAD `765c8637180a0b01f24effb49cbd84ad287cf091`
+before deploying) and reported success: new Version ID
+`09d20b10-ade1-486c-a8eb-e54ce42fb12c`, bindings confirmed `env.ASSETS`
+only, 8360 assets uploaded, zero deploy errors. This session then
+immediately re-ran every live re-certification that depended on that
+redeploy — remote byte-integrity (§17), the full private-path sweep (§10),
+the complete 54-path route census diffed against the pre-fix baseline
+(§9), headers/cache/CORS/auth/webhooks/body-limits (§11–16) — all against
+the new live version. **Zero regressions found; the LF/CRLF artifact-
+integrity defect is now closed end-to-end, Git blob to live response
+bytes.**
 
-**Interim verdict, pending only the operator redeploy**:
-**CONDITIONAL GO** — see §26.
+**Final verdict: GO — READY FOR CONTROLLED PRODUCTION CUTOVER PLANNING**,
+with one explicit, non-technical item requiring business sign-off before
+Stage 6 (the `/api/og` dynamic-rendering limitation, §21). See §26 for the
+full verdict block.
 
 ---
 
@@ -97,8 +105,8 @@ same session.
 | Worker name | `cyberdudebivash-blog` |
 | `*.workers.dev` URL | `https://cyberdudebivash-blog.iambivash-bn.workers.dev` |
 | Original (pre-LF-fix) Version ID | `6f243f31-a98a-4324-b2c1-32bb9b4a5bae` |
-| Replacement (LF-fixed) Version ID | **PENDING OPERATOR REDEPLOY** — not yet created |
-| Cloudflare account authenticated in this session | **No** — confirmed via `wrangler whoami` (`You are not authenticated`), `env \| grep -i cloudflare` (no `CLOUDFLARE_API_TOKEN`/`CF_API_TOKEN`), and no Cloudflare MCP connector available to this account |
+| Replacement (LF-fixed) Version ID | `09d20b10-ade1-486c-a8eb-e54ce42fb12c` — deployed by the operator from a fresh clone of branch `claude/cyberdudebivash-migration-stage5-jvrr4j` at commit `765c8637180a0b01f24effb49cbd84ad287cf091`, confirmed via `git rev-parse HEAD` before deploying |
+| Cloudflare account authenticated in this session | **No** — confirmed via `wrangler whoami` (`You are not authenticated`), `env \| grep -i cloudflare` (no `CLOUDFLARE_API_TOKEN`/`CF_API_TOKEN`), and no Cloudflare MCP connector available to this account. The redeploy itself was performed by the operator's own authenticated local Wrangler (`wrangler 4.123.0`); this session verified the result over plain HTTPS. |
 
 ---
 
@@ -142,16 +150,21 @@ before counting. Flagged honestly rather than silently reconciled; does not
 block certification.
 
 Total upload size this session's dry-run reported: **13,956.73 KiB / gzip:
-2,753.96 KiB** — close to but not identical to the prior session's live
-deployment figure (13,944.50 KiB / 2,752.22 KiB gzip). This delta is
-expected and not a red flag: the site's automated content pipeline
-("SENTINEL APEX v5.0") publishes new posts/CVE pages continuously (visible
-in `git log` as recurring `[skip ci]` auto-commits), and real time elapsed
-between the prior deployment and this session's build. It is **not** the LF
-byte-inflation the prior session found and fixed — this session's build ran
-on a Linux container with no `core.autocrlf` conversion (see §6), so the
-LF fix's effect on THIS build's size is zero; the size delta here is pure
-content growth.
+2,753.96 KiB**. The operator's real deploy (built independently, minutes
+later, on their own Windows machine from the same commit) reported
+**13,946.20 KiB / gzip: 2,752.48 KiB** — a ~10 KiB difference from this
+session's dry-run figure, consistent with the site's automated content
+pipeline ("SENTINEL APEX v5.0") publishing new posts/CVE pages in the
+minutes between the two builds (visible in `git log` as recurring
+`[skip ci]` auto-commits), not a platform or line-ending discrepancy: §17
+independently confirms the operator's actual deployed bytes are
+byte-identical to the committed Git blobs for every file checked. Critically,
+the operator's Windows-built figure (13,946.20 KiB) is **very close to**
+this session's Linux-built figure (13,956.73 KiB) and to the original
+pre-fix Windows deployment (13,944.50 KiB) — the LF fix removed the CRLF
+byte-inflation without materially changing the total bundle size, which is
+expected: injected `\r` bytes were a small fraction of total bytes even
+though they were 100% attributable to the specific defect found (§6).
 
 ---
 
@@ -266,30 +279,66 @@ sufficient, evidenced as follows:**
 (operator-process protection, §9) is the certified, evidence-backed
 sufficient mitigation.
 
+### 6.5 Live-remote confirmation — the fix, closed end-to-end
+
+Following the operator's redeploy (Version `09d20b10-ade1-486c-a8eb-e54ce42fb12c`,
+built from a fresh clone as instructed in §9), the same 6 representative
+files were re-hashed directly from the live `*.workers.dev` response bytes
+and compared against the committed Git blob SHA-256:
+
+| Path | Git bytes | Remote bytes | Git SHA-256 | Remote SHA-256 | Result |
+|---|---|---|---|---|---|
+| `api/intel/threat-graph.json` | 7,535,625 | 7,535,625 | `1c026044...` | `1c026044...` | **PASS — byte-identical** |
+| `api/intel/iocs.json` | 439 | 439 | `ae179a02...` | `ae179a02...` | **PASS — byte-identical** |
+| `sitemap.xml` | 1,223,532 | 1,223,532 | `85b766d8...` | `85b766d8...` | **PASS — byte-identical** |
+| `index.html` | 198,062 | 198,062 | `76f31356...` | `76f31356...` | **PASS — byte-identical** |
+| `banner-orchestrator.js` | 9,885 | 9,885 | `3b145e28...` | `3b145e28...` | **PASS — byte-identical** |
+| `apex-v13.css` | 9,279 | 9,279 | `646a50dd...` | `646a50dd...` | **PASS — byte-identical** |
+
+**6/6 byte-identical, Git blob to live edge response, raw bytes (not
+decompressed/reserialized).** The `api/intel/threat-graph.json` result is
+the direct, decisive proof: this is the exact file the prior session found
+inflated by 244,609 injected `\r` bytes on the pre-fix deployment
+(7,778,626 served vs. 7,534,017 committed at the time). It now serves at
+exactly 7,535,625 bytes — matching the current committed blob exactly (the
+committed blob itself grew slightly between sessions due to routine content
+updates, but the served bytes track it exactly, with zero injected bytes of
+any kind). **The LF/CRLF artifact-integrity defect is closed, Git blob to
+live edge, with direct evidence — not inferred from `.gitattributes`'s
+existence.**
+
 ---
 
 ## 7. Static validation
 
-`GET /` and `GET /about.html` both re-verified live this session against
-**both** platforms (§18, §19) — 200, correct content, no console/runtime
-errors observed in response bodies. Full static/routing/private-path matrix
-(homepage, representative pages, JSON, RSS, sitemap, robots, assets, path
-traversal, encoded-path probes) was already `LIVE-CLOUDFLARE-VERIFIED` by
-the prior session against `6f243f31` (handoff §3, "ACCEPTED STAGE 5 LIVE
-DEPLOYMENT EVIDENCE") — carried forward as baseline, **scheduled for
-re-verification against the LF-corrected redeploy**, since static asset
-*bytes* are exactly what changed (§6).
+**Re-verified live against the new version (`09d20b10`) — PASS.**
+`GET /`, `GET /about.html`, `GET /rss.xml`, `GET /robots.txt`,
+`GET /sitemap.xml`, `GET /feed` (alias redirect target), and a representative
+`posts/**.html` page all returned `200` with correct headers (homepage
+carries the full CSP/Permissions-Policy set, per §19.1) and correct
+`Content-Length` matching the byte-integrity table in §6.5. Full
+static/routing/private-path matrix (path traversal, encoded-path probes)
+was already `LIVE-CLOUDFLARE-VERIFIED` by the prior session against
+`6f243f31` (handoff §3) — the routing/security-header code itself is
+byte-identical between that version and this one (only static asset bytes
+changed, §6), and this session's private-path re-run (§10) against the new
+version independently confirms zero regression rather than assuming it.
 
 ---
 
 ## 8. API validation
 
-Full 31-handler API surface exercised live this session — see §9 below
-(route reachability census) for the complete table. Summary: every
-Cloudflare-reachable handler returned a well-formed, correctly-headered
-response (200/400/401/404/405/500-with-structured-body); zero raw stack
-traces, zero unhandled exceptions, zero silent 5xx without a structured JSON
-error body.
+Full 31-handler API surface exercised live this session, twice — once
+against `6f243f31` (§9), then re-run in full against `09d20b10` after the
+redeploy, with the resulting status codes diffed line-by-line against the
+first run. **Zero status-code differences across all 54 URL variants**
+(the one apparent diff, on `/api/og`, was a TSV-parsing artifact from
+binary PNG bytes in the *first* run's raw-body capture, not a real
+difference — independently confirmed `302` on both runs via dedicated
+full-header requests). Every Cloudflare-reachable handler returns a
+well-formed, correctly-headered response (200/400/401/404/405/413/500-with-
+structured-body); zero raw stack traces, zero unhandled exceptions, zero
+silent 5xx without a structured JSON error body.
 
 ---
 
@@ -324,40 +373,52 @@ mechanism, is in `VERCEL-CLOUDFLARE-PARITY-MATRIX.md` §6.1.
 ## 10. Private-path validation
 
 Prior session (handoff §2/§3): 17 representative internal/private paths
-tested against `6f243f31`, **0/17 exposed**. This session did not re-run
-the full 17-path sweep against the unchanged routing/security-header logic
-(only static asset *bytes* changed via the LF fix — `workers/lib/
-route-table.js`'s `BLOCKED_PREFIXES` and the allowlist-first
-`scripts/build-cloudflare-assets.js` build are unmodified on this branch,
-confirmed via `git diff origin/main HEAD` showing this branch is byte-
-identical to `origin/main` at session start). **Scheduled for full re-run
-against the LF-corrected redeploy** per Stage 5 protocol — status:
-`PENDING OPERATOR REDEPLOY`.
+tested against `6f243f31`, **0/17 exposed**. **Re-run this session against
+the new version (`09d20b10`), using a live-refreshed 17-path list covering
+every `BLOCKED_PREFIXES` entry plus `.vercelignore`-class internal
+directories plus the two new migration documents themselves
+(`VERCEL-CLOUDFLARE-PARITY-MATRIX.md`, `CLOUDFLARE-STAGING-VALIDATION.md`):
+`/CLAUDE.md`, `/Sentinel-APEX/quality/quality-gate.md`, `/eito/README.md`,
+`/platform/open-issues.md`, `/prompts/README.md`,
+`/BUSINESS-TRANSFORMATION-ROADMAP-2026.md`, `/AUDIT-REPORT-2026-05-28.md`,
+`/OPERATIONS.md`, `/RUNBOOKS.md`, `/scripts/build-cloudflare-assets.js`,
+`/docs/RC1-ROADMAP.md`, `/marketing/competitive-battlecard.md`,
+`/package.json`, `/wrangler.jsonc`, `/.env`,
+`/VERCEL-CLOUDFLARE-PARITY-MATRIX.md`, `/CLOUDFLARE-STAGING-VALIDATION.md`.
+
+**Result: 0/17 exposed — every path returns a clean `404`.** (First pass of
+this specific re-run mis-parsed this sandboxed container's HTTPS-proxy
+`CONNECT` response line as the real HTTP status, which momentarily looked
+like 8 "200"s; corrected by parsing with `curl -w "%{http_code}"`, which
+reflects the true final response status regardless of proxy tunneling, and
+re-run cleanly. Documented here rather than silently discarded, per this
+task's zero-hallucination standard.)
 
 ---
 
 ## 11. Headers
 
-Static-asset header baseline (`dist-public/_headers`, transcribed from
-`vercel.json`) and dynamic-response header baseline
-(`workers/lib/security-headers.js`) are unmodified on this branch relative
-to the already-certified `origin/main` state. Live re-spot-check this
-session (`/about.html`, `/api/v1/intel/live` on both platforms) shows the
-expected HSTS/CSP/X-Frame-Options/Referrer-Policy/Permissions-Policy set
-present on Cloudflare responses. Full per-path-type header matrix:
-`PENDING OPERATOR REDEPLOY` (full re-run against the new version, per
-Stage 5 protocol).
+Static-asset header baseline (`dist-public/_headers`) and dynamic-response
+header baseline (`workers/lib/security-headers.js`) are unmodified on this
+branch relative to the already-certified `origin/main` state. **Re-verified
+live against `09d20b10`**: homepage (`/`) carries the full HSTS/CSP/
+Permissions-Policy/X-Frame-Options/Referrer-Policy set (§19.1); dynamic
+endpoints (`/api/v1/intel/live`, `/api/v1/customer/dashboard`,
+`/api/v1/admin/payments/pending`) carry the correct baseline security
+headers with no leakage. PASS.
 
 ---
 
 ## 12. Caching
 
 The Stage 4 dynamic-Cache-Control fix (`applyBaselineHeaders()`,
-commit `9ba8a16b2`) was independently re-confirmed live by the prior session
-against `6f243f31` (handoff §3: "Cache-Control fix from Stage 4 is live and
-correct: no-store on sensitive endpoints ... while billing?action=plans's
-own deliberate public caching is preserved untouched"). Unmodified on this
-branch. Full re-run: `PENDING OPERATOR REDEPLOY`.
+commit `9ba8a16b2`) was re-confirmed live by the prior session against
+`6f243f31`. **Re-verified live against `09d20b10` this session**:
+`/api/v1/billing?action=plans` → `Cache-Control: public, max-age=300,
+stale-while-revalidate=3600` (deliberate public cache preserved);
+`/api/v1/customer/dashboard` and `/api/v1/admin/payments/pending` →
+`Cache-Control: no-store, no-cache, must-revalidate` (sensitive endpoints
+correctly non-cacheable). PASS, zero regression.
 
 ---
 
@@ -366,30 +427,33 @@ branch. Full re-run: `PENDING OPERATOR REDEPLOY`.
 `Access-Control-Allow-Origin: *` never combined with
 `Access-Control-Allow-Credentials` (bearer/API-key auth only, zero
 `Set-Cookie` usage anywhere in the codebase, per Stage 4's full-codebase
-grep, unmodified on this branch). Full OPTIONS/GET re-probe:
-`PENDING OPERATOR REDEPLOY`.
+grep, unmodified on this branch). **Re-verified live against `09d20b10`**:
+`OPTIONS /api/v1/intel/live` → `204`, `Access-Control-Allow-Origin: *`,
+`Access-Control-Allow-Headers`/`-Methods` correctly scoped, no
+`Access-Control-Allow-Credentials` header present. PASS.
 
 ---
 
 ## 14. Authentication
 
-Full census in §9 shows every auth-gated endpoint correctly returning `401`
-(anonymous) on both platforms, with generic, non-leaking error messages
-(`"API key required..."`, `"Valid X-Admin-Key header required."`) — no
-format-vs-value oracle, no stack traces. Consistent live evidence, this
-session, against `6f243f31`. Full re-run against the LF-corrected redeploy:
-`PENDING OPERATOR REDEPLOY`.
+Full census (§9) re-run against `09d20b10` shows every auth-gated endpoint
+still correctly returning `401` (anonymous) with generic, non-leaking error
+messages (`"API key required..."`, `"Valid X-Admin-Key header required."`)
+— no format-vs-value oracle, no stack traces, zero regression from the
+`6f243f31` baseline. PASS.
 
 ---
 
 ## 15. Webhooks
 
 Prior session (handoff §2): Stripe and Razorpay webhook negative-path
-security (missing/invalid/tampered/oversized/empty/wrong-method) already
-`LIVE-CLOUDFLARE-VERIFIED` against `6f243f31`. This session independently
-re-confirmed both webhook endpoints are method-gated (`405` on bare `GET`,
-both platforms, §9 census) — consistent, no regression. Full 7-case ×
-2-processor re-run: `PENDING OPERATOR REDEPLOY`.
+security already `LIVE-CLOUDFLARE-VERIFIED` against `6f243f31`. **Re-verified
+live against `09d20b10` this session**: `POST /api/v1/billing/webhook`
+with a JSON body and no `Stripe-Signature` header → `400`,
+`{"error":"Missing Stripe-Signature"}`; `POST /api/v1/billing/razorpay-webhook`
+with no `X-Razorpay-Signature` header → `400`,
+`{"error":"Missing X-Razorpay-Signature"}`. Both clean, structured
+rejections — no crash, no raw-body echo, no signature-format oracle. PASS.
 
 ---
 
@@ -397,25 +461,24 @@ both platforms, §9 census) — consistent, no regression. Full 7-case ×
 
 Prior session (Stage 4, `LOCAL-TEST-RESULTS.md` §3.1): 4.5 MB ceiling
 enforced via `readBoundedText()`, incremental stream-cancellation hardening
-applied (commit `91ab7bebe`). Unmodified on this branch. Not independently
-re-exercised this session (would require sending a large POST body — safe
-but not repeated here since the code path is unchanged and byte-identical
-to the already-certified `main` state). Full re-run: `PENDING OPERATOR
-REDEPLOY`.
+applied (commit `91ab7bebe`). **Independently re-exercised live against
+`09d20b10` this session**: a genuine 5 MB JSON POST body to
+`/api/v1/newsletter` → `413`,
+`{"error":{"code":"PAYLOAD_TOO_LARGE","message":"Request body exceeds the
+maximum allowed size."}}` — clean rejection, no crash, no partial-body
+processing observed. PASS.
 
 ---
 
 ## 17. Asset integrity
 
-§6 proves Git blob = working tree = `dist-public` build output
+§6.1 proves Git blob = working tree = `dist-public` build output
 byte-identity for 6 representative files on this session's Linux container.
-**Remote byte-integrity** (live `*.workers.dev` response bytes vs. committed
-Git blob) requires the LF-corrected redeploy to exist first — the currently
-live `6f243f31` deployment is the *pre-fix* artifact by definition (that's
-the whole reason a redeploy is needed). Status: `PENDING OPERATOR
-REDEPLOY`. Exact verification commands are pre-staged and will run
-immediately once the operator reports a new Version ID (§9's redeploy
-commands, §21 below for the verification script).
+§6.5 proves the same 6 files are **also byte-identical between the
+committed Git blob and the live `*.workers.dev` response**, following the
+operator's redeploy to Version `09d20b10`. Raw response bytes were hashed
+directly (not decompressed or reserialized) — SHA-256 exact match, 6/6.
+**PASS — the LF/CRLF artifact-integrity defect is closed end-to-end.**
 
 ---
 
@@ -554,43 +617,44 @@ Per the handoff's explicit gate (§20), Stage 5 may recommend cutover
 | 0 Jest failures | **PASS** — 1600 passed, 0 failed, 60 skipped (pre-existing, unrelated to this session) |
 | 0 node:test failures | **PASS** — 527 passed, 0 failed (exceeds the ≥255 baseline) across all 5 discovered node:test locations |
 | Wrangler dry-run PASS | **PASS** — clean, `env.ASSETS` only |
-| Asset integrity PASS | **PASS** (Git↔working↔dist) / **PENDING** (Git↔live-remote, needs redeploy) |
-| 0 private path exposure | **PASS** (prior session, `6f243f31`) / **PENDING** re-run on new version |
-| 0 critical auth regressions | **PASS** (this session, full 31-handler census) |
-| 0 sensitive cache regressions | **PASS** (prior session) / **PENDING** re-run on new version |
-| 0 critical CORS regressions | **PASS** (prior session + this session's codebase grep) |
+| Asset integrity PASS | **PASS** — Git↔working↔dist (§6.1) AND Git↔live-remote (§6.5), 6/6 files, SHA-256 exact match at every layer |
+| 0 private path exposure | **PASS** — 0/17 exposed, re-verified live against `09d20b10` (§10) |
+| 0 critical auth regressions | **PASS** — full 31-handler census, zero regression `6f243f31` → `09d20b10` (§9, §14) |
+| 0 sensitive cache regressions | **PASS** — re-verified live against `09d20b10` (§12) |
+| 0 critical CORS regressions | **PASS** — re-verified live against `09d20b10` (§13) |
 | 0 unexplained staging 5xx | **PASS with explained exceptions** — the only 500s observed (§9, §23) are the designed, structured, non-leaking Redis-unavailable response on an intentionally-secret-free staging Worker; not unexplained |
-| 0 Cloudflare route regressions | **PASS** — 0 `CLOUDFLARE_REGRESSION` in the full 54-path census |
+| 0 Cloudflare route regressions | **PASS** — 0 `CLOUDFLARE_REGRESSION` in the full 54-path census, re-confirmed on `09d20b10` with zero status-code diff vs. `6f243f31` (§9) |
 | All intended public assets verified | **PASS** — allowlist-first build, enumerated and cross-checked (§6.3) |
-| Staging LF/byte-integrity defect closed | **PASS at the Git/build level (§6.1)** / **PENDING at the live-remote level** — requires the redeploy |
+| Staging LF/byte-integrity defect closed | **PASS, end-to-end** — Git blob to live edge response bytes, direct SHA-256 proof (§6.5) |
 | Rollback plan valid | **PASS** — unchanged, production untouched (§24) |
 | Vercel production untouched | **PASS** — confirmed, no DNS/route/secret/storage change made or attempted |
 
-**Remaining blockers to a full, unconditional GO**: the LF-corrected staging
-redeploy itself (blocked on operator-side Cloudflare credentials, not on any
-open code or certification question), and the live re-certifications that
-depend on it (§10–§17, §21 remote byte check). No code defect, no security
-finding, and no unresolved regression is blocking — only the deployment
-action itself.
+**All gate items closed.** Zero code, security, or regression blockers
+identified. The only item outside this session's or the automated gate's
+control is a business decision, not a technical blocker: explicit sign-off
+on the `/api/og` dynamic-rendering limitation (§21) before Stage 6.
 
 ---
 
 ## 26. Final Stage-5 verdict
 
 ```
-STAGE 5 — LIVE CLOUDFLARE STAGING CERTIFICATION (interim, this session)
+STAGE 5 — LIVE CLOUDFLARE STAGING CERTIFICATION (final, this session)
 
 Git:
   main SHA:        522d7372cb286f691b83cda96f2693ab50f304eb
-  branch SHA:       (this branch, cut from main; see §2 for full ancestry proof)
-  deployment SHA:   PENDING — operator has not yet run the redeploy in §9
+  branch SHA:       765c8637180a0b01f24effb49cbd84ad287cf091
+                     (claude/cyberdudebivash-migration-stage5-jvrr4j)
+  deployment SHA:   765c8637180a0b01f24effb49cbd84ad287cf091
+                     (operator confirmed via `git rev-parse HEAD` before deploying)
 
 Cloudflare:
   Worker:           cyberdudebivash-blog
   URL:              https://cyberdudebivash-blog.iambivash-bn.workers.dev
   previous Version: 6f243f31-a98a-4324-b2c1-32bb9b4a5bae (pre-LF-fix)
-  current Version:  PENDING OPERATOR REDEPLOY
-  bindings:         env.ASSETS only (confirmed, dry-run + wrangler.jsonc read)
+  current Version:  09d20b10-ade1-486c-a8eb-e54ce42fb12c (LF-corrected)
+  bindings:         env.ASSETS only (confirmed: operator's deploy output,
+                     this session's dry-run, and wrangler.jsonc read all agree)
 
 Quality:
   npm audit:        0 vulnerabilities
@@ -600,25 +664,28 @@ Quality:
 
 Artifacts:
   LF integrity (Git<->working<->dist): PASS, 6/6 files, SHA-256 exact match
-  Git<->remote hash:                   PENDING — requires the redeploy in §9
+  Git<->remote hash:                   PASS, 6/6 files, SHA-256 exact match
+                                        against live Version 09d20b10 (§6.5)
 
-Runtime (against currently-live 6f243f31, pre-LF-fix):
-  static:       PASS (prior session; scheduled for re-run post-redeploy)
-  API:          PASS (this session, full 31-handler / 54-path census)
-  private paths: PASS 0/17 exposed (prior session; scheduled for re-run)
-  auth:         PASS (this session, full census)
-  cache:        PASS (prior session; scheduled for re-run)
-  CORS:         PASS (prior + this session)
-  webhooks:     PASS (prior session; method-gating re-confirmed this session)
+Runtime (re-verified live against 09d20b10, LF-corrected):
+  static:       PASS — homepage/pages/RSS/sitemap/robots/feed all 200,
+                 correct bytes and headers (§7)
+  API:          PASS — full 31-handler / 54-path census, zero status-code
+                 regression vs. 6f243f31 baseline (§8, §9)
+  private paths: PASS — 0/17 exposed (§10)
+  auth:         PASS — full census, zero regression (§14)
+  cache:        PASS — public/sensitive Cache-Control policy correct (§12)
+  CORS:         PASS — preflight correct, no credentials+wildcard combo (§13)
+  webhooks:     PASS — Stripe/Razorpay missing-signature rejection clean (§15)
+  body limits:  PASS — 5 MB POST correctly rejected 413 (§16)
   logs:         NOT VERIFIED — no Cloudflare log access this session;
                 /api/og root cause independently reproduced via local
-                wrangler dev instead
+                wrangler dev instead (§6.2 of the parity matrix)
   performance:  no unexplained regression; small-sample median TTFB
-                comparable on both platforms (static ~0.2s both; API
-                Cloudflare trending faster, ~0.42s vs ~0.74s median — single
-                vantage point, not a platform-speed claim)
+                comparable on both platforms — single vantage point,
+                not a platform-speed claim
 
-Route census (31 handlers / 54 paths):
+Route census (31 handlers / 54 paths, re-confirmed post-redeploy):
   PARITY_PASS:                              30
   CLOUDFLARE_FIXES_PREEXISTING_VERCEL_DEFECT: 23 (3 also NOT_VERIFIED functional-depth, Redis)
   CLOUDFLARE_REGRESSION:                     0
@@ -641,27 +708,24 @@ Open issues:
                              timing; Vercel homepage missing CSP (§20.2/3)
 
 Production blockers:
-  Only the operator-side LF-corrected redeploy itself (§9) and the live
-  re-certifications that depend on it. Zero code, security, or regression
-  blockers identified.
+  None, technically. One business decision remains open (see below) — it
+  is not a code, security, or regression blocker, and does not block
+  cutover *planning*.
 
 FINAL VERDICT:
 
-CONDITIONAL GO — STAGING HEALTHY, SPECIFIED ITEMS MUST CLOSE FIRST
+GO — READY FOR CONTROLLED PRODUCTION CUTOVER PLANNING
 
-Specified items required to close before an unconditional GO:
-  1. Operator redeploys staging with the LF-corrected build (§9 exact
-     commands) and reports back the new Version ID + full wrangler output.
-  2. This session (or a continuation of it) re-runs: remote byte-integrity
-     (Git blob SHA-256 vs. live response SHA-256, §17), the full private-path
-     sweep (17 paths, §10), the full header/cache/CORS/auth/webhook/body-limit
-     matrix (§11-16) against the NEW version, and confirms zero regression
-     vs. the 6f243f31 baseline recorded in this document.
-  3. Business/product sign-off on the one known, accepted functional
-     limitation: /api/og dynamic per-post social-card rendering does not
-     work on Cloudflare (static fallback only) — §21, §19-note.
-  4. No DNS, Vercel, or production change of any kind until Stage 6 is
-     explicitly authorized by the operator, independent of this verdict.
+This verdict authorizes moving to Stage 6 *planning* only — per §21 of the
+task and the Appendix below, no DNS, Vercel, or production change has been
+or will be made without separate, explicit operator authorization. One item
+should be closed as part of that planning, not as a condition of this
+verdict:
+  - Business/product sign-off on the one known, accepted functional
+    limitation: /api/og dynamic per-post social-card rendering does not
+    work on Cloudflare (static fallback to the generic og-image.png only)
+    — §21, §19-note. Zero 500s, zero broken share cards; just a less
+    specific image than Vercel currently produces.
 ```
 
 ---

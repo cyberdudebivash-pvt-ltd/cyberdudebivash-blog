@@ -49,7 +49,7 @@ class EvidenceTraceabilityEngine {
           type: 'ioc',
           id: ioc.id,
           value: ioc.value,
-          type: ioc.ioType,
+          subtype: ioc.ioType,
           firstSeen: ioc.firstSeen,
           lastSeen: ioc.lastSeen,
         });
@@ -87,7 +87,7 @@ class EvidenceTraceabilityEngine {
           type: 'infrastructure',
           id: infra.id,
           address: infra.address || infra.ip || infra.domain,
-          type: infra.type,
+          subtype: infra.type,
         });
       }
     });
