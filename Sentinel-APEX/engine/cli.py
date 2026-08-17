@@ -45,12 +45,17 @@ Usage (from Sentinel-APEX/engine/):
       prior context the graph already had, then the graph's stats as JSON.
 
   python3 cli.py reportx-gate <bundle.json> [--as-of YYYY-MM-DD] [--json]
+                              [--export out.json]
       ReportX commercial-readiness validator (docs/reportx/). Loads a
       ReportBundle from JSON (sentinel_engine.reportx.bundle_io schema),
       evaluates all 23 commercial-readiness controls, and prints the
       COMMERCIAL READINESS matrix. Add --json for the machine-readable
       form. Exit 0 only on a true 23/23 PASS; exit 1 otherwise (any FAIL
-      or BLOCKED row) -- never exits 0 on a partial result.
+      or BLOCKED row) -- never exits 0 on a partial result. Add --export
+      to additionally write the full validated bundle + precomputed gate
+      results to out.json -- the single self-contained artifact System 5
+      (api/_lib/reportx-adapter.js) reads; it never recomputes anything
+      this command already validated.
 """
 
 from __future__ import annotations
@@ -192,6 +197,16 @@ def cmd_reportx_gate(args: argparse.Namespace) -> int:
     as_of = date_cls.fromisoformat(args.as_of) if args.as_of else None
     markdown, as_json = run_gate_on_file(args.bundle, as_of=as_of)
     print(as_json if args.json else markdown)
+
+    if args.export:
+        from sentinel_engine.reportx.bundle_io import bundle_from_dict, export_report_json
+
+        with open(args.bundle, encoding="utf-8") as fh:
+            bundle = bundle_from_dict(json.load(fh))
+        with open(args.export, "w", encoding="utf-8") as fh:
+            json.dump(export_report_json(bundle, as_of=as_of), fh, indent=2)
+        print(f"Exported System-3-validated bundle + gate results to {args.export}", file=sys.stderr)
+
     return 0 if "FINAL VERDICT: COMMERCIAL-READY (23/23 PASS)" in markdown else 1
 
 
@@ -252,6 +267,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("bundle", help="path to a ReportBundle JSON file")
     p.add_argument("--as-of", default="", help="ISO date to evaluate statistics freshness against (default: today)")
     p.add_argument("--json", action="store_true", help="print the machine-readable JSON form instead of Markdown")
+    p.add_argument("--export", default="", help="also write the full validated bundle + gate results to this path (for System 5 / JS consumers)")
     p.set_defaults(func=cmd_reportx_gate)
 
     args = parser.parse_args(argv)

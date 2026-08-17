@@ -45,58 +45,77 @@ python3 -m pytest tests/ -q            # 349 passed, 0 regressions, includes pre
 python3 -m py_compile sentinel_engine/reportx/*.py
 ```
 
-## Phase 2 — VERIFY via golden fixtures. **2 of 10 complete.**
+## Phase 2 — VERIFY via golden fixtures. **10 of 10 complete.**
 
-`tests/fixtures/reportx-commercial-readiness/` (repo root) holds one
-BEFORE/AFTER pair per named acceptance case, built from real
+`tests/fixtures/reportx-commercial-readiness/` (repo root) holds real,
+research-backed evidence for every named acceptance case, built from
 WebSearch/WebFetch research — never from model memory. Complete:
-CVE-2025-62593 (Ray) and Qilin/Spoonful of Comfort. The Qilin fixture
-alone found and fixed two real bugs in System 3 (a corroboration-count
+CVE-2025-62593 (Ray, the one BEFORE/AFTER defect-catalog pair) and all
+9 named ransomware victims (Qilin/Spoonful of Comfort, Panzer/SAGASTA
+sro, Qilin/Mulino Padano, MedusaLocker/Twal Family IT Lab,
+MedusaLocker/All Parts Dry Cleaning, Aurora/Lloyd Coils Europe,
+DragonForce/Vermont XCenter, MedusaLocker/Idex Group,
+MedusaLocker/Bija Industrie — each AFTER-only, since the BEFORE/AFTER
+defect-catalog demonstration already lives in the Ray pair). 139
+acceptance tests, 0 regressions against the full 492-test engine suite.
+Two real bugs in System 3 were found this way (a corroboration-count
 double-count in `claim_model.py`, a QA-linter false positive on
 legitimate "None of..." prose) — direct evidence for why this phase
 exists before Phase 3, not after: messy real-world data exercises paths
-hand-written unit tests miss.
+hand-written unit tests miss. Full per-fixture results, including two
+naming-collision catches (Medusa/MedusaLocker, and IDEX Corporation vs.
+the unrelated "Idex Group" victim) and a privacy-scoping decision (Twal
+Family IT Lab): see `REPORTX-ACCEPTANCE-RESULTS.md`.
 
-Remaining 8 (Panzer/SAGASTA sro, Qilin/Mulino Padano,
-MedusaLocker/Twal Family IT Lab, MedusaLocker/All Parts Dry Cleaning,
-Aurora/Lloyd Coils Europe, DragonForce/Vermont XCenter,
-MedusaLocker/Idex Group, MedusaLocker/Bija Industrie) each need the same
-treatment: real research, `NOT_ASSESSED`/`UNKNOWN` for anything genuinely
-unconfirmable, `BLOCKED` (not a guess) for anything unfetchable.
+## Phase 3 — ADAPT: System 5 JS adapter. **Done.**
 
-**Do not proceed to Phase 6 (INTEGRATE) until this phase is complete or
-the operator explicitly accepts a partial-coverage integration.**
+System 5 consumes System 3's validated `EvidenceGraph`, never
+reimplements it. The interchange point: `bundle_io.py` now has both
+directions — `bundle_from_dict()` (JSON → `ReportBundle`, extended this
+phase to deserialize `threat_products`, closing the gap noted below) and
+`bundle_to_dict()`/`export_report_json()` (`ReportBundle` → JSON,
+including the already-computed 23-control gate result, so a JS consumer
+never recomputes anything System 3 already validated). `cli.py`'s
+`reportx-gate` subcommand gained an `--export PATH` flag that writes this
+combined artifact.
 
-## Phase 3 — ADAPT: System 5 JS adapter. **Not started (task #44).**
+**The gap this phase closed:** `bundle_from_dict()` originally didn't
+deserialize `threat_products` (the `RansomwareVictimClaim`/`CVERecord`/
+`CISAKEVRecord` layer) at all — the golden fixtures worked around this by
+constructing bundles directly in Python. `bundle_io.py` now has
+`_threat_product_from_dict()` (dispatching on the `threat_type`
+discriminator) and reuses each schema's own `to_dict()` unchanged on the
+way out. Verified against every real fixture in the repo, not a synthetic
+example: `test_bundle_io.py::TestThreatProductsRoundTrip` round-trips all
+9 ransomware fixtures and both Ray CVE JSON fixtures through actual JSON
+text and re-runs `evaluate_commercial_readiness()` on the reloaded
+bundle — the control-result list is byte-identical before and after, for
+every fixture.
 
-System 5 must consume System 3's validated `EvidenceGraph`, never
-reimplement it. The interchange point already exists on the System 3
-side: `bundle_io.bundle_from_dict()` / the inverse (a `to_dict()` export)
-define a plain-JSON shape for a `ReportBundle` — sources, evidence,
-claims, metrics, detection rules, regulatory determinations, forecasts,
-hypothesis sets, intelligence gaps, review record, depth assessment.
+**`api/_lib/reportx-adapter.js`** is the adapter itself: a `ReportXBundle`
+class that reads (never recomputes) claims, sources, threat products, and
+the 23-row control matrix from an exported JSON artifact, plus
+`toInvestigationShape()` — a best-effort compatibility bridge into the
+loosely-typed `investigation` object `product-composition-engine.js`'s
+existing `compose*()` methods already consume. `product-composition-engine.js`
+itself was **not modified** — the adapter is proven against it exactly as
+it already exists: `reportx-adapter.test.js`'s final test calls the real
+`ProductCompositionEngine.composeThreatActorProfile()` (unmodified) with
+a ReportX-derived investigation object and asserts on the resulting
+product, over an exported copy of the Qilin/Spoonful of Comfort fixture
+(`tests/fixtures/reportx-commercial-readiness/qilin-spoonful-of-comfort-exported-bundle.json`,
+itself produced by the real CLI, not hand-written). 20/20 new JS tests
+pass; full JS suite 1620/1620, 0 regressions.
 
-**Known gap to close before this phase can start:** `bundle_from_dict()`
-does not yet deserialize `threat_products` (the `RansomwareVictimClaim` /
-`CVERecord` / `CISAKEVRecord` layer) — the two completed fixtures work
-around this by constructing the bundle directly in Python
-(`qilin_spoonful_of_comfort.py`) rather than round-tripping through JSON.
-A JS consumer needs a real JSON shape for `threat_products`, so extending
-`bundle_from_dict()`/a matching `to_dict()` with that coverage is this
-phase's first task, not an afterthought.
+**What Phase 3 does not do:** it does not wire this adapter into any
+live route, cron job, or customer-facing product path — that is Phase 7
+(INTEGRATE), which requires the Phase 6 GO/NO-GO checkpoint first.
 
-Planned shape of the adapter itself: a Python-side export step
-(`reportx-gate` extended with an `--export-graph` flag, or a new
-`reportx-export` subcommand) produces the validated JSON bundle;
-`api/_lib/` gets a new adapter module (not a rewrite of
-`product-composition-engine.js` — Principle 2, additive) that reads that
-JSON and maps `EvidenceGraph`/`ControlResult` data into whatever shape
-the existing product-composition phases already expect, the same way any
-other upstream data source is consumed today. System 5 never re-derives
-`CorroborationState`, `EpistemicState`, or gate pass/fail — those values
-are read, not recomputed, in JS.
+**Do not proceed to Phase 6 (INTEGRATE) until Phase 5 (human review
+workflow) also has a real answer, or the operator explicitly accepts a
+partial-coverage integration.**
 
-## Phase 4 — CANARY generation. **Blocked on Phases 2 and 3.**
+## Phase 4 — CANARY generation. **Blocked on Phase 5.**
 
 Per Section 39: once fixture coverage and the adapter both exist,
 generate AFTER-quality versions of one Qilin report, one MedusaLocker
@@ -175,10 +194,10 @@ System 4 path resumes exactly as it was, since it was never modified.
 | Phase | Status |
 |---|---|
 | 0 — Architecture decision | Done |
-| 1 — Build System 3 | Done (349/349 tests) |
-| 2 — Golden fixtures | 2/10 (Ray CVE, Qilin/Spoonful of Comfort) |
-| 3 — System 5 adapter | Not started |
-| 4 — Canary generation | Blocked on 2, 3 |
+| 1 — Build System 3 | Done (492/492 Python tests) |
+| 2 — Golden fixtures | Done, 10/10 (139 acceptance tests) |
+| 3 — System 5 adapter | Done (20/20 new JS tests; full JS suite 1620/1620) |
+| 4 — Canary generation | Blocked on Phase 5 |
 | 5 — Human review workflow | Design only |
 | 6 — GO/NO-GO checkpoint | Not reached |
 | 7 — Integrate | Not authorized |
