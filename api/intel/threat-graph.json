@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-17T16:20:44.524Z",
+  "generated": "2026-08-17T16:54:08.368Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11143,
+    "total_nodes": 11145,
     "actors": 8,
-    "cves": 3657,
-    "campaigns": 1128,
+    "cves": 3658,
+    "campaigns": 1129,
     "malware": 0,
     "iocs": 879,
-    "edges": 3688
+    "edges": 3689
   },
   "nodes": {
     "actor:lockbit": {
@@ -211364,6 +211364,44 @@
           "confidence": 1
         }
       ]
+    },
+    "CVE-2026-64868": {
+      "id": "CVE-2026-64868",
+      "type": "CVE",
+      "name": "New API: Unauthenticated payment webhooks allow memory and disk DoS via unbounded body reads and full-body logging",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/QuantumNous/new-api",
+        "published": "2026-08-17",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-64868": {
+      "id": "campaign:cve-2026-64868",
+      "type": "Campaign",
+      "name": "go github.com/QuantumNous/new-api Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-17",
+        "last_seen": "2026-08-17",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-64868"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-64868",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -244716,6 +244754,15 @@
       "id": "campaign:cve-2025-62593→includes→CVE-2025-62593",
       "source": "campaign:cve-2025-62593",
       "target": "CVE-2025-62593",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-17",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-64868→includes→CVE-2026-64868",
+      "source": "campaign:cve-2026-64868",
+      "target": "CVE-2026-64868",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-17",
