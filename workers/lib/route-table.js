@@ -65,6 +65,18 @@ const ASSET_REWRITES = [
   [/^\/feed$/, '/rss.xml'],
   [/^\/feed\.xml$/, '/rss.xml'],
   [/^\/atom\.xml$/, '/rss.xml'],
+
+  // Not a vercel.json rewrite -- a Cloudflare-specific compensation.
+  // wrangler.jsonc's assets.html_handling is set to "none" (required so
+  // /posts/foo.html etc. serve literally instead of 307-redirecting to
+  // /posts/foo -- see that file's comment), but "none" also disables
+  // Cloudflare's automatic "/" -> index.html resolution as a side effect:
+  // confirmed via a real Workerd probe, GET / 404'd while GET /index.html
+  // served the same file at 200. Rewriting "/" here restores the
+  // universal static-hosting convention (and Vercel's actual current
+  // behavior) without reverting html_handling and reintroducing the much
+  // larger 307 regression across every posts/**, cve/**, etc. page.
+  [/^\/$/, '/index.html'],
 ];
 
 // [pattern, destination, status] — vercel.json's `redirects` (permanent: true → 308).

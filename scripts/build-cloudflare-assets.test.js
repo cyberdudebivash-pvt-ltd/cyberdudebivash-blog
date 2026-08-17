@@ -4,7 +4,43 @@ const { test, describe, after } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { build, countFiles, OUT } = require('./build-cloudflare-assets');
+const { build, countFiles, OUT, HEADERS_FILE_CONTENT } = require('./build-cloudflare-assets');
+
+// Mirrors Cloudflare's own documented splat semantics for a _headers
+// pattern: "a splat pattern -- signified by an asterisk (*) -- will
+// greedily match all characters" and "you may only include a single
+// splat in the URL" (confirmed against Cloudflare's _headers docs before
+// writing this, not assumed) -- exactly the subset HEADERS_FILE_CONTENT
+// actually uses (/*, /*.ext, /prefix/*), so a single-splat prefix/suffix
+// match is sufficient here without reimplementing full path-to-regexp.
+function patternMatches(pattern, requestPath) {
+  if (!pattern.includes('*')) return pattern === requestPath;
+  const starIndex = pattern.indexOf('*');
+  const prefix = pattern.slice(0, starIndex);
+  const suffix = pattern.slice(starIndex + 1);
+  return (
+    requestPath.startsWith(prefix) &&
+    requestPath.endsWith(suffix) &&
+    requestPath.length >= prefix.length + suffix.length
+  );
+}
+
+// Parses the _headers file format (blank-line-separated blocks; first
+// line of a block is the pattern, subsequent indented lines are
+// "Header-Name: value") well enough to check cascade safety below.
+// Deliberately independent of any parser Wrangler itself uses -- this is
+// a safety net over HEADERS_FILE_CONTENT as authored, not a test of
+// Cloudflare's own runtime behavior (that's Section 5's real-Workerd job).
+function parseHeadersFile(content) {
+  return content
+    .split(/\n\s*\n/)
+    .map(block => block.split('\n').map(l => l.trim()).filter(Boolean))
+    .filter(lines => lines.length > 0 && !lines[0].startsWith('#'))
+    .map(lines => ({
+      pattern: lines[0],
+      headerNames: lines.slice(1).map(l => l.split(':')[0].trim()),
+    }));
+}
 
 // Path-segment-aware, not substring-aware: an earlier version of this
 // test matched "data"/"platform"/"automation"/"tests"/"lib"/etc. as plain
@@ -111,9 +147,83 @@ describe('build-cloudflare-assets', () => {
     assert.ok(outputFiles.some(f => f.startsWith('api/intel/') && f.endsWith('.json')), 'expected at least one api/intel/*.json');
   });
 
+  test('_headers is written to the build output and matches the exported constant', () => {
+    assert.ok(outputFiles.includes('_headers'), 'expected _headers in dist-public/');
+    const onDisk = fs.readFileSync(path.join(OUT, '_headers'), 'utf8');
+    assert.equal(onDisk, HEADERS_FILE_CONTENT);
+  });
+
   after(() => {
     // dist-public/ is a generated build artifact (gitignored) — leaving it
     // populated on disk after the test run is fine and mirrors what a real
     // deploy step would produce; nothing to clean up for correctness.
+  });
+});
+
+describe('_headers cascade safety', () => {
+  const blocks = parseHeadersFile(HEADERS_FILE_CONTENT);
+
+  test('every block has at least one header and a pattern starting with /', () => {
+    assert.ok(blocks.length >= 8, `expected at least 8 rule blocks, got ${blocks.length}`);
+    for (const { pattern, headerNames } of blocks) {
+      assert.ok(pattern.startsWith('/'), `pattern "${pattern}" must start with /`);
+      assert.ok(headerNames.length > 0, `block "${pattern}" has no headers`);
+    }
+  });
+
+  test('no pattern uses more than one splat (Cloudflare only supports a single splat per URL)', () => {
+    for (const { pattern } of blocks) {
+      const stars = (pattern.match(/\*/g) || []).length;
+      assert.ok(stars <= 1, `pattern "${pattern}" has ${stars} splats, Cloudflare allows at most 1`);
+    }
+  });
+
+  // The actual regression guard: for a representative sample of real
+  // request paths (drawn from PUBLIC_DIRS/PUBLIC_ROOT_FILES categories,
+  // not invented), no header name may be set by more than one block whose
+  // pattern matches that path -- otherwise Cloudflare comma-joins the
+  // duplicate into a corrupted single value on the wire (e.g.
+  // "DENY, DENY"), exactly the failure mode this file's design avoids.
+  test('no header name is set by more than one matching block, for representative real paths', () => {
+    const samplePaths = [
+      '/', '/index.html', '/about.html', '/posts/some-post.html',
+      '/cve/CVE-2026-00000.html', '/apex-v13.css', '/mobile-first.css',
+      '/analytics-engine.js', '/banner-orchestrator.js', '/rss.xml',
+      '/sitemap.xml', '/robots.txt', '/api/intel/cve/CVE-2026-1.json',
+      '/api/intel/products/example.json', '/favicon.ico', '/og-image.png',
+      '/site.webmanifest', '/search-index.json', '/live-intel.json',
+      '/.well-known/security.txt', '/detections/rules/example.yml',
+    ];
+
+    for (const requestPath of samplePaths) {
+      const matchingBlocks = blocks.filter(b => patternMatches(b.pattern, requestPath));
+      assert.ok(matchingBlocks.length >= 1, `no block matches ${requestPath} (expected at least the global /* rule)`);
+
+      const seen = new Map(); // header name -> pattern that first set it
+      for (const { pattern, headerNames } of matchingBlocks) {
+        for (const name of headerNames) {
+          const key = name.toLowerCase();
+          assert.ok(
+            !seen.has(key),
+            `${requestPath}: header "${name}" is set by both "${seen.get(key)}" and "${pattern}" -- ` +
+              `Cloudflare will comma-join these into one corrupted value`
+          );
+          seen.set(key, pattern);
+        }
+      }
+    }
+  });
+
+  test('the /*.html and / blocks set identical header sets (root has no extension to match /*.html)', () => {
+    const htmlBlock = blocks.find(b => b.pattern === '/*.html');
+    const rootBlock = blocks.find(b => b.pattern === '/');
+    assert.ok(htmlBlock && rootBlock, 'expected both /*.html and / blocks to exist');
+    assert.deepEqual(rootBlock.headerNames.sort(), htmlBlock.headerNames.sort());
+  });
+
+  test('the global /* block does not set Content-Security-Policy or Permissions-Policy (matches vercel.json\'s catch-all)', () => {
+    const globalBlock = blocks.find(b => b.pattern === '/*');
+    assert.ok(globalBlock, 'expected a /* block');
+    assert.ok(!globalBlock.headerNames.some(h => /content-security-policy|permissions-policy/i.test(h)));
   });
 });

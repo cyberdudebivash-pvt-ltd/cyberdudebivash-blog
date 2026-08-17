@@ -23,15 +23,18 @@
  * to a real precompiled Module (that import can't live in this
  * CommonJS file — it would break Node's require() of it).
  *
- * KNOWN LIMITATION even with a genuine Module supplied here: see
- * workers/entry.js's comment. initWasm() still fails at request time
- * under Workers with "Wasm code generation disallowed by embedder" — a
- * documented, widely-reported platform restriction (not specific to
- * this file's import mechanism, confirmed by directly checking
- * `instanceof WebAssembly.Module` before ruling that out), not yet
- * resolved. getResvg() below still throws in that case, on purpose —
- * api/og.js's caller already has a correct, verified fallback for
- * exactly this failure mode, so this file does not need its own.
+ * KNOWN LIMITATION even with a genuine Module supplied here — see
+ * workers/entry.js's comment for the full PLATFORM SUPPORT vs. PACKAGE
+ * COMPATIBILITY distinction. Short version: Workers supports precompiled
+ * WebAssembly.Module instantiation; @resvg/resvg-wasm's own initWasm()
+ * still fails at request time under Workers with "Wasm code generation
+ * disallowed by embedder" even when handed one (confirmed by directly
+ * checking `instanceof WebAssembly.Module` before ruling out an import
+ * bug) — a package-level incompatibility with the tested runtime, not a
+ * Workers WebAssembly limitation. getResvg() below still throws in that
+ * case, on purpose — api/og.js's caller already has a correct, verified
+ * fallback for exactly this failure mode, so this file does not need
+ * its own.
  */
 
 const { initWasm, Resvg } = require('@resvg/resvg-wasm');
