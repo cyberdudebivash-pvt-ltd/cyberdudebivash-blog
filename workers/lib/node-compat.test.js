@@ -149,4 +149,45 @@ describe('createNodeResponse', () => {
     assert.equal(r.status, 200);
     assert.deepEqual(await r.json(), { first: true });
   });
+
+  // api/og.js's success path: res.statusCode = 200 (raw property
+  // assignment, not the res.status(200) method every other handler uses).
+  test('res.statusCode = X (property assignment) is respected, not just res.status(X)', async () => {
+    const { res, response } = createNodeResponse();
+    res.statusCode = 302;
+    res.setHeader('Location', '/og-image.png');
+    res.end();
+    const r = await response;
+    assert.equal(r.status, 302);
+    assert.equal(r.headers.get('location'), '/og-image.png');
+  });
+
+  test('res.statusCode getter reflects a prior res.status() call', () => {
+    const { res } = createNodeResponse();
+    res.status(404);
+    assert.equal(res.statusCode, 404);
+  });
+
+  // api/og.js's success path: res.end(pngBuffer) with the raw Buffer
+  // returned by @resvg/resvg-js's .asPng() — must reach the Response
+  // byte-for-byte, not get String()-coerced (which would corrupt it).
+  test('res.end(buffer) passes binary bodies through untouched', async () => {
+    const { res, response } = createNodeResponse();
+    const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]); // PNG magic bytes
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'image/png');
+    res.end(png);
+    const r = await response;
+    const out = new Uint8Array(await r.arrayBuffer());
+    assert.deepEqual(Array.from(out), Array.from(png));
+  });
+
+  test('res.send(buffer) also passes binary bodies through untouched', async () => {
+    const { res, response } = createNodeResponse();
+    const bytes = new Uint8Array([1, 2, 3, 4]);
+    res.send(bytes);
+    const r = await response;
+    const out = new Uint8Array(await r.arrayBuffer());
+    assert.deepEqual(Array.from(out), Array.from(bytes));
+  });
 });
