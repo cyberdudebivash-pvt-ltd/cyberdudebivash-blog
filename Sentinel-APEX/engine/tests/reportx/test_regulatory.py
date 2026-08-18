@@ -65,6 +65,22 @@ class TestGateRequiresLinkedFacts:
         gate = evaluate_regulatory_gate([ra])
         assert gate.passed
 
+    def test_not_assessed_without_a_basis_is_unsupported(self):
+        # Construction alone still allows a bare NOT_ASSESSED placeholder
+        # (test_not_assessed_never_requires_a_basis above), but the GATE
+        # -- the commercial-readiness bar -- requires the withholding
+        # itself to be explained. An empty-reason NOT_ASSESSED is
+        # indistinguishable from a field nobody filled in.
+        ra = not_assessed("GDPR", reason="")
+        gate = evaluate_regulatory_gate([ra])
+        assert "GDPR" in gate.unsupported_determinations
+        assert not gate.passed
+
+    def test_not_assessed_with_a_basis_passes_the_gate(self):
+        ra = not_assessed("GDPR", reason="No EU nexus established by any source located.")
+        gate = evaluate_regulatory_gate([ra])
+        assert gate.passed
+
     def test_not_applicable_never_flagged_even_without_facts(self):
         ra = RegulatoryApplicability(
             jurisdiction="", victim_geography=None, operations_geography=None,

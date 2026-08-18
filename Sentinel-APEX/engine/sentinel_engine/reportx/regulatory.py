@@ -88,12 +88,26 @@ def evaluate_regulatory_gate(applicabilities: list[RegulatoryApplicability]) -> 
     """A determination above NOT_ASSESSED/NOT_APPLICABLE with zero linked
     incident facts is unsupported boilerplate, regardless of whether
     ``basis`` text was filled in — a basis sentence with no claim_ids
-    behind it cannot be verified against the actual incident evidence."""
+    behind it cannot be verified against the actual incident evidence.
+
+    A ``NOT_ASSESSED`` determination is also checked here — for a
+    different reason. ``not_assessed()``/``__post_init__`` deliberately
+    never *require* a basis at construction time (a bare "we haven't
+    looked yet" placeholder is legal to build), but a commercially-ready
+    report is a different bar: "explicit and governed withholding" means
+    the withholding itself is explained, not just declared. An empty-
+    reason ``NOT_ASSESSED`` is indistinguishable from a field nobody
+    filled in; a reasoned one ("no EU nexus established by any source
+    located") is a real analytic conclusion that happens to be negative.
+    ``NOT_APPLICABLE`` is exempt from this extra check because
+    ``__post_init__`` already forces a basis for it unconditionally."""
     unsupported = []
     for a in applicabilities:
         asserts_something = a.applicability_state in (
             ApplicabilityState.CONFIRMED, ApplicabilityState.LIKELY, ApplicabilityState.POTENTIAL,
         )
         if asserts_something and not a.incident_facts_claim_ids:
+            unsupported.append(a.regulation)
+        elif a.applicability_state == ApplicabilityState.NOT_ASSESSED and not a.basis:
             unsupported.append(a.regulation)
     return RegulatoryGateResult(unsupported_determinations=unsupported)

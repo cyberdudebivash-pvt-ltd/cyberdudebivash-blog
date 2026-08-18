@@ -30,3 +30,17 @@
 *.png  binary
 *.woff binary
 *.ico  binary
+
+# ReportX raw source evidence (Sentinel-APEX/engine/sentinel_engine/reportx/
+# evidence_integrity.py's content_sha256 tier): these are byte-for-byte
+# archives of real HTTP responses, checked in so a source's content_sha256
+# can be independently recomputed and verified from the committed file
+# itself. The eol=lf rule above would silently rewrite any \r bytes a
+# source server actually sent (confirmed present in
+# reportx-canary/raw-sources/pytorch-foundation-ray.html -- 109 lines of
+# genuine CRLF from pytorch.org's own response) into \n, changing the
+# file's hash out from under every SourceRecord.content_sha256 value that
+# cites it -- the exact class of silent byte-corruption this repo's own
+# eol=lf rule exists to prevent elsewhere, now prevented here for raw
+# evidence specifically by exempting it from all text processing.
+reportx-canary/raw-sources/** binary

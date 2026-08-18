@@ -44,6 +44,18 @@ class ReportXBundle {
     return Boolean(this._raw.bundle.is_premium_tier);
   }
 
+  /** The real ReviewRecord if a human has actually approved/rejected/
+   * requested changes on this exact artifact, or null if no review has
+   * occurred yet -- read directly from the export, never fabricated or
+   * inferred from the gate verdict. A premium bundle with a PASS verdict
+   * and a null review is exactly PREMIUM_READY_PENDING_HUMAN, not
+   * PREMIUM_CERTIFIED (sentinel_engine.reportx.human_review's governance
+   * rule); this accessor exists so a caller can see that distinction
+   * without System 5 re-deriving or promoting it. */
+  getReview() {
+    return this._raw.bundle.review;
+  }
+
   // ---- Evidence graph (read-only) ----
 
   getSources() {
@@ -90,6 +102,14 @@ class ReportXBundle {
   getPrimaryThreatProduct() {
     const products = this._raw.bundle.threat_products;
     return products.length === 1 ? products[0] : null;
+  }
+
+  /** Detection rules exactly as System 3 stored them, including
+   * validation_state -- System 5 must describe a rule's maturity as
+   * stored (e.g. "SYNTAX_VALIDATED"), never promote it toward
+   * "PRODUCTION_VALIDATED" in derived copy. */
+  getDetectionRules() {
+    return this._raw.bundle.detection_rules;
   }
 
   // ---- Commercial-readiness gate (already computed by System 3 -- read only) ----

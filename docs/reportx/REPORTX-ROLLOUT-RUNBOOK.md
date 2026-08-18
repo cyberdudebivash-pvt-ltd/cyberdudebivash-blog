@@ -8,12 +8,22 @@ architecture decision (System 3 = intelligence truth, System 5 =
 commercial product composition, System 4 = rendering/export, System 1 =
 ingestion/public-volume, System 2 = legacy syndication, not touched).
 
-**Model**: `BUILD → VERIFY → ADAPT → CANARY → REVIEW-WORKFLOW → GO/NO-GO
-→ INTEGRATE → OBSERVE`. Nothing before `INTEGRATE` touches any existing
-production writer path — System 3 is a new, additive package with no
-caller in the existing pipeline yet, so every phase up to and including
-`CANARY` is fully reversible by simply not merging further (Architecture
-Preservation Rule: add, don't replace).
+**Model**: `BUILD → VALIDATE → ADAPT → CANARY →
+PREMIUM_READY_PENDING_HUMAN → HUMAN REVIEW → PREMIUM_CERTIFIED →
+GO/NO-GO → INTEGRATE → OBSERVE`. This corrects an earlier draft of this
+runbook, which stated Phase 4 (CANARY) was "blocked on" Phase 5 (human
+review) while Phase 5's own text said it was sequenced *after* Phase 4 —
+a circular dependency that was never real: CANARY does not depend on
+HUMAN REVIEW being operational; HUMAN REVIEW depends on CANARY producing
+real artifacts to review. `PREMIUM_READY_PENDING_HUMAN` is not a phase a
+person runs — it's the automatic, computed state every canary reaches
+the moment its 23 controls all PASS (`resolve_certification_state()`),
+and it is the trigger that makes HUMAN REVIEW meaningful. Nothing before
+`INTEGRATE` touches any existing production writer path — System 3 is a
+new, additive package with no caller in the existing pipeline yet, so
+every phase up to and including `HUMAN REVIEW` is fully reversible by
+simply not merging further (Architecture Preservation Rule: add, don't
+replace).
 
 ---
 
@@ -111,52 +121,81 @@ pass; full JS suite 1620/1620, 0 regressions.
 live route, cron job, or customer-facing product path — that is Phase 7
 (INTEGRATE), which requires the Phase 6 GO/NO-GO checkpoint first.
 
-**Do not proceed to Phase 6 (INTEGRATE) until Phase 5 (human review
-workflow) also has a real answer, or the operator explicitly accepts a
-partial-coverage integration.**
+## Phase 4 — CANARY generation. **Done, 4 of 4, all real 23/23.**
 
-## Phase 4 — CANARY generation. **Blocked on Phase 5.**
+Four complete, research-backed premium canaries exist in
+`reportx-canary/` (never overwriting anything System 1 or System 2
+currently publishes): Qilin/Spoonful of Comfort, MedusaLocker/Bija
+Industrie, DragonForce/Vermont XCenter, and CVE-2025-62593 (Ray). Each
+independently reaches a genuine 23/23 PASS on real, hash-verified
+evidence — not the synthetic `_build_fully_supported_bundle()` fixture
+`REPORTX-COMMERCIAL-READINESS-MATRIX.md` documents as proving the gate
+is satisfiable in principle. Full detail, per-canary stats, and artifact
+hashes: `REPORTX-CANARY-CERTIFICATION.md`.
 
-Per Section 39: once fixture coverage and the adapter both exist,
-generate AFTER-quality versions of one Qilin report, one MedusaLocker
-report, one other ransomware actor, and CVE-2025-62593 into a
-**non-production canary location** — never overwriting anything System 1
-or System 2 currently publishes. This is a read-only proof step: it
-demonstrates end-to-end System 3 → System 5 → rendered product without
-any customer-facing surface changing.
+Includes real System 4 render/print QA (`reportx-canary/render-qa/`):
+real PDFs via headless Chromium print-to-PDF, real page counts (20-21
+pages per canary — reported truthfully, not inflated to a target),
+`checkRendering()` clean on all four, zero orphan headings, zero broken
+TOC anchors, zero placeholder text. And real System 5 integration
+(`api/_lib/__tests__/reportx-adapter-four-canaries.test.js`, 65 tests):
+proves the adapter and the unmodified `ProductCompositionEngine` never
+recompute claim truth, promote confidence or detection-validation state,
+or lose source/evidence references or commercial-readiness results, for
+all four real exports.
 
-## Phase 5 — Human review workflow. **Design only — no production
-process wired yet.**
+This is a read-only proof step: it demonstrates end-to-end System 3 →
+System 4 → System 5 → rendered product without any customer-facing
+surface changing.
 
-`human_review.ReviewRecord` and `resolve_certification_state()` are
-built and tested, but there is no operational process yet for a human
-analyst to actually produce a `ReviewRecord` against a real canary
-artifact (who reviews, where the approval is recorded, how the artifact
-hash is computed and delivered to the reviewer). This is intentionally
-sequenced after Phase 4 — reviewing a canary report is the first
-realistic exercise of this workflow; building the process against zero
-real artifacts would be speculative.
+## Phase 5 — Human review workflow. **Operational. Real APPROVE pending
+the actual operator.**
+
+`human_review.ReviewRecord` and `resolve_certification_state()` were
+already built and tested before this phase; what didn't exist was the
+operational process. It now does — documented end-to-end in
+`REPORTX-HUMAN-REVIEW-RUNBOOK.md`: a reviewer pack per canary (report ID,
+artifact hash, full 23-control matrix, sources, claims, statistics,
+regulatory determinations, detection status, forecasts, hypotheses,
+gaps, and the real render preview), the exact `reportx-review
+approve/reject/request-changes` commands, and the mandatory post-
+approval re-verification step. `reject`/`request-changes` were smoke-
+tested end-to-end against a real canary export this phase; `approve` was
+deliberately never run with a fabricated identity — that is the one step
+reserved for a real human, by design (Section 44: "the operator must be
+the real reviewer").
+
+**Current state: all four real canaries are `PREMIUM_READY_PENDING_HUMAN`.
+Zero real `APPROVE` actions have been recorded.** This phase is complete
+from an engineering standpoint; it is blocked only on the real operator
+actually running the commands in `REPORTX-HUMAN-REVIEW-RUNBOOK.md`.
 
 ## Phase 6 — GO/NO-GO checkpoint
 
 Before any ReportX-gated bundle reaches an existing production writer
 path or a paying customer, present the operator with:
 
-- Fixture coverage (target: 10/10, or an explicit operator acceptance of
-  partial coverage with named gaps)
-- Full `Sentinel-APEX/engine` test suite result (0 regressions)
+- Fixture coverage — **10/10 golden fixtures** (`REPORTX-ACCEPTANCE-RESULTS.md`)
+  **plus 4/4 real premium canaries** (`REPORTX-CANARY-CERTIFICATION.md`)
+- Full `Sentinel-APEX/engine` test suite result (0 regressions — 649/649
+  at last count) and full JS suite result (0 failures — 1688/1748, 60
+  skipped)
 - At least one canary report that reaches `PREMIUM_CERTIFIED` end-to-end
-  through a real (not `is_test_only_fixture=True`) review
+  through a real (not `is_test_only_fixture=True`) review — **not yet
+  satisfied; this is the current blocker on reaching Phase 6.**
 - Confirmation that System 1/System 2/System 4 continue operating
   unmodified (Architecture Preservation Rule — this is an addition, not
-  a cutover)
-- The 23-row commercial-readiness matrix for each canary report
+  a cutover) — satisfied; System 4's own renderer/checkRendering() code
+  was read and reused unmodified, never replaced
+- The 23-row commercial-readiness matrix for each canary report —
+  satisfied, all four at 23/23
 
 **No row in this checklist may be marked complete without the evidence
 behind it, per this repository's CLAUDE.md "Proof Before Change" and
 "God-Mode Release Gate" requirements.** This runbook does not authorize
 Phase 7 by itself — it documents what Phase 7 requires when the operator
-chooses to proceed.
+chooses to proceed. **Phase 6 is not yet reached**: it requires at least
+one real, operator-executed `APPROVE` first.
 
 ## Phase 7 — INTEGRATE (requires explicit operator authorization)
 
@@ -194,11 +233,16 @@ System 4 path resumes exactly as it was, since it was never modified.
 | Phase | Status |
 |---|---|
 | 0 — Architecture decision | Done |
-| 1 — Build System 3 | Done (492/492 Python tests) |
+| 1 — Build System 3 | Done |
 | 2 — Golden fixtures | Done, 10/10 (139 acceptance tests) |
-| 3 — System 5 adapter | Done (20/20 new JS tests; full JS suite 1620/1620) |
-| 4 — Canary generation | Blocked on Phase 5 |
-| 5 — Human review workflow | Design only |
-| 6 — GO/NO-GO checkpoint | Not reached |
+| 3 — System 5 adapter | Done |
+| 4 — Canary generation | **Done, 4/4 real canaries, all 23/23 PASS** (render QA + System 5 integration included) |
+| 5 — Human review workflow | **Operational** — reviewer packs + CLI commands ready; 0 real `APPROVE` actions recorded yet |
+| 6 — GO/NO-GO checkpoint | Not reached — blocked on at least one real `APPROVE` |
 | 7 — Integrate | Not authorized |
 | 8 — Observe | N/A |
+
+Full regression snapshot at this status: Python `Sentinel-APEX/engine`
+suite 649/649 (0 regressions); JS suite 1688/1748 (60 skipped, 0
+failed); all four canary suites plus the cross-canary anti-padding suite
+97/97 together.

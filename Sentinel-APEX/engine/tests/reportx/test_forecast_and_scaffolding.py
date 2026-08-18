@@ -1,8 +1,11 @@
+import pytest
+
 from sentinel_engine.reportx.analytic_scaffolding import (
     BibliographyEntry,
     Hypothesis,
     HypothesisSet,
     IntelligenceGap,
+    NotApplicableHypothesisSet,
     build_bibliography,
     derive_ransomware_gaps,
     find_orphan_citations,
@@ -51,6 +54,12 @@ class TestForecastGate:
         result = evaluate_forecast_gate([w])
         assert result.passed
 
+    def test_withheld_forecast_requires_a_reason_at_construction(self):
+        # Governed withholding means EXPLAINED withholding -- a bare
+        # withheld flag with nothing behind it is not a valid PASS path.
+        with pytest.raises(ValueError, match="no reason"):
+            WithheldForecast(topic="6-month campaign trajectory", reason="")
+
 
 class TestAlternativeHypotheses:
     def test_well_formed_set_requires_at_least_two_with_evidence(self):
@@ -79,6 +88,29 @@ class TestAlternativeHypotheses:
             ),
         )
         assert not hs.is_well_formed()
+
+
+class TestNotApplicableHypothesisSet:
+    """The governed alternative to HypothesisSet: some analytic questions
+    genuinely don't have competing explanations worth weighing, but the
+    decision to skip must itself be explained, not a bare skip."""
+
+    def test_requires_a_rationale_at_construction(self):
+        with pytest.raises(ValueError, match="no rationale"):
+            NotApplicableHypothesisSet(question="Is a rival actor responsible?", rationale="")
+
+    def test_constructs_fine_with_a_real_rationale(self):
+        hs = NotApplicableHypothesisSet(
+            question="Is a rival actor group responsible instead?",
+            rationale="A single, uncontested named actor claimed this incident; no rival attribution theory has circulated.",
+        )
+        assert hs.question == "Is a rival actor group responsible instead?"
+
+    def test_to_dict_marks_applicable_false(self):
+        hs = NotApplicableHypothesisSet(question="x", rationale="y")
+        d = hs.to_dict()
+        assert d["applicable"] is False
+        assert d["rationale"] == "y"
 
 
 class TestIntelligenceGaps:

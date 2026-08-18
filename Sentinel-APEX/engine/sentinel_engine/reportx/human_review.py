@@ -24,6 +24,17 @@ def compute_artifact_hash(artifact_text: str) -> str:
     return hashlib.sha256(artifact_text.encode("utf-8")).hexdigest()
 
 
+def compute_gate_snapshot_hash(control_results_json: str) -> str:
+    """Hashes the exact serialized 23-control gate output a reviewer saw
+    at approval time -- a second, independent binding alongside
+    artifact_sha256. The artifact hash alone proves the reviewer approved
+    THIS TEXT; the gate-snapshot hash additionally proves they approved
+    it against THIS gate result, not a different run that happened to
+    produce a different pass/fail mix against the same text (e.g. a
+    metrics-freshness check evaluated against a different `as_of` date)."""
+    return hashlib.sha256(control_results_json.encode("utf-8")).hexdigest()
+
+
 @dataclass(frozen=True)
 class ReviewRecord:
     report_id: str
@@ -34,13 +45,17 @@ class ReviewRecord:
     review_version: int
     notes: str = ""
     is_test_only_fixture: bool = False  # Section 26: tests may use an explicit TEST-ONLY reviewer fixture
+    reviewer_role: str = ""
+    gate_snapshot_sha256: str = ""  # optional second binding -- see compute_gate_snapshot_hash()
 
     def to_dict(self) -> dict:
         return {
             "report_id": self.report_id, "artifact_sha256": self.artifact_sha256,
-            "reviewer_identity": self.reviewer_identity, "review_timestamp": self.review_timestamp,
+            "reviewer_identity": self.reviewer_identity, "reviewer_role": self.reviewer_role,
+            "review_timestamp": self.review_timestamp,
             "decision": self.decision.value, "review_version": self.review_version,
             "notes": self.notes, "is_test_only_fixture": self.is_test_only_fixture,
+            "gate_snapshot_sha256": self.gate_snapshot_sha256,
         }
 
 

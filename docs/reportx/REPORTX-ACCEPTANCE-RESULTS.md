@@ -1,5 +1,17 @@
 # ReportX Acceptance Results
 
+**Scope note:** the 10 fixtures below are scoped acceptance tests proving
+System 3's evidence model and individual gates work against real leak-
+site/CVE data — deliberately not full premium submissions (Section 34/42;
+see also `REPORTX-COMMERCIAL-READINESS-MATRIX.md`'s "A genuine 23/23
+PASS" section for why none of them reach 23/23). For the later, deeper
+phase that DOES reach real 23/23 on four full premium reports, see
+`REPORTX-CANARY-CERTIFICATION.md`. Two of these ten fixtures
+(Qilin/Spoonful of Comfort, MedusaLocker/Bija Industrie) and one
+candidate considered for a third (DragonForce/Vermont XCenter) were later
+extended into real premium canaries — the canary modules cite these
+fixtures directly and extend, not replace, their research.
+
 Section 36's before/after delta table, for real, this session — every
 number below is reproducible tool output, not a summary written from
 memory. Reproduce the whole set with:

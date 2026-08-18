@@ -44,6 +44,13 @@ class DetectionRule:
     format: str  # "sigma" | "kql" | "splunk" | "osquery" | "suricata" | "yara"
     validation_state: DetectionValidationState = DetectionValidationState.DRAFT
     body: str = ""
+    # Required whenever validation_state is WITHHELD_INSUFFICIENT_EVIDENCE --
+    # the explicit, recorded reason detection was withheld (e.g. "no
+    # incident-specific telemetry located; withheld pending confirmed
+    # exploitation evidence"). Governed withholding is a valid commercial-
+    # readiness PASS path (Section 12/withholding governance), but only
+    # when the withholding itself is explained, not just declared.
+    evidence_gap_rationale: str = ""
 
 
 # Phrases that assert a specific validation state in rendered prose,
@@ -141,3 +148,15 @@ def check_all_rules(rules: list[DetectionRule], rendered_text: str) -> list[Vali
     for rule in rules:
         violations += check_state_promotion(rule, rendered_text)
     return violations
+
+
+def check_withheld_rules_have_rationale(rules: list[DetectionRule]) -> list[str]:
+    """Governed withholding requires the withholding to be explained, not
+    just declared -- an empty-rationale WITHHELD rule is indistinguishable
+    from one nobody finished filling in. Returns the rule_ids that fail
+    this check."""
+    return [
+        r.rule_id for r in rules
+        if r.validation_state == DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE
+        and not r.evidence_gap_rationale
+    ]
