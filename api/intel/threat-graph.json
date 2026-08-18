@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-18T05:53:22.546Z",
+  "generated": "2026-08-18T06:32:58.661Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11235,
+    "total_nodes": 11241,
     "actors": 8,
     "cves": 3722,
-    "campaigns": 1138,
+    "campaigns": 1141,
     "malware": 0,
     "iocs": 883,
-    "edges": 3710
+    "edges": 3713
   },
   "nodes": {
     "actor:lockbit": {
@@ -213074,6 +213074,120 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "FULLDIS-0662fa2b816a54a6": {
+      "id": "FULLDIS-0662fa2b816a54a6",
+      "type": "Intel",
+      "name": "Re: Security advisory: multiple vulnerabilities including Default-credential RCE, Pre-authentication root RCE in atvise SCADA 3.13.0 (atvise GmbH / Bachmann Visutec)",
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "HIGH",
+        "priority_score": 81,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecLists",
+        "product": "Multiple Targets",
+        "published": "2026-08-18",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "FULLDIS-32b056d59fa07959": {
+      "id": "FULLDIS-32b056d59fa07959",
+      "type": "Intel",
+      "name": "[0day-rubbish] InsightEdge Enterprise (XAP IMDg) 16.1.1 Pre-authentication RCE (path traversal + JSP webshell) (9.8)",
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "HIGH",
+        "priority_score": 74,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecLists",
+        "product": "Multiple Targets",
+        "published": "2026-08-18",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "FULLDIS-85ccdfd3b96c2570": {
+      "id": "FULLDIS-85ccdfd3b96c2570",
+      "type": "Intel",
+      "name": "[0day-rubbish] HiveMQ Platform 4.54.0 Pre-authentication RCE (default credentials + Zip-Slip) (9.8)",
+      "attributes": {
+        "cvss": 9.8,
+        "threat_level": "HIGH",
+        "priority_score": 74,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "SecLists",
+        "product": "Multiple Targets",
+        "published": "2026-08-18",
+        "type": "ZERO_DAY"
+      },
+      "connections": []
+    },
+    "campaign:cluster-2d63cf2d": {
+      "id": "campaign:cluster-2d63cf2d",
+      "type": "Campaign",
+      "name": "SecLists Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "FULLDIS-0662fa2b816a54a6",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-42d67790": {
+      "id": "campaign:cluster-42d67790",
+      "type": "Campaign",
+      "name": "SecLists Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "FULLDIS-32b056d59fa07959",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-08cfa9c3": {
+      "id": "campaign:cluster-08cfa9c3",
+      "type": "Campaign",
+      "name": "SecLists Multiple Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "FULLDIS-85ccdfd3b96c2570",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -246626,6 +246740,33 @@
       "target": "SENTINELAPEX-db0e4f75e6b8",
       "relationship": "exploits",
       "confidence": 0.85,
+      "first_seen": "2026-08-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-2d63cf2d→includes→FULLDIS-0662fa2b816a54a6",
+      "source": "campaign:cluster-2d63cf2d",
+      "target": "FULLDIS-0662fa2b816a54a6",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-42d67790→includes→FULLDIS-32b056d59fa07959",
+      "source": "campaign:cluster-42d67790",
+      "target": "FULLDIS-32b056d59fa07959",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-08cfa9c3→includes→FULLDIS-85ccdfd3b96c2570",
+      "source": "campaign:cluster-08cfa9c3",
+      "target": "FULLDIS-85ccdfd3b96c2570",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-08-18",
       "sources": []
     }
