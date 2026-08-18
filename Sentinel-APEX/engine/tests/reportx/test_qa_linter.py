@@ -52,6 +52,32 @@ class TestUnresolvedTemplates:
         findings = check_unresolved_templates("The affected product is None and the vendor is Acme.")
         assert any(f.check == "none_value_leak" for f in findings)
 
+    def test_single_equals_none_leak_still_caught(self):
+        findings = check_unresolved_templates("Debug dump: vendor = None, product = None")
+        assert any(f.check == "none_value_leak" for f in findings)
+
+    def test_equality_comparison_described_in_prose_is_not_a_false_positive(self):
+        # Real regression: a live CVE-2026-75110 (NVD) record's own genuine
+        # technical prose read "...the comparison None == None evaluates
+        # true" -- an accurate description of the vulnerable code's
+        # equality check, not a leaked unset field. Caught via
+        # automation.main --dry-run against real, current discovery data,
+        # not a synthetic fixture.
+        text = (
+            "os.getenv(\"INTERNAL_SERVICE_SECRET\") returns None and a request omitting the header "
+            "also yields None, so the comparison None == None evaluates true."
+        )
+        findings = check_unresolved_templates(text)
+        assert not any(f.check == "none_value_leak" for f in findings), findings
+
+    def test_not_equal_and_relational_comparisons_are_not_false_positives(self):
+        for text in (
+            "The check requires token != None before granting access.",
+            "Only entries where retries <= None are treated as unset.",
+        ):
+            findings = check_unresolved_templates(text)
+            assert not any(f.check == "none_value_leak" for f in findings), (text, findings)
+
     def test_clean_text_has_no_findings(self):
         assert check_unresolved_templates("The affected product is Ray, maintained by Anyscale.") == []
 

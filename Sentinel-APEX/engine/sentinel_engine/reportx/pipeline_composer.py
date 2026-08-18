@@ -1,0 +1,208 @@
+"""The live-pipeline composer: turns one ``DiscoveredArticle`` into a real,
+evidence-graph-backed, commercial-readiness-gated report -- the piece
+``REPORTX-INTELLIGENCE-FACTORY-ARCHITECTURE.md`` designed and
+``discovery_bridge.py`` half-built. This module is the other half: it
+reuses ``automation.report_renderer.render_evidence_report()`` (the real,
+evidence-first HTML core, "RX-STABILIZATION-1" in that module's own
+history) UNCHANGED for the base narrative, and adds exactly two new
+sections on top using that same module's own styling primitives
+(``_section``/``_panel``/``_bullets``) -- never a second, competing visual
+system.
+
+The point of this module is not to write new analytical prose from
+scratch (``report_renderer.py`` already does that honestly, per
+vulnerability class). The point is to make the result *gate-checkable*:
+build the real ``EvidenceGraph`` alongside the HTML, run it through
+``commercial_readiness.py``'s unmodified 23-control matrix scoped to the
+tier the evidence actually supports (``tier_downgrade.py``, reused from
+the P0 release-certification work), and report an achieved tier a caller
+can trust -- rather than a fixed template nobody re-validates per report.
+"""
+
+from __future__ import annotations
+
+import sys
+from dataclasses import dataclass, field
+from pathlib import Path
+
+# See discovery_bridge.py's identical bootstrap for why this is needed:
+# automation/ lives at the repo root, not under Sentinel-APEX/engine/.
+_REPO_ROOT = Path(__file__).resolve().parents[4]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from automation.report_integrity import ReportContext, build_report_context  # noqa: E402
+from automation.report_renderer import (  # noqa: E402
+    DetectionPackage,
+    _bullets,
+    _detection_package,
+    _esc,
+    _panel,
+    _section,
+)
+
+from .analytic_scaffolding import IntelligenceGap
+from .commercial_readiness import ControlResult, ReportBundle, evaluate_commercial_readiness
+from .detection_validation import DetectionRule, DetectionValidationState
+from .discovery_bridge import build_evidence_graph, build_threat_product
+from .executive_products import RoleAudience, RoleDecision, admiralty_label, render_role_decisions
+from .human_review import CertificationState
+from .product_depth import DepthAssessment
+from .tier_downgrade import DowngradeResult, determine_achieved_tier
+
+_STATUS_TO_VALIDATION_STATE = {
+    "syntax_validated_experimental": DetectionValidationState.SYNTAX_VALIDATED,
+}
+
+
+def _detection_rules(report_id: str, package: DetectionPackage) -> list[DetectionRule]:
+    """One ``DetectionRule`` per format the (single, shared) evidence basis
+    actually supports -- ``DetectionPackage.status`` governs both formats
+    identically, since Sigma and KQL are two renderings of the same
+    evidence-conditioned decision, not two independent judgments. A
+    withheld package still yields exactly one rule (as before), so
+    ``commercial_readiness.py``'s detection_evidence_discipline control
+    (which requires at least one rule to evaluate) keeps working unchanged."""
+    validation_state = _STATUS_TO_VALIDATION_STATE.get(package.status, DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE)
+    technique_id = package.attack_mappings[0] if package.attack_mappings else ""
+    formats = [("sigma", package.sigma_yaml), ("kql", package.kql)]
+    rules = [
+        DetectionRule(
+            rule_id=f"{report_id}-detection-{fmt}", technique_id=technique_id,
+            format=fmt, validation_state=validation_state, body=body, evidence_gap_rationale=package.rationale,
+        )
+        for fmt, body in formats if body
+    ]
+    if rules:
+        return rules
+    return [DetectionRule(
+        rule_id=f"{report_id}-detection", technique_id=technique_id,
+        format="none", validation_state=validation_state, body="", evidence_gap_rationale=package.rationale,
+    )]
+
+
+def _lean_role_decisions(article, context: ReportContext, threat_product) -> list[RoleDecision]:
+    """A deliberately SHORT role list for FLASH-tier volume content --
+    the full 10-role treatment (``REPORTX-INTELLIGENCE-FACTORY-BENCHMARK.md``)
+    is reserved for premium dossiers with the evidence depth to ground all
+    10. Padding every routine alert with 10 roles it has no real basis for
+    would itself be the padding defect this factory exists to remove."""
+    decisions = [
+        RoleDecision(
+            role=RoleAudience.VULNERABILITY_MANAGER,
+            decision=f"Track against {context.family_label.lower()} intake at severity commensurate with "
+                     f"{context.exploitation_label.lower()}.",
+            rationale="Prioritization reflects this record's own exploitation/patch evidence, not a fixed severity template.",
+            evidence_claim_ids=("c-exploitation-status", "c-patch-status") if context.family in (
+                "cve_advisory", "cisa_advisory", "cisa_kev") else (),
+        ),
+    ]
+    if context.family in ("cve_advisory", "cisa_advisory", "cisa_kev"):
+        decisions.append(RoleDecision(
+            role=RoleAudience.SOC_MANAGER,
+            decision="Review the detection guidance below before enabling any blocking action on it.",
+            rationale="Detection maturity for this record is stated explicitly, not assumed production-ready.",
+            evidence_claim_ids=("c-summary",),
+        ))
+    if context.family == "ransomware_claim":
+        decisions.append(RoleDecision(
+            role=RoleAudience.IR_MANAGER,
+            decision="Treat as a validation task (confirm internally), not an activation trigger, absent "
+                      "independent corroboration.",
+            rationale="The victim claim is a single, third-party leak-site source (c-victim-claim, REPORTED "
+                       "not CONFIRMED) -- Section 10's high-impact-claim-type discipline applies.",
+            evidence_claim_ids=("c-victim-claim",),
+        ))
+    return decisions
+
+
+@dataclass(frozen=True)
+class ComposedReport:
+    report_id: str
+    context: ReportContext
+    html: str
+    bundle: ReportBundle
+    control_results: list[ControlResult]
+    downgrade: DowngradeResult
+
+    @property
+    def pass_count(self) -> int:
+        return sum(1 for r in self.control_results if r.status == "PASS")
+
+    @property
+    def total_count(self) -> int:
+        return len(self.control_results)
+
+
+def compose_report(
+    article, config, requested_tier: CertificationState = CertificationState.FLASH_READY,
+    include_provenance: bool = True,
+) -> ComposedReport:
+    """``include_provenance=False`` produces a body-content fragment (no
+    Provenance and Review Status section) for callers -- namely
+    ``authority_transformer._composer_enhance()`` -- that append their own
+    single canonical provenance section afterward and would otherwise get it
+    twice. Standalone/direct callers get the default ``True``, matching
+    ``render_evidence_report()``'s own default, so ``ComposedReport.html``
+    stays a complete, self-contained artifact unless a caller opts out."""
+    context = build_report_context(article)
+    graph = build_evidence_graph(article, context)
+    threat_product = build_threat_product(article, context)
+    package = _detection_package(article, context)
+
+    from automation.report_renderer import render_evidence_report
+    base = render_evidence_report(article, config, include_provenance=include_provenance)
+
+    role_decisions = _lean_role_decisions(article, context, threat_product)
+    role_html = _section(
+        "Role-Based Decisions",
+        _bullets([f"<strong>{d.role.value.replace('_', ' ').title()}:</strong> {_esc(d.decision)} "
+                  f"<span style=\"color:#64748b\">&mdash; {_esc(d.rationale)}</span>" for d in role_decisions],
+                 "#00d4ff"),
+        "#00d4ff",
+    )
+
+    source = next(iter(graph.sources.values()))
+    reliability_html = _section(
+        "Source Reliability & Corroboration",
+        _panel(
+            f'<p style="margin:0 0 8px"><strong>{_esc(source.publisher)}:</strong> {_esc(admiralty_label(source.reliability))}</p>'
+            '<p style="margin:0;color:#94a3b8">Whether an independent second source corroborates this record has '
+            "not been assessed (see the evidence ledger). This report does not wait on that assessment to "
+            "publish, and does not overstate certainty in the meantime.</p>",
+        ),
+        "#64748b",
+    )
+
+    html = base.html + role_html + reliability_html
+
+    intelligence_gaps = [
+        IntelligenceGap(
+            description="Whether an independent second source corroborates this record has not been assessed.",
+            category="KNOWN_UNKNOWN",
+            what_would_confirm_or_refute="A second, independent source reporting the same underlying fact.",
+        ),
+    ]
+
+    material_claims = [c for c in graph.claims.values() if c.has_evidence()]
+    bundle = ReportBundle(
+        report_id=context.report_id, graph=graph, rendered_text=html,
+        detection_rules=_detection_rules(context.report_id, package),
+        threat_products=[threat_product] if threat_product else [],
+        intelligence_gaps=intelligence_gaps,
+        review=None, is_premium_tier=(requested_tier in (
+            CertificationState.PREMIUM_READY_PENDING_HUMAN, CertificationState.PREMIUM_CERTIFIED,
+            CertificationState.PREMIUM_AUTOMATED_CERTIFIED,
+        )),
+        depth_assessment=DepthAssessment(
+            rendered_word_count=len(html.split()), material_claim_count=len(material_claims),
+            distinct_evidence_backed_sections=html.count("data-section="),
+        ),
+    )
+    control_results = evaluate_commercial_readiness(bundle)
+    downgrade = determine_achieved_tier(control_results, requested_tier=requested_tier)
+
+    return ComposedReport(
+        report_id=context.report_id, context=context, html=html, bundle=bundle,
+        control_results=control_results, downgrade=downgrade,
+    )

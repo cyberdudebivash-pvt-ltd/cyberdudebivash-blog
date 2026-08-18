@@ -1,0 +1,151 @@
+"""Tests for sentinel_engine.reportx.discovery_bridge -- the
+DiscoveredArticle -> EvidenceGraph adapter (Intelligence Factory
+architecture, the one genuinely missing piece).
+"""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+
+from automation.content_discovery import DiscoveredArticle
+from automation.report_integrity import build_report_context
+
+from sentinel_engine.reportx.claim_model import EpistemicState, Reliability
+from sentinel_engine.reportx.discovery_bridge import (
+    build_evidence_graph,
+    build_source_record,
+    build_threat_product,
+    source_reliability,
+)
+from sentinel_engine.reportx.threat_schemas import CISAKEVRecord, CVERecord, RansomwareVictimClaim
+
+
+def _cve_article(**overrides) -> DiscoveredArticle:
+    defaults = dict(
+        url="https://nvd.nist.gov/vuln/detail/CVE-2026-99999",
+        title="CVE-2026-99999 test vulnerability",
+        summary="A test vulnerability allows remote code execution via crafted input.",
+        published_at="2026-08-17T11:16:44Z",
+        content_hash="deadbeef",
+        labels=["Vulnerabilities"],
+        source="nvd",
+        cve_id="CVE-2026-99999", cvss_score=9.1, cvss_vector="AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+        cwe_ids=["CWE-78"], kev_listed=False,
+    )
+    defaults.update(overrides)
+    return DiscoveredArticle(**defaults)
+
+
+def _ransomware_article(**overrides) -> DiscoveredArticle:
+    defaults = dict(
+        url="https://www.ransomware.live/id/test",
+        title="Acme Test Corp", summary="qilin has listed Acme Test Corp as a new victim on its leak site.",
+        published_at="2026-08-18T00:00:00Z", content_hash="cafef00d",
+        labels=["Ransomware", "qilin"], source="ransomware_intel",
+    )
+    defaults.update(overrides)
+    return DiscoveredArticle(**defaults)
+
+
+class TestSourceReliability:
+    def test_authoritative_sources_are_high(self):
+        for source in ("nvd", "cisa_kev", "cisa_advisory", "mitre"):
+            assert source_reliability(_cve_article(source=source)) == Reliability.HIGH
+
+    def test_third_party_aggregators_are_moderate(self):
+        assert source_reliability(_ransomware_article()) == Reliability.MODERATE
+
+    def test_unrecognized_source_is_unknown_not_fabricated_high(self):
+        assert source_reliability(_cve_article(source="some_new_feed")) == Reliability.UNKNOWN
+
+
+class TestSourceRecord:
+    def test_full_content_hashes_real_content(self):
+        article = _cve_article(full_content="the complete retrieved article text")
+        context = build_report_context(article)
+        record = build_source_record(article, context)
+        assert record.content_sha256 is not None
+        assert record.excerpt_fingerprint_sha256 is None
+
+    def test_missing_full_content_uses_honest_excerpt_fallback_not_a_fabricated_hash(self):
+        article = _cve_article(full_content=None)
+        context = build_report_context(article)
+        record = build_source_record(article, context)
+        assert record.content_sha256 is None
+        assert record.excerpt_fingerprint_sha256 is not None
+        assert record.fingerprint_fallback_reason
+
+
+class TestClaimConstruction:
+    def test_cve_article_produces_conservative_epistemic_states(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context)
+        assert graph.claims["c-cve-id"].status == EpistemicState.CONFIRMED  # NVD is authoritative for its own ID
+        # EXPLOITATION is a Section 10 high-impact claim type -- never CONFIRMED on one source
+        assert graph.claims["c-exploitation-status"].status != EpistemicState.CONFIRMED
+
+    def test_kev_listed_produces_a_confirmed_kev_claim(self):
+        article = _cve_article(kev_listed=True, source="cisa_kev")
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context)
+        assert "c-kev-listed" in graph.claims
+        assert graph.claims["c-kev-listed"].status == EpistemicState.CONFIRMED
+
+    def test_ransomware_victim_claim_stays_reported_never_confirmed(self):
+        article = _ransomware_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context)
+        assert graph.claims["c-victim-claim"].status == EpistemicState.REPORTED
+        assert graph.claims["c-victim-claim"].claim_type.value == "VICTIM_IDENTITY"
+
+    def test_every_claim_carries_real_evidence_and_source_refs(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context)
+        for claim in graph.claims.values():
+            assert claim.evidence_refs, f"{claim.claim_id} has no evidence_refs"
+            assert claim.source_refs, f"{claim.claim_id} has no source_refs"
+
+    def test_independent_corroboration_gap_is_always_present_and_honest(self):
+        for article in (_cve_article(), _ransomware_article()):
+            context = build_report_context(article)
+            graph = build_evidence_graph(article, context)
+            gap = graph.claims["c-independent-corroboration"]
+            assert gap.status == EpistemicState.NOT_ASSESSED
+
+
+class TestThreatProductMapping:
+    def test_cve_advisory_maps_to_cve_record(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        product = build_threat_product(article, context)
+        assert isinstance(product, CVERecord)
+        assert product.cve_id == "CVE-2026-99999"
+        assert product.cvss_v31 == 9.1
+
+    def test_cisa_kev_maps_to_cisa_kev_record(self):
+        article = _cve_article(source="cisa_kev", kev_listed=True, kev_date_added="2026-08-17")
+        context = build_report_context(article)
+        product = build_threat_product(article, context)
+        assert isinstance(product, CISAKEVRecord)
+        assert product.date_added == "2026-08-17"
+
+    def test_ransomware_claim_maps_to_ransomware_victim_claim(self):
+        article = _ransomware_article()
+        context = build_report_context(article)
+        product = build_threat_product(article, context)
+        assert isinstance(product, RansomwareVictimClaim)
+        assert product.victim_observation.victim_name == "Acme Test Corp"
+
+    def test_unmapped_family_returns_none_not_a_wrong_schema(self):
+        article = DiscoveredArticle(
+            url="https://example.com/breach", title="Example breach notice",
+            summary="A company disclosed a data breach affecting customer records.",
+            published_at="2026-08-18T00:00:00Z", content_hash="x", labels=[], source="breach_intel",
+        )
+        context = build_report_context(article)
+        assert build_threat_product(article, context) is None

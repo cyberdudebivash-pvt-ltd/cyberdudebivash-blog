@@ -33,6 +33,7 @@ class DetectionPackage:
     rationale: str
     telemetry: tuple[str, ...]
     sigma_yaml: Optional[str] = None
+    kql: Optional[str] = None
     attack_mappings: tuple[str, ...] = ()
 
 
@@ -126,6 +127,78 @@ def _validated_sigma(report_id: str, rule: dict) -> str:
     return rendered
 
 
+_KQL_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+_KQL_ALLOWED_OPERATORS = ("has_any", "has", "contains", "==", "!=", "startswith", "endswith")
+# Matches one well-formed, correctly-escaped KQL double-quoted string
+# literal (an indicator token like "SLEEP(" is valid KQL despite containing
+# an unbalanced paren *inside the literal* -- that paren is data, not
+# structure). Stripping every well-formed literal first, so structural
+# balance checks below run only on code, is what makes those checks
+# meaningful instead of false-positiving on legitimate literal content.
+_KQL_STRING_LITERAL_RE = re.compile(r'"(?:[^"\\]|\\.)*"')
+
+
+def _kql_string_list(tokens: list[str]) -> str:
+    """Render a comma-separated list of KQL double-quoted string literals
+    with real backslash/quote escaping for that language -- not Python's
+    own repr() quote-style-picking, which mixes single- and double-quoted
+    output depending on a token's content and has no obligation to match
+    KQL's escape conventions."""
+    literals = []
+    for token in tokens:
+        escaped = token.replace("\\", "\\\\").replace('"', '\\"')
+        literals.append(f'"{escaped}"')
+    return ", ".join(literals)
+
+
+def _validated_kql(report_id: str, rule: dict) -> str:
+    """Return stable Sentinel KQL text only after structural syntax and
+    minimum-contract validation -- the same rigor level ``_validated_sigma``
+    applies via PyYAML's real parser: neither is a full grammar/semantic
+    validator for its language, both refuse to return text that fails
+    their language's minimum structural contract (balanced quoting and
+    parens, a bare-identifier table line followed only by pipe stages, a
+    real non-empty ``where`` filter using a recognized operator) rather
+    than trusting hand-assembled string interpolation.
+    """
+    mandatory = {"title", "table", "where", "project"}
+    if not mandatory.issubset(rule):
+        raise ValueError("KQL rule is missing a mandatory field")
+    if not rule["where"]:
+        raise ValueError("generated KQL rule has no where clause")
+    if not _KQL_IDENTIFIER_RE.match(rule["table"]):
+        raise ValueError(f"invalid KQL table identifier: {rule['table']!r}")
+
+    comment_lines = [f"// {rule['title']}", f"// report: {report_id}"]
+    if rule.get("table_note"):
+        comment_lines.append(f"// {rule['table_note']}")
+    code_lines = [rule["table"]] + [f"| where {clause}" for clause in rule["where"]]
+    if rule["project"]:
+        code_lines.append(f"| project {', '.join(rule['project'])}")
+    rendered = "\n".join(comment_lines + code_lines)
+
+    if not _KQL_IDENTIFIER_RE.match(code_lines[0]):
+        raise ValueError("generated KQL does not open with a bare table identifier")
+    for stage in code_lines[1:]:
+        if not stage.startswith("| "):
+            raise ValueError(f"generated KQL stage does not start with a pipe operator: {stage!r}")
+    # Strip every well-formed string literal before checking structural
+    # balance -- a literal like "SLEEP(" legitimately contains an
+    # unbalanced paren as data; only code-level parens/quotes must balance.
+    structural_text = _KQL_STRING_LITERAL_RE.sub("", rendered)
+    if '"' in structural_text:
+        raise ValueError("generated KQL has an unterminated or malformed string literal")
+    if structural_text.count("(") != structural_text.count(")"):
+        raise ValueError("generated KQL has unbalanced parentheses")
+    where_stages = [ln for ln in code_lines if ln.startswith("| where ")]
+    if not where_stages:
+        raise ValueError("generated KQL has no where stage")
+    for stage in where_stages:
+        if not any(op in stage for op in _KQL_ALLOWED_OPERATORS):
+            raise ValueError(f"generated KQL where stage uses no recognized operator: {stage!r}")
+    return rendered
+
+
 def _detection_package(article: DiscoveredArticle, context: ReportContext) -> DetectionPackage:
     source = _source_text(article).lower()
     source_ref = article.url
@@ -202,6 +275,16 @@ def _detection_package(article: DiscoveredArticle, context: ReportContext) -> De
             "level": "medium",
             "tags": ["attack.initial-access", "attack.t1190"],
         }
+        sqli_tokens = rule["detection"]["selection"]["cs-uri-query|contains"]
+        kql_rule = {
+            "title": rule["title"],
+            "table": "WebRequestLogs",
+            "table_note": "Placeholder table name -- bind to your ingested web/WAF request-log table "
+                           "(e.g. AzureDiagnostics with Category == 'ApplicationGatewayAccessLog', W3CIISLog, "
+                           "or a custom table) and confirm the request-URI column name before deployment.",
+            "where": [f"RequestUri has_any ({_kql_string_list(sqli_tokens)})"],
+            "project": ["TimeGenerated", "RequestUri", "ClientIP"],
+        }
         return DetectionPackage(
             status="syntax_validated_experimental",
             rationale="The source explicitly identifies SQL injection; the rule detects class-level probes, not successful exploitation.",
@@ -210,6 +293,7 @@ def _detection_package(article: DiscoveredArticle, context: ReportContext) -> De
                 "Tune by application route and decode URL-encoded parameters before matching.",
             ),
             sigma_yaml=_validated_sigma(context.report_id, rule),
+            kql=_validated_kql(context.report_id, kql_rule),
             attack_mappings=("Initial Access → Exploit Public-Facing Application (T1190), conditional on an exposed web application.",),
         )
 
@@ -226,6 +310,15 @@ def _detection_package(article: DiscoveredArticle, context: ReportContext) -> De
             "level": "medium",
             "tags": ["attack.initial-access", "attack.t1190"],
         }
+        kql_rule = {
+            "title": rule["title"],
+            "table": "WebRequestLogs",
+            "table_note": "Placeholder table name -- bind to your ingested web/WAF request-log table "
+                           "(e.g. AzureDiagnostics with Category == 'ApplicationGatewayAccessLog', W3CIISLog, "
+                           "or a custom table) and confirm the request-URI column name before deployment.",
+            "where": [f"RequestUri has_any ({_kql_string_list(tokens)})"],
+            "project": ["TimeGenerated", "RequestUri", "ClientIP"],
+        }
         return DetectionPackage(
             status="syntax_validated_experimental",
             rationale="The source identifies a request-oriented vulnerability class with testable class-level request indicators.",
@@ -234,6 +327,7 @@ def _detection_package(article: DiscoveredArticle, context: ReportContext) -> De
                 "Treat matches as investigation leads; confirm product route and affected version before escalation.",
             ),
             sigma_yaml=_validated_sigma(context.report_id, rule),
+            kql=_validated_kql(context.report_id, kql_rule),
             attack_mappings=("Initial Access → Exploit Public-Facing Application (T1190), conditional on an exposed web application.",),
         )
 
@@ -241,6 +335,8 @@ def _detection_package(article: DiscoveredArticle, context: ReportContext) -> De
         re.search(r"web|http|server|application|api|remote", source, re.IGNORECASE)
     )
     if web_rce:
+        web_service_names = ["w3wp.exe", "httpd", "nginx", "java"]
+        interpreter_names = ["cmd.exe", "powershell.exe", "sh", "bash"]
         rule = {
             "title": f"Web Service Spawning a Command Interpreter Related to {article.cve_id or context.report_id}",
             "description": "Detects command interpreters spawned by common web-service processes. Requires product-specific parent-process tuning.",
@@ -256,6 +352,18 @@ def _detection_package(article: DiscoveredArticle, context: ReportContext) -> De
             "level": "high",
             "tags": ["attack.execution", "attack.t1059"],
         }
+        kql_rule = {
+            "title": rule["title"],
+            "table": "DeviceProcessEvents",
+            "table_note": "DeviceProcessEvents is a real Microsoft Defender/Sentinel Advanced Hunting table; "
+                           "tune the parent-service and interpreter name lists to the affected product's actual "
+                           "executable before deployment.",
+            "where": [
+                f"InitiatingProcessFileName has_any ({_kql_string_list(web_service_names)})",
+                f"FileName has_any ({_kql_string_list(interpreter_names)})",
+            ],
+            "project": ["Timestamp", "DeviceName", "InitiatingProcessFileName", "FileName", "ProcessCommandLine"],
+        }
         return DetectionPackage(
             status="syntax_validated_experimental",
             rationale="The source identifies command/code execution and a remotely reachable service context.",
@@ -264,6 +372,7 @@ def _detection_package(article: DiscoveredArticle, context: ReportContext) -> De
                 "Replace generic parent-process names with the affected product executable before deployment.",
             ),
             sigma_yaml=_validated_sigma(context.report_id, rule),
+            kql=_validated_kql(context.report_id, kql_rule),
             attack_mappings=("Execution → Command and Scripting Interpreter (T1059), conditional on observed child-process execution.",),
         )
 
@@ -445,6 +554,14 @@ def _detection_section(package: DetectionPackage) -> str:
             f'<pre style="margin:0;padding:16px;background:#07100a;color:#86efac;white-space:pre-wrap;overflow-x:auto;font-size:11px;line-height:1.55"><code>{_esc(package.sigma_yaml)}</code></pre>'
             '</div>'
         )
+    if package.kql:
+        body += (
+            '<div style="margin-top:14px;border:1px solid #22c55e55;border-radius:8px;overflow:hidden">'
+            '<div style="padding:8px 14px;background:#161b22;color:#22c55e;font-family:monospace;font-size:11px">'
+            'SENTINEL KQL — SYNTAX VALIDATED · EXPERIMENTAL · ENVIRONMENT TUNING REQUIRED</div>'
+            f'<pre style="margin:0;padding:16px;background:#07100a;color:#86efac;white-space:pre-wrap;overflow-x:auto;font-size:11px;line-height:1.55"><code>{_esc(package.kql)}</code></pre>'
+            '</div>'
+        )
     return _section("Detection Engineering", body, "#06b6d4")
 
 
@@ -500,7 +617,9 @@ def _provenance(article: DiscoveredArticle, context: ReportContext) -> str:
     return _section("Provenance and Review Status", _panel(cells, "#334155", "#030912"), "#64748b")
 
 
-def render_evidence_report(article: DiscoveredArticle, config: Config) -> RenderedReport:
+def render_evidence_report(
+    article: DiscoveredArticle, config: Config, include_provenance: bool = True,
+) -> RenderedReport:
     context = build_report_context(article)
     severity, severity_color = _severity(article)
     package = _detection_package(article, context)
@@ -551,7 +670,7 @@ def render_evidence_report(article: DiscoveredArticle, config: Config) -> Render
         + _attack_section(package)
         + _detection_section(package)
         + _references(article, context)
-        + _provenance(article, context)
+        + (_provenance(article, context) if include_provenance else "")
         + '<div style="margin-top:24px;padding:14px 18px;background:#120a00;border:1px solid #f59e0b55;border-radius:8px;color:#fbbf24;font-size:12px;line-height:1.6">'
         f'<strong>{_esc(context.review_status)}.</strong> {_esc(context.certification_status)}. '
         'Customer-specific action requires exposure validation and accountable human approval.</div>'

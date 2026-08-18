@@ -6,9 +6,20 @@ with a design that reuses, rather than replaces, three things this
 repository already has working: `content_discovery.py`'s live feed
 ingestion, `report_integrity.py`'s fail-closed evidence gate, and
 `sentinel_engine.reportx` (ReportX/System 3 + the P0 release-certification
-layer) as the claim/evidence/confidence engine. **This document is a design
-+ one reference implementation (the flagship report). It does not modify
-the live pipeline** — see "What this does not do" at the end.
+layer) as the claim/evidence/confidence engine.
+
+**Status update:** this document was written as a design + one reference
+implementation (the flagship report) that deliberately did not touch the
+live pipeline. Approval to wire it in followed (the subsequent ROLE
+mandate's success criteria require future products to generate
+"automatically... without manual rewriting"), and the bridge adapter +
+composer described below are now built **and wired** into
+`automation/authority_transformer.py`'s `transform()` — see
+`REPORTX-LIVE-PIPELINE-DEMONSTRATION.md` for real, live-data proof and
+`REPORTX-QUALITY-MANAGEMENT-SYSTEM.md` for exactly what that wiring does
+and does not gate yet. The design content below is otherwise unchanged
+from when it was approved; "What this does not do" at the end is updated
+to match current reality, not left stale.
 
 ---
 
@@ -35,7 +46,13 @@ renderer produces yet.
 
 ---
 
-## The bridge adapter — the one genuinely missing piece
+## The bridge adapter — built as `discovery_bridge.py`, wired as `pipeline_composer.py`
+
+*Originally "the one genuinely missing piece" — now built exactly as
+designed below (`sentinel_engine/reportx/discovery_bridge.py`), with
+`pipeline_composer.py` as the second half that turns it into a real,
+gate-checked report and wires into the live `transform()` call. The
+mapping below is the as-built contract, not a proposal.*
 
 `sentinel_engine.reportx.bundle_io` already has the JSON↔`ReportBundle`
 direction (built for System 5). What does not exist is the live-feed
@@ -173,9 +190,16 @@ penalized as `FAIL`) for sections genuinely not attempted.
 
 ## What this does not do
 
-- Does not modify `automation/authority_transformer.py`,
-  `automation/main.py`, or any scheduled workflow. The legacy pipeline
-  keeps running exactly as it does today.
+- **Updated — no longer current as originally written.** The bridge
+  adapter and composer described above are now wired into
+  `automation/authority_transformer.py`'s `transform()`, as a new,
+  fail-closed-gated rung tried after the LLM path and before
+  `_legacy_template_enhance()`. What remains true: it does **not** modify
+  `automation/main.py` or any scheduled workflow, and it does not remove
+  or bypass `_legacy_template_enhance()` — that template is still the
+  final, deprecated-not-deleted fallback for evidence the composer's own
+  tier ladder declines. The LLM-authored path is also unchanged: the
+  composer is tried only when `call_llm()` returns nothing.
 - Does not add a sixth writer system. The bridge adapter's whole purpose
   is to make ReportX the **single** evidence engine behind every future
   product family, per Principle 3 (Single Source of Truth) — it replaces
