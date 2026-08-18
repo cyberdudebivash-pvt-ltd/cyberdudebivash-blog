@@ -183,6 +183,23 @@ class TestFindIndependentPriorSource(unittest.TestCase):
     def test_empty_cve_id_returns_none(self):
         self.assertIsNone(find_independent_prior_source("", "nvd", self.state_path))
 
+    def test_candidate_with_only_a_generic_aggregator_connector_is_not_independent(self):
+        # CodeRabbit review (Round 7 follow-up): a candidate whose
+        # source_publisher is missing must not fall back to "global_rss"
+        # (an aggregator covering ~40 distinct outlets) as if that bare
+        # connector name were a specific, comparable identity -- it would
+        # almost always differ from a real named publisher, making a
+        # genuinely-unknown-outlet entry look "independent" by accident.
+        self._write_state({
+            "hash1": {
+                "source_url": "https://example.test/x", "source_title": "x",
+                "cves": ["CVE-2026-1234"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": None,
+            },
+        })
+        match = find_independent_prior_source("CVE-2026-1234", "Krebs on Security", self.state_path)
+        self.assertIsNone(match)
+
     def test_earliest_independent_match_wins_when_several_exist(self):
         self._write_state({
             "hash1": {

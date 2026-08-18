@@ -12,7 +12,7 @@ The 20-dimension, weighted commercial-readiness scorecard (`intelligence_validat
 
 Ran a live dry-run against real, fresh CVE/KEV articles before deciding anything. Every one scored well (84–90/100) but **`publication_eligible` was `False` for all of them.** Digging into `blocking_reasons` for a real article:
 
-```
+```text
 overall_score: 85 | eligible: False
 - MITRE ATT&CK Justification: 0/1 cited technique(s) are valid and evidenced. Unjustified: T1059.
 - Analytical Completeness: failing "30-40 page premium depth"

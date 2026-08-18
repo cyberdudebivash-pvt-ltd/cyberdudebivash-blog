@@ -319,6 +319,15 @@ def _apply_independent_corroboration(
     discipline for exactly the high-impact claims it exists to protect."""
     if state_file is None or not article.cve_id:
         return
+    # COMMERCIAL-QUALITY-2026-08-18 Round 7 follow-up (CodeRabbit review):
+    # article.source alone (e.g. "global_rss") names the AGGREGATION
+    # CONNECTOR, not a real publisher -- ~40 distinct outlets share it. If
+    # this article's own real publisher is unknown, we cannot honestly
+    # tell whether a same-connector historical entry is independent or is
+    # this exact same outlet re-crawled; failing closed here (never even
+    # attempting the lookup) is the only choice that can't overclaim.
+    if article.source == "global_rss" and not article.source_publisher:
+        return
     match = find_independent_prior_source(
         cve_id=article.cve_id, exclude_publisher=article.source_publisher or article.source,
         state_file=state_file,
@@ -335,7 +344,12 @@ def _apply_independent_corroboration(
     source = SourceRecord(
         source_id=CORROBORATION_SOURCE_ID, url=match.get("source_url") or "",
         publisher=publisher, source_type=_SOURCE_TYPE_MAP.get(match.get("source", ""), SourceType.OTHER),
-        source_role=SourceRole.CORROBORATION, retrieved_at=match.get("published_at") or context.generated_at,
+        # retrieved_at is our own clock, right now (this report's own
+        # generation), never the historical entry's "published_at" --
+        # that field is when OUR pipeline published the OLDER post, not
+        # when we retrieved this corroborating fact (CodeRabbit review:
+        # using it here recorded false provenance metadata).
+        source_role=SourceRole.CORROBORATION, retrieved_at=context.generated_at,
         reliability=_reliability_for(match.get("source", ""), match.get("source_publisher")),
         excerpt_fingerprint_sha256=compute_excerpt_fingerprint([match.get("source_title") or publisher]),
         fingerprint_fallback_reason=(

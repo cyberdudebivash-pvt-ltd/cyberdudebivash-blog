@@ -201,6 +201,46 @@ class TestIndependentSourceCorroboration:
         graph = build_evidence_graph(article, context, state_file=state_file)
         assert graph.claims["c-exploitation-status"].corroboration_state == CorroborationState.SINGLE_SOURCE
 
+    def test_ambiguous_current_publisher_fails_closed_even_with_a_real_match(self, tmp_path):
+        # CodeRabbit review: "global_rss" is the aggregation CONNECTOR
+        # (~40 distinct outlets), not a publisher. If THIS article's own
+        # real publisher is unknown, we cannot honestly tell a same-outlet
+        # re-crawl from a genuinely independent one -- must fail closed
+        # (never even attempt the lookup), not just get lucky that the
+        # historical entry's publisher happens to differ lexically.
+        state_file = self._write_state(tmp_path / "published_posts.json", {
+            "hash1": {
+                "source_url": "https://www.bleepingcomputer.com/x", "source_title": "x",
+                "cves": ["CVE-2026-99999"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": "BleepingComputer",
+            },
+        })
+        article = _cve_article(source="global_rss", source_publisher=None)
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context, state_file=state_file)
+        assert list(graph.sources.keys()) == ["src-primary"]
+        assert graph.claims["c-independent-corroboration"].status == EpistemicState.NOT_ASSESSED
+
+    def test_corroborating_source_retrieved_at_is_this_reports_own_clock(self, tmp_path):
+        # CodeRabbit review: match["published_at"] is when OUR pipeline
+        # published the OLDER post, not when we retrieved this
+        # corroborating fact -- using it as retrieved_at recorded false
+        # provenance. retrieved_at must be this report's own generation
+        # time, always, regardless of the historical entry's timestamp.
+        state_file = self._write_state(tmp_path / "published_posts.json", {
+            "hash1": {
+                "source_url": "https://www.bleepingcomputer.com/x", "source_title": "x",
+                "cves": ["CVE-2026-99999"], "published_at": "2019-01-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": "BleepingComputer",
+            },
+        })
+        article = _cve_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context, state_file=state_file)
+        corroborating = graph.sources["src-corroboration-1"]
+        assert corroborating.retrieved_at == context.generated_at
+        assert corroborating.retrieved_at != "2019-01-01T00:00:00Z"
+
     def test_no_match_leaves_the_gap_claim_honestly_unassessed(self, tmp_path):
         state_file = self._write_state(tmp_path / "published_posts.json", {})
         article = _cve_article()
