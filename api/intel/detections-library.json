@@ -1,8 +1,49 @@
 {
-  "generated": "2026-08-17T19:00:42.972Z",
+  "generated": "2026-08-18T01:53:17.374Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-53659-maven-org-http4k-http4k-core",
+      "title": "http4k: Unbounded gzip decompression in `ServerFilters.GZip` / `RequestFilters.GunZip` allowed memory-exhaustion DoS",
+      "url": "/posts/cve-2026-53659-maven-org-http4k-http4k-core.html",
+      "generated": "2026-08-17T22:18:06.242Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-53659",
+        "CVE-2026-53659"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 6.49.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 6.49.0.0\"; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert ip $HOME_NET any -> 5.42.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 5.42.0.0\"; classtype:trojan-activity; sid:9000002; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-54148-maven-org-http4k-http4k-security-digest",
+      "title": "http4k: `DigestAuthProvider.verify` did not bind to request URI",
+      "url": "/posts/cve-2026-54148-maven-org-http4k-http4k-security-digest.html",
+      "generated": "2026-08-17T22:18:06.234Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-54148",
+        "CVE-2026-54148"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 6.50.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 6.50.0.0\"; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert ip $HOME_NET any -> 5.42.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 5.42.0.0\"; classtype:trojan-activity; sid:9000002; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain http4k.org\"; dns.query; content:\"http4k.org\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-48798-nuget-ssh-net",
       "title": "SSH.NET: ScpClient Recursive Download Allows Arbitrary File Write via Server-Controlled SCP Filenames",
@@ -4158,50 +4199,6 @@
       "suricata": [
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Bulky_Connection8608&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Bulky_Connection8608&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1usxtpz/how_are_you_handling_ssl_inspection_without/\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1usxtpz/how_are_you_handling_ssl_inspection_without/\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
-      ]
-    },
-    {
-      "slug": "uptick-in-email-bombing",
-      "title": "Uptick in email bombing",
-      "url": "/posts/uptick-in-email-bombing.html",
-      "generated": "2026-07-10T18:32:04.188Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [
-        {
-          "id": "T1027",
-          "name": "Obfuscated Files or Information",
-          "tactic": "defense-evasion",
-          "confidence": "MEDIUM"
-        }
-      ],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Beginning-Try3454&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Beginning-Try3454&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1usuewu/uptick_in_email_bombing/&quot;&gt;[link]&lt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1usuewu/uptick_in_email_bombing/&quot\\;&gt\\;[link]&lt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1usuewu/uptick_in_email_bombing/&quot;&gt;[comments]\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1usuewu/uptick_in_email_bombing/&quot\\;&gt\\;[comments]\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "training-recommendations-for-soc-teams-in-the-age-of-ai",
-      "title": "Training recommendations for SOC teams in the age of AI?",
-      "url": "/posts/training-recommendations-for-soc-teams-in-the-age-of-ai.html",
-      "generated": "2026-07-10T17:02:06.241Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/bankster24&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/bankster24&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1ustdp5/training_recommendations_for_soc_teams_in_th\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1ustdp5/training_recommendations_for_soc_teams_in_th\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
       ]
     }
