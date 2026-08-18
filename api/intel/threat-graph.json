@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-18T16:26:06.496Z",
+  "generated": "2026-08-18T16:36:36.769Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11259,
+    "total_nodes": 11263,
     "actors": 8,
-    "cves": 3732,
-    "campaigns": 1141,
+    "cves": 3733,
+    "campaigns": 1143,
     "malware": 0,
     "iocs": 883,
-    "edges": 3713
+    "edges": 3715
   },
   "nodes": {
     "actor:lockbit": {
@@ -211407,7 +211407,7 @@
       "attributes": {
         "cvss": 7.5,
         "threat_level": "LOW",
-        "priority_score": 43,
+        "priority_score": 41,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
@@ -211573,7 +211573,7 @@
       "attributes": {
         "cvss": 9.1,
         "threat_level": "MEDIUM",
-        "priority_score": 49,
+        "priority_score": 47,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
@@ -212542,7 +212542,7 @@
       "attributes": {
         "cvss": 7.5,
         "threat_level": "MEDIUM",
-        "priority_score": 50,
+        "priority_score": 48,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
@@ -213512,6 +213512,82 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "CVE-2026-55839": {
+      "id": "CVE-2026-55839",
+      "type": "CVE",
+      "name": "Kestra vulnerable to stored XSS via custom Markdown [[link]] attribute injection",
+      "attributes": {
+        "cvss": 8.7,
+        "threat_level": "HIGH",
+        "priority_score": 66,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.kestra:kestra",
+        "published": "2026-08-18",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-f80f4ede3b3bb997": {
+      "id": "GHSA-f80f4ede3b3bb997",
+      "type": "Intel",
+      "name": "@rhinostone/swig: arbitrary local file read via include/extends path traversal",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "@rhinostone/swig",
+        "published": "2026-08-18",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-55839": {
+      "id": "campaign:cve-2026-55839",
+      "type": "Campaign",
+      "name": "maven io.kestra:kestra Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55839"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55839",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-3bd84488": {
+      "id": "campaign:cluster-3bd84488",
+      "type": "Campaign",
+      "name": "npm @rhinostone/swig Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-f80f4ede3b3bb997",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -247089,6 +247165,24 @@
       "id": "campaign:cluster-08cfa9c3→includes→FULLDIS-85ccdfd3b96c2570",
       "source": "campaign:cluster-08cfa9c3",
       "target": "FULLDIS-85ccdfd3b96c2570",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55839→includes→CVE-2026-55839",
+      "source": "campaign:cve-2026-55839",
+      "target": "CVE-2026-55839",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-3bd84488→includes→GHSA-f80f4ede3b3bb997",
+      "source": "campaign:cluster-3bd84488",
+      "target": "GHSA-f80f4ede3b3bb997",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-18",
