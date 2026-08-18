@@ -212,3 +212,39 @@ class TestRoleRoutingDoesNotMisapplyVulnerabilityManagement:
         # merely empty, when this family has no grounded role guidance.
         result = compose_report(_general_intelligence_article(), CONFIG)
         assert "Role-Based Decisions" not in result.html
+
+
+class TestTwoAxisReliabilityInTheRenderedReport:
+    """COMMERCIAL-QUALITY-2026-08-18: end-to-end proof that the real,
+    independent 2-axis Admiralty model (not the old blended "A/B —
+    Reliable" line) and the real, known RSS publisher (not the generic
+    "global_rss" connector name) actually reach the rendered HTML -- not
+    just the underlying helper functions in isolation."""
+
+    def test_rendered_report_shows_the_real_publisher_not_the_connector_name(self):
+        # "global_rss" legitimately still appears elsewhere in the page (the
+        # provenance table's separate, correct "Source system" / connector
+        # row) -- what must NOT happen is the Source Reliability &
+        # Corroboration section itself falling back to the connector name
+        # instead of the real, known publisher.
+        import re
+        article = _general_intelligence_article(source="global_rss", source_publisher="Dark Reading")
+        result = compose_report(article, CONFIG)
+        reliability_section = re.search(
+            r"Source Reliability &amp; Corroboration.*?</section>", result.html, re.DOTALL,
+        ).group(0)
+        assert "Dark Reading" in reliability_section
+        assert "global_rss" not in reliability_section
+
+    def test_rendered_report_shows_three_separate_labeled_reliability_lines(self):
+        result = compose_report(_cve_article(), CONFIG)
+        assert "Source Reliability:" in result.html
+        assert "Information Credibility:" in result.html
+        assert "Overall Analytical Confidence:" in result.html
+        assert "A/B" not in result.html
+
+    def test_known_rss_publisher_grades_as_moderate_not_unknown(self):
+        article = _general_intelligence_article(source="global_rss", source_publisher="BleepingComputer")
+        result = compose_report(article, CONFIG)
+        assert "Source Reliability: C" in result.html
+        assert "Source Reliability: F" not in result.html

@@ -124,6 +124,20 @@ class TestGlobalRSSAggregator(unittest.TestCase):
         self.assertGreater(len(result), 0)
         self.assertIn("Source Publisher:", result[0].full_content)
 
+    def test_source_publisher_is_a_real_structured_field_not_just_free_text(self):
+        # COMMERCIAL-QUALITY-2026-08-18: previously the real feed name only
+        # existed buried inside full_content's free text, so nothing
+        # downstream (source_reliability(), the rendered publisher label)
+        # could reliably use it -- every article collapsed to the generic
+        # "global_rss" connector name regardless of which of the ~40
+        # distinct, individually-known outlets it actually came from.
+        xml = MOCK_FEED_XML.format(pub_date=_recent_pub_date())
+        with patch("requests.get", return_value=_make_mock_response(xml)):
+            result = self.source.discover(self.state)
+        self.assertGreater(len(result), 0)
+        known_names = {f.name for f in _GLOBAL_FEEDS}
+        self.assertIn(result[0].source_publisher, known_names)
+
 
 class TestFetchFeed(unittest.TestCase):
     def setUp(self):

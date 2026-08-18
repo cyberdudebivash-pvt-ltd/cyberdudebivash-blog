@@ -52,6 +52,13 @@ class DiscoveredArticle:
     labels: list
     source: str
     full_content: Optional[str] = None
+    # The real publisher/outlet (e.g. "Dark Reading"), distinct from
+    # `source` (the ingestion connector, e.g. "global_rss") -- populated by
+    # rss_aggregator.py from its curated, named feed list. None for
+    # connectors where `source` already names a specific, singular
+    # authoritative system (nvd, cisa_kev, ...) rather than an aggregator
+    # covering many distinct outlets.
+    source_publisher: Optional[str] = None
 
     # Structured vulnerability data — populated by source modules (NVD, CISA
     # KEV) when available, and backfilled by automation/enrichment.py for

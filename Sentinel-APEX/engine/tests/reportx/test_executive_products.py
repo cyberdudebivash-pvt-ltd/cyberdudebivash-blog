@@ -3,7 +3,7 @@ Factory architecture, flagship-report renderers)."""
 
 from __future__ import annotations
 
-from sentinel_engine.reportx.claim_model import Reliability
+from sentinel_engine.reportx.claim_model import CorroborationState, Reliability
 from sentinel_engine.reportx.executive_products import (
     HuntHypothesis,
     RoleAudience,
@@ -11,10 +11,15 @@ from sentinel_engine.reportx.executive_products import (
     SectorApplicability,
     SectorImpact,
     admiralty_label,
+    information_credibility,
+    overall_analytical_confidence,
     render_hunt_package,
     render_role_decisions,
     render_sector_impact_matrix,
     role_display_label,
+    source_reliability_grade,
+    two_axis_reliability,
+    worst_corroboration_state,
 )
 
 
@@ -29,6 +34,72 @@ class TestAdmiraltyLabel:
 
     def test_unknown_maps_to_f(self):
         assert admiralty_label(Reliability.UNKNOWN).startswith("F")
+
+
+class TestTwoAxisReliability:
+    """COMMERCIAL-QUALITY-2026-08-18: independently verified live (and
+    separately flagged in the same terms by an external review) that the
+    platform rendered one blended label ("nvd: A/B — Reliable") instead of
+    the real, independent 2-axis Admiralty matrix -- Source Reliability
+    (the publisher) graded completely separately from Information
+    Credibility (this specific claim's corroboration standing)."""
+
+    def test_every_reliability_value_has_a_grade(self):
+        for r in Reliability:
+            assert source_reliability_grade(r)
+
+    def test_reliability_grades_are_never_a_slash_combo(self):
+        # The exact defect: "A/B" is not a real, single Admiralty grade.
+        for r in Reliability:
+            grade = source_reliability_grade(r)
+            assert "/" not in grade
+            assert len(grade) == 1
+
+    def test_every_corroboration_state_has_a_credibility_number_and_label(self):
+        for state in CorroborationState:
+            number, label = information_credibility(state)
+            assert 1 <= number <= 6
+            assert label
+
+    def test_multi_source_independent_is_the_best_credibility(self):
+        number, _ = information_credibility(CorroborationState.MULTI_SOURCE_INDEPENDENT)
+        assert number == 1
+
+    def test_uncorroborated_is_the_worst_credibility(self):
+        number, _ = information_credibility(CorroborationState.UNCORROBORATED)
+        assert number == 6
+
+    def test_dependent_sources_are_not_graded_as_independent_confirmation(self):
+        # Syndicated copies of the same original report must not be
+        # rewarded the same as genuine independent confirmation.
+        dependent_number, _ = information_credibility(CorroborationState.MULTI_SOURCE_DEPENDENT)
+        independent_number, _ = information_credibility(CorroborationState.MULTI_SOURCE_INDEPENDENT)
+        assert dependent_number > independent_number
+
+    def test_high_confidence_requires_both_axes_strong(self):
+        assert overall_analytical_confidence(Reliability.HIGH, 1) == "HIGH"
+        # Strong publisher alone, with only a single uncorroborated source,
+        # is not enough for HIGH -- both axes must be strong together.
+        assert overall_analytical_confidence(Reliability.HIGH, 3) != "HIGH"
+
+    def test_low_reliability_or_bad_credibility_forces_low_confidence(self):
+        assert overall_analytical_confidence(Reliability.UNKNOWN, 1) == "LOW"
+        assert overall_analytical_confidence(Reliability.HIGH, 6) == "LOW"
+
+    def test_two_axis_reliability_renders_three_separate_labeled_lines(self):
+        out = two_axis_reliability(Reliability.HIGH, CorroborationState.SINGLE_SOURCE)
+        assert "Source Reliability:" in out
+        assert "Information Credibility:" in out
+        assert "Overall Analytical Confidence:" in out
+        assert "A/B" not in out
+
+    def test_worst_corroboration_state_picks_the_least_corroborated(self):
+        assert worst_corroboration_state([
+            CorroborationState.MULTI_SOURCE_INDEPENDENT, CorroborationState.SINGLE_SOURCE,
+        ]) == CorroborationState.SINGLE_SOURCE
+
+    def test_worst_corroboration_state_defaults_to_uncorroborated_when_empty(self):
+        assert worst_corroboration_state([]) == CorroborationState.UNCORROBORATED
 
 
 class TestRoleDecisions:
