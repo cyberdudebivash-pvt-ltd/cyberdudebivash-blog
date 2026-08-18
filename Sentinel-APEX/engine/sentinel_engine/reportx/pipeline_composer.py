@@ -45,7 +45,7 @@ from .analytic_scaffolding import IntelligenceGap
 from .commercial_readiness import ControlResult, ReportBundle, evaluate_commercial_readiness
 from .detection_validation import DetectionRule, DetectionValidationState
 from .discovery_bridge import build_evidence_graph, build_threat_product
-from .executive_products import RoleAudience, RoleDecision, admiralty_label, render_role_decisions
+from .executive_products import RoleAudience, RoleDecision, admiralty_label, render_role_decisions, role_display_label
 from .human_review import CertificationState
 from .product_depth import DepthAssessment
 from .tier_downgrade import DowngradeResult, determine_achieved_tier
@@ -81,7 +81,7 @@ def _detection_rules(report_id: str, package: DetectionPackage) -> list[Detectio
     )]
 
 
-_VULNERABILITY_MANAGER_FAMILIES = ("cve_advisory", "cisa_advisory", "cisa_kev", "ransomware_claim")
+_VULNERABILITY_MANAGER_FAMILIES = ("cve_advisory", "cisa_advisory", "cisa_kev")
 
 
 def _lean_role_decisions(article, context: ReportContext, threat_product) -> list[RoleDecision]:
@@ -92,25 +92,44 @@ def _lean_role_decisions(article, context: ReportContext, threat_product) -> lis
     would itself be the padding defect this factory exists to remove.
 
     Vulnerability Manager guidance requires a real patch/exploitation
-    dimension to be relevant -- gated to the same families
+    dimension to be relevant -- gated to the families
     ``context.exploitation_status``/``context.patch_label`` are actually
     meaningful for (Section 10's evidence-scoping discipline applied to
     role routing, not just to claims). Before this gate, every family --
     including phishing/PhaaS and third-party ransomware-campaign reporting
     with no patch or exploitation dimension at all -- got a bare "Track
-    against {family} intake..." Vulnerability Manager decision regardless,
-    which is exactly the misrouted-guidance defect this fixes (verified
-    live against a real published JWR PhaaS report, family=general_intelligence,
-    which had no CVE/patch evidence anywhere in its bundle)."""
+    against {family} intake..." Vulnerability Manager decision regardless
+    (verified live against a real published JWR PhaaS report,
+    family=general_intelligence, which had no CVE/patch evidence anywhere in
+    its bundle). ``ransomware_claim`` was also removed from this list
+    (COMMERCIAL-QUALITY-2026-08-18 finding, independently verified against
+    the live-fetched CVE-2026-75105 report and this module's own then-empty
+    ``evidence_claim_ids`` for that family, which had already signalled the
+    decision wasn't really evidence-backed): an unverified leak-site victim
+    claim has no CVE, no patch, and no exploitation-status dimension either
+    -- it is not a vulnerability-management concern at all. The IR Manager
+    decision below already covers this family with real, evidence-scoped
+    guidance; it does not also need a Vulnerability Manager decision with
+    nothing to track against."""
     decisions: list[RoleDecision] = []
     if context.family in _VULNERABILITY_MANAGER_FAMILIES:
+        # exploitation_label/patch_label (report_integrity._exploitation()/
+        # _patch()) are standalone display phrases -- several of them (e.g.
+        # "Not confirmed by available evidence; not in verified KEV
+        # snapshot") were never written to grammatically complete a
+        # mid-sentence clause like "severity commensurate with {X}.", which
+        # produced broken English (independently verified live against the
+        # published CVE-2026-75105 report, and separately flagged in the
+        # same terms by an external review -- COMMERCIAL-QUALITY-2026-08-18).
+        # Presenting each status as its own colon-introduced clause is
+        # grammatically correct for every current and future value, rather
+        # than special-casing individual label strings.
         decisions.append(RoleDecision(
             role=RoleAudience.VULNERABILITY_MANAGER,
-            decision=f"Track against {context.family_label.lower()} intake at severity commensurate with "
-                     f"{context.exploitation_label.lower()}.",
+            decision=f"Track against {context.family_label.lower()} intake. "
+                     f"Exploitation status: {context.exploitation_label}. Patch status: {context.patch_label}.",
             rationale="Prioritization reflects this record's own exploitation/patch evidence, not a fixed severity template.",
-            evidence_claim_ids=("c-exploitation-status", "c-patch-status") if context.family in (
-                "cve_advisory", "cisa_advisory", "cisa_kev") else (),
+            evidence_claim_ids=("c-exploitation-status", "c-patch-status"),
         ))
     if context.family in ("cve_advisory", "cisa_advisory", "cisa_kev"):
         decisions.append(RoleDecision(
@@ -176,7 +195,7 @@ def compose_report(
     # return ''" convention for the same situation.
     role_html = "" if not role_decisions else _section(
         "Role-Based Decisions",
-        _bullets([f"<strong>{d.role.value.replace('_', ' ').title()}:</strong> {_esc(d.decision)} "
+        _bullets([f"<strong>{role_display_label(d.role)}:</strong> {_esc(d.decision)} "
                   f"<span style=\"color:#64748b\">&mdash; {_esc(d.rationale)}</span>" for d in role_decisions],
                  "#00d4ff"),
         "#00d4ff",

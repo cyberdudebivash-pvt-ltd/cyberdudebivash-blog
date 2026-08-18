@@ -25,6 +25,7 @@ from automation.report_integrity import (
     CERTIFICATION_STATUS,
     REVIEW_STATUS,
     PublicationIntegrityError,
+    _vulnerability_class,
     build_report_context,
     validate_publication,
 )
@@ -365,6 +366,32 @@ class TestFailClosedPublicationGate(unittest.TestCase):
         # verbatim continues to satisfy validate_publication()'s required-field check.
         html_with_real_label = rendered.html.replace(CERTIFICATION_STATUS, context.certification_status)
         validate_publication(article, context, html_with_real_label)  # must not raise
+
+
+class TestVulnerabilityClassification(unittest.TestCase):
+    """COMMERCIAL-QUALITY-2026-08-18: independently verified live against
+    the published CVE-2026-75105 report (a phpIPAM authorization-bypass
+    flaw, CWE-639) that _CWE_CLASS was missing that CWE entirely, so a
+    report with a clear, named weakness rendered "Vulnerability class:
+    Unclassified" -- and, because report_renderer.py branches its
+    technical-evidence and IOC generation on context.vulnerability_class
+    (e.g. the authorization_failure branch), the report also silently
+    missed that class's technical depth, not merely its label."""
+
+    def test_cwe_639_classifies_as_authorization_failure_not_unclassified(self):
+        article = _make_article(
+            cwe_ids=["CWE-639"],
+            summary="An attacker holding any valid temporary share URL can enumerate records across "
+                    "all subnets because the system fails to verify the requested subnet against the "
+                    "one the token was issued for.",
+        )
+        self.assertEqual(_vulnerability_class(article), "authorization_failure")
+
+    def test_cwe_862_still_classifies_correctly(self):
+        # Regression guard: CWE-639 must be ADDED alongside the existing
+        # authorization-failure CWE, not accidentally replace or shadow it.
+        article = _make_article(cwe_ids=["CWE-862"], summary="Missing authorization check on an admin endpoint.")
+        self.assertEqual(_vulnerability_class(article), "authorization_failure")
 
 
 class TestAuthorityTransformerContract(unittest.TestCase):
