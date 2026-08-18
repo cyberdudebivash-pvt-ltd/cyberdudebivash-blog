@@ -68,6 +68,10 @@ const CFG = {
   // ── Timing & limits ────────────────────────────────────────────────
   nvdLookbackHours:   72,      // fallback when no prior source state
   nvdMinLookbackHours: 4,     // v5.1: minimum lookback floor — prevents 5-min window starvation
+  rssMinLookbackHours: 4,     // v5.2: same floor, generalized to every other lastFetch-driven
+                               // source (CISA KEV/Alerts, GitHub Advisories, ExploitDB, PacketStorm,
+                               // Full Disclosure, and the shared fetchRSS() used by 20+ blog/news
+                               // sources) — see watermarkStart() below for why.
   kevLookbackDays:    7,
   maxNewPostsPerRun:  15,      // v5: increased
   minCVSS:            7.0,
@@ -414,6 +418,24 @@ function setSourceLastFetch(state, source, tsMs) {
   if (!state.sourceFetchState) state.sourceFetchState = {};
   state.sourceFetchState[source] = { lastFetch: tsMs || Date.now(), updatedAt: new Date().toISOString() };
 }
+// Computes a safe incremental-fetch watermark: the source's own lastFetch,
+// but never narrower than minLookbackHours. setSourceLastFetch() ratchets a
+// source's watermark to Date.now() on every SUCCESSFUL fetch regardless of
+// whether any items were found, so on a source with a real quiet period
+// (e.g. a blog that posts every few hours), the window has zero overlap and
+// a single missed or late run can push the watermark past the source's next
+// real item with no way to self-heal. Downstream isPublished()/writeLiveIntel()
+// dedup by item id (TTL-based, and keyed against what's already in the
+// live-intel.json rolling window) already makes a wider re-check window
+// safe — re-seeing an already-seen item is a no-op, not a duplicate publish
+// or a reset _addedAt. This is the same fix shape already shipped for NVD
+// (nvdMinLookbackHours, v5.1) — generalized here instead of re-deriving the
+// "earlier of lastFetch and the floor" logic at every other call site.
+function watermarkStart(lastFetch, minLookbackHours, fallbackMs) {
+  const minStart = new Date(Date.now() - minLookbackHours * 3600000);
+  const rawStart = lastFetch ? new Date(lastFetch) : new Date(Date.now() - fallbackMs);
+  return rawStart < minStart ? rawStart : minStart;
+}
 // isPublished respects dedupTtlDays — items published > TTL days ago are NOT duplicates
 function isPublished(state, id) {
   const ttlMs = (CFG.dedupTtlDays || 30) * 86400000;
@@ -494,7 +516,7 @@ async function fetchNVD(state) {
 // ── SOURCE 2: CISA KEV ─────────────────────────────────────────────────
 async function fetchCISAKev(state) {
   const lastFetch = getSourceLastFetch(state, 'cisa_kev');
-  const cutoff    = lastFetch ? new Date(lastFetch) : new Date(Date.now() - CFG.kevLookbackDays * 86400000);
+  const cutoff    = watermarkStart(lastFetch, CFG.rssMinLookbackHours, CFG.kevLookbackDays * 86400000);
   log(`CISA KEV: fetching (since ${cutoff.toISOString().slice(0,10)})...`);
   try {
     const raw = await fetchWithRetry(CFG.cisaKevUrl);
@@ -545,7 +567,7 @@ async function fetchEpssBatch(cveIds) {
 // ── SOURCE 3: CISA Alerts RSS ──────────────────────────────────────────
 async function fetchCISAAlerts(state) {
   const lastFetch  = getSourceLastFetch(state, 'cisa_alerts');
-  const afterDate  = lastFetch ? new Date(lastFetch) : new Date(Date.now() - CFG.kevLookbackDays * 86400000);
+  const afterDate  = watermarkStart(lastFetch, CFG.rssMinLookbackHours, CFG.kevLookbackDays * 86400000);
   log(`CISA Alerts RSS: fetching (since ${afterDate.toISOString().slice(0,10)})...`);
   try {
     const raw = await fetchWithRetry(CFG.cisaAlertsRss);
@@ -575,7 +597,7 @@ async function fetchCISAAlerts(state) {
 // ── SOURCE 4: GitHub Security Advisories ──────────────────────────────
 async function fetchGitHubAdvisories(state) {
   const lastFetch = getSourceLastFetch(state, 'github_advisories');
-  const cutoff    = lastFetch ? new Date(lastFetch) : new Date(Date.now() - 7*86400000);
+  const cutoff    = watermarkStart(lastFetch, CFG.rssMinLookbackHours, 7*86400000);
   log(`GitHub Advisories: fetching (since ${cutoff.toISOString().slice(0,10)})...`);
   try {
     await sleep(500);
@@ -784,7 +806,7 @@ function rssToIntel(item, source) {
 // ── SOURCES 5-9: RSS FEEDS ─────────────────────────────────────────────
 async function fetchRSS(urlStr, source, maxItems, state) {
   const lastFetch = state ? getSourceLastFetch(state, source) : null;
-  const afterDate = lastFetch ? new Date(lastFetch) : new Date(Date.now() - CFG.kevLookbackDays * 86400000);
+  const afterDate = watermarkStart(lastFetch, CFG.rssMinLookbackHours, CFG.kevLookbackDays * 86400000);
   log(`${source}: fetching RSS (since ${afterDate.toISOString().slice(0,10)})...`);
   try {
     const raw = await fetchWithRetry(urlStr);
@@ -1131,7 +1153,7 @@ async function fetchSentinelApex() {
 
 async function fetchExploitDB(state) {
   const lastFetch = getSourceLastFetch(state, 'exploitdb');
-  const afterDate = lastFetch ? new Date(lastFetch) : new Date(Date.now() - 2*86400000);
+  const afterDate = watermarkStart(lastFetch, CFG.rssMinLookbackHours, 2*86400000);
   log(`ExploitDB: fetching (since ${afterDate.toISOString().slice(0,10)})...`);
   try {
     const raw = await fetchWithRetry(CFG.exploitDbRss, {}, 2);
@@ -1161,7 +1183,7 @@ async function fetchExploitDB(state) {
 
 async function fetchPacketStorm(state) {
   const lastFetch = getSourceLastFetch(state, 'packetstorm');
-  const afterDate = lastFetch ? new Date(lastFetch) : new Date(Date.now() - 2*86400000);
+  const afterDate = watermarkStart(lastFetch, CFG.rssMinLookbackHours, 2*86400000);
   log(`PacketStorm: fetching...`);
   try {
     const raw = await fetchWithRetry(CFG.packetstormRss, {}, 2);
@@ -1191,7 +1213,7 @@ async function fetchPacketStorm(state) {
 
 async function fetchFullDisclosure(state) {
   const lastFetch = getSourceLastFetch(state, 'fulldisclosure');
-  const afterDate = lastFetch ? new Date(lastFetch) : new Date(Date.now() - 2*86400000);
+  const afterDate = watermarkStart(lastFetch, CFG.rssMinLookbackHours, 2*86400000);
   log(`Full Disclosure: fetching...`);
   try {
     const raw = await fetchWithRetry(CFG.fullDisclosureRss, {}, 2);
@@ -3244,5 +3266,6 @@ if (require.main === module) {
     genAttackChain, computePriorityScore, correlateAndMerge,
     extractSentinelApexRecords, normalizeSentinelApexRecord,
     sapexCanonicalId, sapexNativeMitre, fetchSentinelApex,
+    watermarkStart,
   };
 }
