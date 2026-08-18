@@ -165,6 +165,7 @@ _CWE_CLASS = {
     "CWE-287": "authentication_failure",
     "CWE-352": "cross_site_request_forgery",
     "CWE-400": "denial_of_service",
+    "CWE-639": "authorization_failure",
     "CWE-787": "memory_corruption",
     "CWE-862": "authorization_failure",
     "CWE-918": "server_side_request_forgery",

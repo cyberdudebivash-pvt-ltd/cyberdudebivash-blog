@@ -107,10 +107,14 @@ class TestNoRepeatedBoilerplate:
         ransomware_result = compose_report(_ransomware_article(), CONFIG)
         assert "Role-Based Decisions" in cve_result.html
         assert "Role-Based Decisions" in ransomware_result.html
-        # CVE gets a Vulnerability Manager + SOC Manager decision; ransomware
-        # gets Vulnerability Manager + IR Manager -- the role SETS differ.
-        assert "Ir Manager" in ransomware_result.html or "IR Manager" in ransomware_result.html
-        assert "Ir Manager" not in cve_result.html and "IR Manager" not in cve_result.html
+        # CVE gets Vulnerability Manager + SOC Manager; ransomware gets
+        # IR Manager only (no CVE/patch dimension) -- the role SETS differ.
+        # Correct capitalization only (COMMERCIAL-QUALITY-2026-08-18) -- the
+        # mangled "Ir Manager" str.title() produced must never appear again.
+        assert "IR Manager" in ransomware_result.html
+        assert "Ir Manager" not in ransomware_result.html and "Ir Manager" not in cve_result.html
+        assert "IR Manager" not in cve_result.html
+        assert "Vulnerability Manager" not in ransomware_result.html
 
 
 class TestGovernedWithholding:
@@ -161,20 +165,41 @@ class TestFailClosedDowngrade:
 
 
 class TestRoleRoutingDoesNotMisapplyVulnerabilityManagement:
-    """P0 fix: Vulnerability Manager guidance ("Track against {family}
-    intake at severity commensurate with {exploitation}...") requires a
+    """P0 fix: Vulnerability Manager guidance requires a
     real patch/exploitation dimension. Before this fix every family --
-    including phishing/PhaaS reporting with no CVE anywhere in its
-    evidence -- got this decision unconditionally. Verified live against a
-    real published report (JWR PhaaS, family=general_intelligence)."""
+    including phishing/PhaaS reporting and ransomware victim-claims, both
+    with no CVE anywhere in their evidence -- got this decision
+    unconditionally. Verified live against two real published reports: JWR
+    PhaaS (family=general_intelligence) and CVE-2026-75105 (whose live
+    ransomware-adjacent role text read as mechanically-generated boilerplate
+    with nothing real to track against, COMMERCIAL-QUALITY-2026-08-18)."""
 
     def test_cve_article_still_gets_vulnerability_manager(self):
         result = compose_report(_cve_article(), CONFIG)
         assert "Vulnerability Manager" in result.html
 
-    def test_ransomware_claim_still_gets_vulnerability_manager(self):
+    def test_ransomware_claim_no_longer_gets_vulnerability_manager(self):
+        # A leak-site victim claim has no CVE, no patch, and no
+        # exploitation-status dimension -- it is not a vulnerability-
+        # management concern. IR Manager (below) already covers this
+        # family with real, evidence-scoped guidance.
         result = compose_report(_ransomware_article(), CONFIG)
-        assert "Vulnerability Manager" in result.html
+        assert result.context.family == "ransomware_claim"
+        assert "Vulnerability Manager" not in result.html
+        assert "IR Manager" in result.html
+
+    def test_vulnerability_manager_decision_is_grammatical_for_every_exploitation_status(self):
+        # Reproduces the exact live defect on CVE-2026-75105
+        # (kev_listed=False): the old "...severity commensurate with
+        # {exploitation_label.lower()}." template produced broken English
+        # ("severity commensurate with not confirmed by available evidence;
+        # not in verified kev snapshot.") because exploitation_label is a
+        # standalone display phrase, not something written to complete that
+        # clause grammatically.
+        result = compose_report(_cve_article(kev_listed=False), CONFIG)
+        assert "severity commensurate with" not in result.html
+        assert "Exploitation status: Not confirmed by available evidence; not in verified KEV snapshot." in result.html
+        assert "Patch status:" in result.html
 
     def test_general_intelligence_article_does_not_get_vulnerability_manager(self):
         result = compose_report(_general_intelligence_article(), CONFIG)

@@ -14,6 +14,7 @@ from sentinel_engine.reportx.executive_products import (
     render_hunt_package,
     render_role_decisions,
     render_sector_impact_matrix,
+    role_display_label,
 )
 
 
@@ -41,15 +42,45 @@ class TestRoleDecisions:
             evidence_claim_ids=("c-kev-listed",), timeline="Immediate",
         )
         out = render_role_decisions([d])
-        assert "Ciso Cio" in out or "CISO" in out.upper()
+        # COMMERCIAL-QUALITY-2026-08-18: str.title() on the raw enum value
+        # used to render this as "Ciso Cio" -- an acronym-aware label is now
+        # the only correct output.
+        assert "CISO / CIO" in out
+        assert "Ciso Cio" not in out
         assert "c-kev-listed" in out
         assert "Authorize emergency patching." in out
 
     def test_only_supplied_roles_are_rendered_not_padded_to_all(self):
         d = RoleDecision(role=RoleAudience.LEGAL_COMPLIANCE_PRIVACY, decision="x", rationale="y", evidence_claim_ids=())
         out = render_role_decisions([d])
-        assert "Legal Compliance Privacy" in out
-        assert "Ceo Board" not in out
+        assert "Legal / Compliance / Privacy" in out
+        assert "CEO / Board" not in out
+
+
+class TestRoleDisplayLabel:
+    """COMMERCIAL-QUALITY-2026-08-18: independently verified live (and
+    separately flagged in the same terms by an external review) that
+    str.title() on an underscore-joined RoleAudience value mangles every
+    acronym-bearing role -- "Ir Manager", "Soc Manager", "Ciso Cio",
+    "Ot Team", "Mssp". role_display_label() is the single source of truth
+    fix; every RoleAudience member must have a correct entry."""
+
+    def test_every_role_has_a_display_label(self):
+        for role in RoleAudience:
+            label = role_display_label(role)
+            assert label
+
+    def test_acronym_roles_are_not_mangled(self):
+        expected = {
+            RoleAudience.CEO_BOARD: "CEO / Board",
+            RoleAudience.CISO_CIO: "CISO / CIO",
+            RoleAudience.SOC_MANAGER: "SOC Manager",
+            RoleAudience.IR_MANAGER: "IR Manager",
+            RoleAudience.OT_TEAM: "OT Team",
+            RoleAudience.MSSP: "MSSP",
+        }
+        for role, label in expected.items():
+            assert role_display_label(role) == label
 
 
 class TestHuntPackage:

@@ -66,6 +66,33 @@ class RoleAudience(str, Enum):
     MSSP = "MSSP"
 
 
+# COMMERCIAL-QUALITY-2026-08-18: independently verified live (and separately
+# flagged in the same terms by an external review) that
+# ``role.value.replace('_', ' ').title()`` renders acronym-bearing roles
+# wrong -- "Ir Manager", "Soc Manager", "Ciso Cio", "Ot Team", "Mssp" --
+# because str.title() capitalizes only the first letter of each
+# underscore-delimited word, with no notion of an acronym. Single source of
+# truth for every renderer that displays a RoleAudience, so the fix can't
+# drift between them.
+ROLE_DISPLAY_LABELS: dict[RoleAudience, str] = {
+    RoleAudience.CEO_BOARD: "CEO / Board",
+    RoleAudience.CISO_CIO: "CISO / CIO",
+    RoleAudience.SOC_MANAGER: "SOC Manager",
+    RoleAudience.IR_MANAGER: "IR Manager",
+    RoleAudience.THREAT_HUNTER: "Threat Hunter",
+    RoleAudience.VULNERABILITY_MANAGER: "Vulnerability Manager",
+    RoleAudience.CLOUD_TEAM: "Cloud Team",
+    RoleAudience.OT_TEAM: "OT Team",
+    RoleAudience.LEGAL_COMPLIANCE_PRIVACY: "Legal / Compliance / Privacy",
+    RoleAudience.BUSINESS_CONTINUITY_SUPPLY_CHAIN: "Business Continuity / Supply Chain",
+    RoleAudience.MSSP: "MSSP",
+}
+
+
+def role_display_label(role: RoleAudience) -> str:
+    return ROLE_DISPLAY_LABELS[role]
+
+
 @dataclass(frozen=True)
 class RoleDecision:
     role: RoleAudience
@@ -86,7 +113,7 @@ def render_role_decisions(decisions: list[RoleDecision]) -> str:
         return ""
     lines = ["## Role-Based Executive Decisions", ""]
     for d in decisions:
-        lines.append(f"### {d.role.value.replace('_', ' ').title()}")
+        lines.append(f"### {role_display_label(d.role)}")
         lines.append("")
         lines.append(f"**Decision:** {d.decision}")
         if d.timeline:
