@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Tue, 18 Aug 2026 20:28:06 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 18 Aug 2026 20:53:05 GMT</lastBuildDate>
     <pubDate>Tue, 18 Aug 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,7 +31,72 @@
       <height>144</height>
     </image>
 
-        <item>
+          <item>
+    <title><![CDATA[Froxlor: Stored XSS in DNS TXT Record Content Allows Customer-to-Admin Account Takeover]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-54347-composer-froxlor-froxlor.html</link>
+    <description><![CDATA[Score 66/100 HIGH — CVSS 8.7 — ### Summary A stored Cross-Site Scripting (XSS) vulnerability in Froxlor's DNS editor allows an authenticated user with DNS editor access (customer role) to inject arbitrary JavaScript into any administrator's browser session. When an administrator views the DNS configuration of an affected domain, . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 18 Aug 2026 20:53:05 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-54347-composer-froxlor-froxlor.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Lemur: Unchecked `replaces[]` lets any user silence notifications and hijack auto-rotation for arbitrary certificates]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-71308-pip-lemur.html</link>
+    <description><![CDATA[Score 64/100 MEDIUM — CVSS 8.1 — ## Summary Repo under test: https://github.com/Netflix/lemur The certificate create and upload endpoints accept a `replaces[]` (alias `replacements`) array that is resolved to live `Certificate` ORM objects with no ownership or `CertificatePermission` check on the referenced certificates. The SQLAlc. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 18 Aug 2026 20:53:05 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-71308-pip-lemur.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Lemur: Any user can revoke arbitrary certificates at the CA by uploading a duplicate record and revoking it]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-71417-pip-lemur.html</link>
+    <description><![CDATA[Score 61/100 MEDIUM — CVSS 7.3 — ## Summary Repo under test: https://github.com/Netflix/lemur `PUT /api/1/certificates/ /revoke` authorizes the caller against the *Lemur database row* (creator == current user, or `CertificatePermission` over the row's roles) rather than the underlying CA-side certificate identity. Separately, `POST. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 18 Aug 2026 20:53:05 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-71417-pip-lemur.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Lemur: Authenticated low-privilege users can read plaintext destination credentials (SFTP password / private-key passphrase) via the destinations API]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-71307-pip-lemur.html</link>
+    <description><![CDATA[Score 61/100 MEDIUM — CVSS 7.7 — ### Summary
+Lemur's destination read endpoints -- `GET /api/1/destinations` and `GET /api/1/destinations/ ` -- return the full set of stored plugin option values to any authenticated user, with no authorization check and no redaction of secret-bearing options. The sibling write endpoints (`POST`/`PU. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 18 Aug 2026 20:53:05 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-71307-pip-lemur.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Lemur: Incomplete fix for GHSA-v2wp-frmc-5q3v -- ACME authority update endpoint allows non-admin to replace `acme_url` with internal IP, bypassing allowlist]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-71303-pip-lemur.html</link>
+    <description><![CDATA[Score 61/100 MEDIUM — CVSS 7.7 — ### Summary The fix for GHSA-v2wp-frmc-5q3v added `_validate_acme_url()` to reject `acme_url` values not in `ACME_DIRECTORY_HOST_ALLOWLIST`, but the validation is only called at **authority creation time** (POST). The authority **update** endpoint (`PUT /api/1/authorities/ `) accepts and stores arbi. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 18 Aug 2026 20:53:05 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-71303-pip-lemur.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Lemur: Server-Side Request Forgery via the ACME client following server-controlled URLs]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-70666-pip-lemur.html</link>
+    <description><![CDATA[Score 60/100 MEDIUM — CVSS 7.4 — ### Summary
+The ACME client (used to issue certificates from Let's Encrypt / Google Public CA / private ACME CAs) connects to an `acme_url`, then issues requests to URLs that the **ACME server returns** in its directory/order/authorization/finalize responses - this is the classic ACME-client SSRF (R. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 18 Aug 2026 20:53:05 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-70666-pip-lemur.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Froxlor: Second-Order SQL Injection via `Admins.add` `ipaddress` Parameter Allows Full Database Exfiltration]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-54348-composer-froxlor-froxlor.html</link>
+    <description><![CDATA[Score 59/100 MEDIUM — CVSS 7.2 — ### Summary A second-order SQL injection vulnerability in Froxlor's admin API allows an authenticated administrator to store a crafted SQL payload in the `panel_admins.ip` column via the `Admins.add` or `Admins.update` endpoint. The payload executes as a UNION-based SQL injection the next time `IpsA. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 18 Aug 2026 20:53:05 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-54348-composer-froxlor-froxlor.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
     <title><![CDATA[MONAI: Unsafe deserialization in NumpyReader allows arbitrary code execution via malicious .npy files]]></title>
     <link>https://blog.cyberdudebivash.in/posts/monai-unsafe-deserialization-in-numpyreader-allows-arbitrar.html</link>
     <description><![CDATA[Score 63/100 MEDIUM — CVSS 7.8 — ### Summary The `NumpyReader` class in `monai/data/image_reader.py` unconditionally uses `np.load(name, allow_pickle=True)` (line 1276), enabling arbitrary code execution when loading a crafted `.npy` or `.npz` file. This affects all MONAI versions up to and including the latest commit (5b71547). Th. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
