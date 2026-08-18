@@ -1,0 +1,60 @@
+{
+  "schema": "sentinel-apex.intelligence/1.0",
+  "id": "GHSA-b0e7cd8acbdbfdc0",
+  "title": "MONAI: Unsafe deserialization in NumpyReader allows arbitrary code execution via malicious .npy files",
+  "generated": "2026-08-18T20:28:06.975Z",
+  "severity": "HIGH",
+  "cvss": 7.8,
+  "cisa_kev": false,
+  "exploited": false,
+  "cves": [],
+  "vendor": "pip",
+  "product": "monai",
+  "mitre_attack": [],
+  "iocs": [
+    {
+      "value": "hxxps://github[.]com/Project-MONAI/MONAI/blob/5b71547/monai/data/image_reader[.]py#L1276)):",
+      "type": "url",
+      "confidence": 0.82
+    }
+  ],
+  "detections": {
+    "sigma": [],
+    "kql": [],
+    "splunk": [],
+    "osquery": [],
+    "suricata": [
+      "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/Project-MONAI/MONAI/blob/5b71547/monai/data/image_reader.py#L1276)):\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/Project-MONAI/MONAI/blob/5b71547/monai/data/image_reader.py#L1276)):\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+    ]
+  },
+  "assessment": {
+    "verified_facts": [
+      "Affected technology: pip monai.",
+      "CVSS base score of 7.8 assigned by an authoritative source.",
+      "1 indicator(s) of compromise extracted from source reporting."
+    ],
+    "analyst_assessments": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Technical severity is assessed as high (CVSS 7.8); realized business impact depends on asset exposure and data classification."
+      }
+    ],
+    "intelligence_gaps": [
+      "In-the-wild exploitation is unconfirmed as of this report.",
+      "Attribution to a specific threat actor is not established by the available evidence.",
+      "The source lacks sufficient technical detail for confident MITRE ATT&CK mapping."
+    ],
+    "forward_outlook": [
+      {
+        "confidence": "MEDIUM",
+        "text": "Given the repeated targeting pattern, further activity against this vendor/sector is probable."
+      }
+    ]
+  },
+  "correlations": [
+    "Vendor pip has been targeted in 59 prior CYBERDUDEBIVASH reports (recurring target)",
+    "Related prior intelligence: monai-unsafe-deserialization-in-numpyreader-allows-arbitrar (3 shared entities)"
+  ],
+  "source": null,
+  "provider": "CYBERDUDEBIVASH SENTINEL APEX"
+}

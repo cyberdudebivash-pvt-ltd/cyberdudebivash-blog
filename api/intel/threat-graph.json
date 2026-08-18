@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-18T20:16:55.791Z",
+  "generated": "2026-08-18T20:28:06.848Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11297,
+    "total_nodes": 11301,
     "actors": 8,
     "cves": 3756,
-    "campaigns": 1145,
+    "campaigns": 1147,
     "malware": 0,
     "iocs": 883,
-    "edges": 3718
+    "edges": 3720
   },
   "nodes": {
     "actor:lockbit": {
@@ -214209,6 +214209,82 @@
           "confidence": 1
         }
       ]
+    },
+    "GHSA-b0e7cd8acbdbfdc0": {
+      "id": "GHSA-b0e7cd8acbdbfdc0",
+      "type": "Intel",
+      "name": "MONAI: Unsafe deserialization in NumpyReader allows arbitrary code execution via malicious .npy files",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "monai",
+        "published": "2026-08-18",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-39d6588988672b29": {
+      "id": "GHSA-39d6588988672b29",
+      "type": "Intel",
+      "name": "Incomplete Fix in MONAI: algo_from_pickle() pickle.loads() RCE still present in v1.5.2 despite GHSA-89gg-p5r5-q6r4 claiming      patch",
+      "attributes": {
+        "cvss": 7.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 62,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "monai",
+        "published": "2026-08-18",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-64c83f79": {
+      "id": "campaign:cluster-64c83f79",
+      "type": "Campaign",
+      "name": "pip monai Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | 1 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "GHSA-b0e7cd8acbdbfdc0",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-551e71a3": {
+      "id": "campaign:cluster-551e71a3",
+      "type": "Campaign",
+      "name": "pip monai Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-39d6588988672b29",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -247831,6 +247907,24 @@
       "id": "campaign:cluster-6a285008→includes→GHSA-b07c5213e8d1cf1e",
       "source": "campaign:cluster-6a285008",
       "target": "GHSA-b07c5213e8d1cf1e",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-64c83f79→includes→GHSA-b0e7cd8acbdbfdc0",
+      "source": "campaign:cluster-64c83f79",
+      "target": "GHSA-b0e7cd8acbdbfdc0",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-551e71a3→includes→GHSA-39d6588988672b29",
+      "source": "campaign:cluster-551e71a3",
+      "target": "GHSA-39d6588988672b29",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-18",

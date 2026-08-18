@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-18T20:16:55.859Z",
+  "generated": "2026-08-18T20:28:06.904Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 2975,
+  "total_published": 2976,
   "s2n_stats": {
     "passed": 101,
-    "suppressed": 15,
+    "suppressed": 16,
     "avg_qs": 0.494
   },
   "items": [
@@ -359,11 +359,52 @@
       }
     },
     {
-      "id": "CVE-2026-74985",
-      "title": "CVE-2026-74985 - Privilege escalation in the Enterprise Policies component",
-      "description": "CVE ID : CVE-2026-74985\n \n Published : Aug. 18, 2026, 12:23 p.m. | 44minutes ago\n \n Description : Privilege escalation in the Enterprise Policies component. This vulnerability was fixed in Firefox 154 and Firefox ESR 153.1.\n \n Severity: 0.0 | NA\n \n Visit the link for more details... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 45,
+      "id": "CVE-2026-61407",
+      "title": "CVE-2026-61407 - Dell Watchdog Timer Driver Exposed IOCTL Privilege Escalation",
+      "description": "CVE-2026-61407 - Dell Watchdog Timer Driver Exposed IOCTL Privilege Escalation",
+      "cvss": 8.8,
+      "final_ps": 46,
+      "quality_score": 0.423,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-61407"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.422"
+        ],
+        "priority": [
+          "base_ps=46 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-32464",
+      "title": "CVE-2026-32464 - WordPress Theme Test Drive plugin <= 2.9.1 - Local File Inclusion vulnerability",
+      "description": "CVE-2026-32464 - WordPress Theme Test Drive plugin <= 2.9.1 - Local File Inclusion vulnerability",
+      "cvss": 8.1,
+      "final_ps": 46,
       "quality_score": 0.473,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
@@ -381,7 +422,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-74985"
+        "CVE-2026-32464"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -393,7 +434,7 @@
           "QS=0.473"
         ],
         "priority": [
-          "base_ps=45 (no boosts)"
+          "base_ps=46 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2231,7 +2272,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-9198",
@@ -3914,6 +3957,95 @@
       "suppression_reason": null
     },
     {
+      "id": "GHSA-b0e7cd8acbdbfdc0",
+      "title": "MONAI: Unsafe deserialization in NumpyReader allows arbitrary code execution via malicious .npy files",
+      "description": "### Summary The `NumpyReader` class in `monai/data/image_reader.py` unconditionally uses `np.load(name, allow_pickle=True)` (line 1276), enabling arbitrary code execution when loading a crafted `.npy` or `.npz` file. This affects all MONAI versions up to and including the latest commit (5b71547). Th",
+      "cvss": 7.8,
+      "final_ps": 20,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "monai",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-wg9g-w2j2-8pgr",
+        "https://github.com/Project-MONAI/MONAI/security/advisories/GHSA-wg9g-w2j2-8pgr",
+        "https://github.com/Project-MONAI/MONAI/pull/8875",
+        "https://github.com/Project-MONAI/MONAI/releases/tag/1.6.0"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=20 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs"
+    },
+    {
+      "id": "CVE-2026-74985",
+      "title": "CVE-2026-74985 - Privilege escalation in the Enterprise Policies component",
+      "description": "CVE ID : CVE-2026-74985\n \n Published : Aug. 18, 2026, 12:23 p.m. | 44minutes ago\n \n Description : Privilege escalation in the Enterprise Policies component. This vulnerability was fixed in Firefox 154 and Firefox ESR 153.1.\n \n Severity: 0.0 | NA\n \n Visit the link for more details... [Full analysis a",
+      "cvss": 7.8,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-74985"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-28571",
       "title": "CVE-2026-28571 - WordPress FormyChat plugin <= 2.15.7 - Broken Access Control vulnerability",
       "description": "CVE-2026-28571 - WordPress FormyChat plugin <= 2.15.7 - Broken Access Control vulnerability",
@@ -4152,135 +4284,6 @@
       "due_date": null,
       "cves": [
         "CVE-2026-32465"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-32466",
-      "title": "CVE-2026-32466 - WordPress Gravity Forms Bookings premium plugin <= 2.1 - SQL Injection vulnerability",
-      "description": "CVE-2026-32466 - WordPress Gravity Forms Bookings premium plugin <= 2.1 - SQL Injection vulnerability",
-      "cvss": 8.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-18",
-      "last_seen": "2026-08-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-32466"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-61407",
-      "title": "CVE-2026-61407 - Dell Watchdog Timer Driver Exposed IOCTL Privilege Escalation",
-      "description": "CVE-2026-61407 - Dell Watchdog Timer Driver Exposed IOCTL Privilege Escalation",
-      "cvss": 8.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-18",
-      "last_seen": "2026-08-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-61407"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-32464",
-      "title": "CVE-2026-32464 - WordPress Theme Test Drive plugin <= 2.9.1 - Local File Inclusion vulnerability",
-      "description": "CVE-2026-32464 - WordPress Theme Test Drive plugin <= 2.9.1 - Local File Inclusion vulnerability",
-      "cvss": 8.1,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-18",
-      "last_seen": "2026-08-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-32464"
       ],
       "ioc_count": 0,
       "refs": [],

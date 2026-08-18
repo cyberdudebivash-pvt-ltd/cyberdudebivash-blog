@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Tue, 18 Aug 2026 20:16:55 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 18 Aug 2026 20:28:06 GMT</lastBuildDate>
     <pubDate>Tue, 18 Aug 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,7 +31,25 @@
       <height>144</height>
     </image>
 
-      <item>
+        <item>
+    <title><![CDATA[MONAI: Unsafe deserialization in NumpyReader allows arbitrary code execution via malicious .npy files]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/monai-unsafe-deserialization-in-numpyreader-allows-arbitrar.html</link>
+    <description><![CDATA[Score 63/100 MEDIUM — CVSS 7.8 — ### Summary The `NumpyReader` class in `monai/data/image_reader.py` unconditionally uses `np.load(name, allow_pickle=True)` (line 1276), enabling arbitrary code execution when loading a crafted `.npy` or `.npz` file. This affects all MONAI versions up to and including the latest commit (5b71547). Th. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 18 Aug 2026 20:28:06 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/monai-unsafe-deserialization-in-numpyreader-allows-arbitrar.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Incomplete Fix in MONAI: algo_from_pickle() pickle.loads() RCE still present in v1.5.2 despite GHSA-89gg-p5r5-q6r4 claiming      patch]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/incomplete-fix-in-monai-algo-from-pickle-pickle-loads-r.html</link>
+    <description><![CDATA[Score 62/100 MEDIUM — CVSS 7.8 — ## Summary GHSA-89gg-p5r5-q6r4 claims the pickle deserialization vulnerability in `algo_from_pickle()` was fixed in v1.5.2. However, `monai/auto3dseg/utils.py` has not been modified since 2024-07-12 — 18 months before v1.5.2 was released (2026-01-29). All three `pickle.loads()` calls remain unchange. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 18 Aug 2026 20:28:06 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/incomplete-fix-in-monai-algo-from-pickle-pickle-loads-r.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
     <title><![CDATA[MeshCentral has unsanitized data fields]]></title>
     <link>https://blog.cyberdudebivash.in/posts/meshcentral-has-unsanitized-data-fields.html</link>
     <description><![CDATA[Score 64/100 MEDIUM — CVSS 8.3 — ### Description A rogue or compromised MeshAgent can inject arbitrary HTML/JavaScript via the osdesc (OS description) field in its coreinfo message. The server stores this value with zero HTML sanitization (meshagent.js:1903 only checks typeof == 'string'). When an admin views the
