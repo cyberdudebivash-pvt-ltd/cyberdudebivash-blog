@@ -31,7 +31,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
-from .claim_model import Reliability
+from .claim_model import CorroborationState, Reliability
 
 _ADMIRALTY_LABELS: dict[Reliability, str] = {
     Reliability.HIGH: "A/B — Reliable (completely or usually reliable source)",
@@ -45,11 +45,108 @@ def admiralty_label(reliability: Reliability) -> str:
     """Presentation-only mapping of the existing 4-tier ``Reliability``
     field onto Admiralty-Code-adjacent language. This is a documented
     simplification of the full independent 2-axis Admiralty matrix (Source
-    Reliability A-F x Information Credibility 1-6) — see
-    ``REPORTX-INTELLIGENCE-FACTORY-ARCHITECTURE.md``'s "Source reliability
-    display" section for why the second axis is a real, separate follow-up
-    rather than silently approximated here."""
+    Reliability A-F x Information Credibility 1-6) -- kept as the plain,
+    single-axis summary for any caller that only has a ``Reliability``
+    value and no claim graph to derive credibility from. Where both are
+    available, prefer ``two_axis_reliability()`` below, which is the real
+    2-axis model this function's own docstring named as a follow-up."""
     return _ADMIRALTY_LABELS[reliability]
+
+
+# COMMERCIAL-QUALITY-2026-08-18: the follow-up admiralty_label() itself
+# named -- implements the real, independent 2-axis Admiralty matrix instead
+# of the single blended label ("A/B — Reliable") an external review
+# correctly flagged as non-standard and as underutilizing information this
+# platform already computes. Source Reliability grades the PUBLISHER
+# (Reliability, already populated by discovery_bridge.source_reliability());
+# Information Credibility grades THIS SPECIFIC CLAIM's corroboration
+# (CorroborationState, already computed by
+# EvidenceGraph.recompute_corroboration() -- never invented here, only
+# read). The two are independent on purpose: a reliable publisher can still
+# report an uncorroborated claim, and vice versa.
+_RELIABILITY_GRADE: dict[Reliability, str] = {
+    Reliability.HIGH: "B",
+    Reliability.MODERATE: "C",
+    Reliability.LOW: "D",
+    Reliability.UNKNOWN: "F",
+}
+
+# CorroborationState -> Admiralty Information Credibility (1-6). Deliberately
+# conservative: MULTI_SOURCE_DEPENDENT (sources exist but share an
+# independence_group -- i.e. syndicated copies of the same original report)
+# is graded the same as a single, undisputed source, not treated as
+# confirmation, since it isn't independent confirmation.
+_CORROBORATION_CREDIBILITY: dict[CorroborationState, int] = {
+    CorroborationState.MULTI_SOURCE_INDEPENDENT: 1,
+    CorroborationState.MULTI_SOURCE_DEPENDENT: 3,
+    CorroborationState.SINGLE_SOURCE: 3,
+    CorroborationState.UNCORROBORATED: 6,
+}
+
+_CREDIBILITY_LABELS: dict[int, str] = {
+    1: "Confirmed by other independent sources",
+    2: "Probably True",
+    3: "Possibly True",
+    4: "Doubtful",
+    5: "Improbable",
+    6: "Cannot Be Judged",
+}
+
+
+def source_reliability_grade(reliability: Reliability) -> str:
+    return _RELIABILITY_GRADE[reliability]
+
+
+def information_credibility(state: CorroborationState) -> tuple[int, str]:
+    number = _CORROBORATION_CREDIBILITY[state]
+    return number, _CREDIBILITY_LABELS[number]
+
+
+def overall_analytical_confidence(reliability: Reliability, credibility_number: int) -> str:
+    """A high confidence claim requires BOTH a track-recorded publisher AND
+    real corroboration -- neither axis alone is sufficient. Deliberately
+    conservative given today's pipeline has no active corroboration engine
+    yet, so most reports honestly land at MEDIUM (well-sourced, unconfirmed)
+    or LOW (unassessed), not HIGH -- that is the correct, honest signal for
+    the platform's current real capability, not a defect to paper over."""
+    if credibility_number >= 5 or reliability in (Reliability.LOW, Reliability.UNKNOWN):
+        return "LOW"
+    if reliability == Reliability.HIGH and credibility_number <= 2:
+        return "HIGH"
+    return "MEDIUM"
+
+
+_CORROBORATION_SEVERITY_ORDER = (
+    CorroborationState.MULTI_SOURCE_INDEPENDENT,
+    CorroborationState.MULTI_SOURCE_DEPENDENT,
+    CorroborationState.SINGLE_SOURCE,
+    CorroborationState.UNCORROBORATED,
+)
+
+
+def worst_corroboration_state(states) -> CorroborationState:
+    """The most conservative (least-corroborated) state among a set of
+    claims -- a report's corroboration standing is only as strong as its
+    weakest material fact, not its best-supported one. Defaults to
+    UNCORROBORATED (the safe assumption) when given no claims at all,
+    matching ``Claim.corroboration_state``'s own field default."""
+    states = list(states)
+    if not states:
+        return CorroborationState.UNCORROBORATED
+    return max(states, key=_CORROBORATION_SEVERITY_ORDER.index)
+
+
+def two_axis_reliability(reliability: Reliability, corroboration_state: CorroborationState) -> str:
+    """The full replacement for the single blended admiralty_label() output
+    -- three separate, correctly-labeled lines instead of one conflated
+    "A/B — Reliable" string."""
+    credibility_number, credibility_label = information_credibility(corroboration_state)
+    confidence = overall_analytical_confidence(reliability, credibility_number)
+    return (
+        f"Source Reliability: {source_reliability_grade(reliability)}\n"
+        f"Information Credibility: {credibility_number} ({credibility_label})\n"
+        f"Overall Analytical Confidence: {confidence}"
+    )
 
 
 class RoleAudience(str, Enum):

@@ -61,8 +61,37 @@ class TestSourceReliability:
     def test_unrecognized_source_is_unknown_not_fabricated_high(self):
         assert source_reliability(_cve_article(source="some_new_feed")) == Reliability.UNKNOWN
 
+    def test_known_curated_rss_publisher_is_moderate_not_unknown(self):
+        # COMMERCIAL-QUALITY-2026-08-18: independently verified live that
+        # every global_rss article graded Reliability.UNKNOWN ("F")
+        # regardless of which of ~40 distinct, individually-curated outlets
+        # (BleepingComputer, Dark Reading, ...) it actually came from --
+        # source_reliability() keyed only on the connector name
+        # ("global_rss"), discarding the real, known publisher entirely.
+        article = _cve_article(source="global_rss", source_publisher="Dark Reading")
+        assert source_reliability(article) == Reliability.MODERATE
+
+    def test_rss_article_with_no_known_publisher_stays_unknown(self):
+        # Not every RSS-shaped article has a curated publisher (e.g. a feed
+        # outside the hand-maintained list) -- must not default everything
+        # unconditionally to MODERATE just because it's RSS-shaped.
+        article = _cve_article(source="global_rss", source_publisher=None)
+        assert source_reliability(article) == Reliability.UNKNOWN
+
 
 class TestSourceRecord:
+    def test_publisher_prefers_the_real_named_outlet_over_the_connector(self):
+        article = _cve_article(source="global_rss", source_publisher="Dark Reading")
+        context = build_report_context(article)
+        record = build_source_record(article, context)
+        assert record.publisher == "Dark Reading"
+
+    def test_publisher_falls_back_to_the_connector_when_no_named_outlet_is_known(self):
+        article = _cve_article(source="nvd", source_publisher=None)
+        context = build_report_context(article)
+        record = build_source_record(article, context)
+        assert record.publisher == "nvd"
+
     def test_full_content_hashes_real_content(self):
         article = _cve_article(full_content="the complete retrieved article text")
         context = build_report_context(article)

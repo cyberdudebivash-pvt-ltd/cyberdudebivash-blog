@@ -75,10 +75,23 @@ def source_reliability(article: DiscoveredArticle) -> Reliability:
     """Populates the existing, previously-unused ``SourceRecord.reliability``
     field (Finding 3, ``REPORTX-LEGACY-PIPELINE-AUDIT.md``) from the same
     ``article.source`` discriminator ``report_integrity._family()`` already
-    uses -- no new classification logic invented."""
+    uses -- no new classification logic invented.
+
+    COMMERCIAL-QUALITY-2026-08-18: a curated, named RSS publisher (any
+    article carrying ``source_publisher``, e.g. "BleepingComputer", "Dark
+    Reading" -- see ``automation/rss_aggregator.py``'s hand-maintained feed
+    list) is graded the same as this file's own existing "named CTI
+    vendor" policy (``_MODERATE_RELIABILITY_SOURCES``), not left at the
+    connector-level ``UNKNOWN``/"F" grade every ``global_rss`` article got
+    regardless of which of ~40 distinct, individually-vetted outlets it
+    actually came from. This does not (yet) differentiate reliability
+    *between* those outlets -- doing that defensibly needs an editorial
+    trust policy per outlet, a separate follow-up -- it only stops treating
+    a known, deliberately-curated publisher the same as a completely
+    unknown one."""
     if article.source in _HIGH_RELIABILITY_SOURCES:
         return Reliability.HIGH
-    if article.source in _MODERATE_RELIABILITY_SOURCES:
+    if article.source in _MODERATE_RELIABILITY_SOURCES or article.source_publisher:
         return Reliability.MODERATE
     return Reliability.UNKNOWN
 
@@ -103,7 +116,7 @@ def build_source_record(article: DiscoveredArticle, context: ReportContext) -> S
     return SourceRecord(
         source_id=PRIMARY_SOURCE_ID,
         url=article.url,
-        publisher=article.source,
+        publisher=article.source_publisher or article.source,
         source_type=_SOURCE_TYPE_MAP.get(article.source, SourceType.OTHER),
         source_role=SourceRole.PRIMARY_EVENT_SOURCE,
         retrieved_at=context.generated_at,

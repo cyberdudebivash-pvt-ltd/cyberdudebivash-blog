@@ -216,4 +216,5 @@ class GlobalRSSAggregator:
             labels=labels,
             source="global_rss",
             full_content=full_content,
+            source_publisher=feed.name,
         )

@@ -42,10 +42,18 @@ from automation.report_renderer import (  # noqa: E402
 )
 
 from .analytic_scaffolding import IntelligenceGap
+from .claim_model import CorroborationState
 from .commercial_readiness import ControlResult, ReportBundle, evaluate_commercial_readiness
 from .detection_validation import DetectionRule, DetectionValidationState
 from .discovery_bridge import build_evidence_graph, build_threat_product
-from .executive_products import RoleAudience, RoleDecision, admiralty_label, render_role_decisions, role_display_label
+from .executive_products import (
+    RoleAudience,
+    RoleDecision,
+    render_role_decisions,
+    role_display_label,
+    two_axis_reliability,
+    worst_corroboration_state,
+)
 from .human_review import CertificationState
 from .product_depth import DepthAssessment
 from .tier_downgrade import DowngradeResult, determine_achieved_tier
@@ -202,13 +210,40 @@ def compose_report(
     )
 
     source = next(iter(graph.sources.values()))
+    # COMMERCIAL-QUALITY-2026-08-18: real, independent 2-axis Admiralty
+    # grading -- Source Reliability (the publisher) separate from
+    # Information Credibility (this record's own corroboration standing,
+    # already computed by EvidenceGraph.recompute_corroboration(), read
+    # here rather than re-derived) -- instead of one blended "A/B —
+    # Reliable" line, and an honest corroboration statement that reflects
+    # the actually-computed state rather than always asserting "not been
+    # assessed" regardless of it.
+    corroboration_state = worst_corroboration_state(
+        c.corroboration_state for c in graph.claims.values() if source.source_id in c.source_refs
+    )
+    reliability_lines = "<br>".join(
+        _esc(line) for line in two_axis_reliability(source.reliability, corroboration_state).split("\n")
+    )
+    corroboration_note = {
+        CorroborationState.MULTI_SOURCE_INDEPENDENT:
+            "This record is corroborated by independent sources (see the evidence ledger).",
+        CorroborationState.MULTI_SOURCE_DEPENDENT:
+            "Multiple outlets report this, but they trace to a shared, non-independent origin (see the "
+            "evidence ledger) -- treated as a single-source claim, not independent confirmation.",
+        CorroborationState.SINGLE_SOURCE:
+            "Reported by a single identified source; an independent second source has not been found "
+            "(see the evidence ledger).",
+        CorroborationState.UNCORROBORATED:
+            "Whether an independent second source corroborates this record has not been assessed (see the "
+            "evidence ledger). This report does not wait on that assessment to publish, and does not "
+            "overstate certainty in the meantime.",
+    }[corroboration_state]
     reliability_html = _section(
         "Source Reliability & Corroboration",
         _panel(
-            f'<p style="margin:0 0 8px"><strong>{_esc(source.publisher)}:</strong> {_esc(admiralty_label(source.reliability))}</p>'
-            '<p style="margin:0;color:#94a3b8">Whether an independent second source corroborates this record has '
-            "not been assessed (see the evidence ledger). This report does not wait on that assessment to "
-            "publish, and does not overstate certainty in the meantime.</p>",
+            f'<p style="margin:0 0 8px"><strong>{_esc(source.publisher)}</strong></p>'
+            f'<p style="margin:0 0 8px;font-family:monospace;font-size:12px;line-height:1.7">{reliability_lines}</p>'
+            f'<p style="margin:0;color:#94a3b8">{corroboration_note}</p>',
         ),
         "#64748b",
     )
