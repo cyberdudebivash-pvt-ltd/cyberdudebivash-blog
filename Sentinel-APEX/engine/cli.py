@@ -126,6 +126,19 @@ Usage (from Sentinel-APEX/engine/):
       CERTIFICATION.md. `batch` runs every `*-export.json` in a
       directory and, with --audit-log, appends one AuditLogRecord per
       report (append-only; see sentinel_engine.reportx.audit_log).
+
+  python3 cli.py reportx-validate <export.json> [--json]
+                [--overall-minimum N] [--minimum-coverage F]
+      Intelligence Validation Framework (docs/reportx/REPORTX-INTELLIGENCE-
+      VALIDATION-FRAMEWORK.md) -- scores a `reportx-gate --export` artifact
+      across the 20 Phase-3 dimensions (Evidence Traceability, Source
+      Reliability, Information Credibility, ..., Production Readiness) and
+      prints the scorecard. Every dimension is computed from the same
+      already-validated bundle/control results this command loads; it
+      recomputes nothing evidence-related. Exit 0 only when
+      publication_eligible is true (every gated dimension clears its
+      mandatory threshold, overall score and coverage both clear their
+      floors); exit 1 otherwise.
 """
 
 from __future__ import annotations
@@ -506,6 +519,23 @@ def cmd_reportx_certify(args: argparse.Namespace) -> int:
     return 1 if any_not_certified else 0
 
 
+def cmd_reportx_validate(args: argparse.Namespace) -> int:
+    from sentinel_engine.reportx.intelligence_validation import (
+        ValidationThresholds,
+        evaluate_from_export,
+        render_scorecard_markdown,
+    )
+
+    with open(args.export, encoding="utf-8") as fh:
+        export = json.load(fh)
+
+    thresholds = ValidationThresholds(overall_minimum=args.overall_minimum, minimum_coverage=args.minimum_coverage)
+    scorecard = evaluate_from_export(export, thresholds=thresholds)
+
+    print(json.dumps(scorecard.to_dict(), indent=2) if args.json else render_scorecard_markdown(scorecard))
+    return 0 if scorecard.publication_eligible else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -619,6 +649,14 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--release-manifest", required=True, help="path to a reportx-release certify --out manifest")
     p.add_argument("--audit-log", default="", help="append each decision to this JSONL audit log (sentinel_engine.reportx.audit_log)")
     p.set_defaults(func=cmd_reportx_certify)
+
+    p = sub.add_parser("reportx-validate", help="Intelligence Validation Framework: 20-dimension scorecard + mandatory publication thresholds")
+    p.add_argument("export", help="path to a reportx-gate --export artifact")
+    p.add_argument("--json", action="store_true", help="print the machine-readable JSON form instead of Markdown")
+    p.add_argument("--overall-minimum", type=int, default=75, help="mandatory minimum overall score (default: 75)")
+    p.add_argument("--minimum-coverage", type=float, default=0.5,
+                    help="mandatory minimum fraction of the 20 dimensions that must be scoreable, not BLOCKED (default: 0.5)")
+    p.set_defaults(func=cmd_reportx_validate)
 
     args = parser.parse_args(argv)
     return args.func(args)
