@@ -75,6 +75,15 @@ class CertificationState(str, Enum):
     TACTICAL_READY = "TACTICAL_READY"
     PREMIUM_READY_PENDING_HUMAN = "PREMIUM_READY_PENDING_HUMAN"
     PREMIUM_CERTIFIED = "PREMIUM_CERTIFIED"
+    # Release-scoped automated certification (P0 Release-Certification layer,
+    # sentinel_engine.reportx.automated_certification). Reachable ONLY via
+    # certify_report_automated() -- never via resolve_certification_state()
+    # below, and never bound to any ReviewRecord. Means "this exact report
+    # cleared 23/23 under a currently REPORTX_RELEASE_CERTIFIED release with
+    # zero escalation signals" -- it does NOT mean a human read this report,
+    # and must never be rendered or described as human-reviewed/analyst-
+    # approved. See docs/reportx/REPORTX-AUTOMATED-CERTIFICATION.md.
+    PREMIUM_AUTOMATED_CERTIFIED = "PREMIUM_AUTOMATED_CERTIFIED"
 
 
 def resolve_certification_state(
