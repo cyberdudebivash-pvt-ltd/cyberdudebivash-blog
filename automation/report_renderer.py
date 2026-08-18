@@ -18,6 +18,7 @@ import yaml
 from .config import Config
 from .content_discovery import DiscoveredArticle
 from .report_integrity import ReportContext, build_report_context
+from .seo_optimizer import _truncate
 
 
 @dataclass(frozen=True)
@@ -419,11 +420,17 @@ def _facts(article: DiscoveredArticle, context: ReportContext) -> list[str]:
 
 
 def _family_analysis(article: DiscoveredArticle, context: ReportContext) -> str:
-    summary = _esc(article.summary[:1800])
-
+    """Family-specific assessment. Deliberately does NOT re-quote
+    ``article.summary`` -- the Executive Summary section above already
+    shows it as the report's first exposure to the source facts, and
+    ``_technical_evidence()``'s "Source Evidence Extract" below explicitly
+    quotes it as labeled raw evidence. A third, unlabeled repeat here added
+    no analytical value and was the exact "hallmark of template-driven
+    synthesis" duplication found in real published reports (verified live
+    against the JWR PhaaS and Windows Task Host / CISA reports) -- this
+    section's job is the boundary/analysis text alone."""
     if context.family == "ransomware_claim":
         body = _panel(
-            f'<p style="margin:0 0 10px">{summary}</p>'
             '<p style="margin:0"><strong style="color:#f59e0b">Evidence boundary:</strong> '
             'This is a third-party leak-site listing or aggregator record. It is not independent confirmation of compromise scope, '
             'encryption, data theft, initial-access method, or actor attribution beyond the reported claim.</p>',
@@ -441,7 +448,6 @@ def _family_analysis(article: DiscoveredArticle, context: ReportContext) -> str:
         return _section(
             "Disclosure Assessment",
             _panel(
-                f'<p style="margin:0 0 10px">{summary}</p>'
                 '<p style="margin:0"><strong>Evidence boundary:</strong> The source is a public breach-record entry. '
                 'It does not establish that the reader or their environment is affected.</p>'
             ),
@@ -460,7 +466,6 @@ def _family_analysis(article: DiscoveredArticle, context: ReportContext) -> str:
         return _section(
             "AI Security Assessment",
             _panel(
-                f'<p style="margin:0 0 10px">{summary}</p>'
                 '<p style="margin:0"><strong>Assessment boundary:</strong> This record is treated as AI-security intelligence. '
                 'No vulnerability, successful attack, affected-customer scope, or conventional malware behavior is inferred unless the cited source explicitly supplies it.</p>',
                 "#a855f7",
@@ -486,7 +491,6 @@ def _family_analysis(article: DiscoveredArticle, context: ReportContext) -> str:
         return _section(
             "Technical Analysis",
             _panel(
-                f'<p style="margin:0 0 10px">{summary}</p>'
                 f'<p style="margin:0"><strong>Vulnerability class:</strong> {_esc(_label(context.vulnerability_class))}. '
                 f'<strong>Assessment:</strong> {_esc(impact)}</p>'
             ),
@@ -505,7 +509,6 @@ def _family_analysis(article: DiscoveredArticle, context: ReportContext) -> str:
     return _section(
         "Intelligence Assessment",
         _panel(
-            f'<p style="margin:0 0 10px">{summary}</p>'
             '<p style="margin:0"><strong>Evidence boundary:</strong> Conclusions are limited to the cited source record. '
             'No affected-customer scope, attribution, exploitation, or financial impact is inferred.</p>'
         ),
@@ -646,7 +649,7 @@ def render_evidence_report(
     executive_summary = _section(
         "Executive Summary",
         _panel(
-            f'<p style="margin:0 0 10px">{_esc(article.summary[:1800])}</p>'
+            f'<p style="margin:0 0 10px">{_esc(_truncate(article.summary, 1800))}</p>'
             f'<p style="margin:0;color:#94a3b8"><strong style="color:#e2e8f0">Decision:</strong> '
             f'Validate relevance and exposure using the cited source and internal evidence before treating this record as an incident, confirmed compromise, or customer-specific finding.</p>'
         ),
