@@ -1780,6 +1780,12 @@ class _ComposerOutcome:
     html: Optional[str]
     achieved_tier: str
     failed_controls: tuple = ()
+    # COMMERCIAL-QUALITY-2026-08-18: the 20-dimension commercial-readiness
+    # scorecard (Intelligence Validation Framework, PR #90) -- real,
+    # already-computed observability data, not (yet) a hard gate. None only
+    # on the composer-exception path, where no scorecard was ever computed.
+    quality_score: Optional[int] = None
+    quality_score_eligible: Optional[bool] = None
 
 
 def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOutcome:
@@ -1811,13 +1817,27 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
             article, config, requested_tier=CertificationState.FLASH_READY, include_provenance=False,
         )
         tier = result.downgrade.achieved_tier
+        logger.info(
+            "ReportX commercial-readiness scorecard",
+            extra={
+                "overall_score": result.scorecard.overall_score,
+                "publication_eligible": result.scorecard.publication_eligible,
+                "coverage": round(result.scorecard.coverage, 3),
+            },
+        )
         if tier == CertificationState.PUBLIC_REFERENCE_DRAFT:
             logger.info(
                 "ReportX composer evidence graph failed correctness controls -- publication will be blocked",
                 extra={"failed_controls": list(result.downgrade.failed_controls)},
             )
-            return _ComposerOutcome(html=None, achieved_tier=tier.value, failed_controls=result.downgrade.failed_controls)
-        return _ComposerOutcome(html=result.html, achieved_tier=tier.value)
+            return _ComposerOutcome(
+                html=None, achieved_tier=tier.value, failed_controls=result.downgrade.failed_controls,
+                quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
+            )
+        return _ComposerOutcome(
+            html=result.html, achieved_tier=tier.value,
+            quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
+        )
     except Exception as e:
         logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
         return _ComposerOutcome(html=None, achieved_tier="")
@@ -1935,6 +1955,8 @@ class AuthorityTransformer:
             "review_status": context.review_status,
             "certification_status": context.certification_status,
             "achieved_tier": context.achieved_tier,
+            "quality_score": composer_outcome.quality_score,
+            "quality_score_eligible": composer_outcome.quality_score_eligible,
             "detection_status": detection_status,
             "generated_at": context.generated_at,
         }

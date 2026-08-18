@@ -184,6 +184,8 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                 "review_status",
                 "certification_status",
                 "achieved_tier",
+                "quality_score",
+                "quality_score_eligible",
                 "detection_status",
                 "generated_at",
             ):

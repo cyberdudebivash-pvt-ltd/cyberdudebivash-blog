@@ -110,6 +110,29 @@ def test_msiexec_maps_to_t1218_007():
     assert is_valid_technique_id("T1218.007")
 
 
+def test_html_rendered_disclaimer_paragraph_does_not_suppress_a_clean_citation():
+    # The real bug found running a composed CVE report through
+    # map_techniques() for the first time (COMMERCIAL-QUALITY-2026-08-18):
+    # rendered HTML ends a sentence with punctuation immediately followed
+    # by a closing tag ("...execution.</div>"), never by whitespace, so the
+    # old sentence-boundary pattern never fired there. The scan then ran
+    # straight through the tag change into the NEXT, structurally separate
+    # paragraph -- the standard MITRE disclaimer boilerplate ("not claims
+    # that the technique occurred") -- and negated a clean, unhedged
+    # citation the disclaimer wasn't talking about at all. This is the
+    # exact real HTML shape pipeline_composer.py's MITRE ATT&CK section
+    # produces for every composed report.
+    text = (
+        '<div>Execution → Command and Scripting Interpreter (T1059), conditional on '
+        "observed child-process execution.</div>"
+        '<div>Mappings are conditional analytical aids, not claims that the technique '
+        "occurred. Promote a mapping to observed only after telemetry confirms the "
+        "behavior.</div>"
+    )
+    ids = _ids(map_techniques(text))
+    assert "T1059" in ids
+
+
 def test_hedge_in_one_markdown_table_row_does_not_suppress_a_clean_citation_in_another():
     # The real bug found in SA-2026-0001 (GIKEP v1): a multi-row markdown
     # table has no sentence-ending punctuation between rows, so the whole

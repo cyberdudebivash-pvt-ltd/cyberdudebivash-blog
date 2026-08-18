@@ -46,6 +46,7 @@ from .claim_model import CorroborationState
 from .commercial_readiness import ControlResult, ReportBundle, evaluate_commercial_readiness
 from .detection_validation import DetectionRule, DetectionValidationState
 from .discovery_bridge import build_evidence_graph, build_threat_product
+from .intelligence_validation import IntelligenceScorecard, evaluate_intelligence_validation
 from .executive_products import (
     RoleAudience,
     RoleDecision,
@@ -178,6 +179,20 @@ class ComposedReport:
     bundle: ReportBundle
     control_results: list[ControlResult]
     downgrade: DowngradeResult
+    # COMMERCIAL-QUALITY-2026-08-18: the 20-dimension, weighted commercial-
+    # readiness scorecard (Intelligence Validation Framework, PR #90) --
+    # already built, already tested against 5 real canary exports, and
+    # already calibrated (ValidationThresholds' per-dimension overrides).
+    # Computed unconditionally from the same bundle/control_results this
+    # function already builds, at zero extra evidence cost. Exposed here as
+    # real, observable data first (report_id, overall_score, coverage,
+    # publication_eligible, blocking_reasons) -- NOT yet wired into the hard
+    # publication gate. Elevating it to a gate is a separate, deliberate
+    # calibration decision (does today's live pipeline actually clear the
+    # existing 75-point threshold consistently, the same question PR #90
+    # answered empirically for the 5 canaries before setting it) that must
+    # be made from live evidence, not assumed here.
+    scorecard: IntelligenceScorecard
 
     @property
     def pass_count(self) -> int:
@@ -287,8 +302,9 @@ def compose_report(
     )
     control_results = evaluate_commercial_readiness(bundle)
     downgrade = determine_achieved_tier(control_results, requested_tier=requested_tier)
+    scorecard = evaluate_intelligence_validation(bundle, control_results)
 
     return ComposedReport(
         report_id=context.report_id, context=context, html=html, bundle=bundle,
-        control_results=control_results, downgrade=downgrade,
+        control_results=control_results, downgrade=downgrade, scorecard=scorecard,
     )
