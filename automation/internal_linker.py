@@ -34,6 +34,17 @@ PLATFORM_LINKS = [
     },
 ]
 
+# COMMERCIAL-QUALITY-2026-08-18: labels every article carries unconditionally
+# (content_discovery._infer_labels()'s own base list, plus rss_aggregator.py's
+# required-labels list for RSS-sourced articles) -- independently verified
+# live (and separately flagged in the same terms by an external review) that
+# build_correlation_block()'s "shared labels" match always fired on these,
+# since every two articles share at least them, making the fallback
+# functionally "most recent post, any topic" rather than real correlation.
+# Excluded from the match set below so only genuinely topic/actor/campaign
+# -specific labels ("Ransomware", "qilin", "AI Security", ...) count.
+_NON_DISCRIMINATING_LABELS = frozenset({"CYBERDUDEBIVASH", "Threat Intelligence", "Global Intel"})
+
 # Authoritative external cybersecurity references
 EXTERNAL_REFERENCES = {
     "mitre att&ck": "https://attack.mitre.org/",
@@ -120,9 +131,15 @@ class InternalLinker:
         from data/published_posts.json (the same file the syndication
         pipeline already writes; every entry's blogger_url is a real, live
         link, never fabricated). Shared CVEs rank highest, then shared
-        labels, then most recent as a fallback so readers never hit a dead
-        end. Returns "" if the state file is unavailable or has no usable
-        entries.
+        DISCRIMINATING labels (actor, campaign, malware, vulnerability
+        family -- see _NON_DISCRIMINATING_LABELS), sorted most-recent-first
+        only as the tiebreaker within each match tier, never as the primary
+        criterion. Returns "" if the state file is unavailable, has no
+        usable entries, or -- as important a case as finding real matches --
+        this article shares no real relationship with anything previously
+        published (COMMERCIAL-QUALITY-2026-08-18: previously fell through to
+        "any post sharing a universal label," which every post always does,
+        making this functionally a recency feed rather than correlation).
         """
         try:
             with open(self.config.state_file, "r", encoding="utf-8") as f:
@@ -135,7 +152,7 @@ class InternalLinker:
             return ""
 
         article_cve_set = {c.upper() for c in article_cves}
-        article_label_set = set(article_labels)
+        article_label_set = set(article_labels) - _NON_DISCRIMINATING_LABELS
 
         cve_matches, label_matches = [], []
         for content_hash, entry in posts.items():
@@ -147,7 +164,7 @@ class InternalLinker:
                 continue
 
             entry_cves = {c.upper() for c in entry.get("cves", [])}
-            entry_labels = set(entry.get("labels", []))
+            entry_labels = set(entry.get("labels", [])) - _NON_DISCRIMINATING_LABELS
             published_at = entry.get("published_at", "")
 
             if article_cve_set and entry_cves & article_cve_set:
