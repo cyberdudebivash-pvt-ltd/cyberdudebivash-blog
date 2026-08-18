@@ -142,6 +142,18 @@ class TestMultiFormatDetectionRules:
         assert formats == {"sigma", "kql"}
         assert len(result.bundle.detection_rules) == 2
 
+    def test_technique_id_is_a_bare_id_not_the_full_mapping_sentence(self):
+        # COMMERCIAL-QUALITY-2026-08-18: DetectionRule.technique_id used to
+        # hold the entire descriptive mapping sentence ("Execution ->
+        # Command and Scripting Interpreter (T1059), conditional on
+        # observed child-process execution."), not the bare ID it's typed
+        # and named for -- bundle_io.py serializes it as a structured field,
+        # and intelligence_validation.py's scorer already had to work
+        # around this exact shape.
+        result = compose_report(_cve_article(), CONFIG)
+        technique_ids = {r.technique_id for r in result.bundle.detection_rules}
+        assert technique_ids == {"T1059"}
+
     def test_both_format_rules_share_the_same_validation_state(self):
         result = compose_report(_cve_article(), CONFIG)
         states = {r.validation_state for r in result.bundle.detection_rules}

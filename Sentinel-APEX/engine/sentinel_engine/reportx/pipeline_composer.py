@@ -58,6 +58,8 @@ from .human_review import CertificationState
 from .product_depth import DepthAssessment
 from .tier_downgrade import DowngradeResult, determine_achieved_tier
 
+from sentinel_engine.attack_mapper import extract_technique_ids  # noqa: E402
+
 _STATUS_TO_VALIDATION_STATE = {
     "syntax_validated_experimental": DetectionValidationState.SYNTAX_VALIDATED,
 }
@@ -72,7 +74,17 @@ def _detection_rules(report_id: str, package: DetectionPackage) -> list[Detectio
     ``commercial_readiness.py``'s detection_evidence_discipline control
     (which requires at least one rule to evaluate) keeps working unchanged."""
     validation_state = _STATUS_TO_VALIDATION_STATE.get(package.status, DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE)
-    technique_id = package.attack_mappings[0] if package.attack_mappings else ""
+    # COMMERCIAL-QUALITY-2026-08-18: package.attack_mappings entries are
+    # full descriptive sentences ("Defense Evasion -> Valid Accounts
+    # (T1078), only if authentication/session abuse is observed."), not
+    # bare technique IDs -- DetectionRule.technique_id must hold the ID
+    # alone (it's serialized as a structured field by bundle_io.py and read
+    # as one by intelligence_validation.py's own scorer, which already had
+    # to work around this exact shape via the same extract_technique_ids()
+    # reused here rather than storing the raw sentence and pushing the
+    # parsing burden onto every consumer).
+    _ids = extract_technique_ids(package.attack_mappings[0]) if package.attack_mappings else []
+    technique_id = _ids[0] if _ids else ""
     formats = [("sigma", package.sigma_yaml), ("kql", package.kql)]
     rules = [
         DetectionRule(
