@@ -75,6 +75,57 @@ Usage (from Sentinel-APEX/engine/):
       ReportX pipeline; running this command IS the human-approval
       event, so it must be run by the actual human reviewer, never
       automated on their behalf.
+
+  python3 cli.py reportx-release certify --release-id ID
+                --canary export1.json [--canary export2.json ...]
+                --test-result "suite:passed:failed" [...]
+                --render-qa {pass|fail} --system5-tests {pass|fail}
+                --anti-padding {pass|fail} --npm-audit {pass|fail}
+                --reviewer "Full Name" --out manifest.json
+      ReportX RELEASE-level certification (docs/reportx/REPORTX-RELEASE-
+      CERTIFICATION.md). Section 5's invariant: this certifies that THE
+      RELEASE has demonstrated correct behaviour on the required canaries
+      -- it never certifies any individual future report. Reads each
+      --canary export (a reportx-gate --export artifact), auto-discovers
+      a sibling `<report-id>-REVIEW-RECORD.json` if one exists next to
+      it, and recomputes every canary's artifact hash from its own
+      rendered_text rather than trusting a stored value. Real,
+      artifact-bound PREMIUM_CERTIFIED review records are REQUIRED for
+      every canary -- this command never constructs one itself. Exit 0
+      only if REPORTX_RELEASE_CERTIFIED; 1 otherwise.
+
+  python3 cli.py reportx-release (inspect|status|verify) manifest.json
+      inspect: print the manifest exactly as stored, no drift check.
+      status: print the manifest PLUS a live component-drift check
+              against the current working tree (read-only, does not
+              rewrite the file).
+      verify: same drift check as status, but persists the result --
+              a certified release whose tracked components have since
+              changed is rewritten to REPORTX_RELEASE_REVIEW_REQUIRED
+              on disk (Section 8). Exit 0 only if still certified.
+
+  python3 cli.py reportx-release invalidate manifest.json --reason "..."
+      Force a certified release to REPORTX_RELEASE_REVIEW_REQUIRED for
+      an operator-supplied reason (e.g. a release-health degradation
+      alert). Never used to force the opposite direction -- there is no
+      "certify" action in this command, only "certify" the top-level
+      subcommand above, which requires the real inputs.
+
+  python3 cli.py reportx-certify <export.json> --release-manifest manifest.json
+                [--audit-log log.jsonl]
+  python3 cli.py reportx-certify batch <directory> --release-manifest manifest.json
+                [--audit-log log.jsonl]
+      Per-report AUTOMATED premium certification (docs/reportx/REPORTX-
+      AUTOMATED-CERTIFICATION.md) -- Sections 3/5/6. Requires an already
+      REPORTX_RELEASE_CERTIFIED manifest; refuses (falls back to
+      PREMIUM_READY_PENDING_HUMAN or a fail-closed downgraded tier) if
+      the release isn't certified, has since drifted, the report isn't
+      23/23, or a derivable escalation signal fires. NEVER constructs a
+      ReviewRecord and NEVER prints "human reviewed" -- see the rendered
+      certification block conventions in REPORTX-AUTOMATED-
+      CERTIFICATION.md. `batch` runs every `*-export.json` in a
+      directory and, with --audit-log, appends one AuditLogRecord per
+      report (append-only; see sentinel_engine.reportx.audit_log).
 """
 
 from __future__ import annotations
@@ -289,6 +340,172 @@ def cmd_reportx_review(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_reportx_release(args: argparse.Namespace) -> int:
+    from sentinel_engine.reportx.human_review import ReviewDecision, ReviewRecord, compute_artifact_hash
+    from sentinel_engine.reportx.release_certification import (
+        CanaryCertificationInput,
+        ReleaseState,
+        SuiteResult,
+        apply_drift_check,
+        certify_release,
+        manifest_from_dict,
+        render_release_report,
+    )
+
+    if args.action == "certify":
+        canaries = []
+        for export_path in args.canary:
+            with open(export_path, encoding="utf-8") as fh:
+                export = json.load(fh)
+            bundle = export["bundle"]
+            cr = export["commercial_readiness"]
+            rendered_text = bundle.get("rendered_text", "")
+
+            review = None
+            review_path = Path(export_path).with_name(f"{bundle['report_id']}-REVIEW-RECORD.json")
+            if review_path.exists():
+                with open(review_path, encoding="utf-8") as fh:
+                    r = json.load(fh)
+                review = ReviewRecord(
+                    report_id=r["report_id"], artifact_sha256=r["artifact_sha256"],
+                    reviewer_identity=r["reviewer_identity"], review_timestamp=r["review_timestamp"],
+                    decision=ReviewDecision(r["decision"]), review_version=r.get("review_version", 1),
+                    notes=r.get("notes", ""), is_test_only_fixture=r.get("is_test_only_fixture", False),
+                    reviewer_role=r.get("reviewer_role", ""), gate_snapshot_sha256=r.get("gate_snapshot_sha256", ""),
+                )
+
+            canaries.append(CanaryCertificationInput(
+                canary_id=bundle["report_id"],
+                artifact_sha256=compute_artifact_hash(rendered_text),
+                rendered_text=rendered_text,
+                commercial_readiness_pass_count=cr["pass_count"],
+                commercial_readiness_total_count=cr["total_count"],
+                review=review,
+            ))
+
+        test_results = []
+        for spec in args.test_result:
+            name, passed, failed = spec.rsplit(":", 2)
+            test_results.append(SuiteResult(name, int(passed), int(failed)))
+
+        manifest = certify_release(
+            release_id=args.release_id, canaries=canaries, test_results=test_results,
+            render_qa_passed=(args.render_qa == "pass"), system5_tests_passed=(args.system5_tests == "pass"),
+            anti_padding_passed=(args.anti_padding == "pass"), npm_audit_passed=(args.npm_audit == "pass"),
+            reviewer_identity=args.reviewer,
+        )
+        print(render_release_report(manifest))
+        with open(args.out, "w", encoding="utf-8") as fh:
+            json.dump(manifest.to_dict(), fh, indent=2)
+        print(f"Wrote release manifest to {args.out}", file=sys.stderr)
+        return 0 if manifest.is_certified else 1
+
+    if args.action == "inspect":
+        with open(args.manifest, encoding="utf-8") as fh:
+            manifest = manifest_from_dict(json.load(fh))
+        print(render_release_report(manifest))
+        return 0 if manifest.is_certified else 1
+
+    if args.action == "status":
+        with open(args.manifest, encoding="utf-8") as fh:
+            manifest = manifest_from_dict(json.load(fh))
+        checked = apply_drift_check(manifest)
+        print(render_release_report(checked))
+        if checked.release_decision != manifest.release_decision:
+            print(f"NOTE: live state differs from what's on disk ({manifest.release_decision.value} -> "
+                  f"{checked.release_decision.value}). Run 'reportx-release verify' to persist this.", file=sys.stderr)
+        return 0 if checked.is_certified else 1
+
+    if args.action == "verify":
+        with open(args.manifest, encoding="utf-8") as fh:
+            manifest = manifest_from_dict(json.load(fh))
+        checked = apply_drift_check(manifest)
+        print(render_release_report(checked))
+        if checked.release_decision != manifest.release_decision:
+            with open(args.manifest, "w", encoding="utf-8") as fh:
+                json.dump(checked.to_dict(), fh, indent=2)
+            print(f"Release state changed ({manifest.release_decision.value} -> "
+                  f"{checked.release_decision.value}); rewrote {args.manifest}", file=sys.stderr)
+        return 0 if checked.is_certified else 1
+
+    if args.action == "invalidate":
+        with open(args.manifest, encoding="utf-8") as fh:
+            manifest = manifest_from_dict(json.load(fh))
+        invalidated = dataclasses.replace(
+            manifest, release_decision=ReleaseState.REPORTX_RELEASE_REVIEW_REQUIRED,
+            failed_requirements=manifest.failed_requirements + (args.reason,),
+        )
+        with open(args.manifest, "w", encoding="utf-8") as fh:
+            json.dump(invalidated.to_dict(), fh, indent=2)
+        print(f"Invalidated {args.manifest}: {args.reason}", file=sys.stderr)
+        return 0
+
+    raise ValueError(f"unknown reportx-release action {args.action!r}")
+
+
+def cmd_reportx_certify(args: argparse.Namespace) -> int:
+    from datetime import datetime, timezone
+
+    from sentinel_engine.reportx.audit_log import AuditLogRecord, append_record
+    from sentinel_engine.reportx.automated_certification import certify_report_automated, collect_derivable_escalations
+    from sentinel_engine.reportx.bundle_io import bundle_from_dict
+    from sentinel_engine.reportx.commercial_readiness import ControlResult
+    from sentinel_engine.reportx.human_review import CertificationState, compute_artifact_hash
+    from sentinel_engine.reportx.release_certification import manifest_from_dict
+
+    with open(args.release_manifest, encoding="utf-8") as fh:
+        manifest = manifest_from_dict(json.load(fh))
+
+    if args.target == "batch":
+        if not args.directory:
+            print("reportx-certify batch requires a directory argument", file=sys.stderr)
+            return 2
+        targets = sorted(str(p) for p in Path(args.directory).glob("*-export.json"))
+        if not targets:
+            print(f"No *-export.json artifacts found in {args.directory}", file=sys.stderr)
+    else:
+        targets = [args.target]
+
+    any_not_certified = False
+    for target in targets:
+        with open(target, encoding="utf-8") as fh:
+            export = json.load(fh)
+        control_results = [
+            ControlResult(c["control_id"], c["name"], c["status"], c["evidence"],
+                          c.get("failures", []), c.get("warnings", []))
+            for c in export["commercial_readiness"]["controls"]
+        ]
+        bundle = bundle_from_dict(export["bundle"])
+        escalations = collect_derivable_escalations(
+            report_id=bundle.report_id, detection_rules=bundle.detection_rules,
+            rendered_text=bundle.rendered_text, sources=list(bundle.graph.sources.values()),
+        )
+        result = certify_report_automated(bundle.report_id, manifest, control_results, escalation_reasons=escalations)
+
+        print(f"{target}: {result.certification_state.value} "
+              f"({result.commercial_readiness_pass_count}/{result.commercial_readiness_total_count})")
+        for reason in result.refusal_reasons:
+            print(f"  - {reason}")
+        if result.certification_state != CertificationState.PREMIUM_AUTOMATED_CERTIFIED:
+            any_not_certified = True
+
+        if args.audit_log:
+            record = AuditLogRecord(
+                report_id=bundle.report_id, artifact_sha256=compute_artifact_hash(bundle.rendered_text),
+                release_id=manifest.release_id, timestamp=result.decided_at,
+                automated_controls=f"{result.commercial_readiness_pass_count}/{result.commercial_readiness_total_count}",
+                certification_state=result.certification_state.value,
+                escalation_reason="; ".join(r.value for r in result.escalation_reasons),
+                downgrade_reason="; ".join(result.refusal_reasons),
+                human_review_required=(result.certification_state == CertificationState.PREMIUM_READY_PENDING_HUMAN),
+            )
+            append_record(Path(args.audit_log), record)
+
+    if args.target == "batch":
+        return 0
+    return 1 if any_not_certified else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -368,6 +585,40 @@ def main(argv: list[str] | None = None) -> int:
         p_action.add_argument("--out", required=True, help="path to write the resulting ReviewRecord JSON")
 
     p.set_defaults(func=cmd_reportx_review)
+
+    p = sub.add_parser("reportx-release", help="ReportX release-level certification: certify/inspect/status/verify/invalidate a release manifest")
+    release_sub = p.add_subparsers(dest="action", required=True)
+
+    p_rcertify = release_sub.add_parser("certify", help="certify a release from real canary exports + regression results")
+    p_rcertify.add_argument("--release-id", required=True)
+    p_rcertify.add_argument("--canary", action="append", required=True, default=[],
+                             help="path to a reportx-gate --export artifact for one required canary (repeatable)")
+    p_rcertify.add_argument("--test-result", action="append", default=[],
+                             help="'suite_name:passed:failed', repeatable")
+    p_rcertify.add_argument("--render-qa", choices=["pass", "fail"], required=True)
+    p_rcertify.add_argument("--system5-tests", choices=["pass", "fail"], required=True)
+    p_rcertify.add_argument("--anti-padding", choices=["pass", "fail"], required=True)
+    p_rcertify.add_argument("--npm-audit", choices=["pass", "fail"], required=True)
+    p_rcertify.add_argument("--reviewer", required=True,
+                             help="identity of the operator running this release certification (recorded on the manifest; not a gate)")
+    p_rcertify.add_argument("--out", required=True)
+
+    for action in ("inspect", "status", "verify"):
+        p_raction = release_sub.add_parser(action, help=f"{action} an existing release manifest")
+        p_raction.add_argument("manifest")
+
+    p_rinvalidate = release_sub.add_parser("invalidate", help="force a certified release to REPORTX_RELEASE_REVIEW_REQUIRED")
+    p_rinvalidate.add_argument("manifest")
+    p_rinvalidate.add_argument("--reason", required=True)
+
+    p.set_defaults(func=cmd_reportx_release)
+
+    p = sub.add_parser("reportx-certify", help="ReportX per-report automated premium certification against a certified release")
+    p.add_argument("target", help="path to a reportx-gate --export artifact, or the literal 'batch'")
+    p.add_argument("directory", nargs="?", default="", help="directory of *-export.json artifacts, when target is 'batch'")
+    p.add_argument("--release-manifest", required=True, help="path to a reportx-release certify --out manifest")
+    p.add_argument("--audit-log", default="", help="append each decision to this JSONL audit log (sentinel_engine.reportx.audit_log)")
+    p.set_defaults(func=cmd_reportx_certify)
 
     args = parser.parse_args(argv)
     return args.func(args)

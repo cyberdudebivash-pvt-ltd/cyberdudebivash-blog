@@ -10,7 +10,14 @@ ingestion/public-volume, System 2 = legacy syndication, not touched).
 
 **Model**: `BUILD → VALIDATE → ADAPT → CANARY →
 PREMIUM_READY_PENDING_HUMAN → HUMAN REVIEW → PREMIUM_CERTIFIED →
-GO/NO-GO → INTEGRATE → OBSERVE`. This corrects an earlier draft of this
+RELEASE CERTIFICATION → AUTOMATED CERTIFICATION (future reports) →
+GO/NO-GO → INTEGRATE → OBSERVE`. The `RELEASE CERTIFICATION → AUTOMATED
+CERTIFICATION` stage (Phase 5.5, `REPORTX-RELEASE-CERTIFICATION.md` /
+`REPORTX-AUTOMATED-CERTIFICATION.md`) is additive: it lets a
+release-certified engine issue `PREMIUM_AUTOMATED_CERTIFIED` to future
+reports without a per-report human review, without changing what
+`PREMIUM_CERTIFIED` itself means or how any individual canary reaches it.
+This corrects an earlier draft of this
 runbook, which stated Phase 4 (CANARY) was "blocked on" Phase 5 (human
 review) while Phase 5's own text said it was sequenced *after* Phase 4 —
 a circular dependency that was never real: CANARY does not depend on
@@ -170,6 +177,42 @@ Zero real `APPROVE` actions have been recorded.** This phase is complete
 from an engineering standpoint; it is blocked only on the real operator
 actually running the commands in `REPORTX-HUMAN-REVIEW-RUNBOOK.md`.
 
+## Phase 5.5 — Release Certification + Automated Certification. **Built
+and tested; NOT yet certified (same real-APPROVE blocker as Phase 5).**
+
+New, additive layer (`sentinel_engine.reportx.release_certification`,
+`.automated_certification`, `.tier_downgrade`, `.quality_sampling`,
+`.audit_log`, `.release_health`; CLI: `reportx-release`,
+`reportx-certify`) answering the scaling question Phase 5 deliberately
+left open: production-volume reporting cannot require a human to
+individually re-review every report, but a canary's human approval must
+never become a reusable credential for content nobody reviewed.
+
+The resolution, made structural rather than aspirational: a real,
+artifact-bound `APPROVE` on all four canaries certifies **the release**
+(`REPORTX_RELEASE_CERTIFIED` — real 23-control results, real
+`ReviewRecord`s, real regression/render/System-5/anti-padding/npm-audit
+results, real component-file hashes for drift detection). A certified
+release then lets **individual future reports** earn
+`PREMIUM_AUTOMATED_CERTIFIED` on their *own* real evidence — never by
+inheriting a canary's approval, which the new automated-certification code
+path cannot even reach (it never imports `ReviewRecord`). Full detail:
+`REPORTX-RELEASE-CERTIFICATION.md`, `REPORTX-AUTOMATED-CERTIFICATION.md`,
+`REPORTX-RISK-BASED-HUMAN-REVIEW.md`.
+
+**Current state, run against the real four canary exports today:**
+`reportx-release certify` correctly and honestly reports
+`NOT_CERTIFIED` — every canary is still `PREMIUM_READY_PENDING_HUMAN`,
+the same real-operator dependency Phase 5 is blocked on. 105 new tests
+(`tests/reportx/test_{release_certification,automated_certification,
+tier_downgrade,quality_sampling,audit_log,release_health,
+reportx_release_cli}.py`) prove the mechanism itself — including that a
+canary's review cannot certify a different canary or any newly generated
+report, that engine drift invalidates a certified release, that a 22/23
+report cannot receive `PREMIUM_AUTOMATED_CERTIFIED`, and that sampling
+never alters a certification outcome — using the real canary artifacts,
+not synthetic stand-ins.
+
 ## Phase 6 — GO/NO-GO checkpoint
 
 Before any ReportX-gated bundle reaches an existing production writer
@@ -177,12 +220,17 @@ path or a paying customer, present the operator with:
 
 - Fixture coverage — **10/10 golden fixtures** (`REPORTX-ACCEPTANCE-RESULTS.md`)
   **plus 4/4 real premium canaries** (`REPORTX-CANARY-CERTIFICATION.md`)
-- Full `Sentinel-APEX/engine` test suite result (0 regressions — 649/649
-  at last count) and full JS suite result (0 failures — 1688/1748, 60
-  skipped)
-- At least one canary report that reaches `PREMIUM_CERTIFIED` end-to-end
-  through a real (not `is_test_only_fixture=True`) review — **not yet
-  satisfied; this is the current blocker on reaching Phase 6.**
+- Full `Sentinel-APEX/engine` test suite result (0 regressions — 754/754
+  at last count, includes the 105 Phase 5.5 tests) and full JS suite
+  result (0 failures — 1688/1748, 60 skipped)
+- All four canaries reaching `PREMIUM_CERTIFIED` end-to-end through a
+  real (not `is_test_only_fixture=True`) review, and the release itself
+  reaching `REPORTX_RELEASE_CERTIFIED` (Phase 5.5's stricter bar — a
+  single approved canary was this checklist's original bar before Phase
+  5.5 existed; release certification's own Section-4 requirement is all
+  four, since that is what "the release has demonstrated correct
+  behaviour" actually requires) — **not yet satisfied; this is the
+  current blocker on reaching Phase 6.**
 - Confirmation that System 1/System 2/System 4 continue operating
   unmodified (Architecture Preservation Rule — this is an addition, not
   a cutover) — satisfied; System 4's own renderer/checkRendering() code
@@ -238,11 +286,12 @@ System 4 path resumes exactly as it was, since it was never modified.
 | 3 — System 5 adapter | Done |
 | 4 — Canary generation | **Done, 4/4 real canaries, all 23/23 PASS** (render QA + System 5 integration included) |
 | 5 — Human review workflow | **Operational** — reviewer packs + CLI commands ready; 0 real `APPROVE` actions recorded yet |
-| 6 — GO/NO-GO checkpoint | Not reached — blocked on at least one real `APPROVE` |
+| 5.5 — Release + automated certification | **Built and tested** — `reportx-release`/`reportx-certify` CLI operational; release honestly `NOT_CERTIFIED` (blocked on the same 0 real `APPROVE` actions as Phase 5) |
+| 6 — GO/NO-GO checkpoint | Not reached — blocked on all four real `APPROVE` actions (Phase 5.5's release-certification bar) |
 | 7 — Integrate | Not authorized |
 | 8 — Observe | N/A |
 
 Full regression snapshot at this status: Python `Sentinel-APEX/engine`
-suite 649/649 (0 regressions); JS suite 1688/1748 (60 skipped, 0
-failed); all four canary suites plus the cross-canary anti-padding suite
-97/97 together.
+suite 754/754 (0 regressions — 649 pre-existing + 105 new Phase 5.5
+tests); JS suite 1688/1748 (60 skipped, 0 failed); all four canary suites
+plus the cross-canary anti-padding suite 97/97 together.
