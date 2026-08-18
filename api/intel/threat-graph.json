@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-18T17:58:18.317Z",
+  "generated": "2026-08-18T18:50:38.883Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11292,
+    "total_nodes": 11295,
     "actors": 8,
-    "cves": 3755,
-    "campaigns": 1143,
+    "cves": 3756,
+    "campaigns": 1144,
     "malware": 0,
     "iocs": 883,
-    "edges": 3716
+    "edges": 3717
   },
   "nodes": {
     "actor:lockbit": {
@@ -214115,6 +214115,62 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "CVE-2026-55178": {
+      "id": "CVE-2026-55178",
+      "type": "CVE",
+      "name": "GeoLens: Cross-dataset authorization bypass discloses private dataset metadata, schema, sample values, table rows, and raster/vector tile data",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "@geolens/sdk",
+        "published": "2026-08-18",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "THEHACKERNEWS-0c51924f9cdb577b": {
+      "id": "THEHACKERNEWS-0c51924f9cdb577b",
+      "type": "Intel",
+      "name": "Ransom Busters Claims It Hacked Ransomware Servers, Asks Victims for Up to $60,000",
+      "attributes": {
+        "cvss": 0,
+        "threat_level": "LOW",
+        "priority_score": 26,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-08-18",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-55178": {
+      "id": "campaign:cve-2026-55178",
+      "type": "Campaign",
+      "name": "npm @geolens/sdk Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55178"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55178",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -247721,6 +247777,15 @@
       "target": "BLEEPINGCOMPUTER-c42c5953fb098317",
       "relationship": "exploits",
       "confidence": 0.85,
+      "first_seen": "2026-08-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55178→includes→CVE-2026-55178",
+      "source": "campaign:cve-2026-55178",
+      "target": "CVE-2026-55178",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-08-18",
       "sources": []
     }
