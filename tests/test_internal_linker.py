@@ -69,6 +69,45 @@ class TestBuildCorrelationBlock(unittest.TestCase):
         block = self.linker.build_correlation_block(["Ransomware"], [])
         self.assertEqual(block, "")
 
+    def test_universal_base_labels_do_not_count_as_a_real_relationship(self):
+        # COMMERCIAL-QUALITY-2026-08-18: independently verified live (and
+        # separately flagged in the same terms by an external review) that
+        # a ransomware victim-claim report's "Related Intelligence" showed
+        # multiple unrelated critical CVEs. Root cause: content_discovery's
+        # _infer_labels() puts "CYBERDUDEBIVASH"/"Threat Intelligence" (and
+        # rss_aggregator.py adds "Global Intel" for RSS articles) on every
+        # single article unconditionally, so the old "shared labels" match
+        # always fired on these -- functionally a recency feed, not
+        # correlation. An unrelated CVE report sharing only the universal
+        # labels with a ransomware article must NOT be surfaced as related.
+        self._write_state({
+            "hash1": {
+                "source_title": "Unrelated Critical CVE Advisory", "blogger_url": "https://x/unrelated-cve",
+                "cves": [], "labels": ["CYBERDUDEBIVASH", "Threat Intelligence", "Vulnerabilities"],
+                "published_at": "2026-08-18",
+            },
+        })
+        block = self.linker.build_correlation_block(
+            ["CYBERDUDEBIVASH", "Threat Intelligence", "Global Intel", "Ransomware"], [],
+        )
+        self.assertEqual(block, "")
+
+    def test_a_genuinely_shared_discriminating_label_still_matches(self):
+        # The fix must not become so strict that real relationships (e.g.
+        # two ransomware reports) stop matching -- only the universal
+        # labels are excluded, not every label.
+        self._write_state({
+            "hash1": {
+                "source_title": "Another Ransomware Campaign Report", "blogger_url": "https://x/other-ransomware",
+                "cves": [], "labels": ["CYBERDUDEBIVASH", "Threat Intelligence", "Ransomware"],
+                "published_at": "2026-08-18",
+            },
+        })
+        block = self.linker.build_correlation_block(
+            ["CYBERDUDEBIVASH", "Threat Intelligence", "Global Intel", "Ransomware"], [],
+        )
+        self.assertIn("Another Ransomware Campaign Report", block)
+
     def test_max_results_respected(self):
         posts = {
             f"hash{i}": {"source_title": f"Report {i}", "blogger_url": f"https://x/{i}",
