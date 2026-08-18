@@ -13,6 +13,7 @@ import yaml
 from automation.authority_transformer import (
     AuthorityTransformer,
     _build_dynamic_og_image_url,
+    _ComposerOutcome,
     _generate_svg_thumbnail,
     _legacy_template_enhance,
     _sanitize_llm_html,
@@ -311,6 +312,60 @@ class TestFailClosedPublicationGate(unittest.TestCase):
         with self.assertRaises(PublicationIntegrityError):
             validate_publication(article, context, unsafe)
 
+    def test_blocks_public_reference_draft_achieved_tier(self):
+        # The hard publication gate itself, isolated from AuthorityTransformer:
+        # a context carrying achieved_tier=="PUBLIC_REFERENCE_DRAFT" (the
+        # composer's own verdict that evidence failed correctness controls)
+        # must block publication even though every OTHER required field and
+        # check passes cleanly.
+        article = _make_article()
+        context = build_report_context(article, achieved_tier="PUBLIC_REFERENCE_DRAFT")
+        safe = render_evidence_report(article, Config()).html
+        with self.assertRaises(PublicationIntegrityError) as caught:
+            validate_publication(article, context, safe)
+        self.assertTrue(
+            any("evidence-graph correctness controls failed" in issue for issue in caught.exception.issues)
+        )
+
+    @staticmethod
+    def _context_matching_rendered(article, rendered, **overrides):
+        # render_evidence_report() builds its own internal context (via its
+        # own build_report_context(article) call, with no override
+        # parameter), stamping generated_at=datetime.now(timezone.utc) at
+        # that exact moment. A second, independent build_report_context(article)
+        # call a few microseconds later produces a different generated_at
+        # string, which trips validate_publication()'s "missing generation
+        # timestamp" required-field check for reasons that have nothing to
+        # do with what this test is actually verifying. Rebuilding the
+        # context from the SAME generated_at the rendered HTML actually used
+        # avoids that timing hazard.
+        generated_at = datetime.fromisoformat(rendered.context.generated_at.replace("Z", "+00:00"))
+        return build_report_context(article, generated_at=generated_at, **overrides)
+
+    def test_empty_achieved_tier_is_not_treated_as_a_failure(self):
+        # achieved_tier=="" means "not evaluated" (the default for every
+        # caller that hasn't computed a tier), not "evaluated and failed" --
+        # must NOT trip the new gate, preserving every existing, unmodified
+        # caller's behavior exactly.
+        article = _make_article()
+        rendered = render_evidence_report(article, Config())
+        context = self._context_matching_rendered(article, rendered)  # achieved_tier defaults to ""
+        self.assertEqual(context.achieved_tier, "")
+        validate_publication(article, context, rendered.html)  # must not raise
+
+    def test_a_real_non_draft_tier_produces_an_honest_certification_label(self):
+        article = _make_article()
+        rendered = render_evidence_report(article, Config())
+        context = self._context_matching_rendered(article, rendered, achieved_tier="TACTICAL_READY")
+        self.assertNotEqual(context.certification_status, CERTIFICATION_STATUS)
+        self.assertIn("TACTICAL_READY", context.certification_status)
+        # And the label the gate actually enforces the presence of is this
+        # real one -- not the static default -- so a renderer that (like
+        # authority_transformer._assemble_html()) embeds context.certification_status
+        # verbatim continues to satisfy validate_publication()'s required-field check.
+        html_with_real_label = rendered.html.replace(CERTIFICATION_STATUS, context.certification_status)
+        validate_publication(article, context, html_with_real_label)  # must not raise
+
 
 class TestAuthorityTransformerContract(unittest.TestCase):
     def setUp(self):
@@ -335,6 +390,7 @@ class TestAuthorityTransformerContract(unittest.TestCase):
             "report_family",
             "review_status",
             "certification_status",
+            "achieved_tier",
             "detection_status",
             "generated_at",
         }
@@ -359,16 +415,74 @@ class TestAuthorityTransformerContract(unittest.TestCase):
         self.assertTrue(result["llm_attempts"])
         self.assertTrue(all(a["error"] == "no_api_key" for a in result["llm_attempts"]))
 
-    def test_composer_decline_falls_back_to_legacy_template(self):
+    def test_composer_exception_falls_back_to_legacy_template_and_still_publishes(self):
         # The legacy template is deprecated, not deleted (CLAUDE.md
         # Deprecation Instead of Deletion): it must still be reachable as the
-        # final fallback when the new composer rung itself declines (e.g. its
-        # own fail-closed tier ladder downgrades to PUBLIC_REFERENCE_DRAFT,
-        # or it raises). Simulated here via a direct patch so the test does
-        # not depend on constructing evidence that genuinely fails the gate.
-        with patch("automation.authority_transformer._composer_enhance", return_value=None):
+        # final fallback when the composer rung itself raises (a SOFTWARE
+        # fault in an unproven-in-production path, achieved_tier=="" --
+        # distinct from a genuine evidence-correctness failure, see the next
+        # test). An unproven code path must not be able to break publication
+        # outright, so this one case still publishes via the legacy template.
+        with patch(
+            "automation.authority_transformer._composer_enhance",
+            return_value=_ComposerOutcome(html=None, achieved_tier=""),
+        ):
             result = self.transformer.transform(_make_article())
         self.assertEqual(result["content_source"], "template")
+
+    def test_composer_evidence_correctness_failure_blocks_publication_entirely(self):
+        # P0-COMMERCIAL-QUALITY-2026-08-18: when the composer's OWN
+        # fail-closed tier ladder finds the evidence (not the code) failed
+        # correctness controls, the old behavior was to silently fall back
+        # to the legacy template and publish anyway -- exactly the "silent
+        # downgrade to public-reference or legacy output" the mandate
+        # forbids by name. It must now block publication outright instead.
+        with patch(
+            "automation.authority_transformer._composer_enhance",
+            return_value=_ComposerOutcome(
+                html=None, achieved_tier="PUBLIC_REFERENCE_DRAFT", failed_controls=("source_provenance",),
+            ),
+        ):
+            with self.assertRaises(PublicationIntegrityError) as caught:
+                self.transformer.transform(_make_article())
+        self.assertTrue(
+            any("evidence-graph correctness controls failed" in issue for issue in caught.exception.issues)
+        )
+
+    def test_evidence_correctness_failure_blocks_publication_even_when_llm_succeeds(self):
+        # The core gap this fix closes: before it, _composer_enhance() (and
+        # therefore all evidence-based certification) was only ever called
+        # AFTER the LLM path had already failed -- an LLM-authored article,
+        # the first-choice content path, published with zero evidence-based
+        # certification at all, however bad its underlying evidence. The
+        # certification check must now run unconditionally and gate
+        # publication regardless of which renderer supplied the prose.
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM prose.</p>", "groq"),
+        ), patch(
+            "automation.authority_transformer._composer_enhance",
+            return_value=_ComposerOutcome(
+                html=None, achieved_tier="PUBLIC_REFERENCE_DRAFT", failed_controls=("evidence_hash",),
+            ),
+        ):
+            with self.assertRaises(PublicationIntegrityError):
+                self.transformer.transform(_make_article())
+
+    def test_real_achieved_tier_produces_an_honest_non_default_certification_label(self):
+        # _make_article()'s evidence is clean and already proven elsewhere in
+        # this suite to clear the composer's fail-closed gate
+        # (test_default_publication_without_api_keys_falls_back_to_composer),
+        # so it earns a real, non-PUBLIC_REFERENCE_DRAFT tier. The rendered
+        # certification label must reflect that -- not the unconditional
+        # static CERTIFICATION_STATUS string every report carried before
+        # this fix, regardless of actual evidence quality.
+        result = self.transformer.transform(_make_article())
+        self.assertNotEqual(result["achieved_tier"], "")
+        self.assertNotEqual(result["achieved_tier"], "PUBLIC_REFERENCE_DRAFT")
+        self.assertNotEqual(result["certification_status"], CERTIFICATION_STATUS)
+        self.assertIn(result["achieved_tier"], result["certification_status"])
+        self.assertIn(result["certification_status"], result["content"])
 
     def test_structured_data_has_automated_author_and_no_fake_counts(self):
         content = self.transformer.transform(_make_article())["content"]

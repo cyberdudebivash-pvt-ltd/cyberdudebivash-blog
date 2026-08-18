@@ -183,6 +183,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                 "report_family",
                 "review_status",
                 "certification_status",
+                "achieved_tier",
                 "detection_status",
                 "generated_at",
             ):

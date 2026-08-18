@@ -44,6 +44,10 @@ class ReportContext:
     vulnerability_class: str
     review_status: str = REVIEW_STATUS
     certification_status: str = CERTIFICATION_STATUS
+    # Empty string means "not evaluated against the evidence-graph tier
+    # ladder" (sentinel_engine.reportx.tier_downgrade.determine_achieved_tier)
+    # -- the honest default below, not a claim of any specific tier.
+    achieved_tier: str = ""
 
 
 _CONFIRMED_EXPLOITATION_PATTERNS = (
@@ -200,7 +204,21 @@ def _vulnerability_class(article: DiscoveredArticle) -> str:
 def build_report_context(
     article: DiscoveredArticle,
     generated_at: Optional[datetime] = None,
+    achieved_tier: str = "",
 ) -> ReportContext:
+    """``achieved_tier`` (a ``CertificationState.value`` string, e.g.
+    ``"TACTICAL_READY"``) is optional and defaults to "" -- every existing
+    caller that doesn't know about the evidence-graph tier ladder keeps
+    getting the honest, unconditional ``CERTIFICATION_STATUS`` draft label
+    exactly as before. Callers that HAVE computed a real tier (currently:
+    ``authority_transformer.transform()``, once per article, from
+    ``pipeline_composer.compose_report()``) pass it through so the
+    certification label readers actually see reflects real evidence rather
+    than a static string every report carried regardless of quality
+    (P0-COMMERCIAL-QUALITY-2026-08-18 finding). ``PUBLIC_REFERENCE_DRAFT``
+    itself still renders the plain draft label -- that tier means the
+    evidence genuinely didn't clear correctness, so the honest label and
+    the fail-closed default happen to coincide."""
     generated = generated_at or datetime.now(timezone.utc)
     if generated.tzinfo is None:
         generated = generated.replace(tzinfo=timezone.utc)
@@ -216,6 +234,13 @@ def build_report_context(
     exploitation_status, exploitation_label = _exploitation(article, family)
     patch_status, patch_label = _patch(article, family)
 
+    certification_status = CERTIFICATION_STATUS
+    if achieved_tier and achieved_tier != "PUBLIC_REFERENCE_DRAFT":
+        certification_status = (
+            f"Public Intelligence Certification: {achieved_tier} "
+            "(automated evidence-graph certification — see Provenance for the source basis)"
+        )
+
     return ReportContext(
         report_id=f"CDB-CTI-{report_year}-{source_hash[:12].upper()}",
         source_record_hash=source_hash,
@@ -227,6 +252,8 @@ def build_report_context(
         patch_status=patch_status,
         patch_label=patch_label,
         vulnerability_class=_vulnerability_class(article),
+        certification_status=certification_status,
+        achieved_tier=achieved_tier,
     )
 
 
@@ -262,6 +289,24 @@ def validate_publication(article: DiscoveredArticle, context: ReportContext, htm
     for label, value in required.items():
         if value not in html and html_lib.escape(value, quote=True) not in html:
             issues.append(f"missing {label}")
+
+    # Hard publication gate (P0-COMMERCIAL-QUALITY-2026-08-18): a caller that
+    # computed a real evidence-graph tier (currently only
+    # authority_transformer.transform(), via pipeline_composer.compose_report())
+    # and found it landed at the bottom of the tier ladder is telling us the
+    # evidence itself failed correctness controls -- unreliable, not merely
+    # incomplete. That must block publication outright, not merely swap in a
+    # different template while still publishing. achieved_tier == "" (the
+    # default for any caller that hasn't computed a tier) is deliberately
+    # NOT treated as a failure here -- this only gates callers that actually
+    # ran the evaluation, so every existing, unmodified caller of
+    # build_report_context()/validate_publication() keeps its current
+    # behavior exactly.
+    if context.achieved_tier == "PUBLIC_REFERENCE_DRAFT":
+        issues.append(
+            "evidence-graph correctness controls failed -- content is not reliable enough "
+            "to publish at any tier (see the composer's DowngradeResult.failed_controls)"
+        )
 
     if len(html) < 3000:
         issues.append("report body is below minimum production length")

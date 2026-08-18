@@ -8,6 +8,7 @@ import base64
 import html as _html_escape
 import json
 import re
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Optional
 from urllib.parse import urlencode
@@ -1759,19 +1760,41 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     return render_evidence_report(article, config).html
 
 
-def _composer_enhance(article: DiscoveredArticle, config: Config) -> Optional[str]:
-    """Second-choice content path, tried after the LLM and before the
-    deterministic legacy template (RX-PR2: the Intelligence Factory
-    composer, ``Sentinel-APEX/engine/sentinel_engine/reportx/pipeline_composer.py``).
+@dataclass(frozen=True)
+class _ComposerOutcome:
+    """``achieved_tier`` distinguishes WHY ``html`` may be unusable, because
+    the two cases must be handled differently by ``transform()``:
 
-    Reuses ``render_evidence_report()`` above (the same evidence-first
-    renderer ``_template_enhance()`` calls) plus the P0 release-certification
-    layer's fail-closed tier ladder: a composed report replaces the legacy
-    template only when ``determine_achieved_tier()`` finds every correctness
-    control passed for THIS article's own evidence, never merely because its
-    output looks richer. Returns None (never raises) on any failure -- an
-    unproven-in-production path must not be able to break publication, so
-    the legacy template stays the unconditional final fallback.
+    - ``""`` -- ``compose_report()`` itself raised. An unproven-in-production
+      path must not be able to break publication, so this is a software-fault
+      safety net: the legacy template still supplies body content and the
+      article still publishes, exactly as before this change.
+    - ``"PUBLIC_REFERENCE_DRAFT"`` -- ``compose_report()`` succeeded and its
+      own fail-closed tier ladder found the EVIDENCE unreliable, not merely
+      the code broken. That must hard-block publication rather than quietly
+      substitute a legacy template and publish anyway (P0-COMMERCIAL-QUALITY-2026-08-18:
+      "no silent downgrade to public-reference or legacy output") -- see the
+      ``validate_publication()`` gate this feeds in ``report_integrity.py``.
+    - anything else -- a real, evidence-graph-certified tier.
+    """
+    html: Optional[str]
+    achieved_tier: str
+    failed_controls: tuple = ()
+
+
+def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOutcome:
+    """Runs the Intelligence Factory composer
+    (``Sentinel-APEX/engine/sentinel_engine/reportx/pipeline_composer.py``,
+    RX-PR2) unconditionally for every article -- not merely as a fallback
+    after the LLM path fails. Evidence-graph correctness is a property of
+    the article's own evidence, not of which renderer happens to write the
+    prose, so the certification/publication gate below must see this
+    result regardless of whether the LLM, the composer, or (on a composer
+    exception) the legacy template ends up supplying ``transform()``'s
+    actual body content (P0-COMMERCIAL-QUALITY-2026-08-18 finding: before
+    this change, an LLM-authored article -- the first-choice path --
+    published with zero evidence-based certification at all, because this
+    function was only ever called after the LLM path had already failed).
     """
     try:
         import sys
@@ -1787,16 +1810,17 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> Optional[st
         result = compose_report(
             article, config, requested_tier=CertificationState.FLASH_READY, include_provenance=False,
         )
-        if result.downgrade.achieved_tier == CertificationState.PUBLIC_REFERENCE_DRAFT:
+        tier = result.downgrade.achieved_tier
+        if tier == CertificationState.PUBLIC_REFERENCE_DRAFT:
             logger.info(
-                "ReportX composer downgraded to PUBLIC_REFERENCE_DRAFT, using legacy template",
+                "ReportX composer evidence graph failed correctness controls -- publication will be blocked",
                 extra={"failed_controls": list(result.downgrade.failed_controls)},
             )
-            return None
-        return result.html
+            return _ComposerOutcome(html=None, achieved_tier=tier.value, failed_controls=result.downgrade.failed_controls)
+        return _ComposerOutcome(html=result.html, achieved_tier=tier.value)
     except Exception as e:
         logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
-        return None
+        return _ComposerOutcome(html=None, achieved_tier="")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1826,19 +1850,24 @@ class AuthorityTransformer:
         # the same build_report_context()/validate_publication() gate.
         llm_attempts: list = []
         llm_result = call_llm(self.config, _build_analyst_prompt(article), attempts=llm_attempts)
+        # Evidence-graph correctness is a property of the article's own
+        # evidence, not of which renderer writes the prose -- run the
+        # composer's certification check unconditionally, even when the LLM
+        # path below succeeds and supplies the actual body content. Without
+        # this, LLM-authored articles (the first-choice path) published with
+        # zero evidence-based certification at all.
+        composer_outcome = _composer_enhance(article, self.config)
         if llm_result:
             raw_llm_content, content_source = llm_result
             body_content = _sanitize_llm_html(raw_llm_content)
+        elif composer_outcome.html is not None:
+            body_content = composer_outcome.html
+            content_source = "reportx_composer"
         else:
-            composed_content = _composer_enhance(article, self.config)
-            if composed_content is not None:
-                body_content = composed_content
-                content_source = "reportx_composer"
-            else:
-                body_content = _legacy_template_enhance(article, self.config)
-                content_source = "template"
+            body_content = _legacy_template_enhance(article, self.config)
+            content_source = "template"
 
-        context = build_report_context(article)
+        context = build_report_context(article, achieved_tier=composer_outcome.achieved_tier)
         detection_status = _detection_package(article, context).status
 
         # Generate SEO metadata
@@ -1905,6 +1934,7 @@ class AuthorityTransformer:
             "report_family": context.family,
             "review_status": context.review_status,
             "certification_status": context.certification_status,
+            "achieved_tier": context.achieved_tier,
             "detection_status": detection_status,
             "generated_at": context.generated_at,
         }
