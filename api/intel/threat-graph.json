@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-18T19:52:30.570Z",
+  "generated": "2026-08-18T20:16:55.791Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11295,
+    "total_nodes": 11297,
     "actors": 8,
     "cves": 3756,
-    "campaigns": 1144,
+    "campaigns": 1145,
     "malware": 0,
     "iocs": 883,
-    "edges": 3717
+    "edges": 3718
   },
   "nodes": {
     "actor:lockbit": {
@@ -214171,6 +214171,44 @@
           "confidence": 1
         }
       ]
+    },
+    "GHSA-b07c5213e8d1cf1e": {
+      "id": "GHSA-b07c5213e8d1cf1e",
+      "type": "Intel",
+      "name": "MeshCentral has unsanitized data fields",
+      "attributes": {
+        "cvss": 8.3,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "meshcentral",
+        "published": "2026-08-18",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-6a285008": {
+      "id": "campaign:cluster-6a285008",
+      "type": "Campaign",
+      "name": "npm meshcentral Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-b07c5213e8d1cf1e",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -247784,6 +247822,15 @@
       "id": "campaign:cve-2026-55178→includes→CVE-2026-55178",
       "source": "campaign:cve-2026-55178",
       "target": "CVE-2026-55178",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-6a285008→includes→GHSA-b07c5213e8d1cf1e",
+      "source": "campaign:cluster-6a285008",
+      "target": "GHSA-b07c5213e8d1cf1e",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-18",
