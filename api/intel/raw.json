@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-18T17:26:52.351Z",
+  "generated": "2026-08-18T17:30:08.997Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,8 +8,51 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 122,
+  "count": 113,
   "items": [
+    {
+      "id": "SENTINELAPEX-530ce6b3d8ae",
+      "title": "CISA: Windows Task Host flaw now exploited by ransomware gangs",
+      "description": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) has confirmed that ransomware gangs are also exploiting a high-severity Windows Task Host vulnerability that was flagged as actively exploited in April. [...]",
+      "cvss": 0,
+      "final_ps": 63,
+      "quality_score": 0.433,
+      "threat_level": "MEDIUM",
+      "type": "RANSOMWARE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.25",
+          "recency=0d (score=1.00)",
+          "QS=0.433"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed",
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
     {
       "id": "GHSA-f80f4ede3b3bb997",
       "title": "@rhinostone/swig: arbitrary local file read via include/extends path traversal",
@@ -58,6 +101,57 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-55839",
+      "title": "Kestra vulnerable to stored XSS via custom Markdown [[link]] attribute injection",
+      "description": "## Summary Kestra’s Markdown renderer supports a custom `[[link ...]]` syntax that is converted into a custom HTML element. The custom Markdown parser allows attacker-controlled attributes to be rendered into the generated element without proper allowlisting or sanitization. As a result, a user who ",
+      "cvss": 8.7,
+      "final_ps": 57,
+      "quality_score": 0.52,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 2,
+      "merged_sources": [
+        "github_advisories",
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "io.kestra:kestra",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55839"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-34pm-923j-7wf8",
+        "https://github.com/kestra-io/kestra/security/advisories/GHSA-34pm-923j-7wf8",
+        "https://github.com/kestra-io/kestra/commit/6c8e6d099ed172cbb6b003b7fb30b7bb1f8f710e",
+        "https://github.com/kestra-io/kestra/releases/tag/v1.3.24"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "multi_source=2 sources",
+          "recency=999d (score=0.05)",
+          "QS=0.520"
+        ],
+        "priority": [
+          "base_ps=57 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-50522",
       "title": "Critical SharePoint RCE CVE-2026-50522 Under Active Exploitation After Public PoC",
       "description": "",
@@ -103,6 +197,49 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-d353a7058863",
+      "title": "CISA Flags Actively Exploited Ray Flaw That Can Trigger Browser-Based RCE",
+      "description": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) on Monday added a critical flaw impacting Ray to its Known Exploited Vulnerabilities (KEV) catalog, citing evidence of active exploitation.\n\nRay is an open-source, Python-native distributed computing framework desig... [Full analysis a",
+      "cvss": 0,
+      "final_ps": 51,
+      "quality_score": 0.433,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.25",
+          "recency=0d (score=1.00)",
+          "QS=0.433"
+        ],
+        "priority": [
+          "+8 exploited_in_wild",
+          "+3 supply_chain"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -334,50 +471,6 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-56677",
-      "title": "9Router: Authenticated Server-Side Request Forgery (SSRF) via OIDC Provider Test Endpoint",
-      "description": "### Summary\n\nA Server-Side Request Forgery (SSRF) vulnerability exists in the 9Router dashboard via the `/api/auth/oidc/test` endpoint. The application accepts a user-controlled URL string through the `issuerUrl` parameter and performs an outbound HTTP request without validating ... [Full analysis a",
-      "cvss": 8.6,
-      "final_ps": 47,
-      "quality_score": 0.473,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-56677"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=0d (score=1.00)",
-          "QS=0.473"
-        ],
-        "priority": [
-          "base_ps=47 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
       "id": "CVE-2026-58644",
       "title": "CISA Adds Exploited SharePoint RCE Zero-Day CVE-2026-58644 to KEV",
       "description": "",
@@ -415,227 +508,6 @@
           "+10 CVSS≥9",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54148",
-      "title": "http4k: `DigestAuthProvider.verify` did not bind to request URI",
-      "description": "### Impact\n\nAn issue in `DigestAuthProvider.verify`:\n\nThe `uri` parameter in the client's `Authorization: Digest ` response was not checked against the actual request URL. A captured Digest authentication response could be replayed against any other URL served by the same realm, ... [Full analysis a",
-      "cvss": 8.1,
-      "final_ps": 46,
-      "quality_score": 0.473,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54148"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=0d (score=1.00)",
-          "QS=0.473"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-53659",
-      "title": "http4k: Unbounded gzip decompression in `ServerFilters.GZip` / `RequestFilters.GunZip` allowed memory-exhaustion DoS",
-      "description": "### Impact\n\n`ServerFilters.GZip` and `RequestFilters.GunZip` (and the underlying `Gzip` functions used to decompress request bodies) did not impose any cap on the decompressed size. A small malicious gzip-encoded request body (on the order of kilobytes) could decompress to gigaby... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 45,
-      "quality_score": 0.473,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53659"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=0d (score=1.00)",
-          "QS=0.473"
-        ],
-        "priority": [
-          "base_ps=45 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-53752",
-      "title": "docx4j: Stack Overflow via Cyclic `w:basedOn` Style Chain leads to Denial of Service",
-      "description": "### Summary\ndocx4j's `PropertyResolver` and several adjacent helpers recursively walk the OpenXML style inheritance chain (`w:basedOn`) without cycle detection. \n\nA WordprocessingML document containing a cyclic style chain (for example, Style A based on B and Style B based on A) ... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 45,
-      "quality_score": 0.473,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53752"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=0d (score=1.00)",
-          "QS=0.473"
-        ],
-        "priority": [
-          "base_ps=45 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-59902",
-      "title": "Netty: Memory Exhaustion in SctpMessageCompletionHandler",
-      "description": "### Summary\nSctpMessageCompletionHandler does not limit the total size of buffered fragments, allowing an unauthenticated attacker to cause an OutOfMemoryError by sending large SCTP fragments.\n\n### Details\n`io.netty.handler.codec.sctp.SctpMessageCompletionHandler` buffers fragmen... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 45,
-      "quality_score": 0.473,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59902",
-        "CVE-2026-46340"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=0d (score=1.00)",
-          "QS=0.473"
-        ],
-        "priority": [
-          "base_ps=45 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-59893",
-      "title": "sqlparse: Inefficient Regex Handling of Dollar-Quoted SQL Literals Leads to ReDoS (Denial of Service)",
-      "description": "### Summary\n\nsqlparse contains a Regular Expression Denial of Service (ReDoS) vulnerability in its dollar-quoted SQL literal lexer. The regex pattern at `sqlparse/keywords.py:33` uses a backreference (`\\1`) to match closing dollar-quote delimiters, causing O(n) CPU complexity whe... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 45,
-      "quality_score": 0.473,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59893"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=0d (score=1.00)",
-          "QS=0.473"
-        ],
-        "priority": [
-          "base_ps=45 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -693,127 +565,41 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-64868",
-      "title": "New API: Unauthenticated payment webhooks allow memory and disk DoS via unbounded body reads and full-body logging",
-      "description": "## Summary\n\nUnauthenticated payment webhook endpoints could read and log the entire request body before validating the webhook signature. When a payment webhook was enabled, an unauthenticated attacker could send oversized requests to public callback endpoints and force excessive... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 43,
-      "quality_score": 0.458,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-64868"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=1d (score=0.85)",
-          "QS=0.458"
-        ],
-        "priority": [
-          "base_ps=43 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-73683",
-      "title": "CVE-2026-73683: Laravel Socialite's Facebook provider contains an authentication bypass vulnerability that allows unauth",
-      "description": "Laravel Socialite's Facebook provider contains an authentication bypass vulnerability that allows unauthenticated attackers to replay captured OIDC id_tokens by exploiting the missing nonce claim validation in the getUserByOIDCToken() function within FacebookProvider.php. Attacke... [Full analysis a",
-      "cvss": 8.1,
-      "final_ps": 42,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-73683"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=42 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "SENTINELAPEX-d4d6a8c48542",
-      "title": "CISA Flags Actively Exploited Ray Flaw That Can Trigger Browser-Based RCE",
-      "description": "CISA Flags Actively Exploited Ray Flaw That Can Trigger Browser-Based RCE",
+      "id": "BLEEPINGCOMPUTER-c42c5953fb098317",
+      "title": "Clop created custom web shell for Windchill data theft attacks",
+      "description": "A custom Java web shell likely linked to the Clop ransomware gang was designed specifically for PTC Windchill and FlexPLM servers, with built-in features to decrypt credentials, enumerate file repositories, and steal files. [...]",
       "cvss": 0,
       "final_ps": 42,
-      "quality_score": 0.383,
+      "quality_score": 0.42,
       "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
+      "type": "RANSOMWARE",
+      "source": "bleepingcomputer",
       "sources_confirmed": 1,
       "merged_sources": [
-        "sentinel_apex"
+        "bleepingcomputer"
       ],
       "first_seen": "2026-08-18",
       "last_seen": "2026-08-18",
-      "exploited": true,
+      "exploited": false,
       "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
+      "ransomware": true,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
       "due_date": null,
       "cves": [],
       "ioc_count": 0,
-      "refs": [],
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/clop-created-custom-web-shell-for-windchill-data-theft-attacks/"
+      ],
       "explanation": {
         "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.00",
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.65",
           "recency=0d (score=1.00)",
-          "QS=0.383"
+          "QS=0.420"
         ],
         "priority": [
-          "+8 exploited_in_wild"
+          "+10 ransomware_confirmed"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -1005,54 +791,9 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-62982",
-      "title": "Glances: Incomplete fix of CVE-2026-32608: action-template sanitizer is bypassed by nested stat values (process 'cmdline",
-      "description": "## Summary\nCVE-2026-32608 (\"Command Injection via Process Names in Action Command Templates\") was fixed (commit `5680a5d`) by adding `_sanitize_mustache_dict`, which replaces the shell operators `&&`, `|`, `>>`, `>` with spaces in the values rendered into action command templates... [Full analysis a",
-      "cvss": 7,
-      "final_ps": 41,
-      "quality_score": 0.458,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-62982",
-        "CVE-2026-32608"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=1d (score=0.85)",
-          "QS=0.458"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "SENTINELAPEX-f011058a6c84",
-      "title": "Claude Code Helps Ransomware Operator Steal LDAP Passwords, Backdoor VPNs and Exfiltrate SQL Databases",
-      "description": "Claude Code Helps Ransomware Operator Steal LDAP Passwords, Backdoor VPNs and Exfiltrate SQL Databases",
+      "id": "SENTINELAPEX-94959d6d04f1",
+      "title": "Hackers Hijack Thousands of WordPress Sites to Use as C2 Servers for StopAndProtect Malware",
+      "description": "A newly uncovered malware operation dubbed StopAndProtect is transforming thousands of hacked WordPress websites into a sprawling criminal command-and-control (C2) infrastructure. The campaign blends double-extortion ransomware with covert data theft, quietly harvesting sensitive... [Full analysis a",
       "cvss": 0,
       "final_ps": 41,
       "quality_score": 0.373,
@@ -1092,9 +833,9 @@
       "iocs": []
     },
     {
-      "id": "SENTINELAPEX-c33f5821c864",
-      "title": "VMware Syslog Path Traversal Becomes Root RCE, Persistent SSH Access and ESXi Ransomware",
-      "description": "VMware Syslog Path Traversal Becomes Root RCE, Persistent SSH Access and ESXi Ransomware",
+      "id": "SENTINELAPEX-a5269ff3c5ad",
+      "title": "Thousands of Hacked WordPress Sites, One Operation: Unmasking StopAndProtect",
+      "description": "Research by: Jaromr Hoej (@JaromirHorejsi) Key points Introduction We first noticed a ransomware family called StopAndProtect in the middle of May 2026. Further analysis of the infrastructure reveals that the infection chain starts with a ClickFix social-engineering technique, wh... [Full analysis a",
       "cvss": 0,
       "final_ps": 41,
       "quality_score": 0.373,
@@ -1107,6 +848,90 @@
       ],
       "first_seen": "2026-08-18",
       "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.25",
+          "recency=0d (score=1.00)",
+          "QS=0.373"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-d12a33030d7e",
+      "title": "'Ransom Busters': Ransomware Actor Poses as Incident-Recovery Service",
+      "description": "A ransomware affiliate appears to be sidling up to victims with offers of aid, masking its true intention of diverting ransom payments.",
+      "cvss": 0,
+      "final_ps": 41,
+      "quality_score": 0.373,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.25",
+          "recency=0d (score=1.00)",
+          "QS=0.373"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-8c8ad470b51e",
+      "title": "Ukrainian software developer faces 12 years in Swiss ransomware trial",
+      "description": "The unnamed 52-year-old is accused of attacking Swiss train manufacturer Stadler Rail alongside other enterprises as part of an international ransomware operation.",
+      "cvss": 0,
+      "final_ps": 41,
+      "quality_score": 0.373,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-17",
+      "last_seen": "2026-08-17",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": true,
@@ -1959,98 +1784,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-54147",
-      "title": "http4k: `DigestAuthProvider.verify` ignored configured algorithm and did not bind to request URI",
-      "description": "### Impact\n\nAn issue in `DigestAuthProvider.verify`:\n\n **Algorithm silently forced to MD5.** The configured `algorithm` parameter was ignored every verification used MD5 regardless of configuration. Deployments believing they were running SHA-256 Digest auth were silently inherit... [Full analysis a",
-      "cvss": 6.5,
-      "final_ps": 40,
-      "quality_score": 0.433,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54147"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.40",
-          "recency=0d (score=1.00)",
-          "QS=0.432"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-59903",
-      "title": "Netty Vulnerable to Cache Poisoning and Information Disclosure via CORS Vary Header Overwrite",
-      "description": "### Summary\nNetty's `CorsHandler` silently overwrites existing `Vary` headers, enabling cache poisoning and sensitive information disclosure.\n\n### Details\n`io.netty.handler.codec.http.cors.CorsHandler#setVaryHeader` overwrites any existing Vary headers set by backend applications... [Full analysis a",
-      "cvss": 6.5,
-      "final_ps": 40,
-      "quality_score": 0.433,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59903"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.40",
-          "recency=0d (score=1.00)",
-          "QS=0.432"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-34884",
-      "title": "CVE-2026-34884 - Apache SkyWalking MCP: SSRF via set_skywalking_url Tool and GraphQL Expression Injection in MCP Server",
-      "description": "CVE-2026-34884 - Apache SkyWalking MCP: SSRF via set_skywalking_url Tool and GraphQL Expression Injection in MCP Server",
-      "cvss": 6.1,
+      "id": "CVE-2026-75032",
+      "title": "CVE-2026-75032 - Bluez: bluez: out-of-bounds read in avrcp parse_media_element and parse_media_folder",
+      "description": "CVE-2026-75032 - Bluez: bluez: out-of-bounds read in avrcp parse_media_element and parse_media_folder",
+      "cvss": 6.3,
       "final_ps": 40,
       "quality_score": 0.433,
       "threat_level": "LOW",
@@ -2069,7 +1806,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-34884"
+        "CVE-2026-75032"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -2079,94 +1816,6 @@
           "data_confidence=0.40",
           "recency=0d (score=1.00)",
           "QS=0.432"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-53766",
-      "title": "chrome-devtools-mcp: validatePath() does not canonicalize symlinks before enforcing roots",
-      "description": "### Summary\n\nI originally reported this through Google Bug Hunters. The Google Bug Hunters team said this is in OSS VRP scope but not reward-eligible due to the project tier, and asked me to file an issue or PR directly with this repository. I am reporting it privately here first... [Full analysis a",
-      "cvss": 6.1,
-      "final_ps": 40,
-      "quality_score": 0.433,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53766"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.40",
-          "recency=0d (score=1.00)",
-          "QS=0.432"
-        ],
-        "priority": [
-          "base_ps=40 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-19908",
-      "title": "CVE-2026-19908: PAX Technology Q80 XCB Daemon Missing Authentication Vulnerability. This vulnerability allows network-ad",
-      "description": "PAX Technology Q80 XCB Daemon Missing Authentication Vulnerability. This vulnerability allows network-adjacent attackers to disclose sensitive information and modify configuration on affected installations of PAX Technology Q80. Authentication is not required to exploit this vuln... [Full analysis a",
-      "cvss": 7.1,
-      "final_ps": 40,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19908"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
         ],
         "priority": [
           "base_ps=40 (no boosts)"
@@ -3223,6 +2872,50 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-32467",
+      "title": "CVE-2026-32467 - WordPress [Aotuman] Grab WeChat Articles plugin <= 2.0.1 - Server Side Request Forgery (SSRF) vulnerabi",
+      "description": "CVE-2026-32467 - WordPress [Aotuman] Grab WeChat Articles plugin <= 2.0.1 - Server Side Request Forgery (SSRF) vulnerability",
+      "cvss": 6,
+      "final_ps": 39,
+      "quality_score": 0.433,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-32467"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.432"
+        ],
+        "priority": [
+          "base_ps=39 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "SENTINELAPEX-db0e4f75e6b8",
       "title": "Philips and GE investigating Clop ransomware data theft claims",
       "description": "Tech giants General Electric (GE) and Philips have also confirmed they're investigating claims that the Clop ransomware gang breached their systems and stole data. [...]",
@@ -3390,94 +3083,6 @@
         "priority": [
           "+12 PoC_available",
           "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-15371",
-      "title": "CVE-2026-15371 - Velociraptor Stored XSS in URL column types",
-      "description": "CVE-2026-15371 - Velociraptor Stored XSS in URL column types",
-      "cvss": 6.1,
-      "final_ps": 38,
-      "quality_score": 0.383,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-18",
-      "last_seen": "2026-08-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15371"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.383"
-        ],
-        "priority": [
-          "base_ps=38 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-68517",
-      "title": "Glances: REST API CORS Credentials Guard Uses Exact-Match Instead of Membership Test  Bypassed by Any Multi-Origin Allow",
-      "description": "### Summary\nGlances's REST API server includes a documented safety check intended to guarantee that `cors_credentials=True` can never be combined with an unrestricted CORS origin allowlist. The check compares the configured origin list to the wildcard using exact list equality (`... [Full analysis a",
-      "cvss": 6.5,
-      "final_ps": 38,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-68517"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.40",
-          "recency=1d (score=0.85)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=38 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -3660,6 +3265,314 @@
         "priority": [
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2023-47128",
+      "title": "Exploit for SQL Injection in Piccolo-Orm Piccolo",
+      "description": "",
+      "cvss": 9.1,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2023-47128"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-32444",
+      "title": "CVE-2026-32444 - WordPress Cwicly plugin <= 1.4.4 - Remote Code Execution (RCE) vulnerability",
+      "description": "",
+      "cvss": 9.9,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-32444"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-32463",
+      "title": "CVE-2026-32463 - WordPress Sync Post With Other Site plugin <= 1.9.3 - Arbitrary File Upload vulnerability",
+      "description": "",
+      "cvss": 9.9,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-32463"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-56684",
+      "title": "CVE-2026-56684 - Valkey: TLS pending-data processing use-after-free may allow remote code execution",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-56684"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-63639",
+      "title": "CVE-2026-63639 - Valkey: UAF in stream deserialization may lead to remote code execution",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-63639"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-59940",
+      "title": "CVE-2026-59940 - Seroval: `seroval.fromJSON()` Promise resolver type confusion invokes attacker-controlled methods durin",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59940"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2025-62593",
+      "title": "U.S. CISA adds a Ray-Project Ray flaw to its Known Exploited Vulnerabilities catalog",
+      "description": "",
+      "cvss": 9.5,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-62593"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -4373,142 +4286,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-15303",
-      "title": "CVE-2026-15303: The 6Storage Rentals plugin for WordPress is vulnerable to authentication bypass in versions up to, and ",
+      "id": "CVE-2026-63337",
+      "title": "RabbitMQ Java client: Unvalidated Class.forName in JSON-RPC ProcedureDescription enables arbitrary class loading",
       "description": "",
-      "cvss": 9.1,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15303"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-13360",
-      "title": "CVE-2026-13360: The Cookie Banner for GDPR / CCPA  WPLP Cookie Consent plugin for WordPress is vulnerable to Stored Cros",
-      "description": "",
-      "cvss": 9.1,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-13360"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-14433",
-      "title": "CVE-2026-14433: The Online Booking & Scheduling Calendar for WordPress by vcita plugin for WordPress is vulnerable to St",
-      "description": "",
-      "cvss": 9.1,
-      "final_ps": 27,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-14433"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-55839",
-      "title": "Kestra vulnerable to stored XSS via custom Markdown [[link]] attribute injection",
-      "description": "",
-      "cvss": 8.7,
+      "cvss": 7.5,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "LOW",
@@ -4524,18 +4305,17 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "maven",
-      "product": "io.kestra:kestra",
+      "product": "com.rabbitmq:amqp-client",
       "due_date": null,
       "cves": [
-        "CVE-2026-55839",
-        "CVE-2026-55839"
+        "CVE-2026-63337"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-34pm-923j-7wf8",
-        "https://github.com/kestra-io/kestra/security/advisories/GHSA-34pm-923j-7wf8",
-        "https://github.com/kestra-io/kestra/commit/6c8e6d099ed172cbb6b003b7fb30b7bb1f8f710e",
-        "https://github.com/kestra-io/kestra/releases/tag/v1.3.24"
+        "https://github.com/advisories/GHSA-6g32-pxv4-2wfj",
+        "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-6g32-pxv4-2wfj",
+        "https://github.com/rabbitmq/rabbitmq-java-client/pull/2000",
+        "https://github.com/rabbitmq/rabbitmq-java-client/pull/2002"
       ],
       "explanation": {
         "quality": [
@@ -4555,173 +4335,46 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-75087",
-      "title": "CVE-2026-75087 - itsourcecode Hospital Management System viewdepartment.php sql injection",
-      "description": "",
-      "cvss": 6.3,
-      "final_ps": 19,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-18",
-      "last_seen": "2026-08-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-75087"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "+4 critical_infra"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-75086",
-      "title": "CVE-2026-75086 - itsourcecode Hospital Management System viewroom.php sql injection",
-      "description": "",
-      "cvss": 6.3,
-      "final_ps": 19,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-18",
-      "last_seen": "2026-08-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-75086"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.15",
-          "recency=0d (score=1.00)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "+4 critical_infra"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-62737",
-      "title": "Exploit for Untrusted Pointer Dereference in Microsoft",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-62737"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-40145",
-      "title": "CVE-2026-40145 - Control protections bypass in BeyondTrust Endpoint Privilege Management (Windows deployment) support ut",
+      "id": "CVE-2026-69219",
+      "title": "RabbitMQ Java client ValueReader: Oversized LongString/bytes length triggers OOM via unchecked allocation",
       "description": "",
       "cvss": 7.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
+      "final_ps": 21,
+      "quality_score": 0.523,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
-      "source": "sentinel_apex",
+      "source": "github_advisories",
       "sources_confirmed": 1,
       "merged_sources": [
-        "sentinel_apex"
+        "github_advisories"
       ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "",
-      "product": "",
+      "vendor": "maven",
+      "product": "com.rabbitmq:amqp-client",
       "due_date": null,
       "cves": [
-        "CVE-2026-40145"
+        "CVE-2026-69219"
       ],
       "ioc_count": 0,
-      "refs": [],
+      "refs": [
+        "https://github.com/advisories/GHSA-68mj-5wr7-6fgg",
+        "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-68mj-5wr7-6fgg",
+        "https://github.com/rabbitmq/rabbitmq-java-client/pull/2007",
+        "https://github.com/rabbitmq/rabbitmq-java-client/pull/2008"
+      ],
       "explanation": {
         "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
           "recency=0d (score=1.00)",
-          "QS=0.417"
+          "QS=0.523"
         ],
         "priority": [
-          "base_ps=17 (no boosts)"
+          "base_ps=21 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4731,54 +4384,59 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-75481",
-      "title": "CVE-2026-75481 - SkyPilot Authentication Bypass via Service Account Role Escalation",
-      "description": "",
-      "cvss": 8.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-75481"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-11801",
-      "title": "CVE-2026-11801 - WPAdverts <= 2.3.2 - Missing Authorization to Unauthenticated Sensitive Information Disclosure via clas",
+      "id": "CVE-2026-69220",
+      "title": "RabbitMQ Java client ValueReader: Unbounded recursive table/array nesting causes StackOverflowError DoS",
       "description": "",
       "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "maven",
+      "product": "com.rabbitmq:amqp-client",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-69220"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-93j5-89vc-pph4",
+        "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-93j5-89vc-pph4",
+        "https://github.com/rabbitmq/rabbitmq-java-client/pull/2007",
+        "https://github.com/rabbitmq/rabbitmq-java-client/pull/2008"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2022-24439",
+      "title": "Exploit for Improper Input Validation in Gitpython_Project Gitpython",
+      "description": "",
+      "cvss": 8.1,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "LOW",
@@ -4797,7 +4455,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-11801"
+        "CVE-2022-24439"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4819,184 +4477,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-75060",
-      "title": "CVE-2026-75060 - JetBrains PyCharm Remote Code Execution Vulnerability",
-      "description": "",
-      "cvss": 8.4,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-75060"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-45152",
-      "title": "uniget CLI: Metadata signature verification only runs when UNIGET_IGNORE_METADATA_SIGNATURE is set",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-45152"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-75080",
-      "title": "CVE-2026-75080 - SourceCodester Class and Exam Timetabling System edit_subject1.php sql injection",
-      "description": "",
-      "cvss": 7.3,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-18",
-      "last_seen": "2026-08-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-75080"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-75091",
-      "title": "CVE-2026-75091 - Quill Forms  <= 5.7.1 - Unauthenticated Stored Cross-Site Scripting",
-      "description": "",
-      "cvss": 7.2,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-18",
-      "last_seen": "2026-08-18",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-75091"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-73680",
-      "title": "CVE-2026-73680: Cockpit CMS 2.14.0 and prior contains a command injection vulnerability in the FFmpeg integration that a",
+      "id": "CVE-2026-32465",
+      "title": "CVE-2026-32465 - WordPress Essential Real Estate plugin <= 5.3.3 - PHP Object Injection vulnerability",
       "description": "",
       "cvss": 8.8,
       "final_ps": 17,
@@ -5008,8 +4490,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -5017,7 +4499,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-73680"
+        "CVE-2026-32465"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -5039,8 +4521,140 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-68474",
-      "title": "CVE-2026-68474: In the Linux kernel, the following vulnerability has been resolved:\n\npowerpc/spufs: fix out-of-bounds ac",
+      "id": "CVE-2026-32466",
+      "title": "CVE-2026-32466 - WordPress Gravity Forms Bookings premium plugin <= 2.1 - SQL Injection vulnerability",
+      "description": "",
+      "cvss": 8.5,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-32466"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-61407",
+      "title": "CVE-2026-61407 - Dell Watchdog Timer Driver Exposed IOCTL Privilege Escalation",
+      "description": "",
+      "cvss": 8.8,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-61407"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-32464",
+      "title": "CVE-2026-32464 - WordPress Theme Test Drive plugin <= 2.9.1 - Local File Inclusion vulnerability",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-32464"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-74985",
+      "title": "CVE-2026-74985 - Privilege escalation in the Enterprise Policies component",
       "description": "",
       "cvss": 7.8,
       "final_ps": 17,
@@ -5052,8 +4666,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -5061,7 +4675,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-68474"
+        "CVE-2026-74985"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -5083,140 +4697,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-69414",
-      "title": "CVE-2026-69414: Microsoft is aware of an elevation of privilege in the Microsoft Malware Protection Engine in Microsoft ",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "MALWARE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-69414"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-18554",
-      "title": "CVE-2026-18554: IBM Db2 Mirror for i 7.4, 7.5, and 7.6 could allow a remote authenticated attacker to obtain sensitive i",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-14",
-      "last_seen": "2026-08-14",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-18554"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2025-21479",
-      "title": "Exploit for Incorrect Authorization in Qualcomm Aqt1000_Firmware",
-      "description": "",
-      "cvss": 8.6,
-      "final_ps": 17,
-      "quality_score": 0.418,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-21479"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-40345",
-      "title": "Exploit for CVE-2026-40345",
+      "id": "CVE-2026-28571",
+      "title": "CVE-2026-28571 - WordPress FormyChat plugin <= 2.15.7 - Broken Access Control vulnerability",
       "description": "",
       "cvss": 7.5,
       "final_ps": 17,
@@ -5228,8 +4710,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -5237,7 +4719,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-40345"
+        "CVE-2026-28571"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -5259,21 +4741,109 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-69148",
-      "title": "CVE-2026-69148 - MLflow: CreateModelVersion source validation does not check READ permission on referenced run_id",
+      "id": "CVE-2026-32468",
+      "title": "CVE-2026-32468 - WordPress Duitku Payment Gateway plugin <= 2.11.14 - Sensitive Data Exposure vulnerability",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-32468"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-71539",
+      "title": "CVE-2026-71539 - n8n: Race Condition in Git Clone Node Allows Authenticated Users to Achieve Remote Code Execution",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-71539"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-32333",
+      "title": "CVE-2026-32333 - WordPress Mayosis Core plugin <= 5.4.7 - Reflected Cross Site Scripting (XSS) vulnerability",
       "description": "",
       "cvss": 7.1,
       "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "LOW",
-      "type": "AI_SECURITY",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -5281,7 +4851,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-69148"
+        "CVE-2026-32333"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -5303,12 +4873,12 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-68518",
-      "title": "CVE-2026-68518 - Glances: Command injection bypass of action-template sanitizer via cross-field shell-operator reconstru",
+      "id": "CVE-2024-42353",
+      "title": "Exploit for Open Redirect in Pylonsproject Webob",
       "description": "",
-      "cvss": 7.5,
-      "final_ps": 17,
-      "quality_score": 0.418,
+      "cvss": 6.1,
+      "final_ps": 15,
+      "quality_score": 0.378,
       "threat_level": "LOW",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -5316,8 +4886,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -5325,51 +4895,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-68518"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.417"
-        ],
-        "priority": [
-          "base_ps=17 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-69146",
-      "title": "CVE-2026-69146 - MLflow: LogInputs endpoint bypasses per-run UPDATE authorization in basic-auth",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 15,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-69146"
+        "CVE-2024-42353"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -5391,10 +4917,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-6765",
-      "title": "Exploit for Exposure of Private Personal Information to an Unauthorized Actor in Mozilla Firefox",
+      "id": "CVE-2020-6802",
+      "title": "Exploit for Cross-site Scripting in Mozilla Bleach",
       "description": "",
-      "cvss": 5.3,
+      "cvss": 6.1,
       "final_ps": 15,
       "quality_score": 0.378,
       "threat_level": "LOW",
@@ -5404,8 +4930,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-17",
-      "last_seen": "2026-08-17",
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -5413,7 +4939,95 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-6765"
+        "CVE-2020-6802"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.15",
+          "recency=0d (score=1.00)",
+          "QS=0.378"
+        ],
+        "priority": [
+          "base_ps=15 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2024-34064",
+      "title": "Exploit for Cross-site Scripting in Palletsprojects Jinja",
+      "description": "",
+      "cvss": 5.4,
+      "final_ps": 15,
+      "quality_score": 0.378,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2024-34064"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.15",
+          "recency=0d (score=1.00)",
+          "QS=0.378"
+        ],
+        "priority": [
+          "base_ps=15 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2024-37891",
+      "title": "Exploit for Incorrect Resource Transfer Between Spheres in Python Urllib3",
+      "description": "",
+      "cvss": 4.4,
+      "final_ps": 15,
+      "quality_score": 0.378,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2024-37891"
       ],
       "ioc_count": 0,
       "refs": [],
