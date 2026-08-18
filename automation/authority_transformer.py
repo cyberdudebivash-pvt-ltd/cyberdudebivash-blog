@@ -1759,6 +1759,46 @@ def _template_enhance(article: DiscoveredArticle, config: Config) -> str:
     return render_evidence_report(article, config).html
 
 
+def _composer_enhance(article: DiscoveredArticle, config: Config) -> Optional[str]:
+    """Second-choice content path, tried after the LLM and before the
+    deterministic legacy template (RX-PR2: the Intelligence Factory
+    composer, ``Sentinel-APEX/engine/sentinel_engine/reportx/pipeline_composer.py``).
+
+    Reuses ``render_evidence_report()`` above (the same evidence-first
+    renderer ``_template_enhance()`` calls) plus the P0 release-certification
+    layer's fail-closed tier ladder: a composed report replaces the legacy
+    template only when ``determine_achieved_tier()`` finds every correctness
+    control passed for THIS article's own evidence, never merely because its
+    output looks richer. Returns None (never raises) on any failure -- an
+    unproven-in-production path must not be able to break publication, so
+    the legacy template stays the unconditional final fallback.
+    """
+    try:
+        import sys
+        from pathlib import Path
+
+        engine_path = str(Path(__file__).resolve().parents[1] / "Sentinel-APEX" / "engine")
+        if engine_path not in sys.path:
+            sys.path.insert(0, engine_path)
+
+        from sentinel_engine.reportx.human_review import CertificationState
+        from sentinel_engine.reportx.pipeline_composer import compose_report
+
+        result = compose_report(
+            article, config, requested_tier=CertificationState.FLASH_READY, include_provenance=False,
+        )
+        if result.downgrade.achieved_tier == CertificationState.PUBLIC_REFERENCE_DRAFT:
+            logger.info(
+                "ReportX composer downgraded to PUBLIC_REFERENCE_DRAFT, using legacy template",
+                extra={"failed_controls": list(result.downgrade.failed_controls)},
+            )
+            return None
+        return result.html
+    except Exception as e:
+        logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
+        return None
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # AUTHORITY TRANSFORMER CLASS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1790,8 +1830,13 @@ class AuthorityTransformer:
             raw_llm_content, content_source = llm_result
             body_content = _sanitize_llm_html(raw_llm_content)
         else:
-            body_content = _legacy_template_enhance(article, self.config)
-            content_source = "template"
+            composed_content = _composer_enhance(article, self.config)
+            if composed_content is not None:
+                body_content = composed_content
+                content_source = "reportx_composer"
+            else:
+                body_content = _legacy_template_enhance(article, self.config)
+                content_source = "template"
 
         context = build_report_context(article)
         detection_status = _detection_package(article, context).status

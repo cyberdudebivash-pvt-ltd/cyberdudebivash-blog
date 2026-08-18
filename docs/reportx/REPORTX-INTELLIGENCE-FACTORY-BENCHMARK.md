@@ -96,26 +96,31 @@ new production standard... After the benchmark is approved, refactor the
 generation system so the remaining reports can be produced automatically
 using the new architecture instead of manual rewriting."*
 
-**The benchmark is built and gate-verified. The mass refactor is
-deliberately not started.** Concretely, not yet done and waiting on
-approval:
+**The benchmark was built and gate-verified here; approval to proceed
+came via the subsequent ROLE mandate** ("Future intelligence products
+are generated automatically through the redesigned pipeline without
+manual rewriting" — a success criterion, not a request to ask again).
+Status of the three items originally listed as waiting:
 
-1. Wiring the bridge adapter (`DiscoveredArticle` → `EvidenceGraph`,
-   `REPORTX-INTELLIGENCE-FACTORY-ARCHITECTURE.md`'s "genuinely missing
-   piece") into `automation/authority_transformer.py`'s `transform()`, to
-   replace `_legacy_template_enhance()`'s static boilerplate for the
-   97.6% of reports that hit it.
-2. Building the remaining `ThreatProduct` subclasses (malware
-   intelligence, standalone actor profiles, campaigns, APT reporting, IOC
-   bulletins, strategic intelligence) — deferred because no sample in the
-   11 needs one yet; building one speculatively would violate Principle 4
-   (build new logic only when a real report needs it).
-3. Any change to `automation/main.py`, any scheduled workflow, or
-   anything reaching `cyberbivash.blogspot.com` or `blog.cyberdudebivash.in`
-   in production.
-
-None of the above is performed by this task. Say which of the three (or
-some other scope) to proceed with, and whether the mass refactor should
-target all 11 sample families at once or roll out family-by-family
-(CVE advisories first is the natural next step — they're 8 of the 11
-samples and the schema, `CVERecord`/`CISAKEVRecord`, already exists).
+1. **Done.** The bridge adapter (`DiscoveredArticle` → `EvidenceGraph`,
+   `sentinel_engine/reportx/discovery_bridge.py`) and the live-pipeline
+   composer (`pipeline_composer.py`) are wired into
+   `automation/authority_transformer.py`'s `transform()` as a new,
+   fail-closed-gated rung between the LLM path and
+   `_legacy_template_enhance()` — replacing that static boilerplate
+   whenever the composer's own evidence-tier ladder clears, for the 97.6%
+   of reports that previously hit it unconditionally on LLM failure. The
+   legacy template remains reachable, deprecated but not deleted, as the
+   final safety net. See `REPORTX-QUALITY-MANAGEMENT-SYSTEM.md` for the
+   scope caveat on what this rung does and does not gate yet.
+2. **Still deferred**, and still correctly so: the remaining
+   `ThreatProduct` subclasses (malware intelligence, standalone actor
+   profiles, campaigns, APT reporting, IOC bulletins, strategic
+   intelligence) — no discovered article family needs one yet; building
+   one speculatively would violate Principle 4 (build new logic only when
+   a real report needs it).
+3. **Still not performed, and remains out of scope without explicit
+   authorization:** no change to `automation/main.py`, no scheduled
+   workflow, nothing reaching `cyberbivash.blogspot.com` or
+   `blog.cyberdudebivash.in` in production. `main.py --dry-run` (network
+   mocked in tests) is how the wiring in item 1 was validated.

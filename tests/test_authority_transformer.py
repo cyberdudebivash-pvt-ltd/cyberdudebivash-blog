@@ -339,21 +339,36 @@ class TestAuthorityTransformerContract(unittest.TestCase):
             "generated_at",
         }
         self.assertTrue(required.issubset(result))
-        self.assertEqual(result["content_source"], "template")
+        self.assertEqual(result["content_source"], "reportx_composer")
         self.assertEqual(result["source_url"], _make_article().url)
         self.assertEqual(result["content_hash"], _make_article().content_hash)
         self.assertLessEqual(len(result["labels"]), 20)
 
-    def test_default_publication_without_api_keys_falls_back_to_template(self):
-        # RX-PR0: transform() always attempts call_llm() first (mission
+    def test_default_publication_without_api_keys_falls_back_to_composer(self):
+        # RX-PR0/RX-PR2: transform() always attempts call_llm() first (mission
         # Section 7 — "LLM SUCCESS -> enriched narrative, LLM FAILURE ->
-        # deterministic template", never "skip straight to a thin renderer").
-        # With no provider keys configured, call_llm() itself fails closed
-        # (returns None, no network call) and every attempt is recorded.
+        # deterministic template", now a three-rung chain: LLM -> ReportX
+        # composer (evidence-graph-backed, gate-checked per article) ->
+        # legacy template as the final safety net). With no provider keys
+        # configured, call_llm() itself fails closed (returns None, no
+        # network call) and every attempt is recorded; this article's own
+        # evidence is clean, so the composer clears its fail-closed gate and
+        # is used ahead of the legacy template.
         result = self.transformer.transform(_make_article())
-        self.assertEqual(result["content_source"], "template")
+        self.assertEqual(result["content_source"], "reportx_composer")
         self.assertTrue(result["llm_attempts"])
         self.assertTrue(all(a["error"] == "no_api_key" for a in result["llm_attempts"]))
+
+    def test_composer_decline_falls_back_to_legacy_template(self):
+        # The legacy template is deprecated, not deleted (CLAUDE.md
+        # Deprecation Instead of Deletion): it must still be reachable as the
+        # final fallback when the new composer rung itself declines (e.g. its
+        # own fail-closed tier ladder downgrades to PUBLIC_REFERENCE_DRAFT,
+        # or it raises). Simulated here via a direct patch so the test does
+        # not depend on constructing evidence that genuinely fails the gate.
+        with patch("automation.authority_transformer._composer_enhance", return_value=None):
+            result = self.transformer.transform(_make_article())
+        self.assertEqual(result["content_source"], "template")
 
     def test_structured_data_has_automated_author_and_no_fake_counts(self):
         content = self.transformer.transform(_make_article())["content"]

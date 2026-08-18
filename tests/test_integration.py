@@ -171,8 +171,14 @@ class TestFullPipelinePublish(unittest.TestCase):
         # content_source == "evidence_safe_template" — encoding the
         # regression (LLM never attempted, thin renderer only) as a test
         # requirement. transform() once again tries call_llm() first per
-        # mission Section 7; content_source falls back to "template" (the
-        # restored deterministic renderer) when no provider key is set.
+        # mission Section 7.
+        #
+        # RX-PR2: content_source now falls back to "reportx_composer" (the
+        # evidence-graph-backed, gate-checked Intelligence Factory composer)
+        # when no provider key is set and this run's clean synthetic
+        # evidence clears the composer's own fail-closed tier ladder — the
+        # legacy "template" renderer remains the deprecated-not-deleted
+        # fallback for evidence the composer's gate declines.
         token_resp = MagicMock()
         token_resp.ok = True
         token_resp.json.return_value = MOCK_TOKEN_RESPONSE
@@ -196,7 +202,7 @@ class TestFullPipelinePublish(unittest.TestCase):
             self.assertIn("llm_attempts", post)
             self.assertIsInstance(post["llm_attempts"], list)
             self.assertGreater(len(post["llm_attempts"]), 0)
-            self.assertEqual(post["content_source"], "template")
+            self.assertEqual(post["content_source"], "reportx_composer")
             # No API key configured (see _make_config) — every provider
             # attempt must be recorded as a no_api_key skip, not silently
             # dropped.
