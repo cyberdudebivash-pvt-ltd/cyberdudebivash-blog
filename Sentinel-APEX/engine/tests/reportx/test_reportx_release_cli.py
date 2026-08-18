@@ -31,6 +31,20 @@ CANARY_EXPORT_FILES = {
 }
 
 
+def _copy_exports_only(tmp_path: Path) -> Path:
+    """Isolated copies of the four real canary exports with NO sibling
+    REVIEW-RECORD.json -- unlike EXPORTS_DIR (the shared, real
+    reportx-canary/exports/ directory), which may legitimately carry real
+    review records and other real export artifacts committed by other
+    work. Tests asserting "not yet approved"/"not certified" behavior must
+    use this isolated copy, not EXPORTS_DIR directly, so they stay
+    correct regardless of what's genuinely been approved in the shared
+    directory."""
+    for filename in CANARY_EXPORT_FILES.values():
+        (tmp_path / filename).write_text((EXPORTS_DIR / filename).read_text(encoding="utf-8"), encoding="utf-8")
+    return tmp_path
+
+
 def _approve_all_four_via_real_cli(tmp_path: Path) -> Path:
     """Copies all four real exports into tmp_path, runs the real
     `reportx-review approve` CLI (TEST-ONLY reviewer) on each so its
@@ -71,10 +85,11 @@ class TestReleaseCertifyEndToEnd:
         assert "REPORTX_RELEASE_CERTIFIED" in captured.out
 
     def test_refuses_when_no_canary_is_approved(self, tmp_path, capsys):
+        work_dir = _copy_exports_only(tmp_path)
         manifest_out = tmp_path / "manifest.json"
         args = ["reportx-release", "certify", "--release-id", "cli-test-unapproved"]
         for filename in CANARY_EXPORT_FILES.values():
-            args += ["--canary", str(EXPORTS_DIR / filename)]
+            args += ["--canary", str(work_dir / filename)]
         args += [
             "--test-result", "engine:649:0",
             "--render-qa", "pass", "--system5-tests", "pass", "--anti-padding", "pass", "--npm-audit", "pass",
@@ -172,10 +187,11 @@ class TestReportxCertifyCLI:
 
     def test_single_artifact_certify_without_certified_release_refuses(self, tmp_path, capsys):
         # An uncertified manifest (all four still unapproved) refuses automated certification.
+        work_dir = _copy_exports_only(tmp_path)
         manifest_out = tmp_path / "uncertified.json"
         args = ["reportx-release", "certify", "--release-id", "uncertified"]
         for filename in CANARY_EXPORT_FILES.values():
-            args += ["--canary", str(EXPORTS_DIR / filename)]
+            args += ["--canary", str(work_dir / filename)]
         args += [
             "--test-result", "engine:649:0",
             "--render-qa", "pass", "--system5-tests", "pass", "--anti-padding", "pass", "--npm-audit", "pass",
@@ -183,7 +199,7 @@ class TestReportxCertifyCLI:
         ]
         cli.main(args)  # rc == 1, expected -- not certified
 
-        target = EXPORTS_DIR / CANARY_EXPORT_FILES["cve-2025-62593-ray-canary"]
+        target = work_dir / CANARY_EXPORT_FILES["cve-2025-62593-ray-canary"]
         rc = cli.main(["reportx-certify", str(target), "--release-manifest", str(manifest_out)])
         assert rc == 1
         out = capsys.readouterr().out
@@ -191,10 +207,16 @@ class TestReportxCertifyCLI:
         assert "PREMIUM_AUTOMATED_CERTIFIED" not in out.split("\n")[0]
 
     def test_batch_certifies_every_export_in_a_directory(self, tmp_path, capsys):
+        # _certified_manifest() copies exactly the four required canary
+        # exports into tmp_path itself (via _approve_all_four_via_real_cli) --
+        # batch against tmp_path, not the shared real EXPORTS_DIR, so this
+        # test's exact-count assertion stays correct regardless of how many
+        # other real export artifacts the shared directory legitimately
+        # accumulates over time (e.g. the flagship product's own export).
         manifest_out = self._certified_manifest(tmp_path)
         audit_log = tmp_path / "audit.jsonl"
         rc = cli.main([
-            "reportx-certify", "batch", str(EXPORTS_DIR),
+            "reportx-certify", "batch", str(tmp_path),
             "--release-manifest", str(manifest_out), "--audit-log", str(audit_log),
         ])
         assert rc == 0
