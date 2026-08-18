@@ -238,3 +238,70 @@ class InternalLinker:
                     tags.append(tag)
 
         return f'<p style="margin:20px 0;font-size:12px;color:#64748b;font-family:monospace">{" ".join(tags[:15])}</p>'
+
+
+# COMMERCIAL-QUALITY-2026-08-18 Round 7 follow-up (CodeRabbit review):
+# "global_rss" is an AGGREGATION CONNECTOR covering ~40 distinct real
+# outlets, not a publisher identity -- unlike "nvd"/"cisa_kev"/etc., which
+# each genuinely name one single, specific authority. Falling back to it
+# as if it were a specific publisher made an entry with a genuinely
+# UNKNOWN outlet look "different, therefore independent" from anything,
+# purely because the generic connector label rarely matches a real named
+# outlet -- the exact same-publisher-treated-as-independent risk this
+# function's own docstring already promises to avoid.
+_AGGREGATING_CONNECTORS = frozenset({"global_rss"})
+
+
+def _effective_publisher(entry: dict) -> str:
+    """The real, specific identity this entry actually establishes --
+    never the bare connector name for a connector that aggregates many
+    distinct outlets. Shared by both sides of the independence comparison
+    in ``find_independent_prior_source`` (Single Source of Truth): the
+    same rule must decide "do we actually know who this is" whichever
+    side (current article or historical candidate) it's asked about."""
+    publisher = entry.get("source_publisher")
+    if publisher:
+        return publisher
+    source = entry.get("source") or ""
+    return "" if source in _AGGREGATING_CONNECTORS else source
+
+
+def find_independent_prior_source(cve_id: str, exclude_publisher: str, state_file: str) -> Optional[dict]:
+    """Real, already-persisted evidence of independent corroboration for a
+    CVE -- never a live network fetch. Searches ``data/published_posts.json``
+    (the same file ``InternalLinker.build_correlation_block`` already reads)
+    for an earlier entry reporting this exact CVE ID from a genuinely
+    different publisher.
+
+    Fails closed, never fabricates a match: returns ``None`` when the state
+    file is unavailable, no entry shares this exact CVE ID, or every
+    matching entry's publisher is unknown or the same as ``exclude_publisher``
+    (a same-outlet re-crawl or syndicated repost is not independent
+    corroboration). Older entries persisted before this field existed have
+    no ``source_publisher``/``source`` key at all -- treated the same as an
+    unknown publisher, not assumed independent -- and so does a candidate
+    whose only identity is a generic aggregating connector name
+    (``_effective_publisher``): we cannot tell it apart from
+    ``exclude_publisher`` just because the strings differ.
+
+    Module-level, not an ``InternalLinker`` method: the caller
+    (``sentinel_engine.reportx.discovery_bridge``) needs a plain path-based
+    lookup, not a full ``Config``-bound instance."""
+    if not cve_id:
+        return None
+    try:
+        with open(state_file, "r", encoding="utf-8") as f:
+            state = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+    cve_norm = cve_id.upper()
+    candidates = [
+        entry for entry in state.get("posts", {}).values()
+        if cve_norm in {c.upper() for c in entry.get("cves", [])}
+        and _effective_publisher(entry) not in ("", exclude_publisher)
+    ]
+    if not candidates:
+        return None
+    candidates.sort(key=lambda e: e.get("published_at", ""))
+    return candidates[0]

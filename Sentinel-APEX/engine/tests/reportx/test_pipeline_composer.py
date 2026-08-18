@@ -75,6 +75,16 @@ class TestComposeReportProducesAGateCheckedResult:
                 continue  # genuinely-absent optional input (e.g. no actor-context research attempted)
             assert by_id[control_id].status == "PASS", f"{control_id}: {by_id[control_id].failures}"
 
+    def test_commercial_readiness_scorecard_is_computed_from_the_same_bundle(self):
+        # COMMERCIAL-QUALITY-2026-08-18: the 20-dimension Intelligence
+        # Validation Framework scorecard (PR #90) is now computed for
+        # every composed report, not just available as a standalone CLI
+        # tool nothing in the live pipeline ever called.
+        result = compose_report(_cve_article(), CONFIG)
+        assert result.scorecard.report_id == result.report_id
+        assert 0 <= result.scorecard.overall_score <= 100
+        assert isinstance(result.scorecard.publication_eligible, bool)
+
     def test_ransomware_article_also_composes_and_gates_cleanly(self):
         result = compose_report(_ransomware_article(), CONFIG)
         by_id = {r.control_id: r for r in result.control_results}

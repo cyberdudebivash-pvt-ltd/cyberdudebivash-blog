@@ -418,6 +418,8 @@ class TestAuthorityTransformerContract(unittest.TestCase):
             "review_status",
             "certification_status",
             "achieved_tier",
+            "quality_score",
+            "quality_score_eligible",
             "detection_status",
             "generated_at",
         }
@@ -426,6 +428,19 @@ class TestAuthorityTransformerContract(unittest.TestCase):
         self.assertEqual(result["source_url"], _make_article().url)
         self.assertEqual(result["content_hash"], _make_article().content_hash)
         self.assertLessEqual(len(result["labels"]), 20)
+
+    def test_quality_scorecard_is_real_computed_data_not_a_placeholder(self):
+        # COMMERCIAL-QUALITY-2026-08-18: the 20-dimension commercial-
+        # readiness scorecard (Intelligence Validation Framework, PR #90)
+        # was built, tested, and validated against real canary data, but
+        # was never actually wired into the live publish path -- it existed
+        # only as a standalone CLI command. Real, observable data now flows
+        # through transform()'s own result for every composed article.
+        result = self.transformer.transform(_make_article())
+        self.assertIsInstance(result["quality_score"], int)
+        self.assertGreaterEqual(result["quality_score"], 0)
+        self.assertLessEqual(result["quality_score"], 100)
+        self.assertIsInstance(result["quality_score_eligible"], bool)
 
     def test_default_publication_without_api_keys_falls_back_to_composer(self):
         # RX-PR0/RX-PR2: transform() always attempts call_llm() first (mission

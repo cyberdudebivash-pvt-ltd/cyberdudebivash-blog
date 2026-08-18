@@ -503,14 +503,49 @@ class TestIntegrationAgainstARealComposedReport:
         card = evaluate_intelligence_validation(composed.bundle, composed.control_results)
         json.dumps(card.to_dict())  # must not raise
 
-    def test_flash_tier_report_correctly_fails_analytical_completeness_and_production_readiness(self):
-        # A routine FLASH-tier bundle has not attempted the premium-only
-        # controls at all -- confirms this framework does not silently grade
-        # a volume report as if it were a premium dossier.
+    def test_flash_tier_report_is_blocked_not_failed_on_premium_only_dimensions(self):
+        # Round 6 fix: a routine FLASH-tier bundle was never asked to carry
+        # premium-only completeness (30-40 page depth, the 22-control
+        # Fortune-500 roll-up) -- commercial_readiness.py computes those
+        # controls as a raw content fact regardless of tier, so scoring a
+        # lean report against them is a tier-calibration mismatch, not a
+        # real defect (the same distinction tier_downgrade.py already draws
+        # for this exact control set). BLOCKED (not applicable at this
+        # tier), never FAILED (a claimed defect this report doesn't have).
         composed = compose_report(_cve_article(), CONFIG)
+        assert composed.bundle.is_premium_tier is False
         card = evaluate_intelligence_validation(composed.bundle, composed.control_results)
+        assert card.dimension(ValidationDimension.ANALYTICAL_COMPLETENESS).status == "BLOCKED"
+        assert card.dimension(ValidationDimension.PRODUCTION_READINESS).status == "BLOCKED"
+
+    def test_non_premium_tier_report_is_blocked_not_failed_even_when_premium_controls_fail(self):
+        # Direct unit-level regression for the Round 6 fix, independent of
+        # the full compose_report() integration path above.
+        bundle = _empty_bundle(is_premium_tier=False)
+        results = _controls(("premium_depth", "FAIL"), ("fortune_500_commercial_deliverable", "FAIL"))
+        card = evaluate_intelligence_validation(bundle, results)
+        ac = card.dimension(ValidationDimension.ANALYTICAL_COMPLETENESS)
+        pr = card.dimension(ValidationDimension.PRODUCTION_READINESS)
+        assert ac.status == "BLOCKED" and ac.score is None
+        assert pr.status == "BLOCKED" and pr.score is None
+
+    def test_premium_tier_report_still_genuinely_fails_incomplete_premium_dimensions(self):
+        # Tier-awareness must never launder an actual premium-dossier defect
+        # into a no-op -- a report that IS targeting a premium tier keeps
+        # the real, unchanged PASS/FAIL signal.
+        bundle = _empty_bundle(is_premium_tier=True)
+        results = _controls(("premium_depth", "FAIL"), ("fortune_500_commercial_deliverable", "FAIL"))
+        card = evaluate_intelligence_validation(bundle, results)
+        assert card.dimension(ValidationDimension.ANALYTICAL_COMPLETENESS).status == "FAIL"
         assert card.dimension(ValidationDimension.PRODUCTION_READINESS).status == "FAIL"
-        assert card.publication_eligible is False
+
+    def test_premium_tier_report_with_complete_premium_controls_passes(self):
+        bundle = _empty_bundle(is_premium_tier=True)
+        results = _controls(*[(cid, "PASS") for cid in PREMIUM_COMPLETENESS_CONTROLS],
+                             ("fortune_500_commercial_deliverable", "PASS"))
+        card = evaluate_intelligence_validation(bundle, results)
+        assert card.dimension(ValidationDimension.ANALYTICAL_COMPLETENESS).status == "PASS"
+        assert card.dimension(ValidationDimension.PRODUCTION_READINESS).status == "PASS"
 
 
 class TestEvaluateFromExport:

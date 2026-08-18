@@ -167,7 +167,19 @@ _RE_TECHNIQUE_ID = re.compile(r"\bT\d{4}(?:\.\d{3})?\b")
 # a fully clean, unhedged citation of their own — found running a real
 # published report (SA-2026-0001) through the knowledge graph for the first
 # time (GIKEP v1). GFM table rows reliably end in a trailing ` |`.
-_RE_SENTENCE_BOUNDARY = re.compile(r"[.!?](?:\s|$)|\n\s*\n|\|[ \t]*\n")
+#
+# COMMERCIAL-QUALITY-2026-08-18: rendered HTML report text ends sentences
+# like "...observed child-process execution.</div>" -- punctuation
+# immediately followed by a closing tag, never by whitespace. The original
+# `[.!?](?:\s|$)` alternative requires whitespace or end-of-string right
+# after the punctuation, so it never fired there; the boundary scan then
+# ran straight through the tag change into the NEXT, structurally separate
+# paragraph -- the standard "Mappings are conditional analytical aids, not
+# claims that the technique occurred" disclaimer -- and _is_negated()
+# matched its "not" against a citation the disclaimer wasn't talking
+# about, negating a clean, unhedged technique citation. Found running a
+# real composed CVE report through map_techniques() for the first time.
+_RE_SENTENCE_BOUNDARY = re.compile(r"[.!?](?:\s|$|(?=<))|\n\s*\n|\|[ \t]*\n")
 _RE_NEGATION_CUE = re.compile(
     r"\b(?:no|not|none|never|without|lacks?|absent|ruled out|rejected)\b|n't\b",
     re.IGNORECASE,

@@ -96,8 +96,11 @@ class ValidationDimension(str, Enum):
 # Claims, Consistency, Technical Accuracy, Confidence Discipline) over
 # dimensions that are legitimately BLOCKED for routine, high-volume FLASH-tier
 # content (Threat Hunting Guidance, Business Context, Executive Decision
-# Support) -- see ``_clamp_weighted_average`` for how BLOCKED dimensions are
-# excluded and the remaining weights renormalized, not just zero-filled.
+# Support, and -- since the tier-aware fix in Round 6 -- Analytical
+# Completeness and Production Readiness for any non-premium-tier report)
+# -- see the weighted-average assembly in ``evaluate_intelligence_validation``
+# for how BLOCKED dimensions are excluded and the remaining weights
+# renormalized, not just zero-filled.
 WEIGHTS: dict[ValidationDimension, float] = {
     ValidationDimension.EVIDENCE_TRACEABILITY: 0.09,
     ValidationDimension.SOURCE_RELIABILITY: 0.05,
@@ -281,6 +284,36 @@ def _binary(control_ids: tuple[str, ...], by_id: dict[str, ControlResult]) -> _R
     if failing:
         rationale += f" — failing: {', '.join(failing)}"
     return _RawScore(_clamp(100 * n_pass / len(attempted)), bool(failing), rationale + ".", control_ids)
+
+
+def _binary_unless_lean_tier(
+    control_ids: tuple[str, ...], by_id: dict[str, ControlResult], bundle: ReportBundle,
+) -> _RawScore:
+    """Same contract as ``_binary``, except honestly BLOCKED -- not FAILED
+    -- when ``bundle.is_premium_tier`` is False. ``commercial_readiness.py``
+    computes ``premium_depth``/``fortune_500_commercial_deliverable`` and
+    friends as a raw content fact (is this actually 30-40 pages? does the
+    22-control roll-up hold?) with no tier awareness of its own -- exactly
+    like ``tier_downgrade.determine_achieved_tier()`` already treats the
+    same ``PREMIUM_COMPLETENESS_CONTROLS`` set as "correct, but missing a
+    component premium tier requires," never a correctness defect, for any
+    report not targeting a premium tier. Before this, a routine
+    FLASH_READY/TACTICAL_READY report -- which was never asked to carry
+    premium-only completeness -- scored a real FAIL here every time,
+    permanently blocking ``publication_eligible`` for 100% of today's real,
+    good, lean-tier publishing (see
+    docs/audits/commercial-quality-round-6-tier-aware-scoring-2026-08-18.md).
+    A report actually targeting a premium tier still gets the real,
+    unchanged PASS/FAIL signal below -- this never softens a genuine
+    premium-dossier defect."""
+    if not bundle.is_premium_tier:
+        return _RawScore(
+            None, False,
+            f"Not applicable at this report's tier (premium-only completeness, not requested here): "
+            f"{', '.join(control_ids)}.",
+            control_ids,
+        )
+    return _binary(control_ids, by_id)
 
 
 # ============================================================
@@ -597,8 +630,10 @@ def evaluate_intelligence_validation(
         ValidationDimension.EDITORIAL_QUALITY: _score_editorial_quality(by_id, qa_findings),
         ValidationDimension.DUPLICATE_DETECTION: _score_duplicate_detection(qa_findings, supplemental),
         ValidationDimension.UNSUPPORTED_CLAIMS: _binary(QMS_CONTROL_MAP[QMSCategory.NO_UNSUPPORTED_CLAIMS], by_id),
-        ValidationDimension.ANALYTICAL_COMPLETENESS: _binary(tuple(sorted(PREMIUM_COMPLETENESS_CONTROLS)), by_id),
-        ValidationDimension.PRODUCTION_READINESS: _binary(("fortune_500_commercial_deliverable",), by_id),
+        ValidationDimension.ANALYTICAL_COMPLETENESS: _binary_unless_lean_tier(
+            tuple(sorted(PREMIUM_COMPLETENESS_CONTROLS)), by_id, bundle),
+        ValidationDimension.PRODUCTION_READINESS: _binary_unless_lean_tier(
+            ("fortune_500_commercial_deliverable",), by_id, bundle),
     }
 
     dimension_scores: list[DimensionScore] = []

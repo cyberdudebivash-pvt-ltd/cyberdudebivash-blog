@@ -9,7 +9,7 @@ import tempfile
 import unittest
 
 from automation.config import Config
-from automation.internal_linker import InternalLinker
+from automation.internal_linker import InternalLinker, find_independent_prior_source
 
 
 class TestBuildCorrelationBlock(unittest.TestCase):
@@ -117,6 +117,104 @@ class TestBuildCorrelationBlock(unittest.TestCase):
         self._write_state(posts)
         block = self.linker.build_correlation_block(["Ransomware"], [], max_results=3)
         self.assertEqual(block.count("<li>"), 3)
+
+
+class TestFindIndependentPriorSource(unittest.TestCase):
+    """Round 7: real, already-persisted independent-source corroboration --
+    never a live network fetch, never fabricated when the data doesn't
+    actually establish independence."""
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.state_path = os.path.join(self.tmpdir, "published_posts.json")
+
+    def _write_state(self, posts):
+        with open(self.state_path, "w") as f:
+            json.dump({"total_published": len(posts), "posts": posts}, f)
+
+    def test_finds_a_genuinely_different_publisher_for_the_same_cve(self):
+        self._write_state({
+            "hash1": {
+                "source_url": "https://www.bleepingcomputer.com/x", "source_title": "x",
+                "cves": ["CVE-2026-1234"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": "BleepingComputer",
+            },
+        })
+        match = find_independent_prior_source("CVE-2026-1234", "nvd", self.state_path)
+        self.assertIsNotNone(match)
+        self.assertEqual(match["source_publisher"], "BleepingComputer")
+
+    def test_same_publisher_is_not_independent(self):
+        self._write_state({
+            "hash1": {
+                "source_url": "https://nvd.nist.gov/x", "source_title": "x",
+                "cves": ["CVE-2026-1234"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "nvd", "source_publisher": None,
+            },
+        })
+        match = find_independent_prior_source("CVE-2026-1234", "nvd", self.state_path)
+        self.assertIsNone(match)
+
+    def test_unknown_publisher_is_never_assumed_independent(self):
+        # A pre-Round-7 entry has neither "source" nor "source_publisher" at
+        # all -- must be treated as unknown, not silently assumed different.
+        self._write_state({
+            "hash1": {
+                "source_url": "https://example.test/x", "source_title": "x",
+                "cves": ["CVE-2026-1234"], "published_at": "2026-08-01T00:00:00Z",
+            },
+        })
+        match = find_independent_prior_source("CVE-2026-1234", "nvd", self.state_path)
+        self.assertIsNone(match)
+
+    def test_no_matching_cve_returns_none(self):
+        self._write_state({
+            "hash1": {
+                "source_url": "https://www.bleepingcomputer.com/x", "source_title": "x",
+                "cves": ["CVE-2026-9999"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": "BleepingComputer",
+            },
+        })
+        self.assertIsNone(find_independent_prior_source("CVE-2026-1234", "nvd", self.state_path))
+
+    def test_missing_state_file_returns_none_not_a_crash(self):
+        self.assertIsNone(find_independent_prior_source("CVE-2026-1234", "nvd", "/no/such/file.json"))
+
+    def test_empty_cve_id_returns_none(self):
+        self.assertIsNone(find_independent_prior_source("", "nvd", self.state_path))
+
+    def test_candidate_with_only_a_generic_aggregator_connector_is_not_independent(self):
+        # CodeRabbit review (Round 7 follow-up): a candidate whose
+        # source_publisher is missing must not fall back to "global_rss"
+        # (an aggregator covering ~40 distinct outlets) as if that bare
+        # connector name were a specific, comparable identity -- it would
+        # almost always differ from a real named publisher, making a
+        # genuinely-unknown-outlet entry look "independent" by accident.
+        self._write_state({
+            "hash1": {
+                "source_url": "https://example.test/x", "source_title": "x",
+                "cves": ["CVE-2026-1234"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": None,
+            },
+        })
+        match = find_independent_prior_source("CVE-2026-1234", "Krebs on Security", self.state_path)
+        self.assertIsNone(match)
+
+    def test_earliest_independent_match_wins_when_several_exist(self):
+        self._write_state({
+            "hash1": {
+                "source_url": "https://a.test/x", "source_title": "later",
+                "cves": ["CVE-2026-1234"], "published_at": "2026-08-10T00:00:00Z",
+                "source": "global_rss", "source_publisher": "Outlet A",
+            },
+            "hash2": {
+                "source_url": "https://b.test/x", "source_title": "earlier",
+                "cves": ["CVE-2026-1234"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": "Outlet B",
+            },
+        })
+        match = find_independent_prior_source("CVE-2026-1234", "nvd", self.state_path)
+        self.assertEqual(match["source_publisher"], "Outlet B")
 
 
 if __name__ == "__main__":
