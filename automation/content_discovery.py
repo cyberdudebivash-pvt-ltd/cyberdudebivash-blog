@@ -152,6 +152,15 @@ class PublicationState:
             "labels": article.labels,
             "content_hash": article.content_hash,
             "cves": cves,
+            # COMMERCIAL-QUALITY-2026-08-18 Round 7: real publisher identity,
+            # persisted so a later report on the same CVE can tell "a
+            # genuinely different outlet already corroborated this" from "the
+            # same feed was re-crawled" -- see internal_linker.
+            # find_independent_prior_source(). Purely additive; older
+            # entries simply lack these two keys, which every reader of this
+            # file already treats as "unknown," never a fabricated value.
+            "source": article.source,
+            "source_publisher": article.source_publisher,
         }
         if publication_metadata:
             safe_fields = {

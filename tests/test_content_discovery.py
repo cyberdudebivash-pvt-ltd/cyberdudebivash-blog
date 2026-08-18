@@ -122,6 +122,27 @@ class TestPublicationState(unittest.TestCase):
         self.assertTrue(state2.is_published(article.content_hash))
         self.assertTrue(state2.is_source_url_published(article.url))
 
+    def test_mark_published_persists_source_and_publisher(self):
+        # Round 7 (independent-source corroboration): the persisted entry
+        # must carry real publisher identity, or a later report on the same
+        # CVE has no way to tell "a genuinely different outlet already
+        # covered this" from "the same feed was re-crawled."
+        state = PublicationState(self.state_file)
+        article = DiscoveredArticle(
+            url="https://www.bleepingcomputer.com/news/security/cve-test",
+            title="Test", summary="Test summary",
+            published_at=datetime.now(timezone.utc).isoformat(),
+            content_hash=_compute_hash("https://www.bleepingcomputer.com/news/security/cve-test", "Test"),
+            labels=["Vulnerabilities"], source="global_rss", source_publisher="BleepingComputer",
+        )
+        state.mark_published(article, "post-456", "https://blogger.com/post-456")
+
+        with open(self.state_file, "r", encoding="utf-8") as f:
+            saved = json.load(f)
+        entry = saved["posts"][article.content_hash]
+        self.assertEqual(entry["source"], "global_rss")
+        self.assertEqual(entry["source_publisher"], "BleepingComputer")
+
     def test_source_url_deduplication_is_exact(self):
         state = PublicationState(self.state_file)
         article = self._make_article()

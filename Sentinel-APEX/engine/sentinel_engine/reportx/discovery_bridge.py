@@ -38,6 +38,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from automation.content_discovery import DiscoveredArticle  # noqa: E402
+from automation.internal_linker import find_independent_prior_source  # noqa: E402
 from automation.report_integrity import ReportContext, build_report_context  # noqa: E402
 
 from .claim_model import (
@@ -57,6 +58,7 @@ from .evidence_integrity import compute_content_sha256, compute_excerpt_fingerpr
 from .threat_schemas import CISAKEVRecord, CVERecord, RansomwareVictimClaim, ThreatProduct
 
 PRIMARY_SOURCE_ID = "src-primary"
+CORROBORATION_SOURCE_ID = "src-corroboration-1"
 
 _HIGH_RELIABILITY_SOURCES = frozenset({"nvd", "cisa_kev", "cisa_advisory", "mitre"})
 _MODERATE_RELIABILITY_SOURCES = frozenset({"ransomware_intel", "threat_actor_intel", "breach_intel", "cti_vendor"})
@@ -69,6 +71,19 @@ _SOURCE_TYPE_MAP: dict[str, SourceType] = {
     "breach_intel": SourceType.JOURNALISM,
     "threat_actor_intel": SourceType.CTI_VENDOR_RESEARCH,
 }
+
+
+def _reliability_for(source: str, source_publisher: str | None) -> Reliability:
+    """The actual grading rule, factored out of ``source_reliability`` so
+    ``_apply_independent_corroboration`` can grade a historical
+    ``published_posts.json`` entry (which has the same two raw fields but
+    no full ``DiscoveredArticle``) with the exact same policy, never a
+    second, drifting copy of it (Single Source of Truth)."""
+    if source in _HIGH_RELIABILITY_SOURCES:
+        return Reliability.HIGH
+    if source in _MODERATE_RELIABILITY_SOURCES or source_publisher:
+        return Reliability.MODERATE
+    return Reliability.UNKNOWN
 
 
 def source_reliability(article: DiscoveredArticle) -> Reliability:
@@ -89,11 +104,7 @@ def source_reliability(article: DiscoveredArticle) -> Reliability:
     trust policy per outlet, a separate follow-up -- it only stops treating
     a known, deliberately-curated publisher the same as a completely
     unknown one."""
-    if article.source in _HIGH_RELIABILITY_SOURCES:
-        return Reliability.HIGH
-    if article.source in _MODERATE_RELIABILITY_SOURCES or article.source_publisher:
-        return Reliability.MODERATE
-    return Reliability.UNKNOWN
+    return _reliability_for(article.source, article.source_publisher)
 
 
 def build_source_record(article: DiscoveredArticle, context: ReportContext) -> SourceRecord:
@@ -286,8 +297,78 @@ def build_threat_product(article: DiscoveredArticle, context: ReportContext) -> 
     return None
 
 
-def build_evidence_graph(article: DiscoveredArticle, context: ReportContext) -> EvidenceGraph:
+def _apply_independent_corroboration(
+    graph: EvidenceGraph, article: DiscoveredArticle, context: ReportContext, state_file: str | None,
+) -> None:
+    """Real, already-persisted evidence of independent corroboration --
+    never a live network fetch, never a second source invented to fill the
+    gap ``build_claims``'s ``c-independent-corroboration`` claim otherwise
+    always names as unassessed. ``state_file`` is ``None`` for every
+    existing caller that predates this (Round 7): a no-op, so nothing about
+    today's behavior changes unless a caller opts in by passing a real
+    path (``pipeline_composer.compose_report`` does).
+
+    Deliberately narrow about which claims a match actually supports: a
+    bare CVE-ID match against ``data/published_posts.json`` establishes
+    that a genuinely different publisher also reported on this exact CVE
+    -- real corroboration for the CVE's existence/identity (``c-cve-id``,
+    ``c-summary``) and for the honest gap-claim itself
+    (``c-independent-corroboration``). It does NOT establish that the two
+    sources agree on exploitation status, patch status, or business impact
+    -- those stay single-sourced and untouched, preserving Section 10's
+    discipline for exactly the high-impact claims it exists to protect."""
+    if state_file is None or not article.cve_id:
+        return
+    match = find_independent_prior_source(
+        cve_id=article.cve_id, exclude_publisher=article.source_publisher or article.source,
+        state_file=state_file,
+    )
+    if match is None:
+        return
+
+    publisher = match.get("source_publisher") or match.get("source") or "an independent outlet"
+    # This repository's own publication history never persisted the
+    # historical article's full content or summary -- only its title --
+    # so, exactly like build_source_record()'s own missing-full-content
+    # path, this hashes the one real string actually available rather
+    # than fabricating a full-content hash it cannot honestly compute.
+    source = SourceRecord(
+        source_id=CORROBORATION_SOURCE_ID, url=match.get("source_url") or "",
+        publisher=publisher, source_type=_SOURCE_TYPE_MAP.get(match.get("source", ""), SourceType.OTHER),
+        source_role=SourceRole.CORROBORATION, retrieved_at=match.get("published_at") or context.generated_at,
+        reliability=_reliability_for(match.get("source", ""), match.get("source_publisher")),
+        excerpt_fingerprint_sha256=compute_excerpt_fingerprint([match.get("source_title") or publisher]),
+        fingerprint_fallback_reason=(
+            "This corroborating source was found in this repository's own publication history "
+            "(data/published_posts.json), which does not persist the original article's full content or "
+            "summary -- only its title -- so this hashes the retrieved title excerpt instead of a "
+            "fabricated full-content hash."
+        ),
+    )
+    graph.add_source(source)
+
+    for claim_id in ("c-cve-id", "c-summary"):
+        claim = graph.claims.get(claim_id)
+        if claim is not None:
+            claim.source_refs.append(source.source_id)
+            graph.recompute_corroboration(claim_id)
+
+    gap = graph.claims.get("c-independent-corroboration")
+    if gap is not None:
+        gap.text = (
+            f"An independent second source ({publisher}) previously reported on {article.cve_id}, "
+            "found in this repository's own publication history."
+        )
+        gap.status = EpistemicState.CONFIRMED
+        gap.source_refs.append(source.source_id)
+        graph.recompute_corroboration("c-independent-corroboration")
+
+
+def build_evidence_graph(
+    article: DiscoveredArticle, context: ReportContext, state_file: str | None = None,
+) -> EvidenceGraph:
     graph = EvidenceGraph()
     graph.add_source(build_source_record(article, context))
     build_claims(graph, article, context)
+    _apply_independent_corroboration(graph, article, context, state_file)
     return graph

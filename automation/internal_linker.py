@@ -238,3 +238,41 @@ class InternalLinker:
                     tags.append(tag)
 
         return f'<p style="margin:20px 0;font-size:12px;color:#64748b;font-family:monospace">{" ".join(tags[:15])}</p>'
+
+
+def find_independent_prior_source(cve_id: str, exclude_publisher: str, state_file: str) -> Optional[dict]:
+    """Real, already-persisted evidence of independent corroboration for a
+    CVE -- never a live network fetch. Searches ``data/published_posts.json``
+    (the same file ``InternalLinker.build_correlation_block`` already reads)
+    for an earlier entry reporting this exact CVE ID from a genuinely
+    different publisher.
+
+    Fails closed, never fabricates a match: returns ``None`` when the state
+    file is unavailable, no entry shares this exact CVE ID, or every
+    matching entry's publisher is unknown or the same as ``exclude_publisher``
+    (a same-outlet re-crawl or syndicated repost is not independent
+    corroboration). Older entries persisted before this field existed have
+    no ``source_publisher``/``source`` key at all -- treated the same as an
+    unknown publisher, not assumed independent.
+
+    Module-level, not an ``InternalLinker`` method: the caller
+    (``sentinel_engine.reportx.discovery_bridge``) needs a plain path-based
+    lookup, not a full ``Config``-bound instance."""
+    if not cve_id:
+        return None
+    try:
+        with open(state_file, "r", encoding="utf-8") as f:
+            state = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+    cve_norm = cve_id.upper()
+    candidates = [
+        entry for entry in state.get("posts", {}).values()
+        if cve_norm in {c.upper() for c in entry.get("cves", [])}
+        and (entry.get("source_publisher") or entry.get("source") or "") not in ("", exclude_publisher)
+    ]
+    if not candidates:
+        return None
+    candidates.sort(key=lambda e: e.get("published_at", ""))
+    return candidates[0]

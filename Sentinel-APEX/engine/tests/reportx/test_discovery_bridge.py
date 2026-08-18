@@ -5,6 +5,7 @@ architecture, the one genuinely missing piece).
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -13,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 from automation.content_discovery import DiscoveredArticle
 from automation.report_integrity import build_report_context
 
-from sentinel_engine.reportx.claim_model import EpistemicState, Reliability
+from sentinel_engine.reportx.claim_model import CorroborationState, EpistemicState, Reliability
 from sentinel_engine.reportx.discovery_bridge import (
     build_evidence_graph,
     build_source_record,
@@ -145,6 +146,101 @@ class TestClaimConstruction:
             graph = build_evidence_graph(article, context)
             gap = graph.claims["c-independent-corroboration"]
             assert gap.status == EpistemicState.NOT_ASSESSED
+
+
+class TestIndependentSourceCorroboration:
+    """Round 7: build_evidence_graph's optional state_file parameter --
+    real, already-persisted independent-source corroboration (data/
+    published_posts.json), never a live network fetch, and a strict no-op
+    for every caller that doesn't pass it -- including every other test in
+    this file, which keeps working unchanged."""
+
+    @staticmethod
+    def _write_state(path: Path, posts: dict) -> str:
+        path.write_text(json.dumps({"posts": posts}), encoding="utf-8")
+        return str(path)
+
+    def test_no_state_file_is_a_pure_no_op(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context)
+        assert list(graph.sources.keys()) == ["src-primary"]
+
+    def test_independent_match_adds_a_second_source_and_corroborates_the_cve_claims(self, tmp_path):
+        state_file = self._write_state(tmp_path / "published_posts.json", {
+            "hash1": {
+                "source_url": "https://www.bleepingcomputer.com/x", "source_title": "x",
+                "cves": ["CVE-2026-99999"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": "BleepingComputer",
+            },
+        })
+        article = _cve_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context, state_file=state_file)
+
+        assert "src-corroboration-1" in graph.sources
+        assert graph.claims["c-cve-id"].corroboration_state == CorroborationState.MULTI_SOURCE_INDEPENDENT
+        assert graph.claims["c-summary"].corroboration_state == CorroborationState.MULTI_SOURCE_INDEPENDENT
+        gap = graph.claims["c-independent-corroboration"]
+        assert gap.status == EpistemicState.CONFIRMED
+        assert "BleepingComputer" in gap.text
+
+    def test_high_impact_claims_stay_single_sourced_even_with_a_match(self, tmp_path):
+        # A bare CVE-ID match establishes the CVE's identity is corroborated
+        # -- it does NOT establish agreement on exploitation status, which
+        # must keep Section 10's single-source discipline.
+        state_file = self._write_state(tmp_path / "published_posts.json", {
+            "hash1": {
+                "source_url": "https://www.bleepingcomputer.com/x", "source_title": "x",
+                "cves": ["CVE-2026-99999"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": "BleepingComputer",
+            },
+        })
+        article = _cve_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context, state_file=state_file)
+        assert graph.claims["c-exploitation-status"].corroboration_state == CorroborationState.SINGLE_SOURCE
+
+    def test_no_match_leaves_the_gap_claim_honestly_unassessed(self, tmp_path):
+        state_file = self._write_state(tmp_path / "published_posts.json", {})
+        article = _cve_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context, state_file=state_file)
+        assert list(graph.sources.keys()) == ["src-primary"]
+        assert graph.claims["c-independent-corroboration"].status == EpistemicState.NOT_ASSESSED
+
+    def test_ransomware_family_has_no_cve_id_and_is_unaffected(self, tmp_path):
+        state_file = self._write_state(tmp_path / "published_posts.json", {
+            "hash1": {
+                "source_url": "https://www.bleepingcomputer.com/x", "source_title": "x",
+                "cves": ["CVE-2026-99999"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": "BleepingComputer",
+            },
+        })
+        article = _ransomware_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context, state_file=state_file)
+        assert list(graph.sources.keys()) == ["src-primary"]
+
+    def test_corroborating_source_carries_a_real_fingerprint_not_a_missing_hash(self, tmp_path):
+        # Regression for a real defect caught live while building this
+        # feature: a synthesized second source with neither content_sha256
+        # nor an excerpt fingerprint fails commercial_readiness's own
+        # evidence_hash integrity control.
+        state_file = self._write_state(tmp_path / "published_posts.json", {
+            "hash1": {
+                "source_url": "https://www.bleepingcomputer.com/x", "source_title": "x",
+                "cves": ["CVE-2026-99999"], "published_at": "2026-08-01T00:00:00Z",
+                "source": "global_rss", "source_publisher": "BleepingComputer",
+            },
+        })
+        article = _cve_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context, state_file=state_file)
+        corroborating = graph.sources["src-corroboration-1"]
+        assert corroborating.content_sha256 or corroborating.excerpt_fingerprint_sha256
+        if corroborating.excerpt_fingerprint_sha256:
+            assert corroborating.fingerprint_fallback_reason
 
 
 class TestThreatProductMapping:

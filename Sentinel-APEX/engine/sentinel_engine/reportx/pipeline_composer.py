@@ -215,7 +215,7 @@ def compose_report(
     ``render_evidence_report()``'s own default, so ``ComposedReport.html``
     stays a complete, self-contained artifact unless a caller opts out."""
     context = build_report_context(article)
-    graph = build_evidence_graph(article, context)
+    graph = build_evidence_graph(article, context, state_file=getattr(config, "state_file", None))
     threat_product = build_threat_product(article, context)
     package = _detection_package(article, context)
 
