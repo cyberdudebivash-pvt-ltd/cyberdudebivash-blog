@@ -1,5 +1,14 @@
 # ReportX Human Review Runbook
 
+**Scope note:** this document covers approving one artifact. A real
+`APPROVE` recorded here on all four canaries is also the precondition for
+`REPORTX_RELEASE_CERTIFIED` (`REPORTX-RELEASE-CERTIFICATION.md`), which in
+turn is what lets *future, non-canary* reports earn
+`PREMIUM_AUTOMATED_CERTIFIED` without individual human review
+(`REPORTX-AUTOMATED-CERTIFICATION.md`) — but that scaling mechanism never
+changes what `PREMIUM_CERTIFIED` means here: an exact artifact, reviewed by
+a real human, exactly as this document describes.
+
 The one manual step in the entire ReportX pipeline. Everything up to
 `PREMIUM_READY_PENDING_HUMAN` is engineering — automated gates,
 evidence hashing, contradiction detection, depth assessment. Everything
