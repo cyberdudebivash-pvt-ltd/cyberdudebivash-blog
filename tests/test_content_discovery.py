@@ -17,6 +17,7 @@ from automation.content_discovery import (
     _compute_hash,
     _is_recent,
     _infer_labels,
+    _parse_feed_items,
 )
 
 
@@ -229,6 +230,51 @@ class TestContentDiscovery(unittest.TestCase):
             results = engine.discover()
 
         self.assertLessEqual(len(results), 2)
+
+
+class TestParseFeedItemsSummaryTruncation(unittest.TestCase):
+    """P0 fix: a description longer than the 1500-char cap must truncate on
+    a word boundary with an explicit ellipsis marker -- not a silent,
+    mid-word/mid-sentence cutoff. Reproduces the exact real-world defect
+    (verified live on a published JWR PhaaS report, whose rendered prose
+    ended "...codes are still [...]" mid-sentence with no marker at all)
+    that a bare ``get_text(...)[:1500]`` slice produces."""
+
+    def _items_for_description(self, description: str) -> list[dict]:
+        xml = (
+            "<rss><channel><item>"
+            "<title>Test Article</title>"
+            "<link>https://example.test/article</link>"
+            f"<description><![CDATA[{description}]]></description>"
+            "<pubDate>Tue, 18 Aug 2026 09:00:00 GMT</pubDate>"
+            "</item></channel></rss>"
+        )
+        return _parse_feed_items(xml)
+
+    def test_short_description_is_not_truncated_or_marked(self):
+        items = self._items_for_description("A short, complete sentence about a threat.")
+        self.assertEqual(items[0]["summary"], "A short, complete sentence about a threat.")
+        self.assertFalse(items[0]["summary"].endswith("..."))
+
+    def test_long_description_truncates_on_a_word_boundary_with_a_marker(self):
+        long_text = "Security researchers have discovered a sophisticated phishing platform. " * 25
+        items = self._items_for_description(long_text)
+        summary = items[0]["summary"]
+        self.assertLessEqual(len(summary), 1500)
+        self.assertTrue(summary.endswith("..."), f"expected an explicit truncation marker, got: {summary[-40:]!r}")
+        # The character immediately before the marker must be a real word
+        # character, not whitespace -- proves the cut landed after a whole
+        # word, not mid-word or mid-sentence.
+        self.assertFalse(summary[:-3].endswith(" "))
+        self.assertNotIn("  ", summary[-40:])
+
+    def test_never_produces_a_bare_mid_sentence_cutoff(self):
+        # The real defect: text ending abruptly on a preposition/article
+        # with no punctuation and no marker, e.g. "...codes are still".
+        long_text = "while card numbers, passwords and one-time codes are still being typed by the victim. " * 20
+        items = self._items_for_description(long_text)
+        summary = items[0]["summary"]
+        self.assertTrue(summary.endswith("...") or summary.endswith((".", "!", "?")))
 
 
 if __name__ == "__main__":

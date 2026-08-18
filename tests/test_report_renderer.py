@@ -18,7 +18,9 @@ from automation.report_integrity import build_report_context
 from automation.report_renderer import (
     _detection_package,
     _detection_section,
+    _family_analysis,
     _kql_string_list,
+    _technical_evidence,
     _validated_kql,
     _validated_sigma,
 )
@@ -219,6 +221,76 @@ class TestDetectionSectionRendersKql(unittest.TestCase):
         pkg = _detection_package(article, context)
         html = _detection_section(pkg)
         self.assertNotIn("SENTINEL KQL", html)
+
+
+_SUMMARY_TEXT = "Attackers exploited a novel technique to bypass the affected control entirely."
+
+
+class TestFamilyAnalysisDoesNotRepeatTheSourceSummary(unittest.TestCase):
+    """P0 fix: ``_family_analysis()`` must not re-quote ``article.summary``
+    -- that exact text already appears once in the Executive Summary
+    section (report_renderer's own render_evidence_report assembly) and
+    once, explicitly labeled, in ``_technical_evidence()``'s "Source
+    Evidence Extract". A third, unlabeled repeat here was the real,
+    reproduced "hallmark of template-driven synthesis" duplication found
+    live on a published report -- verified here per family branch, since
+    every branch used to open with the identical raw-summary paragraph."""
+
+    def test_ransomware_claim_family_does_not_repeat_the_summary(self):
+        article = _article(_SUMMARY_TEXT, source="ransomware_intel", cve_id=None,
+                            url="https://example.test/ransomware", title="Group X Claims Victim Y")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "ransomware_claim")
+        html = _family_analysis(article, context)
+        self.assertNotIn(_SUMMARY_TEXT, html)
+        self.assertIn("Evidence boundary", html)  # the real analytical content survives
+
+    def test_breach_notice_family_does_not_repeat_the_summary(self):
+        article = _article(_SUMMARY_TEXT, source="breach_intel", cve_id=None,
+                            url="https://example.test/breach", title="Breach Record Z")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "breach_notice")
+        html = _family_analysis(article, context)
+        self.assertNotIn(_SUMMARY_TEXT, html)
+
+    def test_ai_security_family_does_not_repeat_the_summary(self):
+        article = _article("A prompt injection technique against a large language model was documented.",
+                            cve_id=None, labels=["AI Security"],
+                            url="https://example.test/ai-sec", title="LLM Prompt Injection Study")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "ai_security")
+        html = _family_analysis(article, context)
+        self.assertNotIn("A prompt injection technique against a large language model was documented.", html)
+
+    def test_cve_advisory_family_does_not_repeat_the_summary(self):
+        article = _article(_SUMMARY_TEXT)  # default helper already sets cve_id
+        context = build_report_context(article)
+        self.assertEqual(context.family, "cve_advisory")
+        html = _family_analysis(article, context)
+        self.assertNotIn(_SUMMARY_TEXT, html)
+        self.assertIn("Vulnerability class", html)  # the real analytical content survives
+
+    def test_general_intelligence_fallback_does_not_repeat_the_summary(self):
+        # The exact shape of the two real, live-verified problem reports
+        # (JWR PhaaS, "general_intelligence"; CISA Windows Task Host,
+        # "ransomware_reporting" -- neither matches a specialized branch).
+        article = _article(_SUMMARY_TEXT, source="global_rss", cve_id=None,
+                            url="https://example.test/general", title="Some Unmatched Intelligence Item")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "general_intelligence")
+        html = _family_analysis(article, context)
+        self.assertNotIn(_SUMMARY_TEXT, html)
+        self.assertIn("Intelligence Assessment", html)
+
+    def test_source_evidence_extract_still_carries_the_summary_exactly_once(self):
+        # The de-duplication must not have deleted the summary everywhere --
+        # _technical_evidence() is the one, explicitly-labeled place it
+        # belongs, and must still show it.
+        article = _article(_SUMMARY_TEXT, source="global_rss", cve_id=None,
+                            url="https://example.test/general", title="Some Unmatched Intelligence Item")
+        html = _technical_evidence(article)
+        self.assertIn(_SUMMARY_TEXT, html)
+        self.assertEqual(html.count(_SUMMARY_TEXT), 1)
 
 
 if __name__ == "__main__":

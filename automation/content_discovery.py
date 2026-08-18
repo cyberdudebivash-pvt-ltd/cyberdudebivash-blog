@@ -37,6 +37,7 @@ from bs4 import BeautifulSoup
 
 from .config import Config
 from .logger import setup_logger
+from .seo_optimizer import _truncate
 
 logger = setup_logger("content_discovery")
 
@@ -278,7 +279,7 @@ def _parse_feed_items(xml_text: str) -> list[dict]:
 
         summary_raw = _text("description") or _text("summary") or _text("content")
         clean_summary = (
-            BeautifulSoup(summary_raw, "lxml").get_text(separator=" ", strip=True)[:1500]
+            _truncate(BeautifulSoup(summary_raw, "lxml").get_text(separator=" ", strip=True), 1500)
             if summary_raw
             else ""
         )
@@ -553,7 +554,7 @@ class ContentDiscoveryEngine:
             if pub_date and pub_date < cutoff:
                 continue
 
-            clean_summary = BeautifulSoup(str(summary), "lxml").get_text(separator=" ", strip=True)[:1500]
+            clean_summary = _truncate(BeautifulSoup(str(summary), "lxml").get_text(separator=" ", strip=True), 1500)
             content_hash = _compute_hash(url, title)
             labels = _infer_labels(title, clean_summary)
             pub_iso = pub_date.isoformat() if pub_date else datetime.now(timezone.utc).isoformat()

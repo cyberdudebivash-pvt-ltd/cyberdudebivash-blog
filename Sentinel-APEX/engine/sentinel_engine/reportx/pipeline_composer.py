@@ -81,22 +81,37 @@ def _detection_rules(report_id: str, package: DetectionPackage) -> list[Detectio
     )]
 
 
+_VULNERABILITY_MANAGER_FAMILIES = ("cve_advisory", "cisa_advisory", "cisa_kev", "ransomware_claim")
+
+
 def _lean_role_decisions(article, context: ReportContext, threat_product) -> list[RoleDecision]:
     """A deliberately SHORT role list for FLASH-tier volume content --
     the full 10-role treatment (``REPORTX-INTELLIGENCE-FACTORY-BENCHMARK.md``)
     is reserved for premium dossiers with the evidence depth to ground all
     10. Padding every routine alert with 10 roles it has no real basis for
-    would itself be the padding defect this factory exists to remove."""
-    decisions = [
-        RoleDecision(
+    would itself be the padding defect this factory exists to remove.
+
+    Vulnerability Manager guidance requires a real patch/exploitation
+    dimension to be relevant -- gated to the same families
+    ``context.exploitation_status``/``context.patch_label`` are actually
+    meaningful for (Section 10's evidence-scoping discipline applied to
+    role routing, not just to claims). Before this gate, every family --
+    including phishing/PhaaS and third-party ransomware-campaign reporting
+    with no patch or exploitation dimension at all -- got a bare "Track
+    against {family} intake..." Vulnerability Manager decision regardless,
+    which is exactly the misrouted-guidance defect this fixes (verified
+    live against a real published JWR PhaaS report, family=general_intelligence,
+    which had no CVE/patch evidence anywhere in its bundle)."""
+    decisions: list[RoleDecision] = []
+    if context.family in _VULNERABILITY_MANAGER_FAMILIES:
+        decisions.append(RoleDecision(
             role=RoleAudience.VULNERABILITY_MANAGER,
             decision=f"Track against {context.family_label.lower()} intake at severity commensurate with "
                      f"{context.exploitation_label.lower()}.",
             rationale="Prioritization reflects this record's own exploitation/patch evidence, not a fixed severity template.",
             evidence_claim_ids=("c-exploitation-status", "c-patch-status") if context.family in (
                 "cve_advisory", "cisa_advisory", "cisa_kev") else (),
-        ),
-    ]
+        ))
     if context.family in ("cve_advisory", "cisa_advisory", "cisa_kev"):
         decisions.append(RoleDecision(
             role=RoleAudience.SOC_MANAGER,
@@ -154,7 +169,12 @@ def compose_report(
     base = render_evidence_report(article, config, include_provenance=include_provenance)
 
     role_decisions = _lean_role_decisions(article, context, threat_product)
-    role_html = _section(
+    # An empty-but-titled section (heading with nothing under it) reads as
+    # broken, not honest -- omit the section entirely when this record's
+    # family has no grounded role guidance at all, matching
+    # executive_products.render_role_decisions()'s own "if not decisions:
+    # return ''" convention for the same situation.
+    role_html = "" if not role_decisions else _section(
         "Role-Based Decisions",
         _bullets([f"<strong>{d.role.value.replace('_', ' ').title()}:</strong> {_esc(d.decision)} "
                   f"<span style=\"color:#64748b\">&mdash; {_esc(d.rationale)}</span>" for d in role_decisions],

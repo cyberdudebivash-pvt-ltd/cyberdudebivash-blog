@@ -46,6 +46,20 @@ def _ransomware_article(**overrides) -> DiscoveredArticle:
     return DiscoveredArticle(**defaults)
 
 
+def _general_intelligence_article(**overrides) -> DiscoveredArticle:
+    """Shape of the real, live-published JWR PhaaS report (family=
+    general_intelligence -- no CVE, no ransomware/AI-security keyword, not
+    KEV/breach/CISA-sourced): a phishing/PhaaS write-up ingested via RSS."""
+    defaults = dict(
+        url="https://example.test/phaas-platform-discovered", title="New Phishing-as-a-Service Platform Discovered",
+        summary="A phishing-as-a-service kit streams stolen credentials to operators over WebSockets in real time.",
+        published_at="2026-08-18T09:00:00Z", content_hash="phaas1234",
+        labels=["Phishing", "Threat Intelligence"], source="global_rss",
+    )
+    defaults.update(overrides)
+    return DiscoveredArticle(**defaults)
+
+
 class TestComposeReportProducesAGateCheckedResult:
     def test_cve_article_composes_and_gates_cleanly(self):
         result = compose_report(_cve_article(), CONFIG)
@@ -144,3 +158,32 @@ class TestFailClosedDowngrade:
         result = compose_report(_cve_article(), CONFIG, requested_tier=CertificationState.PREMIUM_READY_PENDING_HUMAN)
         assert result.downgrade.achieved_tier != CertificationState.PREMIUM_READY_PENDING_HUMAN
         assert result.downgrade.was_downgraded
+
+
+class TestRoleRoutingDoesNotMisapplyVulnerabilityManagement:
+    """P0 fix: Vulnerability Manager guidance ("Track against {family}
+    intake at severity commensurate with {exploitation}...") requires a
+    real patch/exploitation dimension. Before this fix every family --
+    including phishing/PhaaS reporting with no CVE anywhere in its
+    evidence -- got this decision unconditionally. Verified live against a
+    real published report (JWR PhaaS, family=general_intelligence)."""
+
+    def test_cve_article_still_gets_vulnerability_manager(self):
+        result = compose_report(_cve_article(), CONFIG)
+        assert "Vulnerability Manager" in result.html
+
+    def test_ransomware_claim_still_gets_vulnerability_manager(self):
+        result = compose_report(_ransomware_article(), CONFIG)
+        assert "Vulnerability Manager" in result.html
+
+    def test_general_intelligence_article_does_not_get_vulnerability_manager(self):
+        result = compose_report(_general_intelligence_article(), CONFIG)
+        assert result.context.family == "general_intelligence"
+        assert "Vulnerability Manager" not in result.html
+
+    def test_general_intelligence_article_omits_the_role_section_entirely_rather_than_leaving_it_empty(self):
+        # A heading with nothing under it reads as broken, not honest --
+        # the whole "Role-Based Decisions" section must be absent, not
+        # merely empty, when this family has no grounded role guidance.
+        result = compose_report(_general_intelligence_article(), CONFIG)
+        assert "Role-Based Decisions" not in result.html
