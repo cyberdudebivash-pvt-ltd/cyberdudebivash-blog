@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-18T20:53:05.563Z",
+  "generated": "2026-08-18T21:18:01.993Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11314,
+    "total_nodes": 11316,
     "actors": 8,
     "cves": 3763,
-    "campaigns": 1153,
+    "campaigns": 1154,
     "malware": 0,
     "iocs": 883,
-    "edges": 3726
+    "edges": 3727
   },
   "nodes": {
     "actor:lockbit": {
@@ -214531,6 +214531,44 @@
           "confidence": 1
         }
       ]
+    },
+    "GHSA-4631ecd1497b365c": {
+      "id": "GHSA-4631ecd1497b365c",
+      "type": "Intel",
+      "name": "LibreNMS: SSRF-driven stored XSS via Oxidized API response fields in device showconfig page",
+      "attributes": {
+        "cvss": 8.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "librenms/librenms",
+        "published": "2026-08-18",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-c5860c31": {
+      "id": "campaign:cluster-c5860c31",
+      "type": "Campaign",
+      "name": "composer librenms/librenms Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-18",
+        "last_seen": "2026-08-18",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-4631ecd1497b365c",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -248225,6 +248263,15 @@
       "id": "campaign:cve-2026-70666→includes→CVE-2026-70666",
       "source": "campaign:cve-2026-70666",
       "target": "CVE-2026-70666",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-18",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-c5860c31→includes→GHSA-4631ecd1497b365c",
+      "source": "campaign:cluster-c5860c31",
+      "target": "GHSA-4631ecd1497b365c",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-18",
