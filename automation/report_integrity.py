@@ -295,8 +295,23 @@ _FALSE_HUMAN_REVIEW_PATTERNS = (
 )
 
 
-def validate_publication(article: DiscoveredArticle, context: ReportContext, html: str) -> None:
-    """Fail closed on provenance, contradiction, placeholder, and schema defects."""
+def validate_publication(
+    article: DiscoveredArticle, context: ReportContext, html: str, product_tier: str = "",
+) -> None:
+    """Fail closed on provenance, contradiction, placeholder, and schema defects.
+
+    ``product_tier`` is a second, independent tier signal --
+    ``analytical_depth_gate.evaluate_product_tier()``'s FLASH/TACTICAL/
+    PREMIUM_LONG_FORM verdict against the founder-mandate 24-section
+    contract (``report_contract.py``). This is deliberately NOT the same
+    value as ``context.achieved_tier`` (the ReportX composer's separate
+    23-control PUBLIC_REFERENCE_DRAFT/.../PREMIUM_CERTIFIED ladder,
+    already gated below) -- collapsing two independently-computed
+    tier signals into one field would hide which one actually drove a
+    given verdict. Default "" ("not evaluated") is not gated, so every
+    existing caller that hasn't computed this verdict keeps its current
+    behavior exactly.
+    """
     issues: list[str] = []
     lower = html.lower()
 
@@ -328,6 +343,23 @@ def validate_publication(article: DiscoveredArticle, context: ReportContext, htm
         issues.append(
             "evidence-graph correctness controls failed -- content is not reliable enough "
             "to publish at any tier (see the composer's DowngradeResult.failed_controls)"
+        )
+
+    # Same hard-gate discipline as above, applied to the second, independent
+    # tier signal: FLASH means half or more of this family's MANDATORY
+    # 24-section-contract sections resolved WITHHELD_INSUFFICIENT_EVIDENCE
+    # (analytical_depth_gate.evaluate_product_tier()) -- not merely thin,
+    # but below the floor this pipeline considers publishable. Proven a
+    # no-op against every real article in the current corpus (see
+    # docs/audits/REPORTX-24-SECTION-LONG-FORM-RELEASE-CERTIFICATION.md);
+    # wired as a hard gate now, not observability-only, so the protection
+    # is already live the moment a family-applicability matrix genuinely
+    # makes FLASH reachable, rather than needing a second wiring pass later.
+    if product_tier == "FLASH":
+        issues.append(
+            "24-section product-tier gate resolved FLASH -- half or more of this report "
+            "family's mandatory sections are WITHHELD_INSUFFICIENT_EVIDENCE "
+            "(see ProductTierVerdict.mandatory_withheld)"
         )
 
     if len(html) < 3000:

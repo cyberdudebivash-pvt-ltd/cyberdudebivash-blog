@@ -158,6 +158,30 @@ def _add_claim_with_evidence(
     graph.recompute_corroboration(claim.claim_id)
 
 
+# threat_feeds.py's real fallback for an unnamed ransomware actor -- not a
+# genuine identity. Duplicated here (not imported from internal_linker.py/
+# report_contract.py, which each already carry their own copy for the same
+# dependency-lightness reason) -- both existing copies exist for the same
+# adversarial-testing-found regression class and must be kept in sync if
+# the source fallback string ever changes.
+_PLACEHOLDER_ACTOR_NAMES = frozenset({"Unknown Group"})
+
+
+def _named_ransomware_actor(article: DiscoveredArticle) -> str:
+    """The canonical, already-sanitized actor name
+    (``threat_feeds.py``'s ``RansomwareIntelSource``, via its own
+    ``_safe_str()``/``_clean_taxonomy()`` extraction) -- never
+    ``article.labels``, which carries site taxonomy tags every article gets
+    (e.g. the "CYBERDUDEBIVASH" brand label, "Threat Intelligence") that are
+    not actor names. Returns "" (never a taxonomy label or the placeholder
+    default) when no real actor name is available, matching
+    ``report_contract.py``'s ``_resolve_actor_context()`` -- the same
+    field, the same placeholder guard, checked here for the first time in
+    this module."""
+    group = (article.ransomware_group or "").strip()
+    return group if group and group not in _PLACEHOLDER_ACTOR_NAMES else ""
+
+
 def build_claims(graph: EvidenceGraph, article: DiscoveredArticle, context: ReportContext) -> None:
     """Family-conditioned claim construction -- reuses
     ``report_integrity``'s already-computed exploitation/patch status/
@@ -229,7 +253,7 @@ def build_claims(graph: EvidenceGraph, article: DiscoveredArticle, context: Repo
             analyst_notes="Third-party leak-site claim, independently unverified -- REPORTED, not CONFIRMED "
                           "(Section 10: VICTIM_IDENTITY is a high-impact claim type).",
         )
-        actor_label = next((label for label in article.labels if label and label.lower() != "ransomware"), None)
+        actor_label = _named_ransomware_actor(article)
         if actor_label:
             _add_claim_with_evidence(
                 graph, article, claim_id="c-actor-attribution", claim_type=ClaimType.ACTOR_ATTRIBUTION,
@@ -281,7 +305,7 @@ def build_threat_product(article: DiscoveredArticle, context: ReportContext) -> 
     if context.family == "ransomware_claim":
         from .threat_schemas import ActorHistoricalContext, GenericReadiness, VictimObservation
 
-        actor_label = next((label for label in article.labels if label and label.lower() != "ransomware"), "")
+        actor_label = _named_ransomware_actor(article)
         return RansomwareVictimClaim(
             product_id=context.report_id,
             victim_observation=VictimObservation(
