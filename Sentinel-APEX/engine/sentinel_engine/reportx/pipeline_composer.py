@@ -208,7 +208,7 @@ def compose_report(
     include_provenance: bool = True,
 ) -> ComposedReport:
     """``include_provenance=False`` produces a body-content fragment (no
-    Provenance and Review Status section) for callers -- namely
+    Provenance and Certification section) for callers -- namely
     ``authority_transformer._composer_enhance()`` -- that append their own
     single canonical provenance section afterward and would otherwise get it
     twice. Standalone/direct callers get the default ``True``, matching

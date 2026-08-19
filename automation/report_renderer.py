@@ -633,7 +633,7 @@ def _provenance(article: DiscoveredArticle, context: ReportContext) -> str:
         ("Source published", article.published_at or "Not supplied"),
         ("Source-record SHA-256", context.source_record_hash),
         ("Generated UTC", context.generated_at),
-        ("Review status", context.review_status),
+        ("Production Mode", context.review_status),
         ("Certification", context.certification_status),
     ]
     cells = "".join(
@@ -646,7 +646,7 @@ def _provenance(article: DiscoveredArticle, context: ReportContext) -> str:
         + "</div>"
         for label, value in rows
     )
-    return _section("Provenance and Review Status", _panel(cells, "#334155", "#030912"), "#64748b")
+    return _section("Provenance and Certification", _panel(cells, "#334155", "#030912"), "#64748b")
 
 
 def render_evidence_report(
@@ -687,7 +687,7 @@ def render_evidence_report(
 
     body = (
         f'<article data-report-id="{_esc(context.report_id)}" data-source-record-sha256="{context.source_record_hash}" '
-        f'data-report-family="{_esc(context.family)}" data-review-status="automated-unreviewed" '
+        f'data-report-family="{_esc(context.family)}" data-review-status="ai-native-automated" '
         'style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;color:#e2e8f0">'
         f'<div style="margin:0 0 24px;padding:16px 20px;background:#00080f;border:1px solid {severity_color}66;border-radius:8px">'
         f'<div style="color:{severity_color};font-family:monospace;font-size:11px;font-weight:900;letter-spacing:1.5px">'
@@ -703,9 +703,13 @@ def render_evidence_report(
         + _detection_section(package)
         + _references(article, context)
         + (_provenance(article, context) if include_provenance else "")
-        + '<div style="margin-top:24px;padding:14px 18px;background:#120a00;border:1px solid #f59e0b55;border-radius:8px;color:#fbbf24;font-size:12px;line-height:1.6">'
-        f'<strong>{_esc(context.review_status)}.</strong> {_esc(context.certification_status)}. '
-        'Customer-specific action requires exposure validation and accountable human approval.</div>'
+        + '<div style="margin-top:24px">'
+        + _panel(
+            f'<strong style="color:#e2e8f0">{_esc(context.review_status)}.</strong> '
+            f'{_esc(context.certification_status)}. Customer-specific action requires '
+            'exposure validation and accountable human approval.'
+        )
+        + '</div>'
         + "</article>"
     )
 

@@ -113,7 +113,7 @@ _IMPLEMENTED_TODAY = {
     SECTION_15_DETECTION_ENGINEERING: "Detection Engineering",
     SECTION_19_ROLE_DECISION_MATRIX: "Role-Based Decisions",
     SECTION_23_REFERENCES_EVIDENCE_LEDGER: "Source Evidence Extract / References",
-    SECTION_24_PROVENANCE_CERTIFICATION: "Provenance and Review Status",
+    SECTION_24_PROVENANCE_CERTIFICATION: "Provenance and Certification",
 }
 
 # Section 1 (Executive Risk Command Center), Section 6 (Evidence & Source
