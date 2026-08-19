@@ -18,7 +18,13 @@ from typing import Optional
 from .content_discovery import DiscoveredArticle
 
 
-REVIEW_STATUS = "Automated intelligence synthesis — not human reviewed"
+# Truthful production-mode label (P0-AI-NATIVE-CERTIFICATION-2026-08-19):
+# this pipeline publishes without a per-report human reviewer, so the
+# honest label is the positive, factual description of what DOES gate
+# publication -- automated, evidence-graph-verified controls -- not a
+# defensive "not reviewed" disclaimer. See validate_publication() below
+# for the actual fail-closed evidence gates that replace human review.
+REVIEW_STATUS = "AI-Native Automated Intelligence — Evidence-Graph Verified"
 CERTIFICATION_STATUS = "Public reference draft — not a certified customer deliverable"
 
 
@@ -274,6 +280,20 @@ _UNSUPPORTED_COMMERCIAL_PATTERNS = (
     r"\btrusted by \d[\d,]*\+",
 )
 
+# P0-AI-NATIVE-CERTIFICATION-2026-08-19: this pipeline never performs a
+# real per-report human review (see REVIEW_STATUS above) -- these phrases
+# must never appear in published output, which would falsely imply one
+# happened. Deliberately distinct from legitimate operational-safety
+# language like "requires...accountable human approval" (an instruction to
+# the READER before acting on the report, not a claim about how the
+# report itself was produced).
+_FALSE_HUMAN_REVIEW_PATTERNS = (
+    r"\bhuman reviewed\b",
+    r"\banalyst approved\b",
+    r"\bmanually verified\b",
+    r"\bhuman review(?:ed)? and approved\b",
+)
+
 
 def validate_publication(article: DiscoveredArticle, context: ReportContext, html: str) -> None:
     """Fail closed on provenance, contradiction, placeholder, and schema defects."""
@@ -320,6 +340,10 @@ def validate_publication(article: DiscoveredArticle, context: ReportContext, htm
     for pattern in _UNSUPPORTED_COMMERCIAL_PATTERNS:
         if re.search(pattern, html, re.IGNORECASE):
             issues.append(f"unsupported commercial claim matched /{pattern}/")
+
+    for pattern in _FALSE_HUMAN_REVIEW_PATTERNS:
+        if re.search(pattern, html, re.IGNORECASE):
+            issues.append(f"false human-review claim matched /{pattern}/")
 
     if context.exploitation_status != "confirmed":
         forbidden = (

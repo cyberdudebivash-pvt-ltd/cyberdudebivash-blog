@@ -78,7 +78,7 @@ class TestEvidenceFirstTemplate(unittest.TestCase):
             "Source Evidence Extract",
             "Detection Engineering",
             "References",
-            "Provenance and Review Status",
+            "Provenance and Certification",
         ):
             self.assertIn(section, content)
 
@@ -96,7 +96,7 @@ class TestEvidenceFirstTemplate(unittest.TestCase):
         # the richer template rather than discard the work.
         article = _make_article()
         content = _template_enhance(article, self.config)
-        self.assertIn('data-review-status="automated-unreviewed"', content)
+        self.assertIn('data-review-status="ai-native-automated"', content)
         self.assertNotIn("Executive Decision Matrix", content)
 
     def test_legacy_template_is_the_production_fallback_and_is_commercially_rich(self):

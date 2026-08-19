@@ -47,6 +47,34 @@ def test_new_evidence_safe_report_is_not_a_quarantine_candidate():
     assert finding.reasons == []
     assert finding.legacy_control_missing is False
     assert finding.eligible_for_quarantine is False
+    # The pre-fix disclaimer was never false, just outdated framing -- it
+    # must be tracked (P0-AI-NATIVE-CERTIFICATION-2026-08-19 backfill
+    # scoping) without making an otherwise-clean legacy report quarantine
+    # eligible.
+    assert finding.stale_disclaimer_language is True
+
+
+def test_stale_disclaimer_language_never_affects_quarantine_eligibility():
+    # A real objective defect (KEV contradiction) alongside the stale-but-
+    # accurate disclaimer: eligibility must come from the real defect only,
+    # and the disclaimer must never appear in `reasons`.
+    finding = inspect_legacy_post(
+        _post(
+            "<p>CISA KEV — NOT LISTED</p><p>ACTIVE EXPLOITATION CONFIRMED</p>"
+            "<p>Automated intelligence synthesis — not human reviewed</p>"
+        )
+    )
+    assert finding.reasons == ["kev_exploitation_contradiction"]
+    assert finding.eligible_for_quarantine is True
+    assert finding.stale_disclaimer_language is True
+    assert "stale_disclaimer_language" not in finding.reasons
+
+
+def test_current_positive_disclaimer_is_not_flagged_as_stale():
+    finding = inspect_legacy_post(
+        _post("<p>AI-Native Automated Intelligence — Evidence-Graph Verified</p>")
+    )
+    assert finding.stale_disclaimer_language is False
 
 
 def test_quarantine_notice_contains_hash_reasons_and_withdrawal_boundary():
@@ -73,6 +101,24 @@ def test_dry_run_is_read_only_and_reports_exact_candidates():
     assert report["posts_scanned"] == 2
     assert report["quarantine_candidates"] == 1
     assert report["quarantined"] == 0
+    publisher.update_post.assert_not_called()
+
+
+def test_stale_disclaimer_language_count_is_aggregated_read_only():
+    publisher = Mock()
+    publisher.list_recent_posts.return_value = [
+        {**_post("<p>Automated intelligence synthesis — not human reviewed</p>"), "id": "101"},
+        {**_post("<p>Automated intelligence synthesis — not human reviewed</p>"), "id": "102"},
+        {**_post("<p>AI-Native Automated Intelligence — Evidence-Graph Verified</p>"), "id": "103"},
+    ]
+    report = audit_recent_posts(
+        publisher,
+        50,
+        apply=False,
+        now=datetime(2026, 8, 12, 10, tzinfo=timezone.utc),
+    )
+    assert report["stale_disclaimer_language_count"] == 2
+    assert report["quarantine_candidates"] == 0
     publisher.update_post.assert_not_called()
 
 

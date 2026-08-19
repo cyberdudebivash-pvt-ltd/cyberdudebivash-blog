@@ -14,8 +14,9 @@ from __future__ import annotations
 import dataclasses
 import unittest
 
+from automation.config import Config
 from automation.content_discovery import DiscoveredArticle, _compute_hash
-from automation.report_integrity import build_report_context
+from automation.report_integrity import REVIEW_STATUS, build_report_context
 from automation.report_renderer import (
     _detection_package,
     _detection_section,
@@ -24,6 +25,7 @@ from automation.report_renderer import (
     _technical_evidence,
     _validated_kql,
     _validated_sigma,
+    render_evidence_report,
 )
 
 
@@ -330,6 +332,34 @@ class TestFamilyAnalysisExploitPrerequisitesClause(unittest.TestCase):
         context = dataclasses.replace(build_report_context(article), exploitation_status="confirmed")
         html = _family_analysis(article, context)
         self.assertIn("exploitable over the network", html)
+
+
+class TestNoFalseOrMissingHumanReviewClaims(unittest.TestCase):
+    """P0-AI-NATIVE-CERTIFICATION-2026-08-19 regression coverage: this
+    pipeline publishes without a per-report human reviewer, so the public
+    output must neither carry the old defensive "not human reviewed"
+    disclaimer nor swing the other way into a false claim that a human
+    reviewed, approved, or manually verified a report that no human
+    touched. Mandate 22's exact acceptance test, plus the false-claim
+    checks it also specifies."""
+
+    def _rendered_html(self) -> str:
+        article = _article(_SUMMARY_TEXT)
+        return render_evidence_report(article, Config()).html
+
+    def test_rendered_public_report_does_not_contain_the_old_disclaimer(self):
+        self.assertNotIn("not human reviewed", self._rendered_html().lower())
+
+    def test_rendered_public_report_does_not_falsely_claim_human_review(self):
+        lower = self._rendered_html().lower()
+        for phrase in ("human reviewed", "analyst approved", "manually verified"):
+            self.assertNotIn(phrase, lower)
+
+    def test_rendered_public_report_states_the_truthful_automated_production_mode(self):
+        # REVIEW_STATUS is the single source of truth for this claim --
+        # asserting the live constant, not a duplicated literal, so this
+        # test can't silently drift from what report_integrity.py defines.
+        self.assertIn(REVIEW_STATUS, self._rendered_html())
 
 
 if __name__ == "__main__":

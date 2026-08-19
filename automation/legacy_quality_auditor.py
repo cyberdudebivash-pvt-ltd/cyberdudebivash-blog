@@ -36,6 +36,21 @@ _HUMAN_ATTRIBUTION = re.compile(
     r"bivash kumar nayak\s*[—-]\s*chief security architect",
     re.IGNORECASE,
 )
+# P0-AI-NATIVE-CERTIFICATION-2026-08-19: the pre-fix REVIEW_STATUS constant
+# (report_integrity.py) was always true when published, never a fabricated
+# or false claim -- just outdated framing now that the live renderer uses
+# positive assurance language instead. That is a different KIND of finding
+# than every pattern above (all of which are objective integrity defects:
+# contradictions, placeholders, false attribution, schema contamination).
+# Tracked separately below and deliberately never added to `reasons` /
+# `eligible_for_quarantine` -- this pipeline's only quarantine action is
+# full content withdrawal (build_quarantine_notice()), which would be a
+# wildly disproportionate response to a stale-but-accurate sentence across
+# what is likely most of this site's published history.
+_STALE_DISCLAIMER = re.compile(
+    r"automated intelligence synthesis\s*[—-]\s*not human reviewed",
+    re.IGNORECASE,
+)
 _RANSOMWARE_SCHEMA = re.compile(
     r"pre-exploitation|patch availability|web application exploitation|sigma detection rule",
     re.IGNORECASE,
@@ -60,6 +75,9 @@ class LegacyFinding:
     reasons: list[str]
     legacy_control_missing: bool
     eligible_for_quarantine: bool
+    # Informational only -- see _STALE_DISCLAIMER above for why this never
+    # affects `reasons` or `eligible_for_quarantine`.
+    stale_disclaimer_language: bool = False
     action: str = "none"
     original_content: Optional[str] = None
 
@@ -106,6 +124,7 @@ def inspect_legacy_post(post: dict) -> LegacyFinding:
         reasons=reasons,
         legacy_control_missing='data-report-id="CDB-CTI-' not in content,
         eligible_for_quarantine=bool(reasons),
+        stale_disclaimer_language=bool(_STALE_DISCLAIMER.search(content)),
     )
 
 
@@ -166,13 +185,19 @@ def audit_recent_posts(
             time.sleep(0.5)
 
     return {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "checked_at": checked_at,
         "mode": "quarantine" if apply else "dry_run",
         "posts_scanned": len(posts),
         "legacy_controls_missing": sum(item.legacy_control_missing for item in findings),
         "quarantine_candidates": len(candidates),
         "quarantined": sum(item.action == "quarantined" for item in findings),
+        # Informational count, not a quarantine action -- see
+        # _STALE_DISCLAIMER's comment for why. Surfaces the real scope of
+        # the disclaimer-language backfill named in
+        # AI-NATIVE-INTELLIGENCE-CERTIFICATION-RELEASE.md so that decision
+        # can be made with real numbers instead of "roughly 4,800+".
+        "stale_disclaimer_language_count": sum(item.stale_disclaimer_language for item in findings),
         "findings": [asdict(item) for item in findings],
     }
 
@@ -193,7 +218,10 @@ def main() -> int:
     path = Path(args.manifest)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(json.dumps({key: report[key] for key in ("mode", "posts_scanned", "legacy_controls_missing", "quarantine_candidates", "quarantined")}, indent=2))
+    print(json.dumps({key: report[key] for key in (
+        "mode", "posts_scanned", "legacy_controls_missing",
+        "quarantine_candidates", "quarantined", "stale_disclaimer_language_count",
+    )}, indent=2))
     return 0
 
 
