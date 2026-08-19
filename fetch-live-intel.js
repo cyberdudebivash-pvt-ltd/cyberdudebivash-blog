@@ -2098,6 +2098,113 @@ function qualityGate(item) {
   return { pass: reasons.length === 0, reasons };
 }
 
+// ── PHASE 7B: POST-RENDER INTEGRITY VALIDATOR ───────────────────────────
+// P0-REPORTX-2026-08-19: qualityGate() above runs BEFORE generatePostHTML()
+// and only checks the raw item's fields -- it has no way to catch a defect
+// that only exists in the assembled HTML itself. This is that missing
+// layer, structurally the same role automation/report_integrity.py's
+// validate_publication() plays for the Python pipeline: a fail-closed,
+// evidence-cross-checking pass over the rendered output, run once per item
+// immediately before the file is written. It is defense-in-depth against
+// FUTURE generator bugs, not a statement that current generatePostHTML()
+// output is unsafe -- genExecutiveSummary/genCommentary/genBusinessImpact
+// already gate confirmed-exploitation language behind item.cisaKev/
+// item.exploited correctly today (verified by direct reading of this file);
+// this validator exists so a later edit that breaks that discipline is
+// caught here instead of publishing straight to blog.cyberdudebivash.in.
+
+// Exact confirmed-exploitation phrases these generators can emit -- kept in
+// sync with genExecutiveSummary/genCommentary/genBusinessImpact by hand,
+// same discipline report_integrity.py already uses for its own forbidden
+// phrase list. If none of item.cisaKev/item.exploited is true, none of
+// these phrases may legitimately appear in the rendered HTML.
+const _CONFIRMED_EXPLOITATION_PHRASES = [
+  'cisa has confirmed active exploitation in the wild',
+  'active exploitation has been reported in the wild',
+  'cisa kev listing confirms in-the-wild exploitation',
+  'confirmed exploitation raises remediation priority',
+];
+
+// JS-specific failure mode Python's pipeline structurally cannot have:
+// template-literal interpolation of undefined/NaN/an unstringified object
+// silently produces visible garbage in the page instead of throwing.
+// "undefined" excludes "undefined behavior/behaviour": confirmed live
+// (2026-08-19, real post cve-2026-42327-rust-openssl.html) that this is
+// standard, legitimate memory-safety vulnerability terminology, not a
+// template artifact -- a bare match would have blocked every future
+// undefined-behavior CVE report.
+const _UNRESOLVED_TEMPLATE_PATTERNS = [
+  /\bundefined\b(?!\s+behaviou?r)/i,
+  /\bNaN\b/,
+  /\[object Object\]/,
+];
+
+// Same placeholder-artifact class report_integrity.py's _PLACEHOLDER_PATTERNS
+// checks for on the Python side -- a genuinely shared risk (any pipeline can
+// leak an unfilled template token), so the same discipline applies here.
+// Deliberately excludes "TBD": confirmed live (2026-08-19) that
+// genExecutiveSummary's stat tiles legitimately render "TBD" as the
+// "Exploited ITW" value when exploitation status is honestly unknown --
+// exactly the Rule-6 "UNKNOWN is a valid state" language this whole
+// mandate wants preserved, not a leaked template placeholder.
+// "lorem ipsum" requires the next few words of the actual classic filler
+// passage, not just the two seed words bare: confirmed live (2026-08-19,
+// real post lorem-ipsum-malware-pivots-to-clickfix-delivery.html) that
+// "Lorem Ipsum" is itself a real, named malware family being reported on
+// -- a bare match would have blocked every future report about it.
+const _PLACEHOLDER_BODY_PATTERNS = [
+  /\blorem ipsum dolor sit amet\b/i,
+  /\bchange[_ -]?me\b/i,
+  /\btodo\b/i,
+  /00000000-0000-0000-0000-000000000000/,
+];
+
+// Mirrors automation/report_integrity.py's _FALSE_HUMAN_REVIEW_PATTERNS --
+// this pipeline never performs a real human review (see about.html's own
+// "automated content" disclosure), so these phrases must never appear.
+const _FALSE_HUMAN_REVIEW_PATTERNS = [
+  /\bhuman reviewed\b/i,
+  /\banalyst approved\b/i,
+  /\bmanually verified\b/i,
+];
+
+// Real recent posts run 38-51KB (measured live against the current
+// posts/ corpus, 2026-08-19); this floor is set well below that, at a
+// level that only trips on a genuinely truncated/corrupt render, not on
+// legitimate variation in how many conditional sections an item earns.
+const MIN_RENDERED_POST_LENGTH = 8000;
+
+function validateRenderedPost(item, html) {
+  const reasons = [];
+  const lower = html.toLowerCase();
+
+  if (html.length < MIN_RENDERED_POST_LENGTH) {
+    reasons.push(`Rendered post is only ${html.length} chars -- below the ${MIN_RENDERED_POST_LENGTH} floor, likely truncated or corrupt`);
+  }
+
+  for (const pattern of _UNRESOLVED_TEMPLATE_PATTERNS) {
+    if (pattern.test(html)) reasons.push(`Unresolved template artifact matched /${pattern.source}/`);
+  }
+
+  for (const pattern of _PLACEHOLDER_BODY_PATTERNS) {
+    if (pattern.test(html)) reasons.push(`Placeholder content matched /${pattern.source}/`);
+  }
+
+  for (const pattern of _FALSE_HUMAN_REVIEW_PATTERNS) {
+    if (pattern.test(html)) reasons.push(`False human-review claim matched /${pattern.source}/`);
+  }
+
+  if (!item.cisaKev && !item.exploited) {
+    for (const phrase of _CONFIRMED_EXPLOITATION_PHRASES) {
+      if (lower.includes(phrase)) {
+        reasons.push(`Unsupported confirmed-exploitation assertion (item.cisaKev and item.exploited are both false): "${phrase}"`);
+      }
+    }
+  }
+
+  return { pass: reasons.length === 0, reasons };
+}
+
 // ── PHASE 9: SENTINEL APEX INTEGRATION ENRICHER ──────────────────────────
 // Stamps every publishable item with Sentinel APEX metadata for cross-platform consumption.
 function sentinelApexStamp(item) {
@@ -3188,6 +3295,15 @@ async function main() {
           markPublished(state, { id:item.id, slug, title });
           continue;
         }
+
+        // ── PHASE 7B: POST-RENDER INTEGRITY VALIDATOR ─────────────────
+        const rv = validateRenderedPost(item, html);
+        if (!rv.pass) {
+          warn(`INTEGRITY VALIDATOR REJECTED: ${item.id} — ${rv.reasons.join('; ')}`);
+          qualityRejected++;
+          continue;
+        }
+
         safeWriteSync(filePath, html, 'utf8');
         log(`✅ [${item.threatLevel||'HIGH'}] [${item.type}] ${slug}.html (score=${item.priority||0}, srcs=${item.sourceCount||1})`);
         markPublished(state, { id:item.id, slug, title });
@@ -3262,7 +3378,7 @@ if (require.main === module) {
     genStructuredReasoning, genIntelligenceProducts, buildProductApiJSON,
     genSigma, genYARA, getMitre, stripHtml, decodeEntities,
     extractHttpUrls, parseCvssFromText, hasConfirmedExploitation,
-    rssToIntel, qualityGate, genExecutiveSummary, genBusinessImpact,
+    rssToIntel, qualityGate, validateRenderedPost, genExecutiveSummary, genBusinessImpact,
     genAttackChain, computePriorityScore, correlateAndMerge,
     extractSentinelApexRecords, normalizeSentinelApexRecord,
     sapexCanonicalId, sapexNativeMitre, fetchSentinelApex,

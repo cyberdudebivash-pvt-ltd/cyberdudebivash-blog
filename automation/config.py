@@ -27,7 +27,14 @@ class Config:
     alienvault_otx_key: str = ""
 
     # Model selection per provider
-    llm_model_groq: str = "llama-3.3-70b-versatile"
+    # P0-REPORTX-2026-08-19: "llama-3.3-70b-versatile" was deprecated by Groq
+    # for free/developer-tier usage (announced 2026-06-17, deprecation dated
+    # 2026-08-16) -- this WAS the "Groq 404 likely a retired model ID" cause
+    # noted below, and unlike the DeepSeek/OpenRouter 402s, it is fixable
+    # from this repository. "openai/gpt-oss-120b" is Groq's own documented
+    # replacement (console.groq.com/docs/deprecations) for the same 70B-class
+    # general-purpose tier the original default targeted.
+    llm_model_groq: str = "openai/gpt-oss-120b"
     llm_model_deepseek: str = "deepseek-chat"
     llm_model_openrouter: str = "deepseek/deepseek-chat"
     # COMMERCIAL-QUALITY-2026-08-19: was "claude-opus-4-8", a model ID that
@@ -35,9 +42,10 @@ class Config:
     # dry-run trigger of blogger-syndication.yml once GROQ/DEEPSEEK/
     # OPENROUTER keys were actually wired through: those three reached real
     # HTTP calls for the first time (no longer no_api_key) and failed on
-    # their own account-side issues (Groq 404 likely a retired model ID on
-    # Groq's side, DeepSeek/OpenRouter 402 Payment Required -- neither
-    # fixable from this repository). ANTHROPIC_API_KEY was unset in that
+    # their own account-side issues (Groq 404 -- a retired model ID, fixed
+    # above 2026-08-19; DeepSeek/OpenRouter 402 Payment Required -- an
+    # account-billing issue, not fixable from this repository).
+    # ANTHROPIC_API_KEY was unset in that
     # run, so this stale ID was never actually exercised live, but it would
     # fail identically the moment a real key is added. "claude-opus-5" keeps
     # the same Opus-tier choice the original default signaled, updated to a
