@@ -20,7 +20,7 @@ from .blogger_publisher import BloggerPublisher, BloggerPublishError, BloggerAut
 from .config import Config
 from .content_discovery import ContentDiscoveryEngine, DiscoveredArticle, PublicationState
 from .logger import setup_logger
-from .report_integrity import PublicationIntegrityError
+from .report_integrity import PublicationIntegrityError, compute_artifact_hash
 from .search_console_submitter import SearchConsoleSubmitter
 from .social_amplifier import SocialAmplifier
 
@@ -199,6 +199,28 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                 post_result["status"] = "dry_run"
                 report["skipped"] += 1
             else:
+                # RX-P1-ARTIFACT-BINDING (mandate Section 17/34): the
+                # exact artifact validate_publication() certified inside
+                # transform() must be the exact artifact submitted to
+                # Blogger. transformed["content"] is passed through
+                # unmodified from transform()'s return to publish_post()'s
+                # call below (verified: nothing in this loop rewrites it
+                # between the two) -- so today this recomputation always
+                # matches and is a proven no-op, exactly like the FLASH/
+                # contradiction gates above. It becomes real, load-bearing
+                # protection the moment any future code path between
+                # certification and this call mutates the content, instead
+                # of silently publishing a legacy/short artifact under a
+                # premium certification.
+                publish_input_hash = compute_artifact_hash(transformed["content"])
+                if publish_input_hash != transformed.get("certified_artifact_hash"):
+                    raise PublicationIntegrityError([
+                        f"certified artifact hash mismatch: certified="
+                        f"{transformed.get('certified_artifact_hash')!r}, "
+                        f"publish_input={publish_input_hash!r} -- content "
+                        "changed after certification"
+                    ])
+
                 # Publish to Blogger
                 blogger_post = publisher.publish_post(
                     title=transformed["title"],

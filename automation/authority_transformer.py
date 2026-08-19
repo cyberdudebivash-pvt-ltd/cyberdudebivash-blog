@@ -8,7 +8,7 @@ import base64
 import html as _html_escape
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Optional
 from urllib.parse import urlencode
@@ -26,7 +26,12 @@ from .logger import setup_logger
 from .industry_intelligence import detect_industries, get_industry_profile
 from .monetization_injector import MonetizationInjector
 from .product_recommendations import SERVICES as _CATALOG_SERVICES, recommend_services
-from .report_integrity import ReportContext, build_report_context, validate_publication
+from .report_integrity import (
+    ReportContext,
+    build_report_context,
+    compute_artifact_hash,
+    validate_publication,
+)
 from .report_renderer import (
     _attack_section,
     _detection_package,
@@ -1812,6 +1817,21 @@ class _ComposerOutcome:
     # was likewise computed unconditionally and then discarded at this same
     # boundary. Exposed for the same reason as evidence_graph above.
     intelligence_gaps: tuple = ()
+    # RX-P1D-WIRE: compose_report()'s own contradiction_engine.py findings
+    # (cross-claim same-dimension EpistemicState conflicts + rendered-text
+    # pattern conflicts) -- computed unconditionally, discarded at this same
+    # boundary before this change. Unlike the two fields above, this one
+    # also feeds a hard publication gate below (every Contradiction this
+    # engine can currently produce carries severity=="block" by
+    # construction -- see contradiction_engine.py's own module docstring:
+    # "Gate: unresolved_contradictions == 0").
+    contradictions: tuple = ()
+    # RX-P1E-WIRE: compose_report()'s own structured 3-axis confidence
+    # model (source reliability grade / information credibility number+
+    # label / corroboration state / overall confidence), computed
+    # unconditionally, discarded at this same boundary before this change.
+    # Empty dict only on the composer-exception path.
+    analytical_confidence: dict = field(default_factory=dict)
 
 
 def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOutcome:
@@ -1853,6 +1873,13 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
         )
         evidence_graph = result.bundle.graph.to_dict()
         intelligence_gaps = tuple(g.to_dict() for g in result.bundle.intelligence_gaps)
+        contradictions = tuple(c.to_dict() for c in result.contradictions)
+        analytical_confidence = dict(result.analytical_confidence)
+        if contradictions:
+            logger.warning(
+                "ReportX composer found unresolved contradiction(s) -- publication will be blocked",
+                extra={"contradictions": list(contradictions)},
+            )
         if tier == CertificationState.PUBLIC_REFERENCE_DRAFT:
             logger.info(
                 "ReportX composer evidence graph failed correctness controls -- publication will be blocked",
@@ -1861,12 +1888,14 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
             return _ComposerOutcome(
                 html=None, achieved_tier=tier.value, failed_controls=result.downgrade.failed_controls,
                 quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
-                evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps,
+                evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
+                analytical_confidence=analytical_confidence,
             )
         return _ComposerOutcome(
             html=result.html, achieved_tier=tier.value,
             quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
-            evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps,
+            evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
+            analytical_confidence=analytical_confidence,
         )
     except Exception as e:
         logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
@@ -1959,7 +1988,18 @@ class AuthorityTransformer:
 
         # Build full HTML
         html = self._assemble_html(article, body_content, seo_data, context)
-        validate_publication(article, context, html, product_tier=product_tier_verdict.tier)
+        validate_publication(
+            article, context, html, product_tier=product_tier_verdict.tier,
+            contradictions=composer_outcome.contradictions,
+        )
+        # RX-P1-ARTIFACT-BINDING (mandate Section 17/34): computed on the
+        # EXACT `html` that just passed every fail-closed gate above, not
+        # re-derived later -- the publisher (main.py) recomputes this same
+        # hash over the exact bytes it is about to send Blogger and blocks
+        # if they differ, closing "premium report certified -> legacy
+        # renderer replaces content -> short article published" outright,
+        # not just in the cases this session could enumerate in advance.
+        certified_artifact_hash = compute_artifact_hash(html)
 
         blogger_labels = article.labels[:20]
 
@@ -2015,8 +2055,17 @@ class AuthorityTransformer:
             "evidence_graph": composer_outcome.evidence_graph,
             # RX-P1E-WIRE: see _ComposerOutcome.intelligence_gaps' docstring above.
             "intelligence_gaps": list(composer_outcome.intelligence_gaps),
+            # RX-P1D-WIRE: see _ComposerOutcome.contradictions' docstring above.
+            "contradictions": list(composer_outcome.contradictions),
+            # RX-P1E-WIRE: see _ComposerOutcome.analytical_confidence's docstring above.
+            "analytical_confidence": composer_outcome.analytical_confidence,
             "detection_status": detection_status,
             "generated_at": context.generated_at,
+            # RX-P1-ARTIFACT-BINDING: see the comment at this hash's
+            # computation site above. main.py's publish step must recompute
+            # this same hash over the exact bytes sent to Blogger and block
+            # on any mismatch -- see main.py::run_pipeline().
+            "certified_artifact_hash": certified_artifact_hash,
         }
 
     def _build_blogger_title(self, article: DiscoveredArticle) -> str:

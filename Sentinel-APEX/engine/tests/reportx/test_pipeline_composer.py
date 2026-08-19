@@ -8,14 +8,16 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
 from automation.config import Config
 from automation.content_discovery import DiscoveredArticle
 
+from sentinel_engine.reportx.contradiction_engine import Contradiction
 from sentinel_engine.reportx.human_review import CertificationState
-from sentinel_engine.reportx.pipeline_composer import compose_report
+from sentinel_engine.reportx.pipeline_composer import _dimension_tags_for, compose_report
 from sentinel_engine.reportx.tier_downgrade import CORRECTNESS_CONTROLS
 
 CONFIG = Config()
@@ -270,3 +272,112 @@ class TestTwoAxisReliabilityInTheRenderedReport:
         result = compose_report(article, CONFIG)
         assert "Source Reliability: C" in result.html
         assert "Source Reliability: F" not in result.html
+
+    def test_analytical_confidence_is_the_same_3_axes_as_structured_data(self):
+        # RX-P1E-WIRE: the same 3 real axes the rendered prose lines above
+        # assert on, now also available as structured data -- not a
+        # separately re-derived or re-worded value.
+        article = _general_intelligence_article(source="global_rss", source_publisher="BleepingComputer")
+        result = compose_report(article, CONFIG)
+        conf = result.analytical_confidence
+        assert conf["source_reliability_grade"] == "C"
+        assert isinstance(conf["information_credibility_number"], int)
+        assert isinstance(conf["information_credibility_label"], str)
+        assert conf["overall_confidence"] in ("HIGH", "MEDIUM", "LOW")
+        assert conf["corroboration_state"] in (
+            "SINGLE_SOURCE", "MULTI_SOURCE_INDEPENDENT", "MULTI_SOURCE_DEPENDENT", "UNCORROBORATED",
+        )
+        # Cross-check against the rendered prose line, which independently
+        # embeds the same grade/label -- both must agree.
+        assert f"Source Reliability: {conf['source_reliability_grade']}" in result.html
+
+
+class TestDimensionTagsFor:
+    """_dimension_tags_for() -- discovery_bridge.py's claim_id naming
+    convention mapped to contradiction_engine.py's dimension vocabulary."""
+
+    def test_cve_article_tags_its_own_dimensions(self):
+        result = compose_report(_cve_article(), CONFIG)
+        tags = _dimension_tags_for(result.bundle.graph)
+        assert tags.get("exploitation_state") == ["c-exploitation-status"]
+        assert tags.get("patch_state") == ["c-patch-status"]
+        # kev_listed is False for the default fixture -- no c-kev-listed
+        # claim is ever built for a not-listed CVE, so no kev_state tag.
+        assert "kev_state" not in tags
+
+    def test_kev_listed_cve_also_tags_kev_state(self):
+        result = compose_report(_cve_article(source="cisa_kev", kev_listed=True), CONFIG)
+        tags = _dimension_tags_for(result.bundle.graph)
+        assert tags.get("kev_state") == ["c-kev-listed"]
+
+    def test_ransomware_article_tags_actor_and_victim_dimensions(self):
+        result = compose_report(_ransomware_article(ransomware_group="qilin"), CONFIG)
+        tags = _dimension_tags_for(result.bundle.graph)
+        assert tags.get("actor_identity") == ["c-actor-attribution"]
+        assert tags.get("victim_confirmation") == ["c-victim-claim"]
+
+    def test_a_claim_id_not_present_in_the_graph_is_never_a_keyerror(self):
+        # Regression guard: _DIMENSION_BY_CLAIM_ID names 5 claim_ids: no
+        # single real article family builds all 5 (e.g. a non-KEV CVE never
+        # gets c-kev-listed, a ransomware claim never gets c-exploitation-status).
+        result = compose_report(_cve_article(kev_listed=False), CONFIG)
+        tags = _dimension_tags_for(result.bundle.graph)  # must not raise
+        assert isinstance(tags, dict)
+
+
+class TestContradictionWiring:
+    """RX-P1D-WIRE: contradiction_engine.py's two checkers were real and
+    tested but never invoked by compose_report() -- the identical
+    certified-but-dormant pattern this session already closed for
+    report_contract.py/analytical_depth_gate.py and for the evidence graph
+    itself."""
+
+    def test_real_cve_article_has_zero_contradictions(self):
+        # Honest no-op proof: discovery_bridge.py's single-source claim
+        # construction cannot yet produce two competing same-dimension
+        # claims (see _dimension_tags_for()'s own docstring), and
+        # report_renderer.py's deterministic, single-evidence-state prose
+        # does not naturally trip contradiction_engine.py's 3 specific
+        # text-pattern rules either.
+        result = compose_report(_cve_article(), CONFIG)
+        assert result.contradictions == []
+
+    def test_real_ransomware_article_has_zero_contradictions(self):
+        result = compose_report(_ransomware_article(ransomware_group="qilin"), CONFIG)
+        assert result.contradictions == []
+
+    def test_compose_report_threads_a_real_dimension_contradiction_through(self):
+        # Proves the wiring's plumbing, not contradiction_engine.py's own
+        # internal logic (already covered by test_contradiction_engine.py's
+        # 10 tests): forces find_all_contradictions() to return a real
+        # Contradiction and confirms compose_report()'s own result reflects
+        # it verbatim, rather than silently dropping it anywhere between
+        # the checker and ComposedReport.
+        fake_finding = Contradiction(
+            dimension="kev_state", description="test-forced contradiction",
+            claim_id_a="c-kev-listed", claim_id_b="c-kev-listed-2",
+        )
+        with patch(
+            "sentinel_engine.reportx.pipeline_composer.find_all_contradictions",
+            return_value=[fake_finding],
+        ):
+            result = compose_report(_cve_article(source="cisa_kev", kev_listed=True), CONFIG)
+        assert result.contradictions == [fake_finding]
+
+    def test_compose_report_passes_its_own_real_graph_and_html_to_the_checker(self):
+        # A second plumbing proof, from the other direction: confirms
+        # compose_report() calls find_all_contradictions() with THIS
+        # report's own real graph/dimension_tags/html, not empty or stale
+        # arguments -- so a future article whose evidence genuinely does
+        # produce a same-dimension conflict will actually be seen.
+        with patch(
+            "sentinel_engine.reportx.pipeline_composer.find_all_contradictions",
+            return_value=[],
+        ) as mocked:
+            result = compose_report(_cve_article(source="cisa_kev", kev_listed=True), CONFIG)
+        mocked.assert_called_once()
+        _, kwargs = mocked.call_args
+        called_graph = mocked.call_args[0][0]
+        assert called_graph is result.bundle.graph
+        assert kwargs["dimension_tags"] == _dimension_tags_for(result.bundle.graph)
+        assert kwargs["full_text"] == result.html

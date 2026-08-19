@@ -10,6 +10,7 @@ import unittest
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
+from automation.authority_transformer import AuthorityTransformer
 from automation.config import Config
 from automation.content_discovery import ContentDiscoveryEngine, _compute_hash
 from automation.main import run_pipeline
@@ -156,6 +157,48 @@ class TestFullPipelinePublish(unittest.TestCase):
 
         self.assertGreater(report["published"], 0)
         self.assertEqual(report["failed"], 0)
+
+    def test_certified_artifact_hash_mismatch_blocks_publication(self):
+        # RX-P1-ARTIFACT-BINDING adversarial test: simulates exactly the
+        # scenario mandate Section 17/34 exists to prevent -- report
+        # content mutated after transform()'s own fail-closed gate
+        # certified a different artifact. Uses the REAL transform() (so
+        # every other field stays realistic), tampering only
+        # certified_artifact_hash afterward -- the publish step must
+        # recompute the real hash of the real content, find it doesn't
+        # match, and block before ever calling Blogger's publish endpoint.
+        real_transform = AuthorityTransformer.transform
+
+        def _tampered_transform(self, article):
+            result = real_transform(self, article)
+            result["certified_artifact_hash"] = "0" * 64  # deliberately wrong
+            return result
+
+        token_resp = MagicMock()
+        token_resp.ok = True
+        token_resp.json.return_value = MOCK_TOKEN_RESPONSE
+
+        rss_resp = MagicMock()
+        rss_resp.text = MOCK_RSS
+        rss_resp.raise_for_status = MagicMock()
+
+        with patch("requests.get", return_value=rss_resp):
+            with patch("requests.post", return_value=token_resp) as mock_post:
+                with patch("time.sleep"):
+                    with patch.object(AuthorityTransformer, "transform", _tampered_transform):
+                        report = run_pipeline(self.config, dry_run=False)
+
+        self.assertEqual(report["published"], 0)
+        self.assertGreater(report["integrity_blocked"], 0)
+        self.assertTrue(all(p["status"] == "integrity_blocked" for p in report["posts"]))
+        self.assertTrue(all("certified artifact hash mismatch" in p["error"] for p in report["posts"]))
+        # The Blogger publish endpoint itself must never be reached -- only
+        # the (cached, single) OAuth token refresh call is allowed through.
+        published_post_calls = [
+            c for c in mock_post.call_args_list
+            if c.args and "posts" in str(c.args[0]) and "oauth2" not in str(c.args[0])
+        ]
+        self.assertEqual(published_post_calls, [])
 
     def test_llm_attempts_reaches_the_persisted_report(self):
         # Real production evidence (GPOCIP v1) showed llm_attempts was None

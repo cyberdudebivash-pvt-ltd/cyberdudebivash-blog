@@ -42,16 +42,20 @@ from automation.report_renderer import (  # noqa: E402
 )
 
 from .analytic_scaffolding import IntelligenceGap
-from .claim_model import CorroborationState
+from .claim_model import CorroborationState, EvidenceGraph
 from .commercial_readiness import ControlResult, ReportBundle, evaluate_commercial_readiness
+from .contradiction_engine import Contradiction, find_all_contradictions
 from .detection_validation import DetectionRule, DetectionValidationState
 from .discovery_bridge import build_evidence_graph, build_threat_product
 from .intelligence_validation import IntelligenceScorecard, evaluate_intelligence_validation
 from .executive_products import (
     RoleAudience,
     RoleDecision,
+    information_credibility,
+    overall_analytical_confidence,
     render_role_decisions,
     role_display_label,
+    source_reliability_grade,
     two_axis_reliability,
     worst_corroboration_state,
 )
@@ -100,6 +104,40 @@ def _detection_rules(report_id: str, package: DetectionPackage) -> list[Detectio
         rule_id=f"{report_id}-detection", technique_id=technique_id,
         format="none", validation_state=validation_state, body="", evidence_gap_rationale=package.rationale,
     )]
+
+
+# discovery_bridge.py's own claim_id naming convention (the only place that
+# convention is defined) mapped to contradiction_engine.py's canonical
+# dimension vocabulary -- kept here, not duplicated into either module, so
+# there is exactly one place this join can drift. A claim_id absent from
+# this graph (e.g. a family that never builds "c-kev-listed") is simply
+# absent from the resulting tags, never a KeyError.
+_DIMENSION_BY_CLAIM_ID: dict[str, str] = {
+    "c-exploitation-status": "exploitation_state",
+    "c-kev-listed": "kev_state",
+    "c-patch-status": "patch_state",
+    "c-actor-attribution": "actor_identity",
+    "c-victim-claim": "victim_confirmation",
+}
+
+
+def _dimension_tags_for(graph: EvidenceGraph) -> dict[str, list[str]]:
+    """Groups this graph's claims by contradiction_engine.py's dimension
+    vocabulary. Today's discovery_bridge.py only ever builds one claim per
+    dimension per article (single-source construction; a later independent
+    match upgrades an existing claim's corroboration_state rather than
+    adding a competing one -- see _apply_independent_corroboration()'s own
+    docstring), so find_dimension_contradictions() cannot yet find a real
+    conflict from this alone. Wired unconditionally anyway (Section 6's own
+    discipline: a real, tested mechanism must not sit disconnected) so it
+    engages automatically the moment a future increment merges a second,
+    independently-sourced claim into the same dimension, without a second
+    wiring pass."""
+    tags: dict[str, list[str]] = {}
+    for claim_id, dimension in _DIMENSION_BY_CLAIM_ID.items():
+        if claim_id in graph.claims:
+            tags.setdefault(dimension, []).append(claim_id)
+    return tags
 
 
 _VULNERABILITY_MANAGER_FAMILIES = ("cve_advisory", "cisa_advisory", "cisa_kev")
@@ -193,6 +231,23 @@ class ComposedReport:
     # answered empirically for the 5 canaries before setting it) that must
     # be made from live evidence, not assumed here.
     scorecard: IntelligenceScorecard
+    # RX-P1D-WIRE: contradiction_engine.py's own two real, tested checkers
+    # (dimension-level: same-claim-dimension EpistemicStates that can never
+    # both be true; text-pattern: the task's own three motivating rendered-
+    # prose examples), run unconditionally against this exact graph/html --
+    # not a new checker, not a new schema. Empty today for every real
+    # article (see _dimension_tags_for()'s docstring for why the dimension
+    # layer specifically cannot yet fire); the text-pattern layer is
+    # already live against whatever this function's own real rendered html
+    # contains. A non-empty list here is a real, material finding, not
+    # noise -- see validate_publication()'s new hard gate on it.
+    contradictions: list[Contradiction] = field(default_factory=list)
+    # RX-P1E-WIRE: the 3-axis confidence model (source reliability /
+    # information credibility / overall analytical confidence), already
+    # rendered as prose in html above, exposed here as structured data for
+    # the first time. See analytical_confidence's construction above for
+    # why these stay 3 distinct fields rather than one blended score.
+    analytical_confidence: dict = field(default_factory=dict)
 
     @property
     def pass_count(self) -> int:
@@ -251,6 +306,23 @@ def compose_report(
     reliability_lines = "<br>".join(
         _esc(line) for line in two_axis_reliability(source.reliability, corroboration_state).split("\n")
     )
+    # RX-P1E-WIRE: the same 3 real, independently-computed axes the prose
+    # line above already renders, as structured data -- two_axis_reliability()
+    # itself only returns a formatted string, so these 3 pure functions
+    # (unchanged, already imported into this module) are called a second
+    # time here at zero real cost. Mandate Section 11's own requirement:
+    # "do not use one report-wide cosmetic label" -- this exposes the 3
+    # distinct axes (source reliability / information credibility /
+    # analytical confidence) as 3 distinct structured fields, not a single
+    # blended score.
+    credibility_number, credibility_label = information_credibility(corroboration_state)
+    analytical_confidence = {
+        "source_reliability_grade": source_reliability_grade(source.reliability),
+        "information_credibility_number": credibility_number,
+        "information_credibility_label": credibility_label,
+        "corroboration_state": corroboration_state.value,
+        "overall_confidence": overall_analytical_confidence(source.reliability, credibility_number),
+    }
     corroboration_note = {
         CorroborationState.MULTI_SOURCE_INDEPENDENT:
             "This record is corroborated by independent sources (see the evidence ledger).",
@@ -276,6 +348,8 @@ def compose_report(
     )
 
     html = base.html + role_html + reliability_html
+
+    contradictions = find_all_contradictions(graph, dimension_tags=_dimension_tags_for(graph), full_text=html)
 
     intelligence_gaps = [
         IntelligenceGap(
@@ -307,4 +381,5 @@ def compose_report(
     return ComposedReport(
         report_id=context.report_id, context=context, html=html, bundle=bundle,
         control_results=control_results, downgrade=downgrade, scorecard=scorecard,
+        contradictions=contradictions, analytical_confidence=analytical_confidence,
     )
