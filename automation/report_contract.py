@@ -147,24 +147,36 @@ _IMPLEMENTED_ELSEWHERE = frozenset({
 #   18 (Sector & Geographic Impact) -- the same ransomware_sector/country
 #       fields are real facts, but no impact-differentiation narrative
 #       ("why this sector specifically") exists.
-# Section 13 alone is a true blanket case: the classification mechanism
-# (internal_linker._classify_relation()) is real and runs unconditionally
-# for every article, but confirming whether THIS article actually matched
-# something requires the live state file, which this function does not
-# have access to (by design -- report_contract.py stays dependency-light,
-# no coupling to internal_linker.py or the filesystem). PARTIAL_EVIDENCE
-# here means "the capability is real," not "a match was confirmed."
+# Section 13 alone was a true blanket case when this comment was first
+# written: the classification mechanism (internal_linker._classify_relation())
+# is real and runs unconditionally for every article, but confirming
+# whether THIS article actually matched something requires the live state
+# file, which this function does not have access to (by design --
+# report_contract.py stays dependency-light, no coupling to
+# internal_linker.py or the filesystem). PARTIAL_EVIDENCE here means "the
+# capability is real," not "a match was confirmed."
+#
+# RX-P1F: Section 21 (Intelligence Gaps) joined this set once
+# pipeline_composer.compose_report() started computing a real
+# intelligence_gaps list unconditionally for every article (Round 2) --
+# today always exactly one honest, non-fabricated gap ("independent
+# corroboration not assessed"), not yet a rich per-article analysis. Same
+# reasoning as Section 13: the mechanism is real and article-independent,
+# so this is a static architectural characterization, not a per-article
+# check of key_judgements/authority_transformer.py's actual output.
 _PARTIAL_SIGNAL_ONLY = frozenset({
     SECTION_13_HISTORICAL_CORRELATION,
+    SECTION_21_INTELLIGENCE_GAPS,
 })
 
-# Every other section (Key Judgements, Intelligence Requirements, Attack
-# Path, Threat Hunting as a distinct hypothesis section, Indicators &
-# Observables, Business Impact, Time-bound Actions split by horizon,
-# Intelligence Gaps as structured data, Forecast & Outlook) has no
-# implementation anywhere in this pipeline today (verified via direct
-# codebase research, 2026-08-19) -- resolves to WITHHELD_INSUFFICIENT_
-# EVIDENCE for every article, honestly, not silently rendered blank.
+# Key Judgements (Section 3) is resolved dynamically below, from a real
+# key_judgement_count -- see key_judgements.py (RX-P1F). Every remaining
+# section (Intelligence Requirements, Attack Path, Threat Hunting as a
+# distinct hypothesis section, Indicators & Observables, Business Impact,
+# Time-bound Actions split by horizon, Forecast & Outlook) still has no
+# implementation anywhere in this pipeline -- resolves to WITHHELD_
+# INSUFFICIENT_EVIDENCE for every article, honestly, not silently rendered
+# blank.
 
 # Per-family applicability -- MANDATORY sections a genuinely premium report
 # in that family must resolve to something better than WITHHELD before it
@@ -274,6 +286,7 @@ _DETECTION_STATUS_REAL_CONTENT = frozenset({"syntax_validated_experimental", "te
 
 def evaluate_section_states(
     article: "DiscoveredArticle", context: "ReportContext", detection_status: str = "",
+    key_judgement_count: int = 0,
 ) -> list[SectionResolution]:
     """Resolve all 24 sections for one article. Never fabricates a state:
     a section with no implementation anywhere in this pipeline always
@@ -283,12 +296,20 @@ def evaluate_section_states(
 
     ``detection_status`` is report_renderer.py's already-computed
     DetectionPackage.status for this article (pass "" if unavailable --
-    treated conservatively as withheld, never assumed successful)."""
+    treated conservatively as withheld, never assumed successful).
+
+    ``key_judgement_count`` (RX-P1F) is the number of judgements
+    key_judgements.generate_key_judgements() produced AND
+    validate_key_judgements() actually accepted for this article -- never
+    the raw count an LLM returned. Default 0 preserves every existing
+    caller's behavior (always WITHHELD) exactly."""
     resolutions = []
     for section in ALL_SECTIONS:
         applicability = get_applicability(context.family, section)
         if applicability == Applicability.NOT_APPLICABLE:
             state = SectionState.NOT_APPLICABLE
+        elif section == SECTION_3_KEY_JUDGEMENTS:
+            state = SectionState.COMPLETE if key_judgement_count > 0 else SectionState.WITHHELD_INSUFFICIENT_EVIDENCE
         elif section in _IMPLEMENTED_TODAY or section in _IMPLEMENTED_ELSEWHERE:
             state = _resolve_implemented_section(article, context, section, detection_status)
         elif section in _PARTIAL_SIGNAL_ONLY:

@@ -52,6 +52,7 @@ def evaluate_product_tier(
     content_source: str,
     detection_status: str = "",
     state_file: Optional[str] = None,
+    key_judgement_count: int = 0,
 ) -> ProductTierVerdict:
     """Never returns PREMIUM_LONG_FORM merely because a report has 24
     headings (Phase D's own explicit warning) -- every gate below checks a
@@ -59,8 +60,13 @@ def evaluate_product_tier(
     independent-corroboration check for CVE-family articles (reuses
     internal_linker.find_independent_prior_source(), Round 7); omitted, the
     gate degrades conservatively to capping at TACTICAL rather than
-    guessing corroboration exists."""
-    resolutions = evaluate_section_states(article, context, detection_status=detection_status)
+    guessing corroboration exists. ``key_judgement_count`` (RX-P1F) is the
+    number of key_judgements.generate_key_judgements() results that
+    actually passed its own validator -- threaded straight through to
+    evaluate_section_states(), never re-derived here."""
+    resolutions = evaluate_section_states(
+        article, context, detection_status=detection_status, key_judgement_count=key_judgement_count,
+    )
     mandatory = [r for r in resolutions if r.applicability == Applicability.MANDATORY]
     mandatory_withheld = tuple(
         r.section for r in mandatory if r.state == SectionState.WITHHELD_INSUFFICIENT_EVIDENCE

@@ -1,8 +1,9 @@
 """Tests for automation.analytical_depth_gate -- the Phase D/G product-tier
-verdict. The central claim under test: no currently-live report can honestly
-reach PREMIUM_LONG_FORM today (Key Judgements/Intelligence Gaps have no
-implementation anywhere in this pipeline), while the mechanism itself is
-proven capable of reaching PREMIUM_LONG_FORM once those sections exist."""
+verdict. The central claim under test: a report whose narrative wasn't
+LLM-authored (or whose LLM-authored narrative produced zero validated Key
+Judgements) cannot honestly reach PREMIUM_LONG_FORM, while the mechanism
+itself is proven capable of reaching PREMIUM_LONG_FORM once Key Judgements
+(RX-P1F) and every other mandatory section genuinely resolve."""
 
 from __future__ import annotations
 
@@ -55,11 +56,14 @@ class TestCurrentRealityCannotReachPremium(unittest.TestCase):
         self.assertNotEqual(verdict.tier, PREMIUM_LONG_FORM)
 
     def test_llm_authored_cve_report_still_capped_because_key_judgements_are_withheld(self):
-        # Even a real LLM success (content_source in LLM_AUTHORED_SOURCES)
-        # cannot reach premium today: Key Judgements (Section 3) and
-        # Intelligence Gaps (Section 21) have no structured implementation
-        # anywhere in this pipeline, so they resolve WITHHELD regardless of
-        # which path authored the prose body.
+        # A real LLM success (content_source in LLM_AUTHORED_SOURCES)
+        # alone cannot reach premium: Key Judgements (Section 3) is
+        # resolved dynamically from key_judgement_count (RX-P1F), which
+        # this call doesn't pass -- defaults to 0, so it resolves WITHHELD
+        # regardless of which path authored the prose body. (Intelligence
+        # Gaps/Section 21 no longer withheld as of RX-P1F -- see
+        # test_report_contract.py -- so Key Judgements alone is what keeps
+        # this capped now.)
         article = _cve_article()
         context = build_report_context(article)
         verdict = evaluate_product_tier(article, context, content_source="groq",
