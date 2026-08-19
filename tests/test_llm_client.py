@@ -229,8 +229,12 @@ class TestLLMModelConfig(unittest.TestCase):
     """Verify model defaults are sane."""
 
     def test_groq_default_model(self):
+        # P0-REPORTX-2026-08-19: was a "llama" substring check, but Groq
+        # deprecated llama-3.3-70b-versatile (2026-06-17 announced,
+        # 2026-08-16 effective) -- the current default is their own
+        # documented replacement, not a Llama model at all.
         cfg = Config()
-        self.assertIn("llama", cfg.llm_model_groq.lower())
+        self.assertIn("gpt-oss", cfg.llm_model_groq.lower())
 
     def test_deepseek_default_model(self):
         cfg = Config()
