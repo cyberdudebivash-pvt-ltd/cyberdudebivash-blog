@@ -2045,7 +2045,10 @@ class AuthorityTransformer:
         # header CTA and dilute source provenance.
         related_block = ""
         correlation_block = self.linker.build_correlation_block(
-            article.labels, cves, exclude_hash=article.content_hash
+            article.labels, cves, exclude_hash=article.content_hash,
+            article_ransomware_group=article.ransomware_group or "",
+            article_ransomware_sector=article.ransomware_sector or "",
+            article_ransomware_country=article.ransomware_country or "",
         )
         mitre_navigator_download = ""
         ext_refs = ""

@@ -143,6 +143,31 @@ class TestPublicationState(unittest.TestCase):
         self.assertEqual(entry["source"], "global_rss")
         self.assertEqual(entry["source_publisher"], "BleepingComputer")
 
+    def test_mark_published_persists_ransomware_fields(self):
+        # PHASE-1-DATA-MODEL-2026-08-19: same reasoning as source/publisher
+        # above -- internal_linker._classify_relation() can only recognize
+        # "same threat actor" or "same sector" as a real relationship if
+        # these fields actually survive into the persisted state file, not
+        # just the in-memory DiscoveredArticle for the current run.
+        state = PublicationState(self.state_file)
+        article = DiscoveredArticle(
+            url="https://www.ransomware.live/id/test",
+            title="Test", summary="Test summary",
+            published_at=datetime.now(timezone.utc).isoformat(),
+            content_hash=_compute_hash("https://www.ransomware.live/id/test", "Test"),
+            labels=["Ransomware"], source="ransomware_intel",
+            ransomware_group="SilentRansomGroup", ransomware_sector="Professional Services",
+            ransomware_country="US",
+        )
+        state.mark_published(article, "post-789", "https://blogger.com/post-789")
+
+        with open(self.state_file, "r", encoding="utf-8") as f:
+            saved = json.load(f)
+        entry = saved["posts"][article.content_hash]
+        self.assertEqual(entry["ransomware_group"], "SilentRansomGroup")
+        self.assertEqual(entry["ransomware_sector"], "Professional Services")
+        self.assertEqual(entry["ransomware_country"], "US")
+
     def test_source_url_deduplication_is_exact(self):
         state = PublicationState(self.state_file)
         article = self._make_article()

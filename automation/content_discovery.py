@@ -172,6 +172,16 @@ class PublicationState:
             # file already treats as "unknown," never a fabricated value.
             "source": article.source,
             "source_publisher": article.source_publisher,
+            # PHASE-1-DATA-MODEL-2026-08-19: same additive, never-fabricated
+            # pattern as source/source_publisher above -- persisted so a
+            # later report can recognize "same threat actor" or "same
+            # sector" as a real, typed relationship (internal_linker.
+            # _classify_relation()) instead of only ever falling back to a
+            # shared generic label or bare recency. Older entries simply
+            # lack these keys, same as every other optional field here.
+            "ransomware_group": article.ransomware_group,
+            "ransomware_sector": article.ransomware_sector,
+            "ransomware_country": article.ransomware_country,
         }
         if publication_metadata:
             safe_fields = {
