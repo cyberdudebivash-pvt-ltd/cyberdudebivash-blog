@@ -30,7 +30,19 @@ class Config:
     llm_model_groq: str = "llama-3.3-70b-versatile"
     llm_model_deepseek: str = "deepseek-chat"
     llm_model_openrouter: str = "deepseek/deepseek-chat"
-    claude_model: str = "claude-opus-4-8"
+    # COMMERCIAL-QUALITY-2026-08-19: was "claude-opus-4-8", a model ID that
+    # does not exist in the current Claude lineup -- confirmed via a live
+    # dry-run trigger of blogger-syndication.yml once GROQ/DEEPSEEK/
+    # OPENROUTER keys were actually wired through: those three reached real
+    # HTTP calls for the first time (no longer no_api_key) and failed on
+    # their own account-side issues (Groq 404 likely a retired model ID on
+    # Groq's side, DeepSeek/OpenRouter 402 Payment Required -- neither
+    # fixable from this repository). ANTHROPIC_API_KEY was unset in that
+    # run, so this stale ID was never actually exercised live, but it would
+    # fail identically the moment a real key is added. "claude-opus-5" keeps
+    # the same Opus-tier choice the original default signaled, updated to a
+    # real, current model ID.
+    claude_model: str = "claude-opus-5"
 
     # Google Search Console
     google_search_console_key: str = ""
