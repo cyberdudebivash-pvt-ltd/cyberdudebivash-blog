@@ -6,7 +6,14 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from automation.config import Config
-from automation.llm_client import call_llm, _call_openai_compat
+from automation.llm_client import (
+    _backoff_seconds,
+    _call_openai_compat,
+    _retry_after_seconds,
+    _MAX_BACKOFF_SECONDS,
+    _MAX_RETRIES_ON_RATE_LIMIT,
+    call_llm,
+)
 
 
 def _config(**kwargs) -> Config:
@@ -223,6 +230,125 @@ class TestOpenAICompatCall(unittest.TestCase):
                     max_tokens=100,
                     extra_headers={},
                 )
+
+
+class TestRetryAfterParsing(unittest.TestCase):
+    """RX-P1-PROVIDER-RELIABILITY: _retry_after_seconds() -- real APIs send
+    either delay-seconds or an HTTP-date (RFC 9110 §10.2.3)."""
+
+    def test_numeric_seconds_form(self):
+        resp = MagicMock(headers={"Retry-After": "3"})
+        self.assertEqual(_retry_after_seconds(resp), 3.0)
+
+    def test_http_date_form(self):
+        from datetime import datetime, timedelta, timezone
+        future = datetime.now(timezone.utc) + timedelta(seconds=4)
+        resp = MagicMock(headers={"Retry-After": future.strftime("%a, %d %b %Y %H:%M:%S GMT")})
+        seconds = _retry_after_seconds(resp)
+        self.assertIsNotNone(seconds)
+        self.assertAlmostEqual(seconds, 4.0, delta=1.5)
+
+    def test_missing_header_returns_none(self):
+        resp = MagicMock(headers={})
+        self.assertIsNone(_retry_after_seconds(resp))
+
+    def test_unparseable_value_returns_none(self):
+        resp = MagicMock(headers={"Retry-After": "not-a-number-or-date"})
+        self.assertIsNone(_retry_after_seconds(resp))
+
+    def test_capped_at_max_backoff(self):
+        resp = MagicMock(headers={"Retry-After": "999999"})
+        self.assertEqual(_retry_after_seconds(resp), _MAX_BACKOFF_SECONDS)
+
+    def test_none_response_returns_none(self):
+        self.assertIsNone(_retry_after_seconds(None))
+
+
+class TestBackoffSeconds(unittest.TestCase):
+    def test_real_retry_after_hint_always_wins(self):
+        self.assertEqual(_backoff_seconds(attempt=0, retry_after=2.5), 2.5)
+        self.assertEqual(_backoff_seconds(attempt=1, retry_after=2.5), 2.5)
+
+    def test_exponential_growth_without_a_hint(self):
+        first = _backoff_seconds(attempt=0, retry_after=None)
+        second = _backoff_seconds(attempt=1, retry_after=None)
+        # Jitter makes exact values non-deterministic; growth trend must hold.
+        self.assertLess(first, _MAX_BACKOFF_SECONDS)
+        self.assertGreaterEqual(second, first - 1.0)  # generous bound for jitter overlap
+
+    def test_never_exceeds_the_bounded_ceiling(self):
+        for attempt in range(10):
+            self.assertLessEqual(_backoff_seconds(attempt=attempt, retry_after=None), _MAX_BACKOFF_SECONDS)
+
+
+class TestOpenAICompatRetryOn429(unittest.TestCase):
+    """The actual bounded-retry mechanism, isolated from the provider chain."""
+
+    def test_retries_on_429_then_succeeds_without_a_real_sleep(self):
+        rate_limited = MagicMock(status_code=429, headers={"Retry-After": "1"})
+        ok = MagicMock(status_code=200)
+        ok.json.return_value = {"choices": [{"message": {"content": "recovered"}}]}
+        ok.raise_for_status = MagicMock()
+        sleep_calls = []
+
+        with patch("requests.post", side_effect=[rate_limited, ok]):
+            result = _call_openai_compat(
+                url="https://api.example.com/v1/chat/completions", api_key="k", model="m",
+                prompt="p", max_tokens=100, extra_headers={}, sleep_fn=sleep_calls.append,
+            )
+
+        self.assertEqual(result, "recovered")
+        self.assertEqual(sleep_calls, [1.0])  # real Retry-After honored exactly
+
+    def test_never_retries_on_402_billing_error(self):
+        # "Do not blindly retry billing failures such as 402" -- must raise
+        # on the FIRST attempt, never call sleep_fn, never call requests.post twice.
+        billing_error = MagicMock(status_code=402)
+        billing_error.raise_for_status.side_effect = Exception("402 Payment Required")
+        sleep_calls = []
+
+        with patch("requests.post", return_value=billing_error) as mock_post:
+            with self.assertRaises(Exception):
+                _call_openai_compat(
+                    url="https://api.example.com/v1/chat/completions", api_key="k", model="m",
+                    prompt="p", max_tokens=100, extra_headers={}, sleep_fn=sleep_calls.append,
+                )
+
+        self.assertEqual(mock_post.call_count, 1)
+        self.assertEqual(sleep_calls, [])
+
+    def test_gives_up_after_bounded_retries_and_raises(self):
+        always_rate_limited = MagicMock(status_code=429, headers={})
+        always_rate_limited.raise_for_status.side_effect = Exception("429 Too Many Requests")
+        sleep_calls = []
+
+        with patch("requests.post", return_value=always_rate_limited) as mock_post:
+            with self.assertRaises(Exception):
+                _call_openai_compat(
+                    url="https://api.example.com/v1/chat/completions", api_key="k", model="m",
+                    prompt="p", max_tokens=100, extra_headers={}, sleep_fn=sleep_calls.append,
+                )
+
+        # _MAX_RETRIES_ON_RATE_LIMIT retries -> _MAX_RETRIES_ON_RATE_LIMIT + 1 total attempts.
+        self.assertEqual(mock_post.call_count, _MAX_RETRIES_ON_RATE_LIMIT + 1)
+        self.assertEqual(len(sleep_calls), _MAX_RETRIES_ON_RATE_LIMIT)
+
+    def test_call_llm_threads_sleep_fn_through_the_full_provider_chain(self):
+        # End-to-end proof through the public call_llm() entry point, not
+        # just the inner helper -- Groq rate-limited once, recovers, and no
+        # real time is spent waiting.
+        cfg = _config(groq_api_key="gsk-test")
+        rate_limited = MagicMock(status_code=429, headers={})
+        ok = MagicMock(status_code=200)
+        ok.json.return_value = {"choices": [{"message": {"content": "Groq recovered"}}]}
+        ok.raise_for_status = MagicMock()
+        sleep_calls = []
+
+        with patch("requests.post", side_effect=[rate_limited, ok]):
+            result = call_llm(cfg, "test prompt", sleep_fn=sleep_calls.append)
+
+        self.assertEqual(result, ("Groq recovered", "groq"))
+        self.assertEqual(len(sleep_calls), 1)
 
 
 class TestLLMModelConfig(unittest.TestCase):

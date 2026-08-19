@@ -105,6 +105,20 @@ def _record_hash(article: DiscoveredArticle) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def compute_artifact_hash(html: str) -> str:
+    """SHA-256 of the exact certified HTML body -- the artifact-binding
+    primitive mandate Section 17/34 requires: the content certified by
+    ``validate_publication()`` must be byte-identical to what Blogger
+    actually receives, or the mismatch must block publication rather than
+    publish silently. Same algorithm/encoding as
+    ``sentinel_engine.reportx.human_review.compute_artifact_hash()`` (the
+    CTI engine's own identical concept) -- defined locally here rather than
+    imported cross-package to avoid that module's own sys.path bootstrap
+    dependency for a single stdlib call; both must be kept in sync if the
+    hashing scheme ever changes."""
+    return hashlib.sha256(html.encode("utf-8")).hexdigest()
+
+
 def _family(article: DiscoveredArticle) -> tuple[str, str]:
     text = _source_text(article).lower()
     labels = {str(label).strip().lower() for label in article.labels}
@@ -297,6 +311,7 @@ _FALSE_HUMAN_REVIEW_PATTERNS = (
 
 def validate_publication(
     article: DiscoveredArticle, context: ReportContext, html: str, product_tier: str = "",
+    contradictions: tuple = (),
 ) -> None:
     """Fail closed on provenance, contradiction, placeholder, and schema defects.
 
@@ -311,6 +326,11 @@ def validate_publication(
     given verdict. Default "" ("not evaluated") is not gated, so every
     existing caller that hasn't computed this verdict keeps its current
     behavior exactly.
+
+    ``contradictions`` is ``sentinel_engine.reportx.contradiction_engine``'s
+    real, claim-level and rendered-text-level findings (each a
+    ``Contradiction.to_dict()``), passed through unevaluated by every
+    caller that hasn't computed them -- default ``()`` is never gated.
     """
     issues: list[str] = []
     lower = html.lower()
@@ -360,6 +380,22 @@ def validate_publication(
             "24-section product-tier gate resolved FLASH -- half or more of this report "
             "family's mandatory sections are WITHHELD_INSUFFICIENT_EVIDENCE "
             "(see ProductTierVerdict.mandatory_withheld)"
+        )
+
+    # Section 11 / mandate Section 10: "when evidence conflicts, the system
+    # must be able to publish 'sources disagree' -- never manufacture
+    # consensus." Every Contradiction contradiction_engine.py can currently
+    # construct carries severity=="block" (its own module docstring:
+    # "Gate: unresolved_contradictions == 0") -- there is no
+    # resolution_status/explicit-handling concept yet that would let a
+    # material contradiction be knowingly published anyway, so the only
+    # fail-closed-correct behavior today is to block outright rather than
+    # silently drop the finding or publish a manufactured single narrative.
+    blocking_contradictions = [c for c in contradictions if c.get("severity") == "block"]
+    if blocking_contradictions:
+        issues.append(
+            "unresolved contradiction(s) in evidence/claims/rendered text: "
+            + "; ".join(c["description"] for c in blocking_contradictions)
         )
 
     if len(html) < 3000:
