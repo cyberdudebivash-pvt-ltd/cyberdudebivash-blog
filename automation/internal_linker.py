@@ -43,7 +43,19 @@ PLATFORM_LINKS = [
 # functionally "most recent post, any topic" rather than real correlation.
 # Excluded from the match set below so only genuinely topic/actor/campaign
 # -specific labels ("Ransomware", "qilin", "AI Security", ...) count.
-_NON_DISCRIMINATING_LABELS = frozenset({"CYBERDUDEBIVASH", "Threat Intelligence", "Global Intel"})
+#
+# COMMERCIAL-QUALITY-2026-08-19: "Vulnerabilities" is the same defect,
+# unaddressed within the CVE-report population specifically. content_
+# discovery._infer_labels() maps every "cve"-keyword title to "Vulnerabilities"
+# unconditionally (same mechanism as the three labels above), so two
+# unrelated CVEs -- different vendor, different product, different CVE ID --
+# still "match" on that single shared label. Independently verified live:
+# CVE-2026-60698 (Oracle WebLogic) and CVE-2026-75912 (CodeWhale) each show
+# five "Related Intelligence Reports" that are just the five most recent
+# other CVE posts, not genuinely related vulnerabilities.
+_NON_DISCRIMINATING_LABELS = frozenset(
+    {"CYBERDUDEBIVASH", "Threat Intelligence", "Global Intel", "Vulnerabilities"}
+)
 
 # Authoritative external cybersecurity references
 EXTERNAL_REFERENCES = {

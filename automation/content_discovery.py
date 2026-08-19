@@ -77,6 +77,17 @@ class DiscoveredArticle:
     kev_due_date: Optional[str] = None
     kev_required_action: Optional[str] = None
 
+    # Structured ransomware-claim data — populated by
+    # threat_feeds.RansomwareIntelSource from the same fields it already
+    # renders into the article's title/summary/full_content prose. Carrying
+    # them as their own fields (rather than only as formatted text) lets the
+    # renderer show them as scannable dashboard data instead of requiring a
+    # reader to find them buried in the Source Evidence Extract. Left None
+    # (never fabricated) when the source record didn't supply a value.
+    ransomware_group: Optional[str] = None
+    ransomware_sector: Optional[str] = None
+    ransomware_country: Optional[str] = None
+
     def to_dict(self) -> dict:
         return asdict(self)
 

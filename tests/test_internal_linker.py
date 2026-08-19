@@ -25,13 +25,19 @@ class TestBuildCorrelationBlock(unittest.TestCase):
             json.dump({"total_published": len(posts), "posts": posts}, f)
 
     def test_cve_match_ranks_above_label_only_match(self):
+        # NOTE: uses "Zero-Day" (a genuinely discriminating label), not
+        # "Vulnerabilities" -- COMMERCIAL-QUALITY-2026-08-19 correctly moved
+        # "Vulnerabilities" itself into _NON_DISCRIMINATING_LABELS (see
+        # test_two_unrelated_cve_reports_sharing_only_vulnerabilities_label_do_not_match
+        # below), so it can no longer stand in as "some real shared label"
+        # here without defeating the very fix this file also tests for.
         self._write_state({
             "hash1": {"source_title": "Log4Shell Deep Dive", "blogger_url": "https://x/log4shell",
-                      "cves": ["CVE-2021-44228"], "labels": ["Vulnerabilities"], "published_at": "2026-07-01"},
+                      "cves": ["CVE-2021-44228"], "labels": ["Zero-Day"], "published_at": "2026-07-01"},
             "hash2": {"source_title": "Generic Vuln Roundup", "blogger_url": "https://x/roundup",
-                      "cves": [], "labels": ["Vulnerabilities"], "published_at": "2026-07-15"},
+                      "cves": [], "labels": ["Zero-Day"], "published_at": "2026-07-15"},
         })
-        block = self.linker.build_correlation_block(["Vulnerabilities"], ["CVE-2021-44228"])
+        block = self.linker.build_correlation_block(["Zero-Day"], ["CVE-2021-44228"])
         # CVE match must appear before the label-only match in the output
         self.assertLess(block.index("Log4Shell Deep Dive"), block.index("Generic Vuln Roundup"))
 
@@ -107,6 +113,47 @@ class TestBuildCorrelationBlock(unittest.TestCase):
             ["CYBERDUDEBIVASH", "Threat Intelligence", "Global Intel", "Ransomware"], [],
         )
         self.assertIn("Another Ransomware Campaign Report", block)
+
+    def test_two_unrelated_cve_reports_sharing_only_vulnerabilities_label_do_not_match(self):
+        # COMMERCIAL-QUALITY-2026-08-19: same defect class as the universal-
+        # label test above, unaddressed within the CVE-report population
+        # specifically. content_discovery._infer_labels() maps every
+        # "cve"-keyword title to "Vulnerabilities" unconditionally, so two
+        # CVEs from completely different vendors/products still "matched" on
+        # that one shared label. Independently verified live: CVE-2026-60698
+        # (Oracle WebLogic) and CVE-2026-75912 (CodeWhale) each showed five
+        # "Related Intelligence Reports" that were just the five most recent
+        # other CVE posts, not genuinely related vulnerabilities.
+        self._write_state({
+            "hash1": {
+                "source_title": "CVE-2026-60698 — CVSS 9.8 CRITICAL Severity | NVD Vulnerability Record",
+                "blogger_url": "https://x/cve-2026-60698",
+                "cves": ["CVE-2026-60698"], "labels": ["CYBERDUDEBIVASH", "Threat Intelligence", "Vulnerabilities"],
+                "published_at": "2026-08-18",
+            },
+        })
+        block = self.linker.build_correlation_block(
+            ["CYBERDUDEBIVASH", "Threat Intelligence", "Vulnerabilities"], ["CVE-2026-75912"],
+        )
+        self.assertEqual(block, "")
+
+    def test_two_cve_reports_sharing_a_real_discriminating_label_still_match(self):
+        # The fix must not become so strict that real relationships between
+        # two different CVEs (e.g. both flagged Cloud Security) stop matching
+        # -- only "Vulnerabilities" itself is excluded, not every CVE label.
+        self._write_state({
+            "hash1": {
+                "source_title": "CVE-2026-11111 — Cloud Misconfiguration Advisory",
+                "blogger_url": "https://x/cve-2026-11111",
+                "cves": ["CVE-2026-11111"],
+                "labels": ["CYBERDUDEBIVASH", "Threat Intelligence", "Vulnerabilities", "Cloud Security"],
+                "published_at": "2026-08-18",
+            },
+        })
+        block = self.linker.build_correlation_block(
+            ["CYBERDUDEBIVASH", "Threat Intelligence", "Vulnerabilities", "Cloud Security"], ["CVE-2026-22222"],
+        )
+        self.assertIn("CVE-2026-11111", block)
 
     def test_max_results_respected(self):
         posts = {

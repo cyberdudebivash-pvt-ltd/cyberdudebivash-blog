@@ -13,6 +13,7 @@ import yaml
 from automation.authority_transformer import (
     AuthorityTransformer,
     _build_dynamic_og_image_url,
+    _build_risk_command_center,
     _ComposerOutcome,
     _generate_svg_thumbnail,
     _legacy_template_enhance,
@@ -392,6 +393,90 @@ class TestVulnerabilityClassification(unittest.TestCase):
         # authorization-failure CWE, not accidentally replace or shadow it.
         article = _make_article(cwe_ids=["CWE-862"], summary="Missing authorization check on an admin endpoint.")
         self.assertEqual(_vulnerability_class(article), "authorization_failure")
+
+    def test_cwe_88_classifies_as_argument_injection_not_unclassified(self):
+        # COMMERCIAL-QUALITY-2026-08-19: independently verified live against
+        # the published CVE-2026-75912 report (CodeWhale git_blame argument
+        # injection, CWE-88) that _CWE_CLASS was missing CWE-88 entirely, so
+        # the report showed "CWE: CWE-88" in Verified Facts but "Vulnerability
+        # class: Unclassified" in Technical Analysis of the SAME document --
+        # a direct, visible self-contradiction in a live customer-facing report.
+        article = _make_article(
+            cwe_ids=["CWE-88"],
+            summary="An argument injection vulnerability in the git_blame tool allows attackers to read "
+                    "arbitrary files by injecting git options into the unvalidated rev parameter.",
+        )
+        self.assertEqual(_vulnerability_class(article), "argument_injection")
+
+
+class TestRiskCommandCenterRansomwareTiles(unittest.TestCase):
+    """COMMERCIAL-QUALITY-2026-08-19: independently verified live that
+    ransomware-claim reports (e.g. "SilentRansomGroup Ransomware Claims New
+    Victim: Troutman Pepper Locke") rendered an Executive Risk Command
+    Center with exactly one generic tile ("CISA KEV: Unknown"), because
+    every other tile is gated on CVE-only fields (cve_id, cvss_score,
+    epss_score, affected_vendor/product) that a ransomware claim never has
+    -- despite the real threat-actor group, sector, and country already
+    being known and already shown in the report's own prose elsewhere.
+    threat_feeds.RansomwareIntelSource now carries those same values as
+    dedicated DiscoveredArticle fields instead of only formatted text, so
+    the dashboard can show them as real, scannable tiles."""
+
+    def _ransomware_article(self, **kwargs) -> DiscoveredArticle:
+        defaults = dict(
+            url="https://www.ransomware.live/id/example",
+            title="SilentRansomGroup Ransomware Claims New Victim: Troutman Pepper Locke",
+            summary="SilentRansomGroup has listed Troutman Pepper Locke as a new victim on its leak site.",
+            published_at="2026-08-18T22:51:57+00:00",
+            content_hash=_compute_hash("https://www.ransomware.live/id/example", "SilentRansomGroup"),
+            labels=["Ransomware", "CYBERDUDEBIVASH", "Threat Intelligence"],
+            source="ransomware_intel",
+            cve_id=None, cvss_score=None, cvss_vector=None, cwe_ids=None,
+            affected_vendor=None, affected_product=None,
+        )
+        defaults.update(kwargs)
+        return DiscoveredArticle(**defaults)
+
+    def test_group_sector_country_render_as_real_tiles(self):
+        article = self._ransomware_article(
+            ransomware_group="SilentRansomGroup",
+            ransomware_sector="Professional Services",
+            ransomware_country="US",
+        )
+        html_out = _build_risk_command_center(article, cves=[], cvss=None)
+        self.assertIn("Threat Actor", html_out)
+        self.assertIn("SilentRansomGroup", html_out)
+        self.assertIn("Professional Services", html_out)
+        self.assertIn("US", html_out)
+
+    def test_dashboard_no_longer_collapses_to_the_single_generic_kev_tile(self):
+        article = self._ransomware_article(
+            ransomware_group="shinyhunters",
+            ransomware_sector="Technology",
+            ransomware_country="CH",
+        )
+        html_out = _build_risk_command_center(article, cves=[], cvss=None)
+        # Before this fix, a ransomware claim produced exactly one tile
+        # ("CISA KEV: Unknown"); it must now show real threat-actor context
+        # too: Threat Actor + Sector + Country + the always-present KEV tile.
+        self.assertEqual(html_out.count('font-size:10px;font-weight:700'), 4)
+
+    def test_missing_sector_and_country_omits_only_those_tiles(self):
+        # Must not fabricate a sector/country the source record didn't supply.
+        article = self._ransomware_article(ransomware_group="UnknownGroupX")
+        html_out = _build_risk_command_center(article, cves=[], cvss=None)
+        self.assertIn("UnknownGroupX", html_out)
+        self.assertNotIn("Sector", html_out)
+        self.assertNotIn("Country", html_out)
+
+    def test_cve_report_without_ransomware_fields_is_unaffected(self):
+        # Backward-compatibility guard: a plain CVE report (no ransomware_*
+        # fields set at all) must render exactly as before -- no phantom
+        # "Threat Actor" tile from an unset field.
+        article = _make_article()
+        html_out = _build_risk_command_center(article, cves=[article.cve_id], cvss=str(article.cvss_score))
+        self.assertNotIn("Threat Actor", html_out)
+        self.assertIn("CVE ID", html_out)
 
 
 class TestAuthorityTransformerContract(unittest.TestCase):

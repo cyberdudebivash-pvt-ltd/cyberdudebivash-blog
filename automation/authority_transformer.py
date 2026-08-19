@@ -557,6 +557,12 @@ def _build_risk_command_center(article: DiscoveredArticle, cves: list, cvss: Opt
     tiles = []
     if cve_id:
         tiles.append(_risk_tile("CVE ID", cve_id, "#00d4ff"))
+    if article.ransomware_group:
+        tiles.append(_risk_tile("Threat Actor", article.ransomware_group, "#ef4444"))
+    if article.ransomware_sector:
+        tiles.append(_risk_tile("Sector", article.ransomware_sector, "#a855f7"))
+    if article.ransomware_country:
+        tiles.append(_risk_tile("Country", article.ransomware_country, "#64748b"))
     if cvss_score is not None:
         tiles.append(_risk_tile("CVSS Score", f"{cvss_score:.1f}", sev_color, sev))
     if article.epss_score is not None:
