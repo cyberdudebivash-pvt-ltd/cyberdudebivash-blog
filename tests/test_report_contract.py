@@ -164,11 +164,18 @@ class TestRansomwareArticleSectionStates(unittest.TestCase):
         resolutions = evaluate_section_states(article, context)
         self.assertEqual(_state_of(resolutions, SECTION_18_SECTOR_GEOGRAPHIC_IMPACT), SectionState.WITHHELD_INSUFFICIENT_EVIDENCE)
 
-    def test_intelligence_gaps_always_withheld_today(self):
+    def test_intelligence_gaps_is_partial_evidence_not_withheld(self):
+        # RX-P1F: pipeline_composer.compose_report() now computes a real
+        # (if minimal) intelligence_gaps list unconditionally for every
+        # article (Round 2) -- the same "mechanism is real, article-
+        # independent, not yet a rich per-article analysis" treatment
+        # already established for Section 13 (Historical Correlation).
+        # No longer honestly WITHHELD_INSUFFICIENT_EVIDENCE, which would
+        # now be UNDERSTATING a real, if minimal, capability.
         article = _ransomware_article()
         context = build_report_context(article)
         resolutions = evaluate_section_states(article, context)
-        self.assertEqual(_state_of(resolutions, SECTION_21_INTELLIGENCE_GAPS), SectionState.WITHHELD_INSUFFICIENT_EVIDENCE)
+        self.assertEqual(_state_of(resolutions, SECTION_21_INTELLIGENCE_GAPS), SectionState.PARTIAL_EVIDENCE)
 
 
 if __name__ == "__main__":

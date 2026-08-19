@@ -15,12 +15,13 @@ from urllib.parse import urlencode
 
 from bs4 import BeautifulSoup
 
-from .analytical_depth_gate import evaluate_product_tier
+from .analytical_depth_gate import LLM_AUTHORED_SOURCES, evaluate_product_tier
 from .category_mapper import primary_category
 from .config import Config
 from .content_discovery import DiscoveredArticle
 from .download_center import build_mitre_navigator_layer
 from .internal_linker import InternalLinker
+from .key_judgements import KeyJudgement, generate_key_judgements
 from .llm_client import call_llm
 from .logger import setup_logger
 from .industry_intelligence import detect_industries, get_industry_profile
@@ -34,10 +35,13 @@ from .report_integrity import (
 )
 from .report_renderer import (
     _attack_section,
+    _bullets,
     _detection_package,
     _detection_section,
+    _esc,
     _family_analysis,
     _provenance,
+    _section,
     render_evidence_report,
 )
 from .seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss
@@ -727,6 +731,32 @@ ABSOLUTE RULES — VIOLATIONS WILL BREAK ENTERPRISE TRUST:
 - Write at senior intelligence analyst level — every sentence earns its place
 - Return ONLY the HTML sections, no preamble, no suffix, no explanation
 """
+
+
+def _render_key_judgements_html(key_judgements: tuple) -> str:
+    """RX-P1F: renders validated KeyJudgement records using report_renderer.py's
+    existing section/bullet primitives -- the same visual system
+    pipeline_composer.py's role/reliability sections already use, not a
+    new one. Every judgement rendered here has already passed
+    key_judgements.validate_key_judgements(); this function only escapes
+    and lays out text, it does not re-evaluate anything."""
+    items = []
+    for kj in key_judgements:
+        parts = [f"<strong>{_esc(kj.judgement)}</strong> "
+                 f"<span style=\"color:#64748b\">[{_esc(kj.confidence)} CONFIDENCE]</span>"]
+        if kj.reasoning_basis:
+            parts.append(f"<br><span style=\"color:#94a3b8\">Basis: {_esc(kj.reasoning_basis)}</span>")
+        if kj.decision_relevance:
+            parts.append(f"<br><span style=\"color:#94a3b8\">Relevance: {_esc(kj.decision_relevance)}</span>")
+        if kj.limitations:
+            parts.append(f"<br><span style=\"color:#64748b\">Limitations: {_esc('; '.join(kj.limitations))}</span>")
+        if kj.what_would_change_the_judgement:
+            parts.append(
+                f"<br><span style=\"color:#64748b\">Would change with: "
+                f"{_esc(kj.what_would_change_the_judgement)}</span>"
+            )
+        items.append("".join(parts))
+    return _section("Key Judgements", _bullets(items, "#00d4ff"), "#00d4ff")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1949,6 +1979,25 @@ class AuthorityTransformer:
         context = build_report_context(article, achieved_tier=composer_outcome.achieved_tier)
         detection_status = _detection_package(article, context).status
 
+        # RX-P1F: Key Judgements -- structured analytical synthesis
+        # (key_judgements.py), not free-form prose. Only attempted when
+        # this article's narrative is genuinely LLM-authored: analytical_
+        # depth_gate.py's own PREMIUM_LONG_FORM gate already requires
+        # llm_authored regardless of Key Judgements, so attempting this
+        # second LLM call when the first one already failed would be a
+        # wasted call against an already-capped article. Every judgement
+        # is independently re-verified against the real evidence graph
+        # before acceptance -- see key_judgements.validate_key_judgements().
+        key_judgements: tuple = ()
+        key_judgement_rejections: tuple = ()
+        if content_source in LLM_AUTHORED_SOURCES and composer_outcome.evidence_graph:
+            key_judgements, key_judgement_rejections = generate_key_judgements(
+                article, self.config, composer_outcome.evidence_graph,
+                composer_outcome.contradictions, composer_outcome.analytical_confidence, context,
+            )
+            if key_judgements:
+                body_content = body_content + _render_key_judgements_html(key_judgements)
+
         # RX-P1B-WIRE: analytical_depth_gate.py + report_contract.py (the
         # founder-mandate 24-section contract + FLASH/TACTICAL/PREMIUM_LONG_FORM
         # tier gate) were built and certified
@@ -1959,7 +2008,7 @@ class AuthorityTransformer:
         # verdict for every article, not merely a capability that exists.
         product_tier_verdict = evaluate_product_tier(
             article, context, content_source, detection_status=detection_status,
-            state_file=self.config.state_file,
+            state_file=self.config.state_file, key_judgement_count=len(key_judgements),
         )
 
         # Generate SEO metadata
@@ -2066,6 +2115,10 @@ class AuthorityTransformer:
             # this same hash over the exact bytes sent to Blogger and block
             # on any mismatch -- see main.py::run_pipeline().
             "certified_artifact_hash": certified_artifact_hash,
+            # RX-P1F: validated Key Judgements (never raw LLM output --
+            # every entry already passed key_judgements.validate_key_judgements()).
+            "key_judgements": [kj.to_dict() for kj in key_judgements],
+            "key_judgement_rejections": list(key_judgement_rejections),
         }
 
     def _build_blogger_title(self, article: DiscoveredArticle) -> str:
