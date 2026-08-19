@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-19T05:54:48.093Z",
+  "generated": "2026-08-19T06:34:58.758Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -11,16 +11,16 @@
   "s2n_stats": {
     "passed": 127,
     "suppressed": 11,
-    "avg_qs": 0.481
+    "avg_qs": 0.476
   },
   "items": [
     {
-      "id": "CVE-2026-72278",
-      "title": "CVE-2026-72278: In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: nv: Re-translate VNCR b",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: nv: Re-translate VNCR before injecting abort\n\nKVM faults in the VNCR page with FOLL_WRITE whenever the guest aborts\nfor a write, similar to how a regular stage-2 mapping is handled. It is\nentirely po... [Full analysis a",
-      "cvss": 9.3,
-      "final_ps": 55,
-      "quality_score": 0.438,
+      "id": "CVE-2026-72221",
+      "title": "CVE-2026-72221: In the Linux kernel, the following vulnerability has been resolved:\n\nsunrpc: wait for in-flight TLS hand",
+      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nsunrpc: wait for in-flight TLS handshake callback when cancel loses race\n\nWhen wait_for_completion_interruptible_timeout() in\nsvc_tcp_handshake() returns 0 (timeout) or -ERESTARTSYS (signal) and\ntls_handshake_ca... [Full analysis a",
+      "cvss": 9.8,
+      "final_ps": 54,
+      "quality_score": 0.413,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -37,7 +37,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-72278"
+        "CVE-2026-72221"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -45,8 +45,8 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
+          "recency=4d (score=0.40)",
+          "QS=0.413"
         ],
         "priority": [
           "+10 CVSS≥9"
@@ -56,12 +56,12 @@
       }
     },
     {
-      "id": "CVE-2026-72288",
-      "title": "CVE-2026-72288: In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: vgic: Handle race betwe",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: vgic: Handle race between interrupt affinity change and LPI disabling\n\nHyunwoo Kim reports some really bad races should the following\nsituation occur:\n\n- LPI-I is pending in vcpu-B's AP list\n- vcpu-A... [Full analysis a",
-      "cvss": 9.3,
-      "final_ps": 55,
-      "quality_score": 0.438,
+      "id": "CVE-2026-72222",
+      "title": "CVE-2026-72222: In the Linux kernel, the following vulnerability has been resolved:\n\nsunrpc: pin svc_xprt across the asy",
+      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nsunrpc: pin svc_xprt across the asynchronous TLS handshake callback\n\nsvc_tcp_handshake() stores the raw svc_xprt pointer in\ntls_handshake_args.ta_data and submits the request through\ntls_server_hello_x509(). The... [Full analysis a",
+      "cvss": 9.8,
+      "final_ps": 54,
+      "quality_score": 0.413,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -78,7 +78,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-72288"
+        "CVE-2026-72222"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -86,49 +86,8 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-72277",
-      "title": "CVE-2026-72277: In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: nv: Inject SEA if guest",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: nv: Inject SEA if guest VNCR isn't normal memory\n\nWhen constructing an L1 VNCR mapping, KVM unconditionally uses cacheable\nmemory attributes, even if the underlying PFN isn't memory. This gets\npartic... [Full analysis a",
-      "cvss": 9.3,
-      "final_ps": 55,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-72277"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
+          "recency=4d (score=0.40)",
+          "QS=0.413"
         ],
         "priority": [
           "+10 CVSS≥9"
@@ -814,129 +773,6 @@
       }
     },
     {
-      "id": "CVE-2026-72244",
-      "title": "CVE-2026-72244: In the Linux kernel, the following vulnerability has been resolved:\n\ngpu/buddy: bail out of try_harder w",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\ngpu/buddy: bail out of try_harder when alignment cannot be honoured\n\nThe try_harder contiguous fallback could return a range whose start\noffset did not match the caller's min_block_size. When a candidate's\nstart... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 42,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-72244"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=42 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-72225",
-      "title": "CVE-2026-72225: In the Linux kernel, the following vulnerability has been resolved:\n\njbd2: fix integer underflow in jbd2",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\njbd2: fix integer underflow in jbd2_journal_initialize_fast_commit()\n\njbd2_journal_initialize_fast_commit() validates journal capacity by\nchecking (journal->j_last - num_fc_blks < JBD2_MIN_JOURNAL_BLOCKS).\nBoth ... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 42,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-72225"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=42 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-72252",
-      "title": "CVE-2026-72252: In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: nft_set_pipapo: don't le",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: nft_set_pipapo: don't leak bad clone into future transaction\n\nOn memory allocation failure the cloned nft_pipapo_match can enter a bad\nstate:\n - some fields can have their lookup tables resized while ... [Full analysis a",
-      "cvss": 7.8,
-      "final_ps": 42,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-72252"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=42 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
       "id": "CVE-2026-54121",
       "title": "PoC exploit released for critical AD CS domain-takeover flaw (CVE-2026-54121)",
       "description": "",
@@ -1103,211 +939,6 @@
         "priority": [
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-72247",
-      "title": "CVE-2026-72247: In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: nf_conncount: fix zone c",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: nf_conncount: fix zone comparison in tuple dedup\n\nThe \"already exists\" dedup logic in __nf_conncount_add() decides\nwhether a connection has already been counted and can be skipped instead\nof increment... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 41,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-72247"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-72242",
-      "title": "CVE-2026-72242: In the Linux kernel, the following vulnerability has been resolved:\n\nselinux: avoid sk_socket dereferenc",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nselinux: avoid sk_socket dereference in selinux_sctp_bind_connect()\n\nselinux_sctp_bind_connect() dereferences sk->sk_socket to pass a\nstruct socket * to selinux_socket_bind() and\nselinux_socket_connect_helper().... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 41,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-72242"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-72231",
-      "title": "CVE-2026-72231: In the Linux kernel, the following vulnerability has been resolved:\n\nbatman-adv: tt: avoid request storm",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nbatman-adv: tt: avoid request storms during pending request\n\nbatadv_send_tt_request() allocates a tt_req_node when none exists for the\ndestination originator node. This should prevent that a multiple TT\nrequests... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 41,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-72231"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-72253",
-      "title": "CVE-2026-72253: In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: nf_conntrack_sip: valida",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: nf_conntrack_sip: validate skb_dst() before accessing it\n\ntc ingress and openvswitch do not guarantee routing information to be\navailable. These subsystems use the conntrack helper infrastructure, and... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 41,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-72253"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-72254",
-      "title": "CVE-2026-72254: In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: nft_fib: reject fib expr",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: nft_fib: reject fib expression on the netdev egress hook\n\nA fib expression in a netdev egress base chain dereferences nft_in(pkt),\nNULL on the transmit path, causing a NULL pointer dereference at eval... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 41,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-72254"
-      ],
-      "ioc_count": 0,
-      "refs": [],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.60",
-          "recency=3d (score=0.65)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=41 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2247,9 +1878,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-15013",
@@ -2291,9 +1920,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-15158",
@@ -2336,9 +1963,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-60206",
@@ -2380,9 +2005,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-49952",
@@ -2424,9 +2047,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-65761",
@@ -2468,9 +2089,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-15409",
@@ -2514,9 +2133,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2024-24919",
@@ -2560,9 +2177,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-13001",
@@ -2604,9 +2219,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-56121",
@@ -4008,6 +3621,264 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-72248",
+      "title": "CVE-2026-72248: In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: flowtable: support IPIP ",
+      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nnetfilter: flowtable: support IPIP tunnel with direct xmit\n\nThe combination of IPIP tunnel with direct xmit, eg. bridge device,\nbreaks because no dst_entry is provided to check the skb headroom and to\nset the ip... [Full analysis a",
+      "cvss": 9.8,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "SOCIAL_ENGINEERING",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-72248"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-72234",
+      "title": "CVE-2026-72234: In the Linux kernel, the following vulnerability has been resolved:\n\nbatman-adv: access unicast_ttvn skb",
+      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nbatman-adv: access unicast_ttvn skb->data only after skb realloc\n\nThe pskb_may_pull() called by batadv_get_vid() could reallocate the buffer\nbehind the skb. Variables which were pointing to the old buffer need t... [Full analysis a",
+      "cvss": 9.8,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-72234"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-72239",
+      "title": "CVE-2026-72239: In the Linux kernel, the following vulnerability has been resolved:\n\nx86/virt/sev: Revert \"Drop WBINVD b",
+      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nx86/virt/sev: Revert \"Drop WBINVD before setting MSR_AMD64_SYSCFG_SNP_EN\"\n\nRevert\n\n 99cf1fb58e68 (\"x86/virt/sev: Drop WBINVD before setting MSR_AMD64_SYSCFG_SNP_EN\").\n\nSection 8.8 of the SNP spec says:\n\n Before ... [Full analysis a",
+      "cvss": 9.3,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-72239"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-72278",
+      "title": "CVE-2026-72278: In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: nv: Re-translate VNCR b",
+      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: nv: Re-translate VNCR before injecting abort\n\nKVM faults in the VNCR page with FOLL_WRITE whenever the guest aborts\nfor a write, similar to how a regular stage-2 mapping is handled. It is\nentirely po... [Full analysis a",
+      "cvss": 9.3,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-72278"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-72288",
+      "title": "CVE-2026-72288: In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: vgic: Handle race betwe",
+      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: vgic: Handle race between interrupt affinity change and LPI disabling\n\nHyunwoo Kim reports some really bad races should the following\nsituation occur:\n\n- LPI-I is pending in vcpu-B's AP list\n- vcpu-A... [Full analysis a",
+      "cvss": 9.3,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-72288"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-72277",
+      "title": "CVE-2026-72277: In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: nv: Inject SEA if guest",
+      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: arm64: nv: Inject SEA if guest VNCR isn't normal memory\n\nWhen constructing an L1 VNCR mapping, KVM unconditionally uses cacheable\nmemory attributes, even if the underlying PFN isn't memory. This gets\npartic... [Full analysis a",
+      "cvss": 9.3,
+      "final_ps": 27,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-15",
+      "last_seen": "2026-08-15",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-72277"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-72291",
       "title": "CVE-2026-72291: In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: s390: Fix unlikely race in try",
       "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nKVM: s390: Fix unlikely race in try_get_locked_pte()\n\nFix an unlikely race in try_get_locked_pte(), which could have happened\nif puds or pmds get unmapped between the p?dp_get() and p?d_offset()\nfunctions.",
@@ -4180,11 +4051,11 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-72221",
-      "title": "CVE-2026-72221: In the Linux kernel, the following vulnerability has been resolved:\n\nsunrpc: wait for in-flight TLS hand",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nsunrpc: wait for in-flight TLS handshake callback when cancel loses race\n\nWhen wait_for_completion_interruptible_timeout() in\nsvc_tcp_handshake() returns 0 (timeout) or -ERESTARTSYS (signal) and\ntls_handshake_ca... [Full analysis a",
-      "cvss": 9.8,
-      "final_ps": 27,
+      "id": "CVE-2014-0160",
+      "title": "Exploit for Out-of-bounds Read in Openssl",
+      "description": "Proof-of-concept exploit for CVE-2014-0160. CVSS 7.5.",
+      "cvss": 7.5,
+      "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
@@ -4193,8 +4064,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4202,7 +4073,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-72221"
+        "CVE-2014-0160"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4214,7 +4085,7 @@
           "QS=0.417"
         ],
         "priority": [
-          "+10 CVSS≥9"
+          "base_ps=17 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4223,11 +4094,11 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-72222",
-      "title": "CVE-2026-72222: In the Linux kernel, the following vulnerability has been resolved:\n\nsunrpc: pin svc_xprt across the asy",
-      "description": "In the Linux kernel, the following vulnerability has been resolved:\n\nsunrpc: pin svc_xprt across the asynchronous TLS handshake callback\n\nsvc_tcp_handshake() stores the raw svc_xprt pointer in\ntls_handshake_args.ta_data and submits the request through\ntls_server_hello_x509(). The... [Full analysis a",
-      "cvss": 9.8,
-      "final_ps": 27,
+      "id": "CVE-2026-19500",
+      "title": "Exploit for CVE-2026-19500",
+      "description": "Proof-of-concept exploit for CVE-2026-19500.",
+      "cvss": 7.5,
+      "final_ps": 17,
       "quality_score": 0.418,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
@@ -4236,8 +4107,8 @@
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-08-15",
-      "last_seen": "2026-08-15",
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4245,7 +4116,7 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-72222"
+        "CVE-2026-19500"
       ],
       "ioc_count": 0,
       "refs": [],
@@ -4257,7 +4128,136 @@
           "QS=0.417"
         ],
         "priority": [
-          "+10 CVSS≥9"
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-66602",
+      "title": "CVE-2026-66602 - WordPress HashBar  WordPress Notification Bar plugin <= 2.0.0 - Cross Site Request Forgery (CSRF) vulne",
+      "description": "CVE-2026-66602 - WordPress HashBar WordPress Notification Bar plugin <= 2.0.0 - Cross Site Request Forgery (CSRF) vulnerability",
+      "cvss": 8.8,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-66602"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-70415",
+      "title": "CVE-2026-70415 - Dell PowerStore NFS/RPC Buffer Overflow",
+      "description": "CVE ID : CVE-2026-70415\n \n Published : Aug. 18, 2026, 4:54 p.m. | 13minutes ago\n \n Description : Dell PowerStore SDNAS contains a Buffer Copy without Checking Size of Input vulnerability in the NFS/RPC. An unauthenticated attacker with remote access could potentially exploit this... [Full analysis a",
+      "cvss": 8.1,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "AI_SECURITY",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-70415"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-73973",
+      "title": "CVE-2026-73973 - Linuxfabrik Monitoring Plugins: Arbitrary root file disclosure via unconfined --filename in logfile plu",
+      "description": "CVE-2026-73973 - Linuxfabrik Monitoring Plugins: Arbitrary root file disclosure via unconfined --filename in logfile plugin (sudoers LPE)",
+      "cvss": 7.8,
+      "final_ps": 17,
+      "quality_score": 0.418,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-18",
+      "last_seen": "2026-08-18",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73973"
+      ],
+      "ioc_count": 0,
+      "refs": [],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.417"
+        ],
+        "priority": [
+          "base_ps=17 (no boosts)"
         ],
         "suppression": null,
         "merge": null
