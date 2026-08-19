@@ -45,7 +45,15 @@ def _ransomware_article(**overrides) -> DiscoveredArticle:
         url="https://www.ransomware.live/id/test",
         title="Acme Test Corp", summary="qilin has listed Acme Test Corp as a new victim on its leak site.",
         published_at="2026-08-18T00:00:00Z", content_hash="cafef00d",
-        labels=["Ransomware", "qilin"], source="ransomware_intel",
+        # labels carries the site's own taxonomy tags (matches every real
+        # ransomware_intel article, which also always carries a brand tag
+        # like "CYBERDUDEBIVASH" -- see test_actor_attribution_uses_ransomware_group_not_labels
+        # below); ransomware_group is threat_feeds.py's real, separately-
+        # sanitized actor field (always populated for a real ransomware_intel
+        # article -- RansomwareIntelSource defaults it to "Unknown Group"
+        # rather than leaving it unset) and is the field discovery_bridge.py
+        # must read for attribution, not labels.
+        labels=["Ransomware", "CYBERDUDEBIVASH"], source="ransomware_intel", ransomware_group="qilin",
     )
     defaults.update(overrides)
     return DiscoveredArticle(**defaults)
@@ -131,6 +139,34 @@ class TestClaimConstruction:
         graph = build_evidence_graph(article, context)
         assert graph.claims["c-victim-claim"].status == EpistemicState.REPORTED
         assert graph.claims["c-victim-claim"].claim_type.value == "VICTIM_IDENTITY"
+
+    def test_actor_attribution_uses_ransomware_group_not_the_site_taxonomy_label(self):
+        # Real regression, found via real-data testing of the newly-wired
+        # evidence_graph output (RX-P1C-WIRE): this claim used to be built
+        # from `next(label for label in article.labels if label != "ransomware")`
+        # -- article.labels carries site taxonomy tags every article gets
+        # (e.g. "CYBERDUDEBIVASH"), not the actor name, so a real article
+        # whose first non-"ransomware" label happened to be a taxonomy tag
+        # got misattributed to that tag instead of the real actor. The
+        # fixture's labels=[...,"CYBERDUDEBIVASH"] reproduces exactly that
+        # shape; the correct source is ransomware_group.
+        article = _ransomware_article()
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context)
+        claim = graph.claims["c-actor-attribution"]
+        assert "qilin" in claim.text
+        assert "CYBERDUDEBIVASH" not in claim.text
+
+    def test_unknown_group_placeholder_does_not_become_a_named_actor_attribution(self):
+        # Mirrors the identical, already-fixed regression class in
+        # internal_linker.py/report_contract.py (both: "Unknown Group" is
+        # threat_feeds.py's real fallback string for a genuinely unnamed
+        # actor, never a real identity) -- this module read the wrong field
+        # entirely before this fix, so it never had this guard either.
+        article = _ransomware_article(ransomware_group="Unknown Group")
+        context = build_report_context(article)
+        graph = build_evidence_graph(article, context)
+        assert "c-actor-attribution" not in graph.claims
 
     def test_every_claim_carries_real_evidence_and_source_refs(self):
         article = _cve_article()
@@ -305,6 +341,12 @@ class TestThreatProductMapping:
         product = build_threat_product(article, context)
         assert isinstance(product, RansomwareVictimClaim)
         assert product.victim_observation.victim_name == "Acme Test Corp"
+        # Same regression as test_actor_attribution_uses_ransomware_group_not_the_site_taxonomy_label
+        # above, checked at the ThreatProduct layer this time: both
+        # build_claims() and build_threat_product() shared the identical
+        # article.labels-based bug before this fix.
+        assert product.victim_observation.group_named_by_source == "qilin"
+        assert product.actor_context.actor_aliases == ["qilin"]
 
     def test_unmapped_family_returns_none_not_a_wrong_schema(self):
         article = DiscoveredArticle(

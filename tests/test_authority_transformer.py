@@ -2,6 +2,7 @@
 
 import base64
 import html
+import json
 import re
 import unittest
 from datetime import datetime, timezone
@@ -10,6 +11,7 @@ from urllib.parse import parse_qs, urlparse
 
 import yaml
 
+from automation.analytical_depth_gate import FLASH, ProductTierVerdict
 from automation.authority_transformer import (
     AuthorityTransformer,
     _build_dynamic_og_image_url,
@@ -329,6 +331,21 @@ class TestFailClosedPublicationGate(unittest.TestCase):
             any("evidence-graph correctness controls failed" in issue for issue in caught.exception.issues)
         )
 
+    def test_blocks_flash_product_tier(self):
+        # Mirrors test_blocks_public_reference_draft_achieved_tier above,
+        # for the second, independent tier signal: analytical_depth_gate.
+        # evaluate_product_tier()'s FLASH verdict must block publication on
+        # its own, even though every other required field and check passes
+        # cleanly and achieved_tier (the OTHER tier ladder) is untouched.
+        article = _make_article()
+        context = build_report_context(article)
+        safe = render_evidence_report(article, Config()).html
+        with self.assertRaises(PublicationIntegrityError) as caught:
+            validate_publication(article, context, safe, product_tier="FLASH")
+        self.assertTrue(
+            any("24-section product-tier gate resolved FLASH" in issue for issue in caught.exception.issues)
+        )
+
     @staticmethod
     def _context_matching_rendered(article, rendered, **overrides):
         # render_evidence_report() builds its own internal context (via its
@@ -354,6 +371,16 @@ class TestFailClosedPublicationGate(unittest.TestCase):
         context = self._context_matching_rendered(article, rendered)  # achieved_tier defaults to ""
         self.assertEqual(context.achieved_tier, "")
         validate_publication(article, context, rendered.html)  # must not raise
+
+    def test_empty_product_tier_is_not_treated_as_a_failure(self):
+        # product_tier=="" means "not evaluated" -- must not trip the new
+        # gate, and the pre-existing 3-argument call (no product_tier at
+        # all) must keep working unmodified for every existing caller.
+        article = _make_article()
+        rendered = render_evidence_report(article, Config())
+        context = self._context_matching_rendered(article, rendered)
+        validate_publication(article, context, rendered.html, product_tier="")  # must not raise
+        validate_publication(article, context, rendered.html)  # old 3-arg signature, must not raise
 
     def test_a_real_non_draft_tier_produces_an_honest_certification_label(self):
         article = _make_article()
@@ -610,6 +637,66 @@ class TestAuthorityTransformerContract(unittest.TestCase):
         self.assertNotEqual(result["certification_status"], CERTIFICATION_STATUS)
         self.assertIn(result["achieved_tier"], result["certification_status"])
         self.assertIn(result["certification_status"], result["content"])
+
+    def test_product_tier_verdict_is_wired_into_transform_output(self):
+        # RX-P1B-WIRE: report_contract.py + analytical_depth_gate.py were
+        # built and certified
+        # (docs/audits/REPORTX-24-SECTION-LONG-FORM-RELEASE-CERTIFICATION.md)
+        # but never actually invoked by the live pipeline -- a certified-
+        # but-dormant module. Real, observable data now flows through
+        # transform()'s own result for every article, the same fix already
+        # applied to the composer's quality scorecard above.
+        result = self.transformer.transform(_make_article())
+        self.assertIn("product_tier", result)
+        self.assertIn("product_tier_reason", result)
+        self.assertIn("product_tier_mandatory_withheld", result)
+        # _make_article()'s clean CVE evidence, composed (not LLM-authored)
+        # content: Key Judgements and Intelligence Gaps have no
+        # implementation anywhere in this pipeline (per report_contract.py),
+        # so they always resolve WITHHELD -- but that is only 2 of 14
+        # mandatory cve_advisory sections, capping this at TACTICAL, never
+        # FLASH and never PREMIUM_LONG_FORM. Matches the exhaustive real-data
+        # proof in the certification doc above (9/9 combinations -> TACTICAL).
+        self.assertEqual(result["product_tier"], "TACTICAL")
+        self.assertIn("key_judgements", result["product_tier_mandatory_withheld"])
+        self.assertIn("intelligence_gaps", result["product_tier_mandatory_withheld"])
+
+    def test_evidence_graph_and_intelligence_gaps_are_wired_into_transform_output(self):
+        # RX-P1C-WIRE / RX-P1E-WIRE: compose_report() already builds a real,
+        # claim-level EvidenceGraph (claim_id/claim_type/status/evidence_refs/
+        # source_refs/corroboration_state/contradictions) and a real
+        # intelligence_gaps list for every article -- both were discarded at
+        # the _composer_enhance() boundary before this fix, reaching neither
+        # transform()'s output nor (therefore) anything downstream of it.
+        result = self.transformer.transform(_make_article())
+        self.assertIsNotNone(result["evidence_graph"])
+        self.assertIn("sources", result["evidence_graph"])
+        self.assertIn("evidence", result["evidence_graph"])
+        self.assertIn("claims", result["evidence_graph"])
+        self.assertIn("c-cve-id", result["evidence_graph"]["claims"])
+        self.assertEqual(result["evidence_graph"]["claims"]["c-cve-id"]["status"], "CONFIRMED")
+        self.assertTrue(result["intelligence_gaps"])
+        self.assertIn("description", result["intelligence_gaps"][0])
+        # Both must be genuinely JSON-serializable end to end (this is what
+        # actually flows into logs/run-*.json and any future API surface),
+        # not merely dict-shaped.
+        json.dumps(result["evidence_graph"])
+        json.dumps(result["intelligence_gaps"])
+
+    def test_flash_product_tier_blocks_publication_end_to_end(self):
+        # Adversarial: force a FLASH verdict through transform()'s real call
+        # to evaluate_product_tier() (not bypassing it) and confirm the
+        # live pipeline actually blocks on it, not merely that the isolated
+        # gate function does (see TestFailClosedPublicationGate above).
+        with patch(
+            "automation.authority_transformer.evaluate_product_tier",
+            return_value=ProductTierVerdict(FLASH, "adversarial test forces FLASH"),
+        ):
+            with self.assertRaises(PublicationIntegrityError) as caught:
+                self.transformer.transform(_make_article())
+        self.assertTrue(
+            any("24-section product-tier gate resolved FLASH" in issue for issue in caught.exception.issues)
+        )
 
     def test_structured_data_has_automated_author_and_no_fake_counts(self):
         content = self.transformer.transform(_make_article())["content"]

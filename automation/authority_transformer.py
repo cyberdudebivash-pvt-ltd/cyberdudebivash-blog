@@ -15,6 +15,7 @@ from urllib.parse import urlencode
 
 from bs4 import BeautifulSoup
 
+from .analytical_depth_gate import evaluate_product_tier
 from .category_mapper import primary_category
 from .config import Config
 from .content_discovery import DiscoveredArticle
@@ -1792,6 +1793,25 @@ class _ComposerOutcome:
     # on the composer-exception path, where no scorecard was ever computed.
     quality_score: Optional[int] = None
     quality_score_eligible: Optional[bool] = None
+    # RX-P1C-WIRE: the real, per-article claim/evidence/source graph
+    # (sentinel_engine.reportx.claim_model.EvidenceGraph.to_dict()) --
+    # already built by compose_report() for every article via
+    # discovery_bridge.build_evidence_graph(), already claim-level
+    # (claim_id/claim_type/status/evidence_refs/source_refs/
+    # corroboration_state/contradictions per Sections 3-4), but previously
+    # discarded at this exact boundary: only the derived tier/scorecard
+    # crossed into _ComposerOutcome, never the graph itself. Exposed here as
+    # real, observable data first -- same discipline as quality_score above
+    # -- not yet rendered into the HTML body or used by any gate. None only
+    # on the composer-exception path, where no graph was ever built.
+    evidence_graph: Optional[dict] = None
+    # RX-P1E-WIRE: compose_report()'s own intelligence_gaps list (currently
+    # always exactly one real, honest gap -- "whether an independent second
+    # source corroborates this record has not been assessed"; not yet a
+    # rich, per-article gap analysis -- see analytic_scaffolding.IntelligenceGap)
+    # was likewise computed unconditionally and then discarded at this same
+    # boundary. Exposed for the same reason as evidence_graph above.
+    intelligence_gaps: tuple = ()
 
 
 def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOutcome:
@@ -1831,6 +1851,8 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
                 "coverage": round(result.scorecard.coverage, 3),
             },
         )
+        evidence_graph = result.bundle.graph.to_dict()
+        intelligence_gaps = tuple(g.to_dict() for g in result.bundle.intelligence_gaps)
         if tier == CertificationState.PUBLIC_REFERENCE_DRAFT:
             logger.info(
                 "ReportX composer evidence graph failed correctness controls -- publication will be blocked",
@@ -1839,10 +1861,12 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
             return _ComposerOutcome(
                 html=None, achieved_tier=tier.value, failed_controls=result.downgrade.failed_controls,
                 quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
+                evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps,
             )
         return _ComposerOutcome(
             html=result.html, achieved_tier=tier.value,
             quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
+            evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps,
         )
     except Exception as e:
         logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
@@ -1896,6 +1920,19 @@ class AuthorityTransformer:
         context = build_report_context(article, achieved_tier=composer_outcome.achieved_tier)
         detection_status = _detection_package(article, context).status
 
+        # RX-P1B-WIRE: analytical_depth_gate.py + report_contract.py (the
+        # founder-mandate 24-section contract + FLASH/TACTICAL/PREMIUM_LONG_FORM
+        # tier gate) were built and certified
+        # (docs/audits/REPORTX-24-SECTION-LONG-FORM-RELEASE-CERTIFICATION.md)
+        # but never actually invoked by the live pipeline -- a certified-but-
+        # dormant module. This runs it unconditionally, the same discipline
+        # already applied to the composer's own tier ladder above: a real
+        # verdict for every article, not merely a capability that exists.
+        product_tier_verdict = evaluate_product_tier(
+            article, context, content_source, detection_status=detection_status,
+            state_file=self.config.state_file,
+        )
+
         # Generate SEO metadata
         seo_data = self.seo.generate(
             title=article.title,
@@ -1922,7 +1959,7 @@ class AuthorityTransformer:
 
         # Build full HTML
         html = self._assemble_html(article, body_content, seo_data, context)
-        validate_publication(article, context, html)
+        validate_publication(article, context, html, product_tier=product_tier_verdict.tier)
 
         blogger_labels = article.labels[:20]
 
@@ -1932,6 +1969,8 @@ class AuthorityTransformer:
                 "title": article.title[:60],
                 "content_source": content_source,
                 "labels": blogger_labels,
+                "product_tier": product_tier_verdict.tier,
+                "claim_count": len(composer_outcome.evidence_graph["claims"]) if composer_outcome.evidence_graph else 0,
             },
         )
 
@@ -1963,6 +2002,19 @@ class AuthorityTransformer:
             "achieved_tier": context.achieved_tier,
             "quality_score": composer_outcome.quality_score,
             "quality_score_eligible": composer_outcome.quality_score_eligible,
+            # RX-P1B-WIRE: the founder-mandate 24-section-contract tier
+            # verdict (FLASH/TACTICAL/PREMIUM_LONG_FORM) -- a distinct
+            # signal from achieved_tier above, see validate_publication()'s
+            # docstring in report_integrity.py for why these are kept separate.
+            "product_tier": product_tier_verdict.tier,
+            "product_tier_reason": product_tier_verdict.reason,
+            "product_tier_mandatory_withheld": list(product_tier_verdict.mandatory_withheld),
+            # RX-P1C-WIRE: the real claim/evidence/source graph -- see
+            # _ComposerOutcome.evidence_graph's docstring above. None only
+            # on the rare composer-exception path.
+            "evidence_graph": composer_outcome.evidence_graph,
+            # RX-P1E-WIRE: see _ComposerOutcome.intelligence_gaps' docstring above.
+            "intelligence_gaps": list(composer_outcome.intelligence_gaps),
             "detection_status": detection_status,
             "generated_at": context.generated_at,
         }
