@@ -1,0 +1,130 @@
+{
+  "schema_version": "1.0",
+  "baseline_date": "2026-08-19",
+  "purpose": "Pre-transformation baseline per REPORTX P0 mandate Section 4. Real, current-production output only -- no fabricated or hypothetical examples. Dimensions with no structured representation in current output are marked not_measured rather than assigned an invented score, consistent with the mandate's own zero-fabrication rule applied to this baseline's own methodology.",
+  "pipeline_a_python_blogger": {
+    "method": "python -m automation.main --dry-run --max-posts 20, against real live sources, plus 3 full-HTML captures via direct AuthorityTransformer.transform() calls on real freshly-discovered NVD CVEs",
+    "dry_run_sample_size": 20,
+    "dry_run_category_breakdown": {
+      "cve_advisory": 7,
+      "cisa_advisory": 1,
+      "ransomware_claim": 8,
+      "malware_campaign": 1,
+      "note": "categories present in real current feeds at time of sampling; phishing/zero-day/breach/strategic-general were not present in this specific sample window -- not fabricated to fill the mandate's target category list"
+    },
+    "llm_authorship": {
+      "attempted": 20,
+      "succeeded": 0,
+      "content_source_observed": "reportx_composer (100% of sample)",
+      "provider_failures": "all 4 providers (groq, deepseek, openrouter, anthropic) returned no_api_key in this environment",
+      "structural_consequence": "analytical_depth_gate.py requires content_source in {groq,deepseek,openrouter,anthropic} for PREMIUM_LONG_FORM eligibility -- 100% of sample capped at TACTICAL_READY or below regardless of evidence completeness"
+    },
+    "achieved_tier_distribution": {
+      "TACTICAL_READY": 20,
+      "PREMIUM_LONG_FORM": 0
+    },
+    "commercial_readiness_scorecard": {
+      "overall_score_range": [92, 96],
+      "overall_score_mean_approx": 94,
+      "coverage_range": [0.55, 0.6],
+      "publication_eligible_true_count": 7,
+      "publication_eligible_false_count": 13,
+      "actual_publish_behavior": "all 20 items marked 'would publish' regardless of publication_eligible value -- confirms the scorecard is observability-only, not a gate, for any threshold above PUBLIC_REFERENCE_DRAFT",
+      "finding": "high aggregate score (92-96/100) co-occurring with low section coverage (55-60%) on every single sample -- matches the mandate's own Section 21 concern that a high aggregate score can mask real gaps. Not yet determined whether coverage is under-weighted in the scoring formula or whether 55-60% coverage is itself an accurate reflection of what this pipeline can currently populate -- flagged for the implementation phase, not resolved here."
+    },
+    "integrity_gate_result": {
+      "blocked": 0,
+      "of": 20,
+      "note": "zero PublicationIntegrityError raised across the sample -- the fail-closed evidence gate is real but nothing in current real-world input is currently tripping it"
+    },
+    "full_html_samples": {
+      "count": 3,
+      "source": "real NVD CVE records, fetched live",
+      "mean_word_count": 1188,
+      "word_count_range": [1152, 1251],
+      "mean_html_bytes": 38143,
+      "rendered_data_sections_per_report": 11,
+      "achieved_tier": "TACTICAL_READY (all 3)",
+      "quality_score": "96 (all 3)"
+    },
+    "claim_level_traceability": {
+      "status": "not_measured",
+      "reason": "no claim_id/claim_text/evidence_refs/status data model exists in current output -- the report is prose + a fixed Provenance table, not a claim graph. Nothing to count."
+    },
+    "key_judgements": {
+      "status": "not_measured",
+      "reason": "no Key Judgements section exists in current renderer output; report_contract.py's SECTION_3_KEY_JUDGEMENTS resolves to WITHHELD_INSUFFICIENT_EVIDENCE for every article today (no implementation anywhere in the pipeline, confirmed via report_contract.py's own _IMPLEMENTED_TODAY mapping)."
+    },
+    "intelligence_gaps_as_structured_data": {
+      "status": "not_measured",
+      "reason": "gaps are implied by prose hedging (e.g. 'exploitation not confirmed by available evidence') but not emitted as a discrete, structured intelligence_gaps[] list anywhere."
+    },
+    "forecasts": {
+      "status": "not_measured",
+      "reason": "no forecasting capability exists in Pipeline A's renderer at all."
+    },
+    "role_based_decisions": {
+      "status": "partially_measured",
+      "note": "report_renderer.py renders role-relevant P0/P1 action bullets per family (e.g. Exposure and Remediation Decisions for CVE family) but not as a named-role/decision/priority/evidence-basis/escalation-condition structured object per mandate Section 15's model."
+    },
+    "executive_and_operational_usefulness": {
+      "status": "not_measured",
+      "reason": "subjective dimensions requiring human or LLM-judge evaluation against a rubric -- no rubric exists yet and inventing a score here would itself violate the no-fabrication principle this baseline is trying to model."
+    }
+  },
+  "pipeline_b_node_vercel": {
+    "method": "static analysis of fetch-live-intel.js and its full require() graph, plus grep-based counts across the real posts/ corpus (4210 files)",
+    "corpus_size": 4210,
+    "section_presence_counts": {
+      "structured_intelligence_assessment": 1202,
+      "prior_intelligence_context": 1127,
+      "multi_audience_intelligence_products": 591,
+      "multi_platform_detection_engineering": 110,
+      "note": "counts reflect posts generated since each feature existed in the generator, not a fixed contract applied uniformly -- posts are written once and never re-rendered"
+    },
+    "disclaimer_text_consistency": {
+      "current_wording_count": 63,
+      "total_corpus": 4210,
+      "current_wording_percentage": 1.5,
+      "finding": "the current .intel-sig signature block text exists in only 63/4210 posts; the remaining ~4147 carry one of several historical generator-version variants (v3.0, v4.0, category-specific taglines). This is a larger-scope version of the historical-disclaimer-consistency issue already identified and partially addressed on the Blogger side."
+    },
+    "publication_gate": {
+      "type": "structural_completeness_only",
+      "fabrication_or_contradiction_check": false,
+      "finding": "qualityGate() has no equivalent to Pipeline A's validate_publication() -- confirmed via full-file review, not merely a grep for absence."
+    },
+    "llm_authorship": {
+      "used": false,
+      "by_design": true,
+      "note": "reasoning-engine.js explicitly documents itself as model-free ('no model calls, no fabrication') -- this is an intentional architecture choice, not a degraded/broken state like Pipeline A's LLM chain."
+    },
+    "orphaned_computation": {
+      "enrichment_pipeline_attribution_confidence": "computed every cycle, persisted to api/intel/threat-graph.json, never read by any HTML or public-API output path",
+      "api_tier_gating_subsystem": "fully implemented (filterForFree/filterForPro/filterForEnterprise/applyTierGating), zero callers anywhere in the repository outside its own test file"
+    },
+    "att&ck_mapping": {
+      "systems_present": 2,
+      "reconciled": false,
+      "higher_quality_system": "engine-node/detection-engine.js::mapTechniques() -- confidence-labeled, evidence-quoted, validated against a curated 34-technique registry",
+      "lower_quality_system": "fetch-live-intel.js::getMitre() -- single-technique regex classifier, no confidence, no evidence"
+    },
+    "quantitative_scoring_visibility": {
+      "exposed_in_html": ["editorial_priority_score_0_to_100"],
+      "computed_but_not_exposed_in_html": ["s2n_quality_score", "s2n_final_priority_score", "data_confidence_tier", "actor_attribution_confidence", "epss_probability"],
+      "finding": "richer explainability data exists and is computed but only reaches the JSON API feeds, never the blog post a reader actually sees."
+    }
+  },
+  "cross_pipeline_findings": {
+    "governance_engine_reachability": {
+      "reachable_from_pipeline_a": false,
+      "reachable_from_pipeline_b": false,
+      "verification_method": "exhaustive require()/import grep across both full dependency trees, independently re-verified 3 times across this session by 2 different investigation passes",
+      "confidence": "high"
+    },
+    "reportx_certification_engine_reachability": {
+      "reachable_from_pipeline_a": true,
+      "reachable_from_pipeline_a_detail": "observability only; one hard gate (PUBLIC_REFERENCE_DRAFT)",
+      "reachable_from_pipeline_b": false
+    }
+  }
+}
