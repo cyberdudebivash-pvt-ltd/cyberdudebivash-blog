@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-19T19:02:13.849Z",
+  "generated": "2026-08-19T19:29:23.698Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11433,
+    "total_nodes": 11444,
     "actors": 8,
-    "cves": 3860,
-    "campaigns": 1154,
+    "cves": 3862,
+    "campaigns": 1159,
     "malware": 0,
-    "iocs": 883,
-    "edges": 3730
+    "iocs": 884,
+    "edges": 3736
   },
   "nodes": {
     "actor:lockbit": {
@@ -216690,6 +216690,213 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "CVE-2026-53957": {
+      "id": "CVE-2026-53957",
+      "type": "CVE",
+      "name": "Contentful MCP Server: export_space/import_space tools pass LLM-controlled `host`/`proxy` args to CMA client, redirecting server PAT to attacker-controlled endpoint",
+      "attributes": {
+        "cvss": 7.7,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "@contentful/mcp-server",
+        "published": "2026-08-19",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-53964": {
+      "id": "CVE-2026-53964",
+      "type": "CVE",
+      "name": "Document Merge Service vulnerable to RCE via SSTI (xlsx tempaltes)",
+      "attributes": {
+        "cvss": 7.2,
+        "threat_level": "MEDIUM",
+        "priority_score": 62,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "document-merge-service",
+        "published": "2026-08-19",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:book.hacktricks.xyz",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:book.hacktricks.xyz": {
+      "id": "ioc:domain:book.hacktricks.xyz",
+      "type": "IOC",
+      "name": "book.hacktricks.xyz",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-08-19"
+      },
+      "connections": []
+    },
+    "GHSA-0716a7c188f7c3de": {
+      "id": "GHSA-0716a7c188f7c3de",
+      "type": "Intel",
+      "name": "claude-faf-mcp has an arbitrary local file read/write via unconfined `path` argument in FAF tools",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "claude-faf-mcp",
+        "published": "2026-08-19",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-5cc12d372280d62d": {
+      "id": "GHSA-5cc12d372280d62d",
+      "type": "Intel",
+      "name": "faf-mcp has an arbitrary local file read/write via unconfined `path` argument in FAF tools",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "faf-mcp",
+        "published": "2026-08-19",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-ae4fcf696b3046ec": {
+      "id": "GHSA-ae4fcf696b3046ec",
+      "type": "Intel",
+      "name": "grok-faf-mcp has an arbitrary local file read via unconfined `path` argument in FAF tools",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "grok-faf-mcp",
+        "published": "2026-08-19",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-53957": {
+      "id": "campaign:cve-2026-53957",
+      "type": "Campaign",
+      "name": "npm @contentful/mcp-server Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-19",
+        "last_seen": "2026-08-19",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-53957"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-53957",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-53964": {
+      "id": "campaign:cve-2026-53964",
+      "type": "Campaign",
+      "name": "pip document-merge-service Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-19",
+        "last_seen": "2026-08-19",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-53964 | 3 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-53964",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-3c98e233": {
+      "id": "campaign:cluster-3c98e233",
+      "type": "Campaign",
+      "name": "npm claude-faf-mcp Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-19",
+        "last_seen": "2026-08-19",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-0716a7c188f7c3de",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-932851d0": {
+      "id": "campaign:cluster-932851d0",
+      "type": "Campaign",
+      "name": "npm faf-mcp Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-19",
+        "last_seen": "2026-08-19",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-5cc12d372280d62d",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-344226a7": {
+      "id": "campaign:cluster-344226a7",
+      "type": "Campaign",
+      "name": "npm grok-faf-mcp Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-19",
+        "last_seen": "2026-08-19",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-ae4fcf696b3046ec",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -250422,6 +250629,60 @@
       "target": "SENTINELAPEX-1aa10f525e4d",
       "relationship": "exploits",
       "confidence": 0.85,
+      "first_seen": "2026-08-19",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-53964→linked_to→ioc:domain:book.hacktricks.xyz",
+      "source": "CVE-2026-53964",
+      "target": "ioc:domain:book.hacktricks.xyz",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-08-19",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-53957→includes→CVE-2026-53957",
+      "source": "campaign:cve-2026-53957",
+      "target": "CVE-2026-53957",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-19",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-53964→includes→CVE-2026-53964",
+      "source": "campaign:cve-2026-53964",
+      "target": "CVE-2026-53964",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-19",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-3c98e233→includes→GHSA-0716a7c188f7c3de",
+      "source": "campaign:cluster-3c98e233",
+      "target": "GHSA-0716a7c188f7c3de",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-19",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-932851d0→includes→GHSA-5cc12d372280d62d",
+      "source": "campaign:cluster-932851d0",
+      "target": "GHSA-5cc12d372280d62d",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-19",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-344226a7→includes→GHSA-ae4fcf696b3046ec",
+      "source": "campaign:cluster-344226a7",
+      "target": "GHSA-ae4fcf696b3046ec",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-08-19",
       "sources": []
     }
