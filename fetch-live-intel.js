@@ -1045,7 +1045,13 @@ function normalizeSentinelApexRecord(raw, endpointKey) {
   const refs = [
     ...sapexPickArray(raw, ['references', 'refs', 'links', 'sources']).map(r => (typeof r === 'string') ? r : (r && (r.url || r.source_name))),
     ...sapexPickArray(raw, ['external_references']).map(r => r && r.url),
-    sapexPick(raw, ['url', 'link', 'report_url']),
+    // 'source_url'/'blog_url'/'nvd_url' are the actual field names the live
+    // intel.cyberdudebivash.com API uses (confirmed against a real response:
+    // source_url on 491/500 sampled records, blog_url on the remaining 9) --
+    // 'url'/'link'/'report_url' never appear on any record from this API, so
+    // every sentinel_apex item was silently failing the quality gate's
+    // reference/link requirement before this fix.
+    sapexPick(raw, ['url', 'link', 'report_url', 'source_url', 'blog_url', 'nvd_url']),
   ].flatMap(extractHttpUrls).filter(Boolean).slice(0, 8);
 
   const rawIocs = sapexPickArray(raw, ['iocs', 'indicators', 'observables']);
