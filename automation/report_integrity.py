@@ -158,6 +158,7 @@ _CWE_CLASS = {
     "CWE-22": "path_traversal",
     "CWE-78": "command_injection",
     "CWE-79": "cross_site_scripting",
+    "CWE-88": "argument_injection",
     "CWE-89": "sql_injection",
     "CWE-119": "memory_corruption",
     "CWE-200": "information_disclosure",

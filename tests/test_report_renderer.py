@@ -11,6 +11,7 @@ fail-closed contract worth regression-testing.
 
 from __future__ import annotations
 
+import dataclasses
 import unittest
 
 from automation.content_discovery import DiscoveredArticle, _compute_hash
@@ -291,6 +292,44 @@ class TestFamilyAnalysisDoesNotRepeatTheSourceSummary(unittest.TestCase):
         html = _technical_evidence(article)
         self.assertIn(_SUMMARY_TEXT, html)
         self.assertEqual(html.count(_SUMMARY_TEXT), 1)
+
+
+class TestFamilyAnalysisExploitPrerequisitesClause(unittest.TestCase):
+    """COMMERCIAL-QUALITY-2026-08-19: independently verified live that two
+    real, published CVE reports with materially different real exploit
+    prerequisites (CVE-2026-75914: AV:N/PR:N/UI:N -- no user interaction;
+    CVE-2026-75912: AV:N/PR:N/UI:R -- user interaction required) rendered
+    the byte-for-byte identical "Assessment" sentence, because it was a
+    fixed string keyed only on confirmed-vs-not-confirmed exploitation
+    status. The CVSS vector these facts come from is already shown verbatim
+    in the same report's "Verified Facts" section -- this only makes the
+    Assessment sentence actually reflect it."""
+
+    def test_no_user_interaction_and_required_user_interaction_render_different_text(self):
+        no_interaction = _article(_SUMMARY_TEXT, cvss_vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N")
+        requires_interaction = _article(_SUMMARY_TEXT, cvss_vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:N/A:N")
+        html_no_interaction = _family_analysis(no_interaction, build_report_context(no_interaction))
+        html_requires_interaction = _family_analysis(requires_interaction, build_report_context(requires_interaction))
+        self.assertIn("no user interaction", html_no_interaction)
+        self.assertIn("and user interaction", html_requires_interaction)
+        self.assertNotIn("and no user interaction", html_requires_interaction)
+        self.assertNotEqual(html_no_interaction, html_requires_interaction)
+
+    def test_missing_cvss_vector_falls_back_to_the_original_static_sentence(self):
+        article = _article(_SUMMARY_TEXT, cvss_vector=None)
+        html = _family_analysis(article, build_report_context(article))
+        self.assertIn(
+            "Active exploitation is not confirmed by the available evidence. "
+            "Prioritization must combine technical severity, exposure, asset criticality, "
+            "and compensating controls.",
+            html,
+        )
+
+    def test_confirmed_exploitation_also_carries_the_prerequisites_clause(self):
+        article = _article(_SUMMARY_TEXT, cvss_vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H")
+        context = dataclasses.replace(build_report_context(article), exploitation_status="confirmed")
+        html = _family_analysis(article, context)
+        self.assertIn("exploitable over the network", html)
 
 
 if __name__ == "__main__":

@@ -211,6 +211,9 @@ class RansomwareIntelSource:
                 labels=labels,
                 source="ransomware_intel",
                 full_content=full_content,
+                ransomware_group=group,
+                ransomware_sector=sector,
+                ransomware_country=country,
             ))
 
         logger.info("Ransomware intel parsed", extra={"new_entries": len(articles)})

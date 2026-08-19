@@ -134,6 +134,23 @@ jobs:
           TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
           NEWSLETTER_SIGNUP_URL: ${{ secrets.NEWSLETTER_SIGNUP_URL }}
+          # COMMERCIAL-QUALITY-2026-08-19: these 4 were never wired into this
+          # step's environment at all -- automation/llm_client.py reads them
+          # via automation.config.Config.from_env(), and every one of them
+          # came back "" regardless of whatever secrets actually exist in
+          # this repo, so call_llm() failed closed with no_api_key on every
+          # provider for every real run checked (all of today's, spanning
+          # 10:46-16:48 UTC). That silently collapsed 100% of live
+          # publishing onto the lean reportx_composer fallback -- correct,
+          # safe degradation behavior, but never the rich, LLM-authored
+          # analyst path it was falling back FROM. Wiring these through is
+          # necessary but not sufficient: at least one of the four secrets
+          # below must also actually be set in this repository's Settings ->
+          # Secrets and variables -> Actions for call_llm() to ever succeed.
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '5' }}
         run: |
           DRY_RUN_FLAG=""

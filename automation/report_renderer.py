@@ -71,6 +71,34 @@ def _label(value: str) -> str:
     return value.replace("_", " ").title()
 
 
+_CVSS_ACCESS = {"N": "over the network", "A": "from an adjacent network", "L": "with local access", "P": "with physical access"}
+_CVSS_PRIVILEGE = {"N": "no privileges", "L": "low-privileged access", "H": "high-privileged access"}
+_CVSS_INTERACTION = {"N": "no user interaction", "R": "user interaction"}
+
+
+def _exploit_prerequisites_clause(cvss_vector: Optional[str]) -> str:
+    """Turns the report's own already-verified CVSS vector (Attack Vector,
+    Privileges Required, User Interaction) into a per-CVE exploitation
+    sentence, instead of a single "Prioritization must combine..." sentence
+    repeated identically across every non-KEV-confirmed CVE report
+    regardless of how different their real exploit prerequisites are
+    (COMMERCIAL-QUALITY-2026-08-19: independently verified live -- e.g.
+    CVE-2026-75914's AV:N/PR:N/UI:N and CVE-2026-75912's AV:N/PR:N/UI:R
+    rendered the exact same Assessment text). Every clause is a direct,
+    deterministic reading of the CVSS metric values already displayed
+    verbatim in this same report's "Verified Facts" section -- nothing is
+    inferred or fabricated beyond the standard CVSS metric definitions."""
+    if not cvss_vector:
+        return ""
+    metrics = dict(part.split(":", 1) for part in cvss_vector.split("/") if ":" in part)
+    access = _CVSS_ACCESS.get(metrics.get("AV", ""))
+    privilege = _CVSS_PRIVILEGE.get(metrics.get("PR", ""))
+    interaction = _CVSS_INTERACTION.get(metrics.get("UI", ""))
+    if not (access and privilege and interaction):
+        return ""
+    return f" This vulnerability is exploitable {access}, requiring {privilege} and {interaction}."
+
+
 def _source_lines(article: DiscoveredArticle) -> list[str]:
     source = article.full_content or article.summary
     lines = [line.strip() for line in str(source).splitlines() if line.strip()]
@@ -483,10 +511,11 @@ def _family_analysis(article: DiscoveredArticle, context: ReportContext) -> str:
         )
 
     if context.family in {"cve_advisory", "cisa_kev", "cisa_advisory"}:
+        prerequisites = _exploit_prerequisites_clause(article.cvss_vector)
         impact = (
-            "Active exploitation is confirmed by the cited evidence; prioritize exposure confirmation and the authoritative remediation action."
+            f"Active exploitation is confirmed by the cited evidence; prioritize exposure confirmation and the authoritative remediation action.{prerequisites}"
             if context.exploitation_status == "confirmed"
-            else "Active exploitation is not confirmed by the available evidence. Prioritization must combine technical severity, exposure, asset criticality, and compensating controls."
+            else f"Active exploitation is not confirmed by the available evidence.{prerequisites} Prioritization must combine technical severity, exposure, asset criticality, and compensating controls."
         )
         return _section(
             "Technical Analysis",
