@@ -1,8 +1,62 @@
 {
-  "generated": "2026-08-18T18:59:30.549Z",
+  "generated": "2026-08-19T01:55:29.659Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-71417-pip-lemur",
+      "title": "Lemur: Any user can revoke arbitrary certificates at the CA by uploading a duplicate record and revoking it",
+      "url": "/posts/cve-2026-71417-pip-lemur.html",
+      "generated": "2026-08-18T20:53:05.971Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-71417",
+        "CVE-2026-71417"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/Netflix/lemur\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/Netflix/lemur\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-71308-pip-lemur",
+      "title": "Lemur: Unchecked `replaces[]` lets any user silence notifications and hijack auto-rotation for arbitrary certificates",
+      "url": "/posts/cve-2026-71308-pip-lemur.html",
+      "generated": "2026-08-18T20:53:05.968Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-71308",
+        "CVE-2026-71308"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/Netflix/lemur\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/Netflix/lemur\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "monai-unsafe-deserialization-in-numpyreader-allows-arbitrar",
+      "title": "MONAI: Unsafe deserialization in NumpyReader allows arbitrary code execution via malicious .npy files",
+      "url": "/posts/monai-unsafe-deserialization-in-numpyreader-allows-arbitrar.html",
+      "generated": "2026-08-18T20:28:06.975Z",
+      "severity": "HIGH",
+      "cves": [],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/Project-MONAI/MONAI/blob/5b71547/monai/data/image_reader.py#L1276)):\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/Project-MONAI/MONAI/blob/5b71547/monai/data/image_reader.py#L1276)):\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-53659-maven-org-http4k-http4k-core",
       "title": "http4k: Unbounded gzip decompression in `ServerFilters.GZip` / `RequestFilters.GunZip` allowed memory-exhaustion DoS",
@@ -4138,68 +4192,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1ut205g/inside_raton_rat_a_commodity_trojan_that_tries_to/&\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1ut205g/inside_raton_rat_a_commodity_trojan_that_tries_to/&\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain decodalabs.com\"; dns.query; content:\"decodalabs.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "clauster-non-loopback-deployments-can-serve-the-dashboard-u",
-      "title": "Clauster: Non-loopback deployments can serve the dashboard unauthenticated when auth.enabled is unset",
-      "url": "/posts/clauster-non-loopback-deployments-can-serve-the-dashboard-u.html",
-      "generated": "2026-07-10T21:02:04.430Z",
-      "severity": "HIGH",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert ip $HOME_NET any -> 0.0.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 0.0.0.0\"; classtype:trojan-activity; sid:9000001; rev:1;)"
-      ]
-    },
-    {
-      "slug": "closing-the-timing-gap-defensive-temporal-observability",
-      "title": "Closing the Timing Gap: Defensive Temporal Observability",
-      "url": "/posts/closing-the-timing-gap-defensive-temporal-observability.html",
-      "generated": "2026-07-10T21:02:04.427Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [
-        {
-          "id": "T1071",
-          "name": "Application Layer Protocol",
-          "tactic": "command-and-control",
-          "confidence": "MEDIUM"
-        }
-      ],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://arxiv.org/abs/2604.23338&quot;&gt;https://arxiv.org/abs/2604.23338&lt;/a&gt;&lt;/p&gt;\"; http.host; content:\"arxiv.org\"; nocase; http.uri; content:\"/abs/2604.23338&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Standard-964&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Standard-964&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://arxiv.org/abs/2604.23338&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"arxiv.org\"; nocase; http.uri; content:\"/abs/2604.23338&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1uszoli/closing_the_timing_gap_defensive_temporal/&quot;&gt\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1uszoli/closing_the_timing_gap_defensive_temporal/&quot\\;&gt\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain arxiv.org\"; dns.query; content:\"arxiv.org\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
-      ]
-    },
-    {
-      "slug": "how-are-you-handling-ssl-inspection-without-constantly-break",
-      "title": "How are you handling SSL inspection without constantly breaking developer tooling?",
-      "url": "/posts/how-are-you-handling-ssl-inspection-without-constantly-break.html",
-      "generated": "2026-07-10T20:02:02.287Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Bulky_Connection8608&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Bulky_Connection8608&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1usxtpz/how_are_you_handling_ssl_inspection_without/\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1usxtpz/how_are_you_handling_ssl_inspection_without/\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
       ]
     }
   ]
