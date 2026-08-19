@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-19T19:29:23.698Z",
+  "generated": "2026-08-19T19:48:15.410Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11444,
+    "total_nodes": 11446,
     "actors": 8,
-    "cves": 3862,
-    "campaigns": 1159,
+    "cves": 3863,
+    "campaigns": 1160,
     "malware": 0,
     "iocs": 884,
-    "edges": 3736
+    "edges": 3737
   },
   "nodes": {
     "actor:lockbit": {
@@ -216897,6 +216897,44 @@
           "confidence": 1
         }
       ]
+    },
+    "CVE-2024-45747": {
+      "id": "CVE-2024-45747",
+      "type": "CVE",
+      "name": "GeoServer has a Server-Side Template Injection (SSTI) vulnerability in processing FreeMarker templates",
+      "attributes": {
+        "cvss": 7.2,
+        "threat_level": "HIGH",
+        "priority_score": 66,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "org.geoserver:gs-main",
+        "published": "2026-08-19",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2024-45747": {
+      "id": "campaign:cve-2024-45747",
+      "type": "Campaign",
+      "name": "maven org.geoserver:gs-main Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-19",
+        "last_seen": "2026-08-19",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2024-45747"
+      },
+      "connections": [
+        {
+          "target": "CVE-2024-45747",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -250681,6 +250719,15 @@
       "id": "campaign:cluster-344226a7→includes→GHSA-ae4fcf696b3046ec",
       "source": "campaign:cluster-344226a7",
       "target": "GHSA-ae4fcf696b3046ec",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-19",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2024-45747→includes→CVE-2024-45747",
+      "source": "campaign:cve-2024-45747",
+      "target": "CVE-2024-45747",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-19",
