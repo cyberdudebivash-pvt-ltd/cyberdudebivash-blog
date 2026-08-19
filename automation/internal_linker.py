@@ -66,6 +66,77 @@ EXTERNAL_REFERENCES = {
     "nist csf": "https://www.nist.gov/cyberframework",
 }
 
+# PHASE-1-DATA-MODEL-2026-08-19: structured relationship typing for
+# "related intelligence," replacing the previous flat cve-match-then-
+# label-match priority with an explicit classification every candidate
+# gets, in descending strength. RECENCY_ONLY is a real, named outcome --
+# it means nothing stronger than publication order connects the two
+# reports -- and per design must never be surfaced in the customer-facing
+# block as if it were a real correlation (build_correlation_block excludes
+# it entirely, same as the "no real relationship" case it already handled).
+RELATION_DIRECT = "DIRECT_RELATION"
+RELATION_CAMPAIGN = "CAMPAIGN_RELATION"
+RELATION_TACTICAL = "TACTICAL_SIMILARITY"
+RELATION_SECTOR = "SECTOR_RELATION"
+RELATION_RECENCY_ONLY = "RECENCY_ONLY"
+
+_RELATION_LABELS = {
+    RELATION_DIRECT: "Same vulnerability",
+    RELATION_CAMPAIGN: "Same threat actor",
+    RELATION_TACTICAL: "Related topic",
+    RELATION_SECTOR: "Same sector/region",
+}
+
+# PHASE-1-DATA-MODEL-2026-08-19 (adversarial testing, before certification):
+# threat_feeds.RansomwareIntelSource falls back to the literal placeholder
+# "Unknown Group" whenever the source record has no named actor. Two
+# unrelated claims from two different, genuinely unidentified actors would
+# both carry this exact string, and a naive equality check would classify
+# them as CAMPAIGN_RELATION ("Same threat actor") -- a real false positive,
+# not merely a weak match. Same failure shape as _AGGREGATING_CONNECTORS
+# above: a placeholder is not an identity.
+_PLACEHOLDER_ACTOR_NAMES = frozenset({"Unknown Group"})
+
+
+def _classify_relation(
+    article_cve_set: set,
+    article_label_set: set,
+    article_ransomware_group: str,
+    article_ransomware_sector: str,
+    article_ransomware_country: str,
+    entry: dict,
+) -> str:
+    """Classify a candidate's relationship to the current article using
+    only fields already real and already persisted in published_posts.json
+    -- never inferred or fabricated. Checked strongest-first; the first
+    match wins, since a candidate sharing a real CVE is a stronger
+    relationship than one only sharing a sector, even if both are true."""
+    entry_cves = {c.upper() for c in entry.get("cves", [])}
+    if article_cve_set and entry_cves & article_cve_set:
+        return RELATION_DIRECT
+
+    entry_group = entry.get("ransomware_group") or ""
+    if (
+        article_ransomware_group
+        and entry_group
+        and article_ransomware_group == entry_group
+        and article_ransomware_group not in _PLACEHOLDER_ACTOR_NAMES
+    ):
+        return RELATION_CAMPAIGN
+
+    entry_label_set = set(entry.get("labels", [])) - _NON_DISCRIMINATING_LABELS
+    if article_label_set and entry_label_set & article_label_set:
+        return RELATION_TACTICAL
+
+    entry_sector = entry.get("ransomware_sector") or ""
+    entry_country = entry.get("ransomware_country") or ""
+    if (article_ransomware_sector and entry_sector and article_ransomware_sector == entry_sector) or (
+        article_ransomware_country and entry_country and article_ransomware_country == entry_country
+    ):
+        return RELATION_SECTOR
+
+    return RELATION_RECENCY_ONLY
+
 
 class InternalLinker:
     """Generates internal link sections for syndicated posts."""
@@ -137,21 +208,27 @@ class InternalLinker:
     def build_correlation_block(
         self, article_labels: list, article_cves: list,
         exclude_hash: Optional[str] = None, max_results: int = 5,
+        article_ransomware_group: str = "", article_ransomware_sector: str = "",
+        article_ransomware_country: str = "",
     ) -> str:
         """
         Real cross-references against previously published reports — read
         from data/published_posts.json (the same file the syndication
         pipeline already writes; every entry's blogger_url is a real, live
-        link, never fabricated). Shared CVEs rank highest, then shared
-        DISCRIMINATING labels (actor, campaign, malware, vulnerability
-        family -- see _NON_DISCRIMINATING_LABELS), sorted most-recent-first
-        only as the tiebreaker within each match tier, never as the primary
-        criterion. Returns "" if the state file is unavailable, has no
-        usable entries, or -- as important a case as finding real matches --
-        this article shares no real relationship with anything previously
-        published (COMMERCIAL-QUALITY-2026-08-18: previously fell through to
-        "any post sharing a universal label," which every post always does,
-        making this functionally a recency feed rather than correlation).
+        link, never fabricated). Every candidate is classified by
+        _classify_relation() into one of DIRECT_RELATION (shared CVE),
+        CAMPAIGN_RELATION (shared threat actor), TACTICAL_SIMILARITY (shared
+        discriminating label -- see _NON_DISCRIMINATING_LABELS),
+        SECTOR_RELATION (shared sector/country), or RECENCY_ONLY, in that
+        descending-strength order; sorted most-recent-first only as the
+        tiebreaker within each tier, never as the primary criterion.
+        RECENCY_ONLY candidates are never surfaced here (PHASE-1-DATA-MODEL-
+        2026-08-19: "do not expose RECENCY_ONLY as meaningful intelligence
+        correlation" -- the same discipline COMMERCIAL-QUALITY-2026-08-18
+        already established for "no real relationship at all"). Returns ""
+        if the state file is unavailable, has no usable entries, or this
+        article shares no real relationship with anything previously
+        published.
         """
         try:
             with open(self.config.state_file, "r", encoding="utf-8") as f:
@@ -166,7 +243,7 @@ class InternalLinker:
         article_cve_set = {c.upper() for c in article_cves}
         article_label_set = set(article_labels) - _NON_DISCRIMINATING_LABELS
 
-        cve_matches, label_matches = [], []
+        by_tier: dict = {RELATION_DIRECT: [], RELATION_CAMPAIGN: [], RELATION_TACTICAL: [], RELATION_SECTOR: []}
         for content_hash, entry in posts.items():
             if content_hash == exclude_hash:
                 continue
@@ -175,26 +252,30 @@ class InternalLinker:
             if not blogger_url or not title:
                 continue
 
-            entry_cves = {c.upper() for c in entry.get("cves", [])}
-            entry_labels = set(entry.get("labels", [])) - _NON_DISCRIMINATING_LABELS
+            relation = _classify_relation(
+                article_cve_set, article_label_set,
+                article_ransomware_group, article_ransomware_sector, article_ransomware_country,
+                entry,
+            )
+            if relation == RELATION_RECENCY_ONLY:
+                continue
+
             published_at = entry.get("published_at", "")
+            by_tier[relation].append((published_at, title, blogger_url, relation))
 
-            if article_cve_set and entry_cves & article_cve_set:
-                cve_matches.append((published_at, title, blogger_url))
-            elif article_label_set & entry_labels:
-                label_matches.append((published_at, title, blogger_url))
-
-        cve_matches.sort(reverse=True)
-        label_matches.sort(reverse=True)
-        combined = cve_matches + label_matches
+        combined = []
+        for tier in (RELATION_DIRECT, RELATION_CAMPAIGN, RELATION_TACTICAL, RELATION_SECTOR):
+            by_tier[tier].sort(reverse=True)
+            combined.extend(by_tier[tier])
         combined = combined[:max_results]
 
         if not combined:
             return ""
 
         items_html = "".join(
-            f'<li><a href="{html.escape(str(url), quote=True)}" target="_blank" rel="noopener">{html.escape(str(title)[:90])}</a></li>\n'
-            for _, title, url in combined
+            f'<li><span style="color:#64748b;font-size:11px">{html.escape(_RELATION_LABELS[relation])}:</span> '
+            f'<a href="{html.escape(str(url), quote=True)}" target="_blank" rel="noopener">{html.escape(str(title)[:90])}</a></li>\n'
+            for _, title, url, relation in combined
         )
         return f"""
 <div style="margin:24px 0;padding:18px 20px;background:#0a0f1e;border:1px solid #1e3a5f;border-radius:8px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
