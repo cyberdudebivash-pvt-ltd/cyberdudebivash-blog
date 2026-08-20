@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-20T17:54:59.035Z",
+  "generated": "2026-08-20T19:11:56.386Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11576,
+    "total_nodes": 11589,
     "actors": 8,
-    "cves": 3963,
-    "campaigns": 1171,
+    "cves": 3968,
+    "campaigns": 1177,
     "malware": 0,
-    "iocs": 884,
-    "edges": 3749
+    "iocs": 885,
+    "edges": 3756
   },
   "nodes": {
     "actor:lockbit": {
@@ -219302,6 +219302,251 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "CVE-2026-54263": {
+      "id": "CVE-2026-54263",
+      "type": "CVE",
+      "name": "Wagtail: Reflected XSS in dynamic image URL generator view",
+      "attributes": {
+        "cvss": 7.3,
+        "threat_level": "HIGH",
+        "priority_score": 69,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "wagtail",
+        "published": "2026-08-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:docs.wagtail.org",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:docs.wagtail.org": {
+      "id": "ioc:domain:docs.wagtail.org",
+      "type": "IOC",
+      "name": "docs.wagtail.org",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-08-20"
+      },
+      "connections": []
+    },
+    "GHSA-0496310d4205b511": {
+      "id": "GHSA-0496310d4205b511",
+      "type": "Intel",
+      "name": "Winter: Authenticated Twig sandbox escape in CMS SecurityPolicy (bypass of CVE-2024-54149)",
+      "attributes": {
+        "cvss": 8.4,
+        "threat_level": "MEDIUM",
+        "priority_score": 64,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "winter/wn-system-module",
+        "published": "2026-08-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-61798": {
+      "id": "CVE-2026-61798",
+      "type": "CVE",
+      "name": "netty-incubator-codec-ohttp: BoringSSL HPKE private key bytes exposed through toString() and exception messages",
+      "attributes": {
+        "cvss": 8.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty.incubator:netty-incubator-codec-ohttp-hpke-classes-boringssl",
+        "published": "2026-08-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-54182": {
+      "id": "CVE-2026-54182",
+      "type": "CVE",
+      "name": "Laravel Backpack CRUD: OS command injection in Stats::makeCurlRequest via attacker-controlled Host header (pre-auth)",
+      "attributes": {
+        "cvss": 8.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "composer",
+        "product": "backpack/crud",
+        "published": "2026-08-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-63202": {
+      "id": "CVE-2026-63202",
+      "type": "CVE",
+      "name": "netty-incubator-codec-ohttp BinaryHttpParser: Unauthenticated CPU-exhaustion DoS via infinite loop in field-section decoding",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty.incubator:netty-incubator-codec-bhttp",
+        "published": "2026-08-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-63124": {
+      "id": "CVE-2026-63124",
+      "type": "CVE",
+      "name": "netty-incubator-codec-ohttp: Binary HTTP parser infinite loop on known-length field section boundary",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "io.netty.incubator:netty-incubator-codec-bhttp",
+        "published": "2026-08-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-54263": {
+      "id": "campaign:cve-2026-54263",
+      "type": "Campaign",
+      "name": "pip wagtail Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-20",
+        "last_seen": "2026-08-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-54263 | 2 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-54263",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-367f9846": {
+      "id": "campaign:cluster-367f9846",
+      "type": "Campaign",
+      "name": "composer winter/wn-system-module Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-20",
+        "last_seen": "2026-08-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-0496310d4205b511",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-61798": {
+      "id": "campaign:cve-2026-61798",
+      "type": "Campaign",
+      "name": "maven io.netty.incubator:netty-incubator-codec-ohttp-hpke-classes-boringssl Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-20",
+        "last_seen": "2026-08-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-61798"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-61798",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-54182": {
+      "id": "campaign:cve-2026-54182",
+      "type": "Campaign",
+      "name": "Apache Vulnerability Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-20",
+        "last_seen": "2026-08-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-54182"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-54182",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-63202": {
+      "id": "campaign:cve-2026-63202",
+      "type": "Campaign",
+      "name": "maven io.netty.incubator:netty-incubator-codec-bhttp Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-20",
+        "last_seen": "2026-08-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-63202"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-63202",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-63124": {
+      "id": "campaign:cve-2026-63124",
+      "type": "Campaign",
+      "name": "maven io.netty.incubator:netty-incubator-codec-bhttp Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-20",
+        "last_seen": "2026-08-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-63124"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-63124",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -253203,6 +253448,69 @@
       "id": "campaign:cve-2026-55149→includes→CVE-2026-55149",
       "source": "campaign:cve-2026-55149",
       "target": "CVE-2026-55149",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-54263→linked_to→ioc:domain:docs.wagtail.org",
+      "source": "CVE-2026-54263",
+      "target": "ioc:domain:docs.wagtail.org",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-54263→includes→CVE-2026-54263",
+      "source": "campaign:cve-2026-54263",
+      "target": "CVE-2026-54263",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-367f9846→includes→GHSA-0496310d4205b511",
+      "source": "campaign:cluster-367f9846",
+      "target": "GHSA-0496310d4205b511",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-61798→includes→CVE-2026-61798",
+      "source": "campaign:cve-2026-61798",
+      "target": "CVE-2026-61798",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-54182→includes→CVE-2026-54182",
+      "source": "campaign:cve-2026-54182",
+      "target": "CVE-2026-54182",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-63202→includes→CVE-2026-63202",
+      "source": "campaign:cve-2026-63202",
+      "target": "CVE-2026-63202",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-63124→includes→CVE-2026-63124",
+      "source": "campaign:cve-2026-63124",
+      "target": "CVE-2026-63124",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-20",
