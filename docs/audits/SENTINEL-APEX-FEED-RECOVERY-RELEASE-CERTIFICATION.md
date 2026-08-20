@@ -3,6 +3,7 @@
 **Scope:** PR #109 (sentinel_apex quality-gate `source_url`/`blog_url` field mapping) and PR #110 (freshness-check `lastReportGeneratedAt` signal), certified together as one production-health story — #110 exists because certifying #109 honestly required actually running it in production, which surfaced a second, distinct defect.
 **Certified by:** Claude (this session), via real triggered production runs, not simulation.
 **Governing standard applied throughout:** MERGED ≠ VERIFIED. CI GREEN ≠ PRODUCTION HEALTHY. IMPLEMENTED ≠ RELEASE CERTIFIED.
+**Status as of this update:** both PRs merged. §9 records the final live confirmation that closes the one item §6 originally left open — `freshness-check.yml` now genuinely reports HEALTHY in production, not merely in simulation.
 
 ---
 
@@ -84,7 +85,7 @@ Every previously-accepted field name still passes (zero regression). No malforme
 | New report IDs appear | Yes — 15 distinct new CVE IDs, verified as real new `posts/*.html` + `api/intel/products/*.json` files in the commit, not counter artifacts |
 | `source_url`/`blog_url` provenance preserved | Yes — spot-checked several window items' `refs` fields; real URLs preserved, not stripped or replaced |
 | No duplicate reports introduced | Confirmed — none of the 15 new CVE IDs appear more than once in `intel-state.json`'s `published` list (1958 entries total; 4 duplicate IDs and 51 duplicate slugs exist in that list, but all pre-existing and unrelated to this change — not introduced by #109 or #110) |
-| `freshness-check.yml` returns healthy | **Not yet, as of #109 alone** — confirmed by direct computation against the real post-run `live-intel.json`: max `_addedAt` in the window is still `2026-08-18T06:32:44.039Z`, 2768+ minutes old, which the existing CRITICAL threshold (>180 min) would flag. This is precisely the defect #110 fixes. Simulated the fix's three scenarios against real data (§5 below): with a fresh `lastReportGeneratedAt`, freshness-check correctly reports HEALTHY; without it, correctly still reports CRITICAL (no silent regression in the genuinely-stale case) |
+| `freshness-check.yml` returns healthy | **Yes, confirmed live as of §9** — `freshness-check.yml` run [32335285875](https://github.com/cyberdudebivash-pvt-ltd/cyberdudebivash-blog/actions/runs/32335285875) reported `Status level: HEALTHY`, `Age (minutes): 0`, `Freshness ref: intel-state.json lastReportGeneratedAt`. (As of #109 alone, before #110, this was confirmed NOT yet true: max `_addedAt` in the window was still `2026-08-18T06:32:44.039Z`, 2768+ minutes old — exactly the defect #110 fixes.) |
 | Auto-recovery does not falsely report failure | The `run.data.id` bug from #109's own bundled fix is confirmed not to recur — this run's log path wasn't exercised (auto-recovery only triggers from a freshness-check failure), but the fix itself was already adversarially verified in #109's own certification |
 
 ---
@@ -105,7 +106,7 @@ Simulated the exact new `freshness-check.yml` Node logic against real `live-inte
 
 ## 6. Remaining risks
 
-- **#110 is not yet merged or live-verified.** The simulation in §5 is against real data with a synthetically-set `lastReportGeneratedAt`, not yet an actual field written by a real production run. Full closure requires: #110 merges → the next real `sentinel-apex.yml` run writes the field for real → the next `freshness-check.yml` run reads it and reports HEALTHY. Tracked via PR #110's own check-in.
+- ~~#110 is not yet merged or live-verified~~ — **closed, see §9.** #110 merged and the full live cycle (real `sentinel-apex.yml` run → real `intel-state.json.lastReportGeneratedAt` → real `freshness-check.yml` run reading it) is now confirmed.
 - **No unit test exists yet for `sapexPick`'s field-mapping logic** (the #109 fix) or for `writeLiveIntel()`'s window-trimming interaction with `lastReportGeneratedAt` (the #110 fix). Both were verified against real production data instead, which is stronger evidence but not a permanent regression guard. Worth adding as a follow-up, not blocking this certification.
 - **The pre-existing 4 duplicate IDs / 51 duplicate slugs** in `intel-state.json`'s historical `published` list are a real, separate, pre-existing data-quality issue, unrelated to and not introduced by either PR. Not in scope here.
 - **`writeLiveIntel()`'s priority-first window design** means `live-intel.json`'s item list will continue to under-represent genuinely new but lower-severity content. This is treated here as intentional product behavior, not a defect — but it's worth an explicit product decision at some point on whether the public-facing feed should also expose a recency-sorted view.
@@ -116,8 +117,27 @@ Both PRs are single-purpose, additive-only changes with no schema removal:
 - #109: revert restores the pre-fix field list (immediately reintroduces the 0%-pass-rate defect — not recommended, but mechanically safe).
 - #110: revert removes `lastReportGeneratedAt` from `intel-state.json` writes and freshness-check's use of it; freshness-check falls back to its pre-#110 `_addedAt`-only logic automatically (the field is optional/additive, no migration needed either direction).
 
+## 9. Final live confirmation (#110, post-merge)
+
+After #110 merged, triggered the full real cycle end to end rather than trusting the merge alone:
+
+1. `sentinel-apex.yml` triggered via `workflow_dispatch` against #110's merge commit (`1aedeec5e`). Result: commit [`ceb4b7867`](https://github.com/cyberdudebivash-pvt-ltd/cyberdudebivash-blog/commit/ceb4b7867088072d4e16a47774e9da8bf0b52c40), `+15 reports, +15 API files` — report generation continues working. `intel-state.json.lastReportGeneratedAt` genuinely set for the first time: `2026-08-20T05:20:48.754Z`.
+2. `freshness-check.yml` triggered via `workflow_dispatch` immediately after, against that same commit. Run [32335285875](https://github.com/cyberdudebivash-pvt-ltd/cyberdudebivash-blog/actions/runs/32335285875), job 96323563512, conclusion `success`. Log output, verbatim:
+   ```
+   Freshness ref  : intel-state.json lastReportGeneratedAt
+   Timestamp      : 2026-08-20T05:20:48.754Z
+   Age (minutes)  : 0
+   ✅ Pipeline healthy — latest items 0 minutes old
+   Status level: HEALTHY
+   ```
+   `Auto-recovery trigger` and `Alert on failure` steps both show `conclusion: skipped` — confirming the check did not fail, not merely that a downstream step didn't run.
+
+This is the exact real-world sequence #106-111's cumulative work was meant to restore: pipeline runs → real reports generate → the monitor watching it correctly says so. No simulation, no synthetic timestamp — genuine production state, read back independently after the fact.
+
 ## 8. Certification verdict
 
 **PR #109: RELEASE_CERTIFIED.** Its stated scope — the quality-gate field-mapping defect — is fully fixed, adversarially tested, and proven with real production evidence (0/500 → 500/500 pass rate; a real run producing 15 reports with 0 rejections).
 
-**Overall feed-recovery story (109 + 110): RELEASE_CERTIFIED_WITH_LIMITATIONS.** The underlying pipeline defect (reports not generating) is conclusively fixed and proven live. The monitoring-accuracy defect it exposed (#110) is identified, fixed, and verified against real data, but not yet merged or confirmed by an actual live cycle. This is stated as a limitation, not glossed over: the pipeline is healthy now; the monitor that watches it will not correctly say so until #110 lands.
+**PR #110: RELEASE_CERTIFIED.** Its stated scope — the freshness-monitoring signal defect — is fully fixed and confirmed by a genuine live production cycle (§9), not simulation alone.
+
+**Overall feed-recovery story (109 + 110): RELEASE_CERTIFIED.** No open items remain. The underlying pipeline defect (reports not generating) and the monitoring-accuracy defect it exposed are both conclusively fixed and independently proven live, end to end.
