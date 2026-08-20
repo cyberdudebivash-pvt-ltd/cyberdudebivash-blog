@@ -209,6 +209,63 @@ class TestDetectionPackageGeneratesBothFormatsForTheSameEvidenceGate(unittest.Te
         self.assertIsNone(pkg.kql)
 
 
+class TestDetectionStatusNotApplicableForIntelligenceNewsFamilies(unittest.TestCase):
+    """No test covered this branch of _detection_package() at all before
+    RX-P1H, for any of the five families it names. RX-P1H additionally
+    fixed a real bug here: threat_actor and ransomware_reporting used to be
+    missing from this set entirely and fell through to the vulnerability-
+    class branches below (all CVE-shaped; vulnerability_class is never set
+    for either family, so in practice they always landed on the final
+    withheld_insufficient_evidence return anyway -- but for the wrong,
+    generic rationale rather than this family-appropriate one)."""
+
+    def _family_of(self, article: DiscoveredArticle) -> str:
+        return build_report_context(article).family
+
+    def test_ai_security_is_not_applicable(self):
+        article = _article("A prompt injection technique against a large language model was documented.",
+                            cve_id=None, labels=["AI Security"],
+                            url="https://example.test/ai-sec", title="LLM Prompt Injection Study")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "ai_security")
+        pkg = _detection_package(article, context)
+        self.assertEqual(pkg.status, "not_applicable")
+
+    def test_breach_notice_is_not_applicable(self):
+        article = _article(_SUMMARY_TEXT, source="breach_intel", cve_id=None,
+                            url="https://example.test/breach", title="Breach Record Z")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "breach_notice")
+        pkg = _detection_package(article, context)
+        self.assertEqual(pkg.status, "not_applicable")
+
+    def test_general_intelligence_is_not_applicable(self):
+        article = _article(_SUMMARY_TEXT, source="global_rss", cve_id=None,
+                            url="https://example.test/general", title="Some Unmatched Intelligence Item")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "general_intelligence")
+        pkg = _detection_package(article, context)
+        self.assertEqual(pkg.status, "not_applicable")
+
+    def test_threat_actor_is_not_applicable_not_withheld_for_the_wrong_reason(self):
+        article = _article(_SUMMARY_TEXT, source="threat_actor_intel", cve_id=None,
+                            url="https://example.test/actor-pulse", title="Tracked Actor Infrastructure Update")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "threat_actor")
+        pkg = _detection_package(article, context)
+        self.assertEqual(pkg.status, "not_applicable")
+        self.assertIn("intelligence/news record", pkg.rationale)
+
+    def test_ransomware_reporting_is_not_applicable_not_withheld_for_the_wrong_reason(self):
+        article = _article(_SUMMARY_TEXT, source="global_rss", cve_id=None, labels=["Ransomware"],
+                            url="https://example.test/ransomware-news", title="Ransomware Gangs Target VPN Appliances")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "ransomware_reporting")
+        pkg = _detection_package(article, context)
+        self.assertEqual(pkg.status, "not_applicable")
+        self.assertIn("intelligence/news record", pkg.rationale)
+
+
 class TestDetectionSectionRendersKql(unittest.TestCase):
     def test_kql_block_present_when_package_has_kql(self):
         article = _article("A SQL injection flaw in the login form allows authentication bypass.")
@@ -274,9 +331,11 @@ class TestFamilyAnalysisDoesNotRepeatTheSourceSummary(unittest.TestCase):
         self.assertIn("Vulnerability class", html)  # the real analytical content survives
 
     def test_general_intelligence_fallback_does_not_repeat_the_summary(self):
-        # The exact shape of the two real, live-verified problem reports
-        # (JWR PhaaS, "general_intelligence"; CISA Windows Task Host,
-        # "ransomware_reporting" -- neither matches a specialized branch).
+        # The exact shape of a real, live-verified problem report (JWR
+        # PhaaS, "general_intelligence" -- no specialized branch matches).
+        # ransomware_reporting (e.g. the CISA Windows Task Host report) got
+        # its own dedicated branch in RX-P1H -- see
+        # test_ransomware_reporting_family_does_not_repeat_the_summary below.
         article = _article(_SUMMARY_TEXT, source="global_rss", cve_id=None,
                             url="https://example.test/general", title="Some Unmatched Intelligence Item")
         context = build_report_context(article)
@@ -284,6 +343,34 @@ class TestFamilyAnalysisDoesNotRepeatTheSourceSummary(unittest.TestCase):
         html = _family_analysis(article, context)
         self.assertNotIn(_SUMMARY_TEXT, html)
         self.assertIn("Intelligence Assessment", html)
+
+    def test_ransomware_reporting_family_does_not_repeat_the_summary(self):
+        # RX-P1H: this family (news/analysis ABOUT ransomware activity,
+        # distinct from ransomware_claim's leak-site victim record) used to
+        # fall through to the generic "Intelligence Assessment" fallback --
+        # now gets its own branch, and must stay clearly distinguished from
+        # a specific victim claim.
+        article = _article(_SUMMARY_TEXT, source="global_rss", cve_id=None, labels=["Ransomware"],
+                            url="https://example.test/ransomware-news", title="Ransomware Gangs Target VPN Appliances")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "ransomware_reporting")
+        html = _family_analysis(article, context)
+        self.assertNotIn(_SUMMARY_TEXT, html)
+        self.assertIn("Ransomware Activity Reporting", html)
+        self.assertIn("does not name a specific victim", html)
+
+    def test_threat_actor_family_does_not_repeat_the_summary(self):
+        # RX-P1H: threat_actor (OTX-pulse-sourced actor intelligence) used
+        # to fall through to the generic fallback too -- now gets its own,
+        # attribution-boundary-aware branch.
+        article = _article(_SUMMARY_TEXT, source="threat_actor_intel", cve_id=None,
+                            url="https://example.test/actor-pulse", title="Tracked Actor Infrastructure Update")
+        context = build_report_context(article)
+        self.assertEqual(context.family, "threat_actor")
+        html = _family_analysis(article, context)
+        self.assertNotIn(_SUMMARY_TEXT, html)
+        self.assertIn("Threat Actor Intelligence Assessment", html)
+        self.assertIn("does not independently corroborate", html)
 
     def test_source_evidence_extract_still_carries_the_summary_exactly_once(self):
         # The de-duplication must not have deleted the summary everywhere --

@@ -154,6 +154,34 @@ class TestMechanismCanReachPremiumWhenConditionsAreGenuinelyMet(unittest.TestCas
 
 class TestUnknownFamilyNeverGuessesEligibility(unittest.TestCase):
     def test_family_with_no_matrix_is_capped_at_tactical_even_with_llm_content(self):
+        # RX-P1H: breach_notice (this test's original fixture) now has a
+        # real, reconciled matrix -- see
+        # TestBreachNoticeCanNowReachPremiumLongForm below for its new,
+        # correct behavior. general_intelligence is the family that remains
+        # deliberately unmapped (report_contract.py's own comment on why),
+        # so it is the one that still proves this gate's "no matrix -> never
+        # guess eligibility" discipline.
+        article = DiscoveredArticle(
+            url="https://example.test/roundup", title="Weekly Security News Roundup",
+            summary="test", published_at="2026-08-18T00:00:00+00:00",
+            content_hash=_compute_hash("https://example.test/roundup", "Weekly Security News Roundup"),
+            labels=["News"], source="global_rss",
+        )
+        context = build_report_context(article)
+        self.assertEqual(context.family, "general_intelligence")
+        verdict = evaluate_product_tier(article, context, content_source="groq")
+        self.assertEqual(verdict.tier, TACTICAL)
+
+
+class TestBreachNoticeCanNowReachPremiumLongForm(unittest.TestCase):
+    def test_breach_notice_with_llm_content_and_all_mandatory_sections_resolved_reaches_premium(self):
+        # Before RX-P1H, breach_notice had no matrix at all -- this exact
+        # article shape (LLM-authored, no CVE) was hard-capped at TACTICAL
+        # unconditionally (see the renamed test above). This is the real
+        # before/after proof that the new matrix, role routing, and
+        # detection-status fix together let the gate honestly yield a higher
+        # tier once the evidence supports it, without hardcoding the tier
+        # or manipulating section states.
         article = DiscoveredArticle(
             url="https://example.test/breach", title="Breach Record",
             summary="test", published_at="2026-08-18T00:00:00+00:00",
@@ -162,8 +190,11 @@ class TestUnknownFamilyNeverGuessesEligibility(unittest.TestCase):
         )
         context = build_report_context(article)
         self.assertEqual(context.family, "breach_notice")
-        verdict = evaluate_product_tier(article, context, content_source="groq")
-        self.assertEqual(verdict.tier, TACTICAL)
+        verdict = evaluate_product_tier(
+            article, context, content_source="groq", detection_status="not_applicable", key_judgement_count=3,
+        )
+        self.assertEqual(verdict.tier, PREMIUM_LONG_FORM)
+        self.assertEqual(verdict.mandatory_withheld, ())
 
 
 if __name__ == "__main__":

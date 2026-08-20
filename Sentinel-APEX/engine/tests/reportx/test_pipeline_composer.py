@@ -62,6 +62,50 @@ def _general_intelligence_article(**overrides) -> DiscoveredArticle:
     return DiscoveredArticle(**defaults)
 
 
+def _ai_security_article(**overrides) -> DiscoveredArticle:
+    defaults = dict(
+        url="https://example.test/llm-prompt-injection-study", title="LLM Prompt Injection Study",
+        summary="Researchers documented a prompt injection technique against a large language model deployment.",
+        published_at="2026-08-18T09:00:00Z", content_hash="aisec1234",
+        labels=["AI Security"], source="global_rss",
+    )
+    defaults.update(overrides)
+    return DiscoveredArticle(**defaults)
+
+
+def _breach_notice_article(**overrides) -> DiscoveredArticle:
+    defaults = dict(
+        url="https://example.test/breach-record", title="Breach Record Z",
+        summary="A public breach-record entry lists Example Corp among affected organizations.",
+        published_at="2026-08-18T09:00:00Z", content_hash="breach1234",
+        labels=["Data Breach"], source="breach_intel",
+    )
+    defaults.update(overrides)
+    return DiscoveredArticle(**defaults)
+
+
+def _threat_actor_article(**overrides) -> DiscoveredArticle:
+    defaults = dict(
+        url="https://example.test/actor-pulse", title="Tracked Actor Infrastructure Update",
+        summary="A subscribed OTX pulse updates infrastructure associated with a tracked threat actor.",
+        published_at="2026-08-18T09:00:00Z", content_hash="actor1234",
+        labels=["Threat Actor"], source="threat_actor_intel",
+    )
+    defaults.update(overrides)
+    return DiscoveredArticle(**defaults)
+
+
+def _ransomware_reporting_article(**overrides) -> DiscoveredArticle:
+    defaults = dict(
+        url="https://example.test/ransomware-vpn-targeting", title="Ransomware Gangs Target VPN Appliances",
+        summary="A new report finds ransomware operators increasingly exploit unpatched VPN devices for access.",
+        published_at="2026-08-18T09:00:00Z", content_hash="ransnews1234",
+        labels=["Ransomware", "Research"], source="global_rss",
+    )
+    defaults.update(overrides)
+    return DiscoveredArticle(**defaults)
+
+
 class TestComposeReportProducesAGateCheckedResult:
     def test_cve_article_composes_and_gates_cleanly(self):
         result = compose_report(_cve_article(), CONFIG)
@@ -236,6 +280,88 @@ class TestRoleRoutingDoesNotMisapplyVulnerabilityManagement:
         # merely empty, when this family has no grounded role guidance.
         result = compose_report(_general_intelligence_article(), CONFIG)
         assert "Role-Based Decisions" not in result.html
+
+
+class TestRXP1HRoleRoutingForPreviouslyUnroutedFamilies:
+    """RX-P1H: ai_security/breach_notice/threat_actor/ransomware_reporting
+    used to have zero role decisions -- same "Role-Based Decisions section
+    entirely omitted" behavior as general_intelligence above. Each now gets
+    exactly one, real, unconditional decision using an existing RoleAudience
+    value (no new role invented), which is also what makes
+    report_contract.py's new MANDATORY Section 19 for these families honest
+    rather than a trap: the section is always genuinely populated."""
+
+    def test_ai_security_gets_ciso_cio_not_vulnerability_manager(self):
+        result = compose_report(_ai_security_article(), CONFIG)
+        assert result.context.family == "ai_security"
+        assert "Role-Based Decisions" in result.html
+        assert "CISO / CIO" in result.html
+        assert "Vulnerability Manager" not in result.html
+
+    def test_breach_notice_gets_legal_compliance_privacy(self):
+        result = compose_report(_breach_notice_article(), CONFIG)
+        assert result.context.family == "breach_notice"
+        assert "Role-Based Decisions" in result.html
+        assert "Legal" in result.html
+
+    def test_threat_actor_gets_threat_hunter(self):
+        result = compose_report(_threat_actor_article(), CONFIG)
+        assert result.context.family == "threat_actor"
+        assert "Role-Based Decisions" in result.html
+        assert "Threat Hunter" in result.html
+
+    def test_ransomware_reporting_gets_soc_manager_not_ir_manager(self):
+        # SOC Manager (situational-awareness framing), not IR Manager --
+        # there is no specific claimed victim here to validate, unlike
+        # ransomware_claim.
+        result = compose_report(_ransomware_reporting_article(), CONFIG)
+        assert result.context.family == "ransomware_reporting"
+        assert "Role-Based Decisions" in result.html
+        assert "SOC Manager" in result.html
+        assert "IR Manager" not in result.html
+
+
+class TestRXP1HFamilySpecificIntelligenceGaps:
+    """RX-P1H: pipeline_composer's intelligence_gaps list was identical for
+    every family regardless of evidence shape. Each of these four families
+    now gets one additional, real, family-conditioned gap on top of the
+    existing universal corroboration gap -- additive only, no existing
+    family's gap list changes."""
+
+    def test_universal_corroboration_gap_still_present_for_every_family(self):
+        result = compose_report(_ai_security_article(), CONFIG)
+        descriptions = [g.description for g in result.bundle.intelligence_gaps]
+        assert any("independent second source corroborates" in d for d in descriptions)
+
+    def test_ai_security_gets_an_additional_model_usage_gap(self):
+        result = compose_report(_ai_security_article(), CONFIG)
+        descriptions = [g.description for g in result.bundle.intelligence_gaps]
+        assert len(descriptions) == 2
+        assert any("AI system, model, or capability" in d for d in descriptions)
+
+    def test_breach_notice_gets_an_additional_scope_gap(self):
+        result = compose_report(_breach_notice_article(), CONFIG)
+        descriptions = [g.description for g in result.bundle.intelligence_gaps]
+        assert len(descriptions) == 2
+        assert any("scope of data exposure" in d for d in descriptions)
+
+    def test_threat_actor_gets_an_additional_activity_relevance_gap(self):
+        result = compose_report(_threat_actor_article(), CONFIG)
+        descriptions = [g.description for g in result.bundle.intelligence_gaps]
+        assert len(descriptions) == 2
+        assert any("currently active against the reader's own sector" in d for d in descriptions)
+
+    def test_ransomware_reporting_gets_an_additional_no_named_victim_gap(self):
+        result = compose_report(_ransomware_reporting_article(), CONFIG)
+        descriptions = [g.description for g in result.bundle.intelligence_gaps]
+        assert len(descriptions) == 2
+        assert any("no specific victim organization" in d for d in descriptions)
+
+    def test_cve_family_is_unaffected_still_gets_exactly_one_gap(self):
+        # Regression guard: this addition must not have touched families
+        # outside the four named above.
+        result = compose_report(_cve_article(), CONFIG)
+        assert len(result.bundle.intelligence_gaps) == 1
 
 
 class TestTwoAxisReliabilityInTheRenderedReport:

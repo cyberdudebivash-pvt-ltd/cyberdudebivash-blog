@@ -56,11 +56,22 @@ def _state_of(resolutions, section) -> SectionState:
 
 class TestApplicabilityDefaults(unittest.TestCase):
     def test_unknown_family_defaults_to_optional_never_mandatory_or_na(self):
-        # A family with no reconciled matrix (breach_notice, ai_security,
-        # general_intelligence today) must not silently gate on sections
-        # never actually analyzed for it, nor silently hide them either.
-        result = get_applicability("breach_notice", SECTION_2_EXECUTIVE_SUMMARY)
+        # A family with no reconciled matrix -- general_intelligence is the
+        # deliberate remaining case (RX-P1H gave ai_security/breach_notice/
+        # threat_actor/ransomware_reporting real matrices; general_intelligence
+        # stays unmapped on purpose, see report_contract.py's own comment on
+        # why) -- must not silently gate on sections never actually analyzed
+        # for it, nor silently hide them either.
+        result = get_applicability("general_intelligence", SECTION_2_EXECUTIVE_SUMMARY)
         self.assertEqual(result, Applicability.OPTIONAL)
+
+    def test_a_family_with_a_real_matrix_is_no_longer_the_unknown_case(self):
+        # RX-P1H: breach_notice used to be this test's own "unmapped family"
+        # example -- locks in that it now has a real, reconciled entry so a
+        # future change can't silently regress it back to the fallback
+        # without this test failing loudly.
+        result = get_applicability("breach_notice", SECTION_2_EXECUTIVE_SUMMARY)
+        self.assertEqual(result, Applicability.MANDATORY)
 
 
 class TestCveArticleSectionStates(unittest.TestCase):

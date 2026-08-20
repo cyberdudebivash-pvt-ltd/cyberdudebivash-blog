@@ -246,7 +246,16 @@ def _detection_package(article: DiscoveredArticle, context: ReportContext) -> De
             ),
         )
 
-    if context.family in {"ai_security", "breach_notice", "general_intelligence"}:
+    # RX-P1H: threat_actor and ransomware_reporting used to miss this set
+    # entirely and fall through to the vulnerability-class branches below --
+    # those are all CVE-shaped (context.vulnerability_class is never set for
+    # either family), so in practice they always landed on the final
+    # withheld_insufficient_evidence return anyway, but for the wrong,
+    # generic "no product-specific telemetry" rationale rather than the
+    # honest, family-appropriate one this branch already gives ai_security/
+    # breach_notice/general_intelligence -- both are equally intelligence/
+    # news records with no threat-specific telemetry of their own.
+    if context.family in {"ai_security", "breach_notice", "general_intelligence", "threat_actor", "ransomware_reporting"}:
         return DetectionPackage(
             status="not_applicable",
             rationale="The source is an intelligence/news record without threat-specific telemetry or observables.",
@@ -532,6 +541,46 @@ def _family_analysis(article: DiscoveredArticle, context: ReportContext) -> str:
                 "<strong>P1 — Compensating controls:</strong> Restrict exposure, enforce least privilege, and apply vendor-supported mitigations when immediate remediation is not possible.",
                 "<strong>P1 — Retrospective review:</strong> Search only the telemetry relevant to the affected component and validated vulnerability class; absence of alerts does not prove absence of exploitation.",
             ], "#22c55e"),
+            "#22c55e",
+        )
+
+    if context.family == "ransomware_reporting":
+        return _section(
+            "Ransomware Activity Reporting",
+            _panel(
+                '<p style="margin:0"><strong>Evidence boundary:</strong> This record reports on ransomware activity, '
+                'tooling, or trends generally. It does not name a specific victim in the reader\'s environment and '
+                'must not be treated as a claimed incident against any particular organization.</p>'
+            ),
+            "#f59e0b",
+        ) + _section(
+            "Ransomware Readiness Actions",
+            _bullets([
+                "<strong>Detection coverage:</strong> Confirm detection and alerting coverage for the ransomware behavior or tradecraft described in this record.",
+                "<strong>Backup and recovery:</strong> Validate immutable-backup health and recovery-time assumptions against the reported technique, not a specific claimed compromise.",
+                "<strong>Escalation:</strong> Route to incident response only if a separate, corroborated indicator or claim names the reader's own organization.",
+            ], "#22c55e"),
+            "#22c55e",
+        )
+
+    if context.family == "threat_actor":
+        return _section(
+            "Threat Actor Intelligence Assessment",
+            _panel(
+                '<p style="margin:0"><strong>Evidence boundary:</strong> Actor attribution, TTPs, and infrastructure '
+                'described here are as reported by the cited source. This pipeline does not independently corroborate '
+                'attribution or confirm that described infrastructure is currently active.</p>',
+                "#a855f7",
+                "#0d0014",
+            ),
+            "#a855f7",
+        ) + _section(
+            "CTI and Hunting Actions",
+            _bullets([
+                "<strong>Watchlist:</strong> Track the named actor and any aliases in the organization's threat-actor watchlist and CTI platform.",
+                "<strong>Telemetry cross-reference:</strong> Check any described infrastructure or indicators against internal DNS, proxy, and EDR telemetry before treating them as active.",
+                "<strong>Targeted hunt:</strong> Route confirmed matches to threat hunting for a retrospective sweep; do not assume relevance without one.",
+            ], "#a855f7"),
             "#22c55e",
         )
 

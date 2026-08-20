@@ -244,12 +244,139 @@ _FAMILY_APPLICABILITY: dict = {
 }
 # cisa_kev/cisa_advisory reuse cve_advisory's matrix (same technical shape;
 # KEV adds a federal-mandate urgency signal but not a different section
-# set). breach_notice/ai_security/general_intelligence intentionally have
-# no entry yet -- see evaluate_section_states()'s fallback below; adding a
-# family-specific matrix without first confirming what evidence those
-# families actually carry would be guessing, not reconciling.
+# set).
 _FAMILY_APPLICABILITY["cisa_kev"] = _FAMILY_APPLICABILITY["cve_advisory"]
 _FAMILY_APPLICABILITY["cisa_advisory"] = _FAMILY_APPLICABILITY["cve_advisory"]
+
+# RX-P1H: ai_security / breach_notice / ransomware_reporting all share one
+# shape, reconciled the same way as the two matrices above -- checked
+# section-by-section against what report_renderer.py actually,
+# unconditionally produces for these families today, not assumed complete.
+#
+# MANDATORY (1,2,3,5,6,7,8,9,13,19,21,23,24) -- every one of these already
+# renders real, non-blank, family-appropriate content for these families
+# unconditionally: the "Threat Classification and Evidence Status" block
+# (1/6/8; report_renderer.py:660-676, always real -- report_integrity.
+# _exploitation() has an explicit "not_applicable"/"Not applicable to this
+# intelligence format" resolution for exactly this group, itself an honest,
+# non-fabricated state, not a gap) and Executive Summary/Verified Facts/
+# References/Provenance (2,5,23,24, family-independent renderers); Section
+# 13 and 21 resolve PARTIAL_EVIDENCE unconditionally for every family
+# (_PARTIAL_SIGNAL_ONLY); Section 3 (Key Judgements) is the same
+# family-agnostic mechanism already gating cve_advisory/ransomware_claim.
+# Sections 7 and 9 are real via _family_analysis()'s own dedicated branch
+# for each of these three families (report_renderer.py:475-511) -- distinct
+# per-family prose, not the generic fallback. Section 19 is only MANDATORY
+# because pipeline_composer._lean_role_decisions() (RX-P1H) now gives each
+# of these three families a real, unconditional (never evidence-gated,
+# always present) role decision -- see that function's own docstring for
+# why an unconditional role was chosen specifically so this claim holds.
+#
+# NOT_APPLICABLE:
+#   12 (Actor/Campaign Context) -- none of these three formats are
+#       fundamentally about a named threat actor (same reasoning
+#       cve_advisory already uses for this section); _resolve_actor_context()
+#       only recognizes article.ransomware_group, never populated here, so
+#       marking this MANDATORY would create a permanent, un-earnable trap
+#       rather than a real signal.
+#   15 (Detection Engineering) -- report_renderer._detection_package()
+#       already resolves status="not_applicable" for this exact three-family
+#       set (RX-P1H extended that set to include threat_actor/
+#       ransomware_reporting too, but this trio was already there before
+#       this change) -- NOT_APPLICABLE here keeps the applicability layer
+#       honest with what the content layer already asserts, rather than
+#       leaving it counted as MANDATORY-but-withheld.
+#
+# OPTIONAL (4,10,11,14,16,17,18,20,22) -- unchanged from the pre-existing
+# fallback: no implementation exists anywhere in this pipeline for any
+# family on these sections (Section 4/14/16/17/20/22), or the evidence
+# fields that would populate them (Section 10/11 attack-path/mapping,
+# Section 18 sector/geographic) are never set for these families -- OPTIONAL
+# is the same "no verdict, never fabricated" default get_applicability()
+# already uses for every unmapped family/section, so this changes no
+# runtime behavior for those sections, only for the ones named MANDATORY
+# above.
+_ai_security_breach_ransomware_reporting_matrix = {
+    SECTION_1_EXECUTIVE_RISK_COMMAND_CENTER: Applicability.MANDATORY,
+    SECTION_2_EXECUTIVE_SUMMARY: Applicability.MANDATORY,
+    SECTION_3_KEY_JUDGEMENTS: Applicability.MANDATORY,
+    SECTION_4_INTELLIGENCE_REQUIREMENTS: Applicability.OPTIONAL,
+    SECTION_5_VERIFIED_FACTS: Applicability.MANDATORY,
+    SECTION_6_EVIDENCE_SOURCE_ASSESSMENT: Applicability.MANDATORY,
+    SECTION_7_TECHNICAL_ANALYSIS: Applicability.MANDATORY,
+    SECTION_8_EXPLOITATION_INCIDENT_ASSESSMENT: Applicability.MANDATORY,
+    SECTION_9_EXPOSURE_ASSET_RELEVANCE: Applicability.MANDATORY,
+    SECTION_10_ATTACK_PATH: Applicability.OPTIONAL,
+    SECTION_11_ATTACK_MAPPING: Applicability.OPTIONAL,
+    SECTION_12_ACTOR_CAMPAIGN_CONTEXT: Applicability.NOT_APPLICABLE,
+    SECTION_13_HISTORICAL_CORRELATION: Applicability.MANDATORY,
+    SECTION_14_THREAT_HUNTING: Applicability.OPTIONAL,
+    SECTION_15_DETECTION_ENGINEERING: Applicability.NOT_APPLICABLE,
+    SECTION_16_INDICATORS_OBSERVABLES: Applicability.OPTIONAL,
+    SECTION_17_BUSINESS_IMPACT: Applicability.OPTIONAL,
+    SECTION_18_SECTOR_GEOGRAPHIC_IMPACT: Applicability.OPTIONAL,
+    SECTION_19_ROLE_DECISION_MATRIX: Applicability.MANDATORY,
+    SECTION_20_TIMEBOUND_ACTIONS: Applicability.OPTIONAL,
+    SECTION_21_INTELLIGENCE_GAPS: Applicability.MANDATORY,
+    SECTION_22_FORECAST_OUTLOOK: Applicability.OPTIONAL,
+    SECTION_23_REFERENCES_EVIDENCE_LEDGER: Applicability.MANDATORY,
+    SECTION_24_PROVENANCE_CERTIFICATION: Applicability.MANDATORY,
+}
+_FAMILY_APPLICABILITY["ai_security"] = dict(_ai_security_breach_ransomware_reporting_matrix)
+_FAMILY_APPLICABILITY["breach_notice"] = dict(_ai_security_breach_ransomware_reporting_matrix)
+_FAMILY_APPLICABILITY["ransomware_reporting"] = dict(_ai_security_breach_ransomware_reporting_matrix)
+
+# threat_actor gets its own matrix, not the trio above: Section 12
+# (Actor/Campaign Context) is exactly what this family is about, so unlike
+# the trio it is not marked NOT_APPLICABLE -- but it is also not promoted to
+# MANDATORY, because _resolve_actor_context() still only recognizes
+# article.ransomware_group (a ransomware-specific field, never populated
+# for OTX-pulse-sourced threat_actor articles). Forcing MANDATORY here with
+# no real resolution path would create the same un-earnable trap the trio's
+# comment warns against. OPTIONAL keeps the door open (a future increment
+# that teaches _resolve_actor_context() to also recognize Phase 1G's
+# canonical_entities would then make this section genuinely resolvable)
+# without ever gating this family's tier eligibility on a signal it cannot
+# yet produce. Section 15 (Detection Engineering) is NOT_APPLICABLE for the
+# same reason as the trio -- report_renderer._detection_package() (RX-P1H)
+# now resolves status="not_applicable" for threat_actor too.
+_FAMILY_APPLICABILITY["threat_actor"] = {
+    SECTION_1_EXECUTIVE_RISK_COMMAND_CENTER: Applicability.MANDATORY,
+    SECTION_2_EXECUTIVE_SUMMARY: Applicability.MANDATORY,
+    SECTION_3_KEY_JUDGEMENTS: Applicability.MANDATORY,
+    SECTION_4_INTELLIGENCE_REQUIREMENTS: Applicability.OPTIONAL,
+    SECTION_5_VERIFIED_FACTS: Applicability.MANDATORY,
+    SECTION_6_EVIDENCE_SOURCE_ASSESSMENT: Applicability.MANDATORY,
+    SECTION_7_TECHNICAL_ANALYSIS: Applicability.MANDATORY,
+    SECTION_8_EXPLOITATION_INCIDENT_ASSESSMENT: Applicability.MANDATORY,
+    SECTION_9_EXPOSURE_ASSET_RELEVANCE: Applicability.MANDATORY,
+    SECTION_10_ATTACK_PATH: Applicability.OPTIONAL,
+    SECTION_11_ATTACK_MAPPING: Applicability.OPTIONAL,
+    SECTION_12_ACTOR_CAMPAIGN_CONTEXT: Applicability.OPTIONAL,
+    SECTION_13_HISTORICAL_CORRELATION: Applicability.MANDATORY,
+    SECTION_14_THREAT_HUNTING: Applicability.OPTIONAL,
+    SECTION_15_DETECTION_ENGINEERING: Applicability.NOT_APPLICABLE,
+    SECTION_16_INDICATORS_OBSERVABLES: Applicability.OPTIONAL,
+    SECTION_17_BUSINESS_IMPACT: Applicability.OPTIONAL,
+    SECTION_18_SECTOR_GEOGRAPHIC_IMPACT: Applicability.OPTIONAL,
+    SECTION_19_ROLE_DECISION_MATRIX: Applicability.MANDATORY,
+    SECTION_20_TIMEBOUND_ACTIONS: Applicability.OPTIONAL,
+    SECTION_21_INTELLIGENCE_GAPS: Applicability.MANDATORY,
+    SECTION_22_FORECAST_OUTLOOK: Applicability.OPTIONAL,
+    SECTION_23_REFERENCES_EVIDENCE_LEDGER: Applicability.MANDATORY,
+    SECTION_24_PROVENANCE_CERTIFICATION: Applicability.MANDATORY,
+}
+
+# general_intelligence intentionally still has no entry -- this is the
+# catch-all fallback family (report_integrity._family()'s last resort) with
+# no distinguishing evidence signal of any kind, and the founder mandate is
+# explicit that generic security news must not automatically become a
+# premium product ("First determine: is there real decision value... If no:
+# REFERENCE/FLASH"). Giving it a real MANDATORY set without a real substantive-
+# content gate to back it would let any low-value general_intelligence
+# article reach the same tier as a genuinely well-evidenced report -- exactly
+# the failure mode this section exists to prevent. That gate is real,
+# separate, follow-on work, not a guess made here.
 
 
 @dataclass(frozen=True)
