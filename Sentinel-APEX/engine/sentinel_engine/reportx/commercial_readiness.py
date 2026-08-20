@@ -15,11 +15,18 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 
+from ..attack_mapper import extract_technique_ids, map_techniques
 from .analytic_scaffolding import HypothesisSet, IntelligenceGap, NotApplicableHypothesisSet, build_bibliography, find_orphan_citations
 from .claim_model import EpistemicState, EvidenceGraph
 from .claim_support_matrix import STATUSES_REQUIRING_EVIDENCE, evaluate_claim_support_gate
 from .contradiction_engine import find_all_contradictions
-from .detection_validation import DetectionRule, DetectionValidationState, check_all_rules, check_withheld_rules_have_rationale
+from .detection_validation import (
+    DetectionRule,
+    DetectionValidationState,
+    OFF_LADDER_TERMINAL_STATES,
+    check_all_rules,
+    check_withheld_rules_have_rationale,
+)
 from .evidence_integrity import evaluate_source_integrity_gate
 from .forecast import Forecast, WithheldForecast, evaluate_forecast_gate
 from .human_review import CertificationState, ReviewRecord, resolve_certification_state
@@ -234,18 +241,77 @@ def evaluate_commercial_readiness(bundle: ReportBundle, as_of: date | None = Non
     else:
         promotions = check_all_rules(bundle.detection_rules, bundle.rendered_text)
         missing_rationale = check_withheld_rules_have_rationale(bundle.detection_rules)
+        # RX-P1I fix: this must match check_withheld_rules_have_rationale()'s
+        # own state set exactly -- that function already treats
+        # TELEMETRY_SPECIFICATION ("a real telemetry plan exists, but no
+        # rule was attempted") as equally deserving the explained-not-just-
+        # declared discipline as WITHHELD_INSUFFICIENT_EVIDENCE. This check
+        # only looked for WITHHELD, so a bundle whose rules were ALL
+        # TELEMETRY_SPECIFICATION (each with a real rationale, so
+        # missing_rationale was empty) could pass this control with no
+        # intelligence_gaps recorded at all.
         withheld_present = any(
-            r.validation_state == DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE
+            r.validation_state in (
+                DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+                DetectionValidationState.TELEMETRY_SPECIFICATION,
+            )
             for r in bundle.detection_rules
         )
         gap_recorded = bool(bundle.intelligence_gaps)
         failures = [f"{v.rule_id}: {v.matched_phrase!r}" for v in promotions]
         failures += [f"{rid}: withheld rule has no recorded evidence_gap_rationale" for rid in missing_rationale]
         if withheld_present and not gap_recorded:
-            failures.append("a rule is WITHHELD_INSUFFICIENT_EVIDENCE but no intelligence_gaps are recorded in the bundle")
+            failures.append("a rule is WITHHELD_INSUFFICIENT_EVIDENCE or TELEMETRY_SPECIFICATION but no "
+                             "intelligence_gaps are recorded in the bundle")
+        # RX-P1I: folded into this existing control rather than added as a
+        # 24th row -- this module's own docstring names "the exact 23-row
+        # matrix Section 33/46 requires" as a fixed external contract, and a
+        # cited-but-unevidenced/invalid ATT&CK technique_id is the same
+        # "detection content claims more than the evidence supports" defect
+        # class this control already exists to catch (state-promotion
+        # language above is the prose-side version of the same discipline;
+        # this is the citation-side version). Reuses attack_mapper.
+        # map_techniques() -- the same negation-aware primitive
+        # intelligence_validation.py's own _score_mitre_attack_justification()
+        # already uses -- to hard-fail a technique_id cited with NO real
+        # textual evidence anywhere in what actually got published (a bare
+        # assertion) or one explicitly negated/rejected in the surrounding
+        # text ("T1486 ... was considered and rejected"). Deliberately does
+        # NOT also hard-fail on attack_mapper.is_valid_technique_id()
+        # (curated-registry membership): empirically, two real gold-standard
+        # canary exports (dragonforce/T1219, medusalocker/T1053) cite real,
+        # genuine MITRE technique IDs that simply are not yet in this
+        # repository's curated KNOWN_TECHNIQUES subset -- hard-failing on
+        # that would have downgraded and blocked two already-published,
+        # legitimately good reports, exactly the false-positive risk this
+        # session's own practice is to verify against real data before
+        # wiring a hard gate, not merely reason about it. The two missing
+        # techniques were added to KNOWN_TECHNIQUES (real, standalone
+        # MITRE IDs, consistent with this dict's own parent+sub-technique
+        # pattern) as a separate, narrow fix -- see attack_mapper.py.
+        #
+        # Only rules NOT in an off-ladder terminal state are checked: a
+        # WITHHELD/NOT_APPLICABLE/TELEMETRY_SPECIFICATION rule's technique_id
+        # is a topic tag on an unattempted rule (what this WOULD have covered
+        # if evidence existed), never an assertion of validated behavior --
+        # found live via test_withheld_detection_rule_with_rationale_and_gap_
+        # passes, which manually tags a WITHHELD rule with technique_id
+        # "T1486" purely for categorization and correctly expects PASS.
+        active_rules = [r for r in bundle.detection_rules if r.validation_state not in OFF_LADDER_TERMINAL_STATES]
+        cited_technique_ids = sorted({
+            tid for r in active_rules for tid in extract_technique_ids(r.technique_id)
+        })
+        if cited_technique_ids:
+            evidenced = {m.technique_id for m in map_techniques(bundle.rendered_text)} if bundle.rendered_text else set()
+            unjustified = [tid for tid in cited_technique_ids if tid not in evidenced]
+            failures += [
+                f"{tid}: cited by a detection rule but has no real, non-negated textual evidence "
+                f"anywhere in the rendered report"
+                for tid in unjustified
+            ]
         results.append(_pass_fail("detection_evidence_discipline", "Detection evidence discipline", not failures,
-                                   f"{len(bundle.detection_rules)} detection rules checked for state-promotion language "
-                                   f"and governed-withholding discipline.", failures))
+                                   f"{len(bundle.detection_rules)} detection rules checked for state-promotion language, "
+                                   f"governed-withholding discipline, and ATT&CK citation justification.", failures))
 
     # 14. Temporal integrity — no source with EXACT_TIMESTAMP precision
     # whose retrieved_at predates its own source_date's plausible range is

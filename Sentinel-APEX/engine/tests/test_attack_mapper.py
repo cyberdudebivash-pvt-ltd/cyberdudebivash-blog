@@ -87,6 +87,39 @@ def test_genuine_positive_after_an_earlier_negated_mention_still_maps():
     assert "T1486" in ids
 
 
+def test_explicit_id_citation_genuine_positive_after_an_earlier_negated_citation_still_maps():
+    # RX-P1I fix: the explicit-technique-ID citation loop (as opposed to
+    # the phrase-lexicon loop the previous test exercises) used to check
+    # only the FIRST occurrence of a cited ID (next(...)) -- an early
+    # negated citation ("T1219 ... was considered and rejected") silently
+    # suppressed a genuinely supported, non-negated citation of the same ID
+    # appearing later in the same document. This is the same
+    # document-wide-vs-sentence-scoped discipline the phrase-lexicon loop
+    # already had, now applied consistently to explicit ID citations too --
+    # a real risk once commercial_readiness.py's detection_evidence_discipline
+    # hard gate depends on this function to justify a cited technique.
+    text = (
+        "T1219 (Remote Access Tools) was considered and rejected during initial triage. "
+        "Further analysis confirmed the actor did in fact use T1219 for persistent remote access."
+    )
+    ids = _ids(map_techniques(text))
+    assert "T1219" in ids
+
+
+def test_explicit_id_citation_negated_everywhere_still_does_not_map():
+    # The corresponding negative case: if EVERY occurrence of a cited ID is
+    # negated, it must still never map (this is the pre-existing, already-
+    # correct behavior test_explicit_technique_id_citation_negated_by_rejection_
+    # does_not_map covers for a single occurrence; this adds a multi-
+    # occurrence variant to prove the "any non-negated" fix didn't
+    # accidentally loosen the negative case too).
+    text = (
+        "T1219 was considered and rejected during initial triage. "
+        "A later review also ruled out T1219, finding no evidence of remote access tooling."
+    )
+    assert "T1219" not in _ids(map_techniques(text))
+
+
 def test_negation_does_not_suppress_unrelated_techniques_in_the_same_document():
     text = (
         "No ransomware was deployed in this incident. Separately, the actor used "

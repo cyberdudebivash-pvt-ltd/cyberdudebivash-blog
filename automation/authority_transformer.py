@@ -40,6 +40,7 @@ from .report_renderer import (
     _detection_section,
     _esc,
     _family_analysis,
+    _panel,
     _provenance,
     _section,
     render_evidence_report,
@@ -757,6 +758,44 @@ def _render_key_judgements_html(key_judgements: tuple) -> str:
             )
         items.append("".join(parts))
     return _section("Key Judgements", _bullets(items, "#00d4ff"), "#00d4ff")
+
+
+def _render_hunt_hypotheses_html(hunt_hypotheses: tuple) -> str:
+    """RX-P1I fix: mirrors pipeline_composer.compose_report()'s own inline
+    hunt-hypothesis renderer (same section title, colors, and field order)
+    so the two content paths produce visually identical output -- but reads
+    the ``HuntHypothesis.to_dict()`` dict shape ``_ComposerOutcome.
+    hunt_hypotheses`` actually stores, not the dataclass. Needed because
+    transform()'s LLM-authored path (body_content = the sanitized raw LLM
+    HTML) never included composer_outcome.html at all, so its embedded
+    hunt_html was silently dropped even though hunt_hypothesis_count was
+    still passed to evaluate_product_tier() -- a report could show Section
+    14 as COMPLETE while the actually-published page had no hunt content.
+    Called unconditionally in transform(), same pattern as
+    _render_key_judgements_html() above, so both paths get the same
+    content regardless of which one authored the narrative body."""
+    return "".join(
+        _section(
+            f"Threat Hunting — {h['hypothesis_id']}",
+            _panel(f'<p style="margin:0"><strong>Hypothesis:</strong> {_esc(h["statement"])}</p>')
+            + _bullets(["<strong>Required telemetry:</strong> " + _esc(t) for t in h["required_telemetry"]]
+                       + ["<strong>Pivot:</strong> " + _esc(p) for p in h["pivot_opportunities"]]
+                       + ["<strong>Expected if true:</strong> " + _esc(e) for e in h["expected_observations"]]
+                       + ["<strong>Negative indicator:</strong> " + _esc(n) for n in h["negative_indicators"]]
+                       + ["<strong>False-positive risk:</strong> " + _esc(f) for f in h["false_positive_considerations"]],
+                       "#a855f7")
+            + _panel(
+                f'<p style="margin:0 0 8px"><strong>Success criteria:</strong> {_esc(h["success_criteria"])}</p>'
+                f'<p style="margin:0 0 8px"><strong>Escalation criteria:</strong> {_esc(h["escalation_criteria"])}</p>'
+                f'<p style="margin:0 0 8px"><strong>Confidence:</strong> {_esc(h["confidence"])} &mdash; '
+                f'<strong>Maturity:</strong> {_esc(h["maturity"])} (not independently confirmed by execution '
+                f'against real telemetry)</p>'
+                f'<p style="margin:0"><strong>Limitations:</strong> {_esc(h["limitations"])}</p>'
+            ),
+            "#a855f7",
+        )
+        for h in hunt_hypotheses
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1869,6 +1908,11 @@ class _ComposerOutcome:
     # discarded at this same boundary before this change. Empty tuple on
     # the composer-exception path, same as the fields above.
     canonical_entities: tuple = ()
+    # RX-P1I-WIRE: compose_report()'s own hunt_hypotheses (real,
+    # evidence-grounded, cve_advisory only today -- see pipeline_composer.
+    # _cve_hunt_hypotheses()), same discard-at-this-boundary situation
+    # canonical_entities was in before Phase 1G wired it through.
+    hunt_hypotheses: tuple = ()
 
 
 def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOutcome:
@@ -1913,6 +1957,7 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
         contradictions = tuple(c.to_dict() for c in result.contradictions)
         analytical_confidence = dict(result.analytical_confidence)
         canonical_entities = tuple(e.to_dict() for e in result.canonical_entities)
+        hunt_hypotheses = tuple(h.to_dict() for h in result.hunt_hypotheses)
         if contradictions:
             logger.warning(
                 "ReportX composer found unresolved contradiction(s) -- publication will be blocked",
@@ -1928,12 +1973,14 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
                 quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
                 evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
                 analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
+                hunt_hypotheses=hunt_hypotheses,
             )
         return _ComposerOutcome(
             html=result.html, achieved_tier=tier.value,
             quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
             evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
             analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
+            hunt_hypotheses=hunt_hypotheses,
         )
     except Exception as e:
         logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
@@ -2006,6 +2053,20 @@ class AuthorityTransformer:
             if key_judgements:
                 body_content = body_content + _render_key_judgements_html(key_judgements)
 
+        # RX-P1I fix: composer_outcome.hunt_hypotheses is computed
+        # unconditionally by _composer_enhance() above (real for cve_advisory
+        # articles), but was only ever reaching the published page when
+        # content_source == "reportx_composer" -- composer_outcome.html
+        # already has hunt_html baked in for that path (pipeline_composer.
+        # compose_report()'s own html = base.html + role_html +
+        # reliability_html + hunt_html), so appending here again would
+        # duplicate it. Every other path (LLM-authored, template fallback)
+        # never included it at all despite hunt_hypothesis_count still being
+        # passed to evaluate_product_tier() below -- Section 14 could show
+        # COMPLETE while the actually-published page had no hunt content.
+        if content_source != "reportx_composer" and composer_outcome.hunt_hypotheses:
+            body_content = body_content + _render_hunt_hypotheses_html(composer_outcome.hunt_hypotheses)
+
         # RX-P1B-WIRE: analytical_depth_gate.py + report_contract.py (the
         # founder-mandate 24-section contract + FLASH/TACTICAL/PREMIUM_LONG_FORM
         # tier gate) were built and certified
@@ -2017,6 +2078,7 @@ class AuthorityTransformer:
         product_tier_verdict = evaluate_product_tier(
             article, context, content_source, detection_status=detection_status,
             state_file=self.config.state_file, key_judgement_count=len(key_judgements),
+            hunt_hypothesis_count=len(composer_outcome.hunt_hypotheses),
         )
 
         # Generate SEO metadata
@@ -2118,6 +2180,8 @@ class AuthorityTransformer:
             "analytical_confidence": composer_outcome.analytical_confidence,
             # RX-P1G-WIRE: see _ComposerOutcome.canonical_entities' docstring above.
             "canonical_entities": list(composer_outcome.canonical_entities),
+            # RX-P1I-WIRE: see _ComposerOutcome.hunt_hypotheses' docstring above.
+            "hunt_hypotheses": list(composer_outcome.hunt_hypotheses),
             "detection_status": detection_status,
             "generated_at": context.generated_at,
             # RX-P1-ARTIFACT-BINDING: see the comment at this hash's

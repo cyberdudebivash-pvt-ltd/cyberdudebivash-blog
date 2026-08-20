@@ -78,7 +78,13 @@ def _build_fully_supported_bundle() -> ReportBundle:
     rendered_text = (
         "## Executive Summary\n\nThis is a confirmed critical vulnerability.\n\n"
         "## Technical Analysis\n\nCVSS 9.4, corroborated by NVD and the vendor advisory.\n\n"
-        "## Detection\n\nrule-1 is a production-validated detection.\n"
+        # RX-P1I: the rendered text must actually contain (non-negated)
+        # textual evidence for every technique_id a detection rule cites --
+        # detection_evidence_discipline's new ATT&CK-citation-justification
+        # check (reusing attack_mapper.map_techniques()) now verifies this,
+        # matching what a real compose_report() output always does via its
+        # own ATT&CK Mapping section.
+        "## Detection\n\nrule-1 is a production-validated detection for T1059 (Command and Scripting Interpreter).\n"
     )
 
     registry = MetricsRegistry()
@@ -241,6 +247,116 @@ class TestGovernedWithholdingIsAValidPassPath:
         row = next(r for r in results if r.control_id == "detection_evidence_discipline")
         assert row.status == "PASS"
 
+
+class TestAttackMappingJustificationAdversarialCases:
+    """RX-P1I, mandate Section 19: detection_evidence_discipline's new
+    ATT&CK-citation-justification sub-check (Task 9) must fail closed on a
+    cited-but-unevidenced technique_id, and must not be fooled by a
+    negated/rejected citation "T1486 ... was considered and rejected"
+    counting as support for T1486."""
+
+    def _active_rule(self, technique_id: str) -> DetectionRule:
+        return DetectionRule(
+            rule_id="rule-1", technique_id=technique_id, format="sigma",
+            validation_state=DetectionValidationState.SYNTAX_VALIDATED,
+        )
+
+    def test_hallucinated_technique_id_with_zero_textual_evidence_fails(self):
+        # Mandate Section 19: "hallucinated IOC" / "unsupported ATT&CK
+        # observation" -- a technique_id cited by the rule but never
+        # mentioned anywhere in what actually got published.
+        bundle = ReportBundle(
+            report_id="hallucinated-technique", graph=EvidenceGraph(),
+            rendered_text="This report discusses a vulnerability with no ATT&CK-relevant behavior described.",
+            detection_rules=[self._active_rule("T1486")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "FAIL"
+        assert any("T1486" in f for f in row.failures)
+
+    def test_explicitly_rejected_citation_does_not_count_as_evidence(self):
+        # "T1486 ... was considered and rejected" contains the bare
+        # technique ID, but attack_mapper.py's negation-aware matching must
+        # not treat a rejected citation as support for the mapping.
+        bundle = ReportBundle(
+            report_id="rejected-technique", graph=EvidenceGraph(),
+            rendered_text="Ransomware-style file encryption (T1486) was considered and rejected as an "
+                           "explanation for the observed behavior.",
+            detection_rules=[self._active_rule("T1486")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "FAIL"
+
+    def test_genuinely_evidenced_citation_passes(self):
+        # Contrast case: the same technique_id, but with real, non-negated
+        # textual support -- must PASS, proving the check discriminates
+        # real evidence from absence, not just "did the ID appear anywhere."
+        bundle = ReportBundle(
+            report_id="evidenced-technique", graph=EvidenceGraph(),
+            rendered_text="The malware encrypts victim files (T1486) using AES-256 before demanding payment.",
+            detection_rules=[self._active_rule("T1486")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "PASS"
+
+    def test_technique_id_tag_on_a_withheld_rule_is_never_held_to_this_bar(self):
+        # A WITHHELD rule's technique_id is a topic tag on an unattempted
+        # rule, not an assertion -- must not fail this check even with zero
+        # textual evidence anywhere.
+        bundle = ReportBundle(
+            report_id="withheld-tag-only", graph=EvidenceGraph(),
+            rendered_text="No ATT&CK-relevant behavior is described in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="T1486", format="sigma",
+                validation_state=DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+                evidence_gap_rationale="No incident-specific telemetry located.",
+            )],
+            intelligence_gaps=[IntelligenceGap("No telemetry available.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "PASS"
+
+
+class TestAttackMapperCuratedRegistryRegressions:
+    """RX-P1I: real, empirically-found gaps in attack_mapper.KNOWN_TECHNIQUES,
+    discovered when detection_evidence_discipline's new ATT&CK-citation
+    check (Task 9) was run against two real, gold-standard canary exports
+    for the first time (dragonforce-vermont-xcenter: T1219; medusalocker-
+    bija-industrie: a T1053/T1053.005 parent/sub-technique granularity
+    mismatch). Locked in permanently so a future edit to KNOWN_TECHNIQUES
+    cannot silently drop either real, standalone MITRE technique again."""
+
+    def test_t1219_remote_access_tools_is_curated(self):
+        from sentinel_engine.attack_mapper import KNOWN_TECHNIQUES, is_valid_technique_id
+        assert is_valid_technique_id("T1219")
+        # RX-P1I fix: MITRE's current official name is "Remote Access
+        # Tools" (verified live against attack.mitre.org/techniques/T1219/)
+        # -- this repo's curated label previously said "Remote Access
+        # Software", an outdated/incorrect name reaching published reports.
+        assert KNOWN_TECHNIQUES["T1219"][0] == "Remote Access Tools"
+
+    def test_t1053_scheduled_task_parent_is_curated_alongside_its_sub_technique(self):
+        from sentinel_engine.attack_mapper import KNOWN_TECHNIQUES, is_valid_technique_id
+        assert is_valid_technique_id("T1053")
+        assert is_valid_technique_id("T1053.005")
+        assert KNOWN_TECHNIQUES["T1053"][1] == KNOWN_TECHNIQUES["T1053.005"][1], (
+            "parent and sub-technique should share the same tactic classification"
+        )
+
+    def test_scheduled_task_natural_language_evidences_the_sub_technique_not_the_bare_parent(self):
+        # The actual granularity mismatch this round found: lexicon
+        # evidence for "a scheduled task" maps to T1053.005, never to the
+        # bare parent T1053 -- a rule must cite the sub-technique to be
+        # evidenced by this specific natural-language phrasing.
+        from sentinel_engine.attack_mapper import map_techniques
+        mapped = {m.technique_id for m in map_techniques("Persistence is established via a scheduled task.")}
+        assert "T1053.005" in mapped
+        assert "T1053" not in mapped
+
     def test_withheld_detection_rule_without_rationale_fails(self):
         bundle = ReportBundle(
             report_id="withheld-detection-no-rationale", graph=EvidenceGraph(),
@@ -271,6 +387,45 @@ class TestGovernedWithholdingIsAValidPassPath:
         row = next(r for r in results if r.control_id == "detection_evidence_discipline")
         assert row.status == "FAIL"
         assert any("no intelligence_gaps are recorded" in f for f in row.failures)
+
+    def test_telemetry_specification_rule_without_recorded_gap_fails(self):
+        # RX-P1I fix: withheld_present previously only checked
+        # WITHHELD_INSUFFICIENT_EVIDENCE, so a bundle whose only rule was
+        # TELEMETRY_SPECIFICATION (with a real rationale, so
+        # missing_rationale was empty) could PASS this control with zero
+        # intelligence_gaps recorded -- inconsistent with
+        # check_withheld_rules_have_rationale(), which already treats this
+        # state as equally deserving the explained-not-just-declared
+        # discipline as WITHHELD itself.
+        bundle = ReportBundle(
+            report_id="telemetry-spec-no-gap", graph=EvidenceGraph(),
+            rendered_text="No detection status claims are made in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="", format="none",
+                validation_state=DetectionValidationState.TELEMETRY_SPECIFICATION,
+                evidence_gap_rationale="Availability-impact evidence does not justify a rule.",
+            )],
+            intelligence_gaps=[],  # the gap was never actually recorded at the report level
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "FAIL"
+        assert any("no intelligence_gaps are recorded" in f for f in row.failures)
+
+    def test_telemetry_specification_rule_with_recorded_gap_passes(self):
+        bundle = ReportBundle(
+            report_id="telemetry-spec-with-gap", graph=EvidenceGraph(),
+            rendered_text="No detection status claims are made in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="", format="none",
+                validation_state=DetectionValidationState.TELEMETRY_SPECIFICATION,
+                evidence_gap_rationale="Availability-impact evidence does not justify a rule.",
+            )],
+            intelligence_gaps=[IntelligenceGap("No product-specific telemetry sample available.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "PASS"
 
     def test_withheld_detection_rule_still_fails_if_downstream_text_overclaims(self):
         # Governed withholding does not weaken the existing promotion check

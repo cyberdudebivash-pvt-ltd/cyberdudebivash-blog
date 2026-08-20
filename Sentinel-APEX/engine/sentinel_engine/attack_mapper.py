@@ -22,6 +22,15 @@ KNOWN_TECHNIQUES: dict[str, tuple[str, str]] = {
     "T1036": ("Masquerading", "defense-evasion"),
     "T1036.005": ("Match Legitimate Name or Location", "defense-evasion"),
     "T1049": ("System Network Connections Discovery", "discovery"),
+    # RX-P1I: found live -- two real, gold-standard canary exports
+    # (dragonforce/T1219, medusalocker/T1053) cite these genuine, standalone
+    # MITRE technique IDs, but only their sub-technique siblings (T1053.005)
+    # or no sibling at all (T1219) were previously curated here. Consistent
+    # with this dict's own existing pattern of listing both a parent and its
+    # sub-technique when both are in real use (e.g. T1003/T1003.001,
+    # T1059/T1059.001, T1070/T1070.004, T1021/T1021.001).
+    "T1053": ("Scheduled Task/Job", "persistence"),
+    "T1219": ("Remote Access Tools", "command-and-control"),
     "T1057": ("Process Discovery", "discovery"),
     "T1070": ("Indicator Removal", "defense-evasion"),
     "T1070.004": ("File Deletion", "defense-evasion"),
@@ -237,15 +246,21 @@ def map_techniques(text: str) -> list[TechniqueMapping]:
         )
 
     # Explicit technique IDs cited in the source are high-confidence evidence
-    # — unless the citation itself is negated ("T1486 ... was ... rejected").
+    # — unless EVERY citation of that ID is negated ("T1486 ... was ...
+    # rejected"). RX-P1I fix: this used to check only the first occurrence
+    # of a given ID (`next(...)`) -- an early negated mention ("T1486 was
+    # considered and rejected") silently suppressed a genuinely supported,
+    # non-negated citation of the same ID appearing later in the same
+    # document, exactly the false-negative risk commercial_readiness.py's
+    # new detection_evidence_discipline hard gate (RX-P1I) can't afford: a
+    # real citation wrongly reported as "no evidence" would incorrectly
+    # block a legitimately well-evidenced report. Mirrors the phrase-lexicon
+    # loop above, which already got this right.
     for tid in extract_technique_ids(text):
         if tid in mappings or tid not in KNOWN_TECHNIQUES:
             continue
-        cited = next(
-            (m for m in _RE_TECHNIQUE_ID.finditer(text) if m.group(0) == tid),
-            None,
-        )
-        if cited is not None and _is_negated(text, cited):
+        occurrences = [m for m in _RE_TECHNIQUE_ID.finditer(text) if m.group(0) == tid]
+        if occurrences and all(_is_negated(text, m) for m in occurrences):
             continue
         name, tactic = KNOWN_TECHNIQUES[tid]
         mappings[tid] = TechniqueMapping(

@@ -413,7 +413,7 @@ _DETECTION_STATUS_REAL_CONTENT = frozenset({"syntax_validated_experimental", "te
 
 def evaluate_section_states(
     article: "DiscoveredArticle", context: "ReportContext", detection_status: str = "",
-    key_judgement_count: int = 0,
+    key_judgement_count: int = 0, hunt_hypothesis_count: int = 0,
 ) -> list[SectionResolution]:
     """Resolve all 24 sections for one article. Never fabricates a state:
     a section with no implementation anywhere in this pipeline always
@@ -429,7 +429,13 @@ def evaluate_section_states(
     key_judgements.generate_key_judgements() produced AND
     validate_key_judgements() actually accepted for this article -- never
     the raw count an LLM returned. Default 0 preserves every existing
-    caller's behavior (always WITHHELD) exactly."""
+    caller's behavior (always WITHHELD) exactly.
+
+    ``hunt_hypothesis_count`` (RX-P1I) is len(pipeline_composer.
+    ComposedReport.hunt_hypotheses) for this article -- real, evidence-
+    grounded hunt hypotheses only (cve_advisory today), never a count of
+    generic advice. Default 0 preserves every existing caller's behavior
+    (always WITHHELD) exactly."""
     resolutions = []
     for section in ALL_SECTIONS:
         applicability = get_applicability(context.family, section)
@@ -437,6 +443,8 @@ def evaluate_section_states(
             state = SectionState.NOT_APPLICABLE
         elif section == SECTION_3_KEY_JUDGEMENTS:
             state = SectionState.COMPLETE if key_judgement_count > 0 else SectionState.WITHHELD_INSUFFICIENT_EVIDENCE
+        elif section == SECTION_14_THREAT_HUNTING:
+            state = SectionState.COMPLETE if hunt_hypothesis_count > 0 else SectionState.WITHHELD_INSUFFICIENT_EVIDENCE
         elif section in _IMPLEMENTED_TODAY or section in _IMPLEMENTED_ELSEWHERE:
             state = _resolve_implemented_section(article, context, section, detection_status)
         elif section in _PARTIAL_SIGNAL_ONLY:

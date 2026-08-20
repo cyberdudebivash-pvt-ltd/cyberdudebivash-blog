@@ -812,7 +812,16 @@ def build_detection_rule() -> DetectionRule:
         "level: high\n"
     )
     return DetectionRule(
-        rule_id="reportx-canary-medusalocker-svhost-persistence", technique_id="T1053", format="sigma",
+        # RX-P1I: T1053.005 (Scheduled Task), not the bare parent T1053 --
+        # the rule's own description cites a specific 15-minute recurring
+        # scheduled task, and the rendered text's natural-language evidence
+        # ("scheduled task") maps to the sub-technique via attack_mapper.py's
+        # existing lexicon. The bare parent and its sub-technique are
+        # distinct KNOWN_TECHNIQUES keys; citing the more specific one both
+        # matches the actual behavior described and keeps this rule's
+        # technique_id evidenced under detection_evidence_discipline's
+        # ATT&CK-citation-justification check.
+        rule_id="reportx-canary-medusalocker-svhost-persistence", technique_id="T1053.005", format="sigma",
         validation_state=DetectionValidationState.SYNTAX_VALIDATED, body=body,
     )
 

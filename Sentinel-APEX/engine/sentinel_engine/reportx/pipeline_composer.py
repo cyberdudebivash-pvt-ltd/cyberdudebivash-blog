@@ -48,8 +48,9 @@ from .contradiction_engine import Contradiction, find_all_contradictions
 from .detection_validation import DetectionRule, DetectionValidationState
 from .discovery_bridge import build_evidence_graph, build_threat_product
 from .entity_resolution import CanonicalEntity, resolve_canonical_entities
-from .intelligence_validation import IntelligenceScorecard, evaluate_intelligence_validation
+from .intelligence_validation import IntelligenceScorecard, SupplementalEvidence, evaluate_intelligence_validation
 from .executive_products import (
+    HuntHypothesis,
     RoleAudience,
     RoleDecision,
     information_credibility,
@@ -66,8 +67,19 @@ from .tier_downgrade import DowngradeResult, determine_achieved_tier
 
 from sentinel_engine.attack_mapper import extract_technique_ids  # noqa: E402
 
+# RX-P1I: previously only 1 of report_renderer.DetectionPackage's 4 real
+# status strings was mapped -- the other 3 all fell through to the same
+# WITHHELD_INSUFFICIENT_EVIDENCE default, conflating "this format has no
+# threat-specific telemetry at all" (not_applicable) and "a telemetry plan
+# exists but no rule was attempted" (telemetry_specification_only) with a
+# genuine evidentiary shortfall. detection_validation.py's own
+# NOT_APPLICABLE/TELEMETRY_SPECIFICATION states (added alongside this fix)
+# now let every real status map to its own honest state.
 _STATUS_TO_VALIDATION_STATE = {
     "syntax_validated_experimental": DetectionValidationState.SYNTAX_VALIDATED,
+    "not_applicable": DetectionValidationState.NOT_APPLICABLE,
+    "telemetry_specification_only": DetectionValidationState.TELEMETRY_SPECIFICATION,
+    "withheld_insufficient_evidence": DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
 }
 
 
@@ -258,6 +270,70 @@ def _lean_role_decisions(article, context: ReportContext, threat_product) -> lis
     return decisions
 
 
+def _cve_hunt_hypotheses(article, context: ReportContext, package: DetectionPackage) -> list[HuntHypothesis]:
+    """RX-P1I, mandate Section 15: "CVE: exposure + exploitation hypothesis."
+    Scoped to cve_advisory only this round -- proves the wiring pattern with
+    one real, well-evidenced family (Reuse Before Build: required_telemetry
+    reuses report_renderer._detection_package()'s own already-computed,
+    vulnerability-class-conditioned telemetry guidance verbatim, rather than
+    re-deriving a second copy) instead of a rushed multi-family rollout.
+    cisa_kev's retrospective-exploitation hunt (mandate Section 15) is real,
+    separate follow-up work, not attempted here.
+
+    Deliberately generated unconditionally for every cve_advisory article,
+    not gated on vulnerability_class: package.telemetry is real and
+    non-empty even in the final, generic fallback branch of
+    _detection_package() ("Confirm affected assets and versions, then
+    collect..."), so there is always a genuine, non-fabricated exposure-
+    plus-exploitation question to ask -- the hypothesis itself, not a
+    pipeline-level gate, is what stays honest about "no evidence yet" via
+    its own negative_indicators/limitations text: this never asserts
+    compromise occurred, only what evidence WOULD indicate it did."""
+    if context.family != "cve_advisory":
+        return []
+    subject = article.affected_product or article.affected_vendor or article.cve_id or "the affected component"
+    return [HuntHypothesis(
+        hypothesis_id=f"hunt-{context.report_id}-exposure",
+        statement=f"If {subject} is deployed and reachable as described by {context.report_id}'s evidence "
+                   f"(CVE: {article.cve_id or 'not supplied'}), telemetry consistent with the vulnerability "
+                   f"class below may show attempted or successful exploitation.",
+        required_telemetry=package.telemetry,
+        pivot_opportunities=(
+            "Pivot on the affected component's inventoried version/build identifier, where available.",
+            "Pivot on network paths and identities with reachability to the affected component.",
+        ),
+        expected_observations=(
+            "Requests, processes, or events consistent with the vulnerability class described in this "
+            "report's Technical Analysis, occurring after the CVE's public disclosure date and targeting "
+            "the specific affected component.",
+        ),
+        negative_indicators=(
+            "No matching telemetry for the affected component across the retrospective lookback window.",
+            "The affected component is confirmed not deployed, or not reachable as this CVE describes.",
+        ),
+        false_positive_considerations=(
+            "Legitimate administrative, diagnostic, or scanning activity against the same component can "
+            "resemble exploitation attempts; corroborate with authentication context and known-good change "
+            "records before escalating.",
+        ),
+        validation_steps=(
+            "Confirm the affected component is deployed and reach the specific affected version/build.",
+            "Query the required telemetry sources above for the retrospective lookback window.",
+            "Manually review any matches for legitimacy before escalation.",
+        ),
+        success_criteria="A specific, timestamped, corroborated telemetry match consistent with the "
+                          "vulnerability class, tied to the confirmed affected component.",
+        evidence_claim_ids=("c-cve-id", "c-exploitation-status"),
+        escalation_criteria="Escalate to incident response only when a validated telemetry match is "
+                             "corroborated by at least one additional independent signal (e.g. an "
+                             "authentication anomaly or unexpected process lineage) -- a single matching "
+                             "log line alone is not sufficient grounds for escalation.",
+        limitations="Derived from the vulnerability class alone; does not confirm the affected component is "
+                    "actually deployed in the reader's environment, nor that matching telemetry represents "
+                    "genuine exploitation rather than benign activity.",
+    )]
+
+
 @dataclass(frozen=True)
 class ComposedReport:
     report_id: str
@@ -306,6 +382,11 @@ class ComposedReport:
     # function already built), for every article regardless of tier or
     # content_source.
     canonical_entities: list[CanonicalEntity] = field(default_factory=list)
+    # RX-P1I-WIRE: real, evidence-grounded hunt hypotheses (cve_advisory
+    # only this round -- see _cve_hunt_hypotheses()). Empty for every other
+    # family, matching canonical_entities' own "always present, sometimes
+    # empty" convention rather than a family-conditioned Optional.
+    hunt_hypotheses: list[HuntHypothesis] = field(default_factory=list)
 
     @property
     def pass_count(self) -> int:
@@ -406,7 +487,37 @@ def compose_report(
         "#64748b",
     )
 
-    html = base.html + role_html + reliability_html
+    # RX-P1I: real, evidence-grounded hunt hypotheses -- previously
+    # executive_products.HuntHypothesis/render_hunt_package() existed and
+    # were tested but never called from this live pipeline (Section 14,
+    # Threat Hunting, was permanently WITHHELD_INSUFFICIENT_EVIDENCE for
+    # every article regardless of family). Scoped to cve_advisory only this
+    # round -- see _cve_hunt_hypotheses()'s own docstring for why.
+    hunt_hypotheses = _cve_hunt_hypotheses(article, context, package)
+    hunt_html = "" if not hunt_hypotheses else "".join(
+        _section(
+            f"Threat Hunting — {h.hypothesis_id}",
+            _panel(f'<p style="margin:0"><strong>Hypothesis:</strong> {_esc(h.statement)}</p>')
+            + _bullets(["<strong>Required telemetry:</strong> " + _esc(t) for t in h.required_telemetry]
+                       + ["<strong>Pivot:</strong> " + _esc(p) for p in h.pivot_opportunities]
+                       + ["<strong>Expected if true:</strong> " + _esc(e) for e in h.expected_observations]
+                       + ["<strong>Negative indicator:</strong> " + _esc(n) for n in h.negative_indicators]
+                       + ["<strong>False-positive risk:</strong> " + _esc(f) for f in h.false_positive_considerations],
+                       "#a855f7")
+            + _panel(
+                f'<p style="margin:0 0 8px"><strong>Success criteria:</strong> {_esc(h.success_criteria)}</p>'
+                f'<p style="margin:0 0 8px"><strong>Escalation criteria:</strong> {_esc(h.escalation_criteria)}</p>'
+                f'<p style="margin:0 0 8px"><strong>Confidence:</strong> {_esc(h.confidence.value)} &mdash; '
+                f'<strong>Maturity:</strong> {_esc(h.maturity)} (not independently confirmed by execution '
+                f'against real telemetry)</p>'
+                f'<p style="margin:0"><strong>Limitations:</strong> {_esc(h.limitations)}</p>'
+            ),
+            "#a855f7",
+        )
+        for h in hunt_hypotheses
+    )
+
+    html = base.html + role_html + reliability_html + hunt_html
 
     contradictions = find_all_contradictions(graph, dimension_tags=_dimension_tags_for(graph), full_text=html)
 
@@ -469,11 +580,17 @@ def compose_report(
     )
     control_results = evaluate_commercial_readiness(bundle)
     downgrade = determine_achieved_tier(control_results, requested_tier=requested_tier)
-    scorecard = evaluate_intelligence_validation(bundle, control_results)
+    # RX-P1I: threads the real hunt_hypotheses computed above into the
+    # scorecard's Threat Hunting Guidance dimension for the first time --
+    # previously this call never passed a `supplemental` argument at all,
+    # so that dimension always reported "No hunt hypotheses supplied."
+    scorecard = evaluate_intelligence_validation(
+        bundle, control_results, supplemental=SupplementalEvidence(hunt_hypotheses=tuple(hunt_hypotheses)),
+    )
 
     return ComposedReport(
         report_id=context.report_id, context=context, html=html, bundle=bundle,
         control_results=control_results, downgrade=downgrade, scorecard=scorecard,
         contradictions=contradictions, analytical_confidence=analytical_confidence,
-        canonical_entities=canonical_entities,
+        canonical_entities=canonical_entities, hunt_hypotheses=hunt_hypotheses,
     )
