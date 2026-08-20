@@ -52,6 +52,22 @@ _HIGH_IMPACT_PATTERNS = tuple(re.compile(p, re.IGNORECASE) for p in (
 
 _MAX_JUDGEMENTS_PER_ARTICLE = 8
 
+# RX-P1M: the mandate's own verification-status vocabulary (Section 7/8),
+# made explicit rather than left implicit in claim_refs truthiness.
+# SUPPORTED/ASSESSED_WITH_BASIS are the two outcomes an ACCEPTED
+# KeyJudgement can carry -- computed in validate_key_judgements() from the
+# exact same claim_refs signal the high-impact rejection gate below
+# already uses, a relabeling of an already-correct decision, not a new
+# check. UNSUPPORTED is the rejection outcome, exposed for structured
+# observability only (see _rejection_verification_status() below) --
+# a rejected candidate never becomes a KeyJudgement. CONTRADICTED is
+# reserved vocabulary with no current code path: nothing in this module
+# cross-references a candidate's claim_refs against
+# contradiction_engine.py's findings today (docs/audits/
+# REPORTX-PHASE1M-SEMANTIC-QA-AUDIT.md Sec 4) -- named here for the
+# mandate's own vocabulary completeness, not faked via a shortcut.
+VERIFICATION_STATUSES = ("SUPPORTED", "ASSESSED_WITH_BASIS", "UNSUPPORTED", "CONTRADICTED")
+
 
 @dataclass(frozen=True)
 class KeyJudgement:
@@ -68,6 +84,7 @@ class KeyJudgement:
     contradictions: tuple = ()
     intelligence_gaps: tuple = ()
     what_would_change_the_judgement: str = ""
+    verification_status: str = "ASSESSED_WITH_BASIS"
 
     def to_dict(self) -> dict:
         return {
@@ -78,11 +95,30 @@ class KeyJudgement:
             "limitations": list(self.limitations), "contradictions": list(self.contradictions),
             "intelligence_gaps": list(self.intelligence_gaps),
             "what_would_change_the_judgement": self.what_would_change_the_judgement,
+            "verification_status": self.verification_status,
         }
 
 
 def _is_high_impact(text: str) -> bool:
     return any(p.search(text) for p in _HIGH_IMPACT_PATTERNS)
+
+
+_UNSUPPORTED_REJECTION_PREFIXES = (
+    "UNSUPPORTED_HIGH_IMPACT_CLAIM", "UNKNOWN_CLAIM_REFERENCE",
+    "UNKNOWN_EVIDENCE_REFERENCE", "UNKNOWN_SOURCE_REFERENCE",
+)
+
+
+def _rejection_verification_status(reason: str) -> Optional[str]:
+    """Maps a validate_key_judgements() rejection reason to the mandate's
+    verification vocabulary, for structured observability only -- a
+    relabeling of the exact rejection decision already made, never a new
+    check. Structural/format rejections (malformed JSON, missing
+    judgement text, an invalid confidence value) never became a real
+    candidate to assess and are intentionally left unclassified (None)
+    rather than forced into a bucket that would misrepresent a schema
+    error as an epistemic verdict."""
+    return "UNSUPPORTED" if reason.startswith(_UNSUPPORTED_REJECTION_PREFIXES) else None
 
 
 def build_key_judgement_prompt(
@@ -207,6 +243,9 @@ def validate_key_judgements(candidates: list, evidence_graph: dict) -> tuple[tup
             rejections.append(f"UNSUPPORTED_HIGH_IMPACT_CLAIM: index {idx} no claim_refs")
             continue
 
+        # RX-P1M: the same claim_refs signal the UNSUPPORTED_HIGH_IMPACT_CLAIM
+        # gate above already evaluated, now made an explicit, mandate-vocabulary
+        # label on the accepted record itself rather than left implicit.
         accepted.append(KeyJudgement(
             id=f"kj-{len(accepted) + 1}",
             judgement=judgement_text.strip(),
@@ -220,6 +259,7 @@ def validate_key_judgements(candidates: list, evidence_graph: dict) -> tuple[tup
                 (str(raw["limitations"]),) if raw.get("limitations") else ()
             ),
             what_would_change_the_judgement=str(raw.get("what_would_change_the_judgement") or ""),
+            verification_status="SUPPORTED" if claim_refs else "ASSESSED_WITH_BASIS",
         ))
 
     return tuple(accepted), tuple(rejections)
@@ -263,6 +303,9 @@ def generate_key_judgements(
     if rejections:
         logger.info(
             "Some Key Judgement candidates rejected by validator",
-            extra={"provider": provider, "rejections": list(rejections), "accepted": len(accepted)},
+            extra={
+                "provider": provider, "rejections": list(rejections), "accepted": len(accepted),
+                "verification_statuses": [_rejection_verification_status(r) for r in rejections],
+            },
         )
     return accepted, rejections

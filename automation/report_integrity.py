@@ -72,6 +72,51 @@ _PATCH_AVAILABLE_PATTERNS = (
     r"\bapply (?:the )?(?:vendor )?(?:patch|update)\b",
 )
 
+# RX-P1M: a bare phrase match ("confirmed exploitation", "observed
+# exploitation") cannot tell an actual assertion apart from this exact
+# pipeline's own honest, hedged non-assertion of the same words -- e.g.
+# authority_transformer.py's legacy-template fallback genuinely renders
+# "No confirmed exploitation evidence is available" for an unconfirmed
+# CVE, which must never be flagged as the assertion it explicitly denies.
+# A short negation lookback is the minimum viable mitigation for this real,
+# empirically-found false positive (found via this exact check's own test
+# suite) -- not a general negation parser, just the common English forms
+# that would otherwise make a hedged, evidence-honest sentence indistinguishable
+# from the assertion this gate exists to block.
+_NEGATION_LOOKBACK_RE = re.compile(
+    r"\b(?:no|not|never|without|unconfirmed|isn.t|hasn.t|haven.t|doesn.t|didn.t)\b[^.?!]{0,40}$",
+    re.IGNORECASE,
+)
+
+
+def _is_negated_immediately_before(text: str, match_start: int, window: int = 60) -> bool:
+    return bool(_NEGATION_LOOKBACK_RE.search(text[max(0, match_start - window):match_start]))
+
+
+# RX-P1M, mandate's own named cross-section example: "ransomware claim:
+# unverified... Business Impact: states confirmed breach/data theft."
+# This pipeline's own evidence boundary for ransomware_claim is that a
+# leak-site listing is a REPORTED, third-party claim, never independently
+# confirmed (see pipeline_composer._lean_role_decisions()'s IR_MANAGER
+# decision and report_renderer._family_analysis()'s "Claim Assessment"
+# boundary text, both already established elsewhere in this pipeline) --
+# a DECLARATIVE assertion that the breach/compromise/data theft IS
+# confirmed contradicts that boundary directly. Deliberately declarative-
+# shaped patterns ("X confirms Y", "Y is confirmed", "data was stolen"),
+# not a bare "confirmed breach"/"confirmed compromise" substring: this
+# pipeline's own universal Executive Summary boilerplate legitimately
+# contains "...before treating this record as an incident, confirmed
+# compromise, or customer-specific finding" as cautionary, nominal
+# framing, not an assertion -- confirmed as a real false positive while
+# building this exact check (the same false-positive class already found
+# once this session, Phase 1K's cross-section spot-check).
+_RANSOMWARE_CLAIM_CONFIRMED_BREACH_PATTERNS = (
+    r"\bconfirms? (?:a |the )?(?:breach|compromise)\b",
+    r"\b(?:the )?(?:breach|compromise|data theft) (?:is|has been|was) confirmed\b",
+    r"\bdata (?:has been|was) (?:confirmed )?(?:stolen|exfiltrated)\b",
+    r"\bvictim(?:'s)? (?:data|network|systems?) (?:has been|was|is) (?:confirmed )?compromised\b",
+)
+
 
 def _source_text(article: DiscoveredArticle) -> str:
     return " ".join(
@@ -294,6 +339,40 @@ _UNSUPPORTED_COMMERCIAL_PATTERNS = (
     r"\btrusted by \d[\d,]*\+",
 )
 
+# RX-P1M: generalizes the run #8459 incident fix
+# (docs/audits/blogger-syndication-run-8459-incident-review-2026-08-20.md)
+# beyond the 4 exact-literal numbers already observed as hallucinations.
+# That fix only catches the SAME fabricated number if it recurs verbatim;
+# it has no capability to catch the *next* invented figure (e.g. "1,800+
+# victims" or "$4.2 million in losses"). A specific number in a
+# high-impact quantitative context that does not appear anywhere in the
+# source article's own text is fabricated by construction -- this
+# pipeline invents no fact the source didn't supply. Comma-normalized so a
+# genuinely source-grounded number is never flagged merely because it was
+# reformatted at render time ("2400" in the source vs. "2,400" rendered).
+_QUANTITATIVE_CLAIM_RE = re.compile(
+    r"\b(\d[\d,]*(?:\.\d+)?)\+?\s+"
+    r"(?:victims?|organizations?|customers?|companies|records?|breaches|incidents?|"
+    r"users?|accounts?|servers?|systems?|devices?|downloads?|installations?|"
+    r"(?:TI|threat intel(?:ligence)?)\s+sources?)\b",
+    re.IGNORECASE,
+)
+
+
+def _grounded_numbers(source_text: str) -> set[str]:
+    return {n.replace(",", "") for n in re.findall(r"\d[\d,]*(?:\.\d+)?", source_text)}
+
+
+def _check_quantitative_claims_are_grounded(html: str, article: DiscoveredArticle) -> list[str]:
+    grounded = _grounded_numbers(_source_text(article))
+    issues = []
+    for m in _QUANTITATIVE_CLAIM_RE.finditer(html):
+        number = m.group(1).replace(",", "")
+        if number not in grounded:
+            issues.append(f"unsupported quantitative claim not present in source text: {m.group(0).strip()!r}")
+    return issues
+
+
 # P0-AI-NATIVE-CERTIFICATION-2026-08-19: this pipeline never performs a
 # real per-report human review (see REVIEW_STATUS above) -- these phrases
 # must never appear in published output, which would falsely imply one
@@ -311,7 +390,7 @@ _FALSE_HUMAN_REVIEW_PATTERNS = (
 
 def validate_publication(
     article: DiscoveredArticle, context: ReportContext, html: str, product_tier: str = "",
-    contradictions: tuple = (),
+    contradictions: tuple = (), body_content: str = "",
 ) -> None:
     """Fail closed on provenance, contradiction, placeholder, and schema defects.
 
@@ -331,6 +410,18 @@ def validate_publication(
     real, claim-level and rendered-text-level findings (each a
     ``Contradiction.to_dict()``), passed through unevaluated by every
     caller that hasn't computed them -- default ``()`` is never gated.
+
+    ``body_content`` scopes the source-grounded quantitative-claim check
+    (RX-P1M, see ``_check_quantitative_claims_are_grounded``) to the
+    report's own analytical narrative -- ``authority_transformer.py``'s
+    ``body_content`` before ``_assemble_html()`` wraps it with page chrome.
+    ``html`` (the full assembled page) is deliberately NOT used as a
+    fallback: it also carries ``internal_linker.py``'s "Related
+    Intelligence Reports" widget, which legitimately embeds OTHER real
+    published articles' headlines -- containing THEIR OWN real numbers,
+    not this article's claims -- and a naive full-page scan false-positives
+    on them. Default "" skips the check entirely, so any caller that
+    hasn't computed a ``body_content`` keeps its current behavior exactly.
     """
     issues: list[str] = []
     lower = html.lower()
@@ -409,11 +500,26 @@ def validate_publication(
         if re.search(pattern, html, re.IGNORECASE):
             issues.append(f"unsupported commercial claim matched /{pattern}/")
 
+    if body_content:
+        issues.extend(_check_quantitative_claims_are_grounded(body_content, article))
+
     for pattern in _FALSE_HUMAN_REVIEW_PATTERNS:
         if re.search(pattern, html, re.IGNORECASE):
             issues.append(f"false human-review claim matched /{pattern}/")
 
     if context.exploitation_status != "confirmed":
+        # RX-P1M: kept as an exact-phrase permanent regression guard for
+        # the specific strings this gate has already blocked in production
+        # (never weakened) -- but this list alone had drifted from
+        # _CONFIRMED_EXPLOITATION_PATTERNS above (the same module's own
+        # source-classification patterns), which also matches "observed
+        # exploitation" and "exploitation has/was observed" phrasings this
+        # list did not. A plausible LLM paraphrase of the exact same
+        # fabricated claim ("exploitation has been observed") would have
+        # passed this gate while _CONFIRMED_EXPLOITATION_PATTERNS -- the
+        # single source of truth for what "confirmed exploitation"
+        # language means everywhere else in this module -- would have
+        # matched it instantly. Checked below, additively.
         forbidden = (
             "active exploitation confirmed",
             "exploitation is confirmed active",
@@ -423,6 +529,11 @@ def validate_publication(
         for phrase in forbidden:
             if phrase in lower:
                 issues.append(f"unverified exploitation assertion: {phrase}")
+        for pattern in _CONFIRMED_EXPLOITATION_PATTERNS:
+            for m in re.finditer(pattern, html, re.IGNORECASE):
+                if not _is_negated_immediately_before(html, m.start()):
+                    issues.append(f"unverified exploitation assertion matched /{pattern}/")
+                    break
 
     if article.kev_listed is False:
         for phrase in ("cisa has added this", "already listed in the cisa", "cisa kev inclusion"):
@@ -438,6 +549,11 @@ def validate_publication(
         ):
             if phrase in lower:
                 issues.append(f"ransomware schema contamination: {phrase}")
+        for pattern in _RANSOMWARE_CLAIM_CONFIRMED_BREACH_PATTERNS:
+            for m in re.finditer(pattern, html, re.IGNORECASE):
+                if not _is_negated_immediately_before(html, m.start()):
+                    issues.append(f"unverified confirmed-breach assertion for an unverified leak-site claim matched /{pattern}/")
+                    break
 
     if context.family == "ai_security" and not article.cve_id:
         for phrase in ("sigma detection rule", "office application shell spawn", "phishing detection logic"):

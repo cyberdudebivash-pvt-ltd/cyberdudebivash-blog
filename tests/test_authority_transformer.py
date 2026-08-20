@@ -1013,6 +1013,31 @@ class TestKeyJudgementsWiredIntoTransform(unittest.TestCase):
         self.assertIn("Key Judgements", result["content"])
         self.assertIn("near-term risk", result["content"])
 
+    def test_verification_status_reaches_both_the_output_dict_and_the_rendered_page(self):
+        # RX-P1M: this session's own recurring defect class is "computed
+        # but never rendered" (hunt_hypotheses, attack_mappings,
+        # role_decisions, reliability_html, intelligence_gaps all found
+        # and fixed this way) -- proves verification_status doesn't repeat
+        # it: both the structured output dict AND the actually-published
+        # HTML must carry the real label, on the real transform() path.
+        realistic_kj_response = json.dumps([{
+            "judgement": "The absence of a public patch combined with a network-exploitable vector "
+                         "elevates near-term risk despite no confirmed in-the-wild activity.",
+            "confidence": "MEDIUM", "claim_refs": ["c-exploitation-status"],
+            "reasoning_basis": "Exploitation status is unconfirmed per the source record.",
+        }])
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM prose.</p>", "groq"),
+        ), patch(
+            "automation.key_judgements.call_llm",
+            return_value=(realistic_kj_response, "groq"),
+        ):
+            result = AuthorityTransformer(self.config).transform(_make_article())
+
+        self.assertEqual(result["key_judgements"][0]["verification_status"], "SUPPORTED")
+        self.assertIn("[SUPPORTED]", result["content"])
+
     def test_malformed_key_judgement_response_fails_closed_without_breaking_publication(self):
         with patch(
             "automation.authority_transformer.call_llm",
@@ -1344,6 +1369,224 @@ class TestRoleDecisionsWiredIntoTransform(unittest.TestCase):
         )
         defaults.update(kwargs)
         return DiscoveredArticle(**defaults)
+
+
+class TestContradictionCheckReachesTheFinalPublishedPage(unittest.TestCase):
+    """RX-P1M: find_all_contradictions()/find_text_contradictions() only
+    ever ran against pipeline_composer.compose_report()'s own internally-
+    built html -- on the LLM-authored path, body_content becomes the LLM's
+    own prose entirely, so the text-pattern contradiction layer had never
+    once been evaluated against a real, published, LLM-authored page.
+    Proven here against the real, unmocked compose_report() call -- only
+    call_llm() is mocked, exactly like every other LLM-path proof in this
+    file -- with a contradiction planted directly in the mocked LLM output
+    itself, so this test cannot pass merely because some OTHER, already-
+    rendered section happens to contain one half of the pair."""
+
+    def test_llm_authored_prose_containing_a_real_contradiction_is_blocked(self):
+        # Both halves of one of contradiction_engine.py's own existing,
+        # already-tested text-contradiction rules, planted directly in the
+        # LLM's own mocked output -- before this fix, nothing would have
+        # scanned this text for a contradiction at all.
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=(
+                "<h3>Technical Analysis</h3><p>This detection is currently experimental "
+                "detection logic pending validation.</p><p>Note: this is a "
+                "production-validated detection suitable for immediate blocking.</p>",
+                "groq",
+            ),
+        ):
+            with self.assertRaises(PublicationIntegrityError) as caught:
+                AuthorityTransformer(Config()).transform(_make_article())
+        self.assertTrue(any(
+            "labeled experimental" in issue and "production-validated" in issue
+            for issue in caught.exception.issues
+        ))
+
+    def test_clean_llm_authored_prose_with_no_contradiction_still_publishes(self):
+        # Negative control: the new re-scan must not itself become a
+        # source of false positives on ordinary, non-contradictory prose.
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM-authored prose about the vulnerability.</p>", "groq"),
+        ):
+            result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(result["content_source"], "groq")
+
+
+class TestReliabilityContentWiredIntoTransform(unittest.TestCase):
+    """RX-P1K: report_contract.py's Section 6 (Evidence & Source
+    Assessment) has claimed unconditional COMPLETE since the 24-section
+    contract was first written, but the actual two-axis Admiralty /
+    corroboration content it was claiming only ever reached the published
+    page on the composer content path -- never the LLM-authored or legacy
+    template paths. Proven here against the real, unmocked compose_report()
+    call, mirroring the hunt/attack/role wiring tests exactly."""
+
+    def test_cve_article_gets_reliability_content_in_composer_path_output(self):
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(result["content_source"], "reportx_composer")
+        self.assertIn("Source Reliability &amp; Corroboration", result["content"])
+        self.assertIn("Source Reliability:", result["content"])
+        self.assertIn("Information Credibility:", result["content"])
+        self.assertIn("Overall Analytical Confidence:", result["content"])
+
+    def test_llm_authored_cve_article_still_renders_reliability_content(self):
+        # The exact RX-P1K production defect: before this fix, this path's
+        # body_content was ONLY the sanitized raw LLM HTML, silently
+        # dropping the composer's real reliability/corroboration assessment
+        # even though report_contract.py's Section 6 claimed it COMPLETE
+        # for every article regardless of content_source.
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM-authored prose about the vulnerability.</p>", "groq"),
+        ):
+            result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(result["content_source"], "groq")
+        self.assertIn("Source Reliability &amp; Corroboration", result["content"])
+        conf = result["analytical_confidence"]
+        self.assertIn(f"Source Reliability: {conf['source_reliability_grade']}", result["content"])
+
+
+class TestIntelligenceGapsWiredIntoTransform(unittest.TestCase):
+    """RX-P1K: Section 21 (Intelligence Gaps) has resolved PARTIAL_EVIDENCE
+    unconditionally since RX-P1F on the strength of a real, family-
+    conditioned gap list -- but that list had never once reached a
+    published page, on ANY content path, including the composer's own."""
+
+    def test_cve_article_gets_intelligence_gaps_in_composer_path_output(self):
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(result["content_source"], "reportx_composer")
+        self.assertTrue(result["intelligence_gaps"])
+        self.assertIn("Intelligence Gaps", result["content"])
+        self.assertIn("independent second source corroborates", result["content"])
+
+    def test_llm_authored_cve_article_still_renders_intelligence_gaps(self):
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM-authored prose about the vulnerability.</p>", "groq"),
+        ):
+            result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(result["content_source"], "groq")
+        self.assertTrue(result["intelligence_gaps"])
+        self.assertIn("Intelligence Gaps", result["content"])
+        gap = result["intelligence_gaps"][0]
+        self.assertIn(html.escape(gap["description"], quote=True), result["content"])
+
+    def test_ai_security_article_gets_its_additional_family_specific_gap_rendered(self):
+        article = _make_article(
+            url="https://example.test/llm-prompt-injection-study", title="LLM Prompt Injection Study",
+            summary="Researchers documented a prompt injection technique against a large language model deployment.",
+            content_hash=_compute_hash("https://example.test/llm-prompt-injection-study", "LLM Prompt Injection Study"),
+            labels=["AI Security"], source="global_rss", cve_id=None, cvss_score=None, cvss_vector=None,
+            cwe_ids=None, affected_vendor=None, affected_product=None, full_content=None,
+        )
+        result = AuthorityTransformer(Config()).transform(article)
+        self.assertEqual(len(result["intelligence_gaps"]), 2)
+        self.assertIn("AI system, model, or capability", result["content"])
+
+
+class TestForecastWiredIntoTransform(unittest.TestCase):
+    """RX-P1K: forecast.py's Forecast/WithheldForecast existed, were
+    tested, and certified, but were never imported by this live pipeline
+    at all -- Section 22 (Forecast/Outlook) was permanently WITHHELD for
+    every article regardless of family. Scoped to cve_advisory/cisa_kev/
+    cisa_advisory only, gated on the real CISA KEV listing signal."""
+
+    def test_kev_listed_article_gets_a_real_forecast_in_composer_path_output(self):
+        result = AuthorityTransformer(Config()).transform(
+            _make_article(source="cisa_kev", kev_listed=True)
+        )
+        self.assertEqual(result["content_source"], "reportx_composer")
+        self.assertEqual(len(result["forecasts"]), 1)
+        forecast = result["forecasts"][0]
+        self.assertNotIn("withheld", forecast)
+        self.assertIn("c-kev-listed", forecast["supporting_observation_claim_ids"])
+        self.assertIn("Forecast / Outlook", result["content"])
+
+    def test_non_kev_article_gets_an_explained_withheld_forecast_not_rendered(self):
+        result = AuthorityTransformer(Config()).transform(_make_article(kev_listed=False))
+        self.assertEqual(len(result["forecasts"]), 1)
+        self.assertTrue(result["forecasts"][0].get("withheld"))
+        self.assertTrue(result["forecasts"][0]["reason"])
+        self.assertNotIn("Forecast / Outlook", result["content"])
+
+    def test_forecast_never_gates_the_product_tier_on_its_own(self):
+        # Section 22 is OPTIONAL for cve_advisory (RX-P1K reconciliation) --
+        # a withheld forecast must never appear in mandatory_withheld.
+        result = AuthorityTransformer(Config()).transform(_make_article(kev_listed=False))
+        self.assertNotIn("forecast_outlook", result["product_tier_mandatory_withheld"])
+
+    def test_llm_authored_kev_article_still_renders_the_forecast_section(self):
+        # The exact RX-P1K production defect: before this fix, this path's
+        # body_content was ONLY the sanitized raw LLM HTML, silently
+        # dropping the composer's real forecast even though forecast_count
+        # was still passed to evaluate_product_tier().
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM-authored prose about the vulnerability.</p>", "groq"),
+        ):
+            result = AuthorityTransformer(Config()).transform(
+                _make_article(source="cisa_kev", kev_listed=True)
+            )
+        self.assertEqual(result["content_source"], "groq")
+        self.assertEqual(len(result["forecasts"]), 1)
+        self.assertIn("Forecast / Outlook", result["content"])
+        self.assertIn(html.escape(result["forecasts"][0]["judgment"], quote=True), result["content"])
+
+    def test_non_cve_family_gets_no_forecast_attempt(self):
+        result = AuthorityTransformer(Config()).transform(
+            self._ransomware_article(ransomware_group="SilentRansomGroup")
+        )
+        self.assertEqual(result["forecasts"], [])
+
+    def _ransomware_article(self, **kwargs) -> DiscoveredArticle:
+        defaults = dict(
+            url="https://www.ransomware.live/id/test", title="Group Claims Victim",
+            summary="test", published_at="2026-08-18T22:51:57+00:00",
+            content_hash=_compute_hash("https://www.ransomware.live/id/test", "Group Claims Victim"),
+            labels=["Ransomware"], source="ransomware_intel",
+        )
+        defaults.update(kwargs)
+        return DiscoveredArticle(**defaults)
+
+
+class TestAdversarialForecastGaming(unittest.TestCase):
+    """Mandate section 21: attempt to force Section 22 COMPLETE / real-
+    looking forecast content with a fabricated or under-supported
+    candidate -- all must fail safely (rendered as nothing, never counted)."""
+
+    def test_forecast_with_no_confidence_rationale_never_renders(self):
+        from automation.authority_transformer import _render_forecast_html
+        fake = ({
+            "judgment": "Threat activity is expected to continue.", "time_horizon": "Ongoing",
+            "supporting_observation_claim_ids": ["c-kev-listed"], "confidence": "HIGH",
+            "confidence_rationale": "",  # the exact defect forecast.py's own gate exists to catch
+        },)
+        self.assertEqual(_render_forecast_html(fake), "")
+
+    def test_forecast_with_no_supporting_claims_never_renders(self):
+        from automation.authority_transformer import _render_forecast_html
+        fake = ({
+            "judgment": "Threat activity is expected to continue.", "time_horizon": "Ongoing",
+            "supporting_observation_claim_ids": [], "confidence": "HIGH",
+            "confidence_rationale": "Because the template says so.",
+        },)
+        self.assertEqual(_render_forecast_html(fake), "")
+
+    def test_explicitly_withheld_forecast_never_renders_even_with_other_fields_populated(self):
+        from automation.authority_transformer import _render_forecast_html
+        fake = ({
+            "topic": "x", "withheld": True, "reason": "y",
+            "judgment": "Threat activity is expected to continue.",
+            "supporting_observation_claim_ids": ["c-kev-listed"], "confidence_rationale": "z",
+        },)
+        self.assertEqual(_render_forecast_html(fake), "")
+
+    def test_empty_forecast_list_never_renders(self):
+        from automation.authority_transformer import _render_forecast_html
+        self.assertEqual(_render_forecast_html(()), "")
 
 
 if __name__ == "__main__":
