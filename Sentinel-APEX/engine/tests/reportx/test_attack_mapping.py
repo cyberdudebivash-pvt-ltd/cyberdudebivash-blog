@@ -181,6 +181,38 @@ class TestSemanticGateRejectsInvalidCandidates:
         bad = self._valid_mapping(tactics=("made-up-tactic",))
         assert _apply_semantic_gate([bad]) == []
 
+    def test_a_real_primary_tactic_plus_a_fabricated_extra_tactic_is_rejected(self):
+        # Regression: the gate used to check "is the canonical primary
+        # tactic present somewhere in m.tactics", which a candidate could
+        # satisfy while also carrying an invented tactic alongside the real
+        # one -- e.g. ("initial-access", "invented-tactic") for T1190 has
+        # its real primary tactic present, so the old check wrongly passed
+        # it. The gate must require exact equality with tactics_for(), not
+        # mere membership.
+        bad = self._valid_mapping(tactics=("initial-access", "invented-tactic"))
+        assert _apply_semantic_gate([bad]) == []
+
+    def test_missing_a_required_tactic_is_rejected(self):
+        # T1053/T1053.005 legitimately carry 3 tactics -- a candidate
+        # claiming only 1 of them is incomplete, not merely different.
+        bad = self._valid_mapping(
+            technique_id="T1053.005", technique_name="Scheduled Task", tactics=("persistence",),
+        )
+        assert _apply_semantic_gate([bad]) == []
+
+    def test_reordered_tactics_for_a_multi_tactic_technique_is_rejected(self):
+        # The check is tuple equality (==), which is order-sensitive --
+        # tactics_for() always returns one canonical order and every real
+        # candidate is constructed directly from it (never hand-ordered),
+        # so a reordered tuple can only be a tampered or hand-built one;
+        # rejecting it (not just a different element set) is intentional.
+        from sentinel_engine.attack_mapper import tactics_for
+        canonical = tactics_for("T1053.005")
+        reordered = tuple(reversed(canonical))
+        assert reordered != canonical  # sanity: T1053.005 has >1 tactic, so this really differs
+        bad = self._valid_mapping(technique_id="T1053.005", technique_name="Scheduled Task", tactics=reordered)
+        assert _apply_semantic_gate([bad]) == []
+
     def test_empty_behavioral_basis_is_rejected(self):
         bad = self._valid_mapping(behavioral_basis="")
         assert _apply_semantic_gate([bad]) == []

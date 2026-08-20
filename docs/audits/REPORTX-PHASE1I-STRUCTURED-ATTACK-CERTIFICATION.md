@@ -1,7 +1,7 @@
 # REPORTX Phase 1I Remainder — Structured ATT&CK Object: Certification
 
 **Date:** 2026-08-20
-**Scope:** Mandate Sections 2-5 of the "Phase 1I Remainder → 1J → 1K → 1M → 1N → 1P → 1Q" continuation -- the structured ATT&CK object, its end-to-end survival to the rendered report, multi-tactic/sub-technique semantics, and the semantic quality gate. Phases 1J onward are explicitly NOT attempted this round -- see §7.
+**Scope:** Mandate Sections 2-5 (the structured ATT&CK object, its end-to-end survival to the rendered report, multi-tactic/sub-technique semantics, and the semantic quality gate) of the "Phase 1I Remainder → 1J → 1K → 1M → 1N → 1P → 1Q" continuation, plus `report_contract.py`'s Section 11 (ATT&CK Mapping) state resolution -- the section-state contract this object's count directly feeds -- and mandate Sections 18-20 (real-data validation set, adversarial tests, manual semantic review) and 33/34 (per-phase certification discipline) as supporting evidence for that scope, not as independently certified phases of their own. Phases 1J onward are explicitly NOT attempted this round -- see §7.
 
 ---
 
@@ -40,14 +40,14 @@ No second mapping engine, no second detection-status vocabulary, no second famil
 
 ### 3.2 Multi-tactic support (mandate Section 4)
 
-`KNOWN_TECHNIQUES`'s existing single-tactic-per-id shape is **unchanged** -- `normalizer.py`, `report_ingest.py`, and `intelligence_validation.py` all destructure it as `(name, tactic)` today, and widening that shape would be a breaking change to all three for a refinement only the new structured object needs. Instead, an additive `ADDITIONAL_TACTICS: dict[str, tuple[str, ...]]` and a `tactics_for(technique_id)` helper were added to `attack_mapper.py`, populated with the real, verified MITRE data for T1053/T1053.005 (Execution, Persistence, Privilege Escalation -- all three, not just Persistence). `AttackMapping.tactics` is the only consumer; every existing consumer of `KNOWN_TECHNIQUES` is untouched and unaware this exists.
+`KNOWN_TECHNIQUES`'s existing single-tactic-per-id shape is **unchanged** -- `normalizer.py`, `report_ingest.py`, and `intelligence_validation.py` all destructure it as `(name, tactic)` today, and widening that shape would be a breaking change to all three for a refinement only the new structured object needs. Instead, an additive `ADDITIONAL_TACTICS: dict[str, tuple[str, ...]]` and a `tactics_for(technique_id)` helper were added to `attack_mapper.py`, populated with MITRE data for T1053/T1053.005 verified live against attack.mitre.org during this round (not carried over from training knowledge): [T1053 — Scheduled Task/Job](https://attack.mitre.org/techniques/T1053/) (v2.5, last modified 2026-05-12) and [T1053.005 — Scheduled Task](https://attack.mitre.org/techniques/T1053/005/) (v1.8, last modified 2026-05-12) both list all three tactics -- Execution, Persistence, Privilege Escalation -- not just Persistence. `AttackMapping.tactics` is the only consumer; every existing consumer of `KNOWN_TECHNIQUES` is untouched and unaware this exists.
 
 ### 3.3 The semantic quality gate (mandate Section 5)
 
 `_apply_semantic_gate()` rejects a candidate (filters it out entirely -- never returned as a customer-visible "NOT_SUPPORTED" badge, matching `map_techniques()`'s own established silent-exclusion discipline for negated matches) when:
 - the technique_id is not in the curated registry,
 - the technique_name doesn't match the registry,
-- the primary tactic isn't in the declared `tactics` tuple,
+- `tactics` doesn't exactly equal `tactics_for(technique_id)`'s canonical tuple (§9 records a real defect found and fixed here post-review: the original check only required the primary tactic to be *present in* the tuple, which would have let a candidate with a real primary tactic plus one fabricated extra tactic pass),
 - `behavioral_basis` is empty,
 - no `claim_refs`/`evidence_refs`/`source_refs` exist at all,
 - `status == OBSERVED` (structurally disallowed, see §3.1).
@@ -58,9 +58,9 @@ No second mapping engine, no second detection-status vocabulary, no second famil
 
 Traced and proven, not assumed:
 
-`EvidenceGraph` + `DetectionPackage` → `build_attack_mappings()` (semantic-gate-passed) → `ComposedReport.attack_mappings` (pipeline_composer.py) → rendered into `ComposedReport.html` as a new "Structured ATT&CK Assessment" section (status/confidence/limitations all visible, not just technique/tactic) → `_ComposerOutcome.attack_mappings` (authority_transformer.py, `.to_dict()`-serialized) → `transform()`'s output dict (`result["attack_mappings"]`) **and** rendered into the actually-published HTML on every content path, including the LLM-authored one (the exact duplication-guard pattern already hardened for `hunt_hypotheses` on PR #116, applied identically here so the same defect class could not silently recur) → threaded into `evaluate_product_tier(..., attack_mapping_count=...)` → `report_contract.py`'s Section 11 (ATT&CK Mapping) state resolution.
+`EvidenceGraph` + `DetectionPackage` → `build_attack_mappings()` (semantic-gate-passed) → `ComposedReport.attack_mappings` (pipeline_composer.py) → rendered into `ComposedReport.html` as a new "Structured ATT&CK Assessment" section (status/confidence/limitations all visible, not just technique/tactic) → `_ComposerOutcome.attack_mappings` (authority_transformer.py, `.to_dict()`-serialized) → `transform()`'s output dict (`result["attack_mappings"]`) **and** rendered into `result["content"]` on every content path `transform()` can take, including the LLM-authored one (the exact duplication-guard pattern already hardened for `hunt_hypotheses` on PR #116, applied identically here so the same defect class could not silently recur) → threaded into `evaluate_product_tier(..., attack_mapping_count=...)` → `report_contract.py`'s Section 11 (ATT&CK Mapping) state resolution. This is verified through `transform()`'s real, unmocked output -- no live LLM provider or live Blogger publish occurred in this sandbox (see §5, §8), so "reaches the content `transform()` selects for publication" is the verified claim, not "reaches a live customer-visible page."
 
-No field is lost at any hop -- `status`, `confidence`, and `limitations` are all present in the final rendered HTML and the output dict, not merely computed and discarded (the exact failure class the mandate's Section 3 warns about, and the exact bug CodeRabbit found in the hunt-hypotheses path last round).
+No field is lost at any hop -- `status`, `confidence`, and `limitations` are all present in `transform()`'s rendered output and its output dict, not merely computed and discarded (the exact failure class the mandate's Section 3 warns about, and the exact bug CodeRabbit found in the hunt-hypotheses path last round).
 
 ### 3.5 Section 11 state truthfulness (mandate Section 10)
 
@@ -74,7 +74,7 @@ Running the new pipeline against a `ransomware_claim` fixture with deliberately 
 
 ## 5. Real-data results (mandate Section 18)
 
-Live run through the real, unmocked `AuthorityTransformer.transform()` against 7 representative fixtures:
+Live run through the real, unmocked `AuthorityTransformer.transform()` against 7 representative fixtures -- these are hand-constructed, realistic-shape `DiscoveredArticle` instances (the same convention this session's own test suites already use), not independently-sourced real-world incidents like this directory's other canaries; what is real and unmocked is the code path, not the fixture provenance. Reproducible directly: `python reportx-canary/phase1i_attack_mapping_representative_fixtures.py` from the repo root (added post-review so this table is checked-in-script-reproducible, not prose-only, per CodeRabbit review feedback on PR #117):
 
 | Case | Family | # Mappings | Status(es) | Section 11 state | Tier |
 |---|---|---|---|---|---|
@@ -83,7 +83,7 @@ Live run through the real, unmocked `AuthorityTransformer.transform()` against 7
 | Privilege-escalation CVE | `cve_advisory` | 1 | CONDITIONAL | PARTIAL_EVIDENCE | TACTICAL |
 | KEV (confirmed exploited) | `cisa_kev` | 1 | CONDITIONAL | PARTIAL_EVIDENCE | TACTICAL |
 | Ransomware claim | `ransomware_claim` | **0** (family-gated) | -- | **NOT_APPLICABLE** | TACTICAL |
-| Ransomware reporting (news) | `ransomware_reporting` | 4 | ASSESSED, CONDITIONAL | PARTIAL_EVIDENCE | TACTICAL |
+| Ransomware reporting (news) | `ransomware_reporting` | 5 | ASSESSED, CONDITIONAL | PARTIAL_EVIDENCE | TACTICAL |
 | AI security | `ai_security` | 0 (no text match) | -- | WITHHELD_INSUFFICIENT_EVIDENCE | TACTICAL |
 
 Every tier stays TACTICAL because no fixture had LLM authorship in this sandbox (no live provider access) -- Section 11 is OPTIONAL for every family (never MANDATORY), so it was never capable of gating tier eligibility on its own regardless.
@@ -118,12 +118,30 @@ Per the mandate's own Section 33/34 discipline (per-phase certification, no auto
 
 ## 8. Certification verdict
 
-**RELEASE_CERTIFIED** for the structured ATT&CK object, its end-to-end survival to the rendered/published report, multi-tactic support, and the semantic quality gate:
+**RELEASE_CERTIFIED** for the structured ATT&CK object, its end-to-end survival to `transform()`'s rendered output, multi-tactic support, and the semantic quality gate -- verified through `AuthorityTransformer.transform()`'s real, unmocked return value; no live LLM provider call or live Blogger publish occurred in this sandbox, so this certifies the content `transform()` selects for publication, not a live customer-visible page (that requires Phase 1P/1Q, explicitly not attempted here -- see §7):
 
 - Root cause (prose-only ATT&CK output) fixed with a real structured object, not a workaround.
-- Zero regressions across all 3 test suites (1,632 tests total, 1 pre-existing unrelated failure).
+- Zero regressions across all 3 test suites: 486 + 1023 + 123 = 1,632 passed; 1 additional pre-existing, unrelated failure; 1,633 tests executed in total.
 - One real defect found via genuine real-data/manual review (not merely unit tests) and fixed before certification, with a permanent regression test.
 - No quality/integrity gate weakened -- `ransomware_claim`'s existing "never invent an intrusion chain" policy is now honored by a path that previously bypassed it, strictly strengthening the existing discipline.
 - Reuse Before Build honored throughout: zero new mapping engines, zero breaking changes to `KNOWN_TECHNIQUES`'s existing consumers, every addition extends an already-tested mechanism.
 
 **NOT RELEASE CERTIFIED, explicitly incomplete:** Phases 1J through 1Q remain entirely unstarted, per the mandate's own instruction not to claim otherwise.
+
+## 9. Post-review hardening
+
+A real CodeRabbit review on PR #117 surfaced 9 findings. Each was verified against current code/docs before being accepted -- none were applied blind.
+
+**1 real code defect (Major, confirmed and fixed):** `_apply_semantic_gate()`'s tactic check was `KNOWN_TECHNIQUES[m.technique_id][1] not in m.tactics` -- membership, not equality. A candidate carrying its real primary tactic *plus* one fabricated extra tactic (e.g. `("initial-access", "invented-tactic")` for T1190) satisfied membership and would have passed the gate. Fixed to `m.tactics != tactics_for(m.technique_id)`, exact equality against the single canonical source every real candidate is already constructed from. Three new regression tests added directly against the gate (fabricated-extra-tactic, missing-a-required-tactic-of-a-multi-tactic-technique, reordered-tactics), constructing the invalid candidate directly rather than relying on the real construction path to happen to produce one -- same discipline as every other gate-rejection test in this file.
+
+**8 documentation-accuracy findings (this document and the resume checkpoint), all fixed:**
+- A literal instruction (`Check git log origin/main -3 fresh`) had been left in the checkpoint's `origin/main HEAD` field instead of a real commit SHA -- replaced with the verified SHA and timestamp.
+- The checkpoint's own narrative contradicted its summary table (one line said the structured-ATT&CK work was "uncommitted as of this checkpoint" while the table already showed PR #117 open) -- resolved to the single true state (committed, pushed, PR open).
+- A code fence in the checkpoint was missing a `shell` language tag (Markdownlint MD040).
+- This document's §3.4 and §8 used "actually-published HTML" / "published report" language where the verified claim is `AuthorityTransformer.transform()`'s real, unmocked return value -- no live LLM provider call or live Blogger publish occurred in this sandbox. Reworded to say exactly what was verified.
+- The document's opening **Scope** line (formerly listing only mandate Sections 2-5) didn't mention Section 11 or mandate Sections 18-20/33-34, all of which the document uses as certified evidence -- expanded to name them as supporting evidence.
+- The aggregate test-count sentence didn't clearly separate "passed" from "1 additional pre-existing failure" -- reworded with the explicit arithmetic.
+- The multi-tactic support claim ("real, verified MITRE data" for T1053/T1053.005) had no citation -- added, verified live against attack.mitre.org during this hardening pass (not carried over from training knowledge): T1053 v2.5 and T1053.005 v1.8, both last modified 2026-05-12, both listing Execution/Persistence/Privilege Escalation.
+- The §5 real-data table had no reproduction path -- fixed by writing and checking in `reportx-canary/phase1i_attack_mapping_representative_fixtures.py`, a real, runnable script reproducing the table via the same live `AuthorityTransformer.transform()` call. Running it surfaced one honest discrepancy against the original prose table (the `ransomware_reporting` row: 5 mappings, not 4) -- the original table was never itself backed by a checked-in script, so an exact byte-for-byte fixture could not be recovered; the table was updated to match the new, actually-reproducible script rather than leaving a mismatch between documentation and the reproduction artifact it now points to.
+
+**Test evidence after this hardening:** Root `tests/` unchanged at 486 passed (no root files touched). `Sentinel-APEX/engine/tests/`: 1023 → **1026 passed** (+3, the new gate regression tests), same 1 pre-existing, unrelated Node-rendering failure, reconfirmed identical. `tests-js/` unchanged (no JS files touched). All fixes pushed as a follow-up commit on the same branch/PR.

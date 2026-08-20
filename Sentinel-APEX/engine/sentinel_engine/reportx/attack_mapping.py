@@ -152,7 +152,15 @@ def _apply_semantic_gate(candidates: list[AttackMapping]) -> list[AttackMapping]
             continue
         if KNOWN_TECHNIQUES[m.technique_id][0] != m.technique_name:
             continue
-        if KNOWN_TECHNIQUES[m.technique_id][1] not in m.tactics:
+        # Exact-equality, not "the primary tactic is somewhere in here" --
+        # the latter would let a candidate with a real primary tactic plus
+        # a fabricated extra one (e.g. ("initial-access", "invented-tactic"))
+        # pass the gate and reach published output. tactics_for() is the
+        # single canonical source (already used to construct every real
+        # candidate in build_attack_mappings() below); this check exists to
+        # catch a tampered or hand-built candidate that bypassed it, not to
+        # re-validate what the constructor already got right.
+        if m.tactics != tactics_for(m.technique_id):
             continue
         if not m.behavioral_basis:
             continue
