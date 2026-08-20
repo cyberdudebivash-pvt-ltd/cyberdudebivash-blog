@@ -129,6 +129,41 @@ class TestCveArticleSectionStates(unittest.TestCase):
         self.assertEqual(_state_of(withheld, SECTION_11_ATTACK_MAPPING), SectionState.WITHHELD_INSUFFICIENT_EVIDENCE)
         self.assertEqual(_state_of(real, SECTION_11_ATTACK_MAPPING), SectionState.PARTIAL_EVIDENCE)
 
+    def test_attack_mapping_count_alone_is_sufficient_independent_of_detection_status(self):
+        # RX-P1I structured ATT&CK: attack_mapping_count reflects real,
+        # semantic-gate-passed AttackMapping entries computed for every
+        # family (attack_mapping.py), not only the CVE-vulnerability-class
+        # branches detection_status represents -- must resolve real
+        # content even when detection_status alone would say withheld.
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(
+            article, context, detection_status="withheld_insufficient_evidence", attack_mapping_count=2,
+        )
+        self.assertEqual(_state_of(resolutions, SECTION_11_ATTACK_MAPPING), SectionState.PARTIAL_EVIDENCE)
+
+    def test_attack_mapping_count_zero_falls_back_to_detection_status(self):
+        # Default 0 preserves every existing caller's behavior exactly --
+        # a caller that hasn't computed attack_mapping_count yet still
+        # gets the original detection_status-only resolution.
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context, detection_status="syntax_validated_experimental")
+        self.assertEqual(_state_of(resolutions, SECTION_11_ATTACK_MAPPING), SectionState.PARTIAL_EVIDENCE)
+
+    def test_attack_mapping_never_resolves_complete_regardless_of_count(self):
+        # Every real mapping this pipeline can construct is ASSESSED or
+        # CONDITIONAL, never OBSERVED (attack_mapping.py's own semantic
+        # gate structurally disallows OBSERVED) -- PARTIAL_EVIDENCE is
+        # therefore the honest permanent ceiling for this section, not a
+        # currently-unreached case of COMPLETE.
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(
+            article, context, detection_status="syntax_validated_experimental", attack_mapping_count=5,
+        )
+        self.assertEqual(_state_of(resolutions, SECTION_11_ATTACK_MAPPING), SectionState.PARTIAL_EVIDENCE)
+
     def test_historical_correlation_is_always_partial_never_complete_or_withheld(self):
         # The classification mechanism is real and unconditional, but this
         # function cannot confirm a specific match without the state file.

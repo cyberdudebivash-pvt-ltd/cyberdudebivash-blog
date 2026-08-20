@@ -1230,5 +1230,53 @@ class TestHuntHypothesesWiredIntoTransform(unittest.TestCase):
         self.assertIn(html.escape(hypothesis["statement"], quote=True), result["content"])
 
 
+class TestAttackMappingsWiredIntoTransform(unittest.TestCase):
+    """RX-P1I structured ATT&CK, end-to-end: mirrors
+    TestHuntHypothesesWiredIntoTransform exactly (same real, unmocked
+    compose_report() call path), including the identical duplication-guard
+    proof on the LLM-authored path -- that exact bug class (real data
+    computed and passed to the tier gate, but silently dropped from the
+    actually-published HTML) was found and fixed for hunt_hypotheses in
+    the prior round; this proves the same class of bug was not
+    reintroduced for attack_mappings."""
+
+    def test_cve_article_gets_real_structured_attack_mappings_in_transform_output(self):
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertTrue(result["attack_mappings"])
+        mapping = result["attack_mappings"][0]
+        self.assertIn(mapping["status"], ("ASSESSED", "CONDITIONAL"))
+        self.assertNotEqual(mapping["status"], "OBSERVED")
+        self.assertTrue(mapping["behavioral_basis"])
+        self.assertTrue(mapping["claim_refs"] or mapping["evidence_refs"] or mapping["source_refs"])
+
+    def test_attack_mapping_count_reaches_the_product_tier_verdict(self):
+        # Section 11 is OPTIONAL for every family (never gates tier
+        # eligibility on its own), so this proves the count is threaded
+        # through without error, not that it changes the verdict.
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertIn("product_tier", result)
+
+    def test_llm_authored_cve_article_still_renders_the_attack_section_in_published_content(self):
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM-authored prose about the vulnerability.</p>", "groq"),
+        ):
+            result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(result["content_source"], "groq")
+        self.assertTrue(result["attack_mappings"])
+        mapping = result["attack_mappings"][0]
+        self.assertIn("Structured ATT&amp;CK Assessment", result["content"])
+        self.assertIn(mapping["technique_id"], result["content"])
+
+    def test_attack_mappings_never_include_an_observed_status(self):
+        # This pipeline never has customer telemetry -- structural
+        # property of build_attack_mappings()'s semantic gate, reproven
+        # here against the real transform() output rather than only the
+        # lower-level unit tests in test_attack_mapping.py.
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        statuses = {m["status"] for m in result["attack_mappings"]}
+        self.assertNotIn("OBSERVED", statuses)
+
+
 if __name__ == "__main__":
     unittest.main()
