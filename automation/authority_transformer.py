@@ -823,6 +823,34 @@ def _render_attack_mappings_html(attack_mappings: tuple) -> str:
     return _section("Structured ATT&CK Assessment", "".join(rows), "#a855f7")
 
 
+def _render_role_decisions_html(role_decisions: tuple) -> str:
+    """RX-P1J: same duplication-avoidance reasoning as
+    _render_hunt_hypotheses_html()/_render_attack_mappings_html() above --
+    mirrors pipeline_composer.compose_report()'s own role_html assembly
+    (same section title, color, bullet format, escalation/limitations
+    sub-lines), but reads the RoleDecision.to_dict() shape
+    _ComposerOutcome.role_decisions actually stores. Called unconditionally
+    in transform(), guarded the same way, so every content path shows the
+    same structured role-decision data rather than only the composer path
+    -- this is the exact RX-P1J production defect: role_decisions was
+    computed and counted (Section 19 via evaluate_product_tier()) but never
+    reached this function's own rendered output at all."""
+    if not role_decisions:
+        return ""
+    from sentinel_engine.reportx.executive_products import ROLE_DISPLAY_LABELS, RoleAudience
+
+    items = []
+    for d in role_decisions:
+        label = ROLE_DISPLAY_LABELS[RoleAudience(d["role"])]
+        line = f'<strong>{_esc(label)}:</strong> {_esc(d["decision"])} <span style="color:#64748b">&mdash; {_esc(d["rationale"])}</span>'
+        if d.get("escalation_condition"):
+            line += f'<br><span style="color:#64748b">Escalate when: {_esc(d["escalation_condition"])}</span>'
+        if d.get("limitations"):
+            line += f'<br><span style="color:#64748b">Limitations: {_esc(d["limitations"])}</span>'
+        items.append(line)
+    return _section("Role-Based Decisions", _bullets(items, "#00d4ff"), "#00d4ff")
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # TEMPLATE FALLBACK — full 18-section structure when all LLM providers fail
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1943,6 +1971,16 @@ class _ComposerOutcome:
     # discard-at-this-boundary situation hunt_hypotheses was in until this
     # exact change.
     attack_mappings: tuple = ()
+    # RX-P1J-WIRE: compose_report()'s own role_decisions (real,
+    # family-conditioned, gate-passed -- see pipeline_composer.
+    # _lean_role_decisions()/_validate_role_decisions()). Same
+    # discard-at-this-boundary situation hunt_hypotheses/attack_mappings
+    # were in until wired: previously computed by the composer, counted by
+    # report_contract.py's Section 19 via analytical_depth_gate.py, but
+    # never reaching this function's own output at all -- the identical
+    # defect class the hunt_hypotheses fix above was written to prevent
+    # from recurring, found here because it recurred anyway.
+    role_decisions: tuple = ()
 
 
 def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOutcome:
@@ -1989,6 +2027,7 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
         canonical_entities = tuple(e.to_dict() for e in result.canonical_entities)
         hunt_hypotheses = tuple(h.to_dict() for h in result.hunt_hypotheses)
         attack_mappings = tuple(m.to_dict() for m in result.attack_mappings)
+        role_decisions = tuple(d.to_dict() for d in result.role_decisions)
         if contradictions:
             logger.warning(
                 "ReportX composer found unresolved contradiction(s) -- publication will be blocked",
@@ -2004,14 +2043,14 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
                 quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
                 evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
                 analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
-                hunt_hypotheses=hunt_hypotheses, attack_mappings=attack_mappings,
+                hunt_hypotheses=hunt_hypotheses, attack_mappings=attack_mappings, role_decisions=role_decisions,
             )
         return _ComposerOutcome(
             html=result.html, achieved_tier=tier.value,
             quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
             evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
             analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
-            hunt_hypotheses=hunt_hypotheses, attack_mappings=attack_mappings,
+            hunt_hypotheses=hunt_hypotheses, attack_mappings=attack_mappings, role_decisions=role_decisions,
         )
     except Exception as e:
         logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
@@ -2106,6 +2145,17 @@ class AuthorityTransformer:
         if content_source != "reportx_composer" and composer_outcome.attack_mappings:
             body_content = body_content + _render_attack_mappings_html(composer_outcome.attack_mappings)
 
+        # RX-P1J fix: identical duplication guard as the two fixes
+        # immediately above -- composer_outcome.html already has role_html
+        # baked in for the reportx_composer path (pipeline_composer.
+        # compose_report()'s own html assembly), so every other path
+        # (LLM-authored, template fallback) renders it here instead. Before
+        # this fix, role_decisions was computed and counted toward Section
+        # 19 (see evaluate_product_tier() below) but never appended to
+        # body_content on any of those paths at all.
+        if content_source != "reportx_composer" and composer_outcome.role_decisions:
+            body_content = body_content + _render_role_decisions_html(composer_outcome.role_decisions)
+
         # RX-P1B-WIRE: analytical_depth_gate.py + report_contract.py (the
         # founder-mandate 24-section contract + FLASH/TACTICAL/PREMIUM_LONG_FORM
         # tier gate) were built and certified
@@ -2119,6 +2169,7 @@ class AuthorityTransformer:
             state_file=self.config.state_file, key_judgement_count=len(key_judgements),
             hunt_hypothesis_count=len(composer_outcome.hunt_hypotheses),
             attack_mapping_count=len(composer_outcome.attack_mappings),
+            role_decision_count=len(composer_outcome.role_decisions),
         )
 
         # Generate SEO metadata
@@ -2224,6 +2275,8 @@ class AuthorityTransformer:
             "hunt_hypotheses": list(composer_outcome.hunt_hypotheses),
             # RX-P1I-WIRE (structured ATT&CK): see _ComposerOutcome.attack_mappings' docstring above.
             "attack_mappings": list(composer_outcome.attack_mappings),
+            # RX-P1J-WIRE: see _ComposerOutcome.role_decisions' docstring above.
+            "role_decisions": list(composer_outcome.role_decisions),
             "detection_status": detection_status,
             "generated_at": context.generated_at,
             # RX-P1-ARTIFACT-BINDING: see the comment at this hash's

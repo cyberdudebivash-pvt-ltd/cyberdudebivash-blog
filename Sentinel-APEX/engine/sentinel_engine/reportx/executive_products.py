@@ -198,11 +198,37 @@ class RoleDecision:
     rationale: str
     evidence_claim_ids: tuple[str, ...]
     timeline: str = ""
+    # RX-P1J: reconciles this object with the founder mandate's full
+    # role-decision field set. Every field below is additive and defaults
+    # to a falsy value -- no existing construction call site (7 in
+    # pipeline_composer._lean_role_decisions(), plus this module's own
+    # tests) needs to change. ``evidence_claim_ids`` above already serves
+    # as this object's evidence_refs; ``claim_refs`` is kept as a distinct
+    # field (not a rename) the same way attack_mapping.AttackMapping keeps
+    # evidence_refs and claim_refs separate -- they can cite different
+    # objects in the evidence graph. A caller must only populate a field
+    # when this decision's own evidence genuinely supports it (mandate:
+    # "no invented deadlines, no invented legal obligations, no generic
+    # filler") -- "" / () here means "not established for this decision,"
+    # never a silently-guessed value.
+    action: str = ""
+    priority: str = ""
+    claim_refs: tuple[str, ...] = ()
+    time_horizon: str = ""
+    deadline_or_trigger: str = ""
+    escalation_condition: str = ""
+    conditions_that_change_decision: str = ""
+    limitations: str = ""
 
     def to_dict(self) -> dict:
         return {
             "role": self.role.value, "decision": self.decision, "rationale": self.rationale,
             "evidence_claim_ids": list(self.evidence_claim_ids), "timeline": self.timeline,
+            "action": self.action, "priority": self.priority, "claim_refs": list(self.claim_refs),
+            "time_horizon": self.time_horizon, "deadline_or_trigger": self.deadline_or_trigger,
+            "escalation_condition": self.escalation_condition,
+            "conditions_that_change_decision": self.conditions_that_change_decision,
+            "limitations": self.limitations,
         }
 
 
@@ -214,10 +240,24 @@ def render_role_decisions(decisions: list[RoleDecision]) -> str:
         lines.append(f"### {role_display_label(d.role)}")
         lines.append("")
         lines.append(f"**Decision:** {d.decision}")
+        if d.priority:
+            lines.append(f"**Priority:** {d.priority}")
         if d.timeline:
             lines.append(f"**Timeline:** {d.timeline}")
+        if d.time_horizon:
+            lines.append(f"**Time Horizon:** {d.time_horizon}")
+        if d.deadline_or_trigger:
+            lines.append(f"**Deadline/Trigger:** {d.deadline_or_trigger}")
         lines.append(f"**Rationale:** {d.rationale}")
         lines.append(f"**Evidence:** {', '.join(d.evidence_claim_ids)}")
+        if d.claim_refs:
+            lines.append(f"**Claims:** {', '.join(d.claim_refs)}")
+        if d.escalation_condition:
+            lines.append(f"**Escalate when:** {d.escalation_condition}")
+        if d.conditions_that_change_decision:
+            lines.append(f"**Reassess if:** {d.conditions_that_change_decision}")
+        if d.limitations:
+            lines.append(f"**Limitations:** {d.limitations}")
         lines.append("")
     return "\n".join(lines)
 

@@ -578,3 +578,151 @@ class TestRXP1HHuntHypothesisWiring:
         )
         state = next(r.state for r in resolutions if r.section == SECTION_14_THREAT_HUNTING)
         assert state.value == "COMPLETE"
+
+
+class TestRXP1JRoleDecisionWiring:
+    """RX-P1J: pipeline_composer._lean_role_decisions() built real,
+    family-conditioned RoleDecision objects (RX-P1H) that were used to
+    render role_html inline, but were never counted or exposed on
+    ComposedReport at all -- the identical certified-but-dormant pattern
+    already found and fixed for hunt_hypotheses/attack_mappings. Section 19
+    (Role Decision Matrix) could therefore resolve COMPLETE without any
+    proof that a structured decision list was non-empty."""
+
+    def test_cve_article_exposes_real_role_decisions_on_the_result(self):
+        result = compose_report(_cve_article(), CONFIG)
+        assert len(result.role_decisions) == 2  # Vulnerability Manager + SOC Manager
+        roles = {d.role.value for d in result.role_decisions}
+        assert roles == {"VULNERABILITY_MANAGER", "SOC_MANAGER"}
+
+    def test_general_intelligence_article_exposes_zero_role_decisions(self):
+        result = compose_report(_general_intelligence_article(), CONFIG)
+        assert result.role_decisions == []
+
+    def test_every_real_role_decision_carries_a_real_evidence_basis(self):
+        # Mandate Section 7 hard-fail: "role advice with no evidence basis
+        # where evidence is required" -- proven against every family this
+        # pipeline currently routes a role decision for, not just one.
+        for article in (
+            _cve_article(), _ransomware_article(), _ai_security_article(),
+            _breach_notice_article(), _threat_actor_article(), _ransomware_reporting_article(),
+        ):
+            result = compose_report(article, CONFIG)
+            assert result.role_decisions, f"{result.context.family} produced no role decisions"
+            for d in result.role_decisions:
+                assert d.evidence_claim_ids, f"{d.role.value} decision has no evidence basis"
+                assert d.limitations, f"{d.role.value} decision has no stated limitations"
+
+    def test_ransomware_claim_role_decision_states_its_escalation_condition(self):
+        # The one decision whose existing rationale already states an
+        # explicit conditional trigger in prose ("absent independent
+        # corroboration") -- structured here, not a new claim.
+        result = compose_report(_ransomware_article(), CONFIG)
+        decision = next(d for d in result.role_decisions if d.role.value == "IR_MANAGER")
+        assert "corroboration" in decision.escalation_condition.lower()
+
+    def test_section_19_resolves_complete_for_cve_advisory_when_real_decisions_exist(self):
+        from automation.report_contract import SECTION_19_ROLE_DECISION_MATRIX, evaluate_section_states
+        result = compose_report(_cve_article(), CONFIG)
+        resolutions = evaluate_section_states(
+            _cve_article(), result.context, role_decision_count=len(result.role_decisions),
+        )
+        state = next(r.state for r in resolutions if r.section == SECTION_19_ROLE_DECISION_MATRIX)
+        assert state.value == "COMPLETE"
+
+    def test_section_19_resolves_withheld_when_a_real_caller_measures_zero(self):
+        # The mandate's own named hard-fail: "role decision state marked
+        # COMPLETE with zero actual role decisions" -- proven against
+        # general_intelligence, the one real family with a reconciled
+        # matrix (report_contract._FAMILY_APPLICABILITY has no entry for
+        # general_intelligence, so this instead uses a family that DOES
+        # have Section 19 as MANDATORY to prove the gate actually bites).
+        from automation.report_contract import SECTION_19_ROLE_DECISION_MATRIX, Applicability, evaluate_section_states
+        result = compose_report(_cve_article(), CONFIG)
+        resolutions = evaluate_section_states(_cve_article(), result.context, role_decision_count=0)
+        resolution = next(r for r in resolutions if r.section == SECTION_19_ROLE_DECISION_MATRIX)
+        assert resolution.applicability == Applicability.MANDATORY
+        assert resolution.state.value == "WITHHELD_INSUFFICIENT_EVIDENCE"
+
+
+class TestRXP1JRoleDecisionSemanticGate:
+    """Direct adversarial proof of _validate_role_decisions() -- mirrors
+    test_attack_mapping.py's own semantic-gate adversarial coverage.
+    A hand-built candidate that fails any check must never reach
+    ComposedReport.role_decisions, regardless of how it was constructed."""
+
+    def _decision(self, **overrides):
+        from sentinel_engine.reportx.executive_products import RoleAudience, RoleDecision
+        defaults = dict(
+            role=RoleAudience.SOC_MANAGER, decision="Review the detection guidance for this record.",
+            rationale="Real, evidence-scoped guidance.", evidence_claim_ids=("c-summary",),
+        )
+        defaults.update(overrides)
+        return RoleDecision(**defaults)
+
+    def test_a_well_formed_decision_survives_the_gate(self):
+        from sentinel_engine.reportx.pipeline_composer import _validate_role_decisions
+        out = _validate_role_decisions([self._decision()])
+        assert len(out) == 1
+
+    def test_malformed_role_is_dropped(self):
+        # RoleDecision.role is type-hinted RoleAudience but not runtime-
+        # enforced by the frozen dataclass itself (no __post_init__) -- a
+        # raw string reaching this gate (e.g. a hypothetical future caller
+        # that skips the enum) must still be rejected, not silently
+        # rendered with str(role) as a fabricated-looking role name.
+        from sentinel_engine.reportx.pipeline_composer import _validate_role_decisions
+        assert _validate_role_decisions([self._decision(role="NOT_A_REAL_ROLE")]) == []
+
+    def test_empty_decision_text_is_dropped(self):
+        from sentinel_engine.reportx.pipeline_composer import _validate_role_decisions
+        assert _validate_role_decisions([self._decision(decision="")]) == []
+        assert _validate_role_decisions([self._decision(decision="   ")]) == []
+
+    def test_decision_with_no_evidence_basis_is_dropped(self):
+        from sentinel_engine.reportx.pipeline_composer import _validate_role_decisions
+        assert _validate_role_decisions([self._decision(evidence_claim_ids=())]) == []
+
+    def test_exact_regression_of_the_known_bare_generic_defect_is_dropped(self):
+        # COMMERCIAL-QUALITY-2026-08-18's own fixed defect, permanently
+        # guarded: a bare "Track against X intake." / "Monitor this
+        # threat." with nothing evidence-specific appended.
+        from sentinel_engine.reportx.pipeline_composer import _validate_role_decisions
+        assert _validate_role_decisions([self._decision(decision="Track against intake.")]) == []
+        assert _validate_role_decisions([self._decision(decision="Monitor this threat.")]) == []
+        assert _validate_role_decisions([self._decision(decision="Monitor This Threat")]) == []
+
+    def test_duplicate_role_and_decision_pair_keeps_only_the_first(self):
+        from sentinel_engine.reportx.pipeline_composer import _validate_role_decisions
+        d = self._decision()
+        out = _validate_role_decisions([d, d])
+        assert len(out) == 1
+
+    def test_unsupported_numeric_deadline_is_dropped(self):
+        # This pipeline has no jurisdiction/regulation evidence model in
+        # the role-decision path -- any specific numeric deadline reaching
+        # a RoleDecision today can only be fabricated.
+        from sentinel_engine.reportx.pipeline_composer import _validate_role_decisions
+        out = _validate_role_decisions([self._decision(deadline_or_trigger="Notify within 24 hours.")])
+        assert out == []
+
+    def test_unsupported_regulatory_claim_is_dropped(self):
+        from sentinel_engine.reportx.pipeline_composer import _validate_role_decisions
+        out = _validate_role_decisions(
+            [self._decision(rationale="This is legally required under GDPR notification rules.")]
+        )
+        assert out == []
+
+    def test_real_breach_notice_decision_does_not_false_positive_on_the_regulatory_pattern(self):
+        # The real production breach_notice decision deliberately DEFERS a
+        # regulatory determination rather than asserting one -- must not be
+        # caught by the same gate that rejects an asserted claim above.
+        from sentinel_engine.reportx.pipeline_composer import _validate_role_decisions
+        from sentinel_engine.reportx.executive_products import RoleAudience
+        d = self._decision(
+            role=RoleAudience.LEGAL_COMPLIANCE_PRIVACY,
+            decision="Assess whether this public breach record involves the organization's own data, customers, "
+                     "or vendors before any notification or regulatory determination.",
+            rationale="A public breach record is a disclosure to review, not a confirmed organizational incident.",
+        )
+        assert _validate_role_decisions([d]) == [d]

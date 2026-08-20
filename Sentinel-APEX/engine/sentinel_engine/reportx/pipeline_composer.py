@@ -21,6 +21,7 @@ can trust -- rather than a fixed template nobody re-validates per report.
 
 from __future__ import annotations
 
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -156,6 +157,68 @@ def _dimension_tags_for(graph: EvidenceGraph) -> dict[str, list[str]]:
 
 _VULNERABILITY_MANAGER_FAMILIES = ("cve_advisory", "cisa_advisory", "cisa_kev")
 
+# RX-P1J: exact-string regression guard for the specific bare-generic
+# defects the mandate names and this pipeline already fixed once
+# (COMMERCIAL-QUALITY-2026-08-18 removed a bare "Track against {family}
+# intake..." with nothing evidence-specific appended -- see
+# _lean_role_decisions()'s own docstring). Every current decision's text
+# carries real, evidence-specific content beyond these lead-ins, so this
+# never trims real output today; it exists so a future family branch can't
+# silently reintroduce the exact defect already found and removed.
+_GENERIC_DECISION_PHRASES = frozenset({"monitor this threat", "track against intake"})
+
+# This pipeline has no jurisdiction/regulation evidence model in the
+# role-decision path (regulatory.py's real Section 14 engine is a separate,
+# unwired capability -- see _validate_role_decisions()'s docstring), so a
+# specific numeric deadline or an asserted legal/regulatory obligation
+# reaching a RoleDecision today can only be fabricated, never evidenced.
+_ROLE_DEADLINE_PATTERN = re.compile(r"\b\d+[\s-]?(?:hour|day|week)s?\b", re.IGNORECASE)
+_ROLE_REGULATORY_PATTERN = re.compile(
+    r"\b(?:must notify|legally required|regulatory (?:filing|obligation|deadline)|"
+    r"required by (?:law|regulation)|GDPR|NIS2|DORA|HIPAA)\b", re.IGNORECASE,
+)
+
+
+def _validate_role_decisions(decisions: list[RoleDecision]) -> list[RoleDecision]:
+    """Mandate Section 7/11 hard-fail gate, mirroring attack_mapping.
+    _apply_semantic_gate()'s "drop, never downgrade" discipline: a
+    RoleDecision that fails any check here is dropped entirely rather than
+    published with a fabricated or unsupported basis.
+
+    Promotional/placeholder language is already caught downstream once
+    rendered (report_integrity.validate_publication()'s
+    _UNSUPPORTED_COMMERCIAL_PATTERNS/_PLACEHOLDER_PATTERNS, which run
+    against the full rendered HTML -- including role-decision content once
+    RX-P1J wires it through authority_transformer.py the same way
+    hunt_hypotheses/attack_mappings already are). This gate instead catches
+    defects only visible at the structured-object level, before rendering:
+    a malformed role, no stated decision, no evidence basis, an exact
+    regression of a known bare-generic decision, a duplicate role+decision
+    pair within one report, and a deadline/regulatory claim this pipeline
+    cannot support today."""
+    validated: list[RoleDecision] = []
+    seen: set[tuple] = set()
+    for d in decisions:
+        if not isinstance(d.role, RoleAudience):
+            continue
+        text = (d.decision or "").strip()
+        if not text:
+            continue
+        if text.rstrip(".").lower() in _GENERIC_DECISION_PHRASES:
+            continue
+        if not d.evidence_claim_ids:
+            continue
+        if d.deadline_or_trigger and _ROLE_DEADLINE_PATTERN.search(d.deadline_or_trigger):
+            continue
+        if _ROLE_REGULATORY_PATTERN.search(f"{d.decision} {d.rationale} {d.escalation_condition}"):
+            continue
+        key = (d.role, d.decision)
+        if key in seen:
+            continue
+        seen.add(key)
+        validated.append(d)
+    return validated
+
 
 def _lean_role_decisions(article, context: ReportContext, threat_product) -> list[RoleDecision]:
     """A deliberately SHORT role list for FLASH-tier volume content --
@@ -203,6 +266,8 @@ def _lean_role_decisions(article, context: ReportContext, threat_product) -> lis
                      f"Exploitation status: {context.exploitation_label}. Patch status: {context.patch_label}.",
             rationale="Prioritization reflects this record's own exploitation/patch evidence, not a fixed severity template.",
             evidence_claim_ids=("c-exploitation-status", "c-patch-status"),
+            limitations="Reflects only this record's own reported exploitation and patch status; does not confirm "
+                        "whether the affected component is deployed in any specific environment.",
         ))
     if context.family in ("cve_advisory", "cisa_advisory", "cisa_kev"):
         decisions.append(RoleDecision(
@@ -210,6 +275,8 @@ def _lean_role_decisions(article, context: ReportContext, threat_product) -> lis
             decision="Review the detection guidance below before enabling any blocking action on it.",
             rationale="Detection maturity for this record is stated explicitly, not assumed production-ready.",
             evidence_claim_ids=("c-summary",),
+            limitations="Detection guidance is evidence-scoped to this record; does not confirm the described "
+                        "technique has been observed in any specific environment.",
         ))
     if context.family == "ransomware_claim":
         decisions.append(RoleDecision(
@@ -219,6 +286,9 @@ def _lean_role_decisions(article, context: ReportContext, threat_product) -> lis
             rationale="The victim claim is a single, third-party leak-site source (c-victim-claim, REPORTED "
                        "not CONFIRMED) -- Section 10's high-impact-claim-type discipline applies.",
             evidence_claim_ids=("c-victim-claim",),
+            escalation_condition="Independent corroboration of the victim claim is found.",
+            limitations="Based on a single, third-party leak-site claim only; does not confirm the claim is "
+                        "accurate or that any specific organization has been compromised.",
         ))
     # RX-P1H: these four families previously got no role decision at all --
     # confirmed live (test_pipeline_composer.py's
@@ -240,6 +310,8 @@ def _lean_role_decisions(article, context: ReportContext, threat_product) -> lis
             rationale="AI security findings are a governance and control-mapping concern at this evidence depth, "
                        "not yet a confirmed technical defect.",
             evidence_claim_ids=("c-summary",),
+            limitations="Based on this record's own summary only; does not confirm the cited AI system, model, "
+                        "or capability is in use within any specific environment.",
         ))
     if context.family == "breach_notice":
         decisions.append(RoleDecision(
@@ -249,6 +321,8 @@ def _lean_role_decisions(article, context: ReportContext, threat_product) -> lis
             rationale="A public breach record is a disclosure to review, not a confirmed organizational incident on "
                        "its own (c-summary only -- no scope evidence has been independently established).",
             evidence_claim_ids=("c-summary",),
+            limitations="Based on a public disclosure record only; does not confirm organizational, customer, or "
+                        "vendor data involvement, and is not itself a regulatory or legal determination.",
         ))
     if context.family == "threat_actor":
         decisions.append(RoleDecision(
@@ -258,6 +332,8 @@ def _lean_role_decisions(article, context: ReportContext, threat_product) -> lis
             rationale="Actor attribution and TTPs are as reported by the cited source; this pipeline does not "
                        "independently corroborate them.",
             evidence_claim_ids=("c-summary",),
+            limitations="Actor attribution and TTPs are as reported by the cited source only; this pipeline does "
+                        "not independently corroborate them or confirm relevance to any specific environment.",
         ))
     if context.family == "ransomware_reporting":
         decisions.append(RoleDecision(
@@ -267,8 +343,10 @@ def _lean_role_decisions(article, context: ReportContext, threat_product) -> lis
             rationale="This record reports ransomware activity or trends generally, not a claim against a named "
                        "victim -- see the Ransomware Claim Intelligence family for that distinct evidence type.",
             evidence_claim_ids=("c-summary",),
+            limitations="Describes ransomware activity or trends generally; does not confirm any specific named "
+                        "victim or environment-specific relevance.",
         ))
-    return decisions
+    return _validate_role_decisions(decisions)
 
 
 def _cve_hunt_hypotheses(article, context: ReportContext, package: DetectionPackage) -> list[HuntHypothesis]:
@@ -423,6 +501,16 @@ class ComposedReport:
     # built), same "always present, sometimes empty" convention as
     # canonical_entities/hunt_hypotheses above.
     attack_mappings: list[AttackMapping] = field(default_factory=list)
+    # RX-P1J-WIRE: real, family-conditioned role decisions (see
+    # _lean_role_decisions()/_validate_role_decisions() above) -- every
+    # entry already passed the structural hard-fail gate (real role, real
+    # decision, real evidence basis, no duplicates, no unsupported
+    # deadline/regulatory claim). Same "always present, sometimes empty"
+    # convention as hunt_hypotheses/attack_mappings/canonical_entities
+    # above, so report_contract.py's Section 19 can finally distinguish a
+    # genuinely-measured-empty report from a caller that never measured at
+    # all (see evaluate_section_states()'s role_decision_count parameter).
+    role_decisions: list[RoleDecision] = field(default_factory=list)
 
     @property
     def pass_count(self) -> int:
@@ -463,7 +551,12 @@ def compose_report(
     role_html = "" if not role_decisions else _section(
         "Role-Based Decisions",
         _bullets([f"<strong>{role_display_label(d.role)}:</strong> {_esc(d.decision)} "
-                  f"<span style=\"color:#64748b\">&mdash; {_esc(d.rationale)}</span>" for d in role_decisions],
+                  f"<span style=\"color:#64748b\">&mdash; {_esc(d.rationale)}</span>"
+                  + (f"<br><span style=\"color:#64748b\">Escalate when: {_esc(d.escalation_condition)}</span>"
+                     if d.escalation_condition else "")
+                  + (f"<br><span style=\"color:#64748b\">Limitations: {_esc(d.limitations)}</span>"
+                     if d.limitations else "")
+                  for d in role_decisions],
                  "#00d4ff"),
         "#00d4ff",
     )
@@ -632,5 +725,5 @@ def compose_report(
         control_results=control_results, downgrade=downgrade, scorecard=scorecard,
         contradictions=contradictions, analytical_confidence=analytical_confidence,
         canonical_entities=canonical_entities, hunt_hypotheses=hunt_hypotheses,
-        attack_mappings=attack_mappings,
+        attack_mappings=attack_mappings, role_decisions=role_decisions,
     )

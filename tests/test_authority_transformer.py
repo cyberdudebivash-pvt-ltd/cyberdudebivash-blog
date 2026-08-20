@@ -1278,5 +1278,73 @@ class TestAttackMappingsWiredIntoTransform(unittest.TestCase):
         self.assertNotIn("OBSERVED", statuses)
 
 
+class TestRoleDecisionsWiredIntoTransform(unittest.TestCase):
+    """RX-P1J, end-to-end: mirrors TestHuntHypothesesWiredIntoTransform/
+    TestAttackMappingsWiredIntoTransform exactly (same real, unmocked
+    compose_report() call path), including the identical duplication-guard
+    proof on the LLM-authored path -- role_decisions was computed by the
+    composer and counted toward Section 19 via evaluate_product_tier(),
+    but never reached this function's own rendered output on any path
+    other than content_source == "reportx_composer" until this fix."""
+
+    def test_cve_article_gets_real_role_decisions_in_transform_output(self):
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(len(result["role_decisions"]), 2)
+        roles = {d["role"] for d in result["role_decisions"]}
+        self.assertEqual(roles, {"VULNERABILITY_MANAGER", "SOC_MANAGER"})
+
+    def test_role_decision_count_reaches_the_product_tier_verdict(self):
+        # Section 19 is MANDATORY for cve_advisory -- a real, indirect
+        # proof that role_decision_count was actually threaded into
+        # evaluate_product_tier() (not just computed and discarded): the
+        # verdict must compute cleanly end to end and never withhold
+        # Section 19 when 2 real decisions exist.
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertIn("product_tier", result)
+        self.assertNotIn("role_decision_matrix", result["product_tier_mandatory_withheld"])
+
+    def test_llm_authored_cve_article_still_renders_the_role_section_in_published_content(self):
+        # The exact RX-P1J production defect: content_source="reportx_composer"
+        # is not the only path this needs to work on -- when the LLM call
+        # succeeds, body_content used to become ONLY the sanitized raw LLM
+        # HTML, silently dropping composer_outcome.role_decisions even
+        # though role_decision_count was still passed to
+        # evaluate_product_tier() (Section 19 could show COMPLETE while the
+        # published page had no role-decision content at all). Proven here
+        # against the real, unmocked compose_report() call -- only
+        # call_llm() is mocked.
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM-authored prose about the vulnerability.</p>", "groq"),
+        ):
+            result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(result["content_source"], "groq")
+        self.assertEqual(len(result["role_decisions"]), 2)
+        self.assertIn("Role-Based Decisions", result["content"])
+        # COMMERCIAL-QUALITY-2026-08-18: the acronym-aware label fix must
+        # hold on this rendering path too, not only the composer's own.
+        self.assertIn("SOC Manager", result["content"])
+        self.assertIn("Vulnerability Manager", result["content"])
+        self.assertNotIn("Soc Manager", result["content"])
+
+    def test_ransomware_claim_role_decision_shows_its_escalation_condition_in_published_content(self):
+        result = AuthorityTransformer(Config()).transform(
+            self._ransomware_article(ransomware_group="SilentRansomGroup")
+        )
+        self.assertEqual(len(result["role_decisions"]), 1)
+        self.assertIn("Escalate when:", result["content"])
+        self.assertIn("corroboration", result["content"].lower())
+
+    def _ransomware_article(self, **kwargs) -> DiscoveredArticle:
+        defaults = dict(
+            url="https://www.ransomware.live/id/test", title="Group Claims Victim",
+            summary="test", published_at="2026-08-18T22:51:57+00:00",
+            content_hash=_compute_hash("https://www.ransomware.live/id/test", "Group Claims Victim"),
+            labels=["Ransomware"], source="ransomware_intel",
+        )
+        defaults.update(kwargs)
+        return DiscoveredArticle(**defaults)
+
+
 if __name__ == "__main__":
     unittest.main()

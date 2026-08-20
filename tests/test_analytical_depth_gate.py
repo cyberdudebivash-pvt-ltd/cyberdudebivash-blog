@@ -197,5 +197,59 @@ class TestBreachNoticeCanNowReachPremiumLongForm(unittest.TestCase):
         self.assertEqual(verdict.mandatory_withheld, ())
 
 
+class TestRoleDecisionCountGatesSectionNineteen(unittest.TestCase):
+    """RX-P1J: role_decision_count threaded through to
+    report_contract.evaluate_section_states(), proven at this gate's own
+    level (test_authority_transformer.py separately proves the real,
+    unmocked production caller passes a real int, never the None default,
+    on every live transform() call)."""
+
+    def _breach_notice_article(self):
+        return DiscoveredArticle(
+            url="https://example.test/breach", title="Breach Record",
+            summary="test", published_at="2026-08-18T00:00:00+00:00",
+            content_hash=_compute_hash("https://example.test/breach", "Breach Record"),
+            labels=["Data Breach"], source="breach_intel",
+        )
+
+    def test_omitting_role_decision_count_still_reaches_premium(self):
+        # Backward-compatibility proof: an unmigrated caller that doesn't
+        # pass role_decision_count at all keeps today's exact behavior
+        # (Section 19 stays COMPLETE via the None-sentinel default) --
+        # this is the same call the pre-RX-P1J test above makes; repeated
+        # here under this class's own name for discoverability.
+        article = self._breach_notice_article()
+        context = build_report_context(article)
+        verdict = evaluate_product_tier(
+            article, context, content_source="groq", detection_status="not_applicable", key_judgement_count=3,
+        )
+        self.assertEqual(verdict.tier, PREMIUM_LONG_FORM)
+
+    def test_a_real_caller_measuring_zero_role_decisions_caps_at_tactical(self):
+        # The mandate's own named hard-fail, proven end to end through the
+        # tier gate: a family where Section 19 is MANDATORY (breach_notice)
+        # cannot reach PREMIUM_LONG_FORM when the real, migrated count is
+        # genuinely zero -- even though every other mandatory section
+        # (including Key Judgements) is otherwise satisfied.
+        article = self._breach_notice_article()
+        context = build_report_context(article)
+        verdict = evaluate_product_tier(
+            article, context, content_source="groq", detection_status="not_applicable",
+            key_judgement_count=3, role_decision_count=0,
+        )
+        self.assertNotEqual(verdict.tier, PREMIUM_LONG_FORM)
+        self.assertIn("role_decision_matrix", verdict.mandatory_withheld)
+
+    def test_a_real_caller_measuring_real_decisions_reaches_premium(self):
+        article = self._breach_notice_article()
+        context = build_report_context(article)
+        verdict = evaluate_product_tier(
+            article, context, content_source="groq", detection_status="not_applicable",
+            key_judgement_count=3, role_decision_count=1,
+        )
+        self.assertEqual(verdict.tier, PREMIUM_LONG_FORM)
+        self.assertEqual(verdict.mandatory_withheld, ())
+
+
 if __name__ == "__main__":
     unittest.main()
