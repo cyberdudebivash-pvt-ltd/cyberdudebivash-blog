@@ -55,7 +55,7 @@ This is a CI-signal/alerting design choice, not a content-safety one — changin
 - **Option A — leave as-is.** Every integrity block stays a hard workflow failure. Keeps maximum visibility on every hallucination instance, at the cost of a red-X for what is often correct behavior.
 - **Option B — separate the signal.** Keep `validate_publication()` exactly as strict (still blocks 100% of matches, still never publishes fabricated content), but stop counting an integrity-only block (no auth/quota/unexpected errors alongside it) toward the workflow's hard exit code — e.g., exit 0 with a clearly flagged warning annotation when `failed == integrity_blocked` and no other error class occurred, reserving red-X for real pipeline failures (auth, quota, unexpected exceptions, or a run where publishing itself is broken).
 
-No code change was made for this question — it is presented for a decision, not acted on.
+**Decision (owner, 2026-08-20): Option A — leave as-is.** No code change made or planned for this question. A future integrity-only block will continue to show as a red-X workflow failure by design; that is expected, correct behavior, not a regression to re-investigate.
 
 ## Files touched by this review
 
