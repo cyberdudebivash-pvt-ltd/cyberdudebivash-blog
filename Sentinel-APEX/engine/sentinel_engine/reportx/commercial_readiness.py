@@ -241,15 +241,28 @@ def evaluate_commercial_readiness(bundle: ReportBundle, as_of: date | None = Non
     else:
         promotions = check_all_rules(bundle.detection_rules, bundle.rendered_text)
         missing_rationale = check_withheld_rules_have_rationale(bundle.detection_rules)
+        # RX-P1I fix: this must match check_withheld_rules_have_rationale()'s
+        # own state set exactly -- that function already treats
+        # TELEMETRY_SPECIFICATION ("a real telemetry plan exists, but no
+        # rule was attempted") as equally deserving the explained-not-just-
+        # declared discipline as WITHHELD_INSUFFICIENT_EVIDENCE. This check
+        # only looked for WITHHELD, so a bundle whose rules were ALL
+        # TELEMETRY_SPECIFICATION (each with a real rationale, so
+        # missing_rationale was empty) could pass this control with no
+        # intelligence_gaps recorded at all.
         withheld_present = any(
-            r.validation_state == DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE
+            r.validation_state in (
+                DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+                DetectionValidationState.TELEMETRY_SPECIFICATION,
+            )
             for r in bundle.detection_rules
         )
         gap_recorded = bool(bundle.intelligence_gaps)
         failures = [f"{v.rule_id}: {v.matched_phrase!r}" for v in promotions]
         failures += [f"{rid}: withheld rule has no recorded evidence_gap_rationale" for rid in missing_rationale]
         if withheld_present and not gap_recorded:
-            failures.append("a rule is WITHHELD_INSUFFICIENT_EVIDENCE but no intelligence_gaps are recorded in the bundle")
+            failures.append("a rule is WITHHELD_INSUFFICIENT_EVIDENCE or TELEMETRY_SPECIFICATION but no "
+                             "intelligence_gaps are recorded in the bundle")
         # RX-P1I: folded into this existing control rather than added as a
         # 24th row -- this module's own docstring names "the exact 23-row
         # matrix Section 33/46 requires" as a fixed external contract, and a

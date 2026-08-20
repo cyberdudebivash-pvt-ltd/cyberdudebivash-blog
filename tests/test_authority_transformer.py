@@ -1205,6 +1205,30 @@ class TestHuntHypothesesWiredIntoTransform(unittest.TestCase):
         )
         self.assertEqual(result["hunt_hypotheses"], [])
 
+    def test_llm_authored_cve_article_still_renders_the_hunt_section_in_published_content(self):
+        # RX-P1I fix: content_source="reportx_composer" is not the only
+        # path this needs to work on -- when the LLM call succeeds,
+        # body_content used to become ONLY the sanitized raw LLM HTML,
+        # silently dropping composer_outcome.hunt_hypotheses even though
+        # hunt_hypothesis_count was still passed to evaluate_product_tier()
+        # (Section 14 could show COMPLETE while the published page had no
+        # hunt content at all). Proven here against the real, unmocked
+        # compose_report() call -- only call_llm() is mocked.
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM-authored prose about the vulnerability.</p>", "groq"),
+        ):
+            result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(result["content_source"], "groq")
+        self.assertEqual(len(result["hunt_hypotheses"]), 1)
+        hypothesis = result["hunt_hypotheses"][0]
+        self.assertIn("Threat Hunting", result["content"])
+        self.assertIn(hypothesis["hypothesis_id"], result["content"])
+        # html.escape() because the rendered HTML entity-escapes the raw
+        # statement text (e.g. the report_id's apostrophe becomes &#x27;) --
+        # comparing the escaped form is the correct check, not a workaround.
+        self.assertIn(html.escape(hypothesis["statement"], quote=True), result["content"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -330,9 +330,14 @@ class TestAttackMapperCuratedRegistryRegressions:
     mismatch). Locked in permanently so a future edit to KNOWN_TECHNIQUES
     cannot silently drop either real, standalone MITRE technique again."""
 
-    def test_t1219_remote_access_software_is_curated(self):
-        from sentinel_engine.attack_mapper import is_valid_technique_id
+    def test_t1219_remote_access_tools_is_curated(self):
+        from sentinel_engine.attack_mapper import KNOWN_TECHNIQUES, is_valid_technique_id
         assert is_valid_technique_id("T1219")
+        # RX-P1I fix: MITRE's current official name is "Remote Access
+        # Tools" (verified live against attack.mitre.org/techniques/T1219/)
+        # -- this repo's curated label previously said "Remote Access
+        # Software", an outdated/incorrect name reaching published reports.
+        assert KNOWN_TECHNIQUES["T1219"][0] == "Remote Access Tools"
 
     def test_t1053_scheduled_task_parent_is_curated_alongside_its_sub_technique(self):
         from sentinel_engine.attack_mapper import KNOWN_TECHNIQUES, is_valid_technique_id
@@ -382,6 +387,45 @@ class TestAttackMapperCuratedRegistryRegressions:
         row = next(r for r in results if r.control_id == "detection_evidence_discipline")
         assert row.status == "FAIL"
         assert any("no intelligence_gaps are recorded" in f for f in row.failures)
+
+    def test_telemetry_specification_rule_without_recorded_gap_fails(self):
+        # RX-P1I fix: withheld_present previously only checked
+        # WITHHELD_INSUFFICIENT_EVIDENCE, so a bundle whose only rule was
+        # TELEMETRY_SPECIFICATION (with a real rationale, so
+        # missing_rationale was empty) could PASS this control with zero
+        # intelligence_gaps recorded -- inconsistent with
+        # check_withheld_rules_have_rationale(), which already treats this
+        # state as equally deserving the explained-not-just-declared
+        # discipline as WITHHELD itself.
+        bundle = ReportBundle(
+            report_id="telemetry-spec-no-gap", graph=EvidenceGraph(),
+            rendered_text="No detection status claims are made in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="", format="none",
+                validation_state=DetectionValidationState.TELEMETRY_SPECIFICATION,
+                evidence_gap_rationale="Availability-impact evidence does not justify a rule.",
+            )],
+            intelligence_gaps=[],  # the gap was never actually recorded at the report level
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "FAIL"
+        assert any("no intelligence_gaps are recorded" in f for f in row.failures)
+
+    def test_telemetry_specification_rule_with_recorded_gap_passes(self):
+        bundle = ReportBundle(
+            report_id="telemetry-spec-with-gap", graph=EvidenceGraph(),
+            rendered_text="No detection status claims are made in this excerpt.",
+            detection_rules=[DetectionRule(
+                rule_id="rule-1", technique_id="", format="none",
+                validation_state=DetectionValidationState.TELEMETRY_SPECIFICATION,
+                evidence_gap_rationale="Availability-impact evidence does not justify a rule.",
+            )],
+            intelligence_gaps=[IntelligenceGap("No product-specific telemetry sample available.", "KNOWN_UNKNOWN")],
+        )
+        results = evaluate_commercial_readiness(bundle)
+        row = next(r for r in results if r.control_id == "detection_evidence_discipline")
+        assert row.status == "PASS"
 
     def test_withheld_detection_rule_still_fails_if_downstream_text_overclaims(self):
         # Governed withholding does not weaken the existing promotion check

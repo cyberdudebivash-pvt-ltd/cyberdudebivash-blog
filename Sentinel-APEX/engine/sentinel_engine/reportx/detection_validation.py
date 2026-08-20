@@ -126,7 +126,23 @@ def check_state_promotion(rule: DetectionRule, rendered_text: str) -> list[Valid
     actually stored state (or claiming any positive state at all for a rule
     stored in one of the off-ladder terminal states -- ``WITHHELD``,
     ``NOT_APPLICABLE``, ``TELEMETRY_SPECIFICATION``; none of them is a real
-    validation attempt, so none can honestly be described as one)."""
+    validation attempt, so none can honestly be described as one).
+
+    KNOWN LIMITATION, not fixed here: ``rendered_text`` is the FULL report,
+    not the substring specific to ``rule`` -- there is no per-rule anchor in
+    the rendered HTML today to scope the search to. If one bundle ever
+    carries multiple rules with DIFFERENT validation_state values, a
+    promotion phrase that legitimately describes rule A (e.g. a real
+    PRODUCTION_VALIDATED rule) would be misattributed to rule B (e.g. a
+    NOT_APPLICABLE rule) too, since both searches run against the same
+    whole-document text. This is safe today ONLY because the one real call
+    site (pipeline_composer.compose_report() -> _detection_rules()) always
+    derives every rule in a bundle from the same single DetectionPackage.status,
+    so every rule in a real bundle currently shares one validation_state --
+    see test_check_all_rules_scope_is_whole_document_not_per_rule (locks
+    this invariant in; if it starts failing, this function's per-rule
+    scoping needs the real fix, not just a wider test). A real fix requires
+    rendering-level per-rule text anchors, a separate, larger change."""
 
     violations: list[ValidationStateViolation] = []
 

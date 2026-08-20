@@ -40,6 +40,7 @@ from .report_renderer import (
     _detection_section,
     _esc,
     _family_analysis,
+    _panel,
     _provenance,
     _section,
     render_evidence_report,
@@ -757,6 +758,44 @@ def _render_key_judgements_html(key_judgements: tuple) -> str:
             )
         items.append("".join(parts))
     return _section("Key Judgements", _bullets(items, "#00d4ff"), "#00d4ff")
+
+
+def _render_hunt_hypotheses_html(hunt_hypotheses: tuple) -> str:
+    """RX-P1I fix: mirrors pipeline_composer.compose_report()'s own inline
+    hunt-hypothesis renderer (same section title, colors, and field order)
+    so the two content paths produce visually identical output -- but reads
+    the ``HuntHypothesis.to_dict()`` dict shape ``_ComposerOutcome.
+    hunt_hypotheses`` actually stores, not the dataclass. Needed because
+    transform()'s LLM-authored path (body_content = the sanitized raw LLM
+    HTML) never included composer_outcome.html at all, so its embedded
+    hunt_html was silently dropped even though hunt_hypothesis_count was
+    still passed to evaluate_product_tier() -- a report could show Section
+    14 as COMPLETE while the actually-published page had no hunt content.
+    Called unconditionally in transform(), same pattern as
+    _render_key_judgements_html() above, so both paths get the same
+    content regardless of which one authored the narrative body."""
+    return "".join(
+        _section(
+            f"Threat Hunting — {h['hypothesis_id']}",
+            _panel(f'<p style="margin:0"><strong>Hypothesis:</strong> {_esc(h["statement"])}</p>')
+            + _bullets(["<strong>Required telemetry:</strong> " + _esc(t) for t in h["required_telemetry"]]
+                       + ["<strong>Pivot:</strong> " + _esc(p) for p in h["pivot_opportunities"]]
+                       + ["<strong>Expected if true:</strong> " + _esc(e) for e in h["expected_observations"]]
+                       + ["<strong>Negative indicator:</strong> " + _esc(n) for n in h["negative_indicators"]]
+                       + ["<strong>False-positive risk:</strong> " + _esc(f) for f in h["false_positive_considerations"]],
+                       "#a855f7")
+            + _panel(
+                f'<p style="margin:0 0 8px"><strong>Success criteria:</strong> {_esc(h["success_criteria"])}</p>'
+                f'<p style="margin:0 0 8px"><strong>Escalation criteria:</strong> {_esc(h["escalation_criteria"])}</p>'
+                f'<p style="margin:0 0 8px"><strong>Confidence:</strong> {_esc(h["confidence"])} &mdash; '
+                f'<strong>Maturity:</strong> {_esc(h["maturity"])} (not independently confirmed by execution '
+                f'against real telemetry)</p>'
+                f'<p style="margin:0"><strong>Limitations:</strong> {_esc(h["limitations"])}</p>'
+            ),
+            "#a855f7",
+        )
+        for h in hunt_hypotheses
+    )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2013,6 +2052,20 @@ class AuthorityTransformer:
             )
             if key_judgements:
                 body_content = body_content + _render_key_judgements_html(key_judgements)
+
+        # RX-P1I fix: composer_outcome.hunt_hypotheses is computed
+        # unconditionally by _composer_enhance() above (real for cve_advisory
+        # articles), but was only ever reaching the published page when
+        # content_source == "reportx_composer" -- composer_outcome.html
+        # already has hunt_html baked in for that path (pipeline_composer.
+        # compose_report()'s own html = base.html + role_html +
+        # reliability_html + hunt_html), so appending here again would
+        # duplicate it. Every other path (LLM-authored, template fallback)
+        # never included it at all despite hunt_hypothesis_count still being
+        # passed to evaluate_product_tier() below -- Section 14 could show
+        # COMPLETE while the actually-published page had no hunt content.
+        if content_source != "reportx_composer" and composer_outcome.hunt_hypotheses:
+            body_content = body_content + _render_hunt_hypotheses_html(composer_outcome.hunt_hypotheses)
 
         # RX-P1B-WIRE: analytical_depth_gate.py + report_contract.py (the
         # founder-mandate 24-section contract + FLASH/TACTICAL/PREMIUM_LONG_FORM

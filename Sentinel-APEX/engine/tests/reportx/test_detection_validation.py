@@ -111,3 +111,65 @@ class TestWithheldRuleRationaleRequirement:
         rule = DetectionRule(rule_id="r1", technique_id="", format="none",
                               validation_state=DetectionValidationState.NOT_APPLICABLE)
         assert check_withheld_rules_have_rationale([rule]) == []
+
+
+class TestCheckAllRulesScopeIsWholeDocumentNotPerRule:
+    """KNOWN LIMITATION (documented in check_state_promotion()'s own
+    docstring, not fixed here -- a real fix needs rendering-level per-rule
+    text anchors, a separate, larger change): the promotion-phrase search
+    runs against the FULL rendered_text for every rule, not a substring
+    scoped to that specific rule. A phrase legitimately describing rule A
+    can therefore be misattributed to rule B if they're both checked
+    against the same whole-document text."""
+
+    def test_check_all_rules_scope_is_whole_document_not_per_rule(self):
+        # Deliberately demonstrates the limitation exists, so a future
+        # reader doesn't have to rediscover it: text describing a REAL
+        # PRODUCTION_VALIDATED rule (r-real) also gets attributed as a
+        # promotion violation against an unrelated NOT_APPLICABLE rule
+        # (r-na) in the same bundle, purely because both share one
+        # rendered_text search space.
+        rules = [
+            DetectionRule(rule_id="r-real", technique_id="T1486", format="sigma",
+                          validation_state=DetectionValidationState.PRODUCTION_VALIDATED),
+            DetectionRule(rule_id="r-na", technique_id="", format="none",
+                          validation_state=DetectionValidationState.NOT_APPLICABLE),
+        ]
+        text = "r-real is a genuine, production-validated detection rule for T1486."
+        violations = check_all_rules(rules, text)
+        # The real rule correctly has no violation against its own accurate description...
+        assert not any(v.rule_id == "r-real" for v in violations)
+        # ...but the unrelated NOT_APPLICABLE rule is ALSO flagged, because
+        # the same "production-validated" phrase appears anywhere in the
+        # shared search text -- this is the known, accepted limitation.
+        assert any(v.rule_id == "r-na" for v in violations)
+
+    def test_the_one_real_call_site_never_produces_mixed_validation_states_in_one_bundle(self):
+        # This is WHY the limitation above is safe in production today: the
+        # only real caller (pipeline_composer.compose_report() ->
+        # _detection_rules()) derives every DetectionRule in a bundle from
+        # the SAME single DetectionPackage.status via one shared lookup
+        # table, so every rule in a real bundle always shares one
+        # validation_state. If this ever stops being true, the limitation
+        # above becomes live and check_state_promotion() needs the real,
+        # rendering-level fix -- this test is the tripwire.
+        import sys
+        from pathlib import Path
+
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+        from automation.content_discovery import DiscoveredArticle
+        from automation.config import Config
+        from sentinel_engine.reportx.pipeline_composer import compose_report
+
+        article = DiscoveredArticle(
+            url="https://nvd.nist.gov/vuln/detail/CVE-2026-88888", title="CVE-2026-88888 test vulnerability",
+            summary="A SQL injection flaw in the login form allows authentication bypass.",
+            published_at="2026-08-20T00:00:00Z", content_hash="scopeguard1",
+            labels=["Vulnerabilities"], source="nvd", cve_id="CVE-2026-88888",
+        )
+        result = compose_report(article, Config())
+        states = {r.validation_state for r in result.bundle.detection_rules}
+        assert len(states) <= 1, (
+            f"expected every rule in one real bundle to share a single validation_state, got {states} -- "
+            "check_state_promotion()'s whole-document scoping is no longer safe, see its docstring"
+        )
