@@ -210,6 +210,71 @@ class TestBloggerPublish(unittest.TestCase):
                 with self.assertRaises(BloggerRateLimitError):
                     self.publisher.update_post("post-abc-123", "Title", "<p>safe</p>", [])
 
+    def test_get_post_returns_full_body(self):
+        # ReportX Phase 1Q: unlike publish_post()'s own create response
+        # (fetchBody=false), get_post() must return the real, full content
+        # Blogger currently serves for this post.
+        mock_resp = MagicMock()
+        mock_resp.raise_for_status = MagicMock()
+        mock_resp.json.return_value = {
+            "id": "post-abc-123", "title": "Live Title", "content": "<p>Live content</p>",
+            "labels": ["Vulnerabilities"], "status": "LIVE",
+        }
+        with patch("requests.get", return_value=mock_resp) as mock_get:
+            result = self.publisher.get_post("post-abc-123")
+        self.assertEqual(result["content"], "<p>Live content</p>")
+        args, kwargs = mock_get.call_args
+        self.assertIn("posts/post-abc-123", args[0])
+
+    def test_get_post_raises_on_http_error(self):
+        import requests as req_lib
+        mock_resp = MagicMock()
+        mock_resp.raise_for_status.side_effect = req_lib.HTTPError("404 Not Found")
+        with patch("requests.get", return_value=mock_resp):
+            with self.assertRaises(req_lib.HTTPError):
+                self.publisher.get_post("missing-post")
+
+    def test_publish_raises_when_response_reports_non_live_status(self):
+        # ReportX Phase 1P hard gate: HTTP 200 alone must not be trusted --
+        # if Blogger's own response says the post isn't LIVE for a
+        # non-draft publish request, that is a real, detectable failure
+        # (e.g. a quota/permission edge case silently downgrading to a
+        # draft) that raise_for_status() alone can never catch.
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.ok = True
+        mock_resp.raise_for_status = MagicMock()
+        mock_resp.json.return_value = {
+            "id": "post-abc-123", "url": "https://cyberbivash.blogspot.com/x", "status": "DRAFT",
+        }
+        with patch("requests.post", return_value=mock_resp):
+            with self.assertRaises(BloggerPublishError):
+                self.publisher.publish_post("Title", "<p>x</p>", [], is_draft=False)
+
+    def test_publish_succeeds_when_response_reports_live_status(self):
+        mock_resp = self._mock_publish_success()
+        mock_resp.json.return_value = {**mock_resp.json.return_value, "status": "LIVE"}
+        with patch("requests.post", return_value=mock_resp):
+            result = self.publisher.publish_post("Title", "<p>x</p>", [], is_draft=False)
+        self.assertEqual(result["status"], "LIVE")
+
+    def test_publish_permissive_when_response_has_no_status_field(self):
+        # Backward compatible: every existing caller/test whose mocked (or
+        # real) response has no "status" key at all -- including
+        # test_successful_publish_returns_post_data above -- must keep
+        # working exactly as before. The hard gate only fires when the
+        # field is present and explicitly says something other than LIVE.
+        with patch("requests.post", return_value=self._mock_publish_success()):
+            result = self.publisher.publish_post("Title", "<p>x</p>", [], is_draft=False)
+        self.assertEqual(result["id"], "post-abc-123")
+
+    def test_publish_gate_does_not_apply_to_draft_requests(self):
+        mock_resp = self._mock_publish_success()
+        mock_resp.json.return_value = {**mock_resp.json.return_value, "status": "DRAFT"}
+        with patch("requests.post", return_value=mock_resp):
+            result = self.publisher.publish_post("Title", "<p>x</p>", [], is_draft=True)
+        self.assertEqual(result["status"], "DRAFT")
+
     def test_health_check_passes(self):
         mock_resp = MagicMock()
         mock_resp.ok = True

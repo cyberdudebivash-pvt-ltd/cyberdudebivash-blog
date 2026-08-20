@@ -1,7 +1,7 @@
 # REPORTX Phase 1 — Resume Checkpoint
 
-**Written:** 2026-08-20 (updated — supersedes the pre-Phase-1N version)
-**Written by:** Claude (this session — platform-transformation-review round, continued through Phase 1N)
+**Written:** 2026-08-20 (updated — supersedes the pre-Phase-1P/1Q version)
+**Written by:** Claude (this session — platform-transformation-review round, continued through Phase 1P/1Q)
 **Why this exists:** the governing mandate spans phases 1F–1Q (and further, 1R+). This document
 lets any future session — mine or another Claude instance's — resume without repeating
 investigation already done.
@@ -13,8 +13,8 @@ investigation already done.
 | Field | Value |
 |---|---|
 | Branch | `claude/platform-transformation-review-ycyihz` |
-| `origin/main` HEAD | Check `git log origin/main -5` fresh — this repo's own automation merges `claude/*` PRs and pushes direct `[skip ci]` content commits continuously (often multiple times per hour), so `origin/main` moves fast. Confirmed this round: branch started exactly at `origin/main`'s then-HEAD (`f7b6ba3`), i.e. Phase 1M's changes were already on `main` before this round began. |
-| Open PRs from this round | Check fresh — every prior phase's PR self-merged near-instantly (this repo's own automation opens and merges `claude/*` branch PRs; not something any session did manually); Phase 1N's PR is expected to behave the same way. |
+| `origin/main` HEAD | Check `git log origin/main -5` fresh — this repo's own automation merges `claude/*` PRs and pushes direct `[skip ci]` content commits continuously (often multiple times per hour), so `origin/main` moves fast. Confirmed this round: Phase 1N's PR (#121) self-merged within seconds of being pushed, exactly as every prior phase's PR has. |
+| Open PRs from this round | Check fresh — every prior phase's PR self-merged near-instantly (this repo's own automation opens and merges `claude/*` branch PRs; not something any session did manually); Phase 1P/1Q's PR is expected to behave the same way. |
 | Working tree | Should be re-synced to `origin/main` before starting genuinely new work — confirm first whether this round's PR has already merged. |
 
 ## 2. What happened this round (chronological)
@@ -86,7 +86,32 @@ investigation already done.
    with a 2-branch cap (`_capped_tier_result()`) plus a new, real, importable `TIER_RANK` constant
    (previously only an ad hoc test-local ranking existed). Root unchanged at 541 (no root files
    touched), engine 1056→1062 (+6 new tests, +1 pre-existing unrelated failure reconfirmed
-   unchanged), JS unchanged at 123 (no JS files touched).
+   unchanged), JS unchanged at 123 (no JS files touched). Merged to `main` as PR #121 (auto-merged
+   near-instantly, per this repo's established pattern).
+6. **Phase 1P/1Q — Blogger hard gate + post-publication fetch-back.** User directed continuation
+   ("keep going on content-quality phases"). Completed, tested, certified
+   `RELEASE_CERTIFIED_WITH_LIMITATIONS` (same qualifier Phase 1F carries — mechanism real and
+   tested, live-Blogger validation pending owner authorization to trigger an actual publish). Full
+   detail: `docs/audits/REPORTX-PHASE1P-1Q-BLOGGER-HARD-GATE-FETCH-BACK-CERTIFICATION.md`. Summary:
+   traced the real Blogger publish path (`automation/main.py` → `authority_transformer.transform()`
+   → `report_integrity.validate_publication()` → `blogger_publisher.publish_post()`) and confirmed
+   post-publication fetch-back was genuinely `NOT_IMPLEMENTED`, matching the prior capability
+   reconciliation's own finding. Built two additive pieces: (1P) a narrow hard gate in
+   `publish_post()` that raises when Blogger's own response reports a non-`LIVE` status for a
+   non-draft publish request (permissive when the field is absent, so every existing caller/test
+   keeps working unchanged) — catches a real failure class (quota/permission edge case silently
+   downgrading a publish to a draft) `raise_for_status()` alone can never see; (1Q) a new module
+   (`automation/publication_verifier.py`) that fetches a freshly-published post back
+   (`BloggerPublisher.get_post()`, new method) and compares it against the intended artifact for 6
+   specific defect classes (title/labels mismatch, stripped provenance marker, stripped source-URL
+   comment, placeholder pattern, content-length collapse), reusing `legacy_quality_auditor.py`'s
+   existing `_PLACEHOLDERS`/`_source_url()` primitives rather than redeclaring them. Deliberately
+   never treats exact-content inequality alone as a defect (Blogger's own save-time normalization is
+   real and expected) and never raises (a verification finding must never be confused with a publish
+   failure on an already-live post) — wired into `run_pipeline()` as an additive, observability-only
+   step (`report["fetch_back_discrepancies"]`, `post_result["fetch_back"]`), never an automatic
+   corrective action on live content. All mocked-HTTP; no live Blogger call made. Root 541→563 (+22
+   new tests), engine/JS untouched and reconfirmed unchanged (1061/1062, 123).
 
 ## 3. Certification status
 
@@ -101,8 +126,9 @@ investigation already done.
 | Phase 1J (role decision quality) | `RELEASE_CERTIFIED` — merged (#119) |
 | Phase 1K (24-section semantic population) | `RELEASE_CERTIFIED` — 3 real defects found and fixed (Section 6/21 missing-render, Section 22 dormant module), 1 applicability reconciliation, 1 second independent wiring gap found via premium-candidate benchmarking. Zero regressions. |
 | Phase 1M (semantic/factual QA) | `RELEASE_CERTIFIED` — 3 real defects found and fixed (contradiction-check reach, exploitation-pattern drift, no general quantitative-claim grounding), 1 new hard gate (ransomware confirmed-breach), explicit verification-status vocabulary wired end to end. 3 real false positives found via real-data validation, root-caused, and fixed with regression tests. Zero regressions. |
-| **Phase 1N (premium certification ladder audit)** | **`RELEASE_CERTIFIED`** — this round. Confirmed no aggregate score overrides the hard gate anywhere (traced every real consumer, not just inspected intent). Found and fixed 1 real defect: `determine_achieved_tier()` could outrank the requested tier at the real production call shape (`requested_tier=FLASH_READY`), mislabeling routine articles' reader-facing certification badge as `TACTICAL_READY`. Real before/after against actual `compose_report()` output on 3 representative article families. Zero regressions. Full detail in the Phase 1N certification doc. |
-| Phase 1P onward | Not started |
+| Phase 1N (premium certification ladder audit) | `RELEASE_CERTIFIED` — merged (#121). Confirmed no aggregate score overrides the hard gate anywhere (traced every real consumer, not just inspected intent). Found and fixed 1 real defect: `determine_achieved_tier()` could outrank the requested tier at the real production call shape (`requested_tier=FLASH_READY`), mislabeling routine articles' reader-facing certification badge as `TACTICAL_READY`. Real before/after against actual `compose_report()` output on 3 representative article families. Zero regressions. |
+| **Phase 1P/1Q (Blogger hard gate + post-publication fetch-back)** | **`RELEASE_CERTIFIED_WITH_LIMITATIONS`** — this round (same qualifier as Phase 1F: mechanism real and tested, live-Blogger validation pending owner authorization). Built and wired a Blogger-response hard gate (non-`LIVE` status on a non-draft publish now raises) and a new post-publication fetch-back module (6 defect classes, reusing `legacy_quality_auditor.py` primitives) into the real publish pipeline, entirely with mocked HTTP — no live Blogger call made. Zero regressions. Full detail in the Phase 1P/1Q certification doc. |
+| Phase 1R onward | Not started |
 
 Full detail: see each phase's own certification doc under `docs/audits/`.
 
@@ -113,7 +139,7 @@ cd /home/user/cyberdudebivash-blog
 python3 -m venv <scratchpad>/venv && source <scratchpad>/venv/bin/activate
 pip install -r requirements.txt pytest pytest-timeout   # fresh container: neither pytest nor
                                                           # project deps are preinstalled globally
-python -m pytest tests/ -q                                                # Expect: 541 passed
+python -m pytest tests/ -q                                                # Expect: 563 passed
 cd /home/user/cyberdudebivash-blog/Sentinel-APEX/engine && python -m pytest tests/ -q    # Expect: 1062 passed, 1 pre-existing unrelated failure
 cd /home/user/cyberdudebivash-blog
 node --test tests-js/*.test.js                           # Expect: 123 passed
@@ -146,12 +172,16 @@ anything touched.
 
 ## 5. Next exact action if resuming
 
-**Phase 1N is certified.** Real, separate, comparably-sized pieces of work remain, named but not
-started — pick one per round, same audit-first/evidence-based discipline as every phase so far:
+**Phase 1P/1Q is certified (`RELEASE_CERTIFIED_WITH_LIMITATIONS`).** Real, separate, comparably-sized
+pieces of work remain, named but not started — pick one per round, same audit-first/evidence-based
+discipline as every phase so far:
 
-1. **Phase 1P/1Q** — Blogger hard gate + post-publication fetch-back. The verification *machinery*
-   can be built and tested without a live publish. **Actually triggering a real Blogger publish
-   requires explicit owner authorization** — established policy, unchanged, non-negotiable.
+1. **A real, live-Blogger-authorized canary for Phase 1P/1Q** — the one item on this list that is
+   NOT a next-round engineering task: the mechanism is built and tested (§2 of the Phase 1P/1Q
+   certification doc), but whether it behaves correctly against Blogger's *real* API (does a fresh
+   post's fetch-back actually 200 immediately, or need a retry; what does Blogger's real save-time
+   HTML normalization actually look like against the 50% collapse threshold) is unverified and
+   requires the owner to authorize an actual publish. Not to be attempted unilaterally.
 2. **The remaining Phase 1K sections** — Sections 4 (Intelligence Requirements), 10 (Attack Path),
    16 (Indicators/Observables), 17 (Business Impact), 20 (Time-bound Actions) have no real
    evidence-extraction capability in this pipeline at all; building one for any of them is new
@@ -220,8 +250,9 @@ reviewer.
 ## 7. Items still requiring explicit owner authorization before executing
 
 - Live Blogger publish canary (customer-visible, hard to reverse) — not to be done unilaterally.
-  This directly blocks any *real* completion of Phase 1P/1Q (§5 item 2) — the verification code can
-  be built and tested, but the actual publish action needs the owner's go-ahead.
+  This directly blocks any *real* completion of Phase 1P/1Q (§5 item 1) — the verification code is
+  now built and tested (§2 of the Phase 1P/1Q certification doc), but the actual publish action
+  needed to validate it against Blogger's real API needs the owner's go-ahead.
 - Live LLM provider canary for Key Judgements (lower-stakes, doesn't touch the public site, but
   still worth raising with the owner rather than running silently) — the existing `workflow_dispatch`
   canary mechanism is the right tool if authorized.

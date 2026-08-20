@@ -112,6 +112,21 @@ class BloggerPublisher:
         resp.raise_for_status()
         return resp.json().get("items", [])
 
+    def get_post(self, post_id: str) -> dict:
+        """Fetch one post by ID with its full body (ReportX Phase 1Q,
+        mandate Section 26 "post-publication fetch-back") -- the real,
+        separate GET this closes the loop with: ``publish_post()`` sends
+        ``fetchBody=false`` on its own create response (a deliberate,
+        unrelated optimization -- the caller already has the content it
+        just sent), so a successful create response alone never proves
+        what Blogger now actually persists and serves. This calls the same
+        ``GET /posts/{postId}`` endpoint ``list_recent_posts()`` already
+        uses in bulk, for one specific post by ID instead."""
+        url = f"{BLOGGER_API_BASE}/blogs/{self.config.blogger_blog_id}/posts/{post_id}"
+        resp = requests.get(url, headers=self._headers(), timeout=20)
+        resp.raise_for_status()
+        return resp.json()
+
     # ------------------------------------------------------------------ #
     # Publishing                                                            #
     # ------------------------------------------------------------------ #
@@ -192,11 +207,34 @@ class BloggerPublisher:
                 resp.raise_for_status()
                 post_data = resp.json()
 
+                # ReportX Phase 1P hard gate (mandate Section 26): an HTTP
+                # 200 only proves Blogger ACCEPTED the request -- it does
+                # not by itself prove the post is actually live. Blogger's
+                # own Post resource carries a "status" field (LIVE/DRAFT/
+                # SCHEDULED) in its create response; if a live publish was
+                # requested but the response says otherwise, that is a real,
+                # detectable Blogger-side failure mode (a quota/permission
+                # edge case silently downgrading to a draft) that raise_for_
+                # status() alone can never catch. Deliberately permissive
+                # when the field is absent -- this must never invent a
+                # failure the response didn't actually report, and every
+                # existing caller/test whose mocked response has no
+                # "status" key keeps its current behavior exactly.
+                if not is_draft:
+                    reported_status = post_data.get("status")
+                    if reported_status and reported_status != "LIVE":
+                        raise BloggerPublishError(
+                            f"Blogger accepted the publish request (HTTP {resp.status_code}) but "
+                            f"reports status={reported_status!r}, not LIVE, for a non-draft publish "
+                            f"request -- post_id={post_data.get('id')!r}"
+                        )
+
                 logger.info(
                     "Post published successfully",
                     extra={
                         "post_id": post_data.get("id"),
                         "url": post_data.get("url"),
+                        "status": post_data.get("status"),
                         "title": title[:60],
                         "attempt": attempt,
                     },
