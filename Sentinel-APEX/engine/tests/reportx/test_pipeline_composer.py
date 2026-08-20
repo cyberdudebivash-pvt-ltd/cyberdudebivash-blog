@@ -15,10 +15,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 from automation.config import Config
 from automation.content_discovery import DiscoveredArticle
 
+from sentinel_engine.reportx.commercial_readiness import ControlResult
 from sentinel_engine.reportx.contradiction_engine import Contradiction
 from sentinel_engine.reportx.human_review import CertificationState
+from sentinel_engine.reportx.intelligence_validation import ValidationDimension
 from sentinel_engine.reportx.pipeline_composer import _dimension_tags_for, compose_report
-from sentinel_engine.reportx.tier_downgrade import CORRECTNESS_CONTROLS
+from sentinel_engine.reportx.tier_downgrade import CORRECTNESS_CONTROLS, determine_achieved_tier
 
 CONFIG = Config()
 
@@ -838,3 +840,111 @@ class TestRXP1KForecastWiring:
         assert next(r.state.value for r in kev_resolutions if r.section == SECTION_22_FORECAST_OUTLOOK) == "COMPLETE"
         assert next(r.state.value for r in non_kev_resolutions if r.section == SECTION_22_FORECAST_OUTLOOK) == \
             "WITHHELD_INSUFFICIENT_EVIDENCE"
+
+
+class TestRXP1NRoleDecisionsReachTheScorecard:
+    """RX-P1N: evaluate_intelligence_validation()'s call site only ever
+    passed hunt_hypotheses in SupplementalEvidence -- role_decisions
+    (computed earlier in the same function, real and gate-passed since
+    RX-P1J) was never added even after the role-decision system existed.
+    Every report's Executive Decision Support / Business Context dimensions
+    therefore always reported "no role decisions supplied," including for
+    families that genuinely have CEO/Board-, CISO/CIO-, or business-facing
+    decisions. Distinct from -- and not covered by --
+    test_intelligence_validation.py's own unit-level dimension tests, which
+    always construct a fresh SupplementalEvidence themselves rather than
+    inspecting compose_report()'s own internally-computed
+    ComposedReport.scorecard."""
+
+    def test_ai_security_role_decision_reaches_the_composed_scorecard(self):
+        # ai_security gets a real CISO_CIO-targeted role decision
+        # (TestRXP1HRoleRoutingForPreviouslyUnroutedFamilies above) --
+        # before the fix, EXECUTIVE_DECISION_SUPPORT was BLOCKED here
+        # regardless, because SupplementalEvidence.role_decisions was
+        # always (), never the real tuple compose_report() had on hand.
+        result = compose_report(_ai_security_article(), CONFIG)
+        assert result.role_decisions, "fixture must produce at least one real role decision"
+        dim = result.scorecard.dimension(ValidationDimension.EXECUTIVE_DECISION_SUPPORT)
+        assert dim.status != "BLOCKED", (
+            f"Executive Decision Support was BLOCKED even though this report has real role "
+            f"decisions -- role_decisions is not reaching the scorecard. Rationale: {dim.rationale}"
+        )
+
+    def test_scorecard_role_decisions_match_the_reports_own_role_decisions(self):
+        # Direct plumbing proof, from the other direction: confirms the
+        # exact same role_decisions tuple compose_report() returns on the
+        # ComposedReport is what reached the scorecard -- not a separately
+        # re-derived or stale copy.
+        with patch(
+            "sentinel_engine.reportx.pipeline_composer.evaluate_intelligence_validation",
+        ) as mocked:
+            from sentinel_engine.reportx.intelligence_validation import IntelligenceScorecard
+            mocked.return_value = IntelligenceScorecard(
+                report_id="x", dimension_scores=(), overall_score=0, coverage=0.0,
+                publication_eligible=False, blocking_reasons=(), evaluated_at="",
+            )
+            result = compose_report(_ai_security_article(), CONFIG)
+        mocked.assert_called_once()
+        _, kwargs = mocked.call_args
+        assert kwargs["supplemental"].role_decisions == tuple(result.role_decisions)
+        assert kwargs["supplemental"].hunt_hypotheses == tuple(result.hunt_hypotheses)
+
+
+class TestRXP1NAchievedTierNeverConsultsTheScorecard:
+    """RX-P1N mandate: 'confirm no single high aggregate score can override
+    a hard failure.' determine_achieved_tier() (the ladder actually gating
+    live publication via context.achieved_tier / report_integrity.
+    validate_publication()) and evaluate_intelligence_validation() (the
+    20-dimension weighted scorecard, deliberately observability-only --
+    see ComposedReport.scorecard's own docstring) are architecturally
+    independent: compose_report() computes `downgrade` BEFORE it ever calls
+    evaluate_intelligence_validation() at all, so achieved_tier cannot be a
+    function of the scorecard even in principle. Proven here empirically,
+    not just by reading the source: forcing the scorecard to report a
+    maximal, fully-eligible result does not change achieved_tier for a
+    report that independently earns a downgrade.
+
+    The existing, thorough 'try to game it' coverage for each ladder
+    individually already lives in test_tier_downgrade.py (every correctness
+    control FAILing individually bottoms out the tier, a correctness
+    failure outranks an otherwise-perfect 22/23 report) and
+    test_intelligence_validation.py (TestBinaryDimensionFailurePropagation,
+    TestScorecardAssembly -- a hard_fail is never laundered into a PASS by
+    partial credit) -- not duplicated here."""
+
+    def test_an_artificially_perfect_scorecard_does_not_rescue_a_real_downgrade(self):
+        routine = compose_report(_cve_article(), CONFIG)
+        assert routine.downgrade.was_downgraded  # baseline: this article genuinely downgrades
+
+        from sentinel_engine.reportx.intelligence_validation import IntelligenceScorecard
+        fake_perfect_scorecard = IntelligenceScorecard(
+            report_id="x", dimension_scores=(), overall_score=100, coverage=1.0,
+            publication_eligible=True, blocking_reasons=(), evaluated_at="",
+        )
+        with patch(
+            "sentinel_engine.reportx.pipeline_composer.evaluate_intelligence_validation",
+            return_value=fake_perfect_scorecard,
+        ):
+            gamed = compose_report(_cve_article(), CONFIG)
+
+        assert gamed.scorecard.overall_score == 100
+        assert gamed.scorecard.publication_eligible is True
+        assert gamed.downgrade.achieved_tier == routine.downgrade.achieved_tier
+        assert gamed.downgrade.was_downgraded, (
+            "an artificially perfect, fully-eligible scorecard must never change achieved_tier"
+        )
+
+    def test_control_results_fed_to_both_ladders_are_the_real_same_object(self):
+        # Both determine_achieved_tier() and evaluate_intelligence_validation()
+        # must be gated by the SAME real 23-control results this report
+        # actually earned -- neither ladder is allowed its own, separately
+        # computed view of correctness that could drift from the other.
+        with patch(
+            "sentinel_engine.reportx.pipeline_composer.determine_achieved_tier",
+            wraps=determine_achieved_tier,
+        ) as wrapped_downgrade:
+            result = compose_report(_cve_article(), CONFIG)
+        wrapped_downgrade.assert_called_once()
+        called_control_results = wrapped_downgrade.call_args[0][0]
+        assert called_control_results == result.control_results
+        assert all(isinstance(r, ControlResult) for r in called_control_results)

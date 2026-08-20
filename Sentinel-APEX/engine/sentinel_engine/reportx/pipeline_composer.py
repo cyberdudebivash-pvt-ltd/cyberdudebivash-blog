@@ -861,8 +861,21 @@ def compose_report(
     # scorecard's Threat Hunting Guidance dimension for the first time --
     # previously this call never passed a `supplemental` argument at all,
     # so that dimension always reported "No hunt hypotheses supplied."
+    # RX-P1N: role_decisions (computed above, real and gate-passed since
+    # RX-P1J) was never added here even after the role-decision system was
+    # built -- Executive Decision Support and Business Context always
+    # reported "No ... role decisions supplied" for every report, including
+    # ones that genuinely have CEO/Board-, CISO/CIO-, or business-facing
+    # decisions. This scorecard does not gate live publication (see
+    # ComposedReport.scorecard's own docstring -- deliberately observability-
+    # only, pending a separate calibration decision), but its accuracy still
+    # matters: that future calibration decision must be made from real
+    # coverage, not artificially low coverage caused by a wiring gap.
     scorecard = evaluate_intelligence_validation(
-        bundle, control_results, supplemental=SupplementalEvidence(hunt_hypotheses=tuple(hunt_hypotheses)),
+        bundle, control_results,
+        supplemental=SupplementalEvidence(
+            hunt_hypotheses=tuple(hunt_hypotheses), role_decisions=tuple(role_decisions),
+        ),
     )
 
     return ComposedReport(

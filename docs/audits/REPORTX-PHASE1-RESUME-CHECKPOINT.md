@@ -1,7 +1,7 @@
 # REPORTX Phase 1 — Resume Checkpoint
 
-**Written:** 2026-08-20 (updated — supersedes the pre-Phase-1M version)
-**Written by:** Claude (this session — production-session-recovery round, continued through Phase 1M)
+**Written:** 2026-08-20 (updated — supersedes the pre-Phase-1N version)
+**Written by:** Claude (this session — production-session-recovery round, continued through Phase 1N)
 **Why this exists:** the governing mandate spans phases 1F–1Q (and further, 1R+). This document
 lets any future session — mine or another Claude instance's — resume without repeating
 investigation already done.
@@ -13,9 +13,9 @@ investigation already done.
 | Field | Value |
 |---|---|
 | Branch | `claude/production-session-recovery-036t5a` |
-| `origin/main` HEAD | Check `git log origin/main -5` fresh. Confirmed this round: Phase 1J was auto-merged into `main` as **PR #119** within seconds of being pushed (this repo's own automation opens and merges `claude/*` branch PRs; not something this session did manually). Phase 1K's and Phase 1M's changes are committed on this branch as of this checkpoint; check whether the same auto-merge has already landed them on `main` too before assuming otherwise. |
-| Open PRs from this round | Check fresh — Phase 1J's PR #119 self-merged near-instantly; later phases' PRs may behave the same way. |
-| Working tree | Should be re-synced to `origin/main` before starting genuinely new work — confirm first whether this round's PR has already merged. |
+| `origin/main` HEAD | Check `git log origin/main -5` fresh. **Confirmed this round via the GitHub API** (not git-log inference alone): this repo's own automation opens and auto-merges a PR from this branch onto `main` within about a minute of every push — Phase 1J merged as PR #119 (a regular merge, matching commit hash); Phase 1K + Phase 1M merged **together** as PR #120 (a **squash merge** — new commit hash, `head.sha` matching this branch's pushed tip exactly, verified with `pull_request_read`). A squash merge means the branch's own commits never become ancestors of `main` — after any auto-merge, this branch's history has *diverged* from `main` even though the file content is identical. Restarting the branch (`git checkout -B claude/production-session-recovery-036t5a origin/main`) requires a `force-with-lease` push, which the auto-mode permission classifier blocks by default — asking the user for explicit go-ahead is the correct next step, but is **not required** to keep working: it is equally correct, and force-push-free, to just keep committing new work on top of the branch's current (already-merged, already-pushed) tip instead of resetting to `origin/main` first. That is what this round did. |
+| Open PRs from this round | Check fresh — every PR so far has self-merged within ~1 minute of the push that created it. |
+| Working tree | Whatever this branch's tip currently is, it is safe to build on directly — confirm via `pull_request_read`/`list_pull_requests` (GitHub API, not just `git log`) whether it has already merged before assuming it needs a fresh PR. |
 
 ## 2. What happened this round (chronological)
 
@@ -25,45 +25,47 @@ investigation already done.
    existed anywhere (fresh container) — re-implemented from scratch after a fresh architecture
    audit, not copied from the transcript's own claims.
 2. **Phase 1J — role decision quality.** Completed, tested, real-data-validated, certified
-   `RELEASE_CERTIFIED`. Merged into `main` as PR #119. Full detail:
-   `docs/audits/REPORTX-PHASE1J-ROLE-DECISION-CERTIFICATION.md`. Root 486→497, engine
-   1026→1045 (+1 pre-existing unrelated failure), JS 123 unchanged.
-3. **Phase 1K — 24-section semantic population.** User explicitly directed continuation into this
-   phase. Completed, tested, real-data-validated, certified `RELEASE_CERTIFIED`. Full detail:
-   `docs/audits/REPORTX-PHASE1K-24-SECTION-CERTIFICATION.md` and its companion audit
-   `docs/audits/REPORTX-PHASE1K-SECTION-AUDIT.md`. Summary: audited all 24 sections against what
-   actually reaches `transform()`'s published output on all 3 real content paths (not just
-   section-state claims); found and fixed 3 real defects — Section 6 (Evidence & Source
-   Assessment) claimed unconditional COMPLETE but its real content reached only 1 of 3 content
-   paths; Section 21 (Intelligence Gaps) claimed PARTIAL_EVIDENCE but had **never once** been
-   rendered on **any** path, including the composer's own; Section 22 (Forecast/Outlook) had a
-   real, tested, certified module (`forecast.py`) never imported by the live pipeline at all — the
-   4th recurrence of the "computed/counted but never rendered" defect class (after
-   hunt_hypotheses, attack_mapping, role_decisions). Wired real, evidence-grounded forecast
-   generation for `cve_advisory`/`cisa_kev`/`cisa_advisory`. Reconciled `cve_advisory`'s Section 22
-   applicability from `NOT_APPLICABLE` to `OPTIONAL`, and fixed a second, independent wiring gap in
-   `commercial_readiness.py`'s separate `forecast_methodology` control. Root 497→515, engine
-   1045→1056 (+1 pre-existing unrelated failure, reconfirmed unchanged), JS 123 unchanged.
+   `RELEASE_CERTIFIED`. Merged into `main` as PR #119. Root 486→497, engine 1026→1045 (+1
+   pre-existing unrelated failure), JS 123 unchanged.
+3. **Phase 1K — 24-section semantic population.** User explicitly directed continuation. Completed,
+   tested, real-data-validated, certified `RELEASE_CERTIFIED`. Audited all 24 sections against what
+   actually reaches `transform()`'s published output on all 3 real content paths; found and fixed 3
+   real defects (Section 6/21 missing-render, Section 22 dormant `forecast.py` module — the 4th
+   recurrence of "computed/counted but never rendered"). Root 497→515, engine 1045→1056 (+1
+   pre-existing unrelated failure), JS 123 unchanged.
 4. **Phase 1M — semantic/factual QA.** User explicitly authorized continuation ("yes go ahead").
-   Completed, tested, real-data-validated, certified `RELEASE_CERTIFIED`. Full detail:
-   `docs/audits/REPORTX-PHASE1M-SEMANTIC-QA-CERTIFICATION.md` and its companion audit
-   `docs/audits/REPORTX-PHASE1M-SEMANTIC-QA-AUDIT.md`. Summary: audited the existing
-   claim/contradiction/key-judgement QA infrastructure (materially more complete than the mandate
-   assumed); found and fixed 3 real defects — the text-pattern contradiction layer never scanned
-   the actually-published page on the LLM-authored/legacy-template content paths (only the
-   composer's own internal draft); the render-side exploitation-assertion gate had drifted from the
-   module's own source-classification pattern list, missing plausible paraphrases; and the run
-   #8459 "2,400+ victims" hallucination fix was only a 4-item denylist with no general mechanism to
-   catch the *next* invented number. Added a new ransomware-claim confirmed-breach hard gate (the
-   mandate's own named cross-section example) and made `key_judgements.py`'s existing verification
-   logic explicit via the mandate's own SUPPORTED/ASSESSED_WITH_BASIS/UNSUPPORTED/CONTRADICTED
-   vocabulary (CONTRADICTED honestly documented as reserved-but-unreachable, not faked). Three real
-   false positives were found via real-data validation (an honest hedged non-assertion, universal
-   Decision boilerplate, and — the significant one — `internal_linker.py`'s "Related Intelligence
-   Reports" widget legitimately embedding *other* real articles' own numbers), each root-caused
-   precisely and fixed with a dedicated regression test, never patched around blindly. Root
-   515→541, engine unchanged at 1056 (+1 pre-existing unrelated failure) — no engine files touched
-   this phase.
+   Completed, tested, real-data-validated, certified `RELEASE_CERTIFIED`. Fixed 3 real defects
+   (contradiction-check never reaching the published page on 2 of 3 content paths, an
+   exploitation-assertion pattern-list drift, no general mechanism for the run #8459 "2,400+
+   victims" hallucination class beyond the 4 exact strings already caught). Added a ransomware-claim
+   confirmed-breach hard gate and explicit SUPPORTED/ASSESSED_WITH_BASIS/UNSUPPORTED/CONTRADICTED
+   vocabulary on `KeyJudgement`. 3 real false positives found via real-data validation, root-caused,
+   fixed with regression tests (most notably `internal_linker.py`'s "Related Intelligence Reports"
+   widget surfacing *other* real articles' own numbers). Root 515→541, engine unchanged at 1056 —
+   no engine files touched this phase.
+5. **Deployment verification, requested explicitly by the user.** Confirmed via the GitHub API
+   (`pull_request_read`, `list_pull_requests`, `actions_list`) — not git-log inference alone — that
+   PR #120 (Phase 1K + Phase 1M, squash-merged) was already `merged: true` on `main`, with the real
+   "Intelligence Engine CI" workflow having run against that merge commit and reported `success`.
+   Nothing needed deploying; it already had, automatically, within about a minute of the prior
+   round's push. See §1 above for the squash-merge/force-push nuance this surfaced.
+6. **Phase 1N — premium certification ladder audit.** Completed, tested, real-data-validated,
+   certified `RELEASE_CERTIFIED`. Full detail: `docs/audits/REPORTX-PHASE1N-PREMIUM-LADDER-CERTIFICATION.md`
+   and its companion audit `docs/audits/REPORTX-PHASE1N-PREMIUM-LADDER-AUDIT.md`. Summary: mapped
+   the three separate "premium" systems in this codebase (`analytical_depth_gate.py`'s live
+   FLASH/TACTICAL/PREMIUM_LONG_FORM gate, `tier_downgrade.py`'s live `context.achieved_tier` ladder,
+   and `intelligence_validation.py`'s 20-dimension weighted scorecard — computed and logged, but
+   confirmed via its actual call sites, not its own docstring, to never gate live publication).
+   Confirmed with evidence, not assertion, that the mandate's central worry (a high aggregate score
+   overriding a hard failure) does not exist in the live path: both live gates are strict,
+   sequential, boolean/fail-closed ladders with no numeric-score mechanism, and the one real
+   weighted-average system is, by construction, unable to launder a hard-failing dimension into a
+   PASS. Found and fixed one real defect: `role_decisions` was computed but never passed to the
+   scorecard's `SupplementalEvidence`, understating Executive Decision Support / Business Context
+   coverage for every report with real role decisions since Phase 1J. Added a new cross-system
+   adversarial test proving the achieved-tier gate is empirically unmoved by an artificially perfect
+   scorecard. Root unchanged at 541 (no root files touched), engine 1056→1060 (+1 pre-existing
+   unrelated failure, reconfirmed unchanged).
 
 ## 3. Certification status
 
@@ -76,9 +78,10 @@ investigation already done.
 | Phase 1H (4 of 5 families) | `RELEASE_CERTIFIED` — merged, real before/after proof |
 | Phase 1I (both rounds) | `RELEASE_CERTIFIED` — merged (#116, #117) |
 | Phase 1J (role decision quality) | `RELEASE_CERTIFIED` — merged (#119) |
-| Phase 1K (24-section semantic population) | `RELEASE_CERTIFIED` — 3 real defects found and fixed (Section 6/21 missing-render, Section 22 dormant module), 1 applicability reconciliation, 1 second independent wiring gap found via premium-candidate benchmarking. Zero regressions. |
-| **Phase 1M (semantic/factual QA)** | **`RELEASE_CERTIFIED`** — this round. 3 real defects found and fixed (contradiction-check reach, exploitation-pattern drift, no general quantitative-claim grounding), 1 new hard gate (ransomware confirmed-breach), explicit verification-status vocabulary wired end to end. 3 real false positives found via real-data validation, root-caused, and fixed with regression tests. Zero regressions. Full detail in the Phase 1M certification doc. |
-| Phase 1N onward | Not started |
+| Phase 1K (24-section semantic population) | `RELEASE_CERTIFIED` — merged (#120, with 1M). 3 real defects found and fixed, 1 applicability reconciliation, 1 second independent wiring gap. Zero regressions. |
+| Phase 1M (semantic/factual QA) | `RELEASE_CERTIFIED` — merged (#120, with 1K). 3 real defects found and fixed, 1 new hard gate, explicit verification-status vocabulary wired end to end. 3 real false positives found, root-caused, fixed with regression tests. Zero regressions. |
+| **Phase 1N (premium certification ladder audit)** | **`RELEASE_CERTIFIED`** — this round. Confirmed with evidence that no live gate can be gamed by a high aggregate score. 1 real defect found and fixed (role_decisions not reaching the observability scorecard). 1 new cross-system adversarial test. Zero regressions. Full detail in the Phase 1N certification doc. |
+| Phase 1P onward | Not started |
 
 Full detail: see each phase's own certification doc under `docs/audits/`.
 
@@ -90,7 +93,7 @@ python3 -m venv <scratchpad>/venv && source <scratchpad>/venv/bin/activate
 pip install -r requirements.txt pytest pytest-timeout   # fresh container: neither pytest nor
                                                           # project deps are preinstalled globally
 python -m pytest tests/ -q                                                # Expect: 541 passed
-cd /home/user/cyberdudebivash-blog/Sentinel-APEX/engine && python -m pytest tests/ -q    # Expect: 1056 passed, 1 pre-existing unrelated failure
+cd /home/user/cyberdudebivash-blog/Sentinel-APEX/engine && python -m pytest tests/ -q    # Expect: 1060 passed, 1 pre-existing unrelated failure
 cd /home/user/cyberdudebivash-blog
 node --test tests-js/*.test.js                           # Expect: 123 passed
 ```
@@ -120,29 +123,35 @@ The one known pre-existing engine-side failure:
 — environment-dependent Node-rendering issue, present before any work this session, unrelated to
 anything touched.
 
+**Deployment verification, if asked again:** don't infer merge status from local `git log` alone —
+this repo's auto-merge automation can put a squash-merged PR onto `main` under a brand-new commit
+hash that shares no ancestry with the branch's own commits. Use the GitHub MCP tools instead:
+`pull_request_read` (method `get`, then `get_status` for the head commit's CI state) is the
+authoritative source; corroborate with a file-level `git diff <main-tip> <branch-tip> -- <the
+specific paths you care about>` (excluding auto-generated content/data files, which drift
+independently and constantly) rather than trusting commit-hash presence/absence alone.
+
 ## 5. Next exact action if resuming
 
-**Phase 1M is certified.** Real, separate, comparably-sized pieces of work remain, named but not
+**Phase 1N is certified.** Real, separate, comparably-sized pieces of work remain, named but not
 started — pick one per round, same audit-first/evidence-based discipline as every phase so far:
 
-1. **Phase 1N** — premium certification ladder audit: confirm no single high aggregate score can
-   override a hard failure across evidence integrity/claim traceability/contradictions/Key
-   Judgements/ATT&CK/detection/hunting/roles/semantic QA/provenance/artifact integrity, with
-   adversarial "try to game PREMIUM_LONG_FORM" tests. Phase 1J's role-decision hard-fail gate,
-   Phase 1K's section-completeness signals, and Phase 1M's contradiction/exploitation/quantitative-
-   claim/verification-status gates are all real inputs this phase should reconcile with, not
-   re-derive.
-2. **Phase 1P/1Q** — Blogger hard gate + post-publication fetch-back. The verification *machinery*
+1. **Phase 1P/1Q** — Blogger hard gate + post-publication fetch-back. The verification *machinery*
    can be built and tested without a live publish. **Actually triggering a real Blogger publish
    requires explicit owner authorization** — established policy, unchanged, non-negotiable.
+2. **Elevating `intelligence_validation.py`'s 20-dimension scorecard to a live gate.** Explicitly
+   named in `pipeline_composer.py`'s own prior, dated decision (`COMMERCIAL-QUALITY-2026-08-18`) as
+   "a separate, deliberate calibration decision... that must be made from live evidence" — not
+   something Phase 1N decided unilaterally. Phase 1N's own fix (role_decisions now reaching the
+   scorecard) gives this a real, more-accurate coverage baseline to calibrate against; worth
+   revisiting once that data has accumulated. See `REPORTX-PHASE1N-PREMIUM-LADDER-AUDIT.md` §7.
 3. **The remaining Phase 1K sections** — Sections 4 (Intelligence Requirements), 10 (Attack Path),
    16 (Indicators/Observables), 17 (Business Impact), 20 (Time-bound Actions) have no real
    evidence-extraction capability in this pipeline at all; building one for any of them is new
    capability work, not a wiring fix (see `docs/audits/REPORTX-PHASE1K-SECTION-AUDIT.md` §6). Note:
    Section 17 being `MANDATORY` for `ransomware_claim` with no implementation means that family
-   cannot structurally reach `PREMIUM_LONG_FORM` today — very likely the *correct*, permanent state
-   (an unverified leak-site claim has no honest financial/operational-impact evidence to offer),
-   but worth Phase 1N explicitly confirming rather than assuming.
+   cannot structurally reach `PREMIUM_LONG_FORM` today — Phase 1N did not find evidence this is
+   wrong, but did not go looking specifically either; still worth a dedicated look.
 4. **Sections 7/9's article-invariant content** for the `ai_security`/`breach_notice`/
    `ransomware_reporting` trio — real, family-differentiated, but not evidence-conditioned per
    article the way the mandate's semantic-completeness bar implies. A real content-generation
@@ -155,11 +164,13 @@ started — pick one per round, same audit-first/evidence-based discipline as ev
 6. **Phase 1H's actual remainder** — malware/phishing/zero-day/campaign as real report families.
    The mandate itself says not to prioritize this ahead of 1I–1Q.
 7. **A real per-role-decision `deadline_or_trigger` source** (Phase 1J, still unpopulated),
-   **forecast for families other than the CVE-shaped three** (Phase 1K, deliberately deferred), and
+   **forecast for families other than the CVE-shaped three** (Phase 1K, deliberately deferred),
    **`evaluate_claim_support_gate()` wiring / a general entailment checker / `CONTRADICTED` on
-   `KeyJudgement`** (Phase 1M, deliberately deferred — see the Phase 1M audit doc §4) — all
-   schema-ready or scoped-out with documented reasoning, waiting on either a real evidence source or
-   a dedicated, adversarially-provable round of their own.
+   `KeyJudgement`** (Phase 1M, deliberately deferred), and **`sector_impacts` for
+   `SupplementalEvidence`** (Phase 1N, deliberately deferred — nothing in this pipeline computes
+   sector-impact data at all today, so there is nothing yet to wire) — all schema-ready or
+   scoped-out with documented reasoning, waiting on either a real evidence source or a dedicated,
+   adversarially-provable round of their own.
 
 Do not attempt more than one of these in a single round — pick one, audit what already exists first
 (Reuse Before Build), implement with real evidence, prove with real-data + adversarial tests +
@@ -169,7 +180,7 @@ uninvited.
 ## 6. Items still requiring explicit owner authorization before executing
 
 - Live Blogger publish canary (customer-visible, hard to reverse) — not to be done unilaterally.
-  This directly blocks any *real* completion of Phase 1P/1Q (§5 item 2) — the verification code can
+  This directly blocks any *real* completion of Phase 1P/1Q (§5 item 1) — the verification code can
   be built and tested, but the actual publish action needs the owner's go-ahead.
 - Live LLM provider canary for Key Judgements (lower-stakes, doesn't touch the public site, but
   still worth raising with the owner rather than running silently) — the existing `workflow_dispatch`
