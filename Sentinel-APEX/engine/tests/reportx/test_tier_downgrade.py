@@ -18,6 +18,7 @@ from sentinel_engine.reportx.human_review import CertificationState
 from sentinel_engine.reportx.tier_downgrade import (
     CORRECTNESS_CONTROLS,
     PREMIUM_COMPLETENESS_CONTROLS,
+    TIER_RANK,
     determine_achieved_tier,
 )
 
@@ -40,15 +41,11 @@ def _results(overrides: dict[str, str]) -> list[ControlResult]:
     ]
 
 
-# The tier ladder's total ordering, highest to lowest -- used to assert
-# "never higher than requested" without hard-coding numeric ranks elsewhere.
-_TIER_RANK = {
-    CertificationState.PREMIUM_CERTIFIED: 4,
-    CertificationState.PREMIUM_READY_PENDING_HUMAN: 3,
-    CertificationState.TACTICAL_READY: 2,
-    CertificationState.FLASH_READY: 1,
-    CertificationState.PUBLIC_REFERENCE_DRAFT: 0,
-}
+# The tier ladder's total ordering -- imported from the production module
+# itself (single source of truth) rather than redeclared here, so this
+# test's notion of "higher" can never silently drift from what
+# determine_achieved_tier() actually enforces.
+_TIER_RANK = TIER_RANK
 
 
 class TestAllPassKeepsRequestedTier:
@@ -118,6 +115,91 @@ class TestNeverManufacturesAHigherTierThanRequested:
 
     def test_requesting_a_lower_tier_is_honored_when_earned(self):
         result = determine_achieved_tier(_results({}), requested_tier=CertificationState.TACTICAL_READY)
+        assert result.achieved_tier == CertificationState.TACTICAL_READY
+
+    def test_invariant_holds_for_every_requested_tier_not_just_premium(self):
+        # The original version of this invariant (above) only ever exercised
+        # requested_tier=PREMIUM_READY_PENDING_HUMAN -- the highest realistic
+        # request, where every downgrade branch's hard-coded target
+        # (TACTICAL_READY, FLASH_READY) is already <= the request by
+        # construction, so capping could never have been observed to matter.
+        # It matters a great deal at requested_tier=FLASH_READY: that is
+        # compose_report()'s own default and authority_transformer.
+        # _composer_enhance()'s actual unconditional call for every real
+        # article -- exercised here for every requested tier the ladder
+        # defines, not only the one call shape that happened to already be
+        # safe.
+        single_fail_ids = list(CORRECTNESS_CONTROLS) + list(PREMIUM_COMPLETENESS_CONTROLS) + ["human_analyst_certification_governance"]
+        for requested in CertificationState:
+            if requested not in _TIER_RANK:
+                continue  # PREMIUM_AUTOMATED_CERTIFIED: never a real requested_tier, unranked by design.
+            for control_id in single_fail_ids:
+                for status in ("FAIL", "BLOCKED"):
+                    result = determine_achieved_tier(_results({control_id: status}), requested_tier=requested)
+                    assert _TIER_RANK[result.achieved_tier] <= _TIER_RANK[requested], (
+                        f"requested={requested.value} control={control_id}={status} "
+                        f"achieved={result.achieved_tier.value} outranks the request"
+                    )
+
+
+class TestRealProductionCallerNeverInflatesFlashReadyTier:
+    """The live gap this whole capping mechanism exists to close:
+    ``pipeline_composer.compose_report()``'s own default -- and
+    ``authority_transformer._composer_enhance()``'s actual, unconditional,
+    every-article call -- requests ``FLASH_READY``, not
+    ``PREMIUM_READY_PENDING_HUMAN``. A routine article that is correct but
+    (normally, honestly) never attempted a forecast, hypothesis set,
+    regulatory read, premium depth, current statistics, or technical
+    recommendations -- i.e. every real FLASH_READY-tier article today --
+    must be labelled FLASH_READY, not silently relabelled TACTICAL_READY, a
+    tier nobody asked this report to reach and whose own completeness bar
+    was never evaluated in service of. ``report_integrity.
+    build_report_context()`` renders ``achieved_tier`` verbatim into the
+    reader-facing "Public Intelligence Certification" label, so this is a
+    real commercial-integrity defect, not a cosmetic one, when it regresses."""
+
+    def test_flash_ready_request_with_all_premium_completeness_blocked_stays_flash_ready(self):
+        # The exact, realistic shape of a routine article's control mix:
+        # every correctness control clean, every premium-only control
+        # honestly BLOCKED (never attempted at this tier).
+        overrides = {cid: "BLOCKED" for cid in PREMIUM_COMPLETENESS_CONTROLS}
+        result = determine_achieved_tier(_results(overrides), requested_tier=CertificationState.FLASH_READY)
+        assert result.achieved_tier == CertificationState.FLASH_READY
+        assert not result.was_downgraded
+        assert "Capped at the requested tier" in result.downgrade_reason
+
+    def test_flash_ready_request_with_single_premium_completeness_gap_stays_flash_ready(self):
+        for control_id in PREMIUM_COMPLETENESS_CONTROLS:
+            result = determine_achieved_tier(
+                _results({control_id: "BLOCKED"}), requested_tier=CertificationState.FLASH_READY,
+            )
+            assert result.achieved_tier == CertificationState.FLASH_READY, (
+                f"{control_id} BLOCKED alone should not lift a FLASH_READY request to "
+                f"{result.achieved_tier.value}"
+            )
+
+    def test_tactical_ready_request_with_incomplete_premium_completeness_is_unaffected(self):
+        # Regression guard: TACTICAL_READY is exactly what the natural
+        # (uncapped) branch already returns for this scenario, so a
+        # TACTICAL_READY *request* must see identical behaviour before and
+        # after the capping fix -- the cap is a no-op here by construction
+        # (natural_tier == requested_tier), not a coincidence.
+        result = determine_achieved_tier(
+            _results({"forecast_methodology": "BLOCKED"}), requested_tier=CertificationState.TACTICAL_READY,
+        )
+        assert result.achieved_tier == CertificationState.TACTICAL_READY
+        assert "Capped at the requested tier" not in result.downgrade_reason
+
+    def test_premium_tier_request_with_incomplete_premium_completeness_is_unaffected(self):
+        # Regression guard: the original, still-passing
+        # TestPremiumCompletenessGapsCapAtTactical class already covers this
+        # at the default requested_tier; this pins the same outcome
+        # explicitly at PREMIUM_READY_PENDING_HUMAN, the other tier real
+        # code actually requests (automated_certification.py).
+        result = determine_achieved_tier(
+            _results({"forecast_methodology": "BLOCKED"}),
+            requested_tier=CertificationState.PREMIUM_READY_PENDING_HUMAN,
+        )
         assert result.achieved_tier == CertificationState.TACTICAL_READY
 
 

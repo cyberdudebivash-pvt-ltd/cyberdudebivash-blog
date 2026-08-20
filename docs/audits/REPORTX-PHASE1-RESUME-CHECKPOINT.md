@@ -1,7 +1,7 @@
 # REPORTX Phase 1 — Resume Checkpoint
 
-**Written:** 2026-08-20 (updated — supersedes the pre-Phase-1M version)
-**Written by:** Claude (this session — production-session-recovery round, continued through Phase 1M)
+**Written:** 2026-08-20 (updated — supersedes the pre-Phase-1N version)
+**Written by:** Claude (this session — platform-transformation-review round, continued through Phase 1N)
 **Why this exists:** the governing mandate spans phases 1F–1Q (and further, 1R+). This document
 lets any future session — mine or another Claude instance's — resume without repeating
 investigation already done.
@@ -12,9 +12,9 @@ investigation already done.
 
 | Field | Value |
 |---|---|
-| Branch | `claude/production-session-recovery-036t5a` |
-| `origin/main` HEAD | Check `git log origin/main -5` fresh. Confirmed this round: Phase 1J was auto-merged into `main` as **PR #119** within seconds of being pushed (this repo's own automation opens and merges `claude/*` branch PRs; not something this session did manually). Phase 1K's and Phase 1M's changes are committed on this branch as of this checkpoint; check whether the same auto-merge has already landed them on `main` too before assuming otherwise. |
-| Open PRs from this round | Check fresh — Phase 1J's PR #119 self-merged near-instantly; later phases' PRs may behave the same way. |
+| Branch | `claude/platform-transformation-review-ycyihz` |
+| `origin/main` HEAD | Check `git log origin/main -5` fresh — this repo's own automation merges `claude/*` PRs and pushes direct `[skip ci]` content commits continuously (often multiple times per hour), so `origin/main` moves fast. Confirmed this round: branch started exactly at `origin/main`'s then-HEAD (`f7b6ba3`), i.e. Phase 1M's changes were already on `main` before this round began. |
+| Open PRs from this round | Check fresh — every prior phase's PR self-merged near-instantly (this repo's own automation opens and merges `claude/*` branch PRs; not something any session did manually); Phase 1N's PR is expected to behave the same way. |
 | Working tree | Should be re-synced to `origin/main` before starting genuinely new work — confirm first whether this round's PR has already merged. |
 
 ## 2. What happened this round (chronological)
@@ -64,6 +64,29 @@ investigation already done.
    precisely and fixed with a dedicated regression test, never patched around blindly. Root
    515→541, engine unchanged at 1056 (+1 pre-existing unrelated failure) — no engine files touched
    this phase.
+5. **Phase 1N — premium certification ladder audit.** New session, user directed continuation
+   ("continue with the production task until complete"). Completed, tested, real-data-validated,
+   certified `RELEASE_CERTIFIED`. Full detail:
+   `docs/audits/REPORTX-PHASE1N-CERTIFICATION-LADDER-CERTIFICATION.md`. Summary: audited whether any
+   high aggregate score can override a hard failure anywhere in the ladder (`tier_downgrade.py`,
+   `automated_certification.py`, `commercial_readiness.py`, `intelligence_validation.py`, `qms.py`)
+   — confirmed, by tracing every real consumer, that no aggregate score exists in the hard gate and
+   the one real weighted scorecard (`intelligence_validation.py`) is observable-only, never a
+   publish-gate bypass. Found and fixed 1 real defect in the ladder's own stated invariant:
+   `determine_achieved_tier()` could rank the achieved tier ABOVE the requested tier whenever
+   `requested_tier` ranked below `TACTICAL_READY` — exactly the real production call shape
+   (`pipeline_composer.compose_report()`'s default, `authority_transformer._composer_enhance()`'s
+   actual unconditional call, both request `FLASH_READY`). The existing "never outranks requested"
+   test only ever exercised `requested_tier=PREMIUM_READY_PENDING_HUMAN`, where the bug is
+   mathematically unreachable, so it had never been caught. Real end-to-end before/after against
+   actual `compose_report()` output (not just unit fixtures) showed all three representative real
+   article families (CVE non-KEV, CVE KEV-listed, ransomware claim) mislabeled
+   `TACTICAL_READY` in the reader-facing certification badge when they should have read
+   `FLASH_READY` — confirmed to be the default case for routine articles, not an edge case. Fixed
+   with a 2-branch cap (`_capped_tier_result()`) plus a new, real, importable `TIER_RANK` constant
+   (previously only an ad hoc test-local ranking existed). Root unchanged at 541 (no root files
+   touched), engine 1056→1062 (+6 new tests, +1 pre-existing unrelated failure reconfirmed
+   unchanged), JS unchanged at 123 (no JS files touched).
 
 ## 3. Certification status
 
@@ -77,8 +100,9 @@ investigation already done.
 | Phase 1I (both rounds) | `RELEASE_CERTIFIED` — merged (#116, #117) |
 | Phase 1J (role decision quality) | `RELEASE_CERTIFIED` — merged (#119) |
 | Phase 1K (24-section semantic population) | `RELEASE_CERTIFIED` — 3 real defects found and fixed (Section 6/21 missing-render, Section 22 dormant module), 1 applicability reconciliation, 1 second independent wiring gap found via premium-candidate benchmarking. Zero regressions. |
-| **Phase 1M (semantic/factual QA)** | **`RELEASE_CERTIFIED`** — this round. 3 real defects found and fixed (contradiction-check reach, exploitation-pattern drift, no general quantitative-claim grounding), 1 new hard gate (ransomware confirmed-breach), explicit verification-status vocabulary wired end to end. 3 real false positives found via real-data validation, root-caused, and fixed with regression tests. Zero regressions. Full detail in the Phase 1M certification doc. |
-| Phase 1N onward | Not started |
+| Phase 1M (semantic/factual QA) | `RELEASE_CERTIFIED` — 3 real defects found and fixed (contradiction-check reach, exploitation-pattern drift, no general quantitative-claim grounding), 1 new hard gate (ransomware confirmed-breach), explicit verification-status vocabulary wired end to end. 3 real false positives found via real-data validation, root-caused, and fixed with regression tests. Zero regressions. |
+| **Phase 1N (premium certification ladder audit)** | **`RELEASE_CERTIFIED`** — this round. Confirmed no aggregate score overrides the hard gate anywhere (traced every real consumer, not just inspected intent). Found and fixed 1 real defect: `determine_achieved_tier()` could outrank the requested tier at the real production call shape (`requested_tier=FLASH_READY`), mislabeling routine articles' reader-facing certification badge as `TACTICAL_READY`. Real before/after against actual `compose_report()` output on 3 representative article families. Zero regressions. Full detail in the Phase 1N certification doc. |
+| Phase 1P onward | Not started |
 
 Full detail: see each phase's own certification doc under `docs/audits/`.
 
@@ -90,7 +114,7 @@ python3 -m venv <scratchpad>/venv && source <scratchpad>/venv/bin/activate
 pip install -r requirements.txt pytest pytest-timeout   # fresh container: neither pytest nor
                                                           # project deps are preinstalled globally
 python -m pytest tests/ -q                                                # Expect: 541 passed
-cd /home/user/cyberdudebivash-blog/Sentinel-APEX/engine && python -m pytest tests/ -q    # Expect: 1056 passed, 1 pre-existing unrelated failure
+cd /home/user/cyberdudebivash-blog/Sentinel-APEX/engine && python -m pytest tests/ -q    # Expect: 1062 passed, 1 pre-existing unrelated failure
 cd /home/user/cyberdudebivash-blog
 node --test tests-js/*.test.js                           # Expect: 123 passed
 ```
@@ -122,51 +146,78 @@ anything touched.
 
 ## 5. Next exact action if resuming
 
-**Phase 1M is certified.** Real, separate, comparably-sized pieces of work remain, named but not
+**Phase 1N is certified.** Real, separate, comparably-sized pieces of work remain, named but not
 started — pick one per round, same audit-first/evidence-based discipline as every phase so far:
 
-1. **Phase 1N** — premium certification ladder audit: confirm no single high aggregate score can
-   override a hard failure across evidence integrity/claim traceability/contradictions/Key
-   Judgements/ATT&CK/detection/hunting/roles/semantic QA/provenance/artifact integrity, with
-   adversarial "try to game PREMIUM_LONG_FORM" tests. Phase 1J's role-decision hard-fail gate,
-   Phase 1K's section-completeness signals, and Phase 1M's contradiction/exploitation/quantitative-
-   claim/verification-status gates are all real inputs this phase should reconcile with, not
-   re-derive.
-2. **Phase 1P/1Q** — Blogger hard gate + post-publication fetch-back. The verification *machinery*
+1. **Phase 1P/1Q** — Blogger hard gate + post-publication fetch-back. The verification *machinery*
    can be built and tested without a live publish. **Actually triggering a real Blogger publish
    requires explicit owner authorization** — established policy, unchanged, non-negotiable.
-3. **The remaining Phase 1K sections** — Sections 4 (Intelligence Requirements), 10 (Attack Path),
+2. **The remaining Phase 1K sections** — Sections 4 (Intelligence Requirements), 10 (Attack Path),
    16 (Indicators/Observables), 17 (Business Impact), 20 (Time-bound Actions) have no real
    evidence-extraction capability in this pipeline at all; building one for any of them is new
    capability work, not a wiring fix (see `docs/audits/REPORTX-PHASE1K-SECTION-AUDIT.md` §6). Note:
    Section 17 being `MANDATORY` for `ransomware_claim` with no implementation means that family
    cannot structurally reach `PREMIUM_LONG_FORM` today — very likely the *correct*, permanent state
    (an unverified leak-site claim has no honest financial/operational-impact evidence to offer),
-   but worth Phase 1N explicitly confirming rather than assuming.
-4. **Sections 7/9's article-invariant content** for the `ai_security`/`breach_notice`/
+   but this is now confirmed (Phase 1N) rather than assumed: the ladder itself will correctly cap
+   such a report at `TACTICAL_READY` (or lower), never fabricate `PREMIUM_LONG_FORM` around it.
+3. **Sections 7/9's article-invariant content** for the `ai_security`/`breach_notice`/
    `ransomware_reporting` trio — real, family-differentiated, but not evidence-conditioned per
    article the way the mandate's semantic-completeness bar implies. A real content-generation
    project (per-article branching logic for 5+ families), not a wiring fix.
-5. **The legacy `template` fallback's content-integrity characteristic** — `_legacy_template_enhance()`
+4. **The legacy `template` fallback's content-integrity characteristic** — `_legacy_template_enhance()`
    can render its own hardcoded, unvalidated ATT&CK/detection-looking prose that disagrees with
    Section 11/15's honest, evidence-based state when this rare fallback path fires. Narrow reach
    (confirmed this doesn't fire in the common no-LLM-configured case; already tier-capped at
    TACTICAL). See `REPORTX-PHASE1K-SECTION-AUDIT.md` §3.
-6. **Phase 1H's actual remainder** — malware/phishing/zero-day/campaign as real report families.
+5. **Phase 1H's actual remainder** — malware/phishing/zero-day/campaign as real report families.
    The mandate itself says not to prioritize this ahead of 1I–1Q.
-7. **A real per-role-decision `deadline_or_trigger` source** (Phase 1J, still unpopulated),
+6. **A real per-role-decision `deadline_or_trigger` source** (Phase 1J, still unpopulated),
    **forecast for families other than the CVE-shaped three** (Phase 1K, deliberately deferred), and
    **`evaluate_claim_support_gate()` wiring / a general entailment checker / `CONTRADICTED` on
    `KeyJudgement`** (Phase 1M, deliberately deferred — see the Phase 1M audit doc §4) — all
    schema-ready or scoped-out with documented reasoning, waiting on either a real evidence source or
    a dedicated, adversarially-provable round of their own.
+7. **`intelligence_validation.py`'s weighted scorecard → hard-gate calibration decision**
+   (Phase 1N, deliberately not attempted — see the Phase 1N certification doc §5): does today's live
+   pipeline actually clear the existing 75-point threshold consistently enough to elevate
+   `publication_eligible` from observable data to a real gate alongside the ladder? Requires live
+   evidence across a real sample of production reports, not a one-off calibration guess.
+8. **`tier_downgrade.py`'s own code comment** naming only 2 of its 3 real exclusions
+   (`automated_review_disclosure` undocumented alongside `fortune_500_commercial_deliverable`/
+   `human_analyst_certification_governance`) — cosmetic, deliberately left for a round that's
+   already touching that file's comments rather than bundled into Phase 1N's fix diff.
 
 Do not attempt more than one of these in a single round — pick one, audit what already exists first
 (Reuse Before Build), implement with real evidence, prove with real-data + adversarial tests +
 manual semantic review, certify, then stop and report rather than cascading into the next phase
 uninvited.
 
-## 6. Items still requiring explicit owner authorization before executing
+## 6. Separate, larger blocker: the ReportX System-3→5 rollout (not the Phase-1-lettered series)
+
+The Phase-1-lettered work above (1F–1N) improves the *content quality* of reports already flowing
+through `pipeline_composer.py`/`authority_transformer.py` in production today. It is a **separate
+track** from `docs/reportx/REPORTX-ROLLOUT-RUNBOOK.md`'s Phase 0–8 rollout of the full System 3
+(canonical evidence engine) → System 5 (commercial product composition) → customer-facing premium
+product path. That rollout's own status, confirmed fresh this round (`docs/reportx/REPORTX-ROLLOUT-RUNBOOK.md`
+"Current status summary" table): Phases 0–4 done (4/4 real canaries, all real 23/23 PASS); Phase 5
+(human review) and Phase 5.5 (release certification) are **built, tested, and operational but
+honestly `NOT_CERTIFIED`** — blocked on the exact same real-world dependency: **zero real `APPROVE`
+actions have ever been recorded against any of the four canaries.** Phase 6 (GO/NO-GO) is not
+reached and Phase 7 (INTEGRATE — wiring System 5 into any live customer path) is not authorized as
+a direct, structural consequence.
+
+**This is not engineering work remaining — the engineering is done and tested.** It is a real human
+analyst decision, deliberately and permanently un-automatable by this system's own design (Section
+44: "the operator must be the real reviewer"; `human_review.py`'s `resolve_certification_state()`
+has no override parameter through which an AI session could supply this). No future Claude session
+should attempt to synthesize, simulate, or bypass a `ReviewRecord` `APPROVE` to move this forward —
+doing so would fabricate the exact credential this platform's entire commercial-trust architecture
+exists to make unfabricatable. The concrete unblock path is documented end-to-end in
+`docs/reportx/REPORTX-HUMAN-REVIEW-RUNBOOK.md` for whenever the real owner is ready to act as
+reviewer.
+
+## 7. Items still requiring explicit owner authorization before executing
 
 - Live Blogger publish canary (customer-visible, hard to reverse) — not to be done unilaterally.
   This directly blocks any *real* completion of Phase 1P/1Q (§5 item 2) — the verification code can
