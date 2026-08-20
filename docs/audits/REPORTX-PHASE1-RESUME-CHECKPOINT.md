@@ -1,8 +1,8 @@
 # REPORTX Phase 1 — Resume Checkpoint
 
-**Written:** 2026-08-19T20:20:00Z (approximate — first checkpoint written under the mandate's Section 36 requirement)
-**Written by:** Claude (this session), immediately after Phase 1F landed as PR #108
-**Why this exists:** the governing mandate (Round 3: "PHASE 1F → 1T PREMIUM FINISHED-INTELLIGENCE PRODUCTIONIZATION") spans 14 phases (1F–1T). This document is the mandatory interruption checkpoint so any future session — mine or another Claude instance's — can resume without repeating investigation already done. **This is a deliberate, self-chosen checkpoint, not a forced stop.** No Section-35(A–D) blocker (external dependency, unsafe decision, tool/session limitation, unrecoverable CI failure) applies to continuing further phases right now. The reason for pausing here is stated plainly in §5 below.
+**Written:** 2026-08-20T04:50:00Z (updated — supersedes the 2026-08-19T20:20:00Z version)
+**Written by:** Claude (this session)
+**Why this exists:** the governing mandate spans phases 1F–1T (and, this round, a P0 production-verification detour for #109/#110 before continuing). This document lets any future session — mine or another Claude instance's — resume without repeating investigation already done. Updated now because a lot changed since the last version: #108 merged, a real production incident was found and fixed (#109), verifying it in production surfaced and fixed a second real defect (#110), and Phase 1G reconnaissance is now in flight.
 
 ---
 
@@ -10,78 +10,52 @@
 
 | Field | Value |
 |---|---|
-| Branch | `claude/sentinel-apex-phase-1-u5r4ka` |
-| HEAD | `ce54848e98c5869474c98ca0c0dff78e7fbf8827` |
-| Main base (merge-base) | `84d73229c468c85f8c1a2490301e7911dc66328a` (branch is rebased cleanly onto this — zero divergence from `origin/main` other than this round's own commit) |
-| Working tree | Clean — zero uncommitted files (`git status --short` empty) |
-| Open PR | [#108](https://github.com/cyberdudebivash-pvt-ltd/cyberdudebivash-blog/pull/108) — draft, subscribed, 60-minute check-in scheduled (`trig_01A6qkjWTNh35XsLGtrxLkpq`, fires ~2026-08-19T21:19:00Z) |
-| Prior rounds | PR #106 (Phase 1A–1C) — merged. PR #107 (Phase 1D/1E + provider reliability) — merged. Both confirmed in `origin/main` history at the merge-base above. |
+| Current branch | `fix/sentinel-apex-freshness-signal` |
+| Current branch HEAD | `dd449056a21fc53cd99f4ad3cfedcda67c2e3f4d` |
+| `origin/main` HEAD | `e6a7a483ce1831f94d437a1c83ecfccfd7b650cf` (2026-08-20T04:40:51Z) |
+| Working tree | Clean |
+| Open PR | [#110](https://github.com/cyberdudebivash-pvt-ltd/cyberdudebivash-blog/pull/110) — draft, subscribed, check-in scheduled ~05:46 UTC |
+| Merged PRs this session | #106, #107, #108 (Phase 1F), #109 (sentinel-apex quality-gate fix) |
 
-## 2. Last completed phase
+## 2. What happened since the last checkpoint (chronological)
 
-**Phase 1F — Key Judgements.** Verdict: `RELEASE_CERTIFIED_WITH_LIMITATIONS`.
+1. Phase 1F (Key Judgements) landed as PR #108 — merged.
+2. User reported a real, recurring GitHub Actions failure (screenshot of `freshness-check.yml` run #4226, CRITICAL staleness). Investigated and found the true root cause: `fetch-live-intel.js`'s quality gate rejected 100% of `sentinel_apex`-sourced candidates because the live API's actual reference field (`source_url`/`blog_url`) was never in the checked field-name list. Fixed as PR #109, verified against a real 500-record API pull (0/500 → 500/500 pass), merged.
+3. Given an explicit mandate to verify #109 in real production before continuing (not just trust CI), triggered `sentinel-apex.yml` manually via `workflow_dispatch` against #109's merge commit. Result: **15 real reports generated, quality gate 15 passed / 0 rejected**, 15 new `posts/*.html` + `api/intel/products/*.json` files genuinely committed and pushed. #109's own fix is conclusively proven in production.
+4. That same verification work surfaced a **second, distinct, real defect**: `live-intel.json`'s 150-item window is sorted by priority (not recency) and trims low-priority-but-genuinely-new items out, so `freshness-check.yml`'s `_addedAt`-based staleness signal stayed frozen even after real reports started generating again. Root-caused, fixed, and adversarially tested against real data as PR #110 (open, not yet merged).
+5. Wrote `docs/audits/SENTINEL-APEX-FEED-RECOVERY-RELEASE-CERTIFICATION.md` certifying #109 as `RELEASE_CERTIFIED` (its own scope fully proven) and the combined feed-recovery story as `RELEASE_CERTIFIED_WITH_LIMITATIONS` (pending #110 merging and one real live cycle confirming `freshness-check.yml` reports HEALTHY).
+6. Per the mandate's explicit instruction ("once #109 is production-verified, proceed automatically into 1G and 1H"), began Phase 1G. Spawned a background Explore agent (agentId `afbbef5346dfa7944`) to catalog all existing entity-resolution/normalization/correlation code across all three systems (Pipeline A `automation/`, Pipeline B `fetch-live-intel.js`, CTI engine `Sentinel-APEX/engine/`) before designing anything new, per this repo's Reuse-Before-Build discipline. **That agent's findings had not yet returned as of this checkpoint** — resuming work should start by checking on it (`SendMessage` to `afbbef5346dfa7944`, or check for its completion notification) rather than re-doing the same reconnaissance.
 
-- **IMPLEMENTED:** yes — `automation/key_judgements.py` (new module), wired into `automation/authority_transformer.py::transform()`.
-- **TESTED:** yes — 465/465 automation-side (`pytest tests/ automation/tests/`), 938/939 engine-side (1 pre-existing, unrelated, environment-dependent failure — see §4).
-- **LIVE-VALIDATED:** no — recorded explicitly as `LIVE_PROVIDER_VALIDATION_PENDING`. No provider credentials or outbound network access exist in this sandbox.
-- **PUBLICLY-VERIFIED:** no — no Blogger publish has occurred this round or any prior round.
+## 3. Certification status
 
-Full detail: `docs/audits/REPORTX-PHASE1F-KEY-JUDGEMENTS-CERTIFICATION.md`. Capability matrix updated: `docs/audits/REPORTX-PHASE1-CAPABILITY-RECONCILIATION.md` §9.
+| Item | Status |
+|---|---|
+| Phase 1F (Key Judgements) | `RELEASE_CERTIFIED_WITH_LIMITATIONS` (PR #108, merged) — see `docs/audits/REPORTX-PHASE1F-KEY-JUDGEMENTS-CERTIFICATION.md` |
+| #109 (quality-gate fix) | `RELEASE_CERTIFIED` — merged, production-verified with real triggered-run evidence |
+| #110 (freshness-signal fix) | Implemented, tested against real data, **not yet merged** — no live confirmation cycle has run yet |
+| Phase 1G (entity resolution) | Reconnaissance in progress (background agent), no implementation started |
+| Phase 1H onward | Not started |
 
-**The headline result:** `PREMIUM_LONG_FORM` is now proven end-to-end reachable for the first time in this codebase's history (`test_premium_long_form_is_genuinely_reachable_end_to_end`), because Key Judgements was the last mandatory section with zero implementation anywhere in the pipeline.
-
-## 3. Current phase
-
-**None in progress.** Phase 1G (entity resolution) was assessed, not implemented — see §5. No phase's implementation is currently half-finished; there is nothing mid-edit.
-
-## 4. Test baseline (reproduce this exact count before trusting any future change)
+## 4. Test baseline (reproduce before trusting any further change)
 
 ```
-source <scratchpad>/venv/bin/activate   # or any venv with requirements.txt + pytest installed
-python -m pytest tests/ automation/tests/ -q
-# Expect: 465 passed
-
-cd Sentinel-APEX/engine && python -m pytest tests/ -q
-# Expect: 938 passed, 1 failed
-# The 1 failure is tests/test_certification.py::test_certify_real_end_to_end_with_the_actual_node_rendering_check
-# — a Node-rendering-script environment issue, confirmed present before Round 1 touched anything.
-# It is NOT related to any change in this document's scope. Do not attempt to fix it as part of
-# a Phase 1G+ increment unless it is itself the explicit target of a future phase.
+source <scratchpad>/venv/bin/activate
+python -m pytest tests/ automation/tests/ -q        # Expect: 465 passed
+cd Sentinel-APEX/engine && python -m pytest tests/ -q  # Expect: 938 passed, 1 pre-existing unrelated failure
+cd /home/user/cyberdudebivash-blog
+node --test tests-js/*.test.js                       # Expect: 123 passed (as of #110's branch; 123 also on main pre-#110)
 ```
 
-## 5. Why this checkpoint was written now, honestly stated
+The one known pre-existing engine-side failure: `Sentinel-APEX/engine/tests/test_certification.py::test_certify_real_end_to_end_with_the_actual_node_rendering_check` — environment-dependent Node-rendering issue, present before any work this session, unrelated to anything touched.
 
-No technical blocker exists. This is a judgment call, and it should be stated as one rather than dressed up as a forced stop:
+## 5. Next exact action if resuming
 
-This round already landed a full, certified, real increment (new module, 36 new tests, two genuine defects found and root-caused — not just wired existing code, actually fixed bugs — and the first-ever proof that `PREMIUM_LONG_FORM` is reachable). The remaining mandate (Phases 1G–1T) is not a tail of small follow-ups; several of the remaining items are comparable in size to Phase 1F itself:
+1. Check on background agent `afbbef5346dfa7944` (entity-resolution reconnaissance) — either its completion notification already arrived, or send it a message to check status.
+2. Check PR #110's state (`mcp__github__pull_request_read` method `get`) — if merged, verify the next real `sentinel-apex.yml` + `freshness-check.yml` cycle actually reports HEALTHY (the one remaining unproven item from the certification doc), then update that doc's §6/§8 to remove the "pending" caveat.
+3. Once the entity-resolution catalog is in hand, design Phase 1G's actual implementation from it — reuse/extend what exists (the reconnaissance prompt specifically asked about `fetch-live-intel.js`'s existing actor `actorMap`, its graph/campaign/attribution "ENRICH" pipeline, and the `Sentinel-APEX/engine`'s existing ransomware-actor placeholder guard) rather than building a parallel entity model. Follow the mandate's own explicit requirements: canonical_id/canonical_name/aliases/entity_type/source_refs/evidence_refs/confidence/first_seen/last_seen per entity where applicable; preserve and extend (never replace) the existing "Unknown Group" placeholder guard; avoid over-normalizing actor names (false-merge risk is explicitly called out as a CTI integrity failure in the mandate).
+4. Full certification discipline applies to 1G exactly as it did to 1F/#109/#110: implement → unit test → integration test → regression test → adversarial test → real-data test → certify, before touching 1H.
 
-- **Family completeness (1H)** touches 5 unreconciled families, each requiring its own evidentiary-discipline judgment call (what "confirmed" can honestly mean per family) — not mechanical.
-- **ATT&CK semantic validation (1I)** was checked this session (`grep` for ATT&CK-related code in `automation/`) and touches at least 8 files (`authority_transformer.py`, `report_contract.py`, `internal_linker.py`, `report_renderer.py`, `rss_aggregator.py`, `monetization_injector.py`, `seo_optimizer.py`, `download_center.py`) — comparable surface area to Key Judgements, not a quick pass.
-- **Hunting hypotheses (1J)** is net-new analytical capability with no existing model anywhere in either pipeline to reuse — the highest-risk category of work under this repo's own "Reuse Before Build" principle, and the least suited to being rushed.
-- **Blogger publish canary / post-publish fetch-back (1Q, and the live-publish request in the mandate's Section 29)** is customer-visible and hard to reverse. Per this session's own standing judgment (consistent with the mandate's own Section 35(B) stop condition, "unsafe production decision requiring owner approval"), this should not be executed unilaterally — it needs explicit owner confirmation before it runs, regardless of how much other engineering work precedes it.
+## 6. Items still requiring explicit owner authorization before executing (unchanged from prior checkpoint)
 
-Given CLAUDE.md's own Engineering Decision Order (Level 1 Correctness and Level 2 Production Stability outrank Level 6 Performance/Level 7 Commercial Value, and speed is explicitly "ALWAYS last"), and given three rounds' worth of real pipeline behavior changes are now in flight in one continuous session, pausing here — with a clean, accurately documented state, an open PR the owner can review on its own merits, and a precise description of what's next — is the more defensible choice than continuing to stack additional large, unreviewed increments before the owner has looked at any of them. The mandate's own "Mandatory phase certification rule" (IMPLEMENT→VERIFY→TEST→...→CERTIFY, one phase at a time) supports this: it does not ask for all 14 phases to be rushed through in one sitting, it asks for each phase to be done right before the next begins.
-
-This is not "stopping at the first easy win" — Phase 1F was hard-won, with two real bugs found and fixed. It is stopping at a natural, well-documented boundary.
-
-## 6. Next exact action, if resuming immediately
-
-```bash
-git fetch origin main claude/sentinel-apex-phase-1-u5r4ka
-git checkout claude/sentinel-apex-phase-1-u5r4ka
-git pull origin claude/sentinel-apex-phase-1-u5r4ka
-# If PR #108 has merged, restart per the branch-restart convention:
-#   git fetch origin main && git checkout -B claude/sentinel-apex-phase-1-u5r4ka origin/main
-```
-
-**Recommended next phase: 1H, family completeness — scoped to ONE family at a time, not all 5 at once.**
-
-Concrete starting point: `automation/report_contract.py`'s `_FAMILY_APPLICABILITY` matrices (currently: one shared matrix for `cve_advisory`/`cisa_kev`/`cisa_advisory`, one for `ransomware_claim`; everything else falls back to the safe all-`OPTIONAL` default) and `automation/discovery_bridge.py`'s (actually `Sentinel-APEX/engine/sentinel_engine/reportx/discovery_bridge.py`) family-conditioned `build_claims()`. Pick the next family by real production volume (check `data/published_posts.json` or `Sentinel-APEX/engine`'s own article-source stats for which of `breach_notice`/`ai_security`/`general_intelligence`/`ransomware_reporting`/`threat_actor` actually appears most often in real discovered content) rather than guessing — this repo's own convention (established in Round 1's actor-attribution fix and Round 3's Key Judgements work) is to let real data drive scope, not assumption.
-
-**Alternative next phase: 1I, ATT&CK semantic validation.** Starting point identified this session: `grep -rn "attack_mapping\|ATT&CK\|attck_status\|technique_id" automation/` → 8 files. Read `automation/report_renderer.py`'s ATT&CK rendering path and `Sentinel-APEX/engine`'s equivalent (Pipeline B's `detection-engine.js::mapTechniques()` already has an evidence+confidence model worth reusing the *shape* of, per Principle 4 Reuse Before Build — do not duplicate its logic, mirror its status vocabulary if it fits).
-
-**Do not attempt in the next session without explicit owner authorization first:** the live Blogger publish canary (mandate Section 29) and the live LLM provider canary for Key Judgements specifically (mandate Section 1F's own instruction (F), which permits using the existing `workflow_dispatch` canary "where conventions permit" — this is a lower-risk ask than the Blogger canary since it doesn't touch the public site, and is a reasonable one to raise with the owner alongside PR #108's review, not to run silently).
-
-## 7. Outstanding items from the Round 3 mandate not yet started
-
-Phases 1G (beyond what Round 1 already covers — see reconciliation doc §5's note), 1H, 1I, 1J, 1K, 1M, 1N, 1O (beyond the artifact-hash binding already done in Round 2), 1P (beyond the gates already done in Rounds 1–2), 1Q, 1R, 1S, 1T. None have been started; none should be assumed partially done beyond what `docs/audits/REPORTX-PHASE1-CAPABILITY-RECONCILIATION.md`'s master table (§2) actually documents.
+- Live Blogger publish canary (customer-visible, hard to reverse) — not to be done unilaterally.
+- Nothing else new this round required escalation; #109/#110 were production hotfixes to an already-live, already-broken pipeline, judged in-scope for autonomous action per the mandate's own explicit "fix this production issue... with priority" instruction and the existing `workflow_dispatch` mechanism already used organically throughout this session.
