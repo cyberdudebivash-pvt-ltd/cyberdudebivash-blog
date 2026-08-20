@@ -823,6 +823,27 @@ def _render_attack_mappings_html(attack_mappings: tuple) -> str:
     return _section("Structured ATT&CK Assessment", "".join(rows), "#a855f7")
 
 
+def _render_intelligence_gaps_html(intelligence_gaps: tuple) -> str:
+    """RX-P1K: mirrors pipeline_composer.compose_report()'s own
+    _render_intelligence_gaps_html() (same section title, color, bullet
+    format), but reads the IntelligenceGap.to_dict() shape
+    _ComposerOutcome.intelligence_gaps actually stores. Called
+    unconditionally in transform(), guarded the same way as
+    hunt_hypotheses/attack_mappings/role_decisions -- before this fix, the
+    gap list was never rendered on ANY content path, including the
+    composer's own (see pipeline_composer.py's matching RX-P1K comment)."""
+    if not intelligence_gaps:
+        return ""
+    items = []
+    for g in intelligence_gaps:
+        line = f'<strong>{_esc(g["category"].replace("_", " ").title())}:</strong> {_esc(g["description"])}'
+        if g.get("what_would_confirm_or_refute"):
+            line += (f'<br><span style="color:#64748b">Would be resolved by: '
+                     f'{_esc(g["what_would_confirm_or_refute"])}</span>')
+        items.append(line)
+    return _section("Intelligence Gaps", _bullets(items, "#f59e0b"), "#f59e0b")
+
+
 def _render_role_decisions_html(role_decisions: tuple) -> str:
     """RX-P1J: same duplication-avoidance reasoning as
     _render_hunt_hypotheses_html()/_render_attack_mappings_html() above --
@@ -849,6 +870,42 @@ def _render_role_decisions_html(role_decisions: tuple) -> str:
             line += f'<br><span style="color:#64748b">Limitations: {_esc(d["limitations"])}</span>'
         items.append(line)
     return _section("Role-Based Decisions", _bullets(items, "#00d4ff"), "#00d4ff")
+
+
+def _render_forecast_html(forecasts: tuple) -> str:
+    """RX-P1K: mirrors pipeline_composer.compose_report()'s own
+    _render_forecast_html() (same section title, color, field order), but
+    reads the Forecast.to_dict()/WithheldForecast.to_dict() shape
+    _ComposerOutcome.forecasts actually stores. Called unconditionally in
+    transform(), guarded the same way as the other structured sections.
+    Only a real, adequately-supported forecast renders customer-visible
+    content -- a withheld entry (``d["withheld"]`` present and true, or no
+    confidence_rationale/supporting_observation_claim_ids) renders
+    nothing, matching every other WITHHELD section's own "silent omission"
+    convention in this pipeline."""
+    if not forecasts:
+        return ""
+    real = [
+        f for f in forecasts
+        if not f.get("withheld") and f.get("supporting_observation_claim_ids") and f.get("confidence_rationale")
+    ]
+    if not real:
+        return ""
+    forecast = real[0]
+    rows = (
+        f'<p style="margin:0 0 8px"><strong>Judgment:</strong> {_esc(forecast["judgment"])}</p>'
+        f'<p style="margin:0 0 8px"><strong>Time horizon:</strong> {_esc(forecast["time_horizon"])}</p>'
+        f'<p style="margin:0 0 8px"><strong>Confidence:</strong> {_esc(forecast["confidence"])} '
+        f'&mdash; {_esc(forecast["confidence_rationale"])}</p>'
+    )
+    if forecast.get("assumptions"):
+        rows += _bullets(["<strong>Assumption:</strong> " + _esc(a) for a in forecast["assumptions"]], "#eab308")
+    if forecast.get("what_would_change_assessment"):
+        rows += _bullets(
+            ["<strong>Would change this assessment:</strong> " + _esc(w) for w in forecast["what_would_change_assessment"]],
+            "#eab308",
+        )
+    return _section("Forecast / Outlook", _panel(rows, "#eab308"), "#eab308")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1981,6 +2038,26 @@ class _ComposerOutcome:
     # defect class the hunt_hypotheses fix above was written to prevent
     # from recurring, found here because it recurred anyway.
     role_decisions: tuple = ()
+    # RX-P1K-WIRE: compose_report()'s own reliability_html (Section 6,
+    # Evidence & Source Assessment -- real two-axis Admiralty grading and
+    # corroboration state, always non-empty once the composer succeeds).
+    # Same discard-at-this-boundary situation as the three fields above --
+    # previously baked into composer_outcome.html for the reportx_composer
+    # path only, silently absent from every other path even though Section
+    # 6 has claimed unconditional COMPLETE since report_contract.py was
+    # first written. Already a complete HTML string (unlike the three
+    # fields above): exactly one place ever builds it, so it is passed
+    # through directly rather than re-derived from structured data.
+    reliability_html: str = ""
+    # RX-P1K-WIRE: compose_report()'s own forecasts (real, evidence-grounded
+    # Forecast/WithheldForecast entries -- cve_advisory/cisa_kev/
+    # cisa_advisory only today, see pipeline_composer._cve_forecast()).
+    # forecast.py's dataclasses existed, were tested, and certified, but
+    # were never imported by this live pipeline before this round --
+    # Section 22 (Forecast/Outlook) was permanently WITHHELD for every
+    # article regardless of family. Same discard-at-this-boundary
+    # situation hunt_hypotheses/attack_mappings/role_decisions were in.
+    forecasts: tuple = ()
 
 
 def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOutcome:
@@ -2028,6 +2105,8 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
         hunt_hypotheses = tuple(h.to_dict() for h in result.hunt_hypotheses)
         attack_mappings = tuple(m.to_dict() for m in result.attack_mappings)
         role_decisions = tuple(d.to_dict() for d in result.role_decisions)
+        reliability_html = result.reliability_html
+        forecasts = tuple(f.to_dict() for f in result.forecasts)
         if contradictions:
             logger.warning(
                 "ReportX composer found unresolved contradiction(s) -- publication will be blocked",
@@ -2044,6 +2123,7 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
                 evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
                 analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
                 hunt_hypotheses=hunt_hypotheses, attack_mappings=attack_mappings, role_decisions=role_decisions,
+                reliability_html=reliability_html, forecasts=forecasts,
             )
         return _ComposerOutcome(
             html=result.html, achieved_tier=tier.value,
@@ -2051,6 +2131,7 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
             evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
             analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
             hunt_hypotheses=hunt_hypotheses, attack_mappings=attack_mappings, role_decisions=role_decisions,
+            reliability_html=reliability_html, forecasts=forecasts,
         )
     except Exception as e:
         logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
@@ -2156,6 +2237,47 @@ class AuthorityTransformer:
         if content_source != "reportx_composer" and composer_outcome.role_decisions:
             body_content = body_content + _render_role_decisions_html(composer_outcome.role_decisions)
 
+        # RX-P1K fix: identical duplication guard as the three fixes above --
+        # composer_outcome.html already has reliability_html baked in for
+        # the reportx_composer path (pipeline_composer.compose_report()'s
+        # own html assembly), so every other path appends the pre-built
+        # string here instead. Before this fix, Section 6 (Evidence &
+        # Source Assessment) claimed unconditional COMPLETE for every
+        # article regardless of content_source, while the actual two-axis
+        # reliability/corroboration content only ever reached the published
+        # page on the composer path -- 2 of 3 real content paths silently
+        # omitted it.
+        if content_source != "reportx_composer" and composer_outcome.reliability_html:
+            body_content = body_content + composer_outcome.reliability_html
+
+        # RX-P1K fix: identical duplication guard as the fixes above --
+        # composer_outcome.html now has intelligence_gaps rendered in for
+        # the reportx_composer path (see pipeline_composer.py's matching
+        # RX-P1K change), so every other path appends it here instead.
+        # Before this round, Section 21 (Intelligence Gaps) resolved
+        # PARTIAL_EVIDENCE for every article on the strength of a real,
+        # family-conditioned gap list that had never once been rendered
+        # into a published page on ANY content path.
+        if content_source != "reportx_composer" and composer_outcome.intelligence_gaps:
+            body_content = body_content + _render_intelligence_gaps_html(composer_outcome.intelligence_gaps)
+
+        # RX-P1K fix: identical duplication guard as the fixes above --
+        # composer_outcome.html already has forecast_html baked in for the
+        # reportx_composer path (pipeline_composer.compose_report()'s own
+        # html assembly), so every other path renders it here instead.
+        # Section 22 (Forecast/Outlook) was permanently WITHHELD for every
+        # article before this round -- see pipeline_composer._cve_forecast().
+        if content_source != "reportx_composer" and composer_outcome.forecasts:
+            body_content = body_content + _render_forecast_html(composer_outcome.forecasts)
+
+        # A WithheldForecast is a real, explained outcome, not a failure --
+        # only an adequately-supported Forecast counts toward Section 22's
+        # completeness, mirroring _render_forecast_html()'s own filter.
+        forecast_count = sum(
+            1 for f in composer_outcome.forecasts
+            if not f.get("withheld") and f.get("supporting_observation_claim_ids") and f.get("confidence_rationale")
+        )
+
         # RX-P1B-WIRE: analytical_depth_gate.py + report_contract.py (the
         # founder-mandate 24-section contract + FLASH/TACTICAL/PREMIUM_LONG_FORM
         # tier gate) were built and certified
@@ -2170,6 +2292,7 @@ class AuthorityTransformer:
             hunt_hypothesis_count=len(composer_outcome.hunt_hypotheses),
             attack_mapping_count=len(composer_outcome.attack_mappings),
             role_decision_count=len(composer_outcome.role_decisions),
+            forecast_count=forecast_count,
         )
 
         # Generate SEO metadata
@@ -2277,6 +2400,8 @@ class AuthorityTransformer:
             "attack_mappings": list(composer_outcome.attack_mappings),
             # RX-P1J-WIRE: see _ComposerOutcome.role_decisions' docstring above.
             "role_decisions": list(composer_outcome.role_decisions),
+            # RX-P1K-WIRE: see _ComposerOutcome.forecasts' docstring above.
+            "forecasts": list(composer_outcome.forecasts),
             "detection_status": detection_status,
             "generated_at": context.generated_at,
             # RX-P1-ARTIFACT-BINDING: see the comment at this hash's

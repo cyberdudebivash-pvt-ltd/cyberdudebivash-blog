@@ -726,3 +726,115 @@ class TestRXP1JRoleDecisionSemanticGate:
             rationale="A public breach record is a disclosure to review, not a confirmed organizational incident.",
         )
         assert _validate_role_decisions([d]) == [d]
+
+
+class TestRXP1KReliabilityContentWiring:
+    """RX-P1K: report_contract.py's Section 6 (Evidence & Source
+    Assessment) has claimed unconditional COMPLETE since this contract was
+    first written, but the reliability_html backing that claim was never
+    exposed on ComposedReport at all -- so authority_transformer.py had no
+    way to render it on the LLM-authored or legacy-template content paths."""
+
+    def test_reliability_html_is_exposed_and_non_empty_for_every_real_article(self):
+        for article in (_cve_article(), _ransomware_article(), _ai_security_article()):
+            result = compose_report(article, CONFIG)
+            assert result.reliability_html, f"{result.context.family} produced no reliability_html"
+            assert "Source Reliability" in result.reliability_html
+
+    def test_reliability_html_is_already_baked_into_the_composer_path_html(self):
+        result = compose_report(_cve_article(), CONFIG)
+        assert "Source Reliability &amp; Corroboration" in result.html
+
+
+class TestRXP1KIntelligenceGapsRendering:
+    """RX-P1K: Section 21 (Intelligence Gaps) has resolved PARTIAL_EVIDENCE
+    unconditionally since RX-P1F on the strength of a real gap list that
+    had never once been rendered into the published HTML -- not even on
+    this composer's own path."""
+
+    def test_universal_gap_is_rendered_into_the_composer_html(self):
+        result = compose_report(_cve_article(), CONFIG)
+        assert "Intelligence Gaps" in result.html
+        assert "independent second source corroborates" in result.html
+
+    def test_family_specific_gap_is_also_rendered(self):
+        result = compose_report(_ai_security_article(), CONFIG)
+        assert "AI system, model, or capability" in result.html
+
+    def test_depth_assessment_now_counts_the_gaps_section(self):
+        # RX-P1K: intelligence_gaps computation moved before the html
+        # assembly line specifically so DepthAssessment's
+        # distinct_evidence_backed_sections (data-section= count) and
+        # rendered_word_count reflect the complete page, gaps included.
+        result = compose_report(_cve_article(), CONFIG)
+        assert result.html.count('data-section="intelligence-gaps"') == 1
+
+    def test_contradiction_check_still_runs_against_the_complete_html(self):
+        # Regression guard for the reordering: find_all_contradictions()
+        # must still be called with the FINAL html (gaps included), not an
+        # intermediate version, and must still find zero for clean evidence.
+        result = compose_report(_cve_article(), CONFIG)
+        assert result.contradictions == []
+
+
+class TestRXP1KForecastWiring:
+    """RX-P1K: forecast.py's Forecast/WithheldForecast (Section 16 of the
+    founder mandate, ReportX Section 22) were real, tested, and certified
+    but never imported by this live pipeline at all -- Section 22 has been
+    permanently WITHHELD for every article regardless of family. Scoped to
+    cve_advisory/cisa_kev/cisa_advisory only this round, mirroring
+    _cve_hunt_hypotheses()'s own precedent."""
+
+    def test_kev_listed_cve_gets_a_real_adequately_supported_forecast(self):
+        from sentinel_engine.reportx.forecast import Forecast
+        result = compose_report(_cve_article(source="cisa_kev", kev_listed=True), CONFIG)
+        assert len(result.forecasts) == 1
+        forecast = result.forecasts[0]
+        assert isinstance(forecast, Forecast)
+        assert forecast.is_adequately_supported()
+        assert "c-kev-listed" in forecast.supporting_observation_claim_ids
+        assert "Forecast / Outlook" in result.html
+
+    def test_non_kev_cve_gets_an_explained_withheld_forecast_not_a_guess(self):
+        from sentinel_engine.reportx.forecast import WithheldForecast
+        result = compose_report(_cve_article(kev_listed=False), CONFIG)
+        assert len(result.forecasts) == 1
+        assert isinstance(result.forecasts[0], WithheldForecast)
+        assert result.forecasts[0].reason
+        # Mandate's own explicit ban: no generic "threat activity is
+        # expected to continue" filler must ever render for this case.
+        assert "Forecast / Outlook" not in result.html
+
+    def test_non_cve_families_get_no_forecast_attempt_at_all(self):
+        for article in (_ransomware_article(), _ai_security_article(), _general_intelligence_article()):
+            result = compose_report(article, CONFIG)
+            assert result.forecasts == [], f"{result.context.family} should not attempt a forecast this round"
+
+    def test_forecast_judgment_never_asserts_a_specific_calendar_deadline(self):
+        # Mandate Section 10: do not invent 24h/72h/7d/30d deadlines unless
+        # evidence or policy supports them -- this pipeline has no such
+        # evidence source, so time_horizon must stay qualitative.
+        result = compose_report(_cve_article(source="cisa_kev", kev_listed=True), CONFIG)
+        import re
+        assert not re.search(r"\b\d+\s*(hour|day|week)s?\b", result.forecasts[0].time_horizon, re.IGNORECASE)
+
+    def test_section_22_resolves_complete_only_when_a_real_forecast_exists(self):
+        from automation.report_contract import SECTION_22_FORECAST_OUTLOOK, evaluate_section_states
+        kev_result = compose_report(_cve_article(source="cisa_kev", kev_listed=True), CONFIG)
+        non_kev_result = compose_report(_cve_article(kev_listed=False), CONFIG)
+
+        def _real_count(forecasts):
+            from sentinel_engine.reportx.forecast import Forecast
+            return sum(1 for f in forecasts if isinstance(f, Forecast) and f.is_adequately_supported())
+
+        kev_resolutions = evaluate_section_states(
+            _cve_article(source="cisa_kev", kev_listed=True), kev_result.context,
+            forecast_count=_real_count(kev_result.forecasts),
+        )
+        non_kev_resolutions = evaluate_section_states(
+            _cve_article(kev_listed=False), non_kev_result.context,
+            forecast_count=_real_count(non_kev_result.forecasts),
+        )
+        assert next(r.state.value for r in kev_resolutions if r.section == SECTION_22_FORECAST_OUTLOOK) == "COMPLETE"
+        assert next(r.state.value for r in non_kev_resolutions if r.section == SECTION_22_FORECAST_OUTLOOK) == \
+            "WITHHELD_INSUFFICIENT_EVIDENCE"

@@ -208,7 +208,18 @@ _FAMILY_APPLICABILITY: dict = {
         SECTION_19_ROLE_DECISION_MATRIX: Applicability.MANDATORY,
         SECTION_20_TIMEBOUND_ACTIONS: Applicability.OPTIONAL,
         SECTION_21_INTELLIGENCE_GAPS: Applicability.MANDATORY,
-        SECTION_22_FORECAST_OUTLOOK: Applicability.NOT_APPLICABLE,
+        # RX-P1K: reconciled from NOT_APPLICABLE. The blanket "a CVE has no
+        # forecast" judgment was too coarse once a real evidence source
+        # existed to check: discovery_bridge.py only ever constructs the
+        # c-kev-listed claim when article.kev_listed is True, and a federal
+        # KEV-catalog listing is a genuine, structural basis to forecast
+        # continued exploitation until remediation (pipeline_composer.
+        # _cve_forecast()) -- not every CVE has this signal (an unconfirmed
+        # CVE correctly gets an explained WithheldForecast, never a guess),
+        # but OPTIONAL is what lets a KEV-listed one honestly resolve
+        # COMPLETE instead of a permanent, un-earnable NOT_APPLICABLE floor.
+        # cisa_kev/cisa_advisory inherit this change via the alias below.
+        SECTION_22_FORECAST_OUTLOOK: Applicability.OPTIONAL,
         SECTION_23_REFERENCES_EVIDENCE_LEDGER: Applicability.MANDATORY,
         SECTION_24_PROVENANCE_CERTIFICATION: Applicability.MANDATORY,
     },
@@ -414,7 +425,7 @@ _DETECTION_STATUS_REAL_CONTENT = frozenset({"syntax_validated_experimental", "te
 def evaluate_section_states(
     article: "DiscoveredArticle", context: "ReportContext", detection_status: str = "",
     key_judgement_count: int = 0, hunt_hypothesis_count: int = 0, attack_mapping_count: int = 0,
-    role_decision_count: Optional[int] = None,
+    role_decision_count: Optional[int] = None, forecast_count: int = 0,
 ) -> list[SectionResolution]:
     """Resolve all 24 sections for one article. Never fabricates a state:
     a section with no implementation anywhere in this pipeline always
@@ -466,7 +477,16 @@ def evaluate_section_states(
     unmigrated caller; ``0`` means a caller genuinely measured zero role
     decisions for this article (honestly WITHHELD); any positive int means
     real, gate-passed decisions exist (COMPLETE). See
-    ``_resolve_role_decisions()`` below."""
+    ``_resolve_role_decisions()`` below.
+
+    ``forecast_count`` (RX-P1K) is the number of real, adequately-supported
+    ``forecast.Forecast`` entries in pipeline_composer.ComposedReport.
+    forecasts -- a ``WithheldForecast`` (a real, explained non-forecast,
+    not a failure) never counts toward this. Plain ``int = 0`` default,
+    not a sentinel like ``role_decision_count``: Section 22 has been
+    unconditionally WITHHELD for every caller since this contract was
+    first written (no prior COMPLETE behavior to preserve), the same
+    situation Sections 3/11/14 were in before their own counts existed."""
     resolutions = []
     for section in ALL_SECTIONS:
         applicability = get_applicability(context.family, section)
@@ -478,6 +498,8 @@ def evaluate_section_states(
             state = SectionState.COMPLETE if hunt_hypothesis_count > 0 else SectionState.WITHHELD_INSUFFICIENT_EVIDENCE
         elif section == SECTION_19_ROLE_DECISION_MATRIX:
             state = _resolve_role_decisions(role_decision_count)
+        elif section == SECTION_22_FORECAST_OUTLOOK:
+            state = SectionState.COMPLETE if forecast_count > 0 else SectionState.WITHHELD_INSUFFICIENT_EVIDENCE
         elif section in _IMPLEMENTED_TODAY or section in _IMPLEMENTED_ELSEWHERE:
             state = _resolve_implemented_section(article, context, section, detection_status)
         elif section in _PARTIAL_SIGNAL_ONLY:

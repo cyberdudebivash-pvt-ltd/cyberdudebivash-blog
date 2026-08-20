@@ -21,6 +21,7 @@ from automation.report_contract import (
     SECTION_18_SECTOR_GEOGRAPHIC_IMPACT,
     SECTION_19_ROLE_DECISION_MATRIX,
     SECTION_21_INTELLIGENCE_GAPS,
+    SECTION_22_FORECAST_OUTLOOK,
     SectionState,
     evaluate_section_states,
     get_applicability,
@@ -266,6 +267,40 @@ class TestSectionNineteenRoleDecisions(unittest.TestCase):
         context = build_report_context(article)
         resolutions = evaluate_section_states(article, context, role_decision_count=2)
         self.assertEqual(_state_of(resolutions, SECTION_19_ROLE_DECISION_MATRIX), SectionState.COMPLETE)
+
+
+class TestSectionTwentyTwoForecast(unittest.TestCase):
+    """RX-P1K: forecast_count uses a plain int=0 default (not a sentinel
+    like role_decision_count) -- Section 22 has been unconditionally
+    WITHHELD for every caller since this contract was first written, the
+    same situation Sections 3/11/14 were in before their own counts
+    existed, so 0 correctly preserves that prior behavior exactly."""
+
+    def test_cve_advisory_is_now_optional_not_not_applicable(self):
+        # RX-P1K reconciliation: a KEV-listed CVE has a real forecast
+        # basis (discovery_bridge.py's c-kev-listed claim) that the
+        # original blanket NOT_APPLICABLE judgment didn't have a chance to
+        # weigh when Section 22 had zero implementation anywhere.
+        self.assertEqual(get_applicability("cve_advisory", SECTION_22_FORECAST_OUTLOOK), Applicability.OPTIONAL)
+        self.assertEqual(get_applicability("cisa_kev", SECTION_22_FORECAST_OUTLOOK), Applicability.OPTIONAL)
+
+    def test_omitted_forecast_count_resolves_withheld(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context)
+        self.assertEqual(_state_of(resolutions, SECTION_22_FORECAST_OUTLOOK), SectionState.WITHHELD_INSUFFICIENT_EVIDENCE)
+
+    def test_zero_forecast_count_resolves_withheld(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context, forecast_count=0)
+        self.assertEqual(_state_of(resolutions, SECTION_22_FORECAST_OUTLOOK), SectionState.WITHHELD_INSUFFICIENT_EVIDENCE)
+
+    def test_positive_forecast_count_resolves_complete(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context, forecast_count=1)
+        self.assertEqual(_state_of(resolutions, SECTION_22_FORECAST_OUTLOOK), SectionState.COMPLETE)
 
 
 if __name__ == "__main__":

@@ -50,6 +50,7 @@ from .contradiction_engine import Contradiction, find_all_contradictions
 from .detection_validation import DetectionRule, DetectionValidationState
 from .discovery_bridge import build_evidence_graph, build_threat_product
 from .entity_resolution import CanonicalEntity, resolve_canonical_entities
+from .forecast import Forecast, WithheldForecast
 from .intelligence_validation import IntelligenceScorecard, SupplementalEvidence, evaluate_intelligence_validation
 from .executive_products import (
     HuntHypothesis,
@@ -68,6 +69,7 @@ from .product_depth import DepthAssessment
 from .tier_downgrade import DowngradeResult, determine_achieved_tier
 
 from sentinel_engine.attack_mapper import extract_technique_ids  # noqa: E402
+from sentinel_engine.models import Confidence  # noqa: E402
 
 # RX-P1I: previously only 1 of report_renderer.DetectionPackage's 4 real
 # status strings was mapped -- the other 3 all fell through to the same
@@ -413,6 +415,87 @@ def _cve_hunt_hypotheses(article, context: ReportContext, package: DetectionPack
     )]
 
 
+def _cve_forecast(article, context: ReportContext) -> Forecast | WithheldForecast:
+    """RX-P1K, mandate Section 22: ``forecast.py``'s ``Forecast``/
+    ``WithheldForecast`` (Section 16 of the founder mandate) were real,
+    tested, and certified but never imported by this live pipeline at
+    all -- Section 22 (Forecast/Outlook) has been permanently WITHHELD for
+    every article regardless of family since this contract was first
+    written. Scoped to ``cve_advisory``/``cisa_kev``/``cisa_advisory`` only
+    this round (the same "prove the wiring pattern on the family with the
+    strongest real evidence first" discipline already used for
+    ``_cve_hunt_hypotheses()``, RX-P1I) -- proves the wiring end to end
+    with one real, well-evidenced condition rather than a rushed
+    multi-family rollout that risks the generic "threat activity is
+    expected to continue" filler the mandate explicitly bans.
+
+    The only real, structural forecasting signal this pipeline has for a
+    CVE today is the CISA KEV catalog listing itself
+    (``discovery_bridge.py`` only ever constructs the ``c-kev-listed``
+    claim when ``article.kev_listed is True``): a federal, evidence-based
+    confirmation of active exploitation is a genuine basis to forecast
+    continued exploitation activity until remediation. A CVE with no KEV
+    listing has no comparable real activity signal in this pipeline's
+    evidence model -- forecasting one would be exactly the "assigned HIGH
+    CONFIDENCE solely because a template says so" defect ``forecast.py``'s
+    own module docstring names, so that case is an explicit, reasoned
+    ``WithheldForecast``, never a guessed judgment."""
+    if context.family not in _VULNERABILITY_MANAGER_FAMILIES:
+        return WithheldForecast(
+            topic="Exploitation trajectory",
+            reason="Forecast generation is scoped to CVE-shaped families with a KEV-catalog signal; "
+                   f"no such capability exists yet for family={context.family!r}.",
+        )
+    if article.kev_listed is True:
+        return Forecast(
+            judgment="Exploitation activity against this vulnerability is likely to continue while affected "
+                     "systems remain unremediated, consistent with its confirmed CISA KEV listing.",
+            time_horizon="Until affected systems are remediated or mitigated",
+            supporting_observation_claim_ids=("c-kev-listed",),
+            assumptions=("The vulnerability class and affected component described in this record remain "
+                         "accurate for as-yet-unremediated deployments.",),
+            confidence=Confidence.MEDIUM.value,
+            confidence_rationale="Based on confirmed CISA KEV listing (a federal, evidence-based confirmation "
+                                  "of active exploitation); does not predict the rate, targeting, or duration of "
+                                  "continued activity beyond the fact that exploitation is already occurring.",
+            indicators_to_watch=("Removal from the KEV catalog", "A confirmed vendor/telemetry signal of "
+                                  "majority patch adoption across affected deployments"),
+            what_would_change_assessment=("Removal from the KEV catalog", "Confirmed majority patch adoption "
+                                           "across affected deployments"),
+        )
+    return WithheldForecast(
+        topic="Exploitation trajectory",
+        reason="No confirmed exploitation signal (e.g. a CISA KEV listing) exists for this vulnerability to "
+               "forecast future activity from; forecasting a trajectory with no observed activity baseline "
+               "would be speculative, not evidence-based.",
+    )
+
+
+def _render_forecast_html(forecast: Forecast | WithheldForecast) -> str:
+    """Only a real, adequately-supported Forecast renders customer-visible
+    content -- a WithheldForecast's reason is exposed structurally (see
+    ComposedReport.forecasts / the output dict) but not as its own prose
+    block, matching every other WITHHELD section's own "silent omission,
+    not a placeholder" convention already established throughout this
+    pipeline (Sections 4/10/16/17/20)."""
+    if not isinstance(forecast, Forecast) or not forecast.is_adequately_supported():
+        return ""
+    rows = (
+        f'<p style="margin:0 0 8px"><strong>Judgment:</strong> {_esc(forecast.judgment)}</p>'
+        f'<p style="margin:0 0 8px"><strong>Time horizon:</strong> {_esc(forecast.time_horizon)}</p>'
+        f'<p style="margin:0 0 8px"><strong>Confidence:</strong> {_esc(forecast.confidence)} '
+        f'&mdash; {_esc(forecast.confidence_rationale)}</p>'
+    )
+    if forecast.assumptions:
+        rows += _bullets(["<strong>Assumption:</strong> " + _esc(a) for a in forecast.assumptions], "#eab308")
+    if forecast.what_would_change_assessment:
+        rows += _bullets(
+            ["<strong>Would change this assessment:</strong> " + _esc(w) for w in forecast.what_would_change_assessment],
+            "#eab308",
+        )
+    return _section("Forecast / Outlook", _panel(rows, "#eab308"), "#eab308")
+
+
 def _render_attack_mappings_html(mappings: list[AttackMapping]) -> str:
     """RX-P1I: the structured counterpart to report_renderer._attack_section()
     -- that function already renders package.attack_mappings' prose
@@ -436,6 +519,30 @@ def _render_attack_mappings_html(mappings: list[AttackMapping]) -> str:
             "#a855f7",
         ))
     return _section("Structured ATT&CK Assessment", "".join(rows), "#a855f7")
+
+
+def _render_intelligence_gaps_html(gaps: list[IntelligenceGap]) -> str:
+    """RX-P1K: report_contract.py's Section 21 (Intelligence Gaps) has
+    resolved PARTIAL_EVIDENCE unconditionally since RX-P1F, on the
+    documented basis that a real, family-conditioned gap list is always
+    computed (see the ``intelligence_gaps`` construction above) -- but that
+    list was never rendered into the published HTML on ANY content path,
+    including this composer's own. The mechanism being real was never the
+    same claim as the reader ever seeing it; this closes that gap (no pun
+    intended). Empty list renders nothing, matching every other optional
+    section's own convention in this function -- though in practice this
+    list is never empty (the universal corroboration gap above is
+    unconditional)."""
+    if not gaps:
+        return ""
+    items = []
+    for g in gaps:
+        line = f'<strong>{_esc(g.category.replace("_", " ").title())}:</strong> {_esc(g.description)}'
+        if g.what_would_confirm_or_refute:
+            line += (f'<br><span style="color:#64748b">Would be resolved by: '
+                     f'{_esc(g.what_would_confirm_or_refute)}</span>')
+        items.append(line)
+    return _section("Intelligence Gaps", _bullets(items, "#f59e0b"), "#f59e0b")
 
 
 @dataclass(frozen=True)
@@ -511,6 +618,28 @@ class ComposedReport:
     # genuinely-measured-empty report from a caller that never measured at
     # all (see evaluate_section_states()'s role_decision_count parameter).
     role_decisions: list[RoleDecision] = field(default_factory=list)
+    # RX-P1K-WIRE: report_contract.py Section 6 (Evidence & Source
+    # Assessment) has claimed unconditional COMPLETE since this contract
+    # was first written, on the (correct, for THIS module) assumption that
+    # real reliability/corroboration data always exists once compose_report()
+    # succeeds -- true here, but the rendered HTML backing that claim
+    # (``reliability_html`` below, in this function) was never exposed on
+    # this dataclass at all, so authority_transformer.py had no way to
+    # render it on the LLM-authored or legacy-template content paths (only
+    # ``reportx_composer`` ever saw it, baked into ``html`` directly).
+    # Exposed here as the pre-built HTML string, not re-derived structured
+    # data, since exactly one place ever needs to construct it (unlike
+    # hunt_hypotheses/attack_mappings/role_decisions, which are lists
+    # rendered per-item on multiple paths with their own dict shape).
+    reliability_html: str = ""
+    # RX-P1K-WIRE: real, evidence-grounded Forecast/WithheldForecast
+    # entries (see _cve_forecast() above) -- forecast.py's dataclasses
+    # existed, were tested, and certified, but were never imported by this
+    # live pipeline at all before this round (Section 22 was permanently
+    # WITHHELD for every article regardless of family). Same "always
+    # present, sometimes empty" convention as hunt_hypotheses/
+    # attack_mappings/role_decisions above.
+    forecasts: list = field(default_factory=list)
 
     @property
     def pass_count(self) -> int:
@@ -649,9 +778,14 @@ def compose_report(
 
     attack_html = _render_attack_mappings_html(attack_mappings)
 
-    html = base.html + role_html + reliability_html + hunt_html + attack_html
-
-    contradictions = find_all_contradictions(graph, dimension_tags=_dimension_tags_for(graph), full_text=html)
+    # RX-P1K: real, evidence-grounded forecast -- cve_advisory/cisa_kev/
+    # cisa_advisory only this round, see _cve_forecast()'s own docstring
+    # for why. "always present, sometimes withheld" convention: a
+    # WithheldForecast is a real, explained outcome, not an absence --
+    # forecasts always holds exactly one entry for these three families,
+    # zero for every other family today.
+    forecasts = [_cve_forecast(article, context)] if context.family in _VULNERABILITY_MANAGER_FAMILIES else []
+    forecast_html = _render_forecast_html(forecasts[0]) if forecasts else ""
 
     intelligence_gaps = [
         IntelligenceGap(
@@ -695,12 +829,23 @@ def compose_report(
     if context.family in _FAMILY_SPECIFIC_GAPS:
         intelligence_gaps.append(_FAMILY_SPECIFIC_GAPS[context.family])
 
+    gaps_html = _render_intelligence_gaps_html(intelligence_gaps)
+
+    html = base.html + role_html + reliability_html + hunt_html + attack_html + forecast_html + gaps_html
+
+    # Computed against the now-complete html (including the gaps section
+    # just appended above) -- find_all_contradictions() scans full_text for
+    # its 3 text-pattern checks, so this must run after every section that
+    # could contain a contradictory statement has been assembled, not
+    # before.
+    contradictions = find_all_contradictions(graph, dimension_tags=_dimension_tags_for(graph), full_text=html)
+
     material_claims = [c for c in graph.claims.values() if c.has_evidence()]
     bundle = ReportBundle(
         report_id=context.report_id, graph=graph, rendered_text=html,
         detection_rules=_detection_rules(context.report_id, package),
         threat_products=[threat_product] if threat_product else [],
-        intelligence_gaps=intelligence_gaps,
+        intelligence_gaps=intelligence_gaps, forecasts=forecasts,
         review=None, is_premium_tier=(requested_tier in (
             CertificationState.PREMIUM_READY_PENDING_HUMAN, CertificationState.PREMIUM_CERTIFIED,
             CertificationState.PREMIUM_AUTOMATED_CERTIFIED,
@@ -726,4 +871,5 @@ def compose_report(
         contradictions=contradictions, analytical_confidence=analytical_confidence,
         canonical_entities=canonical_entities, hunt_hypotheses=hunt_hypotheses,
         attack_mappings=attack_mappings, role_decisions=role_decisions,
+        reliability_html=reliability_html, forecasts=forecasts,
     )

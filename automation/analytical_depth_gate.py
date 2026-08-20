@@ -56,6 +56,7 @@ def evaluate_product_tier(
     hunt_hypothesis_count: int = 0,
     attack_mapping_count: int = 0,
     role_decision_count: Optional[int] = None,
+    forecast_count: int = 0,
 ) -> ProductTierVerdict:
     """Never returns PREMIUM_LONG_FORM merely because a report has 24
     headings (Phase D's own explicit warning) -- every gate below checks a
@@ -89,11 +90,18 @@ def evaluate_product_tier(
     own docstring for the full reasoning. Section 19 IS a MANDATORY section
     for every family with a reconciled matrix today, so unlike
     hunt_hypothesis_count/attack_mapping_count, this signal genuinely can
-    gate tier eligibility once a real caller passes 0."""
+    gate tier eligibility once a real caller passes 0. ``forecast_count``
+    (RX-P1K) is the same real pass-through for adequately-supported
+    forecast.Forecast entries (cve_advisory/cisa_kev/cisa_advisory only
+    today) -- plain ``int = 0`` default, since Section 22 has always been
+    WITHHELD before this parameter existed. Section 22 is OPTIONAL for
+    every family with a reconciled matrix today, so like
+    hunt_hypothesis_count/attack_mapping_count this never gates tier
+    eligibility on its own."""
     resolutions = evaluate_section_states(
         article, context, detection_status=detection_status, key_judgement_count=key_judgement_count,
         hunt_hypothesis_count=hunt_hypothesis_count, attack_mapping_count=attack_mapping_count,
-        role_decision_count=role_decision_count,
+        role_decision_count=role_decision_count, forecast_count=forecast_count,
     )
     mandatory = [r for r in resolutions if r.applicability == Applicability.MANDATORY]
     mandatory_withheld = tuple(
