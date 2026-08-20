@@ -127,6 +127,58 @@ class TestRoleDecisions:
         assert "Legal / Compliance / Privacy" in out
         assert "CEO / Board" not in out
 
+    def test_default_construction_leaves_every_rx_p1j_field_falsy(self):
+        # RX-P1J additive fields must never silently default to a truthy
+        # placeholder -- "" / () means "not established," and every one of
+        # the 7 real production call sites in pipeline_composer.
+        # _lean_role_decisions() constructs without most of these, so this
+        # is also the real backward-compatibility proof for that module.
+        d = RoleDecision(role=RoleAudience.SOC_MANAGER, decision="x", rationale="y", evidence_claim_ids=("c-1",))
+        assert d.action == "" and d.priority == "" and d.claim_refs == ()
+        assert d.time_horizon == "" and d.deadline_or_trigger == ""
+        assert d.escalation_condition == "" and d.conditions_that_change_decision == ""
+        assert d.limitations == ""
+
+    def test_to_dict_includes_every_rx_p1j_field(self):
+        d = RoleDecision(
+            role=RoleAudience.IR_MANAGER, decision="Validate internally.", rationale="Single-source claim.",
+            evidence_claim_ids=("c-victim-claim",), action="Open a validation ticket.", priority="P2",
+            claim_refs=("claim-1",), time_horizon="Near-term", deadline_or_trigger="",
+            escalation_condition="Independent corroboration is found.",
+            conditions_that_change_decision="A second independent source reports the same claim.",
+            limitations="Based on a single third-party source only.",
+        )
+        out = d.to_dict()
+        assert out["action"] == "Open a validation ticket."
+        assert out["priority"] == "P2"
+        assert out["claim_refs"] == ["claim-1"]
+        assert out["time_horizon"] == "Near-term"
+        assert out["escalation_condition"] == "Independent corroboration is found."
+        assert out["conditions_that_change_decision"] == "A second independent source reports the same claim."
+        assert out["limitations"] == "Based on a single third-party source only."
+
+    def test_rendered_output_shows_escalation_and_limitations_when_present(self):
+        d = RoleDecision(
+            role=RoleAudience.IR_MANAGER, decision="Validate internally.", rationale="Single-source claim.",
+            evidence_claim_ids=("c-victim-claim",),
+            escalation_condition="Independent corroboration is found.",
+            limitations="Based on a single third-party source only.",
+        )
+        out = render_role_decisions([d])
+        assert "**Escalate when:** Independent corroboration is found." in out
+        assert "**Limitations:** Based on a single third-party source only." in out
+
+    def test_rendered_output_omits_empty_optional_fields(self):
+        # A decision with no genuine basis for the new fields must not
+        # render empty "Priority:"/"Escalate when:" lines -- honest
+        # omission, not a blank placeholder.
+        d = RoleDecision(role=RoleAudience.SOC_MANAGER, decision="x", rationale="y", evidence_claim_ids=("c-1",))
+        out = render_role_decisions([d])
+        assert "Priority:" not in out
+        assert "Escalate when:" not in out
+        assert "Limitations:" not in out
+        assert "Deadline/Trigger:" not in out
+
 
 class TestRoleDisplayLabel:
     """COMMERCIAL-QUALITY-2026-08-18: independently verified live (and

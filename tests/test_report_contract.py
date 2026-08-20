@@ -19,6 +19,7 @@ from automation.report_contract import (
     SECTION_13_HISTORICAL_CORRELATION,
     SECTION_15_DETECTION_ENGINEERING,
     SECTION_18_SECTOR_GEOGRAPHIC_IMPACT,
+    SECTION_19_ROLE_DECISION_MATRIX,
     SECTION_21_INTELLIGENCE_GAPS,
     SectionState,
     evaluate_section_states,
@@ -222,6 +223,49 @@ class TestRansomwareArticleSectionStates(unittest.TestCase):
         context = build_report_context(article)
         resolutions = evaluate_section_states(article, context)
         self.assertEqual(_state_of(resolutions, SECTION_21_INTELLIGENCE_GAPS), SectionState.PARTIAL_EVIDENCE)
+
+
+class TestSectionNineteenRoleDecisions(unittest.TestCase):
+    """RX-P1J: role_decision_count is deliberately Optional[int] = None,
+    not int = 0 like key_judgement_count/hunt_hypothesis_count/
+    attack_mapping_count -- Section 19 was already unconditionally
+    COMPLETE for every caller before this parameter existed (it sits in
+    _IMPLEMENTED_TODAY with no special case in _resolve_implemented_section(),
+    so it fell through to that function's unconditional COMPLETE return),
+    so a bare ``int = 0`` default would silently flip every unmigrated
+    caller's Section 19 from COMPLETE to WITHHELD the moment this
+    parameter was added -- exactly the backward-compatibility break
+    Section 5/Principle 5 of the governing constitution forbids without a
+    documented migration path."""
+
+    def test_omitted_role_decision_count_preserves_the_prior_unconditional_complete(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context)
+        self.assertEqual(_state_of(resolutions, SECTION_19_ROLE_DECISION_MATRIX), SectionState.COMPLETE)
+
+    def test_explicit_none_behaves_identically_to_omission(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context, role_decision_count=None)
+        self.assertEqual(_state_of(resolutions, SECTION_19_ROLE_DECISION_MATRIX), SectionState.COMPLETE)
+
+    def test_explicit_zero_resolves_withheld_not_complete(self):
+        # The mandate's own named hard-fail: Section 19 must not claim
+        # COMPLETE when a real, migrated caller has genuinely measured
+        # zero role decisions for this article.
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context, role_decision_count=0)
+        self.assertEqual(
+            _state_of(resolutions, SECTION_19_ROLE_DECISION_MATRIX), SectionState.WITHHELD_INSUFFICIENT_EVIDENCE,
+        )
+
+    def test_positive_count_resolves_complete(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context, role_decision_count=2)
+        self.assertEqual(_state_of(resolutions, SECTION_19_ROLE_DECISION_MATRIX), SectionState.COMPLETE)
 
 
 if __name__ == "__main__":

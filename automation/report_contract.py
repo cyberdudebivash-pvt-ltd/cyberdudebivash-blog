@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from .content_discovery import DiscoveredArticle
@@ -414,6 +414,7 @@ _DETECTION_STATUS_REAL_CONTENT = frozenset({"syntax_validated_experimental", "te
 def evaluate_section_states(
     article: "DiscoveredArticle", context: "ReportContext", detection_status: str = "",
     key_judgement_count: int = 0, hunt_hypothesis_count: int = 0, attack_mapping_count: int = 0,
+    role_decision_count: Optional[int] = None,
 ) -> list[SectionResolution]:
     """Resolve all 24 sections for one article. Never fabricates a state:
     a section with no implementation anywhere in this pipeline always
@@ -442,7 +443,30 @@ def evaluate_section_states(
     attack_mapping.build_attack_mappings()'s own semantic gate (real
     technique, real tactic, real behavioral basis, real evidence
     reference). Default 0 preserves every existing caller's behavior
-    exactly."""
+    exactly.
+
+    ``role_decision_count`` (RX-P1J) is len(pipeline_composer.
+    ComposedReport.role_decisions) -- every entry already passed
+    executive_products.RoleDecision's own structural hard-fail gate (real
+    role, real decision, real evidence basis, no duplicates, no
+    unsupported deadline/regulatory claim). Deliberately typed
+    ``Optional[int] = None``, NOT a bare ``int = 0`` like the three
+    counts above -- Section 19 is unlike Sections 3/14/11: before this
+    parameter existed, Section 19 was already unconditionally COMPLETE for
+    every caller (it sits in ``_IMPLEMENTED_TODAY`` and
+    ``_resolve_implemented_section()`` has no special case for it, so it
+    falls through to its unconditional ``return SectionState.COMPLETE``),
+    whereas Sections 3/14/11 were always WITHHELD before their own count
+    parameters existed. A bare ``int = 0`` default would therefore flip
+    Section 19 from COMPLETE to WITHHELD for every caller that hasn't been
+    updated to pass a real count -- silently downgrading
+    ``mandatory_withheld``/tier verdicts for callers (existing tests
+    included) that never asked to be re-evaluated on this signal. ``None``
+    preserves the prior unconditional-COMPLETE behavior exactly for an
+    unmigrated caller; ``0`` means a caller genuinely measured zero role
+    decisions for this article (honestly WITHHELD); any positive int means
+    real, gate-passed decisions exist (COMPLETE). See
+    ``_resolve_role_decisions()`` below."""
     resolutions = []
     for section in ALL_SECTIONS:
         applicability = get_applicability(context.family, section)
@@ -452,6 +476,8 @@ def evaluate_section_states(
             state = SectionState.COMPLETE if key_judgement_count > 0 else SectionState.WITHHELD_INSUFFICIENT_EVIDENCE
         elif section == SECTION_14_THREAT_HUNTING:
             state = SectionState.COMPLETE if hunt_hypothesis_count > 0 else SectionState.WITHHELD_INSUFFICIENT_EVIDENCE
+        elif section == SECTION_19_ROLE_DECISION_MATRIX:
+            state = _resolve_role_decisions(role_decision_count)
         elif section in _IMPLEMENTED_TODAY or section in _IMPLEMENTED_ELSEWHERE:
             state = _resolve_implemented_section(article, context, section, detection_status)
         elif section in _PARTIAL_SIGNAL_ONLY:
@@ -517,6 +543,23 @@ def _resolve_attack_mapping(detection_status: str, attack_mapping_count: int = 0
     if detection_status in _DETECTION_STATUS_REAL_CONTENT:
         return SectionState.PARTIAL_EVIDENCE
     return SectionState.WITHHELD_INSUFFICIENT_EVIDENCE
+
+
+def _resolve_role_decisions(role_decision_count: Optional[int]) -> SectionState:
+    """RX-P1J: closes the exact gap the mandate names -- Section 19 must
+    not resolve COMPLETE without proof that structured role decisions
+    actually exist for this article. ``None`` (the parameter's own
+    default, see evaluate_section_states()'s docstring) preserves this
+    section's prior unconditional-COMPLETE behavior for a caller that
+    hasn't been updated to measure a real count -- a deliberate backward-
+    compatibility carve-out, not an oversight. A caller that HAS been
+    updated (currently: authority_transformer.transform(), via
+    pipeline_composer.ComposedReport.role_decisions) always passes a real
+    int, so ``None`` is never reachable on that path; ``0``/positive then
+    resolve exactly like every other count-gated section here."""
+    if role_decision_count is None:
+        return SectionState.COMPLETE
+    return SectionState.COMPLETE if role_decision_count > 0 else SectionState.WITHHELD_INSUFFICIENT_EVIDENCE
 
 
 def _resolve_actor_context(article: "DiscoveredArticle") -> SectionState:

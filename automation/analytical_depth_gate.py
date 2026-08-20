@@ -55,6 +55,7 @@ def evaluate_product_tier(
     key_judgement_count: int = 0,
     hunt_hypothesis_count: int = 0,
     attack_mapping_count: int = 0,
+    role_decision_count: Optional[int] = None,
 ) -> ProductTierVerdict:
     """Never returns PREMIUM_LONG_FORM merely because a report has 24
     headings (Phase D's own explicit warning) -- every gate below checks a
@@ -76,10 +77,23 @@ def evaluate_product_tier(
     this pipeline can construct is ASSESSED or CONDITIONAL, never OBSERVED
     -- see attack_mapping.py's module docstring for why that is a
     structural property, not a current limitation), so like
-    hunt_hypothesis_count this never gates tier eligibility on its own."""
+    hunt_hypothesis_count this never gates tier eligibility on its own.
+    ``role_decision_count`` (RX-P1J) is the same real pass-through for
+    gate-passed RoleDecision entries -- threaded straight to
+    evaluate_section_states(), never re-derived here. Deliberately
+    ``Optional[int] = None`` rather than ``int = 0``: Section 19 (unlike
+    Sections 3/14/11) was already unconditionally COMPLETE before this
+    parameter existed, so ``None`` preserves that behavior for a caller
+    that hasn't been updated, while an explicit ``0``/positive int reflects
+    a real measurement -- see report_contract.evaluate_section_states()'s
+    own docstring for the full reasoning. Section 19 IS a MANDATORY section
+    for every family with a reconciled matrix today, so unlike
+    hunt_hypothesis_count/attack_mapping_count, this signal genuinely can
+    gate tier eligibility once a real caller passes 0."""
     resolutions = evaluate_section_states(
         article, context, detection_status=detection_status, key_judgement_count=key_judgement_count,
         hunt_hypothesis_count=hunt_hypothesis_count, attack_mapping_count=attack_mapping_count,
+        role_decision_count=role_decision_count,
     )
     mandatory = [r for r in resolutions if r.applicability == Applicability.MANDATORY]
     mandatory_withheld = tuple(
