@@ -1106,5 +1106,60 @@ class TestKeyJudgementsWiredIntoTransform(unittest.TestCase):
         self.assertIn("&lt;script&gt;", result["content"])
 
 
+class TestCanonicalEntitiesWiredIntoTransform(unittest.TestCase):
+    """RX-P1G end-to-end: canonical entity resolution is fully deterministic
+    (no LLM call, unlike Key Judgements), so it must reach transform()'s
+    real output for every article regardless of content_source -- proven
+    here against the real, unmocked pipeline_composer.compose_report() call
+    path, not a mocked evidence graph."""
+
+    def _ransomware_article(self, **kwargs) -> DiscoveredArticle:
+        defaults = dict(
+            url="https://www.ransomware.live/id/example",
+            title="SilentRansomGroup Ransomware Claims New Victim: Troutman Pepper Locke",
+            summary="SilentRansomGroup has listed Troutman Pepper Locke as a new victim on its leak site.",
+            published_at="2026-08-18T22:51:57+00:00",
+            content_hash=_compute_hash("https://www.ransomware.live/id/example", "SilentRansomGroup"),
+            labels=["Ransomware", "CYBERDUDEBIVASH", "Threat Intelligence"],
+            source="ransomware_intel",
+            cve_id=None, cvss_score=None, cvss_vector=None, cwe_ids=None,
+            affected_vendor=None, affected_product=None,
+        )
+        defaults.update(kwargs)
+        return DiscoveredArticle(**defaults)
+
+    def test_cve_entity_reaches_transform_output(self):
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        cves = [e for e in result["canonical_entities"] if e["entity_type"] == "cve"]
+        self.assertEqual(len(cves), 1)
+        self.assertEqual(cves[0]["canonical_name"], "CVE-2026-9999")
+        self.assertEqual(cves[0]["confidence"], "HIGH")
+        self.assertTrue(cves[0]["evidence_refs"], "must be linked to a real claim, not fabricated")
+
+    def test_computed_regardless_of_content_source(self):
+        # Unlike Key Judgements (gated on LLM authorship), entity resolution
+        # is pure/deterministic and must run for every article -- confirmed
+        # here on the same non-LLM fixture Key Judgements explicitly skips.
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(result["content_source"], "reportx_composer")
+        self.assertTrue(any(e["entity_type"] == "cve" for e in result["canonical_entities"]))
+
+    def test_ransomware_actor_placeholder_never_reaches_transform_output(self):
+        result = AuthorityTransformer(Config()).transform(
+            self._ransomware_article(ransomware_group="Unknown Group")
+        )
+        actors = [e for e in result["canonical_entities"] if e["entity_type"] == "ransomware_actor"]
+        self.assertEqual(actors, [])
+
+    def test_real_ransomware_actor_reaches_transform_output(self):
+        result = AuthorityTransformer(Config()).transform(
+            self._ransomware_article(ransomware_group="SilentRansomGroup")
+        )
+        actors = [e for e in result["canonical_entities"] if e["entity_type"] == "ransomware_actor"]
+        self.assertEqual(len(actors), 1)
+        self.assertEqual(actors[0]["canonical_name"], "SilentRansomGroup")
+        self.assertEqual(actors[0]["confidence"], "MEDIUM")
+
+
 if __name__ == "__main__":
     unittest.main()
