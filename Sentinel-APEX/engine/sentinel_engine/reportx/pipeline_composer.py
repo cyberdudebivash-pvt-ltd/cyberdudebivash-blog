@@ -207,6 +207,54 @@ def _lean_role_decisions(article, context: ReportContext, threat_product) -> lis
                        "not CONFIRMED) -- Section 10's high-impact-claim-type discipline applies.",
             evidence_claim_ids=("c-victim-claim",),
         ))
+    # RX-P1H: these four families previously got no role decision at all --
+    # confirmed live (test_pipeline_composer.py's
+    # TestRoleRoutingDoesNotMisapplyVulnerabilityManagement class) that an
+    # empty list correctly omits the whole Role-Based Decisions section
+    # rather than rendering it empty, but omission is not a substitute for a
+    # real decision when this family's own evidence supports one. Each of
+    # the four below reuses an existing RoleAudience value (no new role
+    # invented) and is deliberately unconditional -- same "SHORT list, but
+    # never zero for a family with real evidence to route" reasoning as the
+    # three families above -- so that report_contract.py's new MANDATORY
+    # Section 19 for these families (RX-P1H) is never a trap: the section is
+    # always genuinely populated, not merely claimed applicable.
+    if context.family == "ai_security":
+        decisions.append(RoleDecision(
+            role=RoleAudience.CISO_CIO,
+            decision="Confirm whether the cited AI system, model, or capability exists in approved or shadow use "
+                      "before treating this as a governance action item.",
+            rationale="AI security findings are a governance and control-mapping concern at this evidence depth, "
+                       "not yet a confirmed technical defect.",
+            evidence_claim_ids=("c-summary",),
+        ))
+    if context.family == "breach_notice":
+        decisions.append(RoleDecision(
+            role=RoleAudience.LEGAL_COMPLIANCE_PRIVACY,
+            decision="Assess whether this public breach record involves the organization's own data, customers, or "
+                      "vendors before any notification or regulatory determination.",
+            rationale="A public breach record is a disclosure to review, not a confirmed organizational incident on "
+                       "its own (c-summary only -- no scope evidence has been independently established).",
+            evidence_claim_ids=("c-summary",),
+        ))
+    if context.family == "threat_actor":
+        decisions.append(RoleDecision(
+            role=RoleAudience.THREAT_HUNTER,
+            decision="Cross-reference the described actor's infrastructure and TTPs against internal telemetry "
+                      "before treating this record as relevant to the environment.",
+            rationale="Actor attribution and TTPs are as reported by the cited source; this pipeline does not "
+                       "independently corroborate them.",
+            evidence_claim_ids=("c-summary",),
+        ))
+    if context.family == "ransomware_reporting":
+        decisions.append(RoleDecision(
+            role=RoleAudience.SOC_MANAGER,
+            decision="Review detection and backup-immutability coverage against the ransomware tradecraft "
+                      "described, independent of any specific victim claim.",
+            rationale="This record reports ransomware activity or trends generally, not a claim against a named "
+                       "victim -- see the Ransomware Claim Intelligence family for that distinct evidence type.",
+            evidence_claim_ids=("c-summary",),
+        ))
     return decisions
 
 
@@ -369,6 +417,40 @@ def compose_report(
             what_would_confirm_or_refute="A second, independent source reporting the same underlying fact.",
         ),
     ]
+    # RX-P1H: this list was identical for every family regardless of its
+    # actual evidence shape -- the one universal gap above stays true for
+    # every family (corroboration is genuinely unassessed everywhere), but
+    # each of these four families has its own, additional real gap that the
+    # universal one does not capture. Additive only: no existing family's
+    # gap list changes.
+    _FAMILY_SPECIFIC_GAPS = {
+        "ai_security": IntelligenceGap(
+            description="Whether the cited AI system, model, or capability is in use within the reader's "
+                         "environment has not been independently verified.",
+            category="KNOWN_UNKNOWN",
+            what_would_confirm_or_refute="A confirmed model/vendor inventory match against approved or shadow AI usage records.",
+        ),
+        "breach_notice": IntelligenceGap(
+            description="The actual scope of data exposure (records, individuals, or data categories affected) "
+                         "has not been independently confirmed beyond the public disclosure record.",
+            category="KNOWN_UNKNOWN",
+            what_would_confirm_or_refute="A verified breach notification or regulatory filing detailing confirmed scope.",
+        ),
+        "threat_actor": IntelligenceGap(
+            description="Whether the described actor, infrastructure, or TTPs are currently active against the "
+                         "reader's own sector or region has not been assessed.",
+            category="KNOWN_UNKNOWN",
+            what_would_confirm_or_refute="A matching indicator or TTP observed in the reader's own telemetry.",
+        ),
+        "ransomware_reporting": IntelligenceGap(
+            description="This record describes ransomware activity or trends generally; no specific victim "
+                         "organization in the reader's environment has been claimed or assessed.",
+            category="KNOWN_UNKNOWN",
+            what_would_confirm_or_refute="A specific, named victim claim or internal indicator matching the reported activity.",
+        ),
+    }
+    if context.family in _FAMILY_SPECIFIC_GAPS:
+        intelligence_gaps.append(_FAMILY_SPECIFIC_GAPS[context.family])
 
     material_claims = [c for c in graph.claims.values() if c.has_evidence()]
     bundle = ReportBundle(
