@@ -158,6 +158,81 @@ class TestFullPipelinePublish(unittest.TestCase):
         self.assertGreater(report["published"], 0)
         self.assertEqual(report["failed"], 0)
 
+    def test_fetch_back_discrepancy_is_recorded_but_does_not_fail_the_publish(self):
+        # ReportX Phase 1Q wiring: fetch-back is observability, not a gate
+        # -- a post is already live by the time it runs, so a detected
+        # discrepancy must be recorded (report["fetch_back_discrepancies"],
+        # post_result["fetch_back"]) without affecting published/failed
+        # counts. Mocked at the fetch_back_and_verify() boundary (not raw
+        # HTTP) since the real transformer's generated content isn't known
+        # ahead of time -- this test verifies the wiring, not the
+        # comparison logic itself (see test_publication_verifier.py for
+        # that).
+        from automation.publication_verifier import FetchBackResult
+
+        token_resp = MagicMock()
+        token_resp.ok = True
+        token_resp.json.return_value = MOCK_TOKEN_RESPONSE
+
+        post_resp = MagicMock()
+        post_resp.status_code = 200
+        post_resp.raise_for_status = MagicMock()
+        post_resp.json.return_value = MOCK_BLOGGER_POST
+
+        rss_resp = MagicMock()
+        rss_resp.text = MOCK_RSS
+        rss_resp.raise_for_status = MagicMock()
+        rss_resp.status_code = 200
+
+        discrepant = FetchBackResult(
+            post_id="integration-post-123", fetched=True, verified=False,
+            defects=("title_mismatch",),
+        )
+
+        with patch("requests.get", return_value=rss_resp):
+            with patch("requests.post", side_effect=[token_resp, post_resp, post_resp]):
+                with patch("time.sleep"):
+                    with patch("automation.main.fetch_back_and_verify", return_value=discrepant) as mock_fb:
+                        report = run_pipeline(self.config, dry_run=False)
+
+        self.assertGreater(report["published"], 0)
+        self.assertEqual(report["failed"], 0)
+        self.assertEqual(report["fetch_back_discrepancies"], report["published"])
+        published_posts = [p for p in report["posts"] if p["status"] == "published"]
+        self.assertTrue(all(p["fetch_back"]["verified"] is False for p in published_posts))
+        self.assertTrue(all(p["fetch_back"]["defects"] == ["title_mismatch"] for p in published_posts))
+        self.assertGreater(mock_fb.call_count, 0)
+
+    def test_clean_fetch_back_is_recorded_and_does_not_count_as_a_discrepancy(self):
+        from automation.publication_verifier import FetchBackResult
+
+        token_resp = MagicMock()
+        token_resp.ok = True
+        token_resp.json.return_value = MOCK_TOKEN_RESPONSE
+
+        post_resp = MagicMock()
+        post_resp.status_code = 200
+        post_resp.raise_for_status = MagicMock()
+        post_resp.json.return_value = MOCK_BLOGGER_POST
+
+        rss_resp = MagicMock()
+        rss_resp.text = MOCK_RSS
+        rss_resp.raise_for_status = MagicMock()
+        rss_resp.status_code = 200
+
+        clean = FetchBackResult(post_id="integration-post-123", fetched=True, verified=True, exact_content_match=True)
+
+        with patch("requests.get", return_value=rss_resp):
+            with patch("requests.post", side_effect=[token_resp, post_resp, post_resp]):
+                with patch("time.sleep"):
+                    with patch("automation.main.fetch_back_and_verify", return_value=clean):
+                        report = run_pipeline(self.config, dry_run=False)
+
+        self.assertGreater(report["published"], 0)
+        self.assertEqual(report["fetch_back_discrepancies"], 0)
+        published_posts = [p for p in report["posts"] if p["status"] == "published"]
+        self.assertTrue(all(p["fetch_back"]["verified"] is True for p in published_posts))
+
     def test_certified_artifact_hash_mismatch_blocks_publication(self):
         # RX-P1-ARTIFACT-BINDING adversarial test: simulates exactly the
         # scenario mandate Section 17/34 exists to prevent -- report

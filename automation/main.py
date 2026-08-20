@@ -20,6 +20,7 @@ from .blogger_publisher import BloggerPublisher, BloggerPublishError, BloggerAut
 from .config import Config
 from .content_discovery import ContentDiscoveryEngine, DiscoveredArticle, PublicationState
 from .logger import setup_logger
+from .publication_verifier import fetch_back_and_verify
 from .report_integrity import PublicationIntegrityError, compute_artifact_hash
 from .search_console_submitter import SearchConsoleSubmitter
 from .social_amplifier import SocialAmplifier
@@ -112,6 +113,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         "skipped": 0,
         "requeued": 0,
         "integrity_blocked": 0,
+        "fetch_back_discrepancies": 0,
         "posts": [],
         "errors": [],
     }
@@ -233,6 +235,30 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                 blogger_post_id = blogger_post["id"]
                 blogger_url = blogger_post.get("url", "")
 
+                # ReportX Phase 1Q post-publication fetch-back (mandate
+                # Section 26): a real, separate GET call verifying what
+                # Blogger now actually persists for this exact post matches
+                # what was submitted -- Phase 1P's status==LIVE check above
+                # only proves Blogger accepted the request, not that the
+                # stored content itself is intact. Runs inline, immediately
+                # after publish, and never raises (see
+                # fetch_back_and_verify()'s own docstring) -- a verification
+                # finding must never be confused with, or escalate into, a
+                # publish failure on a post that is already live.
+                fetch_back = fetch_back_and_verify(
+                    publisher, blogger_post_id,
+                    transformed["title"], transformed["content"], transformed["labels"],
+                )
+                if not fetch_back.verified:
+                    report["fetch_back_discrepancies"] += 1
+                    logger.warning(
+                        "Post-publication fetch-back found a discrepancy",
+                        extra={
+                            "post_id": blogger_post_id, "blogger_url": blogger_url,
+                            "defects": list(fetch_back.defects),
+                        },
+                    )
+
                 # Persist state
                 discovery.state.mark_published(
                     article,
@@ -258,6 +284,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                     "blogger_post_id": blogger_post_id,
                     "blogger_url": blogger_url,
                     "social": social_result,
+                    "fetch_back": fetch_back.to_dict(),
                 })
                 report["published"] += 1
 
@@ -351,6 +378,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             "failed": report["failed"],
             "skipped": report["skipped"],
             "integrity_blocked": report["integrity_blocked"],
+            "fetch_back_discrepancies": report["fetch_back_discrepancies"],
         },
     )
 
