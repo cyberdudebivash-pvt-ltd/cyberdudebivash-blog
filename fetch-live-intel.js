@@ -398,7 +398,7 @@ function loadState() {
       return s;
     }
   } catch(e) { warn('State corrupt — starting fresh.'); }
-  return { published: [], lastRun: null, totalPublished: 0, correlations: {}, sourceFetchState: {}, sourceHealth: {}, version: '5.0' };
+  return { published: [], lastRun: null, lastReportGeneratedAt: null, totalPublished: 0, correlations: {}, sourceFetchState: {}, sourceHealth: {}, version: '5.0' };
 }
 function saveState(state) {
   state.lastRun  = isoNowFull();
@@ -3351,6 +3351,15 @@ async function main() {
     }
 
     log(`  Quality gate: ${qualityPassed} passed, ${qualityRejected} rejected`);
+    // live-intel.json's rolling window is sorted by priority (not recency) and
+    // trims to CFG.liveRollingWindow -- a genuinely new, real report can still
+    // be trimmed out of the window if its priority is lower than what's
+    // already there, leaving every item's _addedAt stale even while the
+    // pipeline is actively publishing. lastReportGeneratedAt is set only when
+    // a report was actually written this run, so freshness-check.yml can tell
+    // "pipeline ran" apart from "pipeline actually produced new content"
+    // without depending on window membership.
+    if (newSlugs.length > 0) state.lastReportGeneratedAt = isoNowFull();
     saveState(state);
     if (analystMemory) {
       try {
