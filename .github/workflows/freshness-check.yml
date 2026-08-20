@@ -55,8 +55,18 @@ jobs:
 
           # ── Freshness check ───────────────────────────────────────────────
           # IMPORTANT: pubDate/published fields reflect CVE/article PUBLICATION dates,
-          # NOT when the pipeline ran. We use _addedAt (pipeline ingestion timestamp)
-          # or metadata.generated (set on each pipeline run) for true freshness.
+          # NOT when the pipeline ran. We use intel-state.json's lastReportGeneratedAt,
+          # live-intel.json's item _addedAt, or metadata.generated (set on each pipeline
+          # run) for true freshness -- in that priority order. lastReportGeneratedAt is
+          # the most reliable of the three: live-intel.json's 150-item window is sorted
+          # by priority (not recency) and trimmed to size, so a genuinely new, real
+          # report can be trimmed out of the window if its priority is lower than what's
+          # already there -- leaving every item's _addedAt stale even while the pipeline
+          # is actively publishing (confirmed in production: 15 real reports generated
+          # and committed with 0 quality-gate rejections, yet none of the 15 made it into
+          # the window, so max _addedAt stayed frozen days in the past). state.lastRun and
+          # metadata.generated both update on every run regardless of whether anything new
+          # was actually published, so neither can substitute for lastReportGeneratedAt.
           node -e "
             const raw = require('fs').readFileSync('./live-intel.json', 'utf8');
             let d;
@@ -73,7 +83,15 @@ jobs:
 
             console.log('Items in feed  : ' + items.length);
 
-            // PRIMARY: latest _addedAt — ACTUAL item ingestion time (most reliable)
+            // PRIMARY: intel-state.json's lastReportGeneratedAt -- set only when a
+            // report was actually written, immune to window-trimming (see comment above).
+            let lastReportGeneratedAt = null;
+            try {
+              const state = JSON.parse(require('fs').readFileSync('./intel-state.json', 'utf8'));
+              lastReportGeneratedAt = state.lastReportGeneratedAt || null;
+            } catch (e) { /* intel-state.json missing/corrupt -- fall through */ }
+
+            // SECONDARY: latest _addedAt across the live-intel.json window.
             const withAddedAt = items.filter(i => i._addedAt);
             let latestIngestDate = null;
             let latestIngestId = null;
@@ -83,22 +101,25 @@ jobs:
               latestIngestId = sorted[0].id;
             }
 
-            // SECONDARY FALLBACK: metadata.generated only if NO items have _addedAt
+            // TERTIARY FALLBACK: metadata.generated only if nothing else is available
             const metaGenerated = (d.metadata || {}).generated || d.lastUpdated || null;
 
-            // Determine freshness reference — prefer actual item timestamps
+            // Determine freshness reference — prefer the most direct signal available
             let freshnessDate = null;
             let freshnessSource = '';
 
-            if (latestIngestDate) {
+            if (lastReportGeneratedAt) {
+              freshnessDate = new Date(lastReportGeneratedAt);
+              freshnessSource = 'intel-state.json lastReportGeneratedAt';
+            } else if (latestIngestDate) {
               freshnessDate = latestIngestDate;
-              freshnessSource = 'latest _addedAt (' + latestIngestId + ')';
+              freshnessSource = 'latest _addedAt (' + latestIngestId + ') [lastReportGeneratedAt unavailable]';
             } else if (metaGenerated) {
               freshnessDate = new Date(metaGenerated);
               freshnessSource = 'metadata.generated (fallback — no item timestamps)';
             } else {
               // No timestamps available at all
-              console.error('::error title=Malformed Feed::No _addedAt or metadata.generated in feed. Pipeline may be corrupted.');
+              console.error('::error title=Malformed Feed::No lastReportGeneratedAt, _addedAt, or metadata.generated available. Pipeline may be corrupted.');
               process.exit(1);
             }
 
