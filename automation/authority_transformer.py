@@ -1869,6 +1869,11 @@ class _ComposerOutcome:
     # discarded at this same boundary before this change. Empty tuple on
     # the composer-exception path, same as the fields above.
     canonical_entities: tuple = ()
+    # RX-P1I-WIRE: compose_report()'s own hunt_hypotheses (real,
+    # evidence-grounded, cve_advisory only today -- see pipeline_composer.
+    # _cve_hunt_hypotheses()), same discard-at-this-boundary situation
+    # canonical_entities was in before Phase 1G wired it through.
+    hunt_hypotheses: tuple = ()
 
 
 def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOutcome:
@@ -1913,6 +1918,7 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
         contradictions = tuple(c.to_dict() for c in result.contradictions)
         analytical_confidence = dict(result.analytical_confidence)
         canonical_entities = tuple(e.to_dict() for e in result.canonical_entities)
+        hunt_hypotheses = tuple(h.to_dict() for h in result.hunt_hypotheses)
         if contradictions:
             logger.warning(
                 "ReportX composer found unresolved contradiction(s) -- publication will be blocked",
@@ -1928,12 +1934,14 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
                 quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
                 evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
                 analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
+                hunt_hypotheses=hunt_hypotheses,
             )
         return _ComposerOutcome(
             html=result.html, achieved_tier=tier.value,
             quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
             evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
             analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
+            hunt_hypotheses=hunt_hypotheses,
         )
     except Exception as e:
         logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
@@ -2017,6 +2025,7 @@ class AuthorityTransformer:
         product_tier_verdict = evaluate_product_tier(
             article, context, content_source, detection_status=detection_status,
             state_file=self.config.state_file, key_judgement_count=len(key_judgements),
+            hunt_hypothesis_count=len(composer_outcome.hunt_hypotheses),
         )
 
         # Generate SEO metadata
@@ -2118,6 +2127,8 @@ class AuthorityTransformer:
             "analytical_confidence": composer_outcome.analytical_confidence,
             # RX-P1G-WIRE: see _ComposerOutcome.canonical_entities' docstring above.
             "canonical_entities": list(composer_outcome.canonical_entities),
+            # RX-P1I-WIRE: see _ComposerOutcome.hunt_hypotheses' docstring above.
+            "hunt_hypotheses": list(composer_outcome.hunt_hypotheses),
             "detection_status": detection_status,
             "generated_at": context.generated_at,
             # RX-P1-ARTIFACT-BINDING: see the comment at this hash's

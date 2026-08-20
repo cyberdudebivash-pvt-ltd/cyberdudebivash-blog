@@ -31,6 +31,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
+from ..models import Confidence
 from .claim_model import CorroborationState, Reliability
 
 _ADMIRALTY_LABELS: dict[Reliability, str] = {
@@ -221,6 +222,17 @@ def render_role_decisions(decisions: list[RoleDecision]) -> str:
     return "\n".join(lines)
 
 
+_HUNT_PROPOSED = "PROPOSED"
+_HUNT_VALIDATED = "VALIDATED"
+# RX-P1I: this pipeline has no mechanism anywhere that learns whether a SOC
+# actually ran a hunt and what it found -- every hypothesis this pipeline
+# can ever produce is honestly PROPOSED, never VALIDATED. VALIDATED exists
+# in the vocabulary (not omitted) so a future increment that DOES ingest
+# real hunt-execution feedback has somewhere honest to put it, rather than
+# needing a new field bolted on later.
+HUNT_MATURITY_STATES = (_HUNT_PROPOSED, _HUNT_VALIDATED)
+
+
 @dataclass(frozen=True)
 class HuntHypothesis:
     hypothesis_id: str
@@ -233,6 +245,13 @@ class HuntHypothesis:
     validation_steps: tuple[str, ...]
     success_criteria: str
     evidence_claim_ids: tuple[str, ...] = field(default_factory=tuple)
+    # RX-P1I additions -- mandate Section 12's remaining 4 fields. Defaults
+    # keep every existing construction of this dataclass (real callers and
+    # test fixtures alike) working unchanged.
+    escalation_criteria: str = ""
+    confidence: Confidence = Confidence.MEDIUM
+    limitations: str = ""
+    maturity: str = _HUNT_PROPOSED
 
     def to_dict(self) -> dict:
         return {
@@ -245,6 +264,10 @@ class HuntHypothesis:
             "validation_steps": list(self.validation_steps),
             "success_criteria": self.success_criteria,
             "evidence_claim_ids": list(self.evidence_claim_ids),
+            "escalation_criteria": self.escalation_criteria,
+            "confidence": self.confidence.value,
+            "limitations": self.limitations,
+            "maturity": self.maturity,
         }
 
 
@@ -276,6 +299,16 @@ def render_hunt_package(hypotheses: list[HuntHypothesis]) -> str:
         lines += [f"{i + 1}. {v}" for i, v in enumerate(h.validation_steps)]
         lines.append("")
         lines.append(f"**Success criteria:** {h.success_criteria}")
+        lines.append("")
+        if h.escalation_criteria:
+            lines.append(f"**Escalation criteria:** {h.escalation_criteria}")
+            lines.append("")
+        lines.append(f"**Confidence:** {h.confidence.value}")
+        lines.append("")
+        if h.limitations:
+            lines.append(f"**Limitations:** {h.limitations}")
+            lines.append("")
+        lines.append(f"**Maturity:** {h.maturity} — not independently confirmed by execution against real telemetry.")
         lines.append("")
         lines.append(f"**Evidence:** {', '.join(h.evidence_claim_ids) if h.evidence_claim_ids else 'none — this is a forward-looking hunt, not a retrospective claim'}")
         lines.append("")

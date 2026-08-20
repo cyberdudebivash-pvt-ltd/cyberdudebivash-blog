@@ -507,3 +507,74 @@ class TestContradictionWiring:
         assert called_graph is result.bundle.graph
         assert kwargs["dimension_tags"] == _dimension_tags_for(result.bundle.graph)
         assert kwargs["full_text"] == result.html
+
+
+class TestRXP1HHuntHypothesisWiring:
+    """RX-P1I: executive_products.HuntHypothesis existed, was tested, but
+    was never called from this live pipeline before -- Section 14 (Threat
+    Hunting) was permanently WITHHELD_INSUFFICIENT_EVIDENCE for every
+    article regardless of family. Scoped to cve_advisory only this round."""
+
+    def test_cve_advisory_gets_a_real_hunt_hypothesis(self):
+        result = compose_report(_cve_article(), CONFIG)
+        assert result.context.family == "cve_advisory"
+        assert len(result.hunt_hypotheses) == 1
+        assert "Threat Hunting" in result.html
+
+    def test_hunt_hypothesis_is_scoped_to_cve_advisory_only(self):
+        # Mandate Section 15's own discipline: "no evidence = withhold" --
+        # ransomware_claim has no real telemetry basis for this pipeline's
+        # exposure+exploitation hypothesis shape, so it must get none
+        # rather than a generic, evidence-free hunt bolted on regardless.
+        result = compose_report(_ransomware_article(), CONFIG)
+        assert result.hunt_hypotheses == []
+        assert "Threat Hunting" not in result.html
+
+    def test_general_intelligence_gets_no_hunt_hypothesis(self):
+        result = compose_report(_general_intelligence_article(), CONFIG)
+        assert result.hunt_hypotheses == []
+
+    def test_hunt_hypothesis_reuses_the_real_vulnerability_class_telemetry_not_generic_advice(self):
+        # Mandate Section 13: reject hunting content that is only generic
+        # security advice -- required_telemetry must be the same real,
+        # vulnerability-class-specific guidance _detection_package() itself
+        # already computes (Reuse Before Build), not a vague restatement.
+        result = compose_report(_cve_article(), CONFIG)
+        hypothesis = result.hunt_hypotheses[0]
+        generic_phrases = ("monitor suspicious activity", "review logs", "check for unusual behavior")
+        assert not any(g in t.lower() for t in hypothesis.required_telemetry for g in generic_phrases)
+        assert len(hypothesis.required_telemetry) >= 1
+        # Every required field mandate Section 12/13 names is genuinely
+        # populated, not left blank to satisfy a completeness check only.
+        for field_name in (
+            "hypothesis_id", "statement", "required_telemetry", "pivot_opportunities",
+            "expected_observations", "negative_indicators", "false_positive_considerations",
+            "validation_steps", "success_criteria", "escalation_criteria", "limitations",
+        ):
+            value = getattr(hypothesis, field_name)
+            assert value, f"{field_name} must not be empty"
+        assert hypothesis.maturity == "PROPOSED"
+
+    def test_hunt_hypothesis_never_asserts_compromise_occurred(self):
+        # The statement must stay a conditional ("if X, then look for Y"),
+        # never a claim that exploitation actually happened.
+        result = compose_report(_cve_article(), CONFIG)
+        statement = result.hunt_hypotheses[0].statement.lower()
+        assert "if " in statement
+        assert "was exploited" not in statement
+        assert "has been compromised" not in statement
+
+    def test_hunt_hypothesis_reaches_the_intelligence_validation_scorecard(self):
+        from sentinel_engine.reportx.intelligence_validation import ValidationDimension
+        result = compose_report(_cve_article(), CONFIG)
+        dim = result.scorecard.dimension(ValidationDimension.THREAT_HUNTING_GUIDANCE)
+        assert dim.status == "PASS"
+
+    def test_section_14_resolves_complete_for_cve_advisory_not_withheld(self):
+        from automation.report_contract import SECTION_14_THREAT_HUNTING, evaluate_section_states
+        result = compose_report(_cve_article(), CONFIG)
+        resolutions = evaluate_section_states(
+            _cve_article(), result.context, hunt_hypothesis_count=len(result.hunt_hypotheses),
+        )
+        state = next(r.state for r in resolutions if r.section == SECTION_14_THREAT_HUNTING)
+        assert state.value == "COMPLETE"

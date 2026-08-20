@@ -10,18 +10,34 @@ this exact corpus (see docs/reportx/REPORTX-INTELLIGENCE-VALIDATION-
 FRAMEWORK.md's "Validation results" section for the full scorecards and the
 narrative behind each threshold below), not guessed.
 
-Deliberately NOT asserting ``publication_eligible is True`` for every
-canary: two of the five (dragonforce-vermont-xcenter,
-medusalocker-bija-industrie) have a genuine, reproduced MITRE ATT&CK
-Justification defect this framework correctly catches -- a real,
-previously-invisible false-negative in ``attack_mapper.py``'s
-HTML-clause-boundary negation heuristic (an unrelated, later disclaimer
-sentence gets pulled into the same "clause" as an earlier technique
-citation because minified HTML has no blank-line/sentence-punctuation
-boundary between the two `<div>`s). That bug lives in a shared,
-``sentinel_engine``-wide module (not touched by this change; see the doc's
-"Named gaps" section for why fixing it is out of this PR's scope) --
-asserting it away here would hide a real finding, not validate one.
+RX-P1I update: this suite used to NOT assert ``publication_eligible is
+True`` for two of the five canaries (dragonforce-vermont-xcenter,
+medusalocker-bija-industrie), which had a genuine, reproduced MITRE ATT&CK
+Justification defect this framework correctly caught. Both are now fixed
+and both canaries pass -- but by two narrow, verified DATA/citation fixes,
+not by touching ``attack_mapper.py``'s negation heuristic itself (still
+unmodified):
+
+- dragonforce cited T1219 (Remote Access Software), a real, genuine MITRE
+  technique that simply was not yet in ``attack_mapper.KNOWN_TECHNIQUES``'s
+  curated subset. Added (see attack_mapper.py). Verified empirically that
+  the citation was already correctly detected as real, non-negated
+  evidence before this fix -- ``is_valid_technique_id()`` was the only
+  failing half of the check.
+- medusalocker's real detection rule cited the bare parent T1053
+  (Scheduled Task/Job), but the rendered text's only supporting language
+  is "a scheduled task", which ``attack_mapper.py``'s existing lexicon maps
+  to the more specific sub-technique T1053.005 -- a granularity mismatch
+  between two distinct dict keys, not a missing or negated citation.
+  Retargeted the canary's rule to the more precise T1053.005 (see
+  reportx-canary/medusalocker_bija_industrie_canary.py), which the rule's
+  own CISA/FBI-sourced description supports more accurately anyway.
+
+Neither fix touched ``_is_negated()``/``_clause_span()`` -- if a minified-
+HTML clause-boundary negation false-negative is still live somewhere else,
+it was not what was blocking either of these two specific citations, which
+were verified directly against the real export JSON (see the RX-P1I
+certification doc for the verification method and output).
 """
 
 from __future__ import annotations
@@ -39,14 +55,11 @@ from sentinel_engine.reportx.intelligence_validation import ValidationDimension,
 CANARY_DIR = Path(__file__).resolve().parents[3].parent / "reportx-canary" / "exports"
 CANARY_EXPORTS = sorted(CANARY_DIR.glob("*-export.json"))
 
-# The two canaries with the known, real, reproduced attack_mapper.py
-# false-negative (see module docstring). Named explicitly so a future fix
-# to attack_mapper.py's negation heuristic is a visible, intentional test
-# update here, not a silent behavior change nobody notices.
-_KNOWN_MITRE_JUSTIFICATION_FAILURES = frozenset({
-    "dragonforce-vermont-xcenter-premium-canary-export",
-    "medusalocker-bija-industrie-premium-canary-export",
-})
+# RX-P1I: both formerly-known MITRE-justification failures are now fixed
+# (see module docstring) -- empty, not deleted, so a future regression on
+# either canary is a visible, intentional test update here, not a silent
+# behavior change nobody notices.
+_KNOWN_MITRE_JUSTIFICATION_FAILURES = frozenset()
 
 
 @pytest.fixture(scope="module", params=CANARY_EXPORTS, ids=lambda p: p.stem)

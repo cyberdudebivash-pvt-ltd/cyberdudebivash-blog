@@ -53,6 +53,7 @@ def evaluate_product_tier(
     detection_status: str = "",
     state_file: Optional[str] = None,
     key_judgement_count: int = 0,
+    hunt_hypothesis_count: int = 0,
 ) -> ProductTierVerdict:
     """Never returns PREMIUM_LONG_FORM merely because a report has 24
     headings (Phase D's own explicit warning) -- every gate below checks a
@@ -63,9 +64,14 @@ def evaluate_product_tier(
     guessing corroboration exists. ``key_judgement_count`` (RX-P1F) is the
     number of key_judgements.generate_key_judgements() results that
     actually passed its own validator -- threaded straight through to
-    evaluate_section_states(), never re-derived here."""
+    evaluate_section_states(), never re-derived here. ``hunt_hypothesis_count``
+    (RX-P1I) is the same pass-through for real, evidence-grounded hunt
+    hypotheses (cve_advisory today) -- Section 14 is OPTIONAL for every
+    family today, so this never gates tier eligibility on its own, but the
+    section-state resolution stays honest regardless."""
     resolutions = evaluate_section_states(
         article, context, detection_status=detection_status, key_judgement_count=key_judgement_count,
+        hunt_hypothesis_count=hunt_hypothesis_count,
     )
     mandatory = [r for r in resolutions if r.applicability == Applicability.MANDATORY]
     mandatory_withheld = tuple(

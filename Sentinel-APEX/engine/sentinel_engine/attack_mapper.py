@@ -22,6 +22,15 @@ KNOWN_TECHNIQUES: dict[str, tuple[str, str]] = {
     "T1036": ("Masquerading", "defense-evasion"),
     "T1036.005": ("Match Legitimate Name or Location", "defense-evasion"),
     "T1049": ("System Network Connections Discovery", "discovery"),
+    # RX-P1I: found live -- two real, gold-standard canary exports
+    # (dragonforce/T1219, medusalocker/T1053) cite these genuine, standalone
+    # MITRE technique IDs, but only their sub-technique siblings (T1053.005)
+    # or no sibling at all (T1219) were previously curated here. Consistent
+    # with this dict's own existing pattern of listing both a parent and its
+    # sub-technique when both are in real use (e.g. T1003/T1003.001,
+    # T1059/T1059.001, T1070/T1070.004, T1021/T1021.001).
+    "T1053": ("Scheduled Task/Job", "persistence"),
+    "T1219": ("Remote Access Software", "command-and-control"),
     "T1057": ("Process Discovery", "discovery"),
     "T1070": ("Indicator Removal", "defense-evasion"),
     "T1070.004": ("File Deletion", "defense-evasion"),

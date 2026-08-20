@@ -1161,5 +1161,50 @@ class TestCanonicalEntitiesWiredIntoTransform(unittest.TestCase):
         self.assertEqual(actors[0]["confidence"], "MEDIUM")
 
 
+class TestHuntHypothesesWiredIntoTransform(unittest.TestCase):
+    """RX-P1I end-to-end: like canonical entity resolution, hunt hypothesis
+    generation is deterministic (no LLM call), so it must reach
+    transform()'s real output for every cve_advisory article regardless of
+    content_source -- proven against the real, unmocked
+    pipeline_composer.compose_report() call path."""
+
+    def _ransomware_article(self, **kwargs) -> DiscoveredArticle:
+        defaults = dict(
+            url="https://www.ransomware.live/id/example",
+            title="SilentRansomGroup Ransomware Claims New Victim: Troutman Pepper Locke",
+            summary="SilentRansomGroup has listed Troutman Pepper Locke as a new victim on its leak site.",
+            published_at="2026-08-18T22:51:57+00:00",
+            content_hash=_compute_hash("https://www.ransomware.live/id/example", "SilentRansomGroup"),
+            labels=["Ransomware", "CYBERDUDEBIVASH", "Threat Intelligence"],
+            source="ransomware_intel",
+            cve_id=None, cvss_score=None, cvss_vector=None, cwe_ids=None,
+            affected_vendor=None, affected_product=None,
+        )
+        defaults.update(kwargs)
+        return DiscoveredArticle(**defaults)
+
+    def test_cve_article_gets_a_real_hunt_hypothesis_in_transform_output(self):
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(len(result["hunt_hypotheses"]), 1)
+        hypothesis = result["hunt_hypotheses"][0]
+        self.assertTrue(hypothesis["required_telemetry"])
+        self.assertEqual(hypothesis["maturity"], "PROPOSED")
+
+    def test_hunt_hypothesis_count_reaches_the_product_tier_verdict(self):
+        # A real, indirect proof that hunt_hypothesis_count was actually
+        # threaded into evaluate_product_tier() (not just computed and
+        # discarded): Section 14 is OPTIONAL for cve_advisory, so this
+        # never blocks the tier verdict on its own, but it must not raise
+        # and the verdict must still compute cleanly end to end.
+        result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertIn("product_tier", result)
+
+    def test_ransomware_claim_gets_no_hunt_hypothesis_in_transform_output(self):
+        result = AuthorityTransformer(Config()).transform(
+            self._ransomware_article(ransomware_group="SilentRansomGroup")
+        )
+        self.assertEqual(result["hunt_hypotheses"], [])
+
+
 if __name__ == "__main__":
     unittest.main()

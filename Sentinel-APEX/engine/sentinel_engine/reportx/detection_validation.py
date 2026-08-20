@@ -21,12 +21,29 @@ class DetectionValidationState(str, Enum):
     PRODUCTION_CANDIDATE = "PRODUCTION_CANDIDATE"
     PRODUCTION_VALIDATED = "PRODUCTION_VALIDATED"
     WITHHELD_INSUFFICIENT_EVIDENCE = "WITHHELD_INSUFFICIENT_EVIDENCE"
+    # RX-P1I: report_renderer._detection_package() has always honestly
+    # distinguished two states pipeline_composer.py's old
+    # _STATUS_TO_VALIDATION_STATE mapping collapsed into the single
+    # WITHHELD_INSUFFICIENT_EVIDENCE value above -- losing a real semantic
+    # difference. NOT_APPLICABLE ("this record's family/format has no
+    # threat-specific telemetry of its own -- ai_security/breach_notice/
+    # general_intelligence/threat_actor/ransomware_reporting") is not an
+    # evidentiary shortfall at all; TELEMETRY_SPECIFICATION ("a real,
+    # specific telemetry plan exists, but no rule body was ever attempted" --
+    # the DoS/auth/privilege-escalation branches) is a genuine, lesser
+    # maturity level distinct from both DRAFT (an actual, if unvalidated,
+    # rule body exists) and WITHHELD (evidence was insufficient even to
+    # specify telemetry).
+    NOT_APPLICABLE = "NOT_APPLICABLE"
+    TELEMETRY_SPECIFICATION = "TELEMETRY_SPECIFICATION"
 
 
-# Ordinal rank for "is B a promotion beyond A" comparisons. WITHHELD is not
-# on this ladder at all -- it isn't "less validated than DRAFT", it's a
-# terminal non-publish state, so it's compared separately (a WITHHELD rule
-# promoted to ANY of the others is always a defect).
+# Ordinal rank for "is B a promotion beyond A" comparisons. WITHHELD,
+# NOT_APPLICABLE, and TELEMETRY_SPECIFICATION are not on this ladder --
+# none of them is "less validated than DRAFT" in the sense of an in-progress
+# rule attempt; each is a terminal, non-publish-as-a-rule state, so all
+# three are compared separately (any of them "promoted" to a state claiming
+# real validation is always a defect, handled by the same branch below).
 _RANK = {
     DetectionValidationState.DRAFT: 0,
     DetectionValidationState.SYNTAX_VALIDATED: 1,
@@ -35,6 +52,12 @@ _RANK = {
     DetectionValidationState.PRODUCTION_CANDIDATE: 4,
     DetectionValidationState.PRODUCTION_VALIDATED: 5,
 }
+
+OFF_LADDER_TERMINAL_STATES = frozenset({
+    DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+    DetectionValidationState.NOT_APPLICABLE,
+    DetectionValidationState.TELEMETRY_SPECIFICATION,
+})
 
 
 @dataclass
@@ -100,12 +123,14 @@ class ValidationStateViolation:
 def check_state_promotion(rule: DetectionRule, rendered_text: str) -> list[ValidationStateViolation]:
     """Section 12's gate, made concrete: scan text that describes ``rule``
     for language claiming a validation state ranked higher than the rule's
-    actually stored state (or claiming any positive state at all for a
-    ``WITHHELD`` rule)."""
+    actually stored state (or claiming any positive state at all for a rule
+    stored in one of the off-ladder terminal states -- ``WITHHELD``,
+    ``NOT_APPLICABLE``, ``TELEMETRY_SPECIFICATION``; none of them is a real
+    validation attempt, so none can honestly be described as one)."""
 
     violations: list[ValidationStateViolation] = []
 
-    if rule.validation_state == DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE:
+    if rule.validation_state in OFF_LADDER_TERMINAL_STATES:
         for claimed_state, patterns in _PROMOTION_PHRASES.items():
             for pattern in patterns:
                 m = pattern.search(rendered_text)
@@ -153,10 +178,18 @@ def check_all_rules(rules: list[DetectionRule], rendered_text: str) -> list[Vali
 def check_withheld_rules_have_rationale(rules: list[DetectionRule]) -> list[str]:
     """Governed withholding requires the withholding to be explained, not
     just declared -- an empty-rationale WITHHELD rule is indistinguishable
-    from one nobody finished filling in. Returns the rule_ids that fail
-    this check."""
+    from one nobody finished filling in. RX-P1I: TELEMETRY_SPECIFICATION
+    gets the same requirement -- "here's the telemetry plan, but no rule
+    was attempted" is exactly as much a withholding decision as WITHHELD
+    itself, and deserves the same explained-not-just-declared discipline.
+    NOT_APPLICABLE is deliberately excluded: a format mismatch isn't a
+    withholding decision at all, so there is no gap to rationalize.
+    Returns the rule_ids that fail this check."""
     return [
         r.rule_id for r in rules
-        if r.validation_state == DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE
+        if r.validation_state in (
+            DetectionValidationState.WITHHELD_INSUFFICIENT_EVIDENCE,
+            DetectionValidationState.TELEMETRY_SPECIFICATION,
+        )
         and not r.evidence_gap_rationale
     ]
