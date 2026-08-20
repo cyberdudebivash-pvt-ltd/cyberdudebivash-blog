@@ -745,6 +745,8 @@ def _render_key_judgements_html(key_judgements: tuple) -> str:
     for kj in key_judgements:
         parts = [f"<strong>{_esc(kj.judgement)}</strong> "
                  f"<span style=\"color:#64748b\">[{_esc(kj.confidence)} CONFIDENCE]</span>"]
+        if kj.verification_status:
+            parts.append(f" <span style=\"color:#64748b\">[{_esc(kj.verification_status)}]</span>")
         if kj.reasoning_basis:
             parts.append(f"<br><span style=\"color:#94a3b8\">Basis: {_esc(kj.reasoning_basis)}</span>")
         if kj.decision_relevance:
@@ -2321,9 +2323,28 @@ class AuthorityTransformer:
 
         # Build full HTML
         html = self._assemble_html(article, body_content, seo_data, context)
+
+        # RX-P1M fix: composer_outcome.contradictions was computed inside
+        # pipeline_composer.compose_report() against ITS OWN internally-
+        # built html -- on the reportx_composer path that's a close
+        # approximation of the final page, but on the LLM-authored or
+        # legacy-template paths body_content becomes different prose
+        # entirely, and _assemble_html() adds further wrapping (SEO data,
+        # monetization CTAs) on every path. The text-pattern contradiction
+        # layer (unlike the dimension layer, which reads the evidence
+        # graph directly and is unaffected by which prose won) has
+        # therefore never once been evaluated against the actual,
+        # published page. Re-run it here, against the real final html,
+        # every time -- the dimension-level findings from composer_outcome
+        # still apply unchanged (the graph itself doesn't depend on
+        # content_source).
+        from sentinel_engine.reportx.contradiction_engine import find_text_contradictions
+        final_text_contradictions = tuple(c.to_dict() for c in find_text_contradictions(html))
+        all_contradictions = tuple(composer_outcome.contradictions) + final_text_contradictions
+
         validate_publication(
             article, context, html, product_tier=product_tier_verdict.tier,
-            contradictions=composer_outcome.contradictions,
+            contradictions=all_contradictions, body_content=body_content,
         )
         # RX-P1-ARTIFACT-BINDING (mandate Section 17/34): computed on the
         # EXACT `html` that just passed every fail-closed gate above, not
@@ -2389,7 +2410,10 @@ class AuthorityTransformer:
             # RX-P1E-WIRE: see _ComposerOutcome.intelligence_gaps' docstring above.
             "intelligence_gaps": list(composer_outcome.intelligence_gaps),
             # RX-P1D-WIRE: see _ComposerOutcome.contradictions' docstring above.
-            "contradictions": list(composer_outcome.contradictions),
+            # RX-P1M: includes the text-pattern contradictions found by
+            # re-scanning the actual final page above, not only the ones
+            # composer_outcome carried in from compose_report()'s own html.
+            "contradictions": list(all_contradictions),
             # RX-P1E-WIRE: see _ComposerOutcome.analytical_confidence's docstring above.
             "analytical_confidence": composer_outcome.analytical_confidence,
             # RX-P1G-WIRE: see _ComposerOutcome.canonical_entities' docstring above.

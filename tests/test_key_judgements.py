@@ -13,7 +13,9 @@ import unittest
 from automation.config import Config
 from automation.content_discovery import DiscoveredArticle, _compute_hash
 from automation.key_judgements import (
+    VERIFICATION_STATUSES,
     KeyJudgement,
+    _rejection_verification_status,
     build_key_judgement_prompt,
     generate_key_judgements,
     parse_key_judgements_response,
@@ -191,6 +193,92 @@ class TestValidateKeyJudgements(unittest.TestCase):
         candidates = [{"judgement": "x", "confidence": "LOW", "claim_refs": ["c-cve-id"], "limitations": ["a", "b"]}]
         accepted, _ = validate_key_judgements(candidates, _EVIDENCE_GRAPH)
         json.dumps(accepted[0].to_dict())
+
+
+class TestVerificationStatusVocabulary(unittest.TestCase):
+    """RX-P1M: exposes this module's existing, already-correct acceptance
+    logic using the mandate's own 4-state verification vocabulary
+    explicitly -- a labeling/observability change, not a new gate. Every
+    assertion here proves the label matches a decision
+    validate_key_judgements() already made on its own terms (claim_refs
+    truthiness, rejection reason), never a new acceptance/rejection
+    outcome."""
+
+    def test_claim_referenced_judgement_is_labeled_supported(self):
+        candidates = [{
+            "judgement": "The CVE assignment for this record is confirmed by the source registry.",
+            "confidence": "HIGH", "claim_refs": ["c-cve-id"],
+        }]
+        accepted, _ = validate_key_judgements(candidates, _EVIDENCE_GRAPH)
+        self.assertEqual(accepted[0].verification_status, "SUPPORTED")
+
+    def test_low_impact_judgement_with_no_claim_refs_is_labeled_assessed_with_basis(self):
+        # Accepted today with zero claim_refs precisely because it is not
+        # high-impact language (_is_high_impact() gate) -- the label must
+        # reflect that real basis, not silently claim SUPPORTED.
+        candidates = [{
+            "judgement": "This vulnerability follows a pattern common to web-facing administrative endpoints.",
+            "confidence": "MEDIUM", "reasoning_basis": "General pattern observation, not evidence-specific.",
+        }]
+        accepted, rejections = validate_key_judgements(candidates, _EVIDENCE_GRAPH)
+        self.assertEqual(rejections, ())
+        self.assertEqual(accepted[0].claim_refs, ())
+        self.assertEqual(accepted[0].verification_status, "ASSESSED_WITH_BASIS")
+
+    def test_to_dict_includes_verification_status(self):
+        candidates = [{"judgement": "x", "confidence": "LOW", "claim_refs": ["c-cve-id"]}]
+        accepted, _ = validate_key_judgements(candidates, _EVIDENCE_GRAPH)
+        self.assertEqual(accepted[0].to_dict()["verification_status"], "SUPPORTED")
+
+    def test_unsupported_high_impact_rejection_maps_to_unsupported(self):
+        self.assertEqual(
+            _rejection_verification_status("UNSUPPORTED_HIGH_IMPACT_CLAIM: index 0 no claim_refs"),
+            "UNSUPPORTED",
+        )
+
+    def test_unknown_reference_rejections_map_to_unsupported(self):
+        for prefix in ("UNKNOWN_CLAIM_REFERENCE", "UNKNOWN_EVIDENCE_REFERENCE", "UNKNOWN_SOURCE_REFERENCE"):
+            self.assertEqual(_rejection_verification_status(f"{prefix}: index 0"), "UNSUPPORTED")
+
+    def test_structural_rejections_are_not_forced_into_a_verdict_bucket(self):
+        # A malformed/missing-field rejection never became a real
+        # candidate to assess epistemically -- must stay unclassified
+        # (None), not be mislabeled as an evidentiary verdict.
+        for reason in ("MALFORMED_CANDIDATE: index 0 is not an object", "MISSING_JUDGEMENT_TEXT: index 0",
+                       "MALFORMED_CONFIDENCE: index 0 confidence='VERY_SURE'"):
+            self.assertIsNone(_rejection_verification_status(reason))
+
+    def test_rejected_candidates_never_produce_a_keyjudgement_at_all(self):
+        # By this module's own design (docstring: "rejected, not repaired
+        # or softened"), UNSUPPORTED and CONTRADICTED can never appear as
+        # a verification_status on an accepted KeyJudgement -- only
+        # SUPPORTED/ASSESSED_WITH_BASIS are reachable there.
+        candidates = [{
+            "judgement": "Active exploitation has been confirmed in the wild against unpatched systems.",
+            "confidence": "HIGH", "claim_refs": [],
+        }]
+        accepted, rejections = validate_key_judgements(candidates, _EVIDENCE_GRAPH)
+        self.assertEqual(accepted, ())
+        self.assertEqual(_rejection_verification_status(rejections[0]), "UNSUPPORTED")
+
+    def test_generate_key_judgements_logs_verification_statuses_alongside_rejections(self):
+        import json
+        fabricated = json.dumps([{
+            "judgement": "This organization suffered a confirmed data breach with customer records stolen.",
+            "confidence": "HIGH", "claim_refs": [],
+        }])
+        with self.assertLogs("key_judgements", level="INFO") as captured:
+            generate_key_judgements(
+                _article(), Config(), _EVIDENCE_GRAPH, (), {}, _context(),
+                call_llm_fn=lambda *a, **k: (fabricated, "groq"),
+            )
+        self.assertTrue(any("verification_statuses" in str(record.__dict__) for record in captured.records))
+
+    def test_verification_statuses_vocabulary_matches_the_mandate_exactly(self):
+        self.assertEqual(
+            VERIFICATION_STATUSES,
+            ("SUPPORTED", "ASSESSED_WITH_BASIS", "UNSUPPORTED", "CONTRADICTED"),
+        )
 
 
 class TestPromptInjectionResistance(unittest.TestCase):

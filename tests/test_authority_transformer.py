@@ -1013,6 +1013,31 @@ class TestKeyJudgementsWiredIntoTransform(unittest.TestCase):
         self.assertIn("Key Judgements", result["content"])
         self.assertIn("near-term risk", result["content"])
 
+    def test_verification_status_reaches_both_the_output_dict_and_the_rendered_page(self):
+        # RX-P1M: this session's own recurring defect class is "computed
+        # but never rendered" (hunt_hypotheses, attack_mappings,
+        # role_decisions, reliability_html, intelligence_gaps all found
+        # and fixed this way) -- proves verification_status doesn't repeat
+        # it: both the structured output dict AND the actually-published
+        # HTML must carry the real label, on the real transform() path.
+        realistic_kj_response = json.dumps([{
+            "judgement": "The absence of a public patch combined with a network-exploitable vector "
+                         "elevates near-term risk despite no confirmed in-the-wild activity.",
+            "confidence": "MEDIUM", "claim_refs": ["c-exploitation-status"],
+            "reasoning_basis": "Exploitation status is unconfirmed per the source record.",
+        }])
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM prose.</p>", "groq"),
+        ), patch(
+            "automation.key_judgements.call_llm",
+            return_value=(realistic_kj_response, "groq"),
+        ):
+            result = AuthorityTransformer(self.config).transform(_make_article())
+
+        self.assertEqual(result["key_judgements"][0]["verification_status"], "SUPPORTED")
+        self.assertIn("[SUPPORTED]", result["content"])
+
     def test_malformed_key_judgement_response_fails_closed_without_breaking_publication(self):
         with patch(
             "automation.authority_transformer.call_llm",
@@ -1344,6 +1369,50 @@ class TestRoleDecisionsWiredIntoTransform(unittest.TestCase):
         )
         defaults.update(kwargs)
         return DiscoveredArticle(**defaults)
+
+
+class TestContradictionCheckReachesTheFinalPublishedPage(unittest.TestCase):
+    """RX-P1M: find_all_contradictions()/find_text_contradictions() only
+    ever ran against pipeline_composer.compose_report()'s own internally-
+    built html -- on the LLM-authored path, body_content becomes the LLM's
+    own prose entirely, so the text-pattern contradiction layer had never
+    once been evaluated against a real, published, LLM-authored page.
+    Proven here against the real, unmocked compose_report() call -- only
+    call_llm() is mocked, exactly like every other LLM-path proof in this
+    file -- with a contradiction planted directly in the mocked LLM output
+    itself, so this test cannot pass merely because some OTHER, already-
+    rendered section happens to contain one half of the pair."""
+
+    def test_llm_authored_prose_containing_a_real_contradiction_is_blocked(self):
+        # Both halves of one of contradiction_engine.py's own existing,
+        # already-tested text-contradiction rules, planted directly in the
+        # LLM's own mocked output -- before this fix, nothing would have
+        # scanned this text for a contradiction at all.
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=(
+                "<h3>Technical Analysis</h3><p>This detection is currently experimental "
+                "detection logic pending validation.</p><p>Note: this is a "
+                "production-validated detection suitable for immediate blocking.</p>",
+                "groq",
+            ),
+        ):
+            with self.assertRaises(PublicationIntegrityError) as caught:
+                AuthorityTransformer(Config()).transform(_make_article())
+        self.assertTrue(any(
+            "labeled experimental" in issue and "production-validated" in issue
+            for issue in caught.exception.issues
+        ))
+
+    def test_clean_llm_authored_prose_with_no_contradiction_still_publishes(self):
+        # Negative control: the new re-scan must not itself become a
+        # source of false positives on ordinary, non-contradictory prose.
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM-authored prose about the vulnerability.</p>", "groq"),
+        ):
+            result = AuthorityTransformer(Config()).transform(_make_article())
+        self.assertEqual(result["content_source"], "groq")
 
 
 class TestReliabilityContentWiredIntoTransform(unittest.TestCase):
