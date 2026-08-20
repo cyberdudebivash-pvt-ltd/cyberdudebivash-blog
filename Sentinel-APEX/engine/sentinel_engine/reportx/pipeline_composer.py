@@ -47,6 +47,7 @@ from .commercial_readiness import ControlResult, ReportBundle, evaluate_commerci
 from .contradiction_engine import Contradiction, find_all_contradictions
 from .detection_validation import DetectionRule, DetectionValidationState
 from .discovery_bridge import build_evidence_graph, build_threat_product
+from .entity_resolution import CanonicalEntity, resolve_canonical_entities
 from .intelligence_validation import IntelligenceScorecard, evaluate_intelligence_validation
 from .executive_products import (
     RoleAudience,
@@ -248,6 +249,15 @@ class ComposedReport:
     # the first time. See analytical_confidence's construction above for
     # why these stay 3 distinct fields rather than one blended score.
     analytical_confidence: dict = field(default_factory=dict)
+    # RX-P1G-WIRE: canonical entities resolved from this article's own
+    # structured fields (CVE ID, ransomware group/sector/country) and the
+    # existing curated entities.py lexicon -- never from LLM-generated
+    # content, never fuzzy/alias-merged across distinct raw name strings
+    # (see entity_resolution.py's module docstring for why). Computed
+    # unconditionally, at zero extra evidence cost (reuses the graph this
+    # function already built), for every article regardless of tier or
+    # content_source.
+    canonical_entities: list[CanonicalEntity] = field(default_factory=list)
 
     @property
     def pass_count(self) -> int:
@@ -271,6 +281,7 @@ def compose_report(
     stays a complete, self-contained artifact unless a caller opts out."""
     context = build_report_context(article)
     graph = build_evidence_graph(article, context, state_file=getattr(config, "state_file", None))
+    canonical_entities = list(resolve_canonical_entities(article, graph))
     threat_product = build_threat_product(article, context)
     package = _detection_package(article, context)
 
@@ -382,4 +393,5 @@ def compose_report(
         report_id=context.report_id, context=context, html=html, bundle=bundle,
         control_results=control_results, downgrade=downgrade, scorecard=scorecard,
         contradictions=contradictions, analytical_confidence=analytical_confidence,
+        canonical_entities=canonical_entities,
     )

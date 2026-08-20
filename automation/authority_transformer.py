@@ -1862,6 +1862,13 @@ class _ComposerOutcome:
     # unconditionally, discarded at this same boundary before this change.
     # Empty dict only on the composer-exception path.
     analytical_confidence: dict = field(default_factory=dict)
+    # RX-P1G-WIRE: compose_report()'s own canonical_entities (Phase 1G --
+    # CVE/ransomware_actor/sector/country from this article's structured
+    # fields, plus curated-lexicon malware/tool/vendor/product mentions from
+    # its own text -- see entity_resolution.py), computed unconditionally,
+    # discarded at this same boundary before this change. Empty tuple on
+    # the composer-exception path, same as the fields above.
+    canonical_entities: tuple = ()
 
 
 def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOutcome:
@@ -1905,6 +1912,7 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
         intelligence_gaps = tuple(g.to_dict() for g in result.bundle.intelligence_gaps)
         contradictions = tuple(c.to_dict() for c in result.contradictions)
         analytical_confidence = dict(result.analytical_confidence)
+        canonical_entities = tuple(e.to_dict() for e in result.canonical_entities)
         if contradictions:
             logger.warning(
                 "ReportX composer found unresolved contradiction(s) -- publication will be blocked",
@@ -1919,13 +1927,13 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
                 html=None, achieved_tier=tier.value, failed_controls=result.downgrade.failed_controls,
                 quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
                 evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
-                analytical_confidence=analytical_confidence,
+                analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
             )
         return _ComposerOutcome(
             html=result.html, achieved_tier=tier.value,
             quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
             evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
-            analytical_confidence=analytical_confidence,
+            analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
         )
     except Exception as e:
         logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
@@ -2108,6 +2116,8 @@ class AuthorityTransformer:
             "contradictions": list(composer_outcome.contradictions),
             # RX-P1E-WIRE: see _ComposerOutcome.analytical_confidence's docstring above.
             "analytical_confidence": composer_outcome.analytical_confidence,
+            # RX-P1G-WIRE: see _ComposerOutcome.canonical_entities' docstring above.
+            "canonical_entities": list(composer_outcome.canonical_entities),
             "detection_status": detection_status,
             "generated_at": context.generated_at,
             # RX-P1-ARTIFACT-BINDING: see the comment at this hash's
