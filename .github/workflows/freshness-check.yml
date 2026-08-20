@@ -142,7 +142,7 @@ jobs:
             // Auto-trigger sentinel-apex.yml recovery only on CRITICAL (exit code 2)
             console.log('Checking for CRITICAL freshness failure — triggering recovery workflow...');
             try {
-              const run = await github.rest.actions.createWorkflowDispatch({
+              await github.rest.actions.createWorkflowDispatch({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 workflow_id: 'sentinel-apex.yml',
@@ -152,7 +152,12 @@ jobs:
                   debug: 'true'
                 }
               });
-              console.log('✅ Recovery workflow triggered: ' + run.data.id);
+              // createWorkflowDispatch responds 204 No Content -- GitHub never
+              // returns the created run's id synchronously, so run.data.id was
+              // always undefined here and threw on every call, which this
+              // catch block silently reported as "trigger failed" even when
+              // the dispatch itself was accepted.
+              console.log('✅ Recovery workflow dispatch accepted for sentinel-apex.yml');
             } catch(e) {
               console.warn('⚠️ Auto-recovery trigger failed: ' + e.message);
             }
