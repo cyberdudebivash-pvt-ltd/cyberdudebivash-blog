@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-20T13:52:44.310Z",
+  "generated": "2026-08-20T14:29:58.786Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11549,
+    "total_nodes": 11551,
     "actors": 8,
-    "cves": 3941,
-    "campaigns": 1168,
+    "cves": 3942,
+    "campaigns": 1169,
     "malware": 0,
     "iocs": 884,
-    "edges": 3746
+    "edges": 3747
   },
   "nodes": {
     "actor:lockbit": {
@@ -218810,6 +218810,44 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "CVE-2026-73570": {
+      "id": "CVE-2026-73570",
+      "type": "CVE",
+      "name": "Attackers Exploit Zimbra SNMP Flaw for Unauthenticated Remote Code Execution",
+      "attributes": {
+        "cvss": 8.9,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-08-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-73570": {
+      "id": "campaign:cve-2026-73570",
+      "type": "Campaign",
+      "name": "The Threat Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-20",
+        "last_seen": "2026-08-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-73570 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-73570",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -252684,6 +252722,15 @@
       "id": "campaign:cluster-7e8dbf18→includes→FULLDIS-df6aa06664ea8c60",
       "source": "campaign:cluster-7e8dbf18",
       "target": "FULLDIS-df6aa06664ea8c60",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-73570→includes→CVE-2026-73570",
+      "source": "campaign:cve-2026-73570",
+      "target": "CVE-2026-73570",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-20",
