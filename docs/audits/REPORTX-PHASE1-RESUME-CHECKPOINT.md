@@ -11,8 +11,8 @@
 | Field | Value |
 |---|---|
 | `origin/main` HEAD | Check `git log origin/main -3` fresh — PR #116 merged this round; auto-syndication commits land on `main` frequently and are unrelated content |
-| Open PRs from this round | **None yet opened for the structured-ATT&CK work below** — implemented, tested, certified on a local branch (not yet committed/pushed as of this checkpoint). #108–#116 all merged. |
-| Working tree | Uncommitted changes present — see §2 item 10 for the exact file list |
+| Open PRs from this round | **PR #117** (`reportx/phase1i-structured-attack`) — structured ATT&CK object. Draft, subscribed, awaiting CI. #108–#116 all merged. |
+| Working tree | Clean (branch `reportx/phase1i-structured-attack`, one commit ahead of the `main` it was cut from) |
 
 ## 2. What happened this round (chronological)
 
@@ -37,7 +37,7 @@
 | Run #8459 incident review | `RELEASE_CERTIFIED` — merged, no defect found, owner decision recorded |
 | Phase 1H (4 of 5 families) | `RELEASE_CERTIFIED` — merged, real before/after proof |
 | Phase 1I, first round (maturity/hard-gate/`cve_advisory` hunting) | `RELEASE_CERTIFIED` — merged (#116), 6 real defects found and fixed across two rounds of scrutiny |
-| **Phase 1I remainder (structured ATT&CK)** | **`RELEASE_CERTIFIED`** for the object itself, end-to-end survival, multi-tactic support, and the semantic gate — 1 real defect found via real-data review and fixed, zero regressions. **Uncommitted** — not yet a merged/mergeable state. **Explicitly NOT "Phase 1 complete"** — 1J–1Q entirely unstarted, see §5 |
+| **Phase 1I remainder (structured ATT&CK)** | **`RELEASE_CERTIFIED`** for the object itself, end-to-end survival, multi-tactic support, and the semantic gate — 1 real defect found via real-data review and fixed, zero regressions. Open as **PR #117**, not yet merged. **Explicitly NOT "Phase 1 complete"** — 1J–1Q entirely unstarted, see §5 |
 | Phase 1J onward | Not started |
 
 Full detail: `docs/audits/REPORTX-PHASE1F-KEY-JUDGEMENTS-CERTIFICATION.md`, `docs/audits/SENTINEL-APEX-FEED-RECOVERY-RELEASE-CERTIFICATION.md`, `docs/audits/REPORTX-PHASE1G-ENTITY-RESOLUTION-CERTIFICATION.md`, `docs/audits/blogger-syndication-run-8459-incident-review-2026-08-20.md`, `docs/audits/REPORTX-PHASE1H-FAMILY-ENGINES-CERTIFICATION.md`, `docs/audits/REPORTX-PHASE1I-ATTACK-DETECTION-HUNTING-CERTIFICATION.md`, `docs/audits/REPORTX-PHASE1I-STRUCTURED-ATTACK-CERTIFICATION.md`.
@@ -59,13 +59,9 @@ The one known pre-existing engine-side failure: `Sentinel-APEX/engine/tests/test
 
 ## 5. Next exact action if resuming
 
-**If interrupted before commit/push/PR:** the working tree has real, tested, certified, uncommitted changes. Files touched this round:
-- New: `Sentinel-APEX/engine/sentinel_engine/reportx/attack_mapping.py`, `Sentinel-APEX/engine/tests/reportx/test_attack_mapping.py`, `docs/audits/REPORTX-PHASE1I-STRUCTURED-ATTACK-CERTIFICATION.md`
-- Modified: `Sentinel-APEX/engine/sentinel_engine/attack_mapper.py` (additive `ADDITIONAL_TACTICS`/`tactics_for()`), `Sentinel-APEX/engine/sentinel_engine/reportx/pipeline_composer.py` (wiring + rendering), `automation/authority_transformer.py` (`_ComposerOutcome`/`_composer_enhance()`/`transform()` wiring, mirrors the `hunt_hypotheses` pattern exactly), `automation/analytical_depth_gate.py` (`attack_mapping_count` param), `automation/report_contract.py` (`attack_mapping_count` param + family-gate-respecting `_resolve_attack_mapping()`), `tests/test_authority_transformer.py`, `tests/test_report_contract.py`
+**Immediate:** PR #117 is open, draft, subscribed — mark ready for review if still draft, watch CI, and drive to green before starting new work, per this session's standing PR-drive-to-green obligation.
 
-Create a fresh branch off `origin/main` (`git checkout -B reportx/phase1i-structured-attack origin/main`), re-verify the working tree still matches the description above (`git status`/`git diff --stat`), re-run the 3 test suites in §4 to reconfirm the baseline still holds, then commit/push/open a draft PR (title pattern: `reportx: Phase 1I remainder — structured ATT&CK object`), subscribe, and drive to green — matching the exact process every prior phase in this session followed.
-
-**After that PR merges,** real, separate, comparably-sized pieces of work remain, named but not started:
+**After #117 merges,** real, separate, comparably-sized pieces of work remain, named but not started:
 
 1. **Phase 1J** — role decision quality (priority/deadline/escalation_trigger/conditions_that_change_decision fields; per-family role sets; reject generic/malformed/duplicated guidance).
 2. **Phase 1K** — full 24-section population audit across all production families using the now-more-complete structured intelligence (Key Judgements, structured ATT&CK, hunt hypotheses) as real inputs, not filler.
