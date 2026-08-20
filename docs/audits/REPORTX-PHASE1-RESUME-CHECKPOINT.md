@@ -1,6 +1,6 @@
 # REPORTX Phase 1 — Resume Checkpoint
 
-**Written:** 2026-08-20T16:52:00Z (updated — supersedes the 2026-08-20T06:27:00Z version)
+**Written:** 2026-08-20T17:16:00Z (updated — supersedes the 2026-08-20T16:52:00Z version)
 **Written by:** Claude (this session)
 **Why this exists:** the governing mandate spans phases 1F–1T (and, this round, two P0 production-incident detours — #109/#110, then run #8459 — before continuing). This document lets any future session — mine or another Claude instance's — resume without repeating investigation already done.
 
@@ -11,8 +11,8 @@
 | Field | Value |
 |---|---|
 | `origin/main` HEAD | Check `git log origin/main -3` fresh — PR #115 merged this round; auto-syndication commits land on `main` frequently and are unrelated content |
-| Open PRs from this round | **PR #116** (`reportx/phase1i-attack-detection-hunting`) — Phase 1I, ATT&CK/detection-maturity/hunting. Draft, subscribed, awaiting CI. #108–#115 all merged. |
-| Working tree | Clean (branch `reportx/phase1i-attack-detection-hunting`, one commit ahead of the `main` it was cut from) |
+| Open PRs from this round | **PR #116** (`reportx/phase1i-attack-detection-hunting`) — Phase 1I, ATT&CK/detection-maturity/hunting. Ready for review, subscribed, CI green, 4 CodeRabbit findings fixed and threads resolved (§2 item 9). #108–#115 all merged. |
+| Working tree | Clean (branch `reportx/phase1i-attack-detection-hunting`, two commits ahead of the `main` it was cut from) |
 
 ## 2. What happened this round (chronological)
 
@@ -23,7 +23,8 @@
 5. Closed #110's live-verification caveat end to end (`Status level: HEALTHY, Age: 0 minutes`). Merged as **PR #112**.
 6. Real production incident: Blogger Syndication run #8459. Root-caused to the integrity gate correctly blocking an LLM-hallucinated claim. **Verdict: not a defect, no code changed.** Merged as **PR #114**; owner chose to leave the CI-exit-code behavior as-is.
 7. **Phase 1H** — real family-specific analytical engines for 4 of 5 previously-unmapped report families (`ai_security`, `breach_notice`, `threat_actor`, `ransomware_reporting`); `general_intelligence` deliberately left unmapped (named reason). Real matrices, role routing, narrative branches, family-conditioned gaps; real before/after proof (TACTICAL → PREMIUM_LONG_FORM). Merged as **PR #115**.
-8. **Phase 1I (this round's main deliverable).** Audited existing ATT&CK/detection/hunting architecture before writing code — found `attack_mapper.map_techniques()` (negation-aware, evidence-anchored), `detection_validation.DetectionValidationState` + `check_state_promotion()` (already a real, live, hard-gating control), and `executive_products.HuntHypothesis` all already existed, real and tested, just under-wired. Reconciled the detection-maturity vocabulary (2 new off-ladder states); elevated ATT&CK-citation justification from a display score to a hard gate (folded into the existing `detection_evidence_discipline` control, not a new 24th row — the 23-row matrix is a named external contract); wired real hunt hypotheses for `cve_advisory`. **Found and fixed 2 real, previously-invisible defects** empirically (a missing curated technique T1219; a T1053/T1053.005 parent/sub-technique granularity mismatch), both discovered by running the new gate against real, already-published gold-standard canary data for the first time — and caught one real design risk (curated-registry-completeness as a hard-fail condition would have been a false-positive regression) before merge, narrowing the gate accordingly. Verified the mandate's named "historical regressions" (CodeWhale, VMware/IIOP) don't exist in this repo via grep — used the 2 real findings as honest regression material instead. Opened as **PR #116** (open, draft, subscribed).
+8. **Phase 1I (this round's main deliverable).** Audited existing ATT&CK/detection/hunting architecture before writing code — found `attack_mapper.map_techniques()` (negation-aware, evidence-anchored), `detection_validation.DetectionValidationState` + `check_state_promotion()` (already a real, live, hard-gating control), and `executive_products.HuntHypothesis` all already existed, real and tested, just under-wired. Reconciled the detection-maturity vocabulary (2 new off-ladder states); elevated ATT&CK-citation justification from a display score to a hard gate (folded into the existing `detection_evidence_discipline` control, not a new 24th row — the 23-row matrix is a named external contract); wired real hunt hypotheses for `cve_advisory`. **Found and fixed 2 real, previously-invisible defects** empirically (a missing curated technique T1219; a T1053/T1053.005 parent/sub-technique granularity mismatch), both discovered by running the new gate against real, already-published gold-standard canary data for the first time — and caught one real design risk (curated-registry-completeness as a hard-fail condition would have been a false-positive regression) before merge, narrowing the gate accordingly. Verified the mandate's named "historical regressions" (CodeWhale, VMware/IIOP) don't exist in this repo via grep — used the 2 real findings as honest regression material instead. Opened as **PR #116**.
+9. **Post-review hardening.** A real CodeRabbit review on #116 surfaced 4 more verified defects, each checked against current code before being accepted as real: (1) most serious — `transform()`'s LLM-authored path silently dropped the composer's hunt HTML entirely while still passing a non-zero `hunt_hypothesis_count` to the tier gate, so Section 14 could show COMPLETE on a published page with zero hunt content; fixed by extracting `_render_hunt_hypotheses_html()` and calling it unconditionally, guarded against double-rendering on the composer path; (2) `attack_mapper.map_techniques()`'s explicit technique-ID citation loop checked only the first occurrence for negation, inconsistent with its own phrase-lexicon sibling loop — a real false-negative risk now that the citation check is a hard gate; fixed to check all occurrences; (3) `commercial_readiness.py`'s `withheld_present` check was missing the new `TELEMETRY_SPECIFICATION` state, inconsistent with its sibling rationale-requirement check; fixed; (4) T1219's curated label was stale ("Remote Access Software"); verified live against attack.mitre.org and corrected to "Remote Access Tools". One finding (whole-document promotion-phrase scoping in `detection_validation.check_state_promotion()`) investigated and deliberately left unfixed — confirmed currently unreachable in the live pipeline (one call site, one shared validation_state per bundle today) and locked in with a tripwire test rather than silently ignored; reasoning left in the function's own docstring and in a PR reply. All 4 fixed findings: reply posted explaining the fix, review thread resolved. Root 478→479, engine 998→1004 (+6 new tests), 1 pre-existing unrelated failure, JS 123 unchanged. Pushed as a follow-up commit on the same branch/PR.
 
 ## 3. Certification status
 
@@ -34,7 +35,7 @@
 | Phase 1G (entity resolution) | `RELEASE_CERTIFIED` — merged, real-data validated |
 | Run #8459 incident review | `RELEASE_CERTIFIED` — merged, no defect found, owner decision recorded |
 | Phase 1H (4 of 5 families) | `RELEASE_CERTIFIED` — merged, real before/after proof |
-| **Phase 1I (ATT&CK/detection/hunting, partial)** | **`RELEASE_CERTIFIED`** for the 3 real changes made (maturity reconciliation, ATT&CK hard gate, `cve_advisory` hunting) — 2 real defects found and fixed, zero regressions. **Explicitly NOT "Phase 1 complete"** — see §5 |
+| **Phase 1I (ATT&CK/detection/hunting, partial)** | **`RELEASE_CERTIFIED`** for the 3 real changes made (maturity reconciliation, ATT&CK hard gate, `cve_advisory` hunting) — 2 real defects found and fixed during implementation, 4 more found and fixed via a real CodeRabbit review before merge, zero regressions. **Explicitly NOT "Phase 1 complete"** — see §5 |
 | Phase 1J onward | Not started |
 
 Full detail: `docs/audits/REPORTX-PHASE1F-KEY-JUDGEMENTS-CERTIFICATION.md`, `docs/audits/SENTINEL-APEX-FEED-RECOVERY-RELEASE-CERTIFICATION.md`, `docs/audits/REPORTX-PHASE1G-ENTITY-RESOLUTION-CERTIFICATION.md`, `docs/audits/blogger-syndication-run-8459-incident-review-2026-08-20.md`, `docs/audits/REPORTX-PHASE1H-FAMILY-ENGINES-CERTIFICATION.md`, `docs/audits/REPORTX-PHASE1I-ATTACK-DETECTION-HUNTING-CERTIFICATION.md`.
@@ -44,8 +45,8 @@ Full detail: `docs/audits/REPORTX-PHASE1F-KEY-JUDGEMENTS-CERTIFICATION.md`, `doc
 ```
 cd /home/user/cyberdudebivash-blog
 source <scratchpad>/venv/bin/activate   # pip install -r requirements.txt; pip install pytest pytest-timeout, if the venv is fresh
-python -m pytest tests/ -q                              # Expect: 478 passed
-cd /home/user/cyberdudebivash-blog/Sentinel-APEX/engine && python -m pytest tests/ -q    # Expect: 998 passed, 1 pre-existing unrelated failure
+python -m pytest tests/ -q                              # Expect: 479 passed
+cd /home/user/cyberdudebivash-blog/Sentinel-APEX/engine && python -m pytest tests/ -q    # Expect: 1004 passed, 1 pre-existing unrelated failure
 cd /home/user/cyberdudebivash-blog
 node --test tests-js/*.test.js                           # Expect: 123 passed
 ```
@@ -56,7 +57,7 @@ The one known pre-existing engine-side failure: `Sentinel-APEX/engine/tests/test
 
 ## 5. Next exact action if resuming
 
-**Immediate:** PR #116 is open and subscribed — drive it to green/merged first before starting new work, per this session's standing PR-drive-to-green obligation.
+**Immediate:** PR #116 is open, subscribed, CI green, all 4 CodeRabbit review threads resolved. Waiting on merge (owner review or CodeRabbit's rate-limited re-review, ~37 min from 17:14 UTC) — continue watching, don't start new work until it merges, per this session's standing PR-drive-to-green obligation. One open, non-blocking offer from CodeRabbit not yet acted on: it asked whether to file a GitHub follow-up issue for the declined multi-tactic ATT&CK metadata work (§2 item 9) — that's an issue-tracking decision for the repo owner, not something to decide unilaterally.
 
 **After #116 merges,** real, separate, comparably-sized pieces of work remain, named but not started:
 
