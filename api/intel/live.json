@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-20T10:00:54.320Z",
+  "generated": "2026-08-20T10:55:54.303Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,10 +7,10 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 3071,
+  "total_published": 3086,
   "s2n_stats": {
-    "passed": 105,
-    "suppressed": 17,
+    "passed": 104,
+    "suppressed": 10,
     "avg_qs": 0.495
   },
   "items": [
@@ -318,14 +318,14 @@
       }
     },
     {
-      "id": "CVE-2026-19489",
-      "title": "Critical Citrix NetScaler Flaw Lets Remote Attackers Bypass Authentication Without Credentials",
-      "description": "Cloud Software Group has issued a critical security bulletin warning customers of two serious vulnerabilities affecting NetScaler ADC (formerly Citrix ADC) and NetScaler Gateway (formerly Citrix Gateway). Tracked as CVE-2026-19489 and CVE-2026-19490, the flaws could allow attacke... [Full analysis a",
+      "id": "CVE-2026-62673",
+      "title": "Grav: .htaccess file extension rules bypass via case variation on case-insensitive filesystems",
+      "description": "## Summary\n\nThe default `.htaccess` shipped with Grav (and the reference `webserver-configs/htaccess.txt`) contains security rules that block direct HTTP access to sensitive file types (`.yaml`, `.yml`, `.php`, `.json`, `.twig`, etc.) under `user/` and `system/vendor/` directorie... [Full analysis a",
       "cvss": 7.5,
       "final_ps": 46,
       "quality_score": 0.493,
       "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
+      "type": "NEWS_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -340,12 +340,54 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-19489",
-        "CVE-2026-19490"
+        "CVE-2026-62673"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://cybersecuritynews.com/critical-citrix-netscaler-vulnerability/"
+        "https://github.com/advisories/GHSA-vwg3-w8w3-pc79"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=46 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-55694",
+      "title": "Snipe-IT: Chained Information Disclosure and IDOR Leads to Full EULA File Takeover",
+      "description": "### Impact\nAn attacker can completely bypass file-name randomization security and without authorization download confidential, signed EULA files belonging to any other user across the application.\n\n### Steps to Reproduce:\n1. Log in as a restricted user.\n2. Send a GET request to /... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 46,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-19",
+      "last_seen": "2026-08-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55694"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-3hgv-jr5j-cg9x"
       ],
       "explanation": {
         "quality": [
@@ -401,92 +443,6 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-53964",
-      "title": "Document Merge Service vulnerable to RCE via SSTI (xlsx tempaltes)",
-      "description": "### Impact\nA remote code execution (RCE) via server-side template injection (SSTI) allows for user supplied code to be executed in the server's context where it is executed as the document-merge-server user with the UID 901 thus giving an attacker considerable control over the co... [Full analysis a",
-      "cvss": 7.2,
-      "final_ps": 44,
-      "quality_score": 0.493,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-19",
-      "last_seen": "2026-08-19",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-53964"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-w47q-945m-q9pc"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=44 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2024-45747",
-      "title": "GeoServer has a Server-Side Template Injection (SSTI) vulnerability in processing FreeMarker templates",
-      "description": "### Summary\nA server-side template injection (SSTI) vulnerability exist that allows an authenticated administrator to upload FreeMarker templates containing malicious content that can execute OS commands and read from or write to arbitrary files on the server. These FreeMarker te... [Full analysis a",
-      "cvss": 7.2,
-      "final_ps": 44,
-      "quality_score": 0.493,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-19",
-      "last_seen": "2026-08-19",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2024-45747"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wf6j-gr27-g7ch"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=44 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2282,9 +2238,7 @@
         ],
         "suppression": null,
         "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
+      }
     },
     {
       "id": "CVE-2026-29059",
@@ -3978,6 +3932,142 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-19489",
+      "title": "Critical Citrix NetScaler Flaw Lets Remote Attackers Bypass Authentication Without Credentials",
+      "description": "Cloud Software Group has issued a critical security bulletin warning customers of two serious vulnerabilities affecting NetScaler ADC (formerly Citrix ADC) and NetScaler Gateway (formerly Citrix Gateway). Tracked as CVE-2026-19489 and CVE-2026-19490, the flaws could allow attacke... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-19",
+      "last_seen": "2026-08-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19489",
+        "CVE-2026-19490"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cybersecuritynews.com/critical-citrix-netscaler-vulnerability/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-53964",
+      "title": "Document Merge Service vulnerable to RCE via SSTI (xlsx tempaltes)",
+      "description": "### Impact\nA remote code execution (RCE) via server-side template injection (SSTI) allows for user supplied code to be executed in the server's context where it is executed as the document-merge-server user with the UID 901 thus giving an attacker considerable control over the co... [Full analysis a",
+      "cvss": 7.2,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-19",
+      "last_seen": "2026-08-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-53964"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-w47q-945m-q9pc"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2024-45747",
+      "title": "GeoServer has a Server-Side Template Injection (SSTI) vulnerability in processing FreeMarker templates",
+      "description": "### Summary\nA server-side template injection (SSTI) vulnerability exist that allows an authenticated administrator to upload FreeMarker templates containing malicious content that can execute OS commands and read from or write to arbitrary files on the server. These FreeMarker te... [Full analysis a",
+      "cvss": 7.2,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-19",
+      "last_seen": "2026-08-19",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2024-45747"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-wf6j-gr27-g7ch"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-53966",
       "title": "XWiki Platform Live Data Live Table Connector has privilege escalation from edit to script right through Live Data editi",
       "description": "### Impact\nAny user who can edit a page in XWiki can use Live Data's edit REST API in XWiki to change the rights on that page. This allows the user to obtain script right on the page. Script right allows the user to execute potentially dangerous Velocity scripts and send unfilter... [Full analysis a",
@@ -4230,96 +4320,6 @@
       "ioc_count": 0,
       "refs": [
         "https://github.com/advisories/GHSA-rxjr-6c9q-h67x"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-62673",
-      "title": "Grav: .htaccess file extension rules bypass via case variation on case-insensitive filesystems",
-      "description": "## Summary\n\nThe default `.htaccess` shipped with Grav (and the reference `webserver-configs/htaccess.txt`) contains security rules that block direct HTTP access to sensitive file types (`.yaml`, `.yml`, `.php`, `.json`, `.twig`, etc.) under `user/` and `system/vendor/` directorie... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-19",
-      "last_seen": "2026-08-19",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-62673"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-vwg3-w8w3-pc79"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-55694",
-      "title": "Snipe-IT: Chained Information Disclosure and IDOR Leads to Full EULA File Takeover",
-      "description": "### Impact\nAn attacker can completely bypass file-name randomization security and without authorization download confidential, signed EULA files belonging to any other user across the application.\n\n### Steps to Reproduce:\n1. Log in as a restricted user.\n2. Send a GET request to /... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-19",
-      "last_seen": "2026-08-19",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55694"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-3hgv-jr5j-cg9x"
       ],
       "explanation": {
         "quality": [
