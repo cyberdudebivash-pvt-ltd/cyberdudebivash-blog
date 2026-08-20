@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-20T17:23:28.029Z",
+  "generated": "2026-08-20T17:32:34.432Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11551,
+    "total_nodes": 11555,
     "actors": 8,
-    "cves": 3942,
-    "campaigns": 1169,
+    "cves": 3944,
+    "campaigns": 1171,
     "malware": 0,
     "iocs": 884,
-    "edges": 3747
+    "edges": 3749
   },
   "nodes": {
     "actor:lockbit": {
@@ -218816,9 +218816,9 @@
       "type": "CVE",
       "name": "Hackers Target Zimbra Servers in Active Exploitation Campaign",
       "attributes": {
-        "cvss": 8.9,
-        "threat_level": "MEDIUM",
-        "priority_score": 63,
+        "cvss": 0,
+        "threat_level": "LOW",
+        "priority_score": 31,
         "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
@@ -218844,6 +218844,82 @@
       "connections": [
         {
           "target": "CVE-2026-73570",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "CVE-2026-55253": {
+      "id": "CVE-2026-55253",
+      "type": "CVE",
+      "name": "LangChain MongoDB has NoSQL Operator Injection in MongoDBSaver.list() leading to cross-tenant data exposure",
+      "attributes": {
+        "cvss": 7.7,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "langgraph-checkpoint-mongodb",
+        "published": "2026-08-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-55149": {
+      "id": "CVE-2026-55149",
+      "type": "CVE",
+      "name": "vouch-proxy has an Unbounded Multipart Cookie Allocation DoS",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "go",
+        "product": "github.com/vouch/vouch-proxy",
+        "published": "2026-08-20",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-55253": {
+      "id": "campaign:cve-2026-55253",
+      "type": "Campaign",
+      "name": "pip langgraph-checkpoint-mongodb Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-20",
+        "last_seen": "2026-08-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55253"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55253",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-55149": {
+      "id": "campaign:cve-2026-55149",
+      "type": "Campaign",
+      "name": "go github.com/vouch/vouch-proxy Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-20",
+        "last_seen": "2026-08-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55149"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55149",
           "relationship": "includes",
           "confidence": 1
         }
@@ -252731,6 +252807,24 @@
       "id": "campaign:cve-2026-73570→includes→CVE-2026-73570",
       "source": "campaign:cve-2026-73570",
       "target": "CVE-2026-73570",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55253→includes→CVE-2026-55253",
+      "source": "campaign:cve-2026-55253",
+      "target": "CVE-2026-55253",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55149→includes→CVE-2026-55149",
+      "source": "campaign:cve-2026-55149",
+      "target": "CVE-2026-55149",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-20",
