@@ -110,6 +110,38 @@ KNOWN_TECHNIQUES: dict[str, tuple[str, str]] = {
     "T1598": ("Phishing for Information", "reconnaissance"),
 }
 
+# RX-P1I: ATT&CK legitimately assigns some techniques to more than one
+# tactic (e.g. real MITRE data: T1053/T1053.005 sit under Execution,
+# Persistence, AND Privilege Escalation simultaneously). KNOWN_TECHNIQUES
+# above deliberately keeps its existing single-tactic-per-id shape
+# unchanged -- normalizer.py, report_ingest.py, and intelligence_
+# validation.py all destructure it as (name, tactic) today, and widening
+# that shape would be a breaking change to every one of them for a
+# refinement only reportx/attack_mapping.py's new structured object
+# actually needs. This is purely additive: id -> the FULL real tactic set
+# (including the one already in KNOWN_TECHNIQUES), consulted only by
+# callers that want it. A technique absent here has exactly the one
+# tactic KNOWN_TECHNIQUES already states -- not "no other tactics exist in
+# real ATT&CK," just "not curated here yet," the same honest-incompleteness
+# discipline KNOWN_TECHNIQUES itself already documents for its own subset.
+ADDITIONAL_TACTICS: dict[str, tuple[str, ...]] = {
+    "T1053": ("execution", "persistence", "privilege-escalation"),
+    "T1053.005": ("execution", "persistence", "privilege-escalation"),
+}
+
+
+def tactics_for(technique_id: str) -> tuple[str, ...]:
+    """The full, real tactic set for a curated technique_id -- its primary
+    tactic from KNOWN_TECHNIQUES plus any additional ones from
+    ADDITIONAL_TACTICS, deduplicated, primary tactic first. Empty tuple for
+    an id not in KNOWN_TECHNIQUES at all."""
+    if technique_id not in KNOWN_TECHNIQUES:
+        return ()
+    primary = KNOWN_TECHNIQUES[technique_id][1]
+    extra = tuple(t for t in ADDITIONAL_TACTICS.get(technique_id, ()) if t != primary)
+    return (primary,) + extra
+
+
 # phrase-pattern -> technique id. Patterns are matched with word boundaries,
 # case-insensitively. Order matters: more specific patterns first, and a
 # technique is only added once.

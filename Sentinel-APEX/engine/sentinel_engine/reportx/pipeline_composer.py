@@ -42,6 +42,7 @@ from automation.report_renderer import (  # noqa: E402
 )
 
 from .analytic_scaffolding import IntelligenceGap
+from .attack_mapping import AttackMapping, build_attack_mappings
 from .claim_model import CorroborationState, EvidenceGraph
 from .commercial_readiness import ControlResult, ReportBundle, evaluate_commercial_readiness
 from .contradiction_engine import Contradiction, find_all_contradictions
@@ -334,6 +335,31 @@ def _cve_hunt_hypotheses(article, context: ReportContext, package: DetectionPack
     )]
 
 
+def _render_attack_mappings_html(mappings: list[AttackMapping]) -> str:
+    """RX-P1I: the structured counterpart to report_renderer._attack_section()
+    -- that function already renders package.attack_mappings' prose
+    sentences unconditionally (unchanged, still real, still tested). This
+    is additive: the same underlying evidence, now also surfaced with an
+    explicit status/confidence/limitations a caller can act on
+    programmatically, not just read as prose. Empty list renders nothing,
+    matching every other optional section's own convention in this
+    function."""
+    if not mappings:
+        return ""
+    rows = []
+    for m in mappings:
+        rows.append(_panel(
+            f'<p style="margin:0 0 6px"><strong>{_esc(m.technique_id)} &mdash; {_esc(m.technique_name)}</strong> '
+            f'<span style="color:#94a3b8">({_esc(", ".join(m.tactics))})</span></p>'
+            f'<p style="margin:0 0 6px;font-family:monospace;font-size:11px;color:#a855f7">'
+            f'STATUS: {_esc(m.status.value)} &middot; CONFIDENCE: {_esc(m.confidence)}</p>'
+            f'<p style="margin:0 0 6px">{_esc(m.reasoning)}</p>'
+            + ("".join(f'<p style="margin:0;color:#64748b;font-size:12px">Limitation: {_esc(lim)}</p>' for lim in m.limitations)),
+            "#a855f7",
+        ))
+    return _section("Structured ATT&CK Assessment", "".join(rows), "#a855f7")
+
+
 @dataclass(frozen=True)
 class ComposedReport:
     report_id: str
@@ -387,6 +413,16 @@ class ComposedReport:
     # family, matching canonical_entities' own "always present, sometimes
     # empty" convention rather than a family-conditioned Optional.
     hunt_hypotheses: list[HuntHypothesis] = field(default_factory=list)
+    # RX-P1I-WIRE (structured ATT&CK): first-class replacement for reading
+    # DetectionPackage.attack_mappings' prose tuple directly -- every entry
+    # here already passed build_attack_mappings()'s semantic gate (real
+    # technique, real tactic, real behavioral basis, real evidence/claim/
+    # source references, OBSERVED structurally excluded). Computed
+    # unconditionally for every article/family, at zero extra evidence
+    # cost (reuses the graph and detection package this function already
+    # built), same "always present, sometimes empty" convention as
+    # canonical_entities/hunt_hypotheses above.
+    attack_mappings: list[AttackMapping] = field(default_factory=list)
 
     @property
     def pass_count(self) -> int:
@@ -413,6 +449,7 @@ def compose_report(
     canonical_entities = list(resolve_canonical_entities(article, graph))
     threat_product = build_threat_product(article, context)
     package = _detection_package(article, context)
+    attack_mappings = build_attack_mappings(article, context, graph, package)
 
     from automation.report_renderer import render_evidence_report
     base = render_evidence_report(article, config, include_provenance=include_provenance)
@@ -517,7 +554,9 @@ def compose_report(
         for h in hunt_hypotheses
     )
 
-    html = base.html + role_html + reliability_html + hunt_html
+    attack_html = _render_attack_mappings_html(attack_mappings)
+
+    html = base.html + role_html + reliability_html + hunt_html + attack_html
 
     contradictions = find_all_contradictions(graph, dimension_tags=_dimension_tags_for(graph), full_text=html)
 
@@ -593,4 +632,5 @@ def compose_report(
         control_results=control_results, downgrade=downgrade, scorecard=scorecard,
         contradictions=contradictions, analytical_confidence=analytical_confidence,
         canonical_entities=canonical_entities, hunt_hypotheses=hunt_hypotheses,
+        attack_mappings=attack_mappings,
     )

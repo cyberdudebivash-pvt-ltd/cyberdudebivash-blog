@@ -798,6 +798,31 @@ def _render_hunt_hypotheses_html(hunt_hypotheses: tuple) -> str:
     )
 
 
+def _render_attack_mappings_html(attack_mappings: tuple) -> str:
+    """RX-P1I (structured ATT&CK): same duplication-avoidance reasoning as
+    _render_hunt_hypotheses_html() immediately above -- mirrors
+    pipeline_composer._render_attack_mappings_html()'s own visual output
+    exactly (same section title, colors, field order), but reads the
+    AttackMapping.to_dict() shape _ComposerOutcome.attack_mappings actually
+    stores. Called unconditionally in transform(), guarded the same way,
+    so every content path shows the same structured ATT&CK data rather
+    than only the composer path."""
+    if not attack_mappings:
+        return ""
+    rows = []
+    for m in attack_mappings:
+        rows.append(_panel(
+            f'<p style="margin:0 0 6px"><strong>{_esc(m["technique_id"])} &mdash; {_esc(m["technique_name"])}</strong> '
+            f'<span style="color:#94a3b8">({_esc(", ".join(m["tactics"]))})</span></p>'
+            f'<p style="margin:0 0 6px;font-family:monospace;font-size:11px;color:#a855f7">'
+            f'STATUS: {_esc(m["status"])} &middot; CONFIDENCE: {_esc(m["confidence"])}</p>'
+            f'<p style="margin:0 0 6px">{_esc(m["reasoning"])}</p>'
+            + ("".join(f'<p style="margin:0;color:#64748b;font-size:12px">Limitation: {_esc(lim)}</p>' for lim in m["limitations"])),
+            "#a855f7",
+        ))
+    return _section("Structured ATT&CK Assessment", "".join(rows), "#a855f7")
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # TEMPLATE FALLBACK — full 18-section structure when all LLM providers fail
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1913,6 +1938,11 @@ class _ComposerOutcome:
     # _cve_hunt_hypotheses()), same discard-at-this-boundary situation
     # canonical_entities was in before Phase 1G wired it through.
     hunt_hypotheses: tuple = ()
+    # RX-P1I-WIRE (structured ATT&CK): compose_report()'s own
+    # attack_mappings (real, evidence-gated, every family) -- same
+    # discard-at-this-boundary situation hunt_hypotheses was in until this
+    # exact change.
+    attack_mappings: tuple = ()
 
 
 def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOutcome:
@@ -1958,6 +1988,7 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
         analytical_confidence = dict(result.analytical_confidence)
         canonical_entities = tuple(e.to_dict() for e in result.canonical_entities)
         hunt_hypotheses = tuple(h.to_dict() for h in result.hunt_hypotheses)
+        attack_mappings = tuple(m.to_dict() for m in result.attack_mappings)
         if contradictions:
             logger.warning(
                 "ReportX composer found unresolved contradiction(s) -- publication will be blocked",
@@ -1973,14 +2004,14 @@ def _composer_enhance(article: DiscoveredArticle, config: Config) -> _ComposerOu
                 quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
                 evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
                 analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
-                hunt_hypotheses=hunt_hypotheses,
+                hunt_hypotheses=hunt_hypotheses, attack_mappings=attack_mappings,
             )
         return _ComposerOutcome(
             html=result.html, achieved_tier=tier.value,
             quality_score=result.scorecard.overall_score, quality_score_eligible=result.scorecard.publication_eligible,
             evidence_graph=evidence_graph, intelligence_gaps=intelligence_gaps, contradictions=contradictions,
             analytical_confidence=analytical_confidence, canonical_entities=canonical_entities,
-            hunt_hypotheses=hunt_hypotheses,
+            hunt_hypotheses=hunt_hypotheses, attack_mappings=attack_mappings,
         )
     except Exception as e:
         logger.warning("ReportX composer failed, using legacy template", extra={"error": str(e)[:200]})
@@ -2067,6 +2098,14 @@ class AuthorityTransformer:
         if content_source != "reportx_composer" and composer_outcome.hunt_hypotheses:
             body_content = body_content + _render_hunt_hypotheses_html(composer_outcome.hunt_hypotheses)
 
+        # RX-P1I (structured ATT&CK): identical duplication guard as the
+        # hunt-hypotheses fix immediately above -- composer_outcome.html
+        # already has attack_html baked in for the reportx_composer path
+        # (pipeline_composer.compose_report()'s own html assembly), so
+        # every other path renders it here instead.
+        if content_source != "reportx_composer" and composer_outcome.attack_mappings:
+            body_content = body_content + _render_attack_mappings_html(composer_outcome.attack_mappings)
+
         # RX-P1B-WIRE: analytical_depth_gate.py + report_contract.py (the
         # founder-mandate 24-section contract + FLASH/TACTICAL/PREMIUM_LONG_FORM
         # tier gate) were built and certified
@@ -2079,6 +2118,7 @@ class AuthorityTransformer:
             article, context, content_source, detection_status=detection_status,
             state_file=self.config.state_file, key_judgement_count=len(key_judgements),
             hunt_hypothesis_count=len(composer_outcome.hunt_hypotheses),
+            attack_mapping_count=len(composer_outcome.attack_mappings),
         )
 
         # Generate SEO metadata
@@ -2182,6 +2222,8 @@ class AuthorityTransformer:
             "canonical_entities": list(composer_outcome.canonical_entities),
             # RX-P1I-WIRE: see _ComposerOutcome.hunt_hypotheses' docstring above.
             "hunt_hypotheses": list(composer_outcome.hunt_hypotheses),
+            # RX-P1I-WIRE (structured ATT&CK): see _ComposerOutcome.attack_mappings' docstring above.
+            "attack_mappings": list(composer_outcome.attack_mappings),
             "detection_status": detection_status,
             "generated_at": context.generated_at,
             # RX-P1-ARTIFACT-BINDING: see the comment at this hash's
