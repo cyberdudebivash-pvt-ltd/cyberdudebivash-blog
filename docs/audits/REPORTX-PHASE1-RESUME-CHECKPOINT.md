@@ -1,17 +1,17 @@
 # REPORTX Phase 1 — Resume Checkpoint
 
-**Written:** 2026-08-20T05:30:00Z (updated — supersedes the 2026-08-20T04:50:00Z version)
+**Written:** 2026-08-20T05:45:00Z (updated — supersedes the 2026-08-20T05:30:00Z version)
 **Written by:** Claude (this session)
-**Why this exists:** the governing mandate spans phases 1F–1T (and, this round, a P0 production-verification detour for #109/#110 before continuing). This document lets any future session — mine or another Claude instance's — resume without repeating investigation already done.
+**Why this exists:** the governing mandate spans phases 1F–1T (and, this round, two P0 production-incident detours — #109/#110, then run #8459 — before continuing). This document lets any future session — mine or another Claude instance's — resume without repeating investigation already done.
 
 ---
 
-## 1. Exact repository state — everything from this round is merged, nothing open
+## 1. Exact repository state
 
 | Field | Value |
 |---|---|
-| `origin/main` HEAD | `748f3caa8` |
-| Open PRs from this round | **None.** #108, #109, #110, #111, #112 all merged. |
+| `origin/main` HEAD | `fe34606f0` (includes #113; also includes an intervening auto-syndication commit `a6e73aafb` from the run #8459 incident, unrelated content) |
+| Open PRs from this round | **PR #114** (`docs/blogger-syndication-8459-incident-review`) — documentation only, awaiting CI + the owner decision recorded in §6. #108–#113 all merged. |
 | Working tree | Clean |
 
 ## 2. What happened this round (chronological)
@@ -21,6 +21,7 @@
 3. Verified #109 in real production (not just CI) by manually triggering `sentinel-apex.yml`: **15 real reports generated, quality gate 15/0**. That verification surfaced a **second defect**: `live-intel.json`'s window is priority-sorted, not recency-sorted, so `freshness-check.yml`'s staleness signal stayed frozen even with reports genuinely generating. Fixed via a new `intel-state.json.lastReportGeneratedAt` field, merged as **PR #110**.
 4. Spawned a background reconnaissance agent to catalog all existing entity-resolution code across every system in the repo before implementing Phase 1G (Reuse Before Build). Found a separate, more sophisticated entity/attribution stack already serving Pipeline B (`api/_lib/`) — deliberately scoped Phase 1G to REPORTX's own systems instead of duplicating it. Implemented `entity_resolution.py` (CVE/ransomware_actor/sector/country/lexicon entities), wired into `pipeline_composer.py` and `authority_transformer.py`, tested (32 unit + 4 integration tests) and **real-data validated** against 5 live NVD CVEs and 20 live ransomware.live victims. Merged as **PR #111**.
 5. After #110 merged, triggered the full real cycle end to end (`sentinel-apex.yml` → `freshness-check.yml`) to close its one remaining "not yet live-verified" caveat. Confirmed: `Status level: HEALTHY, Age: 0 minutes`. Updated the certification doc and merged as **PR #112**.
+6. User reported a second, separate incident: Blogger Syndication Engine run #8459 failed (red-X). Investigated the real job log end to end: 4/5 articles published (including full graceful degradation through a total LLM-provider outage — Groq 429 → DeepSeek 402 → OpenRouter 402 → composer fallback); the 1 failure was `validate_publication()`'s `_UNSUPPORTED_COMMERCIAL_PATTERNS` gate correctly blocking an LLM-hallucinated "2,400+" claim with zero basis in the article's real source data (traced through `threat_feeds.py::RansomwareIntelSource.discover()` — no numeric field exists anywhere in that path). **Verdict: not a defect, no code changed.** Documented as **PR #114** (open), which also surfaces one real open question — see §6.
 
 ## 3. Certification status — all RELEASE_CERTIFIED, no open items
 
@@ -54,3 +55,4 @@ Phase 1H (family-specific analysis, mandate Sections 12-23) is next. It is compa
 
 - Live Blogger publish canary (customer-visible, hard to reverse) — not to be done unilaterally.
 - Live LLM provider canary for Key Judgements (lower-stakes, doesn't touch the public site, but still worth raising with the owner rather than running silently) — the existing `workflow_dispatch` canary mechanism is the right tool if authorized.
+- **CI-signal question from the run #8459 review (PR #114):** whether an integrity-only block (no auth/quota/unexpected errors alongside it) should keep hard-failing the whole workflow's exit code, or whether that should be separated from real pipeline failures so a correctly-functioning gate stops producing the same red-X as an actual defect. Two options are laid out in `docs/audits/blogger-syndication-run-8459-incident-review-2026-08-20.md` §"Open design question." Content-safety behavior (the gate itself) is not in question either way — only how the run's pass/fail status is reported. Asked of the owner; not decided or implemented pending their answer.
