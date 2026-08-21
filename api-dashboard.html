@@ -72,7 +72,7 @@ input:focus,select:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba
 .bar-col:hover{background:rgba(0,255,224,.3)}
 .bar-col::after{content:attr(data-label);position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--apex-muted);white-space:nowrap}
 footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);padding:24px;text-align:center;font-size:13px;color:var(--apex-muted)}footer a{color:var(--apex-cyan);text-decoration:none}
-@media(max-width:600px){.hero{padding:40px 16px 24px}.wrap{padding:24px 16px}.nlinks a:not(.ncta){display:none}}
+@media(max-width:600px){.hero{padding:40px 16px 24px}.wrap{padding:24px 16px}.nlinks a:not(.ncta):not(#signout-link){display:none}#who{display:none}}
 </style>
 <script src="/payment-flow.js"></script>
   <!-- Google Analytics 4 — CYBERDUDEBIVASH SENTINEL APEX -->
@@ -83,6 +83,8 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
 <nav>
   <a href="/" class="nlogo">CYBERDUDE<span style="color:#fff">BIVASH</span> <span style="font-size:11px;color:var(--apex-muted);font-weight:400">SENTINEL APEX</span></a>
   <div class="nlinks">
+    <span id="who" style="font-size:12px;color:var(--apex-muted);font-family:var(--mono);margin-right:4px"></span>
+    <a href="#" id="signout-link" class="hidden" onclick="signOut();return false">Sign out</a>
     <a href="/">Blog</a>
     <a href="/api.html">API Docs</a>
     <a href="/threat-intelligence.html">Threat Intel</a>
@@ -133,7 +135,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
         <label style="font-size:12px;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px">Your API Key</label>
         <div class="key-display" id="key-display">—<button class="copy-btn" onclick="copyKey()">Copy</button></div>
         <div id="key-meta" style="font-size:13px;color:var(--apex-muted);margin-top:12px;line-height:1.8"></div>
-        <button class="btn btn-primary" onclick="loadDashboard()" style="margin-top:16px;width:100%">Go to My Dashboard →</button>
+        <button class="btn btn-primary" onclick="switchTab('dashboard')" style="margin-top:16px;width:100%">Go to My Dashboard →</button>
       </div>
     </div>
 
@@ -191,6 +193,10 @@ const data = await res.json();</div>
       <div class="card-title">📈 7-Day Usage</div>
       <div class="chart-bar" id="usage-chart"></div>
       <div style="margin-top:24px"></div>
+    </div>
+    <div class="card hidden" id="my-subscription-card">
+      <div class="card-title">💳 My Subscription</div>
+      <div id="subscription-content"></div>
     </div>
     <div class="card" id="dash-upgrade-card" style="background:linear-gradient(135deg,#0a1428,#111827);border-color:rgba(0,255,224,.15)">
       <div class="card-title" style="color:var(--apex-cyan)">🚀 Upgrade Your Plan</div>
@@ -380,6 +386,30 @@ X-API-Key: sentinel_your_key_here</div>
 const API = 'https://blog.cyberdudebivash.in';
 let sessionKey = null;
 
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function persistKey(key) {
+  // In-memory only, for the lifetime of this page load -- never written to
+  // localStorage/sessionStorage/cookies. This key is a full-privilege API
+  // credential; Web Storage is readable by any script on the page, so
+  // persisting it there would hand any future XSS a standing way to
+  // exfiltrate it (CodeQL js/clear-text-storage-of-sensitive-data, flagged
+  // high severity on this exact call during this feature's own review).
+  // A hard page reload intentionally returns to a signed-out state, matching
+  // this page's own "Your key is never stored in your browser" promise.
+  sessionKey = key;
+}
+
+function signOut() {
+  sessionKey = null;
+  document.getElementById('who').textContent = '';
+  document.getElementById('signout-link').classList.add('hidden');
+  document.getElementById('dash-content').classList.add('hidden');
+  switchTab('register');
+}
+
 function switchTab(id) {
   document.querySelectorAll('.tab').forEach((t,i)=>{
     const ids = ['register','dashboard','docs','plans'];
@@ -387,7 +417,11 @@ function switchTab(id) {
   });
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
-  if(id==='dashboard'&&sessionKey) loadDashboard();
+  // silent: switching into this tab with an already-known key (e.g. right
+  // after registering, or navigating back from another tab) should never
+  // greet the user with an intrusive alert() if that key has since been
+  // revoked -- fail quietly back to signed-out instead.
+  if(id==='dashboard'&&sessionKey) loadDashboard(true);
 }
 
 async function registerKey() {
@@ -411,7 +445,7 @@ async function registerKey() {
     const data = await res.json();
 
     if(data.api_key){
-      sessionKey = data.api_key;
+      persistKey(data.api_key);
       document.getElementById('key-display').childNodes[0].textContent = data.api_key;
       document.getElementById('key-meta').innerHTML =
         `<strong style="color:var(--apex-green)">User ID:</strong> ${data.user.user_id}<br>
@@ -429,13 +463,13 @@ async function registerKey() {
   btn.disabled=false; btn.textContent='⚡ Generate My API Key';
 }
 
-async function loadDashboard() {
+async function loadDashboard(silent) {
   const input = document.getElementById('dash-key');
   const key = sessionKey || (input&&input.value.trim());
   if(!key||!key.startsWith('sentinel_')){
-    alert('Please enter a valid API key (starts with sentinel_)'); return;
+    if(!silent) alert('Please enter a valid API key (starts with sentinel_)');
+    return;
   }
-  sessionKey = key;
 
   try {
     const [meRes, usageRes] = await Promise.all([
@@ -445,9 +479,18 @@ async function loadDashboard() {
     const me = await meRes.json();
     const usage = await usageRes.json();
 
-    if(!me.success){ alert(me.error?.message||'Invalid API key'); return; }
+    if(!me.success){
+      // A silent (session-resume) attempt with a now-invalid/revoked key
+      // fails quietly back to signed-out, rather than greeting a returning
+      // visitor with an intrusive alert() on page load.
+      if(silent){ signOut(); return; }
+      alert(me.error?.message||'Invalid API key'); return;
+    }
+    persistKey(key);
 
     const u = me.user, use = me.usage;
+    document.getElementById('who').innerHTML = `Signed in as <strong style="color:var(--apex-cyan)">${esc(u.email||'')}</strong> · ${esc((u.tier||'').toUpperCase())}`;
+    document.getElementById('signout-link').classList.remove('hidden');
     document.getElementById('d-tier').textContent = u.tier.toUpperCase();
     document.getElementById('d-tier').className = 'stat-val'+(u.tier==='enterprise'?' ':'') + (u.tier==='free'?' ':'');
     document.getElementById('d-used').textContent = use.today;
@@ -481,7 +524,65 @@ async function loadDashboard() {
     if(u.tier!=='free') document.getElementById('dash-upgrade-card').style.display='none';
     document.getElementById('dash-content').classList.remove('hidden');
     if(input) input.value='';
-  } catch(e){ alert('Dashboard load failed: '+e.message); }
+    loadSubscriptions(); // independent of the stats above; never blocks them
+  } catch(e){
+    if(!silent) alert('Dashboard load failed: '+e.message);
+  }
+}
+
+async function loadSubscriptions() {
+  const card = document.getElementById('my-subscription-card');
+  const content = document.getElementById('subscription-content');
+  try {
+    const res = await fetch(`${API}/api/v1/billing?action=list-subscriptions`, {headers:{'X-API-Key':sessionKey}});
+    const data = await res.json();
+    if(!data.success || !data.subscriptions || !data.subscriptions.length){
+      card.classList.add('hidden');
+      return;
+    }
+    content.innerHTML = data.subscriptions.map(renderSubscriptionRow).join('');
+    card.classList.remove('hidden');
+  } catch(e){
+    card.classList.add('hidden'); // degrade silently -- the rest of the dashboard already loaded fine
+  }
+}
+
+function renderSubscriptionRow(sub) {
+  const statusColor = sub.status==='active' ? 'var(--apex-green)' : sub.status==='paused' ? 'var(--apex-orange)' : 'var(--apex-red)';
+  const amount = (sub.amount/100).toLocaleString('en-IN');
+  const period = sub.period==='yearly' ? 'year' : 'month';
+  const actionable = sub.status==='active' || sub.status==='paused';
+  return `<div style="padding:16px 0;border-bottom:1px solid var(--apex-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+    <div>
+      <strong style="text-transform:uppercase;color:var(--apex-cyan)">${esc(sub.plan_type)}</strong>
+      <span class="badge" style="background:${statusColor}22;color:${statusColor};margin-left:8px">${esc(sub.status)}</span>
+      <div style="font-size:12px;color:var(--apex-muted);margin-top:6px">
+        ₹${amount}/${period}${sub.next_billing_at ? ` · Next billing: ${fmtDate(sub.next_billing_at)}` : ''}
+      </div>
+    </div>
+    ${actionable ? `<div style="display:flex;gap:8px">
+      ${sub.status==='active' ? `<button class="btn btn-secondary" style="padding:8px 14px;font-size:12px" onclick="manageSubscription('${esc(sub.subscription_id)}','pause')">Pause</button>` : ''}
+      ${sub.status==='paused' ? `<button class="btn btn-secondary" style="padding:8px 14px;font-size:12px" onclick="manageSubscription('${esc(sub.subscription_id)}','resume')">Resume</button>` : ''}
+      <button class="btn btn-danger" style="padding:8px 14px;font-size:12px" onclick="manageSubscription('${esc(sub.subscription_id)}','cancel')">Cancel</button>
+    </div>` : ''}
+  </div>`;
+}
+
+function fmtDate(unixSeconds) {
+  try { return new Date(unixSeconds*1000).toLocaleDateString(undefined,{dateStyle:'medium'}); } catch(_) { return '—'; }
+}
+
+async function manageSubscription(id, act) {
+  if(act==='cancel' && !confirm('Cancel this subscription? Your access reverts to the Free tier at the end of the current billing period. This cannot be undone.')) return;
+  try {
+    const res = await fetch(`${API}/api/v1/billing?action=manage-subscription`, {
+      method:'POST', headers:{'X-API-Key':sessionKey,'Content-Type':'application/json'},
+      body: JSON.stringify({subscription_id:id, action:act})
+    });
+    const data = await res.json();
+    if(!data.success){ alert(data.error?.message || `Failed to ${act} subscription.`); return; }
+    loadSubscriptions();
+  } catch(e){ alert(`Failed to ${act} subscription: `+e.message); }
 }
 
 function startCheckout(plan) {

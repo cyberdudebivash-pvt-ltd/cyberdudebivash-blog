@@ -43,9 +43,13 @@ const FIELDS = {
   'verify-razorpay-payment': ['email', 'plan_type', 'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature'],
   'create-product-checkout': ['email', 'product_id'],
   'verify-product-payment':  ['email', 'product_id', 'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature'],
-  'create-subscription':     ['email', 'plan_type', 'period'],
-  'manage-subscription':     ['email', 'subscription_id', 'action'],
-  'list-subscriptions':      ['email'],
+  // No 'email' field here, unlike the rest of this table: an existing
+  // customer's subscription lifecycle (create/manage, as opposed to their
+  // very first payment) is authenticated by API key -- see each handler's
+  // own comment for why. list-subscriptions has no entry here at all: it
+  // takes no client-supplied fields whatsoever now that it's authenticated.
+  'create-subscription':     ['plan_type', 'period'],
+  'manage-subscription':     ['subscription_id', 'action'],
 };
 
 /* ─── Apex API base URL ────────────────────────────────────────── */
@@ -906,8 +910,12 @@ async function handleVerifyProductPayment(req, res) {
 
 /* ═══════════════════════════════════════════════════════════════
    POST /api/v1/billing?action=create-subscription
-   Set up recurring billing (monthly or annual subscription).
-   Body: { email, plan_type: "starter"|"pro"|"enterprise", period: "monthly"|"yearly" }
+   Set up recurring billing (monthly or annual subscription) for the
+   authenticated caller. Requires an API key -- unlike create-intent/
+   create-razorpay-order (a brand-new customer's very first payment, who
+   has no key yet), recurring billing is for an existing account, the same
+   reasoning handleSubscribe() (the Stripe equivalent, above) already
+   applies. Body: { plan_type: "starter"|"pro"|"enterprise", period: "monthly"|"yearly" }
 ═══════════════════════════════════════════════════════════════ */
 async function handleCreateSubscription(req, res) {
   if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
@@ -916,14 +924,20 @@ async function handleCreateSubscription(req, res) {
     return fail(res, 503, 'RAZORPAY_UNAVAILABLE', 'Subscriptions not configured yet.');
   }
 
+  const user = await authenticate(req, res);
+  if (!user) return;
+
   const subLib = require('../_lib/subscriptions');
   const ip   = sec.getIp(req);
-  const body = await parseBody(req);
+  let body = {};
+  try {
+    body = await parseBody(req);
+  } catch (_) {}
 
   const whitelistErr = sec.assertFieldWhitelist(body, FIELDS['create-subscription']);
   if (whitelistErr) return fail(res, 400, 'INVALID_FIELDS', whitelistErr);
 
-  const email    = normalizeEmail(body.email);
+  const email    = normalizeEmail(user.email);
   const planType = sanitize(String(body.plan_type || '').toLowerCase(), 20);
   const period   = sanitize(String(body.period || 'monthly').toLowerCase(), 10);
 
@@ -972,8 +986,15 @@ async function handleCreateSubscription(req, res) {
 
 /* ═══════════════════════════════════════════════════════════════
    POST /api/v1/billing?action=manage-subscription
-   Pause, resume, or cancel a subscription.
-   Body: { email, subscription_id, action: "pause"|"resume"|"cancel" }
+   Pause, resume, or cancel a subscription. Requires an API key --
+   before this fix, this action trusted a bare client-supplied `email`
+   with no verification at all, so anyone who knew or guessed a
+   customer's email could cancel their paid subscription. Also verifies
+   the target subscription actually belongs to the caller (subscription_id
+   itself is still client-supplied) -- authentication alone isn't
+   ownership, an authenticated caller could otherwise still act on a
+   *different* customer's subscription if they guessed its ID.
+   Body: { subscription_id, action: "pause"|"resume"|"cancel" }
 ═══════════════════════════════════════════════════════════════ */
 async function handleManageSubscription(req, res) {
   if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
@@ -982,25 +1003,37 @@ async function handleManageSubscription(req, res) {
     return fail(res, 503, 'RAZORPAY_UNAVAILABLE', 'Subscriptions not configured yet.');
   }
 
+  const user = await authenticate(req, res);
+  if (!user) return;
+
   const subLib = require('../_lib/subscriptions');
   const ip   = sec.getIp(req);
-  const body = await parseBody(req);
+  let body = {};
+  try {
+    body = await parseBody(req);
+  } catch (_) {}
 
   const whitelistErr = sec.assertFieldWhitelist(body, FIELDS['manage-subscription']);
   if (whitelistErr) return fail(res, 400, 'INVALID_FIELDS', whitelistErr);
 
-  const email     = normalizeEmail(body.email);
+  const email     = normalizeEmail(user.email);
   const subId     = sanitize(String(body.subscription_id || ''), 64);
   const action    = sanitize(String(body.action || '').toLowerCase(), 20);
 
-  if (!sec.validateEmail(email)) {
-    return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
-  }
   if (!subId) {
     return fail(res, 400, 'MISSING_SUBSCRIPTION_ID', 'subscription_id required.');
   }
   if (!['pause', 'resume', 'cancel'].includes(action)) {
     return fail(res, 400, 'INVALID_ACTION', 'action must be "pause", "resume", or "cancel"');
+  }
+
+  // Ownership check: never revealed to the caller whether a subscription
+  // simply doesn't exist vs. belongs to someone else -- same NOT_FOUND
+  // response either way, to avoid letting a valid subscription_id be
+  // enumerated by observing a different error for "not yours".
+  const record = await subLib.getSubscriptionRecord(redis, subId);
+  if (!record || normalizeEmail(record.email) !== email) {
+    return fail(res, 404, 'NOT_FOUND', 'Subscription not found.');
   }
 
   try {
@@ -1035,17 +1068,24 @@ async function handleManageSubscription(req, res) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   GET /api/v1/billing?action=list-subscriptions&email={email}
-   List all subscriptions for a customer.
+   GET /api/v1/billing?action=list-subscriptions
+   List all subscriptions for the authenticated caller. Requires an API
+   key -- before this fix, this action returned any email's subscription
+   list (subscription_id, plan, amount, billing dates) to any caller who
+   supplied that email in the query string, with no verification the
+   caller actually owned it.
 ═══════════════════════════════════════════════════════════════ */
 async function handleListSubscriptions(req, res) {
   if (req.method !== 'GET') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'GET required');
 
+  const user = await authenticate(req, res);
+  if (!user) return;
+
   const subLib = require('../_lib/subscriptions');
-  const email = normalizeEmail(req.query.email || '');
+  const email = normalizeEmail(user.email);
 
   if (!sec.validateEmail(email)) {
-    return fail(res, 400, 'INVALID_EMAIL', 'email query parameter required.');
+    return fail(res, 400, 'INVALID_EMAIL', 'Your account has no valid email on file. Contact support.');
   }
 
   try {
