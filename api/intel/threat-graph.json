@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-21T05:56:45.942Z",
+  "generated": "2026-08-21T06:41:28.042Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11654,
+    "total_nodes": 11657,
     "actors": 8,
-    "cves": 4032,
-    "campaigns": 1177,
+    "cves": 4033,
+    "campaigns": 1178,
     "malware": 0,
     "iocs": 885,
-    "edges": 3756
+    "edges": 3757
   },
   "nodes": {
     "actor:lockbit": {
@@ -220717,6 +220717,62 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-69836": {
+      "id": "CVE-2026-69836",
+      "type": "CVE",
+      "name": "Microsoft Entra ID Flaw (CVSS 10.0) Exploited in Wild, Allows Remote Code Execution",
+      "attributes": {
+        "cvss": 10,
+        "threat_level": "HIGH",
+        "priority_score": 71,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "The Hacker News",
+        "product": "Threat Intelligence",
+        "published": "2026-08-21",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-d6ccf8d3dbe4c479": {
+      "id": "REDDIT_CYBER-d6ccf8d3dbe4c479",
+      "type": "Intel",
+      "name": "How do security teams decide which vulnerabilities to fix first?",
+      "attributes": {
+        "cvss": 0,
+        "threat_level": "LOW",
+        "priority_score": 31,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-08-21",
+        "type": "NEWS_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-69836": {
+      "id": "campaign:cve-2026-69836",
+      "type": "Campaign",
+      "name": "Microsoft Ecosystem Targeting Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-21",
+        "last_seen": "2026-08-21",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-69836 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-69836",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -254684,6 +254740,15 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-20",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-69836→includes→CVE-2026-69836",
+      "source": "campaign:cve-2026-69836",
+      "target": "CVE-2026-69836",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-21",
       "sources": []
     }
   ]
