@@ -17,7 +17,7 @@ class CaseManager {
     this.investigationManager = investigationManager;
   }
 
-  async createCase(investigationId, title, description) {
+  async createCase(investigationId, title, description, createdBy = 'analyst') {
     const investigation = await this.investigationManager.getInvestigation(investigationId);
     if (!investigation) throw new Error(`Investigation not found: ${investigationId}`);
 
@@ -31,7 +31,7 @@ class CaseManager {
       description,
       status: CASE_STATUS.OPEN,
       createdAt: now,
-      createdBy: 'analyst',
+      createdBy,
       updatedAt: now,
       evidenceCount: 0,
       noteCount: 0,

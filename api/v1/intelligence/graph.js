@@ -7,6 +7,10 @@ const { RelationshipEngine } = require('../../_lib/relationship-engine');
 const { GraphTraversal } = require('../../_lib/graph-traversal');
 const { CorrelationEngine } = require('../../_lib/correlation-engine');
 const { SimilarityEngine } = require('../../_lib/similarity-engine');
+const { requireAnalyst } = require('../../_lib/analyst-auth');
+const { resolvePathParts } = require('../../_lib/request-path');
+
+const MOUNT_PATH = '/api/v1/intelligence/graph';
 
 const manager = new IntelligenceManager(redis);
 const graphEngine = new GraphEngine(redis, manager);
@@ -18,7 +22,7 @@ const similarityEngine = new SimilarityEngine(graphEngine);
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Analyst-Key',
 };
 
 function ok(res, data, status = 200) {
@@ -45,7 +49,10 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  const pathParts = (req.url || '').split('?')[0].split('/').filter(Boolean);
+  const caller = await requireAnalyst(req, res, fail);
+  if (!caller) return;
+
+  const pathParts = resolvePathParts(req, MOUNT_PATH);
   const action = pathParts[pathParts.length - 1];
   const id = pathParts[pathParts.length - 2];
 
@@ -57,17 +64,23 @@ module.exports = async (req, res) => {
     return handleGetRelatedEntities(req, res, id);
   }
 
+  // /{sourceId}/path/{targetId} -- three segments beyond the mount point,
+  // so neither endpoint ID is at the generic `id` (second-to-last)
+  // position computed above (that lands on the literal 'path' segment
+  // instead). Derived explicitly here rather than relying on the
+  // module-level `id`, which this branch must not use.
   if (req.method === 'GET' && pathParts.includes('path')) {
     const targetId = pathParts[pathParts.length - 1];
-    return handleFindPath(req, res, id, targetId);
+    const sourceId = pathParts[pathParts.length - 3];
+    return handleFindPath(req, res, sourceId, targetId);
   }
 
   if (req.method === 'POST' && action === 'relationship') {
-    return handleCreateRelationship(req, res);
+    return handleCreateRelationship(req, res, caller);
   }
 
   if (req.method === 'DELETE' && action === 'relationship' && id) {
-    return handleDeleteRelationship(req, res, id);
+    return handleDeleteRelationship(req, res, id, caller);
   }
 
   if (req.method === 'GET' && action === 'stats') {
@@ -137,14 +150,14 @@ async function handleFindPath(req, res, sourceId, targetId) {
   }
 }
 
-async function handleCreateRelationship(req, res) {
+async function handleCreateRelationship(req, res, caller) {
   try {
     let body = {};
     if (req.body) {
       body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     }
 
-    const { source, target, type, evidence, sources, actor } = body;
+    const { source, target, type, evidence, sources } = body;
     if (!source || !target || !type) {
       return fail(res, 400, 'MISSING_FIELD', 'source, target, and type required');
     }
@@ -156,7 +169,7 @@ async function handleCreateRelationship(req, res) {
       {
         evidence,
         sources,
-        actor,
+        actor: caller.id,
         reason: body.reason || '',
       }
     );
@@ -167,10 +180,10 @@ async function handleCreateRelationship(req, res) {
   }
 }
 
-async function handleDeleteRelationship(req, res, id) {
+async function handleDeleteRelationship(req, res, id, caller) {
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-    const result = await graphEngine.deleteRelationship(id, body.actor || 'api', body.reason || '');
+    const result = await graphEngine.deleteRelationship(id, caller.id, body.reason || '');
 
     if (!result) {
       return fail(res, 404, 'NOT_FOUND', `Relationship not found: ${id}`);

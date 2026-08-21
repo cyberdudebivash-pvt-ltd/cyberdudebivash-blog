@@ -14,13 +14,14 @@
 
 const redis = require('../../_lib/redis');
 const { PublishingPipeline } = require('../../_lib/publishing-pipeline');
+const { requireAnalyst } = require('../../_lib/analyst-auth');
 
 const pipeline = new PublishingPipeline(redis);
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Analyst-Key',
 };
 
 function ok(res, data, status = 200) {
@@ -47,28 +48,31 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
+  const caller = await requireAnalyst(req, res, fail);
+  if (!caller) return;
+
   const pathParts = (req.url || '').split('?')[0].split('/').filter(Boolean);
   const action = pathParts[pathParts.length - 1];
   const id = pathParts[pathParts.length - 2];
 
   // POST /api/v1/intelligence/publish/submit
   if (req.method === 'POST' && action === 'submit') {
-    return handleSubmitReview(req, res);
+    return handleSubmitReview(req, res, caller);
   }
 
   // POST /api/v1/intelligence/publish/approve
   if (req.method === 'POST' && action === 'approve') {
-    return handleApprove(req, res);
+    return handleApprove(req, res, caller);
   }
 
   // POST /api/v1/intelligence/publish/publish
   if (req.method === 'POST' && action === 'publish') {
-    return handlePublish(req, res);
+    return handlePublish(req, res, caller);
   }
 
   // POST /api/v1/intelligence/publish/retract
   if (req.method === 'POST' && action === 'retract') {
-    return handleRetract(req, res);
+    return handleRetract(req, res, caller);
   }
 
   // GET /api/v1/intelligence/publish/status/{id}
@@ -89,7 +93,7 @@ module.exports = async (req, res) => {
   return fail(res, 404, 'NOT_FOUND', 'Endpoint not found');
 };
 
-async function handleSubmitReview(req, res) {
+async function handleSubmitReview(req, res, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -103,7 +107,7 @@ async function handleSubmitReview(req, res) {
 
     const result = await pipeline.submitForReview(
       intelligence_id,
-      body.actor || 'analyst',
+      caller.id,
       reason || ''
     );
 
@@ -117,7 +121,7 @@ async function handleSubmitReview(req, res) {
   }
 }
 
-async function handleApprove(req, res) {
+async function handleApprove(req, res, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -131,7 +135,7 @@ async function handleApprove(req, res) {
 
     const result = await pipeline.approveForPublication(
       intelligence_id,
-      body.actor || 'reviewer',
+      caller.id,
       reason || '',
       feedback || ''
     );
@@ -146,7 +150,7 @@ async function handleApprove(req, res) {
   }
 }
 
-async function handlePublish(req, res) {
+async function handlePublish(req, res, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -160,7 +164,7 @@ async function handlePublish(req, res) {
 
     const result = await pipeline.publishToProduction(
       intelligence_id,
-      body.actor || 'publisher',
+      caller.id,
       reason || ''
     );
 
@@ -174,7 +178,7 @@ async function handlePublish(req, res) {
   }
 }
 
-async function handleRetract(req, res) {
+async function handleRetract(req, res, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -188,7 +192,7 @@ async function handleRetract(req, res) {
 
     const result = await pipeline.retractFromProduction(
       intelligence_id,
-      body.actor || 'publisher',
+      caller.id,
       reason || ''
     );
 
