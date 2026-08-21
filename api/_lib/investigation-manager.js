@@ -25,7 +25,7 @@ class InvestigationManager {
     this.graph = graphEngine;
   }
 
-  async createInvestigation(title, description, priority, assignee, linkedIntelligence = []) {
+  async createInvestigation(title, description, priority, assignee, linkedIntelligence = [], createdBy = 'analyst') {
     const investigationId = crypto.randomBytes(16).toString('hex');
     const now = new Date().toISOString();
 
@@ -37,7 +37,7 @@ class InvestigationManager {
       status: INVESTIGATION_STATUS.OPEN,
       assignee: assignee || 'unassigned',
       createdAt: now,
-      createdBy: 'analyst',
+      createdBy,
       updatedAt: now,
       linkedIntelligence: JSON.stringify(linkedIntelligence),
       linkedEntities: JSON.stringify([]),

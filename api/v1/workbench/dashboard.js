@@ -2,13 +2,14 @@
 
 const redis = require('../../_lib/redis');
 const { InvestigationManager } = require('../../_lib/investigation-manager');
+const { requireAnalyst } = require('../../_lib/analyst-auth');
 
 const investigationMgr = new InvestigationManager(redis);
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Analyst-Key',
 };
 
 function ok(res, data, status = 200) {
@@ -39,7 +40,15 @@ module.exports = async (req, res) => {
     return fail(res, 405, 'METHOD_NOT_ALLOWED', 'GET required');
   }
 
-  const analyst = req.query.analyst || 'analyst';
+  const caller = await requireAnalyst(req, res, fail);
+  if (!caller) return;
+
+  // Defaults to the authenticated caller's own dashboard; an explicit
+  // ?analyst= still allows viewing another analyst's queue (small internal
+  // team, same trust boundary the unauthenticated version already had --
+  // requireAnalyst() above is the real, new restriction: SOME verified
+  // analyst identity is required at all, where previously none was).
+  const analyst = req.query.analyst || caller.id;
 
   try {
     const dashboard = await buildAnalystDashboard(analyst);

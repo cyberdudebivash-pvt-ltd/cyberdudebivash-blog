@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#00ffe0"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>SOC Workbench — CYBERDUDEBIVASH SENTINEL APEX</title>
+<meta name="description" content="Internal SOC analyst workbench: investigations, cases, intelligence graph, and search.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-blue:#0099ff;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:var(--apex-bg);color:var(--apex-text);min-height:100vh}
+nav{background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nlogo{font-size:17px;font-weight:900;color:var(--apex-cyan);text-decoration:none;display:flex;align-items:center;gap:10px}
+.internal-badge{background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:var(--apex-purple);font-size:10px;font-weight:800;letter-spacing:.08em;padding:3px 8px;border-radius:5px}
+.nlinks{display:flex;gap:4px;align-items:center}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:#fff;background:var(--apex-surface)}
+#who{font-size:12px;color:var(--apex-muted);font-family:var(--mono)}#who strong{color:var(--apex-cyan)}
+.hero{background:linear-gradient(135deg,#07090f,#0d1117);border-bottom:1px solid var(--apex-border);padding:36px 24px 24px}
+.hero h1{font-size:clamp(20px,3vw,30px);font-weight:900;color:#fff}.hero h1 span{color:var(--apex-cyan)}
+.hero p{color:var(--apex-muted);font-size:14px;margin-top:6px}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--apex-border);background:var(--apex-surface);overflow-x:auto}
+.tab{padding:14px 22px;font-size:13px;font-weight:700;color:var(--apex-muted);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;white-space:nowrap;letter-spacing:.02em}.tab:hover{color:var(--apex-text)}.tab.active{color:var(--apex-cyan);border-bottom-color:var(--apex-cyan)}
+.wrap{max-width:1280px;margin:0 auto;padding:32px 24px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:24px;margin-bottom:20px}
+.card-title{font-size:13px;font-weight:800;color:var(--apex-cyan);text-transform:uppercase;letter-spacing:.09em;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--apex-border);display:flex;justify-content:space-between;align-items:center}
+.form-group{margin-bottom:14px}label{display:block;font-size:12px;font-weight:700;color:var(--apex-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+input,select,textarea{width:100%;padding:10px 14px;background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;color:var(--apex-text);font-size:13px;font-family:inherit;outline:none;transition:.2s}
+textarea{resize:vertical;min-height:70px}
+input:focus,select:focus,textarea:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba(0,255,224,.1)}
+.btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000}.btn-primary:hover{opacity:.9}
+.btn-secondary{background:transparent;border:1px solid var(--apex-cyan);color:var(--apex-cyan)}.btn-secondary:hover{background:rgba(0,255,224,.08)}
+.btn-ghost{background:var(--apex-surface);border:1px solid var(--apex-border);color:var(--apex-muted)}.btn-ghost:hover{color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin:16px 0}
+.stat-box{background:#0a0e18;border:1px solid var(--apex-border);border-radius:10px;padding:16px;text-align:center}
+.stat-val{font-size:24px;font-weight:900;font-family:var(--mono);color:var(--apex-cyan)}.stat-val.red{color:var(--apex-red)}.stat-val.green{color:var(--apex-green)}.stat-val.orange{color:var(--apex-orange)}.stat-val.purple{color:var(--apex-purple)}
+.stat-lbl{font-size:10px;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.07em;margin-top:5px}
+.badge{display:inline-block;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.st-open{background:#0099ff22;color:#0099ff}.st-in_progress{background:#ff8c0022;color:#ff8c00}.st-pending_review{background:#a855f722;color:#a855f7}.st-closed{background:#00ff8822;color:#00ff88}.st-archived{background:#6b728022;color:#6b7280}
+.pr-5{color:var(--apex-red)}.pr-4{color:var(--apex-orange)}.pr-3{color:var(--apex-cyan)}.pr-2,.pr-1{color:var(--apex-muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:10px 12px;text-align:left;color:var(--apex-cyan);border-bottom:1px solid var(--apex-border);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+td{padding:10px 12px;border-bottom:1px solid var(--apex-border);color:var(--apex-text)}
+tr.clickable{cursor:pointer}tr.clickable:hover td{background:#0a0e18}
+.alert{padding:12px 16px;border-radius:8px;margin:12px 0;font-size:13px}
+.alert-success{background:#00ff8815;border:1px solid #00ff8840;color:#00ff88}
+.alert-error{background:#ff3b3b15;border:1px solid #ff3b3b40;color:#ff3b3b}
+.alert-info{background:#00ffe015;border:1px solid #00ffe040;color:#00ffe0}
+.hidden{display:none!important}
+.muted{color:var(--apex-muted)}
+.mono{font-family:var(--mono)}
+.row{display:flex;gap:20px;flex-wrap:wrap}
+.col{flex:1;min-width:280px}
+.timeline-item{padding:12px 0;border-left:2px solid var(--apex-border);padding-left:16px;margin-left:6px;position:relative}
+.timeline-item::before{content:'';position:absolute;left:-6px;top:16px;width:10px;height:10px;border-radius:50%;background:var(--apex-cyan)}
+.sub-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.sub-tab{padding:7px 14px;font-size:12px;font-weight:700;color:var(--apex-muted);cursor:pointer;border:1px solid var(--apex-border);border-radius:7px;background:var(--apex-surface)}
+.sub-tab.active{color:#000;background:var(--apex-cyan);border-color:var(--apex-cyan)}
+.entity-card{background:#0a0e18;border:1px solid var(--apex-border);border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer}
+.entity-card:hover{border-color:var(--apex-cyan)}
+.back-link{color:var(--apex-cyan);text-decoration:none;font-size:13px;font-weight:600;display:inline-block;margin-bottom:16px;cursor:pointer}
+.back-link:hover{text-decoration:underline}
+.empty-state{text-align:center;padding:40px 20px;color:var(--apex-muted);font-size:13px}
+.login-wrap{max-width:420px;margin:80px auto;padding:0 24px}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,255,224,.3);border-top-color:var(--apex-cyan);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:700px){.hero{padding:24px 16px}.wrap{padding:20px 16px}.nlinks a{display:none}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nlogo">CYBERDUDE<span style="color:#fff">BIVASH</span> <span class="internal-badge">SOC WORKBENCH</span></a>
+  <div class="nlinks">
+    <span id="who"></span>
+    <a href="#" id="logout-link" class="hidden">Sign out</a>
+  </div>
+</nav>
+
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="card">
+      <div class="card-title">🔐 Analyst Sign-In</div>
+      <div id="login-alert" class="hidden"></div>
+      <p class="muted" style="font-size:13px;margin-bottom:16px">Internal workbench access only. Your key is kept in this browser tab's session storage and sent as the <code style="color:var(--apex-cyan)">X-Analyst-Key</code> header — never persisted beyond this session.</p>
+      <div class="form-group">
+        <label>Analyst Key</label>
+        <input id="login-key" type="password" placeholder="Your analyst key" autocomplete="off">
+      </div>
+      <button class="btn btn-primary" onclick="Workbench.login()" style="width:100%">Sign In →</button>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="hero">
+    <h1>⚡ <span>SOC</span> Workbench</h1>
+    <p>Investigations, cases, intelligence graph, and cross-entity search.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="dashboard" onclick="Workbench.switchTab('dashboard')">📊 Dashboard</div>
+    <div class="tab" data-tab="investigations" onclick="Workbench.switchTab('investigations')">🔎 Investigations</div>
+    <div class="tab" data-tab="cases" onclick="Workbench.switchTab('cases')">🗂 Cases</div>
+    <div class="tab" data-tab="search" onclick="Workbench.switchTab('search')">🔍 Search</div>
+    <div class="tab" data-tab="graph" onclick="Workbench.switchTab('graph')">🕸 Graph Explorer</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="panel-dashboard" class="panel active wrap"></div>
+
+  <!-- INVESTIGATIONS -->
+  <div id="panel-investigations" class="panel wrap"></div>
+
+  <!-- CASES -->
+  <div id="panel-cases" class="panel wrap"></div>
+
+  <!-- SEARCH -->
+  <div id="panel-search" class="panel wrap"></div>
+
+  <!-- GRAPH -->
+  <div id="panel-graph" class="panel wrap"></div>
+</div>
+
+<script>
+'use strict';
+const API = 'https://blog.cyberdudebivash.in';
+
+const Workbench = (() => {
+  let analystKey = null;
+  let analystIdentity = null;
+
+  /* ── API client ──────────────────────────────────────────────── */
+  async function api(path, opts = {}) {
+    const res = await fetch(`${API}${path}`, {
+      ...opts,
+      headers: { 'X-Analyst-Key': analystKey, 'Content-Type': 'application/json', ...(opts.headers || {}) },
+    });
+    const data = await res.json().catch(() => ({ success: false, error: { message: 'Invalid response' } }));
+    if (!data.success) {
+      const err = new Error((data.error && data.error.message) || `Request failed (${res.status})`);
+      err.status = res.status;
+      err.code = data.error && data.error.code;
+      throw err;
+    }
+    return data;
+  }
+  const get = path => api(path);
+  const post = (path, body) => api(path, { method: 'POST', body: JSON.stringify(body || {}) });
+  const put = (path, body) => api(path, { method: 'PUT', body: JSON.stringify(body || {}) });
+
+  /* ── Small render helpers ───────────────────────────────────── */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  function fmtDate(s) {
+    if (!s) return '—';
+    try { return new Date(s).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }); } catch (_) { return s; }
+  }
+  function statusBadge(s) {
+    return `<span class="badge st-${esc(s || 'open')}">${esc((s || 'open').replace(/_/g, ' '))}</span>`;
+  }
+  function priorityLabel(p) {
+    const n = Number(p) || 3;
+    const names = { 5: 'CRITICAL', 4: 'HIGH', 3: 'MEDIUM', 2: 'LOW', 1: 'INFO' };
+    return `<span class="pr-${n} mono" style="font-weight:800">${names[n] || 'MEDIUM'}</span>`;
+  }
+  function alertBox(container, type, msg) {
+    // Some alert containers start with class="hidden" in the markup
+    // (login-alert, new-inv-alert) so an error/success message written in
+    // here is actually visible -- innerHTML alone doesn't touch the
+    // container's own class list.
+    container.classList.remove('hidden');
+    container.innerHTML = `<div class="alert alert-${type}">${esc(msg)}</div>`;
+  }
+  function loading(container) {
+    container.innerHTML = `<div class="empty-state"><span class="spinner"></span> Loading…</div>`;
+  }
+  function errorBox(container, e) {
+    container.innerHTML = `<div class="alert alert-error">⚠ ${esc(e.message)}</div>`;
+  }
+  // Generic best-effort renderer for AI-suggestion / graph payloads whose
+  // exact shape varies by engine method -- avoids guessing field names that
+  // could silently drift from the real backend response.
+  function renderAny(value, depth = 0) {
+    if (value == null) return '<span class="muted">—</span>';
+    if (Array.isArray(value)) {
+      if (!value.length) return '<span class="muted">None</span>';
+      return '<ul style="margin:4px 0 4px 18px;line-height:1.7">' + value.map(v => `<li>${renderAny(v, depth + 1)}</li>`).join('') + '</ul>';
+    }
+    if (typeof value === 'object') {
+      const entries = Object.entries(value);
+      if (!entries.length) return '<span class="muted">—</span>';
+      if (depth > 3) return esc(JSON.stringify(value));
+      return '<div style="margin-left:' + (depth ? 10 : 0) + 'px">' + entries.map(([k, v]) =>
+        `<div style="margin:2px 0"><strong style="color:var(--apex-muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em">${esc(k)}:</strong> ${renderAny(v, depth + 1)}</div>`
+      ).join('') + '</div>';
+    }
+    return esc(String(value));
+  }
+
+  /* ── Auth ────────────────────────────────────────────────────── */
+  function login() {
+    const input = document.getElementById('login-key');
+    const key = input.value.trim();
+    const alertEl = document.getElementById('login-alert');
+    if (!key) { alertBox(alertEl, 'error', 'Enter your analyst key.'); return; }
+    analystKey = key;
+    get('/api/v1/workbench/dashboard').then(() => {
+      try { sessionStorage.setItem('apex_analyst_key', key); } catch (_) {}
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('logout-link').classList.remove('hidden');
+      switchTab('dashboard');
+    }).catch(e => {
+      analystKey = null;
+      alertBox(alertEl, 'error', e.status === 401 ? 'Invalid analyst key.' : e.message);
+    });
+  }
+
+  function logout() {
+    analystKey = null;
+    try { sessionStorage.removeItem('apex_analyst_key'); } catch (_) {}
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('logout-link').classList.add('hidden');
+    document.getElementById('who').textContent = '';
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('login-key').value = '';
+  }
+
+  function tryResumeSession() {
+    let saved = null;
+    try { saved = sessionStorage.getItem('apex_analyst_key'); } catch (_) {}
+    if (!saved) return;
+    analystKey = saved;
+    get('/api/v1/workbench/dashboard').then(() => {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('logout-link').classList.remove('hidden');
+      switchTab('dashboard');
+    }).catch(() => { analystKey = null; try { sessionStorage.removeItem('apex_analyst_key'); } catch (_) {} });
+  }
+
+  /* ── Tabs ────────────────────────────────────────────────────── */
+  const renderers = {};
+  function switchTab(id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === id));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    if (renderers[id]) renderers[id]();
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     DASHBOARD
+  ══════════════════════════════════════════════════════════════ */
+  renderers.dashboard = async function () {
+    const el = document.getElementById('panel-dashboard');
+    loading(el);
+    try {
+      const { analyst, dashboard: d } = await get('/api/v1/workbench/dashboard');
+      document.getElementById('who').innerHTML = `Signed in as <strong>${esc(analyst)}</strong>`;
+      const s = d.summary || {};
+      const stats = d.workbenchStats || {};
+      el.innerHTML = `
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-val">${s.assignedCount ?? 0}</div><div class="stat-lbl">Assigned to me</div></div>
+          <div class="stat-box"><div class="stat-val orange">${s.openCount ?? 0}</div><div class="stat-lbl">Open</div></div>
+          <div class="stat-box"><div class="stat-val green">${s.inProgressCount ?? 0}</div><div class="stat-lbl">In progress</div></div>
+          <div class="stat-box"><div class="stat-val purple">${s.pendingReviewCount ?? 0}</div><div class="stat-lbl">Pending review</div></div>
+          <div class="stat-box"><div class="stat-val">${stats.totalInvestigations ?? 0}</div><div class="stat-lbl">Total investigations</div></div>
+          <div class="stat-box"><div class="stat-val">${stats.totalCases ?? 0}</div><div class="stat-lbl">Total cases</div></div>
+          <div class="stat-box"><div class="stat-val">${stats.totalGraphEntities ?? 0}</div><div class="stat-lbl">Graph entities</div></div>
+        </div>
+        ${(d.suggestedActions || []).length ? `
+          <div class="card">
+            <div class="card-title">⚡ Suggested Actions</div>
+            ${d.suggestedActions.map(a => `<div class="timeline-item"><span class="badge st-${a.priority === 'high' ? 'in_progress' : 'open'}">${esc(a.priority)}</span> ${esc(a.action)}</div>`).join('')}
+          </div>` : ''}
+        <div class="row">
+          <div class="col">
+            <div class="card">
+              <div class="card-title">My Investigations</div>
+              ${investigationTable(d.myInvestigations)}
+            </div>
+          </div>
+          <div class="col">
+            <div class="card">
+              <div class="card-title">Open (unassigned queue)</div>
+              ${investigationTable(d.open)}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="card">
+              <div class="card-title">Pending Review</div>
+              ${investigationTable(d.pendingReview)}
+            </div>
+          </div>
+          <div class="col">
+            <div class="card">
+              <div class="card-title">Recently Updated</div>
+              ${investigationTable(d.recentlyUpdated)}
+            </div>
+          </div>
+        </div>`;
+      el.querySelectorAll('tr[data-id]').forEach(row => {
+        row.addEventListener('click', () => openInvestigation(row.dataset.id));
+      });
+    } catch (e) { errorBox(el, e); }
+  };
+
+  function investigationTable(list) {
+    if (!list || !list.length) return '<div class="empty-state">None</div>';
+    return `<table><tbody>${list.map(i => `
+      <tr class="clickable" data-id="${esc(i.id)}">
+        <td>${esc(i.title || i.id)}</td>
+        <td>${statusBadge(i.status)}</td>
+        <td>${priorityLabel(i.priority)}</td>
+      </tr>`).join('')}</tbody></table>`;
+  }
+
+  function openInvestigation(id) {
+    switchTab('investigations');
+    setTimeout(() => showInvestigationDetail(id), 0);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     INVESTIGATIONS
+  ══════════════════════════════════════════════════════════════ */
+  renderers.investigations = async function () {
+    const el = document.getElementById('panel-investigations');
+    el.innerHTML = `
+      <div class="card">
+        <div class="card-title">🆕 New Investigation
+          <button class="btn btn-ghost" onclick="Workbench.toggleNewInvestigation()">＋ New</button>
+        </div>
+        <div id="new-investigation-form" class="hidden">
+          <div id="new-inv-alert" class="hidden"></div>
+          <div class="row">
+            <div class="col form-group"><label>Title *</label><input id="inv-title" type="text"></div>
+            <div class="col form-group"><label>Priority</label>
+              <select id="inv-priority"><option value="CRITICAL">Critical</option><option value="HIGH">High</option><option value="MEDIUM" selected>Medium</option><option value="LOW">Low</option><option value="INFO">Info</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Description</label><textarea id="inv-description"></textarea></div>
+          <div class="form-group"><label>Assignee</label><input id="inv-assignee" type="text" placeholder="Leave blank for unassigned"></div>
+          <button class="btn btn-primary" onclick="Workbench.createInvestigation()">Create Investigation</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Investigations
+          <span>
+            <select id="inv-filter-status" onchange="Workbench.listInvestigations()" style="width:auto;display:inline-block;padding:4px 10px;font-size:11px">
+              <option value="">All statuses</option>
+              <option value="open">Open</option><option value="in_progress">In progress</option>
+              <option value="pending_review">Pending review</option><option value="closed">Closed</option><option value="archived">Archived</option>
+            </select>
+          </span>
+        </div>
+        <div id="investigations-list"></div>
+      </div>
+      <div id="investigation-detail"></div>`;
+    listInvestigations();
+  };
+
+  function toggleNewInvestigation() {
+    document.getElementById('new-investigation-form').classList.toggle('hidden');
+  }
+
+  async function createInvestigation() {
+    const title = document.getElementById('inv-title').value.trim();
+    const alertEl = document.getElementById('new-inv-alert');
+    if (!title) { alertBox(alertEl, 'error', 'Title is required.'); return; }
+    try {
+      await post('/api/v1/workbench/investigations', {
+        title,
+        description: document.getElementById('inv-description').value.trim(),
+        priority: document.getElementById('inv-priority').value,
+        assignee: document.getElementById('inv-assignee').value.trim() || undefined,
+      });
+      alertBox(alertEl, 'success', 'Investigation created.');
+      document.getElementById('inv-title').value = '';
+      document.getElementById('inv-description').value = '';
+      document.getElementById('inv-assignee').value = '';
+      listInvestigations();
+    } catch (e) { alertBox(alertEl, 'error', e.message); }
+  }
+
+  async function listInvestigations() {
+    const el = document.getElementById('investigations-list');
+    loading(el);
+    try {
+      const status = document.getElementById('inv-filter-status').value;
+      const q = status ? `?status=${encodeURIComponent(status)}` : '';
+      const { investigations } = await get(`/api/v1/workbench/investigations${q}`);
+      el.innerHTML = !investigations.length ? '<div class="empty-state">No investigations match this filter.</div>' : `
+        <table><thead><tr><th>Title</th><th>Status</th><th>Priority</th><th>Assignee</th><th>Created</th></tr></thead>
+        <tbody>${investigations.map(i => `
+          <tr class="clickable" data-id="${esc(i.id)}">
+            <td>${esc(i.title || i.id)}</td>
+            <td>${statusBadge(i.status)}</td>
+            <td>${priorityLabel(i.priority)}</td>
+            <td>${esc(i.assignee || 'unassigned')}</td>
+            <td class="muted">${fmtDate(i.createdAt)}</td>
+          </tr>`).join('')}</tbody></table>`;
+      el.querySelectorAll('tr[data-id]').forEach(row => row.addEventListener('click', () => showInvestigationDetail(row.dataset.id)));
+    } catch (e) { errorBox(el, e); }
+  }
+
+  let currentInvestigationId = null;
+  let currentInvestigationSubTab = 'overview';
+
+  async function showInvestigationDetail(id) {
+    currentInvestigationId = id;
+    currentInvestigationSubTab = 'overview';
+    const el = document.getElementById('investigation-detail');
+    loading(el);
+    el.scrollIntoView({ behavior: 'smooth' });
+    try {
+      const { investigation: inv } = await get(`/api/v1/workbench/investigations/${encodeURIComponent(id)}`);
+      renderInvestigationDetail(inv);
+    } catch (e) { errorBox(el, e); }
+  }
+
+  function renderInvestigationDetail(inv) {
+    const el = document.getElementById('investigation-detail');
+    el.innerHTML = `
+      <div class="card">
+        <span class="back-link" onclick="Workbench.closeInvestigationDetail()">← Back to list</span>
+        <div class="card-title">${esc(inv.title)} ${statusBadge(inv.status)}</div>
+        <p class="muted" style="margin-bottom:12px">${esc(inv.description || 'No description.')}</p>
+        <div class="row" style="margin-bottom:16px">
+          <div class="col"><label>Priority</label>${priorityLabel(inv.priority)}</div>
+          <div class="col"><label>Assignee</label>${esc(inv.assignee || 'unassigned')}</div>
+          <div class="col"><label>Created</label><span class="muted">${fmtDate(inv.createdAt)} by ${esc(inv.createdBy)}</span></div>
+        </div>
+        <div class="sub-tabs">
+          ${['overview', 'evidence', 'timeline', 'graph', 'suggestions', 'summary'].map(t =>
+            `<div class="sub-tab ${t === currentInvestigationSubTab ? 'active' : ''}" data-sub="${t}">${t[0].toUpperCase() + t.slice(1)}</div>`
+          ).join('')}
+        </div>
+        <div id="inv-subpanel"></div>
+      </div>`;
+    el.querySelectorAll('.sub-tab').forEach(tab => tab.addEventListener('click', () => {
+      currentInvestigationSubTab = tab.dataset.sub;
+      el.querySelectorAll('.sub-tab').forEach(t => t.classList.toggle('active', t === tab));
+      renderInvestigationSubpanel(inv);
+    }));
+    renderInvestigationSubpanel(inv);
+  }
+
+  function closeInvestigationDetail() {
+    currentInvestigationId = null;
+    document.getElementById('investigation-detail').innerHTML = '';
+  }
+
+  async function renderInvestigationSubpanel(inv) {
+    const el = document.getElementById('inv-subpanel');
+    const id = inv.id;
+    loading(el);
+    try {
+      if (currentInvestigationSubTab === 'overview') {
+        el.innerHTML = `
+          <div class="form-group"><label>Update status</label>
+            <select id="inv-update-status">
+              ${['open', 'in_progress', 'pending_review', 'closed', 'archived'].map(s => `<option value="${s}" ${s === inv.status ? 'selected' : ''}>${s.replace(/_/g, ' ')}</option>`).join('')}
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="Workbench.updateInvestigationStatus('${esc(id)}')">Save</button>
+          <div id="inv-update-alert"></div>
+          <div style="margin-top:16px"><label>Linked entities</label>${renderAny(inv.linkedEntities ? JSON.parse(inv.linkedEntities) : [])}</div>`;
+        return;
+      }
+      if (currentInvestigationSubTab === 'evidence') {
+        const { evidence } = await get(`/api/v1/workbench/investigations/${encodeURIComponent(id)}/evidence`);
+        el.innerHTML = `
+          <div class="form-group"><label>Add evidence</label>
+            <select id="ev-type" style="margin-bottom:8px">
+              <option value="article">Article</option><option value="threat_report">Threat report</option><option value="ioc">IOC</option>
+              <option value="malware">Malware</option><option value="file">File</option><option value="hash">Hash</option>
+              <option value="url">URL</option><option value="domain">Domain</option><option value="external_reference">External reference</option><option value="note">Note</option>
+            </select>
+            <input id="ev-title" type="text" placeholder="Title" style="margin-bottom:8px">
+            <textarea id="ev-content" placeholder="Content / notes"></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="Workbench.addEvidence('${esc(id)}')">Add Evidence</button>
+          <div id="ev-alert"></div>
+          <div style="margin-top:16px">${!evidence.length ? '<div class="empty-state">No evidence yet.</div>' :
+            evidence.map(e => `<div class="entity-card"><strong>${esc(e.title)}</strong> <span class="badge st-open">${esc(e.type)}</span><div class="muted" style="margin-top:6px;font-size:12px">${esc(e.content || '')}</div><div class="muted" style="margin-top:6px;font-size:11px">Added ${fmtDate(e.createdAt)} by ${esc(e.createdBy)}</div></div>`).join('')}</div>`;
+        return;
+      }
+      if (currentInvestigationSubTab === 'timeline') {
+        const { timeline, stats } = await get(`/api/v1/workbench/investigations/${encodeURIComponent(id)}/timeline`);
+        el.innerHTML = `
+          <div class="stat-grid" style="margin-bottom:8px">
+            <div class="stat-box"><div class="stat-val">${stats.totalEvents}</div><div class="stat-lbl">Events</div></div>
+            ${stats.timespan ? `<div class="stat-box"><div class="stat-val">${stats.timespan.durationDays}</div><div class="stat-lbl">Days span</div></div>` : ''}
+          </div>
+          ${!timeline.length ? '<div class="empty-state">No timeline events.</div>' : timeline.map(ev => `
+            <div class="timeline-item">
+              <div><strong>${esc(ev.action)}</strong> <span class="muted" style="font-size:12px">${fmtDate(ev.timestamp)}</span></div>
+              <div class="muted" style="font-size:12px">${esc(ev.description)}</div>
+              <div class="mono" style="font-size:11px;color:var(--apex-purple)">${esc(ev.actor)}</div>
+            </div>`).join('')}`;
+        return;
+      }
+      if (currentInvestigationSubTab === 'graph') {
+        // buildInvestigationGraph() returns {investigationId, nodes, edges, stats}
+        // spread flat into the response (see investigations.js's
+        // handleGetInvestigationGraph) -- there is no top-level "graph" key.
+        const { nodes, edges, stats } = await get(`/api/v1/workbench/investigations/${encodeURIComponent(id)}/graph`);
+        el.innerHTML = `
+          <div class="stat-grid" style="margin-bottom:8px">
+            <div class="stat-box"><div class="stat-val">${stats.nodeCount}</div><div class="stat-lbl">Nodes</div></div>
+            <div class="stat-box"><div class="stat-val">${stats.edgeCount}</div><div class="stat-lbl">Edges</div></div>
+          </div>
+          ${renderAny({ nodes, edges })}`;
+        return;
+      }
+      if (currentInvestigationSubTab === 'suggestions') {
+        const { suggestions } = await get(`/api/v1/workbench/investigations/${encodeURIComponent(id)}/suggestions`);
+        el.innerHTML = `
+          <div class="row">
+            <div class="col"><h4 style="color:var(--apex-cyan);font-size:12px;text-transform:uppercase;margin-bottom:8px">Related Intelligence</h4>${renderAny(suggestions.relatedIntelligence)}</div>
+            <div class="col"><h4 style="color:var(--apex-cyan);font-size:12px;text-transform:uppercase;margin-bottom:8px">Missing Evidence</h4>${renderAny(suggestions.missingEvidence)}</div>
+          </div>
+          <div class="row" style="margin-top:16px">
+            <div class="col"><h4 style="color:var(--apex-cyan);font-size:12px;text-transform:uppercase;margin-bottom:8px">Suggested Detection Rules</h4>${renderAny(suggestions.detectionRules)}</div>
+            <div class="col"><h4 style="color:var(--apex-cyan);font-size:12px;text-transform:uppercase;margin-bottom:8px">Prioritized IOCs</h4>${renderAny(suggestions.prioritizedIOCs)}</div>
+          </div>
+          <div style="margin-top:16px"><h4 style="color:var(--apex-cyan);font-size:12px;text-transform:uppercase;margin-bottom:8px">Completeness</h4>${renderAny(suggestions.completeness)}</div>`;
+        return;
+      }
+      if (currentInvestigationSubTab === 'summary') {
+        const { summary } = await get(`/api/v1/workbench/investigations/${encodeURIComponent(id)}/summary`);
+        el.innerHTML = renderAny(summary);
+        return;
+      }
+    } catch (e) { errorBox(el, e); }
+  }
+
+  async function updateInvestigationStatus(id) {
+    const alertEl = document.getElementById('inv-update-alert');
+    try {
+      await put(`/api/v1/workbench/investigations/${encodeURIComponent(id)}`, {
+        status: document.getElementById('inv-update-status').value,
+      });
+      alertBox(alertEl, 'success', 'Updated.');
+      // Delayed so the confirmation is actually visible for a moment --
+      // showInvestigationDetail() immediately shows a loading spinner over
+      // the whole detail card (including this alert) as its first step.
+      setTimeout(() => showInvestigationDetail(id), 700);
+    } catch (e) { alertBox(alertEl, 'error', e.message); }
+  }
+
+  async function addEvidence(investigationId) {
+    const alertEl = document.getElementById('ev-alert');
+    const title = document.getElementById('ev-title').value.trim();
+    if (!title) { alertBox(alertEl, 'error', 'Title is required.'); return; }
+    try {
+      await post('/api/v1/workbench/investigations/evidence', {
+        investigationId,
+        type: document.getElementById('ev-type').value,
+        title,
+        content: document.getElementById('ev-content').value.trim(),
+      });
+      currentInvestigationSubTab = 'evidence';
+      const { investigation: inv } = await get(`/api/v1/workbench/investigations/${encodeURIComponent(investigationId)}`);
+      renderInvestigationSubpanel(inv);
+    } catch (e) { alertBox(alertEl, 'error', e.message); }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     CASES  (no list-all endpoint exists server-side -- look up by ID,
+     typically reached from an investigation)
+  ══════════════════════════════════════════════════════════════ */
+  renderers.cases = function () {
+    const el = document.getElementById('panel-cases');
+    el.innerHTML = `
+      <div class="card">
+        <div class="card-title">🗂 Open a Case</div>
+        <p class="muted" style="font-size:12px;margin-bottom:12px">Cases are opened from an investigation. Paste a case ID (from an investigation, or a link shared with you) to view it directly.</p>
+        <div class="row">
+          <div class="col form-group"><input id="case-id-input" type="text" placeholder="Case ID"></div>
+        </div>
+        <button class="btn btn-secondary" onclick="Workbench.loadCase()">Open Case</button>
+      </div>
+      <div class="card">
+        <div class="card-title">🆕 Create Case</div>
+        <div id="new-case-alert"></div>
+        <div class="row">
+          <div class="col form-group"><label>Investigation ID *</label><input id="case-inv-id" type="text"></div>
+          <div class="col form-group"><label>Title *</label><input id="case-title" type="text"></div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="case-description"></textarea></div>
+        <button class="btn btn-primary" onclick="Workbench.createCase()">Create Case</button>
+      </div>
+      <div id="case-detail"></div>`;
+  };
+
+  async function createCase() {
+    const alertEl = document.getElementById('new-case-alert');
+    const investigationId = document.getElementById('case-inv-id').value.trim();
+    const title = document.getElementById('case-title').value.trim();
+    if (!investigationId || !title) { alertBox(alertEl, 'error', 'Investigation ID and title are required.'); return; }
+    try {
+      const { case: c } = await post('/api/v1/workbench/cases', {
+        investigationId, title, description: document.getElementById('case-description').value.trim(),
+      });
+      alertBox(alertEl, 'success', `Case created: ${c.id}`);
+      document.getElementById('case-id-input').value = c.id;
+      loadCase();
+    } catch (e) { alertBox(alertEl, 'error', e.message); }
+  }
+
+  async function loadCase() {
+    const id = document.getElementById('case-id-input').value.trim();
+    const el = document.getElementById('case-detail');
+    if (!id) return;
+    loading(el);
+    try {
+      const { case: c, summary } = await get(`/api/v1/workbench/cases/${encodeURIComponent(id)}`);
+      el.innerHTML = `
+        <div class="card">
+          <div class="card-title">${esc(c.title)} ${statusBadge(c.status)}</div>
+          <p class="muted">${esc(c.description || '')}</p>
+          <div class="muted" style="font-size:12px;margin:8px 0">Investigation: <span class="mono">${esc(c.investigationId)}</span> · Created ${fmtDate(c.createdAt)} by ${esc(c.createdBy)}</div>
+          ${c.status !== 'closed' ? `<button class="btn btn-ghost" onclick="Workbench.closeCase('${esc(id)}')">Close Case</button>` : ''}
+          <div style="margin-top:16px">
+            <label>Add note</label>
+            <textarea id="case-note-content"></textarea>
+            <button class="btn btn-secondary" style="margin-top:8px" onclick="Workbench.addCaseNote('${esc(id)}')">Add Note</button>
+          </div>
+          <div id="case-note-alert"></div>
+          <div style="margin-top:16px">
+            <h4 style="color:var(--apex-cyan);font-size:12px;text-transform:uppercase;margin-bottom:8px">Notes (${summary.noteCount})</h4>
+            ${!summary.notes.length ? '<div class="empty-state">No notes yet.</div>' : summary.notes.map(n => `
+              <div class="entity-card"><div>${esc(n.content)}</div><div class="muted" style="font-size:11px;margin-top:6px">${esc(n.author)} · ${fmtDate(n.createdAt)}</div></div>`).join('')}
+          </div>
+        </div>`;
+    } catch (e) { errorBox(el, e); }
+  }
+
+  async function addCaseNote(id) {
+    const alertEl = document.getElementById('case-note-alert');
+    const content = document.getElementById('case-note-content').value.trim();
+    if (!content) { alertBox(alertEl, 'error', 'Note content is required.'); return; }
+    try {
+      await post(`/api/v1/workbench/cases/${encodeURIComponent(id)}/notes`, { content });
+      loadCase();
+    } catch (e) { alertBox(alertEl, 'error', e.message); }
+  }
+
+  async function closeCase(id) {
+    try {
+      await put(`/api/v1/workbench/cases/${encodeURIComponent(id)}/close`, { closureReason: 'Closed via SOC Workbench' });
+      loadCase();
+    } catch (e) { alert(e.message); }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     SEARCH
+  ══════════════════════════════════════════════════════════════ */
+  renderers.search = function () {
+    const el = document.getElementById('panel-search');
+    el.innerHTML = `
+      <div class="card">
+        <div class="card-title">🔍 Cross-Entity Search</div>
+        <div class="row">
+          <div class="col form-group"><input id="search-q" type="text" placeholder="Search investigations, intelligence, entities, evidence…"></div>
+          <div class="col form-group" style="max-width:200px">
+            <select id="search-type">
+              <option value="all">All types</option><option value="investigations">Investigations</option>
+              <option value="intelligence">Intelligence</option><option value="entities">Graph entities</option><option value="evidence">Evidence</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="Workbench.runSearch()">Search</button>
+        <div id="search-results" style="margin-top:16px"></div>
+      </div>`;
+    document.getElementById('search-q').addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+  };
+
+  async function runSearch() {
+    const el = document.getElementById('search-results');
+    const q = document.getElementById('search-q').value.trim();
+    if (q.length < 2) { alertBox(el, 'error', 'Enter at least 2 characters.'); return; }
+    loading(el);
+    try {
+      const type = document.getElementById('search-type').value;
+      const { results } = await get(`/api/v1/workbench/search?q=${encodeURIComponent(q)}&type=${encodeURIComponent(type)}`);
+      el.innerHTML = !results.length ? '<div class="empty-state">No results.</div>' : results.map(r => `
+        <div class="entity-card" data-type="${esc(r.type)}" data-id="${esc(r.id)}">
+          <span class="badge st-open">${esc(r.type)}</span> <strong>${esc(r.title || r.name || r.id)}</strong>
+          ${r.description ? `<div class="muted" style="font-size:12px;margin-top:4px">${esc(r.description)}</div>` : ''}
+        </div>`).join('');
+      el.querySelectorAll('[data-type="investigation"]').forEach(card => card.addEventListener('click', () => {
+        switchTab('investigations');
+        setTimeout(() => showInvestigationDetail(card.dataset.id), 0);
+      }));
+      el.querySelectorAll('[data-type="graph_entity"]').forEach(card => card.addEventListener('click', () => {
+        switchTab('graph');
+        setTimeout(() => loadEntity(card.dataset.id), 0);
+      }));
+    } catch (e) { errorBox(el, e); }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     GRAPH EXPLORER
+  ══════════════════════════════════════════════════════════════ */
+  renderers.graph = async function () {
+    const el = document.getElementById('panel-graph');
+    el.innerHTML = `
+      <div class="card">
+        <div class="card-title">🕸 Graph Stats</div>
+        <div id="graph-stats"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Explore an Entity</div>
+        <div class="row">
+          <div class="col form-group"><input id="graph-entity-id" type="text" placeholder="Entity ID (from search results)"></div>
+        </div>
+        <button class="btn btn-primary" onclick="Workbench.loadEntity()">Load Entity</button>
+      </div>
+      <div id="entity-detail"></div>
+      <div class="card">
+        <div class="card-title">Find Path Between Two Entities</div>
+        <div class="row">
+          <div class="col form-group"><label>Source entity ID</label><input id="path-source" type="text"></div>
+          <div class="col form-group"><label>Target entity ID</label><input id="path-target" type="text"></div>
+        </div>
+        <button class="btn btn-secondary" onclick="Workbench.findPath()">Find Path</button>
+        <div id="path-result" style="margin-top:12px"></div>
+      </div>`;
+    const statsEl = document.getElementById('graph-stats');
+    loading(statsEl);
+    try {
+      const stats = await get('/api/v1/intelligence/graph/stats');
+      statsEl.innerHTML = `
+        <div class="stat-grid">
+          <div class="stat-box"><div class="stat-val">${stats.totalEntities ?? 0}</div><div class="stat-lbl">Entities</div></div>
+          <div class="stat-box"><div class="stat-val">${stats.totalRelationships ?? 0}</div><div class="stat-lbl">Relationships</div></div>
+        </div>
+        ${renderAny(stats.entityTypeBreakdown)}`;
+    } catch (e) { errorBox(statsEl, e); }
+  };
+
+  async function loadEntity(idArg) {
+    const id = idArg || document.getElementById('graph-entity-id').value.trim();
+    const el = document.getElementById('entity-detail');
+    if (!id) return;
+    if (document.getElementById('graph-entity-id')) document.getElementById('graph-entity-id').value = id;
+    loading(el);
+    try {
+      const { entity, relationships } = await get(`/api/v1/intelligence/graph/${encodeURIComponent(id)}/entity`);
+      const { related } = await get(`/api/v1/intelligence/graph/${encodeURIComponent(id)}/related?depth=2&limit=25`);
+      el.innerHTML = `
+        <div class="card">
+          <div class="card-title">${esc(entity.name || id)} <span class="badge st-open">${esc(entity.type)}</span></div>
+          <div class="muted" style="font-size:12px;margin-bottom:12px">Confidence: ${esc(entity.confidence || 'unknown')} · ${relationships.outgoing} outgoing / ${relationships.incoming} incoming relationships</div>
+          <h4 style="color:var(--apex-cyan);font-size:12px;text-transform:uppercase;margin-bottom:8px">Related Entities</h4>
+          ${!related.length ? '<div class="empty-state">No related entities within 2 hops.</div>' : related.map(r => `
+            <div class="entity-card" onclick="Workbench.loadEntity('${esc(r.id || r.entityId)}')">${renderAny(r)}</div>`).join('')}
+        </div>`;
+    } catch (e) { errorBox(el, e); }
+  }
+
+  async function findPath() {
+    const source = document.getElementById('path-source').value.trim();
+    const target = document.getElementById('path-target').value.trim();
+    const el = document.getElementById('path-result');
+    if (!source || !target) { alertBox(el, 'error', 'Both entity IDs are required.'); return; }
+    loading(el);
+    try {
+      const result = await get(`/api/v1/intelligence/graph/${encodeURIComponent(source)}/path/${encodeURIComponent(target)}`);
+      el.innerHTML = `<div class="alert alert-success">Path found: ${result.hops} hop(s), ${result.relationshipCount} relationship(s).</div>${renderAny(result.path)}`;
+    } catch (e) {
+      if (e.code === 'NO_PATH') el.innerHTML = '<div class="alert alert-info">No path found between these entities.</div>';
+      else errorBox(el, e);
+    }
+  }
+
+  return {
+    login, logout, tryResumeSession, switchTab,
+    toggleNewInvestigation, createInvestigation, listInvestigations,
+    closeInvestigationDetail, updateInvestigationStatus, addEvidence,
+    createCase, loadCase, addCaseNote, closeCase,
+    runSearch, loadEntity, findPath,
+  };
+})();
+
+document.getElementById('logout-link').addEventListener('click', e => { e.preventDefault(); Workbench.logout(); });
+document.getElementById('login-key').addEventListener('keydown', e => { if (e.key === 'Enter') Workbench.login(); });
+Workbench.tryResumeSession();
+</script>
+</body>
+</html>

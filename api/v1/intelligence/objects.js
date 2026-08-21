@@ -17,13 +17,14 @@
 const redis = require('../../_lib/redis');
 const { IntelligenceManager } = require('../../_lib/intelligence-manager');
 const { INTELLIGENCE_TYPES, LIFECYCLE_STATES, CONFIDENCE_LEVELS } = require('../../_lib/intelligence-object');
+const { requireAnalyst } = require('../../_lib/analyst-auth');
 
 const manager = new IntelligenceManager(redis);
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Analyst-Key',
 };
 
 function ok(res, data, status = 200) {
@@ -50,13 +51,16 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
+  const caller = await requireAnalyst(req, res, fail);
+  if (!caller) return;
+
   const pathParts = (req.url || '').split('?')[0].split('/').filter(Boolean);
   const action = pathParts[pathParts.length - 1];
   const id = pathParts[pathParts.length - 2];
 
   // POST /api/v1/intelligence/objects — create new intelligence
   if (req.method === 'POST' && !id && action === 'objects') {
-    return handleCreateIntelligence(req, res);
+    return handleCreateIntelligence(req, res, caller);
   }
 
   // GET /api/v1/intelligence/objects — search/list
@@ -71,27 +75,27 @@ module.exports = async (req, res) => {
 
   // PUT /api/v1/intelligence/objects/{id} — update
   if (req.method === 'PUT' && id && !action) {
-    return handleUpdateIntelligence(req, res, id);
+    return handleUpdateIntelligence(req, res, id, caller);
   }
 
   // POST /api/v1/intelligence/objects/{id}/review — submit for review
   if (req.method === 'POST' && action === 'review' && id) {
-    return handleSubmitReview(req, res, id);
+    return handleSubmitReview(req, res, id, caller);
   }
 
   // POST /api/v1/intelligence/objects/{id}/approve — approve
   if (req.method === 'POST' && action === 'approve' && id) {
-    return handleApprove(req, res, id);
+    return handleApprove(req, res, id, caller);
   }
 
   // POST /api/v1/intelligence/objects/{id}/publish — publish
   if (req.method === 'POST' && action === 'publish' && id) {
-    return handlePublish(req, res, id);
+    return handlePublish(req, res, id, caller);
   }
 
   // POST /api/v1/intelligence/objects/{id}/retract — retract
   if (req.method === 'POST' && action === 'retract' && id) {
-    return handleRetract(req, res, id);
+    return handleRetract(req, res, id, caller);
   }
 
   // GET /api/v1/intelligence/objects/{id}/history — history
@@ -102,7 +106,7 @@ module.exports = async (req, res) => {
   return fail(res, 404, 'NOT_FOUND', 'Endpoint not found');
 };
 
-async function handleCreateIntelligence(req, res) {
+async function handleCreateIntelligence(req, res, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -118,7 +122,7 @@ async function handleCreateIntelligence(req, res) {
       return fail(res, 400, 'MISSING_TITLE', 'title is required');
     }
 
-    const actor = body.createdBy || 'api';
+    const actor = caller.id;
     const result = await manager.storeIntelligence(type, {
       title,
       description: description || '',
@@ -175,14 +179,14 @@ async function handleGetIntelligence(req, res, id) {
   }
 }
 
-async function handleUpdateIntelligence(req, res, id) {
+async function handleUpdateIntelligence(req, res, id, caller) {
   try {
     let body = {};
     if (req.body) {
       body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     }
 
-    const result = await manager.updateIntelligence(id, body, body.updatedBy || 'api', body.reason || '');
+    const result = await manager.updateIntelligence(id, body, caller.id, body.reason || '');
 
     return ok(res, {
       message: 'Intelligence object updated.',
@@ -194,7 +198,7 @@ async function handleUpdateIntelligence(req, res, id) {
   }
 }
 
-async function handleSubmitReview(req, res, id) {
+async function handleSubmitReview(req, res, id, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -204,7 +208,7 @@ async function handleSubmitReview(req, res, id) {
     const result = await manager.transitionIntelligence(
       id,
       LIFECYCLE_STATES.REVIEW,
-      body.actor || 'api',
+      caller.id,
       body.reason || 'Submitted for review'
     );
 
@@ -218,7 +222,7 @@ async function handleSubmitReview(req, res, id) {
   }
 }
 
-async function handleApprove(req, res, id) {
+async function handleApprove(req, res, id, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -228,7 +232,7 @@ async function handleApprove(req, res, id) {
     const result = await manager.transitionIntelligence(
       id,
       LIFECYCLE_STATES.APPROVED,
-      body.actor || 'api',
+      caller.id,
       body.reason || 'Approved for publication'
     );
 
@@ -242,14 +246,9 @@ async function handleApprove(req, res, id) {
   }
 }
 
-async function handlePublish(req, res, id) {
+async function handlePublish(req, res, id, caller) {
   try {
-    let body = {};
-    if (req.body) {
-      body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-    }
-
-    const result = await manager.publishIntelligence(id, body.actor || 'api');
+    const result = await manager.publishIntelligence(id, caller.id);
 
     return ok(res, {
       message: 'Intelligence published to production.',
@@ -261,7 +260,7 @@ async function handlePublish(req, res, id) {
   }
 }
 
-async function handleRetract(req, res, id) {
+async function handleRetract(req, res, id, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -270,7 +269,7 @@ async function handleRetract(req, res, id) {
 
     const result = await manager.retractIntelligence(
       id,
-      body.actor || 'api',
+      caller.id,
       body.reason || ''
     );
 

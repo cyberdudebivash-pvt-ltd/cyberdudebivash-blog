@@ -11,6 +11,10 @@ const { EvidenceManager } = require('../../_lib/evidence-manager');
 const { TimelineEngine } = require('../../_lib/timeline-engine');
 const { InvestigationGraph } = require('../../_lib/investigation-graph');
 const { AIAnalyst } = require('../../_lib/ai-analyst');
+const { requireAnalyst } = require('../../_lib/analyst-auth');
+const { resolvePathParts } = require('../../_lib/request-path');
+
+const MOUNT_PATH = '/api/v1/workbench/investigations';
 
 const manager = new IntelligenceManager(redis);
 const graphEngine = new GraphEngine(redis, manager);
@@ -26,7 +30,7 @@ const aiAnalyst = new AIAnalyst(redis, investigationMgr, graphEngine, traversal,
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Analyst-Key',
 };
 
 function ok(res, data, status = 200) {
@@ -53,36 +57,29 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  const pathParts = (req.url || '').split('?')[0].split('/').filter(Boolean);
+  const caller = await requireAnalyst(req, res, fail);
+  if (!caller) return;
+
+  const pathParts = resolvePathParts(req, MOUNT_PATH);
   const action = pathParts[pathParts.length - 1];
   const id = pathParts[pathParts.length - 2];
 
-  // Investigation CRUD
+  // Investigation CRUD -- base path, no sub-segment
   if (req.method === 'POST' && action === 'investigations') {
-    return handleCreateInvestigation(req, res);
+    return handleCreateInvestigation(req, res, caller);
   }
 
   if (req.method === 'GET' && action === 'investigations') {
     return handleListInvestigations(req, res);
   }
 
-  if (req.method === 'GET' && action && id) {
-    const resourceType = pathParts[pathParts.length - 3];
-    if (resourceType === 'investigations') {
-      return handleGetInvestigation(req, res, id);
-    }
-  }
-
-  if (req.method === 'PUT' && action && id) {
-    const resourceType = pathParts[pathParts.length - 3];
-    if (resourceType === 'investigations') {
-      return handleUpdateInvestigation(req, res, id);
-    }
-  }
-
-  // Evidence operations
+  // Named sub-resource actions (/investigations/{id}/{verb}) -- checked
+  // BEFORE the bare-ID fallback below, since a bare `action && id` check
+  // alone can't tell "the real ID" apart from "a known verb"; every one of
+  // these must be resolved first or the bare-ID handler would shadow all
+  // of them.
   if (req.method === 'POST' && pathParts.includes('evidence')) {
-    return handleAddEvidence(req, res);
+    return handleAddEvidence(req, res, caller);
   }
 
   if (req.method === 'GET' && pathParts.includes('evidence') && pathParts[pathParts.length - 2]) {
@@ -90,17 +87,14 @@ module.exports = async (req, res) => {
     return handleGetInvestigationEvidence(req, res, investigationId);
   }
 
-  // Timeline operations
   if (req.method === 'GET' && action === 'timeline' && id) {
     return handleGetTimeline(req, res, id);
   }
 
-  // Graph operations
   if (req.method === 'GET' && action === 'graph' && id) {
     return handleGetInvestigationGraph(req, res, id);
   }
 
-  // AI assistant operations
   if (req.method === 'GET' && action === 'suggestions' && id) {
     return handleGetSuggestions(req, res, id);
   }
@@ -113,10 +107,29 @@ module.exports = async (req, res) => {
     return handleLinkIntelligence(req, res, id);
   }
 
+  // Bare /investigations/{realId} -- for this exact shape, `id` (the
+  // segment right before the last) is always the literal 'investigations'
+  // and `action` (the last segment) is the real investigation ID. Every
+  // named verb above already returned if it matched, so reaching here
+  // with id === 'investigations' unambiguously means "no verb, just an
+  // ID" -- fixes a pre-existing defect where this used to check
+  // pathParts[length-3] === 'investigations' (always false for this
+  // shape: that position holds 'workbench', the parent directory segment,
+  // not the resource name), so GET/PUT on a single investigation could
+  // never actually be reached even once the missing-rewrite gap above is
+  // fixed.
+  if (req.method === 'GET' && id === 'investigations' && action) {
+    return handleGetInvestigation(req, res, action);
+  }
+
+  if (req.method === 'PUT' && id === 'investigations' && action) {
+    return handleUpdateInvestigation(req, res, action);
+  }
+
   return fail(res, 404, 'NOT_FOUND', 'Endpoint not found');
 };
 
-async function handleCreateInvestigation(req, res) {
+async function handleCreateInvestigation(req, res, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -133,7 +146,8 @@ async function handleCreateInvestigation(req, res) {
       description || '',
       priority || 'MEDIUM',
       assignee,
-      linkedIntelligence || []
+      linkedIntelligence || [],
+      caller.id
     );
 
     return ok(res, { investigation }, 201);
@@ -185,7 +199,7 @@ async function handleUpdateInvestigation(req, res, id) {
   }
 }
 
-async function handleAddEvidence(req, res) {
+async function handleAddEvidence(req, res, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -197,7 +211,12 @@ async function handleAddEvidence(req, res) {
       return fail(res, 400, 'MISSING_FIELD', 'investigationId, type, title required');
     }
 
-    const evidence = await evidenceMgr.addEvidence(investigationId, type, title, content, metadata);
+    // createdBy always the verified caller -- never a client-supplied
+    // metadata field, otherwise any request could attribute evidence to
+    // any name it chose to send.
+    const evidence = await evidenceMgr.addEvidence(
+      investigationId, type, title, content, { ...metadata, createdBy: caller.id }
+    );
 
     return ok(res, { evidence }, 201);
   } catch (e) {

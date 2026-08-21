@@ -4,6 +4,7 @@ const redis = require('../../_lib/redis');
 const { IntelligenceManager } = require('../../_lib/intelligence-manager');
 const { GraphEngine } = require('../../_lib/graph-engine');
 const { SimilarityEngine } = require('../../_lib/similarity-engine');
+const { requireAnalyst } = require('../../_lib/analyst-auth');
 
 const manager = new IntelligenceManager(redis);
 const graphEngine = new GraphEngine(redis, manager);
@@ -12,7 +13,7 @@ const similarityEngine = new SimilarityEngine(graphEngine);
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Analyst-Key',
 };
 
 function ok(res, data, status = 200) {
@@ -39,6 +40,9 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
+  const caller = await requireAnalyst(req, res, fail);
+  if (!caller) return;
+
   const pathParts = (req.url || '').split('?')[0].split('/').filter(Boolean);
   const action = pathParts[pathParts.length - 1];
   const id = pathParts[pathParts.length - 2];
@@ -56,7 +60,7 @@ module.exports = async (req, res) => {
   }
 
   if (req.method === 'POST' && action === 'merge') {
-    return handleMergeDuplicates(req, res);
+    return handleMergeDuplicates(req, res, caller);
   }
 
   return fail(res, 404, 'NOT_FOUND', 'Endpoint not found');

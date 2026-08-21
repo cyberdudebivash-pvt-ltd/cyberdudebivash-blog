@@ -5,6 +5,7 @@ const { IntelligenceManager } = require('../../_lib/intelligence-manager');
 const { GraphEngine } = require('../../_lib/graph-engine');
 const { GraphTraversal } = require('../../_lib/graph-traversal');
 const { CorrelationEngine } = require('../../_lib/correlation-engine');
+const { requireAnalyst } = require('../../_lib/analyst-auth');
 
 const manager = new IntelligenceManager(redis);
 const graphEngine = new GraphEngine(redis, manager);
@@ -14,7 +15,7 @@ const correlationEngine = new CorrelationEngine(graphEngine, traversal);
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Analyst-Key',
 };
 
 function ok(res, data, status = 200) {
@@ -40,6 +41,9 @@ module.exports = async (req, res) => {
     Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
     return res.status(200).end();
   }
+
+  const caller = await requireAnalyst(req, res, fail);
+  if (!caller) return;
 
   const pathParts = (req.url || '').split('?')[0].split('/').filter(Boolean);
   const action = pathParts[pathParts.length - 1];

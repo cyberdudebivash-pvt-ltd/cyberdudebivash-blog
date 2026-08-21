@@ -3,6 +3,7 @@
 const redis = require('../../_lib/redis');
 const { IntelligenceManager } = require('../../_lib/intelligence-manager');
 const { GraphEngine } = require('../../_lib/graph-engine');
+const { requireAnalyst } = require('../../_lib/analyst-auth');
 
 const manager = new IntelligenceManager(redis);
 const graphEngine = new GraphEngine(redis, manager);
@@ -10,7 +11,7 @@ const graphEngine = new GraphEngine(redis, manager);
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Analyst-Key',
 };
 
 function ok(res, data, status = 200) {
@@ -40,6 +41,9 @@ module.exports = async (req, res) => {
   if (req.method !== 'GET') {
     return fail(res, 405, 'METHOD_NOT_ALLOWED', 'GET required');
   }
+
+  const caller = await requireAnalyst(req, res, fail);
+  if (!caller) return;
 
   const query = req.query.q || '';
   const type = req.query.type || 'all';
@@ -109,7 +113,7 @@ async function searchInvestigations(query, limit) {
     }
 
     if (
-      invest.title.toLowerCase().includes(query) ||
+      (invest.title && invest.title.toLowerCase().includes(query)) ||
       (invest.description && invest.description.toLowerCase().includes(query))
     ) {
       results.push({
@@ -136,7 +140,7 @@ async function searchIntelligence(query, limit) {
       if (!intel) continue;
 
       if (
-        intel.title.toLowerCase().includes(query) ||
+        (intel.title && intel.title.toLowerCase().includes(query)) ||
         (intel.description && intel.description.toLowerCase().includes(query))
       ) {
         results.push({
@@ -168,7 +172,7 @@ async function searchGraphEntities(query, limit) {
       const entity = await graphEngine.getEntity(entityId);
       if (!entity) continue;
 
-      if (entity.name.toLowerCase().includes(query)) {
+      if (entity.name && entity.name.toLowerCase().includes(query)) {
         results.push({
           type: 'graph_entity',
           id: entityId,
@@ -205,7 +209,7 @@ async function searchEvidence(query, limit) {
       }
 
       if (
-        evid.title.toLowerCase().includes(query) ||
+        (evid.title && evid.title.toLowerCase().includes(query)) ||
         (evid.content && evid.content.toLowerCase().includes(query))
       ) {
         results.push({

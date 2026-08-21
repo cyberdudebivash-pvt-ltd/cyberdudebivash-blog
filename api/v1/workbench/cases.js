@@ -3,6 +3,10 @@
 const redis = require('../../_lib/redis');
 const { InvestigationManager } = require('../../_lib/investigation-manager');
 const { CaseManager } = require('../../_lib/case-manager');
+const { requireAnalyst } = require('../../_lib/analyst-auth');
+const { resolvePathParts } = require('../../_lib/request-path');
+
+const MOUNT_PATH = '/api/v1/workbench/cases';
 
 const investigationMgr = new InvestigationManager(redis);
 const caseMgr = new CaseManager(redis, investigationMgr);
@@ -10,7 +14,7 @@ const caseMgr = new CaseManager(redis, investigationMgr);
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Analyst-Key',
 };
 
 function ok(res, data, status = 200) {
@@ -37,23 +41,22 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  const pathParts = (req.url || '').split('?')[0].split('/').filter(Boolean);
+  const caller = await requireAnalyst(req, res, fail);
+  if (!caller) return;
+
+  const pathParts = resolvePathParts(req, MOUNT_PATH);
   const action = pathParts[pathParts.length - 1];
   const id = pathParts[pathParts.length - 2];
 
   if (req.method === 'POST' && action === 'cases') {
-    return handleCreateCase(req, res);
+    return handleCreateCase(req, res, caller);
   }
 
-  if (req.method === 'GET' && action && id) {
-    const resourceType = pathParts[pathParts.length - 3];
-    if (resourceType === 'cases') {
-      return handleGetCase(req, res, id);
-    }
-  }
-
+  // Named sub-resource actions checked before the bare-ID fallback below,
+  // same discipline as investigations.js -- a plain `action && id` check
+  // can't distinguish "the real ID" from "a known verb" on its own.
   if (req.method === 'POST' && pathParts.includes('notes') && id) {
-    return handleAddNote(req, res, id);
+    return handleAddNote(req, res, id, caller);
   }
 
   if (req.method === 'POST' && pathParts.includes('tasks') && id) {
@@ -64,10 +67,19 @@ module.exports = async (req, res) => {
     return handleCloseCase(req, res, id);
   }
 
+  // Bare /cases/{realId} -- id (segment before last) is the literal
+  // 'cases' and action (last segment) is the real case ID for this exact
+  // shape. Fixes the same pre-existing defect as investigations.js: the
+  // old check compared pathParts[length-3] (always 'workbench' here, the
+  // parent directory segment) against 'cases', which could never match.
+  if (req.method === 'GET' && id === 'cases' && action) {
+    return handleGetCase(req, res, action);
+  }
+
   return fail(res, 404, 'NOT_FOUND', 'Endpoint not found');
 };
 
-async function handleCreateCase(req, res) {
+async function handleCreateCase(req, res, caller) {
   try {
     let body = {};
     if (req.body) {
@@ -79,7 +91,7 @@ async function handleCreateCase(req, res) {
       return fail(res, 400, 'MISSING_FIELD', 'investigationId and title required');
     }
 
-    const caseObj = await caseMgr.createCase(investigationId, title, description || '');
+    const caseObj = await caseMgr.createCase(investigationId, title, description || '', caller.id);
 
     return ok(res, { case: caseObj }, 201);
   } catch (e) {
@@ -102,19 +114,22 @@ async function handleGetCase(req, res, id) {
   }
 }
 
-async function handleAddNote(req, res, id) {
+async function handleAddNote(req, res, id, caller) {
   try {
     let body = {};
     if (req.body) {
       body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     }
 
-    const { content, author } = body;
+    const { content } = body;
     if (!content) {
       return fail(res, 400, 'MISSING_CONTENT', 'content required');
     }
 
-    const note = await caseMgr.addNote(id, content, author || 'analyst');
+    // Author is the verified caller, never a client-supplied field --
+    // otherwise any request could attribute a case note to any name it
+    // chose to send.
+    const note = await caseMgr.addNote(id, content, caller.id);
 
     return ok(res, { note }, 201);
   } catch (e) {
