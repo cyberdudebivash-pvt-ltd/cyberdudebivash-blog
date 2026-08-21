@@ -391,25 +391,23 @@ function esc(s) {
 }
 
 function persistKey(key) {
+  // In-memory only, for the lifetime of this page load -- never written to
+  // localStorage/sessionStorage/cookies. This key is a full-privilege API
+  // credential; Web Storage is readable by any script on the page, so
+  // persisting it there would hand any future XSS a standing way to
+  // exfiltrate it (CodeQL js/clear-text-storage-of-sensitive-data, flagged
+  // high severity on this exact call during this feature's own review).
+  // A hard page reload intentionally returns to a signed-out state, matching
+  // this page's own "Your key is never stored in your browser" promise.
   sessionKey = key;
-  try { sessionStorage.setItem('apex_customer_key', key); } catch (_) {}
 }
 
 function signOut() {
   sessionKey = null;
-  try { sessionStorage.removeItem('apex_customer_key'); } catch (_) {}
   document.getElementById('who').textContent = '';
   document.getElementById('signout-link').classList.add('hidden');
   document.getElementById('dash-content').classList.add('hidden');
   switchTab('register');
-}
-
-function trySessionResume() {
-  let saved = null;
-  try { saved = sessionStorage.getItem('apex_customer_key'); } catch (_) {}
-  if (!saved) return;
-  sessionKey = saved;
-  switchTab('dashboard');
 }
 
 function switchTab(id) {
@@ -419,10 +417,10 @@ function switchTab(id) {
   });
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
-  // silent: switching into this tab with an already-known key should never
+  // silent: switching into this tab with an already-known key (e.g. right
+  // after registering, or navigating back from another tab) should never
   // greet the user with an intrusive alert() if that key has since been
-  // revoked -- fail quietly back to signed-out instead (same reasoning
-  // trySessionResume() needs, generalized to every path that reaches here).
+  // revoked -- fail quietly back to signed-out instead.
   if(id==='dashboard'&&sessionKey) loadDashboard(true);
 }
 
@@ -607,8 +605,6 @@ function showAlert(el, type, msg) {
   el.textContent = msg;
   el.classList.remove('hidden');
 }
-
-trySessionResume();
 
 // Check for Stripe redirect
 const params = new URLSearchParams(location.search);
