@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-21T16:34:04.439Z",
+  "generated": "2026-08-21T17:22:57.042Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 11682,
+    "total_nodes": 11683,
     "actors": 8,
     "cves": 4049,
-    "campaigns": 1179,
+    "campaigns": 1180,
     "malware": 0,
     "iocs": 885,
-    "edges": 3760
+    "edges": 3761
   },
   "nodes": {
     "actor:lockbit": {
@@ -218164,7 +218164,7 @@
       "attributes": {
         "cvss": 0,
         "threat_level": "LOW",
-        "priority_score": 24,
+        "priority_score": 22,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": true,
@@ -220068,9 +220068,9 @@
       "name": "CVE-2026-77647 - SPIP Remote Code Execution Vulnerability",
       "attributes": {
         "cvss": 9.8,
-        "threat_level": "MEDIUM",
-        "priority_score": 51,
-        "exploited": false,
+        "threat_level": "HIGH",
+        "priority_score": 71,
+        "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
         "vendor": "",
@@ -221235,6 +221235,26 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "campaign:cve-2026-77647": {
+      "id": "campaign:cve-2026-77647",
+      "type": "Campaign",
+      "name": "Multi-Vendor Platform Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-20",
+        "last_seen": "2026-08-20",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-77647 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-77647",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -255237,6 +255257,15 @@
       "target": "BLEEPINGCOMPUTER-e0291f3e167512cd",
       "relationship": "exploits",
       "confidence": 0.85,
+      "first_seen": "2026-08-21",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-77647→includes→CVE-2026-77647",
+      "source": "campaign:cve-2026-77647",
+      "target": "CVE-2026-77647",
+      "relationship": "includes",
+      "confidence": 1,
       "first_seen": "2026-08-21",
       "sources": []
     }
