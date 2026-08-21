@@ -1,8 +1,28 @@
 {
-  "generated": "2026-08-20T19:05:06.320Z",
+  "generated": "2026-08-21T02:00:35.264Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-54263-pip-wagtail",
+      "title": "Wagtail: Reflected XSS in dynamic image URL generator view",
+      "url": "/posts/cve-2026-54263-pip-wagtail.html",
+      "generated": "2026-08-20T19:11:56.888Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-54263",
+        "CVE-2026-54263"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://docs.wagtail.org/en/stable/advanced_topics/images/image_serve_view.html).\"; http.host; content:\"docs.wagtail.org\"; nocase; http.uri; content:\"/en/stable/advanced_topics/images/image_serve_view.html).\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain docs.wagtail.org\"; dns.query; content:\"docs.wagtail.org\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-53964-pip-document-merge-service",
       "title": "Document Merge Service vulnerable to RCE via SSTI (xlsx tempaltes)",
@@ -4173,26 +4193,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/4hmedq&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/4hmedq&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1ut71ue/a_degree_in_cs_or_ai_engineering_robotics/&q\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1ut71ue/a_degree_in_cs_or_ai_engineering_robotics/&q\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
-      ]
-    },
-    {
-      "slug": "how-do-you-keep-archived-firewall-logs-usable-during-a-threa",
-      "title": "How do you keep archived firewall logs usable during a threat hunt?",
-      "url": "/posts/how-do-you-keep-archived-firewall-logs-usable-during-a-threa.html",
-      "generated": "2026-07-10T23:55:28.141Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/splunk_sbg&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/splunk_sbg&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://lantern.splunk.com/Security_Use_Cases/Threat_Hunting/Hunting_threats_across_Amazon_S3-backed\"; http.host; content:\"lantern.splunk.com\"; nocase; http.uri; content:\"/Security_Use_Cases/Threat_Hunting/Hunting_threats_across_Amazon_S3-backed\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1ut3woi/how_do_you_keep_archived_firewall_logs_usabl\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1ut3woi/how_do_you_keep_archived_firewall_logs_usabl\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain lantern.splunk.com\"; dns.query; content:\"lantern.splunk.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
       ]
     }
   ]
