@@ -1589,5 +1589,176 @@ class TestAdversarialForecastGaming(unittest.TestCase):
         self.assertEqual(_render_forecast_html(()), "")
 
 
+class TestIocsWiredIntoTransform(unittest.TestCase):
+    """RX-P1K-16: Sentinel-APEX/engine's ioc_extractor.py existed, was
+    tested, and certified on the separate CTI platform, but was never
+    imported by this pipeline at all -- Section 16 (Indicators/Observables)
+    was permanently WITHHELD for every article regardless of family, the
+    same certified-but-dormant-module defect class already found four
+    times this mandate. Unlike forecast/hunt_hypotheses/attack_mappings/
+    role_decisions, IOC extraction applies to every family (no CVE-only
+    restriction) and needs no reportx_composer duplication guard."""
+
+    def test_real_indicators_in_full_content_are_extracted_rendered_and_counted(self):
+        article = _make_article(
+            full_content=(
+                "The intrusion set beaconed to attacker-c2-panel.ru and dropped a payload from "
+                "hxxp://evil-payload-host[.]top/drop.exe. The sample's SHA-256 hash is "
+                "3ff4a1dff44a1282c3bbf4d91f23e94218f3edbe7b4985dc0e9ab75c6f6bd87e."
+            ),
+        )
+        result = AuthorityTransformer(Config()).transform(article)
+        self.assertEqual(len(result["iocs"]), 3)
+        found_types = {i["type"] for i in result["iocs"]}
+        self.assertEqual(found_types, {"domain", "url", "sha256"})
+        self.assertIn("Indicators / Observables", result["content"])
+
+    def test_article_with_no_real_indicators_resolves_empty_and_unrendered(self):
+        result = AuthorityTransformer(Config()).transform(
+            _make_article(full_content="A vendor released a patch for the reported issue.")
+        )
+        self.assertEqual(result["iocs"], [])
+        self.assertNotIn("Indicators / Observables", result["content"])
+
+    def test_ioc_count_never_gates_the_product_tier_on_its_own(self):
+        # Section 16 is OPTIONAL for every family with a reconciled matrix --
+        # a zero ioc_count must never appear in mandatory_withheld.
+        result = AuthorityTransformer(Config()).transform(
+            _make_article(full_content="A vendor released a patch for the reported issue.")
+        )
+        self.assertNotIn("indicators_observables", result["product_tier_mandatory_withheld"])
+
+    def test_falls_back_to_summary_when_full_content_is_none(self):
+        result = AuthorityTransformer(Config()).transform(
+            _make_article(full_content=None, summary="Traffic was observed to attacker-c2-panel.ru.")
+        )
+        self.assertEqual(len(result["iocs"]), 1)
+        self.assertEqual(result["iocs"][0]["value"], "attacker-c2-panel.ru")
+
+    def test_llm_authored_article_still_renders_the_indicators_section(self):
+        # The exact RX-P1K/RX-P1I/RX-P1J recurring production defect: a fix
+        # that only appends to body_content on the reportx_composer path
+        # silently omits it for every other content_source. IOC extraction
+        # never had that specific guard (see _extract_article_iocs()'s own
+        # docstring), but this proves it end-to-end on the LLM path anyway.
+        with patch(
+            "automation.authority_transformer.call_llm",
+            return_value=("<h3>Executive Summary</h3><p>Fluent LLM-authored prose about the vulnerability.</p>", "groq"),
+        ):
+            result = AuthorityTransformer(Config()).transform(
+                _make_article(full_content="Traffic was observed to attacker-c2-panel.ru.")
+            )
+        self.assertEqual(result["content_source"], "groq")
+        self.assertEqual(len(result["iocs"]), 1)
+        self.assertIn("Indicators / Observables", result["content"])
+        self.assertIn("attacker-c2-panel.ru", result["content"])
+
+    def test_live_indicator_never_appears_undefanged_in_published_html(self):
+        # models.py's own IOC docstring: "Rendering for publication must go
+        # through ioc_extractor.defang" -- a live, clickable indicator on a
+        # public blog is an operational hazard, not a style choice.
+        result = AuthorityTransformer(Config()).transform(
+            _make_article(full_content="Payload retrieved from http://evil-payload-host.top/drop.exe")
+        )
+        self.assertNotIn("http://evil-payload-host.top/drop.exe", result["content"])
+        self.assertIn("hxxp", result["content"])
+
+    def test_non_cve_family_still_gets_a_real_extraction_attempt(self):
+        # Confirms Section 16 isn't accidentally scoped to cve_advisory the
+        # way forecast_count's underlying capability is (RX-P1K).
+        article = DiscoveredArticle(
+            url="https://www.ransomware.live/id/test", title="Group Claims Victim",
+            summary="test", published_at="2026-08-18T22:51:57+00:00",
+            content_hash=_compute_hash("https://www.ransomware.live/id/test", "Group Claims Victim"),
+            labels=["Ransomware"], source="ransomware_intel", ransomware_group="SilentRansomGroup",
+            full_content="The group's leak site listing named attacker-c2-panel.ru as a related infrastructure host.",
+        )
+        result = AuthorityTransformer(Config()).transform(article)
+        self.assertEqual(len(result["iocs"]), 1)
+
+
+class TestKnownPublisherDomainAllowlist(unittest.TestCase):
+    """RX-P1K-16: found during this round's own real-data validation --
+    ioc_extractor.py's DEFAULT_ALLOWLIST covers MITRE/NVD/CISA/reference
+    infrastructure but has no way to know this pipeline's own curated news
+    publishers, so ordinary source-article citation prose ("as reported by
+    SecurityWeek...") was misclassified as a domain indicator. Fixed by
+    deriving a supplementary allowlist from rss_aggregator.py's own real,
+    already-curated feed list (Single Source of Truth) rather than a
+    second, separately hand-maintained list."""
+
+    def test_publisher_citation_is_not_flagged_as_an_indicator(self):
+        result = AuthorityTransformer(Config()).transform(
+            _make_article(
+                full_content=(
+                    "As first reported by SecurityWeek (securityweek.com) and BleepingComputer "
+                    "(bleepingcomputer.com), a vendor patched the reported issue."
+                ),
+            )
+        )
+        self.assertEqual(result["iocs"], [])
+
+    def test_real_indicator_still_flagged_alongside_a_publisher_citation(self):
+        # The allowlist must suppress citation noise without masking a
+        # genuine indicator reported in the very same article.
+        result = AuthorityTransformer(Config()).transform(
+            _make_article(
+                full_content=(
+                    "As first reported by Dark Reading (darkreading.com), the intrusion set "
+                    "beaconed to attacker-c2-panel.ru."
+                ),
+            )
+        )
+        self.assertEqual(len(result["iocs"]), 1)
+        self.assertEqual(result["iocs"][0]["value"], "attacker-c2-panel.ru")
+
+    def test_multi_tenant_platforms_are_excluded_from_the_derived_allowlist(self):
+        # medium.com/feeds.feedburner.com host arbitrary third-party
+        # content (one real publisher's feed among many unrelated ones) --
+        # broadly allowlisting them could mask a genuine indicator a
+        # different, unrelated article legitimately reports there.
+        from automation.authority_transformer import _KNOWN_PUBLISHER_DOMAINS
+        self.assertNotIn("medium.com", _KNOWN_PUBLISHER_DOMAINS)
+        self.assertNotIn("feeds.feedburner.com", _KNOWN_PUBLISHER_DOMAINS)
+
+    def test_derived_allowlist_is_drawn_from_the_real_curated_feed_list(self):
+        # Single Source of Truth: this must track rss_aggregator.py's own
+        # feed list, not a separately hand-maintained duplicate that could
+        # silently drift out of sync.
+        from automation.authority_transformer import _KNOWN_PUBLISHER_DOMAINS
+        from automation.rss_aggregator import _GLOBAL_FEEDS
+        self.assertIn("securityweek.com", _KNOWN_PUBLISHER_DOMAINS)
+        self.assertGreaterEqual(len(_KNOWN_PUBLISHER_DOMAINS), len(_GLOBAL_FEEDS) - 5)
+
+
+class TestIocRenderingAndDefanging(unittest.TestCase):
+    """Direct unit tests of _render_iocs_html(), same style as
+    TestAdversarialForecastGaming above."""
+
+    def test_empty_ioc_list_never_renders(self):
+        from automation.authority_transformer import _render_iocs_html
+        self.assertEqual(_render_iocs_html([]), "")
+
+    def test_every_ioc_type_is_defanged_before_rendering(self):
+        from automation.authority_transformer import _render_iocs_html
+        iocs = [
+            {"value": "45.61.136.39", "type": "ipv4", "context": ""},
+            {"value": "evil.example.top", "type": "domain", "context": ""},
+            {"value": "http://evil.example.top/x", "type": "url", "context": ""},
+            {"value": "a@evil.example.top", "type": "email", "context": ""},
+        ]
+        html_out = _render_iocs_html(iocs)
+        self.assertNotIn("http://evil.example.top/x", html_out)
+        self.assertNotIn(">a@evil.example.top<", html_out)
+        self.assertIn("Indicators / Observables", html_out)
+
+    def test_cve_type_indicator_renders_unchanged_value(self):
+        # defang() is a documented no-op for CVE/registry-key types --
+        # confirms that no-op path doesn't accidentally drop the value.
+        from automation.authority_transformer import _render_iocs_html
+        html_out = _render_iocs_html([{"value": "CVE-2026-9999", "type": "cve", "context": ""}])
+        self.assertIn("CVE-2026-9999", html_out)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -40,6 +40,7 @@ from .report_renderer import (
     _detection_section,
     _esc,
     _family_analysis,
+    _KNOWN_PUBLISHER_DOMAINS,
     _panel,
     _provenance,
     _section,
@@ -908,6 +909,98 @@ def _render_forecast_html(forecasts: tuple) -> str:
             "#eab308",
         )
     return _section("Forecast / Outlook", _panel(rows, "#eab308"), "#eab308")
+
+
+def _extract_article_iocs(article: DiscoveredArticle) -> list:
+    """RX-P1K-16: Sentinel-APEX/engine/sentinel_engine/ioc_extractor.py is a
+    real, tested, false-positive-hardened IOC extractor already used on the
+    separate Sentinel APEX CTI platform (normalizer.py, quality.py,
+    report_ingest.py) but never imported by this pipeline at all -- Section
+    16 (Indicators/Observables) was permanently WITHHELD for every article
+    regardless of family, the same certified-but-dormant-module defect
+    class already found four times this mandate (hunt_hypotheses,
+    attack_mapping, role_decisions, forecast). Unlike those four, IOC
+    extraction has no dependency on the composer's evidence graph or
+    family -- it's a pure, deterministic scan of the article's own raw
+    source text, so it needs no reportx_composer duplication guard and no
+    family gate (Section 16 is OPTIONAL for every family with a reconciled
+    matrix -- see report_contract.py). Runs against (article.full_content
+    or article.summary), the same "richest available raw text" convention
+    already used elsewhere in this file (see _build_analyst_prompt's
+    identical fallback) -- never against LLM-authored or template-generated
+    prose, which could in principle echo a fabricated value; this only
+    ever finds what is literally present in the real, already-sourced
+    article text, the same integrity property _extract_cve_ids() already
+    relies on. Returns [] (never raises) if the engine package can't be
+    imported, matching _composer_enhance()'s own fail-safe convention."""
+    try:
+        import sys
+        from pathlib import Path
+
+        engine_path = str(Path(__file__).resolve().parents[1] / "Sentinel-APEX" / "engine")
+        if engine_path not in sys.path:
+            sys.path.insert(0, engine_path)
+
+        from sentinel_engine.ioc_extractor import DEFAULT_ALLOWLIST, extract_iocs
+
+        text = article.full_content or article.summary or ""
+        allowlist = DEFAULT_ALLOWLIST | _KNOWN_PUBLISHER_DOMAINS
+        return [
+            {"value": ioc.value, "type": ioc.type.value, "context": ioc.context}
+            for ioc in extract_iocs(text, allowlist=allowlist)
+        ]
+    except Exception as e:
+        logger.warning("IOC extraction failed", extra={"error": str(e)[:200]})
+        return []
+
+
+def _render_iocs_html(iocs: list) -> str:
+    """RX-P1K-16: renders extracted indicators grouped by type, always
+    defanged via ioc_extractor.defang() before publication -- models.py's
+    own IOC docstring requires this ("Rendering for publication must go
+    through ioc_extractor.defang"): a live, clickable indicator published
+    on a public blog is itself an operational hazard, not merely a
+    citation style choice. Called unconditionally in transform(), like
+    _extract_article_iocs() above -- see that function's own docstring for
+    why no reportx_composer duplication guard is needed here."""
+    if not iocs:
+        return ""
+    try:
+        import sys
+        from pathlib import Path
+
+        engine_path = str(Path(__file__).resolve().parents[1] / "Sentinel-APEX" / "engine")
+        if engine_path not in sys.path:
+            sys.path.insert(0, engine_path)
+
+        from sentinel_engine.ioc_extractor import defang
+        from sentinel_engine.models import IOCType
+    except Exception as e:
+        logger.warning("IOC rendering failed", extra={"error": str(e)[:200]})
+        return ""
+
+    _labels = {
+        IOCType.SHA256.value: "SHA-256", IOCType.SHA1.value: "SHA-1", IOCType.MD5.value: "MD5",
+        IOCType.IPV4.value: "IPv4", IOCType.DOMAIN.value: "Domain", IOCType.URL.value: "URL",
+        IOCType.EMAIL.value: "Email", IOCType.CVE.value: "CVE", IOCType.REGISTRY_KEY.value: "Registry Key",
+    }
+    by_type: dict = {}
+    for ioc in iocs:
+        by_type.setdefault(ioc["type"], []).append(ioc["value"])
+
+    rows = ""
+    for ioc_type, values in by_type.items():
+        defanged = [defang(v, IOCType(ioc_type)) for v in values]
+        rows += _bullets(
+            [f'<strong>{_esc(_labels.get(ioc_type, ioc_type))}:</strong> {_esc(v)}' for v in defanged],
+            "#f97316",
+        )
+    note = _panel(
+        "<em>Indicators are defanged for safe display (e.g. hxxp:// / [.]) -- "
+        "refang before use in blocking or detection tooling.</em>",
+        "#f97316",
+    )
+    return _section("Indicators / Observables", rows + note, "#f97316")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2280,6 +2373,16 @@ class AuthorityTransformer:
             if not f.get("withheld") and f.get("supporting_observation_claim_ids") and f.get("confidence_rationale")
         )
 
+        # RX-P1K-16: Section 16 (Indicators/Observables) -- see
+        # _extract_article_iocs()'s own docstring for why this needs no
+        # reportx_composer duplication guard (nothing else in this
+        # pipeline renders IOCs today, unlike the composer-derived
+        # sections above). Computed and appended unconditionally, once,
+        # regardless of content_source.
+        article_iocs = _extract_article_iocs(article)
+        if article_iocs:
+            body_content = body_content + _render_iocs_html(article_iocs)
+
         # RX-P1B-WIRE: analytical_depth_gate.py + report_contract.py (the
         # founder-mandate 24-section contract + FLASH/TACTICAL/PREMIUM_LONG_FORM
         # tier gate) were built and certified
@@ -2294,7 +2397,7 @@ class AuthorityTransformer:
             hunt_hypothesis_count=len(composer_outcome.hunt_hypotheses),
             attack_mapping_count=len(composer_outcome.attack_mappings),
             role_decision_count=len(composer_outcome.role_decisions),
-            forecast_count=forecast_count,
+            forecast_count=forecast_count, ioc_count=len(article_iocs),
         )
 
         # Generate SEO metadata
@@ -2426,6 +2529,8 @@ class AuthorityTransformer:
             "role_decisions": list(composer_outcome.role_decisions),
             # RX-P1K-WIRE: see _ComposerOutcome.forecasts' docstring above.
             "forecasts": list(composer_outcome.forecasts),
+            # RX-P1K-16: see _extract_article_iocs()' own docstring above.
+            "iocs": article_iocs,
             "detection_status": detection_status,
             "generated_at": context.generated_at,
             # RX-P1-ARTIFACT-BINDING: see the comment at this hash's

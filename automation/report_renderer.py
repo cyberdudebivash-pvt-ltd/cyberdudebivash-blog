@@ -99,9 +99,88 @@ def _exploit_prerequisites_clause(cvss_vector: Optional[str]) -> str:
     return f" This vulnerability is exploitable {access}, requiring {privilege} and {interaction}."
 
 
+# RX-P1K-16: known-publisher domains this pipeline already curates and
+# trusts (rss_aggregator.py's own feed list) -- real source article text
+# routinely self-cites its own publisher ("as first reported by
+# SecurityWeek...") or a peer outlet, which ioc_extractor.py's own
+# DEFAULT_ALLOWLIST (MITRE/NVD/CISA/social-media/reference infrastructure
+# only) has no way to know about; confirmed as a real false positive during
+# this round's own real-data validation (securityweek.com misclassified as
+# a domain indicator from ordinary citation prose). Derived once from data
+# this pipeline already maintains for feed ingestion, not a second,
+# separately hand-maintained list that could drift out of sync (Single
+# Source of Truth) -- excludes multi-tenant platforms a real indicator
+# could still legitimately be hosted on (medium.com; feeds.feedburner.com
+# is Google's shared syndication proxy, not a citable publisher domain in
+# article prose either way) so this never masks a genuine indicator. Lives
+# here (not authority_transformer.py, its only caller until this round)
+# because _defang_text() below -- also called from this module -- needs it
+# too, and authority_transformer.py already imports from report_renderer.py,
+# never the reverse, so this is this pipeline's one safe, non-circular home
+# for it.
+def _known_publisher_domains() -> frozenset:
+    from urllib.parse import urlparse
+
+    from .rss_aggregator import _GLOBAL_FEEDS
+
+    exclude = {"medium.com", "feeds.feedburner.com"}
+    domains = set()
+    for feed in _GLOBAL_FEEDS:
+        host = urlparse(feed.url).netloc.lower()
+        if host.startswith("www."):
+            host = host[4:]
+        if host and host not in exclude:
+            domains.add(host)
+    return frozenset(domains)
+
+
+_KNOWN_PUBLISHER_DOMAINS = _known_publisher_domains()
+
+
+def _defang_text(text: str) -> str:
+    """RX-P1K-16-ADJACENT: found during this round's own real-data
+    validation of Section 16 (Indicators/Observables) -- _source_lines()
+    below has always quoted the article's raw source text verbatim (only
+    HTML-escaped, never defanged) into the published "Source Evidence
+    Extract" section, so any live indicator present in the article's own
+    source text (an active C2 URL, for example) was published exactly as
+    written: a real, clickable link to attacker infrastructure. Confirmed
+    reachable on the pipeline's own primary content path, not a rare
+    edge case: pipeline_composer.compose_report() (Sentinel-APEX/engine)
+    reuses render_evidence_report() -- and therefore this function -- as
+    its own base HTML for every article, not merely the legacy-template
+    fallback. Pre-existing and unrelated to Section 16's own wiring, but
+    found while proving Section 16's own defanging guarantee end-to-end
+    and directly adjacent to it (both concern the same underlying hazard),
+    so fixed in the same round rather than deferred -- small, surgical,
+    and reuses this round's own extract_iocs()/defang() integration rather
+    than a second, separate mechanism. Returns ``text`` unchanged (never
+    raises) if the engine package can't be imported, matching
+    authority_transformer.py's own established fail-safe convention for
+    this exact import."""
+    try:
+        import sys
+        from pathlib import Path
+
+        engine_path = str(Path(__file__).resolve().parents[1] / "Sentinel-APEX" / "engine")
+        if engine_path not in sys.path:
+            sys.path.insert(0, engine_path)
+
+        from sentinel_engine.ioc_extractor import DEFAULT_ALLOWLIST, defang, extract_iocs
+    except Exception:
+        return text
+
+    allowlist = DEFAULT_ALLOWLIST | _KNOWN_PUBLISHER_DOMAINS
+    out = text
+    for ioc in extract_iocs(text, allowlist=allowlist, include_context=False):
+        if ioc.value in out:
+            out = out.replace(ioc.value, defang(ioc.value, ioc.type))
+    return out
+
+
 def _source_lines(article: DiscoveredArticle) -> list[str]:
-    source = article.full_content or article.summary
-    lines = [line.strip() for line in str(source).splitlines() if line.strip()]
+    source = _defang_text(str(article.full_content or article.summary))
+    lines = [line.strip() for line in source.splitlines() if line.strip()]
     return lines[:18] if lines else [article.summary]
 
 

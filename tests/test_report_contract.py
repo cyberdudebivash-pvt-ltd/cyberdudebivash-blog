@@ -18,6 +18,7 @@ from automation.report_contract import (
     SECTION_12_ACTOR_CAMPAIGN_CONTEXT,
     SECTION_13_HISTORICAL_CORRELATION,
     SECTION_15_DETECTION_ENGINEERING,
+    SECTION_16_INDICATORS_OBSERVABLES,
     SECTION_18_SECTOR_GEOGRAPHIC_IMPACT,
     SECTION_19_ROLE_DECISION_MATRIX,
     SECTION_21_INTELLIGENCE_GAPS,
@@ -301,6 +302,46 @@ class TestSectionTwentyTwoForecast(unittest.TestCase):
         context = build_report_context(article)
         resolutions = evaluate_section_states(article, context, forecast_count=1)
         self.assertEqual(_state_of(resolutions, SECTION_22_FORECAST_OUTLOOK), SectionState.COMPLETE)
+
+
+class TestSectionSixteenIndicators(unittest.TestCase):
+    """RX-P1K-16: ioc_count uses a plain int=0 default, same reasoning as
+    forecast_count -- Section 16 has been unconditionally WITHHELD for
+    every caller since this contract was first written. Unlike Section 22
+    (cve_advisory/cisa_kev/cisa_advisory only), Section 16 is OPTIONAL for
+    every family with a reconciled matrix -- IOC extraction has no
+    family-specific evidence dependency, it's a pure scan of raw text."""
+
+    def test_optional_for_every_reconciled_family(self):
+        for family in ("cve_advisory", "cisa_kev", "cisa_advisory", "ransomware_claim",
+                        "ai_security", "breach_notice", "ransomware_reporting", "threat_actor"):
+            self.assertEqual(get_applicability(family, SECTION_16_INDICATORS_OBSERVABLES), Applicability.OPTIONAL)
+
+    def test_omitted_ioc_count_resolves_withheld(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context)
+        self.assertEqual(_state_of(resolutions, SECTION_16_INDICATORS_OBSERVABLES), SectionState.WITHHELD_INSUFFICIENT_EVIDENCE)
+
+    def test_zero_ioc_count_resolves_withheld(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context, ioc_count=0)
+        self.assertEqual(_state_of(resolutions, SECTION_16_INDICATORS_OBSERVABLES), SectionState.WITHHELD_INSUFFICIENT_EVIDENCE)
+
+    def test_positive_ioc_count_resolves_complete(self):
+        article = _cve_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context, ioc_count=3)
+        self.assertEqual(_state_of(resolutions, SECTION_16_INDICATORS_OBSERVABLES), SectionState.COMPLETE)
+
+    def test_ransomware_family_also_resolves_from_ioc_count(self):
+        # Confirms the resolution isn't accidentally scoped to cve_advisory
+        # the way forecast_count's underlying capability is.
+        article = _ransomware_article()
+        context = build_report_context(article)
+        resolutions = evaluate_section_states(article, context, ioc_count=2)
+        self.assertEqual(_state_of(resolutions, SECTION_16_INDICATORS_OBSERVABLES), SectionState.COMPLETE)
 
 
 if __name__ == "__main__":
