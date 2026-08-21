@@ -1,7 +1,8 @@
 # REPORTX Phase 1 — Resume Checkpoint
 
-**Written:** 2026-08-20 (updated — supersedes the pre-Phase-1P/1Q version)
-**Written by:** Claude (this session — platform-transformation-review round, continued through Phase 1P/1Q)
+**Written:** 2026-08-20, updated 2026-08-21 (supersedes the pre-Section-16 version)
+**Written by:** Claude (platform-transformation-review round, continued through Phase 1P/1Q and, in a
+later session the same day, the Phase 1K remainder's Section 16)
 **Why this exists:** the governing mandate spans phases 1F–1Q (and further, 1R+). This document
 lets any future session — mine or another Claude instance's — resume without repeating
 investigation already done.
@@ -112,6 +113,34 @@ investigation already done.
    step (`report["fetch_back_discrepancies"]`, `post_result["fetch_back"]`), never an automatic
    corrective action on live content. All mocked-HTTP; no live Blogger call made. Root 541→563 (+22
    new tests), engine/JS untouched and reconfirmed unchanged (1061/1062, 123).
+7. **Phase 1K remainder — Section 16 (Indicators/Observables).** New session; user asked whether
+   the "1K unfinished task" was still open, then directed completing it one section at a time.
+   Completed, tested, real-data-validated, certified `RELEASE_CERTIFIED`. Full detail:
+   `docs/audits/REPORTX-PHASE1K-SECTION16-INDICATORS-CERTIFICATION.md`. Summary: audited first
+   (Reuse Before Build) and found the original Phase 1K audit's own claim ("no IOC extraction
+   capability exists") was incomplete — `Sentinel-APEX/engine/sentinel_engine/ioc_extractor.py` is
+   a real, tested, certified extractor already used on the CTI platform side, never imported by this
+   pipeline (the 5th "certified-but-dormant-module" instance this mandate has found). Wired it in
+   (`ioc_count` threaded through `report_contract.py`/`analytical_depth_gate.py` exactly like
+   `forecast_count`; new `_extract_article_iocs()`/`_render_iocs_html()` in `authority_transformer.py`,
+   appended unconditionally on every content path since IOC extraction has no composer/evidence-graph
+   dependency, unlike the four prior wirings). Real-data validation (mandate Section 29) then found
+   two adjacent, pre-existing defects while proving this round's own defanging guarantee end-to-end,
+   both fixed inline rather than deferred (same precedent Phase 1M set): (a) `report_renderer.py`'s
+   `_source_lines()` (Section 23, "Source Evidence Extract") had always quoted the article's raw
+   source text verbatim, un-defanged — confirmed reachable on the *primary* `reportx_composer`
+   content path, not just the legacy-template fallback, since `pipeline_composer.compose_report()`
+   reuses `render_evidence_report()` as its own base HTML; fixed with a new `_defang_text()`. (b)
+   `ioc_extractor.py`'s `DEFAULT_ALLOWLIST` had no awareness of this pipeline's own curated news
+   publishers, misclassifying citation prose ("as reported by SecurityWeek...") as an indicator;
+   fixed by deriving a supplementary allowlist from `rss_aggregator.py`'s own real, curated feed list
+   (Single Source of Truth). Root 587/587 (+24 new tests), engine 1062/1062 (0 touched — this
+   session's environment reproduces zero pre-existing failures, including the previously-documented
+   Node-rendering one; not investigated further, unrelated to this round either way), JS 123/123 (0
+   touched). Extended (not duplicated) the original Phase 1K real-data canary
+   (`reportx-canary/phase1k_section_completeness_representative_fixtures.py`) with an IOCs column and
+   2 new adversarial assertions (no `COMPLETE`-without-render, no live-indicator leak anywhere on the
+   page), run live against all 8 production families.
 
 ## 3. Certification status
 
@@ -127,7 +156,8 @@ investigation already done.
 | Phase 1K (24-section semantic population) | `RELEASE_CERTIFIED` — 3 real defects found and fixed (Section 6/21 missing-render, Section 22 dormant module), 1 applicability reconciliation, 1 second independent wiring gap found via premium-candidate benchmarking. Zero regressions. |
 | Phase 1M (semantic/factual QA) | `RELEASE_CERTIFIED` — 3 real defects found and fixed (contradiction-check reach, exploitation-pattern drift, no general quantitative-claim grounding), 1 new hard gate (ransomware confirmed-breach), explicit verification-status vocabulary wired end to end. 3 real false positives found via real-data validation, root-caused, and fixed with regression tests. Zero regressions. |
 | Phase 1N (premium certification ladder audit) | `RELEASE_CERTIFIED` — merged (#121). Confirmed no aggregate score overrides the hard gate anywhere (traced every real consumer, not just inspected intent). Found and fixed 1 real defect: `determine_achieved_tier()` could outrank the requested tier at the real production call shape (`requested_tier=FLASH_READY`), mislabeling routine articles' reader-facing certification badge as `TACTICAL_READY`. Real before/after against actual `compose_report()` output on 3 representative article families. Zero regressions. |
-| **Phase 1P/1Q (Blogger hard gate + post-publication fetch-back)** | **`RELEASE_CERTIFIED_WITH_LIMITATIONS`** — this round (same qualifier as Phase 1F: mechanism real and tested, live-Blogger validation pending owner authorization). Built and wired a Blogger-response hard gate (non-`LIVE` status on a non-draft publish now raises) and a new post-publication fetch-back module (6 defect classes, reusing `legacy_quality_auditor.py` primitives) into the real publish pipeline, entirely with mocked HTTP — no live Blogger call made. Zero regressions. Full detail in the Phase 1P/1Q certification doc. |
+| Phase 1P/1Q (Blogger hard gate + post-publication fetch-back) | `RELEASE_CERTIFIED_WITH_LIMITATIONS` (same qualifier as Phase 1F: mechanism real and tested, live-Blogger validation pending owner authorization). Built and wired a Blogger-response hard gate (non-`LIVE` status on a non-draft publish now raises) and a new post-publication fetch-back module (6 defect classes, reusing `legacy_quality_auditor.py` primitives) into the real publish pipeline, entirely with mocked HTTP — no live Blogger call made. Zero regressions. Full detail in the Phase 1P/1Q certification doc. |
+| **Phase 1K remainder — Section 16 (Indicators/Observables)** | **`RELEASE_CERTIFIED`** — this round. Wired the real, previously-dormant `ioc_extractor.py` into Section 16 (`ioc_count`, mirroring `forecast_count` exactly). Found and fixed 2 adjacent, pre-existing defects via this round's own real-data validation: a live-indicator leak in Section 23's "Source Evidence Extract" (reachable on the primary `reportx_composer` path, not just legacy-template), and a publisher-citation false positive in IOC extraction. Zero regressions (587/587 root, 1062/1062 engine, 123/123 JS). Real-data canary extended and run live across all 8 families. Full detail: `REPORTX-PHASE1K-SECTION16-INDICATORS-CERTIFICATION.md`. |
 | Phase 1R onward | Not started |
 
 Full detail: see each phase's own certification doc under `docs/audits/`.
@@ -182,10 +212,17 @@ discipline as every phase so far:
    post's fetch-back actually 200 immediately, or need a retry; what does Blogger's real save-time
    HTML normalization actually look like against the 50% collapse threshold) is unverified and
    requires the owner to authorize an actual publish. Not to be attempted unilaterally.
-2. **The remaining Phase 1K sections** — Sections 4 (Intelligence Requirements), 10 (Attack Path),
-   16 (Indicators/Observables), 17 (Business Impact), 20 (Time-bound Actions) have no real
-   evidence-extraction capability in this pipeline at all; building one for any of them is new
-   capability work, not a wiring fix (see `docs/audits/REPORTX-PHASE1K-SECTION-AUDIT.md` §6). Note:
+2. **The remaining Phase 1K sections** — Section 16 (Indicators/Observables) is now done (see item 7
+   in §2 above and `REPORTX-PHASE1K-SECTION16-INDICATORS-CERTIFICATION.md`). Still open: Sections 4
+   (Intelligence Requirements) and 20 (Time-bound Actions) have no real evidence-extraction capability
+   in this pipeline at all; building one for either is new capability work, not a wiring fix (see
+   `docs/audits/REPORTX-PHASE1K-SECTION-AUDIT.md` §6). Section 20 is likely the smaller of the two —
+   its content (P0/P1/P2-labeled bullets) already exists inside Sections 7/9's "Decisions" sub-blocks,
+   making this probably a promote-to-its-own-section job rather than new capability from scratch.
+   Sections 10 (Attack Path) and 17 (Business Impact, for `ransomware_claim`) are deliberately **not**
+   on this list — the original audit concluded `WITHHELD`/`NOT_APPLICABLE` is the honest, permanent,
+   correct state there, not a gap to close (confirmed again this round: see the Section 16
+   certification doc's own Known Limitations). Note:
    Section 17 being `MANDATORY` for `ransomware_claim` with no implementation means that family
    cannot structurally reach `PREMIUM_LONG_FORM` today — very likely the *correct*, permanent state
    (an unverified leak-site claim has no honest financial/operational-impact evidence to offer),

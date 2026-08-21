@@ -57,6 +57,7 @@ def evaluate_product_tier(
     attack_mapping_count: int = 0,
     role_decision_count: Optional[int] = None,
     forecast_count: int = 0,
+    ioc_count: int = 0,
 ) -> ProductTierVerdict:
     """Never returns PREMIUM_LONG_FORM merely because a report has 24
     headings (Phase D's own explicit warning) -- every gate below checks a
@@ -97,11 +98,17 @@ def evaluate_product_tier(
     WITHHELD before this parameter existed. Section 22 is OPTIONAL for
     every family with a reconciled matrix today, so like
     hunt_hypothesis_count/attack_mapping_count this never gates tier
-    eligibility on its own."""
+    eligibility on its own. ``ioc_count`` (RX-P1K-16) is the same real
+    pass-through for indicators/observables extracted from the article's
+    own raw source text (every family, not family-restricted like
+    forecast_count) -- plain ``int = 0`` default, same reasoning as
+    forecast_count. Section 16 is OPTIONAL for every family with a
+    reconciled matrix today, so this never gates tier eligibility on its
+    own either."""
     resolutions = evaluate_section_states(
         article, context, detection_status=detection_status, key_judgement_count=key_judgement_count,
         hunt_hypothesis_count=hunt_hypothesis_count, attack_mapping_count=attack_mapping_count,
-        role_decision_count=role_decision_count, forecast_count=forecast_count,
+        role_decision_count=role_decision_count, forecast_count=forecast_count, ioc_count=ioc_count,
     )
     mandatory = [r for r in resolutions if r.applicability == Applicability.MANDATORY]
     mandatory_withheld = tuple(

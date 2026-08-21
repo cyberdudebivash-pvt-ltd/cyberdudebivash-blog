@@ -18,10 +18,13 @@ from automation.config import Config
 from automation.content_discovery import DiscoveredArticle, _compute_hash
 from automation.report_integrity import REVIEW_STATUS, build_report_context
 from automation.report_renderer import (
+    _defang_text,
     _detection_package,
     _detection_section,
     _family_analysis,
+    _known_publisher_domains,
     _kql_string_list,
+    _source_lines,
     _technical_evidence,
     _validated_kql,
     _validated_sigma,
@@ -419,6 +422,46 @@ class TestFamilyAnalysisExploitPrerequisitesClause(unittest.TestCase):
         context = dataclasses.replace(build_report_context(article), exploitation_status="confirmed")
         html = _family_analysis(article, context)
         self.assertIn("exploitable over the network", html)
+
+
+class TestSourceEvidenceExtractDefanging(unittest.TestCase):
+    """RX-P1K-16-ADJACENT: found during real-data validation of Section 16
+    (Indicators/Observables) -- _source_lines() feeds _technical_evidence()
+    ("Source Evidence Extract"), which is reused as the base HTML for
+    every real content path via pipeline_composer.compose_report()
+    (Sentinel-APEX/engine), not merely the legacy-template fallback. Before
+    this fix, a live indicator anywhere in the article's raw source text
+    was published exactly as written -- a real, clickable link to
+    attacker infrastructure."""
+
+    def test_live_url_is_defanged_in_the_source_extract(self):
+        article = _article("test", full_content="Payload retrieved from http://evil-payload-host.top/drop.exe")
+        lines = _source_lines(article)
+        joined = " ".join(lines)
+        self.assertNotIn("http://evil-payload-host.top/drop.exe", joined)
+        self.assertIn("hxxp", joined)
+
+    def test_live_domain_is_defanged_in_the_rendered_evidence_section(self):
+        article = _article("test", full_content="Traffic was observed to attacker-c2-panel.ru.")
+        html = _technical_evidence(article)
+        self.assertNotIn(">attacker-c2-panel.ru<", html)
+        self.assertIn("attacker-c2-panel[.]ru", html)
+
+    def test_publisher_citation_is_not_altered_in_the_source_extract(self):
+        # The extract's own stated purpose ("escaped and rendered from the
+        # ingested source record") implies fidelity to the real source --
+        # defanging must be reserved for genuine indicators, not applied so
+        # broadly it rewrites an ordinary citation.
+        article = _article("test", full_content="As reported by SecurityWeek (securityweek.com).")
+        self.assertIn("securityweek.com", " ".join(_source_lines(article)))
+
+    def test_defang_text_returns_input_unchanged_when_no_indicator_present(self):
+        self.assertEqual(_defang_text("A vendor released a routine patch."), "A vendor released a routine patch.")
+
+    def test_known_publisher_domains_includes_a_real_curated_feed_and_excludes_medium(self):
+        domains = _known_publisher_domains()
+        self.assertIn("bleepingcomputer.com", domains)
+        self.assertNotIn("medium.com", domains)
 
 
 class TestNoFalseOrMissingHumanReviewClaims(unittest.TestCase):

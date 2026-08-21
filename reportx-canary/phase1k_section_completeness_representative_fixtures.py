@@ -35,6 +35,7 @@ from automation.report_contract import (
     SECTION_6_EVIDENCE_SOURCE_ASSESSMENT,
     SECTION_11_ATTACK_MAPPING,
     SECTION_14_THREAT_HUNTING,
+    SECTION_16_INDICATORS_OBSERVABLES,
     SECTION_19_ROLE_DECISION_MATRIX,
     SECTION_21_INTELLIGENCE_GAPS,
     SECTION_22_FORECAST_OUTLOOK,
@@ -67,6 +68,11 @@ CASES = {
         summary="CISA confirms this remote code execution vulnerability is being actively exploited in the wild.",
         source="cisa_kev", cve_id="CVE-2026-90004", cvss_score=9.8,
         cvss_vector="CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H", cwe_ids=["CWE-78"], kev_listed=True,
+        # RX-P1K-16: realistic indicator-bearing source text -- proves
+        # Section 16 (Indicators/Observables) end to end against at least
+        # one representative family, not only the always-zero path every
+        # other case here exercises.
+        full_content="Observed exploitation attempts in telemetry originated from 45.61.136.39.",
     ),
     "Ransomware claim": _article(
         url="https://www.ransomware.live/id/fixture-victim", title="Group Claims Fixture Corp",
@@ -109,7 +115,7 @@ def _real_forecast_count(forecasts: list) -> int:
 def main() -> None:
     config = Config()
     header = (
-        f"{'Case':<28}{'Family':<20}{'KJ':<4}{'Role':<5}{'ATT&CK':<7}{'Hunt':<5}{'Gaps':<5}{'Fcst':<5}"
+        f"{'Case':<28}{'Family':<20}{'KJ':<4}{'Role':<5}{'ATT&CK':<7}{'Hunt':<5}{'Gaps':<5}{'Fcst':<5}{'IOCs':<5}"
         f"{'S6':<12}{'S19':<32}{'S21':<20}{'S22':<32}{'Tier'}"
     )
     print(header)
@@ -123,16 +129,18 @@ def main() -> None:
         gaps = len(result.get("intelligence_gaps") or [])
         forecasts = result.get("forecasts") or []
         real_forecasts = _real_forecast_count(forecasts)
+        iocs = len(result.get("iocs") or [])
 
         context = build_report_context(article)
         resolutions = evaluate_section_states(
             article, context, key_judgement_count=kj, hunt_hypothesis_count=hunts,
             attack_mapping_count=attack, role_decision_count=roles, forecast_count=real_forecasts,
+            ioc_count=iocs,
         )
         state_of = {r.section: r.state.value for r in resolutions}
 
         print(
-            f"{label:<28}{result['report_family']:<20}{kj:<4}{roles:<5}{attack:<7}{hunts:<5}{gaps:<5}{real_forecasts:<5}"
+            f"{label:<28}{result['report_family']:<20}{kj:<4}{roles:<5}{attack:<7}{hunts:<5}{gaps:<5}{real_forecasts:<5}{iocs:<5}"
             f"{state_of[SECTION_6_EVIDENCE_SOURCE_ASSESSMENT]:<12}{state_of[SECTION_19_ROLE_DECISION_MATRIX]:<32}"
             f"{state_of[SECTION_21_INTELLIGENCE_GAPS]:<20}{state_of[SECTION_22_FORECAST_OUTLOOK]:<32}"
             f"{result['product_tier']}"
@@ -155,6 +163,16 @@ def main() -> None:
             failures.append(f"{label}: {real_forecasts} real forecast(s) but section missing from rendered HTML")
         if real_forecasts == 0 and "Forecast / Outlook" in content:
             failures.append(f"{label}: no real forecast but 'Forecast / Outlook' rendered anyway")
+        if state_of[SECTION_16_INDICATORS_OBSERVABLES] == "COMPLETE" and "Indicators / Observables" not in content:
+            failures.append(f"{label}: Section 16 COMPLETE but indicators content missing from rendered HTML")
+        if iocs == 0 and "Indicators / Observables" in content:
+            failures.append(f"{label}: no real indicators but 'Indicators / Observables' rendered anyway")
+        # Live indicators must never reach the page un-defanged, regardless
+        # of which section rendered them (Section 16's own render path, or
+        # the pre-existing "Source Evidence Extract" this round also fixed).
+        for ioc in result.get("iocs") or []:
+            if ioc["type"] in ("url", "ipv4", "domain") and ioc["value"] in content:
+                failures.append(f"{label}: live (un-defanged) {ioc['type']} indicator found in published content: {ioc['value']}")
 
         # Cross-section consistency spot-check (mandate section 22): a
         # ransomware CLAIM must never assert a confirmed breach/compromise
