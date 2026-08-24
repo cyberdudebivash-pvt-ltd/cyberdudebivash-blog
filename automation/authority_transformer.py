@@ -732,7 +732,7 @@ Generate a comprehensive intelligence report with EXACTLY these sections in HTML
 [Specific guidance for MSSPs: client notification priority (which client segments are exposed), detection rule deployment (which rules to push), threat hunting activation (specific hypotheses), advisory content. Position CYBERDUDEBIVASH® SENTINEL APEX as the intelligence source.]
 
 <h3>Sentinel APEX Intelligence Correlation</h3>
-[How CYBERDUDEBIVASH® SENTINEL APEX detects and correlates this threat class. Reference: live CVE tracking engine, MITRE ATT&CK correlation, real-time IOC feed integration, Sigma rule library (2,400+ rules), threat hunting workbench. Be specific to this threat type.]
+[How CYBERDUDEBIVASH® SENTINEL APEX detects and correlates this threat class. Reference: live CVE tracking engine, MITRE ATT&CK correlation, real-time IOC feed integration, the Sigma/YARA detection rule library, threat hunting workbench. Do not state a specific rule count or any other statistic not present in the source article. Be specific to this threat type.]
 
 <h3>AI Security Impact</h3>
 [INCLUDE ONLY if the article explicitly discusses AI/LLM/ML systems, AI infrastructure, or AI-assisted attacks. Reference OWASP LLM Top 10, MITRE ATLAS, NIST AI RMF 1.0 with specific LLM vulnerability identifiers. OMIT ENTIRELY if not AI-related.]
