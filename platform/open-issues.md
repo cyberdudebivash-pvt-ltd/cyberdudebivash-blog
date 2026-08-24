@@ -504,6 +504,25 @@ free-text descriptions), a materially larger and riskier change than
 wiring an edge from data that already exists structurally, correctly left
 as a Strategic Investment rather than attempted here.
 
+**Related but distinct defect found and fixed separately (Campaign
+Delivery Integrity v1, 2026-08-24)**: this issue is about what's inside
+the live graph. A separate, more severe defect existed in how the graph's
+own correctly-accumulated Campaign data reached customers at all —
+`campaigns.json` (the paid `GET /api/v1/intel/campaigns` endpoint's
+backing store) was fully overwritten every ~30-min cycle with only that
+cycle's freshly-clustered batch, silently discarding all
+previously-accumulated campaigns. Confirmed live: 0 campaigns served to
+every customer despite the graph holding 1,187 accumulated Campaign
+nodes the whole time. Root-caused, fixed at the source (`campaign-engine.js`'s
+`mergeCampaigns()`, upsert-by-`campaign_id`, plus a catastrophic-drop
+guard in `saveCampaigns()` itself), and the 1,187 already-lost campaigns
+were recovered via a one-time, honestly-labeled reconstruction directly
+from graph state. Full detail:
+`docs/audits/SENTINEL-APEX-CAMPAIGN-DELIVERY-INTEGRITY-V1-CERTIFICATION.md`.
+Tracked here only as a cross-reference, since it was discovered while
+re-verifying this issue's own numbers — the fix itself is a separate
+issue, not a reopening of this one.
+
 ## Issue 9 — SA-2026-0001 had never been ingested into the offline knowledge graph; running it for the first time found a real ATT&CK mapper defect (GIKEP v1)
 
 Distinct from Issue 8 (the live JS `api/_lib/threat-graph.js`) — this is

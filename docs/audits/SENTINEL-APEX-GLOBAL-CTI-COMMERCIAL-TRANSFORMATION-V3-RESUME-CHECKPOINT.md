@@ -1,10 +1,10 @@
 # SENTINEL APEX — Global CTI Commercial Transformation v3 — Resume Checkpoint
 
-**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2, same day, different branch)
-**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, this update)
+**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3, same day, different branch each time)
+**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, this update)
 **Written per:** the master mandate's own "Long-Run Checkpoint Policy" — stop at a safe boundary, commit, push, update the PR, and leave a clear resume point rather than attempting the full 70-phase mandate in one uninterrupted pass.
 
-**READ THIS FIRST IF RESUMING:** §7 below (added in round 2) contains the single most important thing to know before touching deployment, routing, or correlation work again: **Vercel is being retired** (decision final per the user, mid-round-2; technical cutover incomplete) **and Cloudflare Workers is now the sole target platform.** Also: round 1's "Thread A" (build real correlation logic for `intelligence/correlations.js`) is now **answered — NO-GO** — see §7. Do not restart Thread A as originally framed below without reading §7 first.
+**READ THIS FIRST IF RESUMING:** §8 below (added in round 3) is the most consequential update — the campaign-delivery defect §7.4 flagged as "found but deliberately not fixed" in round 2 has now been fixed AND the historical data recovered. §7 (round 2) still holds for its other findings: **Vercel is being retired** (decision final per the user; technical cutover incomplete) **and Cloudflare Workers is the sole target platform.** Round 1's "Thread A" (build real correlation logic for `intelligence/correlations.js`) remains **NO-GO** — see §7.1. Do not restart either without reading §7 and §8 first.
 
 ---
 
@@ -91,3 +91,38 @@ Direct live HTTP testing found that only `api/v1/*.js` files flat at the top lev
 node --test workers/lib/*.test.js
 # Expect: 18 suites, 116 tests, 116 pass, 0 fail
 ```
+
+---
+
+## 8. Round 3 update (2026-08-24, branch `claude/p0-campaign-delivery-integrity-v1`)
+
+Fixed the campaign-delivery defect §7.4 (round 2) found and deliberately deferred. Full detail: `docs/audits/SENTINEL-APEX-CAMPAIGN-DELIVERY-INTEGRITY-V1-CERTIFICATION.md`, `docs/audits/SENTINEL-APEX-VERCEL-RETIREMENT-INVENTORY.md`, `docs/architecture/INTELLIGENCE-SOURCE-OF-TRUTH-MATRIX.md`.
+
+**8.1 — Root cause fixed at the source, not patched around.** `campaign-engine.js` gained `mergeCampaigns()`/`mergeCampaign()` (upsert-by-`campaign_id`, field-specific merge semantics — union arrays, min/max dates, OR flags, max confidence, severity recomputed from merged flags) and `saveCampaigns()` gained an independent catastrophic-drop guard at the actual write chokepoint (refuses to persist a count decrease below what's already on disk, unless explicitly told to). `enrichment-pipeline.js` now loads existing `campaigns.json` and merges into it every cycle instead of overwriting. **Do not revert this to a raw `saveCampaigns({ campaigns })` call** — that reintroduces the exact incident this fixed.
+
+**8.2 — The ~1,187 already-lost campaigns were recovered, not left for a future round.** `reconstructCampaignsFromGraph()` derives full campaign objects from the graph's own Campaign nodes/edges (dry-run validated against the real production graph first — 1,187/1,187 reconstructed, zero duplicates/orphans, a spot-checked sample cross-verified against `threat-graph.js`'s own hardcoded ground truth). Executed via `scripts/backfill-campaigns-from-graph.js --write`. Honestly labeled `clustering_model: 'graph_reconstruction_v1'` (never `weighted_v2`) with a disclosed fidelity gap on `shared_iocs` (see the certification doc §9) — this is not claimed to be identical to what live clustering would have produced, only a faithful, non-fabricated derivation of what the graph already recorded. **If resuming: `api/intel/campaigns.json` now has 1,187 real campaigns committed in this branch — do not treat a future empty/near-empty count as normal without checking whether the merge fix (8.1) is still in place.**
+
+**8.3 — Graph↔API consistency verified, not assumed.** Post-fix, `campaigns.json`'s campaign IDs and the graph's Campaign node IDs are in exact agreement (1,187 = 1,187), checked directly against the real committed files, not a synthetic fixture.
+
+**8.4 — Also produced this round, as explicitly asked for by the mandate**: `docs/audits/SENTINEL-APEX-VERCEL-RETIREMENT-INVENTORY.md` (classifies Vercel artifacts by retirement readiness, built on top of the pre-existing `VERCEL_MIGRATION_INVENTORY.md` rather than re-deriving it; flags the Vercel Cron trigger status for `api/cron/dispatch-intel.js` as the one genuinely **UNKNOWN** item blocking a safe cutover) and `docs/architecture/INTELLIGENCE-SOURCE-OF-TRUTH-MATRIX.md` (per-domain canonical-ownership table, to prevent a repeat of 8.1's failure mode for any other intelligence type).
+
+**Test baseline after round 3** (in addition to §4 and round 2's baseline above):
+```
+node --test tests-js/*.test.js
+# Expect: 155 tests, 155 pass, 0 fail (123 pre-existing + 25 merge/guard + 7 reconstruction)
+
+node --test workers/lib/*.test.js
+# Expect: 116 tests, 116 pass, 0 fail (unchanged from round 2)
+
+npx jest --silent
+# Expect: 1 skipped suite (unrelated, pre-existing), 1797 passed, 0 failed
+
+npx tsc --noEmit
+# Expect: no output
+```
+
+**Next recommended tranche** (ranked, not automatically chosen — per the mandate's own instruction to measure readiness first):
+1. **Resolve the Vercel Cron `UNKNOWN` status (§8.4)** — the one concrete blocker this round found standing between "Cloudflare routing is ready" and "cutover is safe." Low implementation risk, high blocking value; mostly requires operator dashboard access this session doesn't have, not code.
+2. **Malware node population** — still the most-referenced, longest-standing real gap (`platform/open-issues.md` Issue 8, unchanged across 4 sprints) blocking a genuinely complete correlation/graph story; real entity-extraction work, not a quick fix.
+3. **Actor-attribution coverage** (still ~2%/~1% of the graph) — same reasoning as malware population; would make the correlation layer (already real and live) meaningfully more useful without requiring new architecture.
+4. Do **not** restart Thread A (SOC-workbench correlation-engine building) until the workbench has real analyst-generated data to correlate — re-check `evidence-manager.js`/`intelligence-manager.js` population before considering this again.
