@@ -53,7 +53,9 @@ const {
 const {
   buildCampaigns,
   linkActorsToCampaigns: linkActorsToCampaignsEngine,
+  loadCampaigns,
   saveCampaigns,
+  mergeCampaigns,
 } = require('./campaign-engine');
 
 const {
@@ -554,7 +556,22 @@ function runEnrichmentPipeline(intelItems) {
 
   // ── Persist to disk ────────────────────────────────────────────────
   saveGraph(graph);
-  saveCampaigns({ campaigns });
+
+  // Accumulate, don't overwrite: `campaigns` above is only what this run's
+  // batch clustered -- it has no knowledge of campaigns discovered in any
+  // earlier cycle. mergeCampaigns() upserts this batch into the
+  // previously-persisted set by campaign_id instead of replacing it
+  // outright, which is the fix for the production defect where
+  // campaigns.json could go from 1,187 accumulated campaigns to 0 in a
+  // single overwrite (campaign delivery integrity v1). saveCampaigns()'s
+  // own catastrophic-drop guard is a second, independent line of defense
+  // at the actual write chokepoint.
+  const existingCampaignsState = loadCampaigns();
+  const existingCampaignIds    = new Set((existingCampaignsState.campaigns || []).map(c => c.campaign_id));
+  const mergedCampaigns        = mergeCampaigns(existingCampaignsState.campaigns || [], campaigns);
+  const campaignSaveResult     = saveCampaigns({ campaigns: mergedCampaigns });
+  const campaignsCreated       = campaigns.filter(c => !existingCampaignIds.has(c.campaign_id)).length;
+  const campaignsUpdated       = campaigns.length - campaignsCreated;
 
   const elapsed = Date.now() - startTime;
   const topThreatCount = enrichedItems.filter(i => !i.data_confidence.suppressed).length;
@@ -562,24 +579,33 @@ function runEnrichmentPipeline(intelItems) {
   log(`Pipeline complete in ${elapsed}ms`);
   log(`  Items enriched:     ${enrichedItems.length}`);
   log(`  Attributed:         ${pass2Attributed}/${validItems.length}`);
-  log(`  Campaigns:          ${campaigns.length}`);
+  log(`  Campaigns:          ${campaigns.length} this run (${campaignsCreated} new, ${campaignsUpdated} updated) -> ${mergedCampaigns.length} accumulated total`);
+  if (!campaignSaveResult.saved) {
+    log(`  CAMPAIGN SAVE ${campaignSaveResult.blocked ? 'BLOCKED by catastrophic-drop guard' : 'FAILED'} -- see [CAMPAIGNS] log above`);
+  }
   log(`  High/Med conf data: ${topThreatCount} (${suppressedCount} suppressed)`);
 
   return {
     enrichedItems,
     graph,
-    campaigns,
+    campaigns: mergedCampaigns,
     stats: {
-      items_processed:     validItems.length,
-      skipped:             skippedItems.length,
-      attributed:          pass2Attributed,
-      unattributed:        validItems.length - pass2Attributed,
-      campaigns:           campaigns.length,
-      suppressed_low_data: suppressedCount,
-      top_threat_items:    topThreatCount,
-      graph_nodes:         Object.keys(graph.nodes).length,
-      graph_edges:         graph.edges.length,
-      elapsed_ms:          elapsed,
+      items_processed:        validItems.length,
+      skipped:                skippedItems.length,
+      attributed:             pass2Attributed,
+      unattributed:           validItems.length - pass2Attributed,
+      // Kept as "this run's batch count" for backward compatibility --
+      // fetch-live-intel.js already logs this field under that meaning.
+      campaigns:              campaigns.length,
+      campaigns_created:      campaignsCreated,
+      campaigns_updated:      campaignsUpdated,
+      campaigns_total:        mergedCampaigns.length,
+      campaigns_save_blocked: campaignSaveResult.blocked === true,
+      suppressed_low_data:    suppressedCount,
+      top_threat_items:       topThreatCount,
+      graph_nodes:            Object.keys(graph.nodes).length,
+      graph_edges:            graph.edges.length,
+      elapsed_ms:             elapsed,
     },
   };
 }

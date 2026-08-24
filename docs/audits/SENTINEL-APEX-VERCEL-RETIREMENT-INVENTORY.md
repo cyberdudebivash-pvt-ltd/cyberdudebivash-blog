@@ -1,0 +1,35 @@
+# SENTINEL APEX — Vercel Retirement Inventory
+
+**Date:** 2026-08-24
+**Status directive (user, this session):** Vercel retirement is a final decision; Cloudflare Workers is the sole target platform going forward. Technical cutover is not yet complete (DNS still points to Vercel as of this writing).
+
+This document classifies Vercel-specific artifacts by retirement readiness. It does **not** re-derive the underlying forensic facts about `vercel.json`, `.vercelignore`, or the GitHub Actions/Vercel relationship — `VERCEL_MIGRATION_INVENTORY.md` (2026-08-16) already did that thoroughly and its findings are treated as current unless noted otherwise below. This document adds: (a) retirement classification, (b) two material findings from live testing done in this and the prior round that post-date that inventory, (c) the Cloudflare-side parity status each Vercel artifact maps to.
+
+---
+
+## New evidence since `VERCEL_MIGRATION_INVENTORY.md` (2026-08-16)
+
+1. **A large, previously-undetected live deployment gap on Vercel** (found via direct HTTP testing against `blog.cyberdudebivash.in` in the prior round, PR #129). Only files flat at the top level of `api/v1/*.js`, plus files explicitly listed in `vercel.json`'s `functions` block (8 files — `intel.js`, `auth.js`, `billing.js`, `admin.js`, `billing/webhook.js`, `billing/razorpay-webhook.js`, `cron/dispatch-intel.js`, `og.js`), are actually reachable. Every one of the other ~24 routable function files 404s at Vercel's own edge, even at its bare base path. This does not contradict `VERCEL_MIGRATION_INVENTORY.md` §8's claim that "live production was independently verified reachable and healthy" — that verification tested the same 8 core routes `OPERATIONS.md` §3 documents; it never probed the newer `intelligence/`, `workbench/`, `ioc/`, `quality/`, `customer/`, `reports/`, `analysis/`, `products/` surface, which mostly post-dates that 2026-08-16 audit.
+2. **Cloudflare Workers' equivalent sub-path routing gap for 7 of those files was closed in the prior round** (PR #129, `workers/lib/route-table.js`'s `APEX_SUBPATH_HANDLERS`) — verified end-to-end against the real handler stack. Cloudflare Workers is not yet the live DNS target (`wrangler.jsonc` still declares no production routes/custom_domains as of the prior round's check), but its routing code is now closer to parity than Vercel's live deployment is for this surface.
+
+## Classification
+
+| Artifact | Cloudflare equivalent | Runtime dependency | Evidence | Retirement status | Safe-removal prerequisite |
+|---|---|---|---|---|---|
+| `vercel.json` | `workers/lib/route-table.js` + `workers/lib/router.js` (already a full transcription — see that file's own header comment) | Vercel only | DNS still resolves `blog.cyberdudebivash.in` to Vercel (live-tested this round); `vercel.json` is what's actually serving that traffic today | **ACTIVE DEPENDENCY** — do not remove | Cloudflare DNS cutover (`PRODUCTION-CUTOVER-RUNBOOK.md` Stage 6) executed and verified |
+| `.vercelignore` | Cloudflare's equivalent access-control is `workers/lib/route-table.js`'s `BLOCKED_PREFIXES` (already present, already transcribed) | Vercel only | Same reasoning as above | **ACTIVE DEPENDENCY** | Same as above |
+| `vercel-ignore-build.sh` | No Cloudflare equivalent exists yet — this specific problem (bot-commit deploy-quota exhaustion) has not been evaluated for whether it recurs on Cloudflare's deploy model | Vercel only | Governs whether a bot commit triggers a Vercel build at all; still referenced live by `vercel.json`'s `ignoreCommand` | **ACTIVE DEPENDENCY** | Same as above, plus: evaluate whether Cloudflare Workers deploys need an equivalent throttle before cutover, not after |
+| `api/v1/*.js`, `api/og.js`, `api/cron/dispatch-intel.js` (the 32 routable function files) | `workers/lib/router.js`'s `HANDLER_MODULES` (already requires every one of these files — shared code, not duplicated) | **Both** — same files serve both runtimes today | `router.test.js` enforces 1:1 parity between `route-table.js` and `HANDLER_MODULES` (a test, not a manual claim) | **MIGRATED** (code-level) / **ACTIVE DEPENDENCY** (Vercel still serves them live) | N/A — these files are not Vercel-specific and were never going to be removed; only their Vercel *routing* becomes retirable after cutover |
+| `api/cron/dispatch-intel.js`'s Vercel Cron trigger | No Cloudflare Cron Trigger configured yet (`NOT VERIFIED` in `VERCEL_MIGRATION_INVENTORY.md` §6 whether this was ever live on Vercel either) | Vercel dashboard-only config, not git-visible | `vercel.json` has no `crons` key — if this ever ran, its schedule lives only in a Vercel dashboard this session has no access to | **UNKNOWN** | Confirm with whoever has Vercel dashboard access whether this cron is currently active before assuming it can be silently dropped; if active, a Cloudflare Cron Trigger equivalent must exist and be verified *before* cutover, not discovered missing after |
+| `api/intel/campaigns.json`, `api/intel/threat-graph.json`, and the other static `api/intel/**` JSON artifacts | Same files, same paths — already read correctly on both runtimes (`api/_lib/intel.js`'s `isCloudflareWorkers()`-gated `PATHS`, verified this round) | Both | This round's own campaign-delivery-integrity fix directly touches these files and was verified compatible with both runtimes' read paths | **MIGRATED** | None — no retirement action needed, these were never Vercel-specific |
+| `OPERATIONS.md` / `RUNBOOKS.md` Vercel-specific sections | Not yet updated for Cloudflare-as-primary | N/A (documentation) | Not audited line-by-line this round | **LEGACY** (documentation drift risk, not runtime risk) | Update once cutover is scheduled, so on-call procedures don't point at the wrong platform mid-incident |
+
+## What this document does not do
+
+- It does not remove, disable, or modify any Vercel configuration file. Per this mandate's own instruction and the master governance constitution's Deprecation-Instead-of-Deletion policy, nothing here is deleted.
+- It does not attempt to answer `VERCEL_MIGRATION_INVENTORY.md` §8's already-documented `NOT VERIFIED` items (account/project ownership, live env var values, cron dashboard state, current plan tier) — those require Vercel dashboard/API access this session does not have, unchanged from three weeks ago.
+- It does not schedule or execute the DNS cutover itself — that is an operator-authorized action per `PRODUCTION-CUTOVER-RUNBOOK.md`'s own Stage 6 gate, outside this document's scope.
+
+## Recommendation
+
+The single highest-leverage next action toward retirement is resolving the **UNKNOWN** cron status above — if `api/cron/dispatch-intel.js` is genuinely live and load-bearing on Vercel today, cutover cannot proceed safely until an equivalent exists and is verified on Cloudflare. Everything else in this table is either already code-level migrated (shared files, already-tested route parity) or is inert Vercel-specific config that simply stops mattering the moment DNS cutover completes — no separate "removal" work is needed for those beyond the cutover itself.
