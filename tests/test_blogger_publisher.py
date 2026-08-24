@@ -210,6 +210,112 @@ class TestBloggerPublish(unittest.TestCase):
                 with self.assertRaises(BloggerRateLimitError):
                     self.publisher.update_post("post-abc-123", "Title", "<p>safe</p>", [])
 
+    # -- patch_post_preview() (P0 social-preview-trust-v2) -------------------
+
+    def test_patch_post_preview_uses_patch_method_with_narrow_payload(self):
+        with patch("requests.patch", return_value=self._mock_publish_success()) as mock_patch:
+            self.publisher.patch_post_preview(
+                "post-abc-123", content="<p>fixed</p>", image_url="https://blog.cyberdudebivash.in/api/og?x",
+            )
+        self.assertEqual(mock_patch.call_count, 1)
+        payload = mock_patch.call_args.kwargs["json"]
+        self.assertEqual(payload["content"], "<p>fixed</p>")
+        self.assertEqual(payload["images"], [{"url": "https://blog.cyberdudebivash.in/api/og?x"}])
+        # A PATCH is a narrow update — title/labels must never appear, unlike
+        # update_post()'s PUT (which requires them or risks clearing them).
+        self.assertNotIn("title", payload)
+        self.assertNotIn("labels", payload)
+
+    def test_patch_post_preview_image_only_omits_content(self):
+        with patch("requests.patch", return_value=self._mock_publish_success()) as mock_patch:
+            self.publisher.patch_post_preview("post-abc-123", image_url="https://blog.cyberdudebivash.in/api/og?x")
+        payload = mock_patch.call_args.kwargs["json"]
+        self.assertNotIn("content", payload)
+        self.assertEqual(payload["images"], [{"url": "https://blog.cyberdudebivash.in/api/og?x"}])
+
+    def test_patch_post_preview_requires_at_least_one_field(self):
+        with self.assertRaises(ValueError):
+            self.publisher.patch_post_preview("post-abc-123")
+
+    def test_patch_post_preview_retries_rate_limit(self):
+        rate_limited = MagicMock()
+        rate_limited.status_code = 429
+        rate_limited.text = "quota"
+        success = self._mock_publish_success()
+
+        with patch("requests.patch", side_effect=[rate_limited, success]) as mock_patch:
+            with patch("time.sleep"):
+                result = self.publisher.patch_post_preview("post-abc-123", content="<p>x</p>")
+
+        self.assertEqual(result["id"], "post-abc-123")
+        self.assertEqual(mock_patch.call_count, 2)
+
+    def test_patch_post_preview_rate_limit_exhaustion_is_explicit(self):
+        rate_limited = MagicMock()
+        rate_limited.status_code = 429
+        rate_limited.text = "quota"
+
+        with patch("requests.patch", return_value=rate_limited):
+            with patch("time.sleep"):
+                with self.assertRaises(BloggerRateLimitError):
+                    self.publisher.patch_post_preview("post-abc-123", content="<p>x</p>")
+
+    def test_patch_post_preview_refreshes_token_once_on_401(self):
+        unauthorized = MagicMock()
+        unauthorized.status_code = 401
+        unauthorized.text = "expired"
+        success = self._mock_publish_success()
+        refreshed_token = MagicMock()
+        refreshed_token.ok = True
+        refreshed_token.json.return_value = {"access_token": "refreshed-token", "expires_in": 3600}
+
+        with patch("requests.patch", side_effect=[unauthorized, success]):
+            with patch("requests.post", return_value=refreshed_token):
+                with patch("time.sleep"):
+                    result = self.publisher.patch_post_preview("post-abc-123", content="<p>x</p>")
+        self.assertEqual(result["id"], "post-abc-123")
+
+    def test_patch_post_preview_second_401_is_fatal(self):
+        unauthorized = MagicMock()
+        unauthorized.status_code = 401
+        unauthorized.text = "expired"
+        refreshed_token = MagicMock()
+        refreshed_token.ok = True
+        refreshed_token.json.return_value = {"access_token": "refreshed-token", "expires_in": 3600}
+
+        with patch("requests.patch", return_value=unauthorized):
+            with patch("requests.post", return_value=refreshed_token):
+                with patch("time.sleep"):
+                    with self.assertRaises(BloggerAuthError):
+                        self.publisher.patch_post_preview("post-abc-123", content="<p>x</p>")
+
+    # -- list_posts_page() (P0 social-preview-trust-v2) -----------------------
+
+    def test_list_posts_page_first_page_omits_page_token(self):
+        mock_resp = MagicMock()
+        mock_resp.raise_for_status = MagicMock()
+        mock_resp.json.return_value = {"items": [{"id": "1"}], "nextPageToken": "abc"}
+        with patch("requests.get", return_value=mock_resp) as mock_get:
+            result = self.publisher.list_posts_page(max_results=10)
+        self.assertNotIn("pageToken", mock_get.call_args.kwargs["params"])
+        self.assertEqual(result["nextPageToken"], "abc")
+
+    def test_list_posts_page_forwards_page_token(self):
+        mock_resp = MagicMock()
+        mock_resp.raise_for_status = MagicMock()
+        mock_resp.json.return_value = {"items": []}
+        with patch("requests.get", return_value=mock_resp) as mock_get:
+            self.publisher.list_posts_page(page_token="xyz", max_results=10)
+        self.assertEqual(mock_get.call_args.kwargs["params"]["pageToken"], "xyz")
+
+    def test_list_posts_page_last_page_has_no_next_token(self):
+        mock_resp = MagicMock()
+        mock_resp.raise_for_status = MagicMock()
+        mock_resp.json.return_value = {"items": [{"id": "1"}]}
+        with patch("requests.get", return_value=mock_resp):
+            result = self.publisher.list_posts_page()
+        self.assertNotIn("nextPageToken", result)
+
     def test_get_post_returns_full_body(self):
         # ReportX Phase 1Q: unlike publish_post()'s own create response
         # (fetchBody=false), get_post() must return the real, full content

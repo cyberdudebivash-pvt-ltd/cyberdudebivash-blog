@@ -190,6 +190,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                 "quality_score_eligible",
                 "detection_status",
                 "generated_at",
+                "preview_certification",
             ):
                 post_result[field] = transformed.get(field)
 

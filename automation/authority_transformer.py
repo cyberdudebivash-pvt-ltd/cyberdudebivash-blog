@@ -47,6 +47,7 @@ from .report_renderer import (
     render_evidence_report,
 )
 from .seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss
+from .social_preview_certifier import certify_metadata
 
 logger = setup_logger("authority_transformer")
 
@@ -161,20 +162,62 @@ def _get_palette(labels: list) -> dict:
 # This becomes data:post.firstImageUrl in Blogger — fixes missing thumbnails.
 # ─────────────────────────────────────────────────────────────────────────────
 
+# Bumped only when api/og.js's rendered layout actually changes (e.g. this
+# Intelligence Card v2 redesign) — a fixed, deterministic cache-key
+# differentiator so Vercel's long-lived edge cache (s-maxage=1yr) doesn't
+# keep serving a stale old-design PNG at a URL it already cached, without
+# fragmenting the cache per-request the way a timestamp or random value
+# would. Every card of the same design version shares this one value.
+OG_CARD_VERSION = "2"
+
+
+def _format_og_date(published_at: Optional[str]) -> str:
+    """Short display date for the OG card footer, e.g. "24 AUG 2026". Falls
+    back to today (UTC) when published_at is missing or unparseable — never
+    raises, since a slightly-off fallback date is harmless where a broken
+    image render is not (same fail-soft discipline as api/og.js itself)."""
+    if published_at:
+        try:
+            dt = datetime.fromisoformat(str(published_at).replace("Z", "+00:00"))
+            return dt.strftime("%d %b %Y").upper()
+        except (ValueError, TypeError):
+            pass
+    return datetime.now(timezone.utc).strftime("%d %b %Y").upper()
+
+
 def _build_dynamic_og_image_url(config: Config, title: str, severity: Optional[str],
-                                 cve_id: str, cvss: Optional[str], type_label: str) -> str:
+                                 cve_id: str, cvss: Optional[str], type_label: str,
+                                 report_id: Optional[str] = None, published_at: Optional[str] = None,
+                                 ransomware_group: Optional[str] = None,
+                                 ransomware_sector: Optional[str] = None) -> str:
     """Same satori/resvg-rendered card the Vercel-side generators use
     (api/og.js) — mirrors its documented query contract exactly (title,
-    severity, cve, cvss, type; see api/og.js's own docstring) rather than
-    inventing a parallel image system. A parity port, not a duplication:
-    Python can't require() the Node module, so the query-string contract is
-    the shared interface, matching how detection-engine.js/sigma_builder.py
-    mirror each other elsewhere in this repo."""
-    params = {"title": title, "severity": severity or "HIGH", "type": type_label}
+    severity, cve, cvss, type, reportId, date, actor, sector; see api/og.js's
+    own docstring) rather than inventing a parallel image system. A parity
+    port, not a duplication: Python can't require() the Node module, so the
+    query-string contract is the shared interface, matching how
+    detection-engine.js/sigma_builder.py mirror each other elsewhere in this
+    repo.
+
+    report_id reuses the platform's one canonical report-identity scheme
+    (report_integrity.build_report_context()'s "CDB-CTI-{year}-{hash}") —
+    never a second ID invented here. actor/sector are sent only when the
+    source record actually supplied them (DiscoveredArticle.ransomware_group/
+    ransomware_sector, already None-when-unknown by that dataclass's own
+    contract) — this function fabricates no attribution or victim data of
+    its own; when both are absent the card simply omits that line."""
+    params = {"title": title, "severity": severity or "HIGH", "type": type_label,
+              "date": _format_og_date(published_at), "v": OG_CARD_VERSION}
     if cve_id:
         params["cve"] = cve_id
     if cvss:
         params["cvss"] = cvss
+    if report_id:
+        params["reportId"] = report_id
+    if ransomware_group:
+        params["actor"] = ransomware_group
+    if ransomware_sector:
+        params["sector"] = ransomware_sector
     return f"{config.source_base_url}/api/og?{urlencode(params)}"
 
 
@@ -732,7 +775,7 @@ Generate a comprehensive intelligence report with EXACTLY these sections in HTML
 [Specific guidance for MSSPs: client notification priority (which client segments are exposed), detection rule deployment (which rules to push), threat hunting activation (specific hypotheses), advisory content. Position CYBERDUDEBIVASH® SENTINEL APEX as the intelligence source.]
 
 <h3>Sentinel APEX Intelligence Correlation</h3>
-[How CYBERDUDEBIVASH® SENTINEL APEX detects and correlates this threat class. Reference: live CVE tracking engine, MITRE ATT&CK correlation, real-time IOC feed integration, Sigma rule library (2,400+ rules), threat hunting workbench. Be specific to this threat type.]
+[How CYBERDUDEBIVASH® SENTINEL APEX detects and correlates this threat class. Reference: live CVE tracking engine, MITRE ATT&CK correlation, real-time IOC feed integration, the Sigma/YARA detection rule library, threat hunting workbench. Do not state a specific rule count or any other statistic not present in the source article. Be specific to this threat type.]
 
 <h3>AI Security Impact</h3>
 [INCLUDE ONLY if the article explicitly discusses AI/LLM/ML systems, AI infrastructure, or AI-assisted attacks. Reference OWASP LLM Top 10, MITRE ATLAS, NIST AI RMF 1.0 with specific LLM vulnerability identifiers. OMIT ENTIRELY if not AI-related.]
@@ -2424,21 +2467,16 @@ class AuthorityTransformer:
             forecast_count=forecast_count, ioc_count=len(article_iocs),
         )
 
-        # Generate SEO metadata
-        seo_data = self.seo.generate(
-            title=article.title,
-            summary=article.summary,
-            url=article.url,
-            labels=article.labels,
-            published_at=article.published_at,
-        )
-
         # Dynamic per-article social card (ESPMP v1). Computed independently
         # from _assemble_html()'s own cves/cvss extraction (same pattern
-        # already used elsewhere in this file — see seo_data above, which
+        # already used elsewhere in this file — see seo_data below, which
         # also re-derives cves/cvss on the same text) because this value
         # needs to reach main.py's publish_post() call directly, not just
-        # the embedded HTML body.
+        # the embedded HTML body. Computed before seo_data (moved ahead of
+        # it) so the same URL can be threaded into the JSON-LD Article.image
+        # too — otherwise the page's structured data claims a different
+        # image than the one actually shown, which is exactly the kind of
+        # conflicting same-entity metadata a crawler should never see.
         _cves_for_image = _extract_cve_ids(article.title + " " + article.summary)
         _cvss_for_image = _extract_cvss(article.title + " " + article.summary)
         _severity_for_image, _ = _derive_severity(article, _cvss_for_image)
@@ -2446,7 +2484,37 @@ class AuthorityTransformer:
             self.config, title=article.title, severity=_severity_for_image,
             cve_id=_cves_for_image[0] if _cves_for_image else "", cvss=_cvss_for_image,
             type_label=primary_category(article.labels) or "THREAT INTEL",
+            report_id=context.report_id, published_at=article.published_at,
+            ransomware_group=article.ransomware_group, ransomware_sector=article.ransomware_sector,
         )
+
+        # Generate SEO metadata
+        seo_data = self.seo.generate(
+            title=article.title,
+            summary=article.summary,
+            url=article.url,
+            labels=article.labels,
+            published_at=article.published_at,
+            image_url=image_url,
+        )
+
+        # Social-preview certification -- OBSERVE stage (see
+        # social_preview_certifier.py's module docstring for the full staged
+        # rollout: observe -> warn -> shadow -> blocking). Logged and carried
+        # in this method's return value for the run report; never blocks
+        # publication at this stage. canonical_url/expected_domain are
+        # omitted deliberately -- Blogger doesn't assign a post's real URL
+        # until after publish_post() returns, so there is nothing genuine to
+        # certify that against yet (a live fetch-back check belongs in
+        # social_preview_certifier.certify_live_html(), run post-publish).
+        preview_certification = certify_metadata(
+            image_url=image_url, title=seo_data["meta_title"], description=seo_data["meta_description"],
+        ).to_dict()
+        if preview_certification["verdict"] != "CERTIFIED":
+            logger.warning(
+                "Social preview certification BLOCKED (observe mode — publication proceeds)",
+                extra={"title": article.title[:60], "reasons": preview_certification["reasons"]},
+            )
 
         # Build full HTML
         html = self._assemble_html(article, body_content, seo_data, context, image_url=image_url)
@@ -2500,6 +2568,7 @@ class AuthorityTransformer:
             "content": html,
             "labels": blogger_labels,
             "image_url": image_url,
+            "preview_certification": preview_certification,
             # meta_title/meta_description/keywords below have no Blogger API
             # home: verified against the real Posts v3 schema (the
             # blogger.googleapis.com discovery document) that no

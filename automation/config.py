@@ -70,8 +70,13 @@ class Config:
     source_sitemap_url: str = "https://blog.cyberdudebivash.in/sitemap.xml"
     source_base_url: str = "https://blog.cyberdudebivash.in"
 
-    # Target Blogger
+    # Target Blogger — target_blog_url is the underlying Blogspot hosting
+    # implementation detail (used only for internal/API purposes). public_cti_url
+    # is the commercial, customer-facing canonical identity of the same site
+    # (custom-domain-mapped) and is what belongs in public-facing structured
+    # data, sameAs references, and anywhere else customers or crawlers see it.
     target_blog_url: str = "https://cyberbivash.blogspot.com"
+    public_cti_url: str = "https://cti.cyberdudebivash.in"
     blogger_api_base: str = "https://www.googleapis.com/blogger/v3"
 
     # Pipeline control — production observations show Blogger accepts five
@@ -114,6 +119,7 @@ class Config:
             twitter_access_token=os.environ.get("TWITTER_ACCESS_TOKEN", ""),
             twitter_access_secret=os.environ.get("TWITTER_ACCESS_SECRET", ""),
             newsletter_signup_url=os.environ.get("NEWSLETTER_SIGNUP_URL", "https://cyberdudebivash.substack.com"),
+            public_cti_url=os.environ.get("PUBLIC_CTI_URL", "https://cti.cyberdudebivash.in"),
             max_posts_per_run=int(os.environ.get("MAX_POSTS_PER_RUN", "5")),
         )
 

@@ -67,4 +67,57 @@ describe('api/og.js', () => {
     // entirely (empty string), not sanitized-and-kept -- still renders fine.
     expect(getStatus()).toBe(200);
   });
+
+  // -- Intelligence Card v2 contract (P0 social-preview-trust-v2) -----------
+
+  test('renders with reportId, date, actor, and sector all present', async () => {
+    const { req, res, getStatus, getBody } = fakeReqRes(
+      '/api/og?title=krybit%20Ransomware%20Claims%20New%20Victim&severity=HIGH&type=Ransomware' +
+      '&reportId=CDB-CTI-2026-AB8646B9A383&date=24%20AUG%202026&actor=KRYBIT&sector=Retail'
+    );
+    await ogHandler(req, res);
+    expect(getStatus()).toBe(200);
+    expect(getBody() instanceof Uint8Array).toBe(true);
+    expect(Array.from(getBody().subarray(0, 8))).toEqual([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  });
+
+  test('rejects a malformed reportId (fails its allowlist regex) without rendering it raw', async () => {
+    const { req, res, getStatus } = fakeReqRes('/api/og?reportId=%22%3B%20rm%20-rf%20%2F%20%23');
+    await ogHandler(req, res);
+    // '"; rm -rf / #' fails /^[A-Za-z0-9-]+$/ and is dropped entirely,
+    // same discipline as the existing cve-format rejection above.
+    expect(getStatus()).toBe(200);
+  });
+
+  test('never falls back to the static image for a very long actor/sector combination', async () => {
+    // Regression guard for the overflow bug found during manual visual QA:
+    // long actor+sector text must wrap within its own bounded box (see
+    // buildTree's metaItems row: flexWrap + maxWidth + wordBreak) rather
+    // than causing a satori layout error that would trip the catch-all
+    // fallback (a 302, not a 200).
+    const longValue = 'A'.repeat(300);
+    const { req, res, getStatus, headers } = fakeReqRes(
+      `/api/og?title=Overflow%20probe&actor=${longValue}&sector=${longValue}`
+    );
+    await ogHandler(req, res);
+    expect(getStatus()).toBe(200);
+    expect(headers['content-type']).toBe('image/png');
+  });
+
+  test('renders with no optional fields at all (graceful minimum-metadata degradation)', async () => {
+    const { req, res, getStatus } = fakeReqRes('/api/og?title=Weekly%20Threat%20Landscape%20Roundup');
+    await ogHandler(req, res);
+    expect(getStatus()).toBe(200);
+  });
+
+  test('script/HTML-injection attempts in title and actor render as inert text, not markup', async () => {
+    // satori builds a React-like element tree from plain string children —
+    // it never parses these values as HTML, so this proves there is no
+    // injection surface, not just that the sanitizer stripped something.
+    const { req, res, getStatus } = fakeReqRes(
+      '/api/og?title=%3Cscript%3Ealert(1)%3C%2Fscript%3E&actor=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E'
+    );
+    await ogHandler(req, res);
+    expect(getStatus()).toBe(200);
+  });
 });

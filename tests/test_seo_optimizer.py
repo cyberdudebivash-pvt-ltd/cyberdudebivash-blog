@@ -5,6 +5,7 @@ Tests for seo_optimizer — metadata generation, schema validation, keyword extr
 import json
 import unittest
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 from automation.config import Config
 from automation.seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss, _extract_cwe_ids, _truncate
@@ -57,13 +58,15 @@ class TestSEOOptimizer(unittest.TestCase):
         self.optimizer = SEOOptimizer(self.config)
         self.pub_date = datetime.now(timezone.utc).isoformat()
 
-    def _generate(self, title="CVE-2026-1234 Critical RCE Vulnerability", summary="A critical vulnerability"):
+    def _generate(self, title="CVE-2026-1234 Critical RCE Vulnerability", summary="A critical vulnerability",
+                  image_url=None):
         return self.optimizer.generate(
             title=title,
             summary=summary,
             url="https://blog.cyberdudebivash.in/posts/test",
             labels=["Vulnerabilities", "Zero-Day", "CYBERDUDEBIVASH"],
             published_at=self.pub_date,
+            image_url=image_url,
         )
 
     def test_meta_title_contains_brand(self):
@@ -214,6 +217,50 @@ class TestSEOOptimizer(unittest.TestCase):
     def test_glossary_empty_when_no_terms_mentioned(self):
         glossary = self.optimizer.build_glossary_schema("Generic Security Update", "Nothing specific mentioned here.")
         self.assertEqual(glossary, {})
+
+    # -- image_url coherence (P0 social-preview-trust-v2) --------------------
+
+    def test_og_image_uses_real_per_report_image_url_when_given(self):
+        real_image = "https://blog.cyberdudebivash.in/api/og?title=x&severity=CRITICAL"
+        result = self._generate(image_url=real_image)
+        self.assertEqual(result["og_tags"]["og:image"], real_image)
+        self.assertEqual(result["twitter_card"]["twitter:image"], real_image)
+
+    def test_og_image_falls_back_to_static_banner_without_image_url(self):
+        result = self._generate(image_url=None)
+        self.assertTrue(result["og_tags"]["og:image"].endswith("/og-image.png"))
+        self.assertTrue(result["twitter_card"]["twitter:image"].endswith("/og-image.png"))
+
+    def test_json_ld_article_image_uses_real_per_report_image_url(self):
+        real_image = "https://blog.cyberdudebivash.in/api/og?title=x&severity=CRITICAL"
+        result = self._generate(image_url=real_image)
+        article = result["json_ld"]["@graph"][0]
+        self.assertEqual(article["image"]["url"], real_image)
+
+    def test_json_ld_article_image_falls_back_to_static_banner(self):
+        result = self._generate(image_url=None)
+        article = result["json_ld"]["@graph"][0]
+        self.assertTrue(article["image"]["url"].endswith("/og-image.png"))
+
+    def test_json_ld_publisher_logo_stays_static_even_with_real_image_url(self):
+        # Organization.logo is a brand mark, not a per-article social card —
+        # schema.org/Google guidance wants it stable, not swapped per report.
+        real_image = "https://blog.cyberdudebivash.in/api/og?title=x&severity=CRITICAL"
+        result = self._generate(image_url=real_image)
+        article = result["json_ld"]["@graph"][0]
+        self.assertTrue(article["publisher"]["logo"]["url"].endswith("/og-image.png"))
+        self.assertNotEqual(article["publisher"]["logo"]["url"], real_image)
+
+    def test_organization_sameas_has_no_blogspot_canonical_leakage(self):
+        result = self._generate()
+        org = next(n for n in result["json_ld"]["@graph"] if n.get("@type") == "Organization")
+        same_as = org["sameAs"]
+        # Real hostname comparison, not a substring/"in" check — a raw
+        # substring match is satisfiable at an arbitrary position (e.g.
+        # "https://evil.example/?x=blogspot.com") and CodeQL correctly
+        # flags that pattern regardless of context.
+        self.assertFalse(any(urlparse(url).netloc == "cyberbivash.blogspot.com" for url in same_as))
+        self.assertIn(self.config.public_cti_url, same_as)
 
 
 if __name__ == "__main__":

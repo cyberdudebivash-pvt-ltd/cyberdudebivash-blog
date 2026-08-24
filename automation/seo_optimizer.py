@@ -49,8 +49,17 @@ class SEOOptimizer:
         self.config = config
 
     def generate(self, title: str, summary: str, url: str, labels: list[str],
-                 published_at: str) -> dict:
-        """Return full SEO payload for a syndicated article."""
+                 published_at: str, image_url: Optional[str] = None) -> dict:
+        """Return full SEO payload for a syndicated article.
+
+        image_url, when given, is the real per-report social card
+        (authority_transformer._build_dynamic_og_image_url()'s api/og.js URL —
+        the same one used for the post's lead <img> and sent to Blogger's
+        Post.images field). Threading it through here keeps the JSON-LD
+        Article.image coherent with what the page actually shows; without it,
+        this fell back to the static site-wide /og-image.png even after the
+        visible image became per-report, which is exactly the kind of
+        conflicting same-entity metadata a crawler should not see."""
         cves = _extract_cve_ids(title + " " + summary)
         cvss = _extract_cvss(title + " " + summary)
         cwes = _extract_cwe_ids(title + " " + summary)
@@ -63,9 +72,9 @@ class SEOOptimizer:
             "meta_title": meta_title,
             "meta_description": meta_description,
             "keywords": keywords,
-            "og_tags": self._build_og_tags(meta_title, meta_description, url),
-            "twitter_card": self._build_twitter_card(meta_title, meta_description, url),
-            "json_ld": self._build_json_ld(meta_title, meta_description, url, labels, published_at, cves, cwes),
+            "og_tags": self._build_og_tags(meta_title, meta_description, url, image_url),
+            "twitter_card": self._build_twitter_card(meta_title, meta_description, url, image_url),
+            "json_ld": self._build_json_ld(meta_title, meta_description, url, labels, published_at, cves, cwes, image_url=image_url),
         }
 
         logger.info("SEO metadata generated", extra={"title": title[:80], "cves": cves})
@@ -101,33 +110,42 @@ class SEOOptimizer:
                 words.add(word)
         return sorted(words)[:25]
 
-    def _build_og_tags(self, title: str, description: str, url: str) -> dict:
+    def _build_og_tags(self, title: str, description: str, url: str,
+                       image_url: Optional[str] = None) -> dict:
         return {
             "og:type": "article",
             "og:title": title,
             "og:description": description,
             "og:url": url,
-            "og:image": f"{self.config.source_base_url}/og-image.png",
+            "og:image": image_url or f"{self.config.source_base_url}/og-image.png",
             "og:site_name": "CYBERDUDEBIVASH® SENTINEL APEX",
         }
 
-    def _build_twitter_card(self, title: str, description: str, url: str) -> dict:
+    def _build_twitter_card(self, title: str, description: str, url: str,
+                            image_url: Optional[str] = None) -> dict:
         return {
             "twitter:card": "summary_large_image",
             "twitter:site": "@CyberDudeBivash",
             "twitter:title": title,
             "twitter:description": description,
-            "twitter:image": f"{self.config.source_base_url}/og-image.png",
+            "twitter:image": image_url or f"{self.config.source_base_url}/og-image.png",
         }
 
     def _build_json_ld(self, title: str, description: str, url: str,
                        labels: list[str], published_at: str, cves: list[str],
-                       cwes: Optional[list[str]] = None) -> dict:
+                       cwes: Optional[list[str]] = None,
+                       image_url: Optional[str] = None) -> dict:
         now = datetime.now(timezone.utc).isoformat()
         text_lower = title.lower()
         # Use TechArticle for CVE/vulnerability content — better Google News eligibility
         article_type = "TechArticle" if (cves or "vulnerability" in text_lower or "cve" in text_lower) else "NewsArticle"
-        og_image_url = f"{self.config.source_base_url}/og-image.png"
+        # Static site-wide banner — used as the publisher's brand logo (below)
+        # regardless of image_url: schema.org/Google guidance wants
+        # Organization.logo to be a stable brand mark, not a per-article card.
+        static_brand_image = f"{self.config.source_base_url}/og-image.png"
+        # The article's own image should be the real per-report card when one
+        # was computed, not the generic banner — see generate()'s docstring.
+        article_image_url = image_url or static_brand_image
 
         article_node = {
             "@type": article_type,
@@ -151,14 +169,14 @@ class SEOOptimizer:
                 "url": self.config.brand_url,
                 "logo": {
                     "@type": "ImageObject",
-                    "url": og_image_url,
+                    "url": static_brand_image,
                     "width": 1200,
                     "height": 630,
                 },
             },
             "image": {
                 "@type": "ImageObject",
-                "url": og_image_url,
+                "url": article_image_url,
                 "width": 1200,
                 "height": 630,
             },
@@ -190,7 +208,10 @@ class SEOOptimizer:
                         "https://intel.cyberdudebivash.com",
                         "https://cyberdudebivash.in",
                         "https://tools.cyberdudebivash.com",
-                        "https://cyberbivash.blogspot.com",
+                        # Public commercial identity of the syndicated site,
+                        # not its underlying Blogspot hosting URL — see
+                        # Config.public_cti_url.
+                        self.config.public_cti_url,
                     ],
                 },
             ],
