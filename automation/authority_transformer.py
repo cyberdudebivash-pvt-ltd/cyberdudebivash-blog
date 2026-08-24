@@ -178,8 +178,33 @@ def _build_dynamic_og_image_url(config: Config, title: str, severity: Optional[s
     return f"{config.source_base_url}/api/og?{urlencode(params)}"
 
 
-def _generate_svg_thumbnail(title: str, labels: list, cvss: Optional[str] = None) -> str:
-    """Return an <img> tag with the SVG banner as a data URI."""
+def _generate_svg_thumbnail(title: str, labels: list, cvss: Optional[str] = None,
+                             image_url: Optional[str] = None) -> str:
+    """Return the post's lead <img> tag — first in the body, so Blogger's own
+    "first image in post" detection turns it into data:blog.postImageUrl,
+    which the live theme uses for og:image/twitter:image.
+
+    When image_url is given (the api/og.js-backed URL _build_dynamic_og_image_url
+    already computes), the tag points at that real, externally-fetchable HTTPS
+    resource. This matters because every social crawler that renders a link
+    preview — LinkedIn, X/Twitter, Facebook, Slack, Telegram — requires
+    og:image to be a fetchable URL and silently drops the tag when it is a
+    data: URI, which is exactly what made shared cti.cyberdudebivash.in report
+    links preview with a title and description but no image. Falls back to
+    embedding the SVG banner below as a base64 data URI when no image_url is
+    available (still correct for on-page/in-app rendering, just not for
+    external link-preview crawlers)."""
+    alt_text = _html_escape.escape(title[:80], quote=True)
+    if image_url:
+        safe_src = _html_escape.escape(image_url, quote=True)
+        return (
+            f'<img src="{safe_src}" '
+            f'alt="{alt_text}" '
+            f'width="1200" height="630" '
+            f'style="width:100%;max-width:1200px;height:auto;display:block;margin:0 auto 24px;border-radius:8px" '
+            f'loading="eager"/>'
+        )
+
     palette = _get_palette(labels)
     bg1 = palette["bg1"]
     bg2 = palette["bg2"]
@@ -265,7 +290,6 @@ def _generate_svg_thumbnail(title: str, labels: list, cvss: Optional[str] = None
 </svg>"""
 
     svg_b64 = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
-    alt_text = _html_escape.escape(title[:80], quote=True)
     return (
         f'<img src="data:image/svg+xml;base64,{svg_b64}" '
         f'alt="{alt_text}" '
@@ -2425,7 +2449,7 @@ class AuthorityTransformer:
         )
 
         # Build full HTML
-        html = self._assemble_html(article, body_content, seo_data, context)
+        html = self._assemble_html(article, body_content, seo_data, context, image_url=image_url)
 
         # RX-P1M fix: composer_outcome.contradictions was computed inside
         # pipeline_composer.compose_report() against ITS OWN internally-
@@ -2556,6 +2580,7 @@ class AuthorityTransformer:
 
     def _assemble_html(
         self, article: DiscoveredArticle, body_content: str, seo_data: dict, context: ReportContext,
+        image_url: Optional[str] = None,
     ) -> str:
         """Assemble the complete Blogger-compatible HTML article."""
         safe_source_url = _html_escape.escape(article.url, quote=True)
@@ -2581,8 +2606,10 @@ class AuthorityTransformer:
         category = primary_category(article.labels)
         pub_date = datetime.now(timezone.utc).strftime("%B %d, %Y")
 
-        # SVG thumbnail — FIRST element so Blogger uses it as firstImageUrl
-        svg_thumbnail = _generate_svg_thumbnail(article.title, article.labels, cvss)
+        # Lead image — FIRST element so Blogger uses it as firstImageUrl.
+        # Pass image_url through so this becomes a real fetchable HTTPS URL
+        # (see _generate_svg_thumbnail's docstring) instead of a data URI.
+        svg_thumbnail = _generate_svg_thumbnail(article.title, article.labels, cvss, image_url=image_url)
 
         # Executive Risk Command Center — real CVSS/EPSS/KEV data only,
         # rendered once here so both the LLM and template content paths
