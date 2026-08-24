@@ -512,6 +512,23 @@ function getIocDetail(graph, iocId) {
 }
 
 /**
+ * Real relationships for a single CVE, via the same getNeighbors()
+ * primitive as every other entity here -- campaigns that include it
+ * ('includes', inbound), actors that exploit it ('exploits', inbound),
+ * and any co_occurs_with correlation to other CVEs. Returns empty
+ * arrays (not an error) for a CVE with no linked campaigns/actors --
+ * true for the large majority of the 4,300+ CVE nodes today, and
+ * honestly represented as "none found," not omitted or guessed at.
+ */
+function getCveRelated(graph, cveId) {
+  return {
+    related_campaigns: relatedFromEdges(getNeighbors(graph, cveId, 'includes')),
+    related_actors:    relatedFromEdges(getNeighbors(graph, cveId, 'exploits')),
+    related_cves:      relatedFromEdges(getNeighbors(graph, cveId, 'co_occurs_with')),
+  };
+}
+
+/**
  * Single-report detail, sourced from the reports-index manifest (built
  * by scripts/generate-reports-index.js from real front matter — nothing
  * here is re-derived or guessed).
@@ -535,5 +552,5 @@ module.exports = {
   SEARCH_SCHEMA_VERSION, SUPPORTED_TYPES, FREE_TIER_EXCLUDED_TYPES,
   buildCveDoc, buildCampaignDoc, buildActorDoc, buildIocDoc, buildReportDoc,
   buildSearchIndex, validateSearchIndex, searchDocuments,
-  buildTimeline, getActorDetail, getIocDetail, getReportDetail,
+  buildTimeline, getActorDetail, getIocDetail, getReportDetail, getCveRelated,
 };

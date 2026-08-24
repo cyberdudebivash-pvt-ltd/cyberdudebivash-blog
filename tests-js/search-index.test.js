@@ -6,7 +6,7 @@ const {
   SUPPORTED_TYPES, FREE_TIER_EXCLUDED_TYPES,
   buildCveDoc, buildCampaignDoc, buildActorDoc, buildIocDoc, buildReportDoc,
   buildSearchIndex, validateSearchIndex, searchDocuments,
-  buildTimeline, getActorDetail, getIocDetail, getReportDetail,
+  buildTimeline, getActorDetail, getIocDetail, getReportDetail, getCveRelated,
 } = require('../api/_lib/search-index');
 
 /* ───────────────────────── fixtures ───────────────────────── */
@@ -381,4 +381,24 @@ test('getReportDetail: unknown report ID returns found:false', () => {
 test('getReportDetail: empty reports index handled without throwing', () => {
   const { found } = getReportDetail({ reports: [] }, 'SA-2024-0001');
   assert.equal(found, false);
+});
+
+test('getCveRelated: surfaces real campaigns and actors via graph edges', () => {
+  const related = getCveRelated(makeGraph(), 'CVE-2024-0001');
+  assert.equal(related.related_campaigns.length, 0); // fixture graph has no Campaign nodes
+  assert.equal(related.related_actors.length, 1);
+  assert.equal(related.related_actors[0].id, 'actor:evilcorp');
+  assert.equal(related.related_actors[0].relationship, 'exploits');
+  assert.equal(related.related_actors[0].confidence, 0.9);
+});
+
+test('getCveRelated: a CVE with no linked entities returns empty arrays, not an error', () => {
+  const related = getCveRelated(makeGraph(), 'CVE-2024-0002');
+  assert.deepEqual(related, { related_campaigns: [], related_actors: [], related_cves: [] });
+});
+
+test('getCveRelated: unknown CVE id returns empty arrays rather than throwing', () => {
+  assert.doesNotThrow(() => getCveRelated(makeGraph(), 'CVE-9999-99999'));
+  const related = getCveRelated(makeGraph(), 'CVE-9999-99999');
+  assert.deepEqual(related, { related_campaigns: [], related_actors: [], related_cves: [] });
 });

@@ -197,6 +197,29 @@ describe('action=report (authenticated, real production data)', () => {
   });
 });
 
+describe('action=cve related-entity extension (additive)', () => {
+  it('pro/enterprise tier gets a related field with real graph relationships', async () => {
+    authenticate.mockResolvedValue(mockUser('enterprise'));
+    const req = mockReq({ action: 'cve', id: 'CVE-2023-27351' });
+    const res = mockRes();
+    await handler(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    const body = res.json.mock.calls[0][0];
+    expect(body.item.related).toBeDefined();
+    expect(Array.isArray(body.item.related.related_actors)).toBe(true);
+  });
+
+  it('free tier response has no related field -- fully backward compatible', async () => {
+    authenticate.mockResolvedValue(mockUser('free'));
+    const req = mockReq({ action: 'cve', id: 'CVE-2023-27351' });
+    const res = mockRes();
+    await handler(req, res);
+    expect(res.status).toHaveBeenCalledWith(200);
+    const body = res.json.mock.calls[0][0];
+    expect(body.item.related).toBeUndefined();
+  });
+});
+
 describe('backward compatibility: existing action=search is untouched', () => {
   it('action=search (the pre-existing, narrower search) still works exactly as before', async () => {
     authenticate.mockResolvedValue(mockUser('enterprise'));

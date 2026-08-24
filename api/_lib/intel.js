@@ -258,6 +258,22 @@ function getIntel(type, tier, query = {}) {
   };
 }
 
+// Additive: attaches real graph relationships (related campaigns/actors/
+// correlated CVEs) to a CVE detail response. Pro/enterprise only -- the
+// free/starter response shape is completely unchanged by this addition.
+// Fails soft: a lookup error never breaks the underlying CVE detail that
+// was already found.
+function attachCveRelated(item, cveId, tier) {
+  if (tier !== 'pro' && tier !== 'enterprise') return item;
+  try {
+    const related = getCveRelated(loadGraph(), cveId);
+    return { ...item, related };
+  } catch (e) {
+    console.error(`[INTEL] CVE related-entity lookup failed for ${cveId}: ${e.message}`);
+    return item;
+  }
+}
+
 // CVE detail lookup across all intel files
 function getCVEDetail(cveId, tier) {
   const normalized = cveId.toUpperCase().trim();
@@ -275,7 +291,7 @@ function getCVEDetail(cveId, tier) {
         const item = tier === 'enterprise' ? filterEnterprise(data)
                     : tier === 'pro'        ? filterPro(data)
                     : filterFree(data);
-        return { found: true, item: attestItem(item) };
+        return { found: true, item: attachCveRelated(attestItem(item), normalized, tier) };
       }
     }
   }
@@ -287,7 +303,7 @@ function getCVEDetail(cveId, tier) {
       const item = tier === 'enterprise' ? filterEnterprise(found)
                   : tier === 'pro'        ? filterPro(found)
                   : filterFree(found);
-      return { found: true, item: attestItem(item) };
+      return { found: true, item: attachCveRelated(attestItem(item), normalized, tier) };
     }
   }
   return { found: false, item: null };
@@ -466,7 +482,7 @@ function getTopActorsAPI(tier, limit = 10) {
 ═══════════════════════════════════════════════════════════════════════ */
 const {
   buildSearchIndex, validateSearchIndex, searchDocuments,
-  getActorDetail, getIocDetail, getReportDetail,
+  getActorDetail, getIocDetail, getReportDetail, getCveRelated,
 } = require('./search-index');
 
 let _searchIndexCache = null;
