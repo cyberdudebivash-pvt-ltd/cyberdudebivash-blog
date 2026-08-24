@@ -155,10 +155,15 @@ function buildDescriptions({
   };
 }
 
-// Matches api/og.js's documented query contract exactly (api/og.js:9-16):
-// title, severity, cve, cvss, type — verified against the two live callers
-// (fetch-live-intel.js:2223, publish-report.js:77) as well as the
-// endpoint's own docstring, not assumed.
+// Matches api/og.js's documented query contract (api/og.js's own docstring):
+// title, severity, cve, cvss, type, v — verified against the two live
+// callers (fetch-live-intel.js, automation/authority_transformer.py's
+// _build_dynamic_og_image_url()) as well as the endpoint's own docstring,
+// not assumed. reportId/date/actor/sector are also part of that contract
+// but are left to the caller to add (via URLSearchParams on this
+// function's return value) rather than threaded through here — this
+// engine has no report-identity or ransomware-attribution model of its
+// own to source them from correctly.
 function buildDynamicOgImageUrl({ baseUrl, title, severity = 'HIGH', cveId = '', cvss, type = 'THREAT INTEL' }) {
   const params = new URLSearchParams();
   params.set('title', title || '');
@@ -166,6 +171,9 @@ function buildDynamicOgImageUrl({ baseUrl, title, severity = 'HIGH', cveId = '',
   if (cveId) params.set('cve', cveId);
   if (cvss !== undefined && cvss !== null && cvss !== '') params.set('cvss', String(cvss));
   params.set('type', type || 'THREAT INTEL');
+  // Mirrors automation/authority_transformer.py's OG_CARD_VERSION — see
+  // that constant's comment for why this is a fixed, deterministic value.
+  params.set('v', '2');
   return `${baseUrl}/api/og?${params.toString()}`;
 }
 
