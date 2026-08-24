@@ -5,6 +5,7 @@ Tests for seo_optimizer — metadata generation, schema validation, keyword extr
 import json
 import unittest
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 from automation.config import Config
 from automation.seo_optimizer import SEOOptimizer, _extract_cve_ids, _extract_cvss, _extract_cwe_ids, _truncate
@@ -254,7 +255,11 @@ class TestSEOOptimizer(unittest.TestCase):
         result = self._generate()
         org = next(n for n in result["json_ld"]["@graph"] if n.get("@type") == "Organization")
         same_as = org["sameAs"]
-        self.assertFalse(any("blogspot.com" in url for url in same_as))
+        # Real hostname comparison, not a substring/"in" check — a raw
+        # substring match is satisfiable at an arbitrary position (e.g.
+        # "https://evil.example/?x=blogspot.com") and CodeQL correctly
+        # flags that pattern regardless of context.
+        self.assertFalse(any(urlparse(url).netloc == "cyberbivash.blogspot.com" for url in same_as))
         self.assertIn(self.config.public_cti_url, same_as)
 
 
