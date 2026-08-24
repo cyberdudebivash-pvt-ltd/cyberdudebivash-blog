@@ -15,6 +15,10 @@
  *  action=campaigns    GET  Campaign clusters (?severity=&has_kev=)
  *  action=campaign     GET  Single campaign detail (?id=campaign:...)
  *  action=top-actors   GET  Most active threat actors ranked by activity
+ *  action=unified-search GET Cross-entity search: CVE/campaign/actor/IOC/report (?q=query&type=)
+ *  action=actor        GET  Single threat actor detail + relationships (?id=actor:...)
+ *  action=ioc          GET  Single IOC detail + linked intel — PRO+ only (?id=ioc:...)
+ *  action=report       GET  Single published intelligence report detail (?id=SA-YYYY-NNNN)
  *
  * Backward-compat rewrites in vercel.json map old paths to ?action= params.
  */
@@ -22,7 +26,8 @@
 const crypto = require('crypto');
 const { authenticate, successResponse, apiError, corsHeaders } = require('../_lib/middleware');
 const { getIntel, getCVEDetail, searchIntel, getPlatformStats,
-        getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI } = require('../_lib/intel');
+        getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI,
+        unifiedSearch, getActorDetailAPI, getIocDetailAPI, getReportDetailAPI } = require('../_lib/intel');
 const sec = require('../_lib/security');
 
 /* ─── Main Router ────────────────────────────────────────────── */
@@ -269,10 +274,110 @@ module.exports = async (req, res) => {
         });
       }
 
+      /* ── GET ?action=unified-search&q=query&type=cve,campaign ─── */
+      case 'unified-search': {
+        const q = String(req.query.q || '').trim();
+        const result = unifiedSearch(q, user.tier, {
+          type:     req.query.type,
+          severity: req.query.severity,
+          from:     req.query.from_date,
+          to:       req.query.to_date,
+          limit:    req.query.limit,
+          offset:   req.query.offset,
+        });
+        if (!result.ok) {
+          return apiError(res, 400, result.error, result.message);
+        }
+        if (user.tier === 'free' && result.results.length > 5) {
+          result.results = result.results.slice(0, 5);
+          result._free_limit = `Showing 5 of ${result.pagination.total} results. Upgrade to Pro for full search.`;
+        }
+        return successResponse(res, result, {
+          endpoint:       '/api/v1/intel?action=unified-search',
+          description:    'Cross-entity search across CVE, campaign, threat actor, IOC, and published-report intelligence',
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
+      /* ── GET ?action=actor&id=actor:... ───────────────────────── */
+      case 'actor': {
+        const id = String(req.query.id || '').trim().toLowerCase();
+        if (!id) {
+          return apiError(res, 400, 'MISSING_ACTOR_ID',
+            'Actor ID required. Example: GET /api/v1/intel?action=actor&id=actor:lockbit');
+        }
+        const { found, actor } = getActorDetailAPI(id);
+        if (!found) {
+          return apiError(res, 404, 'ACTOR_NOT_FOUND',
+            `Actor "${id}" not found. List all at GET /api/v1/intel?action=top-actors`);
+        }
+        // Free/starter: identity only, no relationships/timeline — mirrors
+        // getGraphForTier()'s own free/starter node-detail restriction.
+        const payload = (user.tier === 'free' || user.tier === 'starter') ? {
+          id: actor.id, type: actor.type, name: actor.name,
+          attributes: {
+            aliases: actor.attributes.aliases, category: actor.attributes.category,
+            motivation: actor.attributes.motivation, active: actor.attributes.active,
+          },
+          _upgrade: 'Full relationships, timeline, and TTP detail available on Pro plan',
+        } : actor;
+        return successResponse(res, { actor: payload }, {
+          endpoint:       `/api/v1/intel?action=actor&id=${id}`,
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
+      /* ── GET ?action=ioc&id=ioc:... — PRO+ only ───────────────── */
+      case 'ioc': {
+        if (user.tier !== 'pro' && user.tier !== 'enterprise') {
+          return apiError(res, 403, 'TIER_RESTRICTED',
+            'IOC detail requires Pro or Enterprise plan. Upgrade at https://blog.cyberdudebivash.in/pricing.html',
+            { 'X-Upgrade-URL': 'https://blog.cyberdudebivash.in/pricing.html' });
+        }
+        const id = String(req.query.id || '').trim().toLowerCase();
+        if (!id) {
+          return apiError(res, 400, 'MISSING_IOC_ID',
+            'IOC ID required. Example: GET /api/v1/intel?action=ioc&id=ioc:domain:example.com');
+        }
+        const { found, ioc } = getIocDetailAPI(id);
+        if (!found) {
+          return apiError(res, 404, 'IOC_NOT_FOUND', `IOC "${id}" not found.`);
+        }
+        return successResponse(res, { ioc }, {
+          endpoint:       `/api/v1/intel?action=ioc&id=${id}`,
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
+      /* ── GET ?action=report&id=SA-YYYY-NNNN ───────────────────── */
+      case 'report': {
+        const id = String(req.query.id || '').trim().toUpperCase();
+        if (!id) {
+          return apiError(res, 400, 'MISSING_REPORT_ID',
+            'Report ID required. Example: GET /api/v1/intel?action=report&id=SA-2026-0001');
+        }
+        const { found, report } = getReportDetailAPI(id);
+        if (!found) {
+          return apiError(res, 404, 'REPORT_NOT_FOUND', `Report "${id}" not found.`);
+        }
+        return successResponse(res, { report }, {
+          endpoint:       `/api/v1/intel?action=report&id=${id}`,
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
       /* ── Unknown action ────────────────────────────────────── */
       default:
         return apiError(res, 400, 'INVALID_ACTION',
-          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors`);
+          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors, unified-search, actor, ioc, report`);
     }
   } catch (e) {
     return apiError(res, 500, 'INTERNAL_ERROR',

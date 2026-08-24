@@ -32,6 +32,7 @@ if (isCloudflareWorkers()) {
     state:       require('../../intel-state.json'),
     graph:       require('../intel/threat-graph.json'),
     campaigns:   require('../intel/campaigns.json'),
+    reportsIndex: require('../intel/reports-index.json'),
   };
 } else {
   const path = require('path');
@@ -45,6 +46,7 @@ if (isCloudflareWorkers()) {
     state:       path.join(BASE, 'intel-state.json'),
     graph:       path.join(BASE, 'api', 'intel', 'threat-graph.json'),
     campaigns:   path.join(BASE, 'api', 'intel', 'campaigns.json'),
+    reportsIndex: path.join(BASE, 'api', 'intel', 'reports-index.json'),
   };
 }
 
@@ -457,7 +459,66 @@ function getTopActorsAPI(tier, limit = 10) {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   UNIFIED INTELLIGENCE SEARCH  — derived, in-memory, cached projection
+   over the graph/campaigns/reports already loaded above. No second
+   persisted store: see api/_lib/search-index.js's own header for why.
+═══════════════════════════════════════════════════════════════════════ */
+const {
+  buildSearchIndex, validateSearchIndex, searchDocuments,
+  getActorDetail, getIocDetail, getReportDetail,
+} = require('./search-index');
+
+let _searchIndexCache = null;
+let _searchIndexCacheTime = 0;
+const SEARCH_INDEX_CACHE_TTL_MS = 60000; // matches CACHE_TTL_MS above
+
+function getSearchIndex() {
+  const now = Date.now();
+  if (_searchIndexCache && (now - _searchIndexCacheTime) < SEARCH_INDEX_CACHE_TTL_MS) {
+    return _searchIndexCache;
+  }
+  const graph          = loadGraph();
+  const campaignsData  = loadJSON(PATHS.campaigns);
+  const reportsIndexData = loadJSON(PATHS.reportsIndex);
+  const index = buildSearchIndex({ graph, campaignsData, reportsIndexData });
+
+  const check = validateSearchIndex(index, { graph, campaignsData, reportsIndexData });
+  if (!check.valid) {
+    // Fail safe, not fail closed: an anomaly here means the computed
+    // index disagrees with its own canonical inputs (the exact failure
+    // class the campaign-delivery-integrity-v1 fix exists to catch) —
+    // log loudly and keep serving the previous good cache rather than a
+    // suspect one, matching this file's own PATHS.campaigns caution.
+    console.error(`[SEARCH-INDEX] Validation failed: ${check.problems.join('; ')}`);
+    if (_searchIndexCache) return _searchIndexCache;
+  }
+
+  _searchIndexCache = index;
+  _searchIndexCacheTime = now;
+  return index;
+}
+
+function unifiedSearch(query, tier, options = {}) {
+  const index = getSearchIndex();
+  return searchDocuments(index, query, { ...options, tier });
+}
+
+function getActorDetailAPI(actorId) {
+  return getActorDetail(loadGraph(), actorId);
+}
+
+function getIocDetailAPI(iocId) {
+  return getIocDetail(loadGraph(), iocId);
+}
+
+function getReportDetailAPI(reportId) {
+  return getReportDetail(loadJSON(PATHS.reportsIndex), reportId);
+}
+
 module.exports = {
   getIntel, getCVEDetail, searchIntel, getPlatformStats, applyTierFilter,
   getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI,
+  loadJSON, PATHS, parsePagination, attestItem,
+  getSearchIndex, unifiedSearch, getActorDetailAPI, getIocDetailAPI, getReportDetailAPI,
 };
