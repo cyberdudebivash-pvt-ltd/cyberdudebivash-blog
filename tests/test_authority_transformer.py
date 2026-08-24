@@ -805,7 +805,14 @@ class TestAuthorityTransformerContract(unittest.TestCase):
 
     def test_svg_thumbnail_and_dynamic_image_contract(self):
         result = self.transformer.transform(_make_article())
-        self.assertIn("data:image/svg+xml;base64,", result["content"])
+        # The post's lead <img> must be the same real, externally-fetchable
+        # api/og.js URL sent to Blogger as image_url, not a data: URI —
+        # Blogger's own first-image detection promotes this exact src into
+        # data:blog.postImageUrl (and from there into og:image/twitter:image),
+        # and every social-preview crawler (LinkedIn, X, Facebook, Slack)
+        # silently drops og:image when it is a data: URI rather than a URL.
+        self.assertIn(f'<img src="{html.escape(result["image_url"], quote=True)}"', result["content"])
+        self.assertNotIn("data:image/svg+xml;base64,", result["content"])
         params = parse_qs(urlparse(result["image_url"]).query)
         self.assertEqual(params["cve"], ["CVE-2026-9999"])
         self.assertEqual(params["severity"], ["CRITICAL"])
