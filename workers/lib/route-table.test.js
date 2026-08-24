@@ -4,7 +4,7 @@ const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { resolveRoute, DIRECT_API_HANDLERS, DYNAMIC_API_HANDLERS } = require('./route-table');
+const { resolveRoute, DIRECT_API_HANDLERS, DYNAMIC_API_HANDLERS, APEX_SUBPATH_HANDLERS } = require('./route-table');
 
 describe('resolveRoute — blocked paths', () => {
   for (const p of ['/CLAUDE.md', '/OPERATIONS.md', '/AUDIT-REPORT-2026-05-28.md', '/BUSINESS-TRANSFORMATION-ROADMAP-2026.md']) {
@@ -140,6 +140,44 @@ describe('resolveRoute — dynamic [id] segments', () => {
 
   test('/api/v1/detections/rules/<id> hits [id] with that value', () => {
     assert.deepEqual(resolveRoute('/api/v1/detections/rules/rule-42'), { type: 'handler', handlerPath: 'api/v1/detections/rules/[id]', query: { id: 'rule-42' } });
+  });
+});
+
+describe('resolveRoute — apex sub-path routing (Cloudflare mirror of vercel.json\'s :apexSubpath* rewrites)', () => {
+  test('every APEX_SUBPATH_HANDLERS entry is also a known DIRECT_API_HANDLERS base path', () => {
+    for (const base of APEX_SUBPATH_HANDLERS) {
+      assert.ok(DIRECT_API_HANDLERS.has(base), `${base} is in APEX_SUBPATH_HANDLERS but not DIRECT_API_HANDLERS`);
+    }
+  });
+
+  const cases = [
+    ['/api/v1/workbench/investigations/inv-123', 'api/v1/workbench/investigations', 'inv-123'],
+    ['/api/v1/workbench/investigations/inv-123/timeline', 'api/v1/workbench/investigations', 'inv-123/timeline'],
+    ['/api/v1/workbench/cases/case-123', 'api/v1/workbench/cases', 'case-123'],
+    ['/api/v1/workbench/cases/case-123/notes', 'api/v1/workbench/cases', 'case-123/notes'],
+    ['/api/v1/intelligence/graph/e1/entity', 'api/v1/intelligence/graph', 'e1/entity'],
+    ['/api/v1/intelligence/correlations/actor-1/actors', 'api/v1/intelligence/correlations', 'actor-1/actors'],
+    ['/api/v1/intelligence/objects/intel-123/approve', 'api/v1/intelligence/objects', 'intel-123/approve'],
+    ['/api/v1/intelligence/similarity/e1/find', 'api/v1/intelligence/similarity', 'e1/find'],
+    ['/api/v1/intelligence/publish/status/intel-123', 'api/v1/intelligence/publish', 'status/intel-123'],
+  ];
+
+  for (const [p, handlerPath, apexSubpath] of cases) {
+    test(`${p} -> ${handlerPath} with apexSubpath=${apexSubpath}`, () => {
+      assert.deepEqual(resolveRoute(p), { type: 'handler', handlerPath, query: { apexSubpath } });
+    });
+  }
+
+  test('the bare base path (no sub-path) still resolves via the exact-match rule, not the prefix rule', () => {
+    assert.deepEqual(resolveRoute('/api/v1/intelligence/objects'), { type: 'handler', handlerPath: 'api/v1/intelligence/objects', query: {} });
+  });
+
+  test('a path that merely starts similarly (no separating slash) is not treated as a sub-path', () => {
+    assert.equal(resolveRoute('/api/v1/intelligence/objectsextra'), null);
+  });
+
+  test('a handler NOT in APEX_SUBPATH_HANDLERS still 404s on a sub-path (e.g. api/v1/auth has its own pretty-URL rewrites, not apexSubpath)', () => {
+    assert.equal(resolveRoute('/api/v1/auth/some-unmapped-subpath'), null);
   });
 });
 
