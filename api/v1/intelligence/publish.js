@@ -15,6 +15,9 @@
 const redis = require('../../_lib/redis');
 const { PublishingPipeline } = require('../../_lib/publishing-pipeline');
 const { requireAnalyst } = require('../../_lib/analyst-auth');
+const { resolvePathParts } = require('../../_lib/request-path');
+
+const MOUNT_PATH = '/api/v1/intelligence/publish';
 
 const pipeline = new PublishingPipeline(redis);
 
@@ -51,7 +54,7 @@ module.exports = async (req, res) => {
   const caller = await requireAnalyst(req, res, fail);
   if (!caller) return;
 
-  const pathParts = (req.url || '').split('?')[0].split('/').filter(Boolean);
+  const pathParts = resolvePathParts(req, MOUNT_PATH);
   const action = pathParts[pathParts.length - 1];
   const id = pathParts[pathParts.length - 2];
 
@@ -75,9 +78,17 @@ module.exports = async (req, res) => {
     return handleRetract(req, res, caller);
   }
 
-  // GET /api/v1/intelligence/publish/status/{id}
-  if (req.method === 'GET' && action === 'status' && id) {
-    return handleGetStatus(req, res, id);
+  // GET /api/v1/intelligence/publish/status/{id} -- the literal 'status'
+  // comes BEFORE the real ID in this URL, the reverse of every other named
+  // route in this file, so `id` (pathParts[length-2]) holds the literal
+  // 'status' and `action` (pathParts[length-1]) holds the real intelligence
+  // ID -- not the other way around. Checking `action === 'status'` (as
+  // every other route here correctly does for its own, differently-shaped
+  // URL) could never match this shape, so this endpoint was unreachable
+  // even after the routing-gap fix; fixed to check `id === 'status'` and
+  // pass `action` (the real ID) through.
+  if (req.method === 'GET' && id === 'status' && action) {
+    return handleGetStatus(req, res, action);
   }
 
   // GET /api/v1/intelligence/publish/pending
