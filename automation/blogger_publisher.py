@@ -112,6 +112,24 @@ class BloggerPublisher:
         resp.raise_for_status()
         return resp.json().get("items", [])
 
+    def list_posts_page(self, page_token: Optional[str] = None, max_results: int = 25) -> dict:
+        """List one page of live posts, newest first, with real Blogger API
+        pagination (nextPageToken) — unlike list_recent_posts() (capped,
+        single-page, built for the small dedup-lookback it's actually used
+        for), this is what a legacy remediation scan over the full post
+        history needs to walk forward through in bounded batches, exactly
+        the "never rewrite thousands of posts in one shot" staged-batch
+        requirement automation/backfill_social_previews.py implements.
+        Returns the raw {"items": [...], "nextPageToken": "..." | absent}
+        shape so the caller decides when to stop (absent token = last page)."""
+        url = f"{BLOGGER_API_BASE}/blogs/{self.config.blogger_blog_id}/posts"
+        params = {"maxResults": max_results, "status": "live", "fetchBodies": "true"}
+        if page_token:
+            params["pageToken"] = page_token
+        resp = requests.get(url, headers=self._headers(), params=params, timeout=20)
+        resp.raise_for_status()
+        return resp.json()
+
     def get_post(self, post_id: str) -> dict:
         """Fetch one post by ID with its full body (ReportX Phase 1Q,
         mandate Section 26 "post-publication fetch-back") -- the real,
@@ -305,6 +323,78 @@ class BloggerPublisher:
                 f"Update retry attempts exhausted — last error: {last_error}"
             )
         raise BloggerPublishError(f"Update retry attempts exhausted — last error: {last_error}")
+
+    def patch_post_preview(
+        self, post_id: str, content: Optional[str] = None, image_url: Optional[str] = None,
+    ) -> dict:
+        """Narrowly update ONLY a post's content and/or social-preview image
+        field via Blogger API v3's real PATCH method (blogs.posts.patch —
+        distinct from blogs.posts.update, which is a full PUT requiring
+        title/content/labels together and risks clobbering a field silently
+        omitted by a caller reconstructing them from scratch).
+
+        Built for automation/backfill_social_previews.py: legacy remediation
+        needs to replace only the broken first <img> in an already-published
+        post's content (data: URI -> real HTTPS card) without touching its
+        title or labels at all. PATCH's partial-update semantics make that
+        safe by construction; update_post()'s PUT semantics do not.
+
+        At least one of content/image_url must be given -- an empty PATCH
+        body is a caller bug, not a valid narrow update, so this fails
+        fast rather than sending a no-op request that would still count
+        against the API's write quota.
+        """
+        if content is None and image_url is None:
+            raise ValueError("patch_post_preview: at least one of content, image_url is required")
+
+        payload: dict = {"kind": "blogger#post", "id": post_id}
+        if content is not None:
+            payload["content"] = content
+        if image_url:
+            payload["images"] = [{"url": image_url}]
+
+        url = f"{BLOGGER_API_BASE}/blogs/{self.config.blogger_blog_id}/posts/{post_id}"
+        last_error = "no attempt made"
+        auth_refreshed = False
+
+        for attempt in range(1, self.config.retry_attempts + 1):
+            try:
+                resp = requests.patch(url, headers=self._headers(), json=payload, timeout=30)
+                if resp.status_code == 429:
+                    last_error = f"HTTP 429 rate limited: {resp.text[:300]}"
+                    if attempt < self.config.retry_attempts:
+                        time.sleep(self.config.retry_base_delay * (2 ** attempt))
+                    continue
+                if resp.status_code == 401:
+                    if auth_refreshed:
+                        raise BloggerAuthError(
+                            f"Blogger API rejected refreshed token (HTTP 401): {resp.text[:300]}"
+                        )
+                    self._access_token = None
+                    auth_refreshed = True
+                    last_error = f"HTTP 401 unauthorized: {resp.text[:300]}"
+                    continue
+                if not resp.ok:
+                    last_error = f"HTTP {resp.status_code}: {resp.text[:300]}"
+                resp.raise_for_status()
+                logger.info(
+                    "Post preview patched successfully",
+                    extra={"post_id": post_id, "fields": list(payload.keys() - {"kind", "id"}), "attempt": attempt},
+                )
+                return resp.json()
+            except requests.RequestException as exc:
+                last_error = str(exc)
+                if attempt == self.config.retry_attempts:
+                    raise BloggerPublishError(
+                        f"Preview patch failed after {attempt} attempts: {last_error}"
+                    ) from exc
+                time.sleep(self.config.retry_base_delay * (2 ** attempt))
+
+        if last_error.startswith("HTTP 429"):
+            raise BloggerRateLimitError(
+                f"Preview patch retry attempts exhausted — last error: {last_error}"
+            )
+        raise BloggerPublishError(f"Preview patch retry attempts exhausted — last error: {last_error}")
 
     def health_check(self) -> bool:
         """Verify Blogger API connectivity and credentials."""
