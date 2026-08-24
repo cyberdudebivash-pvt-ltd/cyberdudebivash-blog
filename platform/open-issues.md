@@ -1360,5 +1360,43 @@ mechanical, low-risk fixes once someone owns confirming no current caller
 depends on the unauthenticated/unbounded behavior (the same due-diligence
 step Issue 19 already recommends for its own similar situation).
 
+## Issue 21 — LLM-provider degradation in the Blogger syndication pipeline: operator action needed, not a code defect (2026-08-24)
+
+Found during the Intel Factory Publication Reliability v1 investigation
+(`docs/audits/SENTINEL-APEX-INTEL-FACTORY-PUBLICATION-RELIABILITY-V1-CERTIFICATION.md`
+§15). `automation/llm_client.py`'s provider chain (Groq → DeepSeek →
+OpenRouter → Anthropic → deterministic template fallback) is correctly
+implemented and correctly wired end to end — this is not a code gap. Real
+production logs across multiple sampled runs show:
+
+1. **Groq** rate-limits (429) after 1–2 successful calls per run — a real
+   usage-volume limit, correctly backed off and retried per the module's
+   bounded/jittered policy.
+2. **DeepSeek and OpenRouter** both return HTTP 402 Payment Required on
+   every call — the associated billing accounts are exhausted. Correctly
+   not retried (402 is excluded from the retry policy by design).
+3. **Anthropic** is wired correctly in both `automation/config.py`
+   (`ANTHROPIC_API_KEY` → `Config.anthropic_api_key`) and the workflow YAML
+   (`.github/workflows/blogger-syndication.yml` passes the secret through),
+   and is fourth in `call_llm()`'s provider priority order — but the
+   underlying GitHub Actions secret has never been populated, so it is
+   never reached in practice.
+
+Net effect: every sampled run falls through to the deterministic
+`reportx_composer` template, which still passes the quality scorecard for
+most published articles — no customer-facing defect, only reduced
+LLM-authored prose and increased per-article wall-clock time (~35–45s
+cycling through 3 failing providers before falling back).
+
+**Not fixed this round** — none of the three findings are fixable from
+this repository; each requires an operator action outside engineering's
+control (billing top-up or a secret value only the account owner holds).
+
+**Suggested operator actions:** top up DeepSeek and/or OpenRouter billing
+to restore two of the three currently-degraded providers; add the
+`ANTHROPIC_API_KEY` GitHub Actions secret if a fourth LLM fallback is
+desired (no code change required — activates automatically the moment the
+secret has a real value).
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
