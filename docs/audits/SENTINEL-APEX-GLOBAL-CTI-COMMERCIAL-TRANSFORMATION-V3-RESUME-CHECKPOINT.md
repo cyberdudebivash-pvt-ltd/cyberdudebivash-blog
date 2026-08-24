@@ -1,10 +1,10 @@
 # SENTINEL APEX — Global CTI Commercial Transformation v3 — Resume Checkpoint
 
-**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3, same day, different branch each time)
-**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, this update)
+**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4, same day, different branch each time)
+**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, this update, PR #131 open)
 **Written per:** the master mandate's own "Long-Run Checkpoint Policy" — stop at a safe boundary, commit, push, update the PR, and leave a clear resume point rather than attempting the full 70-phase mandate in one uninterrupted pass.
 
-**READ THIS FIRST IF RESUMING:** §8 below (added in round 3) is the most consequential update — the campaign-delivery defect §7.4 flagged as "found but deliberately not fixed" in round 2 has now been fixed AND the historical data recovered. §7 (round 2) still holds for its other findings: **Vercel is being retired** (decision final per the user; technical cutover incomplete) **and Cloudflare Workers is the sole target platform.** Round 1's "Thread A" (build real correlation logic for `intelligence/correlations.js`) remains **NO-GO** — see §7.1. Do not restart either without reading §7 and §8 first.
+**READ THIS FIRST IF RESUMING:** §9 below (added in round 4) is the most consequential update — a genuinely new customer-facing capability (Unified Intelligence Search) shipped on top of the now-correctly-accumulating campaign data from round 3. §8 (round 3): the campaign-delivery defect is fixed AND merged (PR #130) — `campaigns.json` now correctly accumulates. §7 (round 2) still holds: **Vercel is being retired** (decision final per the user; technical cutover incomplete) **and Cloudflare Workers is the sole target platform.** Round 1's "Thread A" (build real correlation logic for `intelligence/correlations.js`) remains **NO-GO** — see §7.1. Do not restart any of these without reading §7, §8, and §9 first.
 
 ---
 
@@ -121,8 +121,46 @@ npx tsc --noEmit
 # Expect: no output
 ```
 
-**Next recommended tranche** (ranked, not automatically chosen — per the mandate's own instruction to measure readiness first):
+**Next recommended tranche, as of round 3** (superseded by round 4's own ranking in §9.6 below — kept here for history):
 1. **Resolve the Vercel Cron `UNKNOWN` status (§8.4)** — the one concrete blocker this round found standing between "Cloudflare routing is ready" and "cutover is safe." Low implementation risk, high blocking value; mostly requires operator dashboard access this session doesn't have, not code.
 2. **Malware node population** — still the most-referenced, longest-standing real gap (`platform/open-issues.md` Issue 8, unchanged across 4 sprints) blocking a genuinely complete correlation/graph story; real entity-extraction work, not a quick fix.
 3. **Actor-attribution coverage** (still ~2%/~1% of the graph) — same reasoning as malware population; would make the correlation layer (already real and live) meaningfully more useful without requiring new architecture.
 4. Do **not** restart Thread A (SOC-workbench correlation-engine building) until the workbench has real analyst-generated data to correlate — re-check `evidence-manager.js`/`intelligence-manager.js` population before considering this again.
+
+---
+
+## 9. Round 4 update (2026-08-24, branch `claude/p1-unified-intelligence-search-v1`, PR #131 open, not yet merged)
+
+Shipped Unified Intelligence Search v1 on top of round 3's now-correctly-accumulating campaign data. Full detail: `docs/audits/SENTINEL-APEX-UNIFIED-INTELLIGENCE-SEARCH-V1-CERTIFICATION.md` (CONDITIONAL GO — read it before touching `api/_lib/search-index.js` or the new `api/v1/intel.js` actions again).
+
+**9.1 — What shipped.** A genuinely cross-entity search (CVE/Campaign/ThreatActor/IOC/published-Report) computed **in-memory from already-canonical data**, never persisted as a second store — deliberately, to structurally eliminate the drift-risk class round 3's campaign-delivery fix had to guard against rather than merely guard against it again. New actions on the existing `api/v1/intel.js` router: `action=unified-search`, `action=actor`, `action=ioc`, `action=report`. `action=cve` gained an additive, pro/enterprise-only `related` field (real campaigns/actors via graph edges). Every existing action, route, and response field is unchanged — zero routing-file (`vercel.json`/`route-table.js`/`router.js`) changes were needed, since this stays inside `api/v1/intel.js`'s existing `action=` dispatch pattern.
+
+**9.2 — Malware and standalone ATT&CK-technique search are explicitly NOT supported**, for the same evidence-based reason round 3's own capability-map entry already established: 0 populated Malware nodes exist anywhere in production data (re-confirmed directly this round), and no canonical ATT&CK technique registry exists in this codebase at all. Building either would mean a search feature advertising coverage that isn't real — refused per this mandate's own STRICT TRUTH RULE. **If resuming: do not add these as supported search types without first re-verifying real data backs them** (re-run the same direct-count check this round did against the live graph).
+
+**9.3 — Resolved a previously-open architectural question.** `docs/architecture/INTELLIGENCE-SOURCE-OF-TRUTH-MATRIX.md` had flagged, unresolved, whether `api/v1/ioc/search.js`/`[id].js` share the same IOC data as the graph. Confirmed this round: they do not — that route reads a separate, disconnected, unauthenticated, near-empty (2-record) store (`data/ioc-canonical.json`) that nothing in the live pipeline writes to. The new `action=ioc` correctly uses the real 886-node graph instead. **The old `ioc/search.js` route itself was not fixed** — see 9.4.
+
+**9.4 — Found, not fixed: three pre-existing security/robustness gaps.** `api/v1/ioc/search.js`, `api/v1/ioc/[id].js`, and `api/v1/detections/rules.js` have **no authentication at all**; `api/v1/workbench/search.js`'s `limit` param has no upper clamp. All four tracked in detail as `platform/open-issues.md` Issue 20. Deliberately not fixed this round — each deserves its own reviewed sprint rather than a drive-by fix riding along with an unrelated feature, matching this codebase's own established caution (Issue 1, Issue 8).
+
+**9.5 — Investigation integration is documentation-only, not new code.** `evidence-manager.js`'s `addEvidence()` was found to already accept free-form content with zero ID-scheme validation — referencing a new canonical entity ID as investigation evidence works today via the already-wired `POST /api/v1/workbench/investigations/.../evidence` route, with no code change. Not built further because System A (this round's data) and System B (SOC Workbench) are confirmed, by grep in both directions, fully disjoint — a deliberate, already-documented architectural boundary, not an accidental gap to casually bridge.
+
+**Test baseline after round 4** (in addition to §4 and rounds 2/3's baselines above):
+```
+node --test tests-js/*.test.js
+# Expect: 206 tests, 206 pass, 0 fail (155 prior + 51 new)
+
+node --test workers/lib/*.test.js
+# Expect: 116 tests, 116 pass, 0 fail (unchanged)
+
+npx jest --silent
+# Expect: 1 skipped suite (unrelated, pre-existing), 1819 passed, 0 failed (was 1797; +22 new)
+
+npx tsc --noEmit
+# Expect: no output
+```
+
+**9.6 — Next recommended tranche** (ranked by evidence per the mandate's own weighted-factor table — customer value / commercial value / data readiness / trust impact weighted High, differentiation/engineering risk/operational cost weighted Medium — not chosen automatically):
+1. **Fix the three unauthenticated/unbounded gaps in Issue 20 (§9.4)** — highest trust-impact-per-effort ratio of anything currently open: small, mechanical, well-understood fixes (add the standard `authenticate()` call, add a `Math.min()` clamp) once someone confirms no current caller depends on the existing behavior.
+2. **A minimal search UI page**, now that the backend contract (§9.1) is stable and tested — the natural next slice if a UI is wanted, deliberately not attempted this round to keep the backend certification honest and complete rather than shipping a shallow version of both.
+3. **Malware node population** and **actor-attribution coverage** — unchanged from round 3's own ranking (§8's list), still real, still not a quick fix; now additionally unlocks the Malware search-type exclusion (§9.2) once real data exists.
+4. **Resolve the Vercel Cron `UNKNOWN` status** — unchanged from round 3, still mostly an operator-dashboard-access blocker, not code.
+5. Do **not** restart Thread A (SOC-workbench correlation-engine building) — unchanged reasoning from round 3.

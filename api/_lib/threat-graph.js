@@ -522,6 +522,12 @@ function getNeighbors(graph, nodeId, relationship) {
       relationship: e.relationship,
       confidence:   e.confidence,
       direction:    e.source === nodeId ? 'outbound' : 'inbound',
+      // Additive (existing callers destructure only the 4 fields above):
+      // every edge already carries a real evidence trail -- surface it
+      // rather than dropping it, so a caller building an evidence panel
+      // doesn't have to re-scan graph.edges itself.
+      sources:      e.sources || [],
+      first_seen:   e.first_seen || null,
     }))
     .filter(n => n.node !== null);
 }

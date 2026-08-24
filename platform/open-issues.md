@@ -916,7 +916,16 @@ inspection: RSS generation (`fetch-live-intel.js` vs. `generate-rss.js`,
 both scheduled, both write `rss.xml`), sitemap generation (`fetch-live-intel.js`
 vs. `generate-cve-pages.js`, with `intelligence/*.html` reports reaching
 neither), search-index generation (live `fetch-live-intel.js` path vs. an
-orphaned `generate-search-index.py` wired into no workflow), Markdown/HTML
+orphaned `generate-search-index.py` wired into no workflow — **correction,
+Unified Intelligence Search v1 round**: re-verified directly and this is
+only half true. The standalone `generate-search-index.py` CLI script is
+indeed unwired from any GitHub Actions workflow, but `fetch-live-intel.js`'s
+own `updateSearchIndex()` function (a separate, incremental implementation)
+*does* keep `search-index.json` live every ~30-minute cycle — so the file
+itself is not stale/orphaned, only the standalone full-rebuild script is.
+This is still two parallel implementations of the same capability, which is
+what this Issue is actually about — the correction is only to the word
+"orphaned," not to the underlying duplication finding), Markdown/HTML
 rendering (canonical `report-renderer.js` vs. hand-rolled `mdToSafeHtml()`
 in `generate-cve-pages.js` — already tracked as Issue 5, not duplicated
 here), `slugify()` (near-identical copies in `fetch-live-intel.js` and
@@ -1302,6 +1311,54 @@ to two separate platforms' routing configs.
 **Staging-blocking?** No. Confirmed identical (broken) behavior on both
 platforms is true parity, not a Cloudflare-specific gap — does not block
 `VERCEL-CLOUDFLARE-PARITY-MATRIX.md`'s readiness verdict.
+
+---
+
+## Issue 20 — Unauthenticated / unbounded API surfaces found during the Unified Intelligence Search v1 reuse audit (2026-08-24)
+
+Found while auditing existing search-adjacent capabilities before building
+the new unified search (`docs/audits/SENTINEL-APEX-UNIFIED-INTELLIGENCE-SEARCH-V1-CERTIFICATION.md`).
+Three separate, real, pre-existing gaps — none touched or fixed this round,
+each tracked here per this file's own convention (data sparsity, index
+limitations, and scope gaps are listed separately, not folded into a
+generic "future improvements" note per this mandate's explicit instruction).
+
+1. **`api/v1/ioc/search.js` and `api/v1/ioc/[id].js` have no authentication
+   at all** — confirmed by reading every line of both files: no
+   `authenticate()`, no `requireAnalyst()`, no `sec.guardRequest`. They are
+   reachable without any API key. They also read a separate, disconnected,
+   near-empty store (`data/ioc-canonical.json` — 2 records, stale since
+   2026-07-31) rather than the real 886-node IOC graph — see the
+   source-of-truth matrix's now-resolved IOC row for the full detail.
+
+2. **`api/v1/detections/rules.js` has no authentication at all** — same
+   gap, same verification method (only `require('../../_lib/detection-rules')`,
+   no auth import anywhere in the file).
+
+3. **`api/v1/workbench/search.js`'s `limit` query parameter has no upper
+   clamp** — `limit` defaults to 50 with no `Math.min(...)`-style cap, unlike
+   every other bounded parameter in this codebase (`parsePagination()`'s
+   `Math.min(100, ...)` idiom, `action=search`'s 200-char query cap,
+   `action=top-actors`'s `Math.min(20, ...)`). This route is internal-only
+   (`requireAnalyst`-gated), which lowers but does not eliminate the risk.
+
+**Not fixed this round** — each is either unauthenticated (a security-
+relevant change that deserves its own dedicated, carefully-reviewed sprint
+rather than a drive-by fix bundled into an unrelated feature PR) or reads
+from a live-pipeline-adjacent store this session has repeatedly declined to
+touch without a dedicated review window (matching Issue 8's and the
+campaign-delivery-integrity work's own established caution). The new
+Unified Intelligence Search v1's own `action=ioc` deliberately does **not**
+reuse `ioc/search.js`'s data source, precisely because of finding 1 above.
+
+**Suggested fix** (for whoever picks this up): add the standard
+`authenticate()`/tier-gating call to `ioc/search.js`/`[id].js` and
+`detections/rules.js` matching every other customer-facing route's
+established pattern; add a `Math.min(N, ...)` clamp to `workbench/search.js`'s
+`limit` matching `parsePagination()`'s own idiom. All three are small,
+mechanical, low-risk fixes once someone owns confirming no current caller
+depends on the unauthenticated/unbounded behavior (the same due-diligence
+step Issue 19 already recommends for its own similar situation).
 
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
