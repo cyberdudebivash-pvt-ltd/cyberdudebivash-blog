@@ -130,6 +130,32 @@ const DYNAMIC_API_HANDLERS = [
   [/^\/api\/v1\/ioc\/([^/]+)$/, 'api/v1/ioc/[id]'],
 ];
 
+// These 7 handlers do their own internal routing on segments beyond their
+// own base path (e.g. /api/v1/intelligence/objects/{id}/approve) via
+// api/_lib/request-path.js's resolvePathParts(), which reads
+// req.query.apexSubpath. On Vercel this is delivered by a
+// `/mountPath/:apexSubpath*` -> `/mountPath?apexSubpath=:apexSubpath*`
+// wildcard rewrite per mount point (vercel.json). Cloudflare has no
+// declarative rewrite config to mirror that in, so resolveRoute() below
+// does the equivalent prefix match itself and returns the remaining
+// segments as query.apexSubpath — router.js's dispatch() already merges
+// route.query into req.query (line 93), so this reaches
+// resolvePathParts() exactly the way the real query param would.
+// Without this, every sub-path request 404s here the same way it did on
+// Vercel before that fix existed: DIRECT_API_HANDLERS only matches the
+// bare base path, and there is no other rule that would catch a deeper
+// path -- confirmed via platform/open-issues.md Issue 19's real Workerd
+// probe (cases.js), the same defect class, not yet closed on this side.
+const APEX_SUBPATH_HANDLERS = new Set([
+  'api/v1/workbench/investigations',
+  'api/v1/workbench/cases',
+  'api/v1/intelligence/graph',
+  'api/v1/intelligence/correlations',
+  'api/v1/intelligence/objects',
+  'api/v1/intelligence/similarity',
+  'api/v1/intelligence/publish',
+]);
+
 /**
  * @param {string} pathname bare path, no query string (e.g. url.pathname)
  * @returns {null
@@ -166,6 +192,12 @@ function resolveRoute(pathname) {
     return { type: 'handler', handlerPath: `${directPath}/index`, query: {} };
   }
 
+  for (const base of APEX_SUBPATH_HANDLERS) {
+    if (directPath.startsWith(`${base}/`)) {
+      return { type: 'handler', handlerPath: base, query: { apexSubpath: directPath.slice(base.length + 1) } };
+    }
+  }
+
   for (const [pattern, handlerPath] of DYNAMIC_API_HANDLERS) {
     const m = pathname.match(pattern);
     if (m) return { type: 'handler', handlerPath, query: { id: m[1] } };
@@ -181,5 +213,6 @@ module.exports = {
   REDIRECTS,
   DIRECT_API_HANDLERS,
   DYNAMIC_API_HANDLERS,
+  APEX_SUBPATH_HANDLERS,
   resolveRoute,
 };

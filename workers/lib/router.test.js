@@ -105,6 +105,29 @@ describe('handleFetch — real end-to-end handler dispatch', () => {
     const response = await dispatch('api/v1/does-not-exist', request, {});
     assert.equal(response.status, 404);
   });
+
+  test('GET /api/v1/intelligence/objects/{id} (apexSubpath route) reaches the real handler, not a 404', async () => {
+    // Proves the full chain end-to-end: route-table.js's APEX_SUBPATH_HANDLERS
+    // prefix match -> dispatch()'s req.query merge -> the real objects.js
+    // handler's resolvePathParts()/requireAnalyst. No ANALYST_KEYS configured
+    // in this environment, so the real handler's own 401 (not a routing 404)
+    // proves the sub-path actually reached application logic.
+    const { env } = fakeEnv();
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/intelligence/objects/intel-123');
+    const response = await handleFetch(request, env);
+    assert.equal(response.status, 401);
+    const body = await response.json();
+    assert.equal(body.error.code, 'UNAUTHORIZED');
+  });
+
+  test('POST /api/v1/workbench/cases/{id}/notes (apexSubpath route, multi-segment) reaches the real handler', async () => {
+    const { env } = fakeEnv();
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/workbench/cases/case-1/notes', { method: 'POST' });
+    const response = await handleFetch(request, env);
+    assert.equal(response.status, 401);
+    const body = await response.json();
+    assert.equal(body.error.code, 'UNAUTHORIZED');
+  });
 });
 
 describe('handleFetch — malformed/oversized body handling (real handler dispatch)', () => {
