@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 from automation.authority_transformer import AuthorityTransformer
 from automation.config import Config
 from automation.content_discovery import ContentDiscoveryEngine, _compute_hash
-from automation.main import run_pipeline
+from automation.main import _pipeline_exit_code, run_pipeline
 
 
 # Content discovery drops anything older than config.max_article_age_hours
@@ -265,6 +265,10 @@ class TestFullPipelinePublish(unittest.TestCase):
 
         self.assertEqual(report["published"], 0)
         self.assertGreater(report["integrity_blocked"], 0)
+        # The evidence-integrity gate correctly blocking a tampered artifact
+        # is the pipeline doing its job, not a systemic defect -- DEGRADED,
+        # not FAILED, even when every discovered article is blocked.
+        self.assertEqual(report["run_status"], "DEGRADED")
         self.assertTrue(all(p["status"] == "integrity_blocked" for p in report["posts"]))
         self.assertTrue(all("certified artifact hash mismatch" in p["error"] for p in report["posts"]))
         # The Blogger publish endpoint itself must never be reached -- only
@@ -358,6 +362,49 @@ class TestFullPipelinePublish(unittest.TestCase):
         self.assertEqual(report["failed"], 1)
         self.assertEqual(len(report["posts"]), 1)
         self.assertEqual(report["posts"][0]["status"], "rate_limited")
+        # A self-healing rate limit is DEGRADED, not FAILED: the article is
+        # already queued for retry next run, and this must never redden an
+        # otherwise-healthy pipeline run (see automation/main.py
+        # _pipeline_run_status()).
+        self.assertEqual(report["run_status"], "DEGRADED")
+
+    def test_auth_error_marks_run_failed_not_degraded(self):
+        """A broken/revoked credential is the one failure a retry can never
+        fix -- every future run fails identically until BLOGGER_REFRESH_TOKEN
+        is rotated (see BloggerAuthError's own invalid_grant hint in
+        blogger_publisher.py). Unlike a rate limit or a single publish
+        rejection, this must redden the whole run so it gets operator
+        attention immediately rather than waiting to be noticed."""
+        token_resp = MagicMock()
+        token_resp.ok = True
+        token_resp.json.return_value = MOCK_TOKEN_RESPONSE
+
+        unauthorized_resp = MagicMock()
+        unauthorized_resp.status_code = 401
+        unauthorized_resp.text = "invalid_grant: Token has been expired or revoked."
+
+        rss_resp = MagicMock()
+        rss_resp.text = MOCK_RSS
+        rss_resp.raise_for_status = MagicMock()
+
+        # Token refresh -> publish POST -> 401 (attempt 1: refreshes once,
+        # retries) -> token refresh again (access token was cleared) ->
+        # publish POST -> 401 (attempt 2: auth_refreshed already True ->
+        # raises BloggerAuthError, matching retry_attempts=2 in _make_config).
+        with patch("requests.get", return_value=rss_resp):
+            with patch(
+                "requests.post",
+                side_effect=[token_resp, unauthorized_resp, token_resp, unauthorized_resp],
+            ):
+                with patch("time.sleep"):
+                    report = run_pipeline(self.config, dry_run=False)
+
+        self.assertEqual(report["published"], 0)
+        self.assertEqual(report["failed"], 1)
+        self.assertEqual(len(report["posts"]), 1)
+        self.assertEqual(report["posts"][0]["status"], "auth_error")
+        self.assertEqual(report["run_status"], "FAILED")
+        self.assertEqual(_pipeline_exit_code(report), 1)
 
     def test_published_articles_tracked_in_state(self):
         token_resp = MagicMock()
@@ -393,6 +440,12 @@ class TestFullPipelinePublish(unittest.TestCase):
         report = run_pipeline(bad_config, dry_run=False)
         self.assertGreater(len(report["errors"]), 0)
         self.assertEqual(report["published"], 0)
+        # A missing-credentials run must exit non-zero: before this fix,
+        # run_pipeline() returned here without ever touching report["failed"],
+        # so _pipeline_exit_code() silently reported success (exit 0) even
+        # though nothing was validated or published.
+        self.assertEqual(report["run_status"], "FAILED")
+        self.assertEqual(_pipeline_exit_code(report), 1)
 
     def test_run_report_written_to_logs(self):
         rss_resp = MagicMock()
