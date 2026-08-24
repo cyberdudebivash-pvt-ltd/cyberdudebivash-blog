@@ -13,7 +13,12 @@ limit is now hit before every discovered batch is exhausted.
 from unittest.mock import Mock
 
 from automation.content_discovery import DiscoveredArticle
-from automation.main import _merge_retry_and_fresh, _pipeline_exit_code, _requeue_unattempted
+from automation.main import (
+    _merge_retry_and_fresh,
+    _pipeline_exit_code,
+    _pipeline_run_status,
+    _requeue_unattempted,
+)
 
 
 def _article(n):
@@ -49,12 +54,136 @@ def test_empty_remaining_list_is_a_no_op():
     state.add_to_retry_queue.assert_not_called()
 
 
-def test_partial_success_still_returns_failure_exit_code():
-    assert _pipeline_exit_code({"published": 2, "failed": 1}) == 1
-
-
 def test_clean_run_returns_success_exit_code():
     assert _pipeline_exit_code({"published": 2, "failed": 0}) == 0
+
+
+# ── run_status classification (SUCCESS / DEGRADED / FAILED) ────────────────
+#
+# Supersedes the prior binary policy documented in
+# docs/audits/blogger-syndication-run-8459-incident-review-2026-08-20.md
+# ("Decision (owner, 2026-08-20): Option A — leave as-is", i.e. any failed
+# article, including a correctly-blocked one, reddened the whole run). The
+# P0 Intel Factory Publication Reliability mandate explicitly re-raised this
+# exact question and specified a 3-state model instead — see
+# docs/audits/SENTINEL-APEX-INTEL-FACTORY-PUBLICATION-RELIABILITY-V1-CERTIFICATION.md
+# for the full reasoning. These tests pin down the new, intentional policy:
+# an integrity block, a self-healing rate limit, or a queued-for-retry
+# publish error are all DEGRADED (still exit 0) — the pipeline did its job.
+# Only a broken credential or an exception outside the pipeline's own error
+# taxonomy is FAILED (exit 1).
+
+def test_run_missing_entirely_is_success():
+    assert _pipeline_run_status({"published": 3, "failed": 0, "posts": []}) == "SUCCESS"
+
+
+def test_integrity_blocked_alone_is_degraded_not_failed():
+    report = {
+        "published": 2,
+        "failed": 1,
+        "integrity_blocked": 1,
+        "posts": [
+            {"status": "published"},
+            {"status": "published"},
+            {"status": "integrity_blocked"},
+        ],
+    }
+    assert _pipeline_run_status(report) == "DEGRADED"
+    report["run_status"] = _pipeline_run_status(report)
+    assert _pipeline_exit_code(report) == 0
+
+
+def test_rate_limited_alone_is_degraded_not_failed():
+    report = {
+        "published": 2,
+        "failed": 1,
+        "posts": [
+            {"status": "published"},
+            {"status": "published"},
+            {"status": "rate_limited"},
+        ],
+    }
+    assert _pipeline_run_status(report) == "DEGRADED"
+    report["run_status"] = _pipeline_run_status(report)
+    assert _pipeline_exit_code(report) == 0
+
+
+def test_publish_error_alone_is_degraded_not_failed():
+    report = {
+        "published": 2,
+        "failed": 1,
+        "posts": [
+            {"status": "published"},
+            {"status": "published"},
+            {"status": "publish_error"},
+        ],
+    }
+    assert _pipeline_run_status(report) == "DEGRADED"
+    report["run_status"] = _pipeline_run_status(report)
+    assert _pipeline_exit_code(report) == 0
+
+
+def test_auth_error_is_failed_even_with_other_successful_publications():
+    report = {
+        "published": 2,
+        "failed": 1,
+        "posts": [
+            {"status": "published"},
+            {"status": "published"},
+            {"status": "auth_error"},
+        ],
+    }
+    assert _pipeline_run_status(report) == "FAILED"
+    report["run_status"] = _pipeline_run_status(report)
+    assert _pipeline_exit_code(report) == 1
+
+
+def test_unexpected_exception_is_failed():
+    report = {
+        "published": 2,
+        "failed": 1,
+        "posts": [
+            {"status": "published"},
+            {"status": "published"},
+            {"status": "error"},
+        ],
+    }
+    assert _pipeline_run_status(report) == "FAILED"
+    report["run_status"] = _pipeline_run_status(report)
+    assert _pipeline_exit_code(report) == 1
+
+
+def test_clean_run_is_success_status():
+    report = {
+        "published": 2,
+        "failed": 0,
+        "posts": [{"status": "published"}, {"status": "published"}],
+    }
+    assert _pipeline_run_status(report) == "SUCCESS"
+
+
+def test_terminal_status_wins_even_if_it_is_not_the_only_failure():
+    """A run with both a healthy integrity block and a genuine auth error
+    must still be FAILED — the terminal condition can never be masked by
+    also containing a benign one."""
+    report = {
+        "published": 1,
+        "failed": 2,
+        "posts": [
+            {"status": "published"},
+            {"status": "integrity_blocked"},
+            {"status": "auth_error"},
+        ],
+    }
+    assert _pipeline_run_status(report) == "FAILED"
+
+
+def test_exit_code_never_infers_failed_from_a_missing_run_status():
+    """A report that was never run through run_pipeline()'s own
+    classification (no run_status key at all) must not be silently treated
+    as FAILED just because it has a nonzero failed count — only an explicit
+    run_status of "FAILED" may produce exit code 1."""
+    assert _pipeline_exit_code({"published": 2, "failed": 1}) == 0
 
 
 def test_fresh_article_replaces_stale_retry_with_same_source_url():

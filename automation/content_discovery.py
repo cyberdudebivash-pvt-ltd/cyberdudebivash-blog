@@ -121,10 +121,22 @@ class PublicationState:
         }
 
     def save(self) -> None:
+        """Persist state via write-temp-then-rename so a process kill mid-write
+        (e.g. the syndication workflow's 10-minute job timeout) can never leave
+        a truncated/corrupt state file on disk. A corrupt file previously fell
+        back to _load()'s "start fresh" path, which would silently forget every
+        prior publication and risk duplicate Blogger posts on the next run --
+        os.replace() is atomic within the same directory/filesystem, so readers
+        only ever see either the fully-old or fully-new file, never a partial
+        write."""
         self.state_file.parent.mkdir(parents=True, exist_ok=True)
         self._state["last_updated"] = datetime.now(timezone.utc).isoformat()
-        with open(self.state_file, "w", encoding="utf-8") as f:
+        tmp_path = self.state_file.with_name(self.state_file.name + ".tmp")
+        with open(tmp_path, "w", encoding="utf-8") as f:
             json.dump(self._state, f, indent=2, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_path, self.state_file)
         logger.info("State saved", extra={"total_published": self._state["total_published"]})
 
     def is_published(self, content_hash: str) -> bool:

@@ -1,5 +1,15 @@
 # SENTINEL APEX — Global CTI Commercial Transformation v3 — Resume Checkpoint
 
+**Unrelated parallel thread, not part of this lineage:** a separate P0
+mandate ("Intel Factory Publication Reliability, Blogger Syndication
+Recovery & Customer Delivery Assurance v1", `claude/p0-intel-factory-publication-reliability-v1`,
+2026-08-24) fixed a CI-signal defect in the Python Blogger syndication
+pipeline (`automation/main.py` and friends) — entirely outside this
+checkpoint's JS/intelligence-core scope, but worth knowing about if
+resuming any work on this repo. See
+`docs/audits/SENTINEL-APEX-INTEL-FACTORY-PUBLICATION-RELIABILITY-V1-CERTIFICATION.md`.
+Nothing below this note is affected by it.
+
 **Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4, same day, different branch each time)
 **Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, this update, PR #131 open)
 **Written per:** the master mandate's own "Long-Run Checkpoint Policy" — stop at a safe boundary, commit, push, update the PR, and leave a clear resume point rather than attempting the full 70-phase mandate in one uninterrupted pass.

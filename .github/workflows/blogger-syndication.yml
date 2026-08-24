@@ -165,8 +165,30 @@ jobs:
             --max-posts ${{ github.event.inputs.max_posts || '5' }} \
             2>&1 | tee logs/pipeline-output.txt
           PIPELINE_EXIT=${PIPESTATUS[0]}
+
+          # run_status (SUCCESS / DEGRADED / FAILED) is set by
+          # automation/main.py::_pipeline_run_status() and persisted to the
+          # latest logs/run-*.json. FAILED is the only state that ever
+          # produces a nonzero PIPELINE_EXIT above; DEGRADED (e.g. one
+          # article correctly blocked by the evidence-integrity gate while
+          # the rest of the run published) exits 0 by design, so it needs
+          # its own annotation here or it would pass through this step
+          # silently despite deserving operator attention.
+          RUN_STATUS=$(python -c "
+          import json, glob
+          try:
+              latest = sorted(glob.glob('logs/run-*.json'))[-1]
+              with open(latest) as f:
+                  print(json.load(f).get('run_status', 'UNKNOWN'))
+          except Exception:
+              print('UNKNOWN')
+          " 2>/dev/null || echo "UNKNOWN")
+          echo "Pipeline run_status: ${RUN_STATUS}"
+
           if [ "$PIPELINE_EXIT" -ne 0 ]; then
-            echo "::error::Syndication pipeline exited with code ${PIPELINE_EXIT}. Review the run summary for integrity blocks, published count, authentication, quota, or API failures."
+            echo "::error::Syndication pipeline exited with code ${PIPELINE_EXIT} (run_status=${RUN_STATUS}). Review the run summary for authentication or unexpected-error details."
+          elif [ "$RUN_STATUS" = "DEGRADED" ]; then
+            echo "::warning::Syndication pipeline completed DEGRADED — one or more articles were correctly blocked by the evidence-integrity gate, deferred by a self-healing rate limit, or queued for retry, while the rest of the run published successfully. Review the run summary for details; no operator action is required unless this persists across runs."
           fi
           exit $PIPELINE_EXIT
 
@@ -232,6 +254,7 @@ jobs:
           try:
             with open('$LATEST_REPORT') as f:
               r = json.load(f)
+            print(f'Run status: {r.get(\"run_status\", \"UNKNOWN\")}')
             print(f'Discovered: {r.get(\"discovered\", 0)}')
             print(f'Published:  {r.get(\"published\", 0)}')
             print(f'Failed:     {r.get(\"failed\", 0)}')

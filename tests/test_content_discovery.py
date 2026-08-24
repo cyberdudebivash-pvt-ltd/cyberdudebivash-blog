@@ -188,6 +188,43 @@ class TestPublicationState(unittest.TestCase):
         state = PublicationState(self.state_file)
         self.assertEqual(state.total_published, 0)
 
+    def test_save_leaves_no_tmp_file_behind(self):
+        state = PublicationState(self.state_file)
+        state.mark_published(self._make_article(), "post-1", "https://blogger.com/post-1")
+        tmp_path = self.state_file + ".tmp"
+        self.assertFalse(os.path.exists(tmp_path))
+        self.assertTrue(os.path.exists(self.state_file))
+
+    def test_crash_mid_write_does_not_corrupt_existing_state(self):
+        """Regression test for the exact risk atomic write-temp-then-rename
+        closes: a process killed mid-save() (e.g. the syndication workflow's
+        10-minute job timeout) must never leave a truncated/corrupt state
+        file that _load() would silently treat as empty on the next run --
+        that would forget every prior publication and risk duplicate Blogger
+        posts. Simulates the crash by making the rename step itself raise
+        after the write already succeeded."""
+        state = PublicationState(self.state_file)
+        first = self._make_article(url="https://example.com/first", title="First")
+        state.mark_published(first, "post-1", "https://blogger.com/post-1")
+        with open(self.state_file, "r", encoding="utf-8") as f:
+            good_state_before_crash = f.read()
+
+        second = self._make_article(url="https://example.com/second", title="Second")
+        with patch("automation.content_discovery.os.replace", side_effect=OSError("simulated crash")):
+            with self.assertRaises(OSError):
+                state.mark_published(second, "post-2", "https://blogger.com/post-2")
+
+        # The original file must be exactly as it was before the failed
+        # write -- not truncated, not partially overwritten -- and a fresh
+        # load must still see the first (successful) publication.
+        with open(self.state_file, "r", encoding="utf-8") as f:
+            after_crash = f.read()
+        self.assertEqual(after_crash, good_state_before_crash)
+
+        reloaded = PublicationState(self.state_file)
+        self.assertTrue(reloaded.is_published(first.content_hash))
+        self.assertFalse(reloaded.is_published(second.content_hash))
+
     def test_record_failure_stored(self):
         state = PublicationState(self.state_file)
         state.record_failure("https://example.com/fail", "Network error")

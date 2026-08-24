@@ -60,3 +60,54 @@ This is a CI-signal/alerting design choice, not a content-safety one — changin
 ## Files touched by this review
 
 None (production code). This document only.
+
+---
+
+## Addendum — 2026-08-24: Decision reversed under the Intel Factory Publication Reliability mandate
+
+**This section does not alter the analysis or conclusions above.** The root
+cause finding (real LLM hallucination, gate correctly fired, true positive)
+and the resilience findings (provider fallback, retry queue) still stand
+unchanged. Only the **CI-signal policy decision** immediately above —
+"Decision (owner, 2026-08-20): Option A — leave as-is" — has been
+superseded.
+
+**What changed:** the P0 "Intel Factory Publication Reliability, Blogger
+Syndication Recovery & Customer Delivery Assurance v1" mandate
+(2026-08-24), triggered by continued syndication workflow failures,
+independently re-derived this exact same root cause from fresh evidence
+(runs spanning 2026-08-22 through 2026-08-24, ~24 of the last 30 scheduled
+runs showing `conclusion: failure`) and explicitly specified a 3-state
+run-verdict model (`SUCCESS` / `DEGRADED` / `FAILED`) in place of the
+binary pass/fail this document's Option A kept. That mandate frames the
+distinction as: *"Never turn INTEGRITY_BLOCKED into PUBLISHED to make CI
+green... A healthy production system may legitimately block a bad report.
+Workflow success and report publication count are different metrics"* —
+i.e. the gate staying strict was never in question; only whether a
+correctly-functioning gate should keep reddening an otherwise-healthy run.
+
+**Why this reads as a reversal, not a contradiction:** Option A was chosen
+on 2026-08-20 to preserve maximum visibility on every hallucination
+instance. Four days and roughly two dozen majority-failure-rate runs later,
+that same choice was producing chronic, low-signal red-X noise that
+obscured genuine outages (a broken credential, an unexpected exception)
+behind routine, healthy integrity blocks — the opposite of the visibility
+Option A was meant to protect. The new mandate reflects the owner
+revisiting that tradeoff with more data, not a different agent overriding
+the recorded decision unilaterally.
+
+**What actually changed in code:** `automation/main.py` gained
+`_pipeline_run_status()`, classifying a completed run as `FAILED` only for
+a broken credential (`auth_error`) or an exception outside the pipeline's
+own error taxonomy (`error`); an integrity block, a self-healing rate
+limit, or a queued-for-retry publish error now classify as `DEGRADED` —
+exit code 0, but distinctly flagged (a `::warning::` annotation and a `Run
+status:` line in the GitHub Actions summary) rather than silently folded
+into a plain success. The evidence gate itself
+(`report_integrity.py::validate_publication()`, the artifact-hash binding
+check in `main.py`) was **not** touched, loosened, or bypassed in any way —
+every report this document analyzed as correctly blocked would still be
+blocked today.
+
+Full reasoning, evidence, and certification:
+`docs/audits/SENTINEL-APEX-INTEL-FACTORY-PUBLICATION-RELIABILITY-V1-CERTIFICATION.md`.

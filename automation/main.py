@@ -126,6 +126,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         msg = f"Missing required secrets: {missing}"
         logger.error(msg)
         report["errors"].append(msg)
+        report["run_status"] = "FAILED"
         report["run_end"] = datetime.now(timezone.utc).isoformat()
         return report
 
@@ -157,6 +158,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
 
     if not articles:
         logger.info("No new articles to syndicate this run")
+        report["run_status"] = "SUCCESS"
         report["run_end"] = datetime.now(timezone.utc).isoformat()
         return report
 
@@ -370,10 +372,12 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         report["posts"].append(post_result)
 
     report["run_end"] = datetime.now(timezone.utc).isoformat()
+    report["run_status"] = _pipeline_run_status(report)
 
     logger.info(
         "Pipeline complete",
         extra={
+            "run_status": report["run_status"],
             "discovered": report["discovered"],
             "published": report["published"],
             "failed": report["failed"],
@@ -387,9 +391,43 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
     return report
 
 
+# Post statuses that mean the pipeline itself is unhealthy and needs operator
+# attention now: an expired/revoked credential (BloggerAuthError) that will
+# fail identically on every future run until rotated, or an exception outside
+# the pipeline's own error taxonomy -- the one bucket nothing here is
+# designed to produce. Every other failure status the loop above can record
+# (integrity_blocked, rate_limited, publish_error) is already handled by
+# design: the evidence gate correctly kept an unverified report out of
+# publication, or the article was queued for automatic retry next run. None
+# of those are evidence the pipeline is broken, so none of them may redden
+# an otherwise-successful run.
+_TERMINAL_POST_STATUSES = {"auth_error", "error"}
+
+
+def _pipeline_run_status(report: dict) -> str:
+    """Classify a completed run as SUCCESS / DEGRADED / FAILED.
+
+    Mirrors the mandate's 3-state run-verdict model: a run where every
+    article either published or was correctly, healthily handled (integrity
+    block, self-healing rate limit, a single retryable publish error) is
+    DEGRADED, not FAILED -- partial success is real signal, not something to
+    hide, but it must never be confused with a systemic outage. Only a
+    terminal post status (see _TERMINAL_POST_STATUSES) makes a run FAILED.
+    """
+    if any(post.get("status") in _TERMINAL_POST_STATUSES for post in report.get("posts", [])):
+        return "FAILED"
+    if int(report.get("failed", 0)) > 0:
+        return "DEGRADED"
+    return "SUCCESS"
+
+
 def _pipeline_exit_code(report: dict) -> int:
-    """Return non-zero for every partial or complete pipeline failure."""
-    return 1 if int(report.get("failed", 0)) > 0 else 0
+    """Non-zero only for a FAILED run (see _pipeline_run_status). A DEGRADED
+    run -- e.g. one article correctly blocked by the evidence-integrity gate
+    while the rest of the batch published -- exits 0: the pipeline did its
+    job. DEGRADED is still surfaced distinctly via report["run_status"] and
+    the workflow summary, never silently folded into a plain SUCCESS."""
+    return 1 if report.get("run_status") == "FAILED" else 0
 
 
 def main() -> int:
@@ -414,9 +452,13 @@ def main() -> int:
 
     report = run_pipeline(config, dry_run=args.dry_run)
 
-    # Any blocked or failed article must surface as a workflow failure even
-    # when other articles published successfully. Partial success cannot hide
-    # an evidence-integrity, authentication, quota, or publication defect.
+    # A FAILED run (broken credential, or an exception outside the
+    # pipeline's own error taxonomy) must surface as a workflow failure.
+    # A DEGRADED run -- an integrity block, a self-healing rate limit, or a
+    # queued-for-retry publish error alongside otherwise-successful
+    # publications -- exits 0: the pipeline correctly did its job and must
+    # not have that success hidden behind a red workflow run. See
+    # _pipeline_run_status() for the full classification.
     return _pipeline_exit_code(report)
 
 
