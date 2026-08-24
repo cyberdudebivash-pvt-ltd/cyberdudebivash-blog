@@ -33,7 +33,8 @@ function makeGraph() {
       'intel:item1': { id: 'intel:item1', type: 'Intel', name: 'Some article', attributes: {} },
     },
     edges: [
-      { source: 'actor:evilcorp', target: 'CVE-2024-0001', relationship: 'exploits', confidence: 0.9 },
+      { source: 'actor:evilcorp', target: 'CVE-2024-0001', relationship: 'exploits', confidence: 0.9,
+        sources: ['https://example.test/advisory'], first_seen: '2024-01-16' },
       { source: 'ioc:domain:evil.test', target: 'intel:item1', relationship: 'linked_to', confidence: 0.7 },
     ],
   };
@@ -347,6 +348,18 @@ test('getActorDetail: found actor includes real graph relationships', () => {
   assert.equal(actor.related_cves.length, 1);
   assert.equal(actor.related_cves[0].id, 'CVE-2024-0001');
   assert.equal(actor.related_cves[0].confidence, 0.9);
+});
+
+test('getActorDetail: relationships carry real evidence (sources/first_seen), not just a confidence number', () => {
+  const { actor } = getActorDetail(makeGraph(), 'actor:evilcorp');
+  assert.deepEqual(actor.related_cves[0].evidence.sources, ['https://example.test/advisory']);
+  assert.equal(actor.related_cves[0].evidence.first_seen, '2024-01-16');
+});
+
+test('getIocDetail: a relationship with no recorded sources gets an honest empty array, not a crash', () => {
+  const { ioc } = getIocDetail(makeGraph(), 'ioc:domain:evil.test');
+  assert.deepEqual(ioc.linked_intel[0].evidence.sources, []);
+  assert.equal(ioc.linked_intel[0].evidence.first_seen, null);
 });
 
 test('getActorDetail: unknown actor ID returns found:false, not a crash or fabricated record', () => {

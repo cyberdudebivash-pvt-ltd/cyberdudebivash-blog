@@ -449,6 +449,15 @@ function relatedFromEdges(edges) {
     relationship: e.relationship,
     confidence:   typeof e.confidence === 'number' ? e.confidence : null,
     direction:    e.direction,
+    // Evidence/provenance (Phase 26/27): real citations already carried
+    // on the edge, not a separate evidence store -- an empty array here
+    // honestly means "no source citation recorded for this specific
+    // edge," not "not evidence-backed at all" (confidence/relationship
+    // still stand on their own).
+    evidence: {
+      sources:    Array.isArray(e.sources) ? e.sources : [],
+      first_seen: e.first_seen || null,
+    },
   }));
 }
 
