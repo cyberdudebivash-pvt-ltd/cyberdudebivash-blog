@@ -18,6 +18,9 @@ const redis = require('../../_lib/redis');
 const { IntelligenceManager } = require('../../_lib/intelligence-manager');
 const { INTELLIGENCE_TYPES, LIFECYCLE_STATES, CONFIDENCE_LEVELS } = require('../../_lib/intelligence-object');
 const { requireAnalyst } = require('../../_lib/analyst-auth');
+const { resolvePathParts } = require('../../_lib/request-path');
+
+const MOUNT_PATH = '/api/v1/intelligence/objects';
 
 const manager = new IntelligenceManager(redis);
 
@@ -54,29 +57,25 @@ module.exports = async (req, res) => {
   const caller = await requireAnalyst(req, res, fail);
   if (!caller) return;
 
-  const pathParts = (req.url || '').split('?')[0].split('/').filter(Boolean);
+  const pathParts = resolvePathParts(req, MOUNT_PATH);
   const action = pathParts[pathParts.length - 1];
   const id = pathParts[pathParts.length - 2];
 
   // POST /api/v1/intelligence/objects — create new intelligence
-  if (req.method === 'POST' && !id && action === 'objects') {
+  if (req.method === 'POST' && action === 'objects') {
     return handleCreateIntelligence(req, res, caller);
   }
 
   // GET /api/v1/intelligence/objects — search/list
-  if (req.method === 'GET' && action === 'objects' && !id) {
+  if (req.method === 'GET' && action === 'objects') {
     return handleSearchIntelligence(req, res);
   }
 
-  // GET /api/v1/intelligence/objects/{id} — retrieve
-  if (req.method === 'GET' && id && !action) {
-    return handleGetIntelligence(req, res, id);
-  }
-
-  // PUT /api/v1/intelligence/objects/{id} — update
-  if (req.method === 'PUT' && id && !action) {
-    return handleUpdateIntelligence(req, res, id, caller);
-  }
+  // Named sub-resource actions (/objects/{id}/{verb}) -- checked BEFORE the
+  // bare-ID fallback below, since a bare `id === 'objects' && action` check
+  // alone can't tell "the real ID" apart from "a known verb"; every one of
+  // these must be resolved first or the bare-ID handler would shadow all of
+  // them (mirrors investigations.js's identical ordering constraint).
 
   // POST /api/v1/intelligence/objects/{id}/review — submit for review
   if (req.method === 'POST' && action === 'review' && id) {
@@ -101,6 +100,23 @@ module.exports = async (req, res) => {
   // GET /api/v1/intelligence/objects/{id}/history — history
   if (req.method === 'GET' && action === 'history' && id) {
     return handleGetHistory(req, res, id);
+  }
+
+  // Bare /objects/{realId} -- for this exact shape, `id` (the segment right
+  // before the last) is always the literal 'objects' and `action` (the last
+  // segment) is the real intelligence object ID. Every named verb above
+  // already returned if it matched, so reaching here with id === 'objects'
+  // unambiguously means "no verb, just an ID" -- fixes a pre-existing defect
+  // where these checks required `id && !action`, which can never be true
+  // for this URL shape (action always holds the real ID here, never empty),
+  // so GET/PUT on a single intelligence object could never be reached
+  // (same fix pattern as investigations.js/cases.js).
+  if (req.method === 'GET' && id === 'objects' && action) {
+    return handleGetIntelligence(req, res, action);
+  }
+
+  if (req.method === 'PUT' && id === 'objects' && action) {
+    return handleUpdateIntelligence(req, res, action, caller);
   }
 
   return fail(res, 404, 'NOT_FOUND', 'Endpoint not found');

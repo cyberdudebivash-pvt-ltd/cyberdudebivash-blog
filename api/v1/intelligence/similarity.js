@@ -5,6 +5,9 @@ const { IntelligenceManager } = require('../../_lib/intelligence-manager');
 const { GraphEngine } = require('../../_lib/graph-engine');
 const { SimilarityEngine } = require('../../_lib/similarity-engine');
 const { requireAnalyst } = require('../../_lib/analyst-auth');
+const { resolvePathParts } = require('../../_lib/request-path');
+
+const MOUNT_PATH = '/api/v1/intelligence/similarity';
 
 const manager = new IntelligenceManager(redis);
 const graphEngine = new GraphEngine(redis, manager);
@@ -43,7 +46,7 @@ module.exports = async (req, res) => {
   const caller = await requireAnalyst(req, res, fail);
   if (!caller) return;
 
-  const pathParts = (req.url || '').split('?')[0].split('/').filter(Boolean);
+  const pathParts = resolvePathParts(req, MOUNT_PATH);
   const action = pathParts[pathParts.length - 1];
   const id = pathParts[pathParts.length - 2];
 
@@ -110,22 +113,22 @@ async function handleDetectDuplicates(req, res) {
   }
 }
 
-async function handleMergeDuplicates(req, res) {
+async function handleMergeDuplicates(req, res, caller) {
   try {
     let body = {};
     if (req.body) {
       body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     }
 
-    const { keepEntity, mergeEntity, analyst, reason } = body;
-    if (!keepEntity || !mergeEntity || !analyst) {
-      return fail(res, 400, 'MISSING_FIELD', 'keepEntity, mergeEntity, and analyst required');
+    const { keepEntity, mergeEntity, reason } = body;
+    if (!keepEntity || !mergeEntity) {
+      return fail(res, 400, 'MISSING_FIELD', 'keepEntity and mergeEntity required');
     }
 
     const result = await similarityEngine.mergeDuplicates(
       keepEntity,
       mergeEntity,
-      analyst,
+      caller.id,
       reason || ''
     );
 
