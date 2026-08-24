@@ -2,10 +2,10 @@
   "platform": "CYBERDUDEBIVASH SENTINEL APEX — AI Security Intelligence Division",
   "endpoint": "/api/intel/ai-security.json",
   "doctrine": "Sentinel-APEX/prompts/ai-security-master-prompt.md",
-  "generated": "2026-08-24T18:42:11.771Z",
+  "generated": "2026-08-24T20:32:16.538Z",
   "disclaimer": "Evidence-graded AI security intelligence. Confidence and evidence labels attached per item. Community leads are corroborated before publication.",
   "stats": {
-    "published": 15,
+    "published": 14,
     "p1": 1,
     "leadsHeld": 4,
     "analystReports": 0,
@@ -29,14 +29,6 @@
         "error": null
       },
       {
-        "name": "GitHub Security Advisories",
-        "key": "ghsa",
-        "tier": 1,
-        "status": "ok",
-        "items": 60,
-        "error": null
-      },
-      {
         "name": "arXiv cs.CR (LLM security)",
         "key": "arxiv_sec",
         "tier": 2,
@@ -53,6 +45,14 @@
         "error": null
       },
       {
+        "name": "GitHub Security Advisories",
+        "key": "ghsa",
+        "tier": 1,
+        "status": "ok",
+        "items": 60,
+        "error": null
+      },
+      {
         "name": "NVD (AI/LLM keyword)",
         "key": "nvd_ai",
         "tier": 1,
@@ -61,7 +61,7 @@
         "error": null
       }
     ],
-    "runtimeMs": 870
+    "runtimeMs": 1203
   },
   "frameworks": {
     "owasp_llm_top10": {
@@ -88,7 +88,7 @@
       "AML.T0057": "LLM Data Leakage"
     }
   },
-  "count": 15,
+  "count": 14,
   "items": [
     {
       "id": "e575969abf685c5e",
@@ -155,62 +155,6 @@
       "detection": {
         "detect": "Monitor LLM gateway logs for delimiter-breaking tokens, role-swap phrases (\"ignore previous\", \"you are now\"), and base64/hex blobs in user or retrieved content.",
         "hunt": "Correlate anomalous tool-invocation sequences that immediately follow untrusted content ingestion (email, web, RAG chunks)."
-      },
-      "has_analyst_report": false
-    },
-    {
-      "id": "00536f39ab673c35",
-      "title": "Laravel Backpack CRUD: OS command injection in Stats::makeCurlRequest via attacker-controlled Host header (pre-auth)",
-      "url": "https://github.com/advisories/GHSA-mrc5-3mm3-45c5",
-      "source": "GitHub Security Advisories",
-      "tier": 1,
-      "published": "2026-08-20T18:38:55Z",
-      "cve": "CVE-2026-54182",
-      "severity": "high",
-      "cvss": null,
-      "evidence_label": "VERIFIED_ADVISORY",
-      "categories": [
-        {
-          "id": "agent_tool",
-          "label": "Agentic / Tool / MCP Exploitation"
-        }
-      ],
-      "owasp_llm": [
-        {
-          "id": "LLM06",
-          "name": "Sensitive Information Disclosure / Excessive Agency"
-        }
-      ],
-      "mitre_atlas": [
-        {
-          "id": "AML.T0053",
-          "name": "LLM Plugin Compromise"
-        }
-      ],
-      "agent_risk": {
-        "flags": {
-          "agentic": true,
-          "mcp": false,
-          "rag": false,
-          "tool_use": false,
-          "supply_chain": false
-        },
-        "level": "elevated"
-      },
-      "enterprise_impact": {
-        "score": 63,
-        "priority": "P2"
-      },
-      "confidence": {
-        "source": "HIGH",
-        "evidence": "HIGH",
-        "overall": "HIGH",
-        "rationale": "Authoritative source (GitHub Security Advisories) with assigned CVE."
-      },
-      "corroboration": 1,
-      "detection": {
-        "detect": "Log every agent tool call with arguments; alert on tools reaching unexpected hosts, filesystem paths, or privileged actions.",
-        "hunt": "Trace agent action chains for excessive-agency patterns (self-granted scope, unbounded loops, denial-of-wallet spend)."
       },
       "has_analyst_report": false
     },
