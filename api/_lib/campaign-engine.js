@@ -26,6 +26,7 @@
 const fs     = require('fs');
 const path   = require('path');
 const crypto = require('crypto');
+const { getNeighbors } = require('./threat-graph');
 
 const CAMPAIGNS_PATH      = path.resolve(__dirname, '../../api/intel/campaigns.json');
 const CAMPAIGNS_CACHE_TTL = 120000;
@@ -54,16 +55,307 @@ function loadCampaigns() {
   return { generated: new Date().toISOString(), version: '1.0', campaigns: [] };
 }
 
-function saveCampaigns(data) {
+// Catastrophic-drop guard (campaign delivery integrity v1): the real
+// production defect this guards against was campaigns.json going from
+// 1,187 campaigns to 0 in a single write, because the caller passed only
+// the current ingestion cycle's freshly-clustered batch instead of a
+// merge against existing state (see mergeCampaigns() below, which is the
+// actual fix -- this is defense-in-depth at the single write chokepoint,
+// so a future caller that bypasses the merge, or a bug in the merge
+// itself, can't silently reintroduce the same class of data loss).
+// DROP_FLOOR avoids false positives while campaign state is still small
+// (e.g. a fresh environment, or early in this fix's rollout) --
+// production has already been observed at 1,187, so 5 is conservative,
+// not tuned to any specific current count.
+const CAMPAIGN_DROP_FLOOR = 5;
+
+function saveCampaigns(data, { allowDrop = false } = {}) {
   data.generated = new Date().toISOString();
   data.version   = '1.0';
   data.platform  = 'CYBERDUDEBIVASH SENTINEL APEX v4.0';
+  const newCount = (data.campaigns || []).length;
+
+  if (!allowDrop) {
+    let existingCount = 0;
+    try {
+      if (fs.existsSync(CAMPAIGNS_PATH)) {
+        existingCount = (JSON.parse(fs.readFileSync(CAMPAIGNS_PATH, 'utf8')).campaigns || []).length;
+      }
+    } catch (e) { console.error(`[CAMPAIGNS] Drop-guard read failed: ${e.message}`); }
+
+    if (existingCount >= CAMPAIGN_DROP_FLOOR && newCount < existingCount) {
+      console.error(
+        `[CAMPAIGNS] BLOCKED destructive write: ${existingCount} -> ${newCount} campaigns. ` +
+        `saveCampaigns() only ever expects a monotonically-accumulating list (see mergeCampaigns()); ` +
+        `a caller passed fewer campaigns than are already persisted. Refusing to overwrite -- ` +
+        `existing file left untouched. Pass { allowDrop: true } if this is a deliberate reset.`
+      );
+      return { saved: false, blocked: true, existingCount, attemptedCount: newCount };
+    }
+  }
+
   try {
     fs.writeFileSync(CAMPAIGNS_PATH, JSON.stringify(data, null, 2), 'utf8');
     _campaignsCache     = data;
     _campaignsCacheTime = Date.now();
-    console.log(`[CAMPAIGNS] Saved: ${data.campaigns.length} campaigns`);
-  } catch (e) { console.error(`[CAMPAIGNS] Save failed: ${e.message}`); }
+    console.log(`[CAMPAIGNS] Saved: ${newCount} campaigns`);
+    return { saved: true, blocked: false, existingCount: null, attemptedCount: newCount };
+  } catch (e) {
+    console.error(`[CAMPAIGNS] Save failed: ${e.message}`);
+    return { saved: false, blocked: false, error: e.message, attemptedCount: newCount };
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CAMPAIGN PERSISTENCE MERGE (campaign delivery integrity v1)
+   buildCampaigns() only ever sees the current ingestion cycle's freshly-
+   fetched batch -- it has no visibility into campaigns clustered in any
+   earlier run. mergeCampaigns() is what makes accumulation safe: it
+   upserts a batch of newly-built campaigns into the previously-persisted
+   set by campaign_id (buildCampaignId() is deterministic -- the same
+   underlying CVE/cluster always produces the same id, so this is a
+   correct identity key, not a name-similarity guess), rather than
+   replacing the set outright. An existing campaign whose id doesn't
+   appear in this run's batch is left completely untouched -- that's the
+   fix: campaigns discovered in earlier cycles are no longer silently
+   dropped just because none of their underlying intel re-appeared in
+   today's fetch.
+═══════════════════════════════════════════════════════════════════════ */
+const MAX_MERGED_SHARED_IOCS = 25; // matches buildCampaigns()'s own per-campaign cap
+const MAX_MERGED_REASONING   = 12; // bounds unbounded growth across many merge cycles
+
+/** Mirrors campaignSeverity()'s thresholds, but operates on already-merged
+ * scalar flags instead of a raw items array -- related_intel[] (the
+ * persisted per-item projection) doesn't carry every field campaignSeverity()
+ * reads from a raw intel item (e.g. no per-item `ransomware` flag), so
+ * recomputing from campaign-level has_kev/has_ransomware/has_exploited/
+ * max_priority_score (each already merged correctly via OR/max below) is
+ * the correct way to keep severity in sync after a merge, not calling
+ * campaignSeverity() against a differently-shaped array. */
+function severityFromFlags(maxScore, hasKev, hasRansomware, hasExploited) {
+  if (maxScore >= 85 || (hasKev && hasRansomware))                 return 'CRITICAL';
+  if (maxScore >= 65 || hasKev || (hasRansomware && hasExploited)) return 'HIGH';
+  if (maxScore >= 45 || hasExploited)                              return 'MEDIUM';
+  return 'LOW';
+}
+
+/**
+ * Merge one incoming (freshly-clustered) campaign into its previously-
+ * persisted counterpart (same campaign_id). Field-specific semantics --
+ * never a blind object spread, which would let an incoming batch with a
+ * smaller related_intel[] silently shrink history.
+ */
+function mergeCampaign(existing, incoming) {
+  // Union related_intel by id -- incoming wins on a rare id collision
+  // (the freshest re-observation of the same item), existing entries for
+  // ids not present in this batch are preserved untouched.
+  const relatedIntelById = new Map();
+  for (const item of (existing.related_intel || [])) if (item && item.id) relatedIntelById.set(item.id, item);
+  for (const item of (incoming.related_intel || [])) if (item && item.id) relatedIntelById.set(item.id, item);
+  const relatedIntel   = [...relatedIntelById.values()];
+  const relatedIntelIds = relatedIntel.map(i => i.id);
+
+  const sharedIOCs = [...new Set([...(existing.shared_iocs || []), ...(incoming.shared_iocs || [])])]
+    .slice(0, MAX_MERGED_SHARED_IOCS);
+  const sharedCVEs = [...new Set([...(existing.shared_cves || []), ...(incoming.shared_cves || [])])];
+
+  // Union threat_actors by id, keeping whichever observation has higher
+  // confidence rather than always preferring one side.
+  const actorsById = new Map();
+  for (const a of (existing.threat_actors || [])) if (a && a.id) actorsById.set(a.id, a);
+  for (const a of (incoming.threat_actors || [])) {
+    if (!a || !a.id) continue;
+    const prev = actorsById.get(a.id);
+    if (!prev || (a.confidence || 0) > (prev.confidence || 0)) actorsById.set(a.id, a);
+  }
+  const threatActors = [...actorsById.values()].sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
+
+  // first_seen/last_seen recomputed from the full merged related_intel
+  // set (not just whichever side's timestamp is "newer") -- correct
+  // regardless of the order cycles happen to run in, including a replay
+  // of an older batch after a newer one (Phase 42/43: out-of-order safe
+  // by construction, not by assuming chronological arrival).
+  const dates = relatedIntel.map(i => i.published).filter(Boolean).sort();
+  const firstSeen = dates[0] || existing.first_seen || incoming.first_seen || null;
+  const lastSeen   = dates[dates.length - 1] || incoming.last_seen || existing.last_seen || null;
+
+  const maxPriorityScore = Math.max(existing.max_priority_score || 0, incoming.max_priority_score || 0);
+  const hasKev        = !!(existing.has_kev || incoming.has_kev);
+  const hasRansomware = !!(existing.has_ransomware || incoming.has_ransomware);
+  const hasExploited  = !!(existing.has_exploited || incoming.has_exploited);
+
+  const reasoningSet = new Set([...(existing.reasoning || []), ...(incoming.reasoning || [])]);
+  const gainedNewItems = relatedIntelIds.some(id => !(existing.related_intel_ids || []).includes(id));
+  if (gainedNewItems) {
+    reasoningSet.add(
+      `Merged ${incoming.related_intel_ids?.length || 0} item(s) observed in a later ingestion cycle ` +
+      `(${new Date().toISOString().slice(0, 10)}) -- ${relatedIntel.length} total item(s) accumulated`
+    );
+  }
+  const reasoning = [...reasoningSet].slice(0, MAX_MERGED_REASONING);
+
+  return {
+    // Identity and presentation are stable once first established --
+    // never overwritten by a later merge (Phase 4/40: a campaign's name
+    // must not silently change out from under a customer who bookmarked
+    // or referenced it).
+    campaign_id:      existing.campaign_id,
+    name:             existing.name,
+    clustering_model: existing.clustering_model || incoming.clustering_model || 'weighted_v2',
+
+    severity:    severityFromFlags(maxPriorityScore, hasKev, hasRansomware, hasExploited),
+    confidence:  Math.max(existing.confidence || 0, incoming.confidence || 0),
+    item_count:  relatedIntel.length,
+    ioc_count:   sharedIOCs.length,
+    first_seen:  firstSeen,
+    last_seen:   lastSeen,
+
+    related_intel_ids: relatedIntelIds,
+    related_intel:      relatedIntel,
+    shared_iocs:        sharedIOCs,
+    shared_cves:        sharedCVEs,
+    threat_actor:       threatActors.length > 0 ? threatActors[0].name : (existing.threat_actor || incoming.threat_actor || null),
+    threat_actors:      threatActors,
+
+    max_priority_score: maxPriorityScore,
+    has_kev:             hasKev,
+    has_ransomware:      hasRansomware,
+    has_exploited:       hasExploited,
+
+    reasoning,
+  };
+}
+
+/**
+ * Upsert a batch of freshly-clustered campaigns into the previously-
+ * persisted set. Provably monotonic in campaign count by construction --
+ * every existing entry is retained in the output Map (updated in place
+ * if re-observed, left untouched otherwise); nothing is ever deleted.
+ * Idempotent: merging the same batch twice produces the same result,
+ * since every merge operation above is a set union or a min/max, not an
+ * append that would grow unboundedly on replay.
+ */
+function mergeCampaigns(existingCampaigns, newCampaigns) {
+  const byId = new Map();
+  for (const c of (existingCampaigns || [])) if (c && c.campaign_id) byId.set(c.campaign_id, c);
+  for (const c of (newCampaigns || [])) {
+    if (!c || !c.campaign_id) continue;
+    const existing = byId.get(c.campaign_id);
+    byId.set(c.campaign_id, existing ? mergeCampaign(existing, c) : c);
+  }
+
+  return [...byId.values()].sort((a, b) => {
+    const sevOrder = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
+    const sevDiff = (sevOrder[b.severity] || 0) - (sevOrder[a.severity] || 0);
+    return sevDiff !== 0 ? sevDiff : (b.item_count || 0) - (a.item_count || 0);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ONE-TIME HISTORICAL RECOVERY (campaign delivery integrity v1)
+   mergeCampaigns() above only prevents FUTURE data loss -- it has nothing
+   to merge against for campaigns that were already dropped from
+   campaigns.json before this fix existed. Unlike campaigns.json, the
+   graph's own Campaign nodes were never lost (addNode()'s upsert-into-
+   loaded-graph pattern already accumulated them correctly), so a
+   reconstruction is possible without replaying any external source.
+   Dry-run only by design -- reconstructCampaignsFromGraph() never writes
+   anything; a caller decides separately whether/how to persist its output.
+═══════════════════════════════════════════════════════════════════════ */
+const MAX_RECONSTRUCTED_SHARED_IOCS = 25; // matches the live pipeline's own per-campaign cap
+
+/**
+ * Derive campaign objects directly from the graph's own Campaign nodes
+ * and their edges. Everything used here is either a node attribute set
+ * at ingestion time or reachable via a bounded traversal over
+ * already-proven edge types (includes / executes / linked_to) --
+ * no external source is replayed, nothing is invented.
+ *
+ * STRICT TRUTH RULE / provenance: this is a strictly LOWER-FIDELITY
+ * reconstruction than the original live clustering run that first built
+ * each campaign. In particular, shared_iocs depends on a 2-hop traversal
+ * (Campaign->includes->Intel/CVE->linked_to->IOC) through data that was
+ * already capped at ingestion time (buildGraphFromIntel() keeps at most
+ * 5 IOC nodes per intel item), so a reconstructed campaign's shared_iocs
+ * can legitimately undercount relative to what the original clustering
+ * run captured from the item's full, uncapped IOC list. clustering_model
+ * is therefore always 'graph_reconstruction_v1', never 'weighted_v2' --
+ * a reconstruction must never claim the same evidentiary basis as a live
+ * clustering run produced from the original source data.
+ */
+function reconstructCampaignsFromGraph(graph) {
+  const campaignNodes = Object.values((graph && graph.nodes) || {}).filter(n => n && n.type === 'Campaign');
+  const results = [];
+
+  for (const node of campaignNodes) {
+    const attrs = node.attributes || {};
+
+    const includesEdges = getNeighbors(graph, node.id, 'includes').filter(n => n.direction === 'outbound');
+    const relatedIntel = includesEdges
+      .map(n => n.node)
+      .filter(Boolean)
+      .map(intelNode => ({
+        id:             intelNode.id,
+        title:          intelNode.name || intelNode.id,
+        type:           intelNode.attributes?.type || (intelNode.type === 'CVE' ? 'CVE_REPORT' : 'INTEL'),
+        priority_score: intelNode.attributes?.priority_score || 0,
+        published:      intelNode.attributes?.published || '',
+        exploited:      !!intelNode.attributes?.exploited,
+        cisa_kev:       !!intelNode.attributes?.cisa_kev,
+      }));
+    const relatedIntelIds = relatedIntel.map(i => i.id);
+    const sharedCVEs = relatedIntelIds.filter(id => String(id).startsWith('CVE-'));
+
+    const sharedIOCsSet = new Set();
+    for (const intelId of relatedIntelIds) {
+      for (const iocNeighbor of getNeighbors(graph, intelId, 'linked_to')) {
+        if (iocNeighbor.direction === 'outbound' && iocNeighbor.node?.type === 'IOC') {
+          sharedIOCsSet.add(iocNeighbor.node.id);
+        }
+      }
+    }
+    const sharedIOCs = [...sharedIOCsSet].slice(0, MAX_RECONSTRUCTED_SHARED_IOCS);
+
+    const threatActors = getNeighbors(graph, node.id, 'executes')
+      .filter(n => n.direction === 'inbound')
+      .map(n => (n.node ? { id: n.node.id, name: n.node.name, confidence: n.confidence, category: n.node.attributes?.category } : null))
+      .filter(Boolean)
+      .sort((a, b) => (b.confidence || 0) - (a.confidence || 0));
+
+    const maxPriorityScore = relatedIntel.reduce((max, i) => Math.max(max, i.priority_score || 0), 0);
+    const hasKev        = relatedIntel.some(i => i.cisa_kev);
+    const hasRansomware = includesEdges.some(n => !!n.node?.attributes?.ransomware);
+    const hasExploited  = relatedIntel.some(i => i.exploited);
+
+    results.push({
+      campaign_id:      node.id,
+      name:             node.name || node.id,
+      severity:         severityFromFlags(maxPriorityScore, hasKev, hasRansomware, hasExploited),
+      confidence:       typeof attrs.confidence === 'number' ? attrs.confidence : 0.5,
+      item_count:       relatedIntel.length,
+      ioc_count:        sharedIOCs.length,
+      first_seen:       attrs.first_seen || null,
+      last_seen:        attrs.last_seen || null,
+      related_intel_ids: relatedIntelIds,
+      related_intel:     relatedIntel,
+      shared_iocs:       sharedIOCs,
+      shared_cves:       sharedCVEs,
+      threat_actor:      threatActors.length > 0 ? threatActors[0].name : null,
+      threat_actors:     threatActors,
+      max_priority_score: maxPriorityScore,
+      has_kev:            hasKev,
+      has_ransomware:     hasRansomware,
+      has_exploited:      hasExploited,
+      reasoning: [
+        `Reconstructed from graph state (not re-clustered) — ${relatedIntel.length} related item(s), ` +
+        `${threatActors.length} attributed actor(s).`,
+        ...(attrs.reasoning ? [attrs.reasoning] : []),
+      ],
+      clustering_model: 'graph_reconstruction_v1',
+    });
+  }
+
+  return results;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -565,6 +857,10 @@ module.exports = {
   linkActorsToCampaigns,
   loadCampaigns,
   saveCampaigns,
+  mergeCampaign,
+  mergeCampaigns,
+  reconstructCampaignsFromGraph,
+  severityFromFlags,
   computeItemSimilarity,
   jaccardSimilarity,
   campaignSeverity,
