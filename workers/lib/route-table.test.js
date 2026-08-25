@@ -87,7 +87,7 @@ describe('resolveRoute — pretty-URL rewrites', () => {
 });
 
 describe('resolveRoute — direct api/** filesystem routes', () => {
-  test('every real handler file on disk has a route (32-function parity check)', () => {
+  test('every real handler file on disk has a route (33-function parity check)', () => {
     const files = [];
     function walk(dir) {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -99,7 +99,7 @@ describe('resolveRoute — direct api/** filesystem routes', () => {
     }
     walk(path.join(__dirname, '..', '..', 'api'));
 
-    assert.equal(files.length, 32, 'expected exactly 32 routable api/** functions — update route-table.js if this changes');
+    assert.equal(files.length, 33, 'expected exactly 33 routable api/** functions — update route-table.js if this changes');
 
     const INDEX_HANDLERS = new Set(['api/v1/products/index', 'api/v1/quality/index', 'api/v1/reports/index']);
     // [id]-bracket files have no single literal URL — checked with a real
@@ -192,10 +192,10 @@ describe('resolveRoute — no match', () => {
 });
 
 describe('table sanity', () => {
-  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 32 handlers with no overlap', () => {
+  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 33 handlers with no overlap', () => {
     const dynamicPaths = DYNAMIC_API_HANDLERS.map(([, handlerPath]) => handlerPath);
     const all = [...DIRECT_API_HANDLERS, ...dynamicPaths];
-    assert.equal(all.length, 32);
-    assert.equal(new Set(all).size, 32, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
+    assert.equal(all.length, 33);
+    assert.equal(new Set(all).size, 33, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
   });
 });
