@@ -10,11 +10,11 @@ resuming any work on this repo. See
 `docs/audits/SENTINEL-APEX-INTEL-FACTORY-PUBLICATION-RELIABILITY-V1-CERTIFICATION.md`.
 Nothing below this note is affected by it.
 
-**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5, same day, different branch each time)
-**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, this update, PR open)
+**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5); updated 2026-08-25 (round 6)
+**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, merged as PR #133); `claude/p1-watchlists-change-detection-v1` (round 6, this update, PR open)
 **Written per:** the master mandate's own "Long-Run Checkpoint Policy" — stop at a safe boundary, commit, push, update the PR, and leave a clear resume point rather than attempting the full 70-phase mandate in one uninterrupted pass.
 
-**READ THIS FIRST IF RESUMING:** §10 below (added in round 5) is the most consequential update — the first genuinely new customer-facing **UI** in this lineage (Intelligence Dossiers: `dossier.html` + `action=dossier`), built on top of round 4's search/entity-detail backend, exactly the "minimal search UI page" round 4 itself predicted as the natural next slice (§9.6 item 2) — except delivered as a full evidence-backed dossier, not just a search results page. §9 (round 4): Unified Intelligence Search is merged (PR #131) — search index, `action=unified-search`/`actor`/`ioc`/`report` all live. §8 (round 3): the campaign-delivery defect is fixed AND merged (PR #130) — `campaigns.json` now correctly accumulates. §7 (round 2) still holds: **Vercel is being retired** (decision final per the user; technical cutover incomplete) **and Cloudflare Workers is the sole target platform.** Round 1's "Thread A" (build real correlation logic for `intelligence/correlations.js`) remains **NO-GO** — see §7.1. Do not restart any of these without reading §7, §8, §9, and §10 first.
+**READ THIS FIRST IF RESUMING:** §11 below (added in round 6) is the most consequential update — the platform's **first genuinely persistent customer-owned state** anywhere in this lineage (Watchlists), and a load-bearing architectural finding: this repo has **zero Cloudflare production storage bindings today and is not yet deployed to a production hostname** — confirmed directly from `wrangler.jsonc` and independently corroborated by `CLOUDFLARE-ACCOUNT-INVENTORY.md`/`COMPLETE-CLOUDFLARE-INVENTORY.md`. **Do not reach for D1/KV/Durable Objects/Queues for any future persistent-state feature without re-reading §11.2 first** — Upstash Redis (already the platform's real, live, Worker-compatible customer/auth datastore) is the evidenced choice, not a workaround. §10 (round 5): Intelligence Dossiers merged (PR #133) — `dossier.html` + `action=dossier` live on `main`. §9 (round 4): Unified Intelligence Search merged (PR #131). §8 (round 3): campaign-delivery defect fixed AND merged (PR #130). §7 (round 2) still holds: **Vercel is being retired** (decision final per the user; technical cutover incomplete) **and Cloudflare Workers is the sole target platform.** Round 1's "Thread A" (build real correlation logic for `intelligence/correlations.js`) remains **NO-GO** — see §7.1. Do not restart any of these without reading §7, §8, §9, §10, and §11 first.
 
 ---
 
@@ -175,7 +175,7 @@ npx tsc --noEmit
 4. **Resolve the Vercel Cron `UNKNOWN` status** — unchanged from round 3, still mostly an operator-dashboard-access blocker, not code.
 5. Do **not** restart Thread A (SOC-workbench correlation-engine building) — unchanged reasoning from round 3.
 
-## 10. Round 5 update (2026-08-24, branch `claude/p1-intelligence-dossiers-v1`, PR open, not yet merged)
+## 10. Round 5 update (2026-08-24, branch `claude/p1-intelligence-dossiers-v1`, merged as PR #133)
 
 Shipped CVE and Campaign Intelligence Dossiers on top of round 4's search/entity-detail backend — the first customer-facing **UI** anywhere in this v3 lineage. Full detail: `docs/audits/SENTINEL-APEX-INTELLIGENCE-DOSSIERS-V1-CERTIFICATION.md` (CONDITIONAL GO — read it before touching `api/_lib/intelligence-dossier.js` or `dossier.html` again).
 
@@ -213,3 +213,48 @@ Real-browser QA (not part of the above, no CI wiring yet — ad hoc Playwright s
 3. **Saved Searches / Watchlists / Alerting**, per the master mandate's own suggested next sequence (Dossiers → Watchlists → Change Detection → Alerts) — now that both the search backend (round 4) and a real dossier UI (round 5) exist to build a "watch this CVE/campaign" feature on top of.
 4. Malware node population, actor-attribution coverage, Vercel Cron status — unchanged, still real, still not quick fixes.
 5. Do **not** restart Thread A — unchanged reasoning from round 3.
+
+## 11. Round 6 update (2026-08-25, branch `claude/p1-watchlists-change-detection-v1`, PR open, not yet merged)
+
+Shipped CVE and Campaign Watchlists + deterministic Intelligence Change Detection + a customer monitoring feed, on top of round 5's dossier assembler and UI — the first capability in this entire v3 lineage to persist genuine customer-owned mutable state (every prior round was read-only intelligence serving). Full detail: `docs/audits/SENTINEL-APEX-WATCHLISTS-CHANGE-DETECTION-V1-CERTIFICATION.md` (CONDITIONAL GO — read it before touching `api/_lib/watchlist-store.js`/`change-engine.js`/`change-detector.js`/`watchable-state.js` again).
+
+**11.1 — What shipped.** `api/_lib/watchable-state.js` (normalized, fingerprinted per-entity state projection, reusing `intelligence-dossier.js`'s `classifyExploitation()`/`campaignConfidenceBucket()` directly), `api/_lib/change-detector.js` (pure, deterministic diff -> typed, evidence-carrying, idempotent change events — no LLM), `api/_lib/change-engine.js` (orchestrates evaluation: canonical load -> normalize -> fingerprint-compare -> detect -> persist once -> match to watchers), `api/_lib/watchlist-store.js` (customer-owned watchlist CRUD + entity membership + reverse index + audit log), `api/v1/watchlists.js` (new router, registered in `workers/lib/route-table.js`/`router.js`), `scripts/evaluate-watchlist-changes.js` (manual/scheduled-fallback CLI). UI: a watch action on `dossier.html`, a Watchlists tab + monitoring feed on `api-dashboard.html`.
+
+**11.2 — Load-bearing architectural finding: this repo has zero Cloudflare production storage bindings, and isn't deployed to a production hostname yet.** Read `wrangler.jsonc` in full: explicit, dated comments state "no production hostname," "no production storage bindings," `kv_namespaces` — "no blog-owned namespace exists yet... reuse is not automatic," `d1_databases` — "none needed; the blog has no relational data dependency." Independently corroborated by `CLOUDFLARE-ACCOUNT-INVENTORY.md`/`COMPLETE-CLOUDFLARE-INVENTORY.md`: the wider Cloudflare account's 8 KV namespaces and 5 D1 databases all belong to sibling platforms, explicitly classified DEFER/DO_NOT_REUSE for this blog by a prior session's own storage-binding decision — direct quote: "the blog's current datastore (Upstash Redis) has no forcing Worker-compatibility reason to change." This eliminated D1/KV/Durable Objects/Queues from consideration before any watchlist schema design began. **Upstash Redis** — the same, already-production, already-Worker-compatible (pure REST/`fetch`, no TCP socket) datastore backing customer auth (`user:key:*`) and the existing payment audit log — is the evidenced choice instead. **If resuming and a future feature needs persistent state: re-read this section before reaching for D1/KV.** Provisioning new Cloudflare infrastructure is an architectural event requiring separate, explicit authorization — not something to introduce as a side effect of a feature task, and this session had no live Cloudflare account access to provision it even if it were in scope.
+
+**11.3 — Evaluated and rejected an existing "change detection" class, with cause.** `api/_lib/intelligence-change-detection.js` (`IntelligenceChangeDetectionEngine`) is real and pre-existing, but diffs whole intelligence-holdings snapshots (not a single watched entity), uses `JSON.stringify(a)!==JSON.stringify(b)` on arrays in several places (the exact array-reorder false-positive this tranche's own noise-suppression exists to avoid), has flat non-evidence-aware severities, and no idempotent event identity. Not reused — a new, purpose-built, single-entity, evidence-graded detector (`change-detector.js`) was built instead, with the rejection reasoning documented directly in that file's own header comment.
+
+**11.4 — Threat Actor, IOC, and Malware watchlists deliberately NOT built.** Actor: `action=actor` (round 4) already serves the need, same reasoning round 5 applied to skip an Actor dossier. IOC: confirmed directly against `threat-graph.js`'s `buildGraphFromIntel()` that IOC nodes carry only `{ioc_type, confidence, first_seen}` — no `last_seen`/freshness/expiration field exists anywhere, so the platform cannot honestly represent whether a watched indicator is still live. Malware: 0 populated nodes, unchanged finding. Relationship/KEV/exploitation-status changes are **addition-only** in v1 — no reversal/removal event types, since the canonical pipelines don't yet guarantee a disappearance reflects a real correction rather than a temporary projection error; this also structurally prevents a catastrophic upstream data drop from ever producing a false mass-"removed" event storm (no removal code path exists to trigger one). All tracked in `platform/open-issues.md` Issue 23.
+
+**11.5 — Found and fixed two real gaps via a dedicated adversarial re-read, not the initial pass.** (a) Schema-version safety (Phase 30 of the governing mandate): a stored snapshot from an older `WATCHABLE_STATE_SCHEMA_VERSION` is now re-baselined (treated as if no snapshot existed) rather than diffed against an incompatible shape, which could otherwise produce a false mass-change event purely from a schema bump. (b) A malformed/non-ISO `last_seen` value on a campaign is now rejected before comparison — previously a plain string `>` comparison could fire a false `CAMPAIGN_LAST_SEEN_ADVANCED` from garbage input without throwing. Both fixed with dedicated regression tests.
+
+**11.6 — Real browser QA (Playwright/Chromium) found zero new bugs this round, but proved the XSS defenses hold under adversarial payloads.** 16/16 checks: full watch/unwatch cycle on `dossier.html`, and on `api-dashboard.html`'s new Watchlists tab — `<script>`/`<img onerror>`/`<svg onload>` payloads injected into a watchlist name and a feed `reason` string, zero execution, payload text still visibly present as escaped text (proving `esc()` ran). Mobile (375px): zero horizontal overflow.
+
+**Test baseline after round 6** (in addition to §4 and rounds 2-5's baselines above):
+```
+node --test tests-js/*.test.js
+# Expect: 208 tests, 208 pass, 0 fail (unchanged from round 5 -- no tests-js/ files touched this round)
+
+node --test workers/lib/*.test.js
+# Expect: 116 tests, 116 pass, 0 fail (unchanged; route-table.test.js's handler-count
+# tripwire updated 32->33 in place, not a new test)
+
+npx jest --silent
+# Expect: 1 skipped suite (unrelated, pre-existing), 1946 passed, 0 failed
+# (was 1838; +108 net: 107 new across 5 new test files [change-detector.test.js,
+# watchable-state.test.js, watchlist-store.test.js, change-engine.test.js,
+# api/v1/__tests__/watchlists.test.js] + 1 new setnx test in the pre-existing
+# redis.test.js -- exact delta, verified by direct test-run output, not estimated)
+
+npx tsc --noEmit
+# Expect: no output
+```
+Real-browser QA (not part of the above, no CI wiring yet — ad hoc Playwright scripts in this session's scratchpad, reusing the same `node_modules`/Chromium install round 5 set up, not committed to the repo): 16/16 checks passed, including the adversarial XSS suite.
+
+**11.7 — Next recommended tranche** (ranked by evidence, not chosen automatically):
+1. **Provision a live Cloudflare Cron Trigger for the change evaluator** (§11.2/§20 of the certification doc) — the single highest-leverage gap between what this tranche promises structurally (continuous monitoring) and what it delivers today (manual runs only). Requires an explicit operator authorization decision, not further engineering — the same posture already established for D1/KV.
+2. **Alert Delivery & Webhook Automation v1**, per the master mandate's own suggested next sequence (Watchlists → Change Detection → Alerts) — now that the monitoring feed built here exists to generate real customer usage evidence of what's worth alerting on. Do not build this before #1, or it delivers stale alerts on a schedule nobody controls.
+3. **Fix the three unauthenticated/unbounded gaps in Issue 20 (round 4 §9.4)** — still open, still unaddressed across two subsequent rounds.
+4. **Build the detection-to-entity linkage index (Issue 22, round 5 §10.4)** — still the highest-leverage gap in dossier completeness specifically.
+5. Malware node population, actor-attribution coverage, Vercel Cron status — unchanged, still real, still not quick fixes.
+6. Do **not** restart Thread A — unchanged reasoning from round 3.

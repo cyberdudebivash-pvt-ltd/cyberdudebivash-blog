@@ -201,10 +201,86 @@ async function loadDossier(type, id) {
       return;
     }
     renderDossier(body.dossier, type);
+    refreshWatchState(type, body.dossier.entity_id);
   } catch (e) {
     document.getElementById('dossier-root').innerHTML = '';
     showStatus('<div class="alert alert-error">Network error loading dossier. Please retry.</div>');
   }
+}
+
+/* ───────────────────────── Watchlist integration ─────────────────────────
+   v1 keeps this deliberately simple: a customer with zero watchlists gets
+   one ("My Watchlist") created on first use; a customer with one or more
+   uses the first one found. A full multi-watchlist picker is future work
+   -- not built here rather than shipped half-working (Phase 46's "do not
+   add half-working UI buttons" applies equally to over-scoping one). */
+let watchState = { watchlistId: null, watching: false };
+
+function renderWatchButton(type, id) {
+  const container = document.getElementById('watch-btn-container');
+  if (!container) return;
+  const label = watchState.watching ? '✓ Watching — click to remove' : '＋ Add to Watchlist';
+  container.innerHTML = `<button class="btn btn-secondary" id="watch-btn">${esc(label)}</button>`;
+  const btn = document.getElementById('watch-btn');
+  btn.addEventListener('click', () => toggleWatch(type, id));
+}
+
+async function refreshWatchState(type, id) {
+  if (!sessionKey) return;
+  try {
+    const listRes = await fetch(`${API}/api/v1/watchlists?action=list`, { headers: { 'X-API-Key': sessionKey } });
+    const listBody = await listRes.json();
+    if (!listRes.ok || !listBody.success || !listBody.watchlists.length) {
+      watchState = { watchlistId: null, watching: false };
+      return renderWatchButton(type, id);
+    }
+    const wl = listBody.watchlists[0];
+    const entRes = await fetch(`${API}/api/v1/watchlists?action=list-entities&id=${encodeURIComponent(wl.id)}`, { headers: { 'X-API-Key': sessionKey } });
+    const entBody = await entRes.json();
+    const watching = entRes.ok && entBody.success && (entBody.entities || []).some(e => e.type === type && e.id === id);
+    watchState = { watchlistId: wl.id, watching };
+  } catch (e) {
+    watchState = { watchlistId: null, watching: false };
+  }
+  renderWatchButton(type, id);
+}
+
+async function toggleWatch(type, id) {
+  if (!sessionKey) { showStatus('<div class="alert alert-error">Enter your API key first.</div>'); return; }
+  const btn = document.getElementById('watch-btn');
+  if (btn) btn.disabled = true;
+  try {
+    let watchlistId = watchState.watchlistId;
+    if (!watchState.watching) {
+      if (!watchlistId) {
+        const createRes = await fetch(`${API}/api/v1/watchlists?action=create`, {
+          method: 'POST', headers: { 'X-API-Key': sessionKey, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: 'My Watchlist' }),
+        });
+        const createBody = await createRes.json();
+        if (!createRes.ok || !createBody.success) throw new Error((createBody.error && createBody.error.message) || 'Could not create watchlist.');
+        watchlistId = createBody.watchlist.id;
+      }
+      const addRes = await fetch(`${API}/api/v1/watchlists?action=add-entity`, {
+        method: 'POST', headers: { 'X-API-Key': sessionKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: watchlistId, entity_type: type, entity_id: id }),
+      });
+      const addBody = await addRes.json();
+      if (!addRes.ok || !addBody.success) throw new Error((addBody.error && addBody.error.message) || 'Could not add to watchlist.');
+      watchState = { watchlistId, watching: true };
+    } else {
+      const remRes = await fetch(`${API}/api/v1/watchlists?action=remove-entity`, {
+        method: 'POST', headers: { 'X-API-Key': sessionKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: watchlistId, entity_type: type, entity_id: id }),
+      });
+      const remBody = await remRes.json();
+      if (!remRes.ok || !remBody.success) throw new Error((remBody.error && remBody.error.message) || 'Could not remove from watchlist.');
+      watchState = { watchlistId, watching: false };
+    }
+  } catch (e) {
+    showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`);
+  }
+  renderWatchButton(type, id);
 }
 
 function renderRelationshipList(items, kind) {
@@ -323,8 +399,9 @@ function renderDossier(d, type) {
       <div class="assessment-text">${esc(d.assessment.summary)}</div>
       <ul class="factor-list">${(d.assessment.factors || []).map(f => `<li>${esc(f)}</li>`).join('')}</ul>
       <div class="stat-grid">${riskStats}</div>
-      <div style="margin-top:16px">
+      <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
         <a href="${API}/api/v1/intel?action=graph" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">View Threat Graph ↗</a>
+        <span id="watch-btn-container"></span>
       </div>
     </div>
 

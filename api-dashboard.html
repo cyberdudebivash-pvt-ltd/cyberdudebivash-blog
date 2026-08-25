@@ -100,6 +100,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
 <div class="tabs">
   <div class="tab active" onclick="switchTab('register')">🔑 Get API Key</div>
   <div class="tab" onclick="switchTab('dashboard')">📊 My Dashboard</div>
+  <button class="tab" onclick="switchTab('watchlists')" style="background:none;font:inherit">📡 Watchlists</button>
   <div class="tab" onclick="switchTab('docs')">📖 API Reference</div>
   <div class="tab" onclick="switchTab('plans')">💎 Plans</div>
 </div>
@@ -206,6 +207,32 @@ const data = await res.json();</div>
       </div>
       <p style="font-size:13px;color:var(--apex-muted);margin-top:12px">Pro includes: 5,000 req/day · Full IOC access · MITRE mapping · Sigma/YARA rules · Pay via UPI or bank transfer</p>
     </div>
+  </div>
+</div>
+
+<!-- WATCHLISTS PANEL -->
+<div id="panel-watchlists" class="panel wrap">
+  <div class="card">
+    <div class="card-title">📡 Create Watchlist</div>
+    <div id="wl-create-alert" class="hidden"></div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end">
+      <div class="form-group">
+        <label for="wl-name">Watchlist Name</label>
+        <input id="wl-name" type="text" placeholder="My Watchlist" maxlength="100">
+      </div>
+      <button class="btn btn-primary" onclick="createWatchlistUI()">+ Create</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Your Watchlists</div>
+    <div id="wl-list" style="color:var(--apex-muted);font-size:13px">Loading…</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔔 Recent Intelligence Changes</div>
+    <div id="wl-feed" style="color:var(--apex-muted);font-size:13px">Loading…</div>
+    <button class="btn btn-secondary hidden" id="wl-feed-more" style="margin-top:12px;width:100%">Load more</button>
   </div>
 </div>
 
@@ -412,7 +439,7 @@ function signOut() {
 
 function switchTab(id) {
   document.querySelectorAll('.tab').forEach((t,i)=>{
-    const ids = ['register','dashboard','docs','plans'];
+    const ids = ['register','dashboard','watchlists','docs','plans'];
     t.classList.toggle('active', ids[i]===id);
   });
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -422,6 +449,7 @@ function switchTab(id) {
   // greet the user with an intrusive alert() if that key has since been
   // revoked -- fail quietly back to signed-out instead.
   if(id==='dashboard'&&sessionKey) loadDashboard(true);
+  if(id==='watchlists'&&sessionKey) loadWatchlistsPanel();
 }
 
 async function registerKey() {
@@ -605,6 +633,119 @@ function showAlert(el, type, msg) {
   el.textContent = msg;
   el.classList.remove('hidden');
 }
+
+/* ───────────────────────── Watchlists panel ─────────────────────────
+   v1 UI: create/list/delete watchlists, and a paginated read-only
+   monitoring feed. Adding/removing individual entities happens from
+   dossier.html's "Add to Watchlist" action (Phase 40) -- kept out of
+   this panel to avoid duplicating entity lookup/validation UI here. */
+let wlFeedCursor = 0;
+
+function importanceColor(imp) {
+  const s = String(imp || '').toUpperCase();
+  if (s === 'CRITICAL') return '#ff3b3b';
+  if (s === 'HIGH') return '#ff8c00';
+  if (s === 'MEDIUM') return '#eab308';
+  return '#6b7280';
+}
+
+async function loadWatchlistsPanel() {
+  await Promise.all([loadWatchlistsList(), loadWatchlistFeed(0)]);
+}
+
+async function loadWatchlistsList() {
+  const el = document.getElementById('wl-list');
+  el.textContent = 'Loading…';
+  try {
+    const res = await fetch(`${API}/api/v1/watchlists?action=list`, { headers: { 'X-API-Key': sessionKey } });
+    const body = await res.json();
+    if (!res.ok || !body.success) { el.textContent = (body.error && body.error.message) || 'Could not load watchlists.'; return; }
+    if (!body.watchlists.length) {
+      el.textContent = 'No watchlists yet. Create one above, or use "Add to Watchlist" from any CVE or campaign dossier.';
+      return;
+    }
+    el.innerHTML = body.watchlists.map(w => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--apex-border)">
+        <div>
+          <div style="font-weight:600">${esc(w.name)}</div>
+          <div style="font-size:12px;color:var(--apex-muted)">${w.entity_count} ${w.entity_count === 1 ? 'entity' : 'entities'} tracked · ${esc(w.status)}${w.last_evaluated_at ? ' · last checked ' + esc(w.last_evaluated_at) : ' · not yet evaluated'}</div>
+        </div>
+        <button class="btn btn-secondary" data-wl-id="${esc(w.id)}" onclick="deleteWatchlistUI(this.dataset.wlId)">Delete</button>
+      </div>`).join('');
+  } catch (e) {
+    el.textContent = 'Network error loading watchlists.';
+  }
+}
+
+async function createWatchlistUI() {
+  const nameEl = document.getElementById('wl-name');
+  const alertEl = document.getElementById('wl-create-alert');
+  const name = nameEl.value.trim();
+  if (!name) { showAlert(alertEl, 'error', 'Enter a watchlist name.'); return; }
+  try {
+    const res = await fetch(`${API}/api/v1/watchlists?action=create`, {
+      method: 'POST', headers: { 'X-API-Key': sessionKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
+    const body = await res.json();
+    if (!res.ok || !body.success) { showAlert(alertEl, 'error', (body.error && body.error.message) || 'Could not create watchlist.'); return; }
+    showAlert(alertEl, 'success', `Watchlist "${body.watchlist.name}" created.`);
+    nameEl.value = '';
+    loadWatchlistsList();
+  } catch (e) { showAlert(alertEl, 'error', 'Network error creating watchlist.'); }
+}
+
+async function deleteWatchlistUI(id) {
+  if (!confirm('Delete this watchlist? This cannot be undone.')) return;
+  try {
+    const res = await fetch(`${API}/api/v1/watchlists?action=delete`, {
+      method: 'POST', headers: { 'X-API-Key': sessionKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+    const body = await res.json();
+    if (!res.ok || !body.success) { alert((body.error && body.error.message) || 'Could not delete watchlist.'); return; }
+    loadWatchlistsList();
+  } catch (e) { alert('Network error deleting watchlist.'); }
+}
+
+async function loadWatchlistFeed(cursor) {
+  const el = document.getElementById('wl-feed');
+  const moreBtn = document.getElementById('wl-feed-more');
+  if (cursor === 0) el.textContent = 'Loading…';
+  try {
+    const res = await fetch(`${API}/api/v1/watchlists?action=feed&limit=20&cursor=${cursor}`, { headers: { 'X-API-Key': sessionKey } });
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      if (cursor === 0) el.textContent = (body.error && body.error.message) || 'Could not load monitoring feed.';
+      moreBtn.classList.add('hidden');
+      return;
+    }
+    const rows = body.events.map(e => `
+      <div style="padding:12px 0;border-bottom:1px solid var(--apex-border)">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center">
+          <span class="badge" style="background:${importanceColor(e.importance)}22;color:${importanceColor(e.importance)};border:1px solid ${importanceColor(e.importance)}44">${esc(e.importance)}</span>
+          <span style="font-size:12px;color:var(--apex-muted)">${esc(e.observed_at)}</span>
+        </div>
+        <div style="margin-top:6px;font-weight:600">${esc(e.entity_id)}</div>
+        <div style="font-size:13px;color:var(--apex-text);margin-top:2px">${esc(e.reason)}</div>
+        <div style="font-size:12px;color:var(--apex-muted);margin-top:4px">→ ${esc(e.recommended_action)}</div>
+        <a href="/dossier.html?type=${encodeURIComponent(e.entity_type)}&id=${encodeURIComponent(e.entity_id)}" style="font-size:12px;color:var(--apex-cyan);text-decoration:none">Open Dossier →</a>
+      </div>`).join('');
+    if (cursor === 0) {
+      el.innerHTML = rows || 'No changes since you started monitoring. Check back after your watched entities are re-evaluated.';
+    } else if (rows) {
+      el.insertAdjacentHTML('beforeend', rows);
+    }
+    wlFeedCursor = (body.meta && body.meta.next_cursor != null) ? body.meta.next_cursor : null;
+    moreBtn.classList.toggle('hidden', wlFeedCursor == null);
+  } catch (e) {
+    if (cursor === 0) el.textContent = 'Network error loading monitoring feed.';
+    moreBtn.classList.add('hidden');
+  }
+}
+document.getElementById('wl-feed-more').addEventListener('click', () => {
+  if (wlFeedCursor != null) loadWatchlistFeed(wlFeedCursor);
+});
 
 // Check for Stripe redirect
 const params = new URLSearchParams(location.search);

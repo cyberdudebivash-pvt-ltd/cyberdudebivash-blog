@@ -1441,5 +1441,62 @@ counts as a "genuine" detection (e.g. reject a Suricata rule whose only
 content match is a citation URL) before it can be surfaced to customers
 without repeating finding #2 above.
 
+## Issue 23 — Watchlists v1 real, disclosed gaps (2026-08-25)
+
+Found and deliberately scoped out while building
+`docs/audits/SENTINEL-APEX-WATCHLISTS-CHANGE-DETECTION-V1-CERTIFICATION.md`.
+Tracked here individually, not buried only in certification prose.
+
+1. **No live Cloudflare Cron Trigger for the change evaluator.**
+   `scripts/evaluate-watchlist-changes.js` (`evaluateWatchedEntities()`) is
+   run manually today, the same posture already established for the
+   dossier tranche's `generate-cve-enrichment-index.js`. `wrangler.jsonc`'s
+   own header explicitly defers `triggers.crons` pending separate
+   authorization ("scheduling authority is undecided"), the same posture
+   already applied to D1/KV in this and the dossier tranche. A customer's
+   monitoring feed only reflects reality as of whenever that script was
+   last run by a human, not continuously. Needs an explicit decision to
+   provision a live schedule before this becomes a "set it and forget it"
+   capability.
+2. **Threat Actor and IOC watchlists are not built.** Actor: the curated
+   `THREAT_ACTOR_DB` (8 actors) changes rarely, and `action=actor` already
+   serves the identity/relationship need — the same reasoning the
+   Intelligence Dossiers v1 round already applied to skip an Actor
+   dossier. IOC: confirmed directly against `threat-graph.js`'s
+   `buildGraphFromIntel()` that IOC nodes carry only
+   `{ioc_type, confidence, first_seen}` — no `last_seen`/freshness/
+   expiration field exists anywhere in the data model, so the platform
+   cannot honestly tell a customer whether a watched indicator is still
+   live or a stale ingestion artifact (exactly the ambiguity the
+   governing mandate's Phase 16 warns against). Malware: 0 populated
+   Malware-type graph nodes exist, unchanged from every prior round's
+   finding.
+3. **Relationship and KEV/exploitation-status changes are addition-only.**
+   No `CVE_NEW_CAMPAIGN_ASSOCIATION`-style event has a removal
+   counterpart, and no `CVE_KEV_ADDED`/`CVE_ACTIVE_EXPLOITATION_CONFIRMED`
+   event has a reversal counterpart. This platform's canonical pipelines
+   don't yet guarantee a disappearance reflects a real correction rather
+   than a temporary projection error (see the campaign-delivery-integrity
+   certification's own findings) — surfacing "X was removed" risked
+   exactly the false alert storm the governing mandate's Phase 72 warns
+   against. A real, deliberate scope boundary, not an oversight; revisit
+   once the canonical pipelines carry a trustworthy "this was a
+   confirmed removal, not data loss" signal of their own.
+4. **Watchlist entitlements are flat across tiers.** No existing
+   feature-flag precedent exists in `api/_lib/payment-utils.js`'s `PLANS`
+   to extend (confirmed via direct read: `label/amount/currency/period/
+   rateLimit/description` only, nothing resembling `watchlists.max`
+   anywhere) — every authenticated tier gets the same technical caps (20
+   watchlists/owner, 100 entities/watchlist) in v1, which the governing
+   mandate's Phase 9 explicitly permits over inventing pricing. A natural
+   future upsell lever (e.g. higher caps on Pro/Enterprise) once real
+   customer usage data exists to inform real numbers.
+5. **Campaign attribution truth states in change events inherit the
+   dossier's own coarser-than-spec taxonomy** (`ASSESSED`/`UNKNOWN` only,
+   not `CONFIRMED`/`VENDOR-ATTRIBUTED`/`DISPUTED`) — unchanged from the
+   Intelligence Dossiers v1 finding, since watchable state reuses
+   `campaignConfidenceBucket()` directly rather than re-deriving a finer
+   distinction the data model doesn't support.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

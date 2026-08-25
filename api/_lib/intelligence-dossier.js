@@ -97,6 +97,16 @@ function computeDataQuality({ sourceCount, hasStrongConfidenceSignal, lastKnownD
   return { evidence_coverage, confidence, freshness, source_count: sourceCount };
 }
 
+// Shared with api/_lib/watchable-state.js (watchlist change detection) so
+// a campaign's confidence bucket can never disagree between its dossier
+// and its change-detection state -- one threshold definition, not two.
+function campaignConfidenceBucket(confidence) {
+  if (typeof confidence !== 'number') return 'UNKNOWN';
+  if (confidence >= 0.8) return 'HIGH';
+  if (confidence >= 0.5) return 'MEDIUM';
+  return 'LOW';
+}
+
 // Phase 18: ATT&CK techniques are never generated for a CVE/Campaign
 // directly -- confirmed against real data that no live automated mapping
 // exists at that level (see the certification doc's reuse audit). The
@@ -497,7 +507,7 @@ function buildCampaignDossier({ graph, campaign, reportsIndexData, tier }) {
     },
 
     confidence: {
-      overall: typeof campaign.confidence === 'number' ? (campaign.confidence >= 0.8 ? 'HIGH' : campaign.confidence >= 0.5 ? 'MEDIUM' : 'LOW') : 'UNKNOWN',
+      overall: campaignConfidenceBucket(campaign.confidence),
       basis:   'Derived from the campaign clustering engine\'s own composite confidence score.',
     },
 
@@ -564,4 +574,5 @@ module.exports = {
   buildDossierTimeline,
   computeDataQuality,
   classifyExploitation,
+  campaignConfidenceBucket,
 };
