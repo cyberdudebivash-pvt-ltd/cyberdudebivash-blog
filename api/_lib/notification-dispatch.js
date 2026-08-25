@@ -26,14 +26,16 @@
  * (ownership-checked, public-shaped) for the watchlist name shown in an
  * alert.
  *
- * Honesty constraint (same as change-engine.js's own docstring): nothing
- * here runs on a live schedule. dispatchNewEvent() only executes when
- * scripts/evaluate-watchlist-changes.js is run; processDueDeliveries()
- * only executes when scripts/deliver-watchlist-notifications.js is run.
- * This is a real, working delivery mechanism -- not yet a "real-time
- * alerting" product claim, and this module makes no such claim anywhere
- * in its content (email/webhook copy below says what changed and why,
- * never "instantly" or "in real time").
+ * Scheduling posture (Alert Orchestration v1): scripts/deliver-watchlist-
+ * notifications.js now runs on a GitHub Actions native schedule (see
+ * .github/workflows/alert-delivery.yml) rather than manually-only --
+ * still not sub-30-minute "real-time" (this repo's own dispatch-intel.js
+ * documents GitHub's native scheduler as unreliable below that cadence),
+ * and this module's content still says what changed and why, never
+ * "instantly" or "in real time". What DID change this round: this
+ * function is now safe to invoke concurrently/at-least-once, which it
+ * was not before -- see processDueDeliveries()'s own doc for the atomic
+ * claim/lease mechanism that makes that true.
  */
 'use strict';
 
@@ -57,6 +59,43 @@ function loadChangeEngine() {
 const WEBHOOK_TIMEOUT_MS = 8000;
 const MAX_WEBHOOK_RESPONSE_BYTES = 4096; // only used for the truncated error detail we log
 const DASHBOARD_URL = 'https://blog.cyberdudebivash.in/api-dashboard.html';
+const WEBHOOK_PAYLOAD_SCHEMA_VERSION = '1.0';
+
+/* ───────────────────────── retry classification ───────────────────────── */
+
+// Deterministic retry classification (orchestration mandate Phase 21/25),
+// applied at the point that knows the failure's actual shape (an HTTP
+// status here) rather than reconstructed later from a flattened error
+// string. Anything NOT in this explicit permanent list defaults to
+// retryable -- a false "retryable" costs one wasted attempt inside an
+// already-bounded budget; a false "permanent" would drop a possibly-
+// transient failure (an unlisted 5xx variant, a status this table simply
+// doesn't anticipate) before the retry budget ever got to help.
+const PERMANENT_HTTP_STATUSES = new Set([400, 401, 403, 404, 405, 410, 422]);
+
+function isRetryableHttpStatus(status) {
+  return !PERMANENT_HTTP_STATUSES.has(status);
+}
+
+// Bounded Retry-After parser (Phase 22): accepts the numeric-seconds form
+// (the common case) and the HTTP-date form. Anything else, non-positive,
+// or unparseable is ignored -- falls back to the normal backoff table
+// rather than trusting a malformed or hostile header value. The upper
+// bound itself is enforced by notification-store.js's
+// MAX_RETRY_AFTER_SECONDS at the point the value is actually applied, not
+// here -- this function only parses, it does not decide policy.
+function parseRetryAfterSeconds(headerValue) {
+  if (!headerValue) return null;
+  const trimmed = String(headerValue).trim();
+  if (/^\d+$/.test(trimmed)) {
+    const seconds = parseInt(trimmed, 10);
+    return seconds > 0 ? seconds : null;
+  }
+  const asDate = Date.parse(trimmed);
+  if (Number.isNaN(asDate)) return null;
+  const seconds = Math.round((asDate - Date.now()) / 1000);
+  return seconds > 0 ? seconds : null;
+}
 
 function escapeHtml(value) {
   return String(value == null ? '' : value)
@@ -116,23 +155,43 @@ function humanizeChangeType(changeType) {
 /* ───────────────────────── per-channel delivery ───────────────────────── */
 
 async function deliverEmailChannel({ email, event, watchlistName }) {
-  if (!resend.canSendEmail()) return { success: false, error: 'EMAIL_NOT_CONFIGURED' };
-  if (!email) return { success: false, error: 'NO_RECIPIENT' };
+  // Neither "not configured" nor "no recipient yet" is treated as a
+  // permanent failure -- an operator-side RESEND_API_KEY gap or a
+  // customer adding a recipient before the next attempt can both resolve
+  // it without any code change, so this stays in the normal retry cycle
+  // rather than dead-lettering (Phase 21: unlisted/ambiguous defaults to
+  // retryable, never blindly permanent).
+  if (!resend.canSendEmail()) return { success: false, error: 'EMAIL_NOT_CONFIGURED', retryable: true };
+  if (!email) return { success: false, error: 'NO_RECIPIENT', retryable: true };
   const { subject, text, html } = buildWatchlistAlertEmail({ event, watchlistName });
   try {
     await resend.sendEmail({ to: email, subject, html, text });
     return { success: true };
   } catch (e) {
-    return { success: false, error: e && e.message ? e.message : 'SEND_FAILED' };
+    const status = e && e.status;
+    return {
+      success: false,
+      error: e && e.message ? e.message : 'SEND_FAILED',
+      retryable: status ? isRetryableHttpStatus(status) : true,
+    };
   }
 }
 
-async function deliverWebhookChannel({ url, secret, event, watchlistId, watchlistName }) {
+async function deliverWebhookChannel({ url, secret, event, watchlistId, watchlistName, deliveryId }) {
   const check = await isSafeWebhookUrl(url);
-  if (!check.safe) return { success: false, error: `UNSAFE_URL:${check.reason}` };
+  // Permanent, not retryable: an SSRF-blocked destination is a
+  // configuration problem the customer must fix, and retrying it on
+  // every cycle just repeats a DNS lookup against a URL we already
+  // decided cannot be delivered to (Phase 25's own "invalid destination
+  // configuration" example) -- fast-tracking to a visible terminal state
+  // gets the customer to "fix your webhook URL" sooner than 5 silent
+  // retry cycles would.
+  if (!check.safe) return { success: false, error: `UNSAFE_URL:${check.reason}`, retryable: false };
 
   const payload = JSON.stringify({
+    schema_version: WEBHOOK_PAYLOAD_SCHEMA_VERSION,
     id: `evt_${event.event_id}`,
+    delivery_id: deliveryId,
     type: 'watchlist.change_event',
     created_at: new Date().toISOString(),
     data: {
@@ -158,16 +217,26 @@ async function deliverWebhookChannel({ url, secret, event, watchlistId, watchlis
         'Content-Type': 'application/json',
         'X-Sentinel-Signature': signature,
         'X-Sentinel-Event': 'watchlist.change_event',
+        // Stable across every retry of this same semantic delivery (see
+        // notification-store.js's buildDeliveryId doc) -- recipients
+        // should dedupe on this, not on the HTTP request itself, since a
+        // retry is a NEW request carrying the SAME delivery.
+        'X-Sentinel-Delivery-Id': deliveryId,
         'User-Agent': 'SentinelApex-Webhooks/1.0',
       },
       body: payload,
     });
     if (res.ok) return { success: true };
     const detail = await res.text().catch(() => '');
-    return { success: false, error: `HTTP_${res.status}:${detail.slice(0, MAX_WEBHOOK_RESPONSE_BYTES)}` };
+    return {
+      success: false,
+      error: `HTTP_${res.status}:${detail.slice(0, MAX_WEBHOOK_RESPONSE_BYTES)}`,
+      retryable: isRetryableHttpStatus(res.status),
+      retryAfterSeconds: parseRetryAfterSeconds(res.headers.get('retry-after')),
+    };
   } catch (e) {
     const reason = e && e.name === 'AbortError' ? 'TIMEOUT' : (e && e.message) || 'NETWORK_ERROR';
-    return { success: false, error: reason };
+    return { success: false, error: reason, retryable: true };
   } finally {
     clearTimeout(timer);
   }
@@ -220,14 +289,24 @@ async function dispatchNewEvent({ ownerId, watchlistId, event }) {
   return { enqueued: result.created, channels };
 }
 
-// The sender. Safe to invoke repeatedly/concurrently is NOT assumed --
-// scripts/deliver-watchlist-notifications.js is expected to run as a
-// single manual/scheduled invocation at a time, matching change-engine's
-// own evaluator posture (no distributed-lock mechanism exists in this
-// tranche; documented in the certification doc's Known Limitations).
+// The sender. Safe to invoke repeatedly/CONCURRENTLY is now an explicit
+// design goal, not an assumption to avoid violating -- notify.
+// claimDeliveryChannel()'s atomic SET-NX-PX makes at-least-once
+// scheduling (an overlapping cron run, a manual run racing a scheduled
+// one, a retried GitHub Actions job) safe at the application level
+// regardless of what triggers this function or how many times (see
+// notification-store.js's CLAIM_LEASE_MS doc). This is the orchestration
+// mandate's core non-negotiable: never assume the trigger mechanism
+// itself provides exactly-once execution.
 async function processDueDeliveries({ limit = 100 } = {}) {
   const records = await notify.getDuePendingDeliveries(limit);
-  const results = { records_processed: 0, attempts: 0, delivered: 0, retried: 0, dead_lettered: 0 };
+  const results = {
+    records_processed: 0, attempts: 0, delivered: 0, retried: 0, dead_lettered: 0,
+    // Additive fields -- kept alongside the field names above so
+    // scripts/deliver-watchlist-notifications.js's existing console.log
+    // lines keep working unchanged (Principle 5).
+    claimed: 0, skipped_claimed_elsewhere: 0, cancelled: 0,
+  };
   const now = Date.now();
 
   for (const record of records) {
@@ -241,43 +320,81 @@ async function processDueDeliveries({ limit = 100 } = {}) {
       const due = record.attempts[channel] && record.attempts[channel].next_attempt_at <= now;
       if (!due) continue;
 
-      // The underlying event or watchlist may have been deleted between
-      // enqueue and delivery -- fail this channel out cleanly (dead-letter
-      // after retries, same as any other failure) rather than throwing.
-      if (!event) {
-        await notify.recordAttemptOutcome({ ownerId: record.owner_id, eventId: record.event_id, channel, success: false });
+      // A customer who disabled this channel between enqueue and delivery
+      // must not receive it -- cancel cleanly, not as a failure/retry/
+      // dead-letter (orchestration mandate Phase 74).
+      const stillEligible = channel === 'email'
+        ? prefs.email_enabled
+        : channel === 'webhook'
+          ? Boolean(prefs.webhook_enabled && prefs.webhook_url && prefs.has_webhook_secret)
+          : false;
+      if (!stillEligible) {
+        await notify.cancelDeliveryChannel({ ownerId: record.owner_id, eventId: record.event_id, channel });
         await notify.recordDelivery(record.owner_id, {
           channel, eventId: record.event_id, watchlistId: record.watchlist_id,
-          status: 'failed', error: 'EVENT_NOT_FOUND', attempt: (record.attempts[channel] || {}).count || 0,
+          status: 'cancelled', error: 'CHANNEL_DISABLED', attempt: (record.attempts[channel] || {}).count || 0,
         });
-        results.attempts++;
+        results.cancelled++;
         continue;
       }
 
-      let outcome;
-      if (channel === 'email') {
-        const email = prefs.email_override || await getOwnerAccountEmail(record.owner_id);
-        outcome = await deliverEmailChannel({ email, event, watchlistName });
-      } else if (channel === 'webhook') {
-        const secret = await notify.getWebhookSecret(record.owner_id);
-        outcome = secret
-          ? await deliverWebhookChannel({ url: prefs.webhook_url, secret, event, watchlistId: record.watchlist_id, watchlistName })
-          : { success: false, error: 'NO_SECRET_CONFIGURED' };
-      } else {
-        outcome = { success: false, error: 'UNKNOWN_CHANNEL' };
-      }
+      // Atomic claim: if another concurrent invocation already holds this
+      // channel's delivery, skip it THIS cycle without touching its state
+      // -- its own lease recovers it if that other invocation never
+      // finishes (crash-safe by construction, not by a cleanup sweep).
+      const claimed = await notify.claimDeliveryChannel({ ownerId: record.owner_id, eventId: record.event_id, channel });
+      if (!claimed) { results.skipped_claimed_elsewhere++; continue; }
+      results.claimed++;
 
-      results.attempts++;
-      await notify.recordAttemptOutcome({ ownerId: record.owner_id, eventId: record.event_id, channel, success: outcome.success });
-      await notify.recordDelivery(record.owner_id, {
-        channel, eventId: record.event_id, watchlistId: record.watchlist_id,
-        status: outcome.success ? 'delivered' : 'failed', error: outcome.error,
-        attempt: ((record.attempts[channel] || {}).count || 0) + 1,
-      });
-      if (outcome.success) results.delivered++;
-      else {
-        const willRetry = ((record.attempts[channel] || {}).count || 0) + 1 < notify.MAX_RETRY_ATTEMPTS;
-        if (willRetry) results.retried++; else results.dead_lettered++;
+      try {
+        // The underlying event or watchlist may have been deleted between
+        // enqueue and delivery -- fail this channel out cleanly (dead-letter
+        // after retries, same as any other failure) rather than throwing.
+        if (!event) {
+          const disposition = await notify.recordAttemptOutcome({ ownerId: record.owner_id, eventId: record.event_id, channel, success: false });
+          await notify.recordDelivery(record.owner_id, {
+            channel, eventId: record.event_id, watchlistId: record.watchlist_id,
+            status: 'failed', error: 'EVENT_NOT_FOUND', attempt: (record.attempts[channel] || {}).count || 0,
+          });
+          results.attempts++;
+          if (disposition === 'retrying') results.retried++;
+          else if (disposition === 'dead_lettered') results.dead_lettered++;
+          continue;
+        }
+
+        let outcome;
+        if (channel === 'email') {
+          const email = prefs.email_override || await getOwnerAccountEmail(record.owner_id);
+          outcome = await deliverEmailChannel({ email, event, watchlistName });
+        } else if (channel === 'webhook') {
+          const secret = await notify.getWebhookSecret(record.owner_id);
+          outcome = secret
+            ? await deliverWebhookChannel({
+                url: prefs.webhook_url, secret, event, watchlistId: record.watchlist_id, watchlistName,
+                deliveryId: notify.buildDeliveryId(record.owner_id, record.event_id, channel),
+              })
+            : { success: false, error: 'NO_SECRET_CONFIGURED', retryable: true };
+        } else {
+          outcome = { success: false, error: 'UNKNOWN_CHANNEL', retryable: false };
+        }
+
+        results.attempts++;
+        const disposition = await notify.recordAttemptOutcome({
+          ownerId: record.owner_id, eventId: record.event_id, channel,
+          success: outcome.success, retryable: outcome.retryable, retryAfterSeconds: outcome.retryAfterSeconds,
+        });
+        await notify.recordDelivery(record.owner_id, {
+          channel, eventId: record.event_id, watchlistId: record.watchlist_id,
+          status: outcome.success ? 'delivered' : 'failed', error: outcome.error,
+          attempt: ((record.attempts[channel] || {}).count || 0) + 1,
+        });
+        if (disposition === 'delivered') results.delivered++;
+        else if (disposition === 'retrying') results.retried++;
+        else if (disposition === 'dead_lettered') results.dead_lettered++;
+      } finally {
+        // Best-effort early release -- see releaseDeliveryChannel's own
+        // doc for why correctness never depends on this line running.
+        await notify.releaseDeliveryChannel({ ownerId: record.owner_id, eventId: record.event_id, channel });
       }
     }
   }
@@ -286,6 +403,9 @@ async function processDueDeliveries({ limit = 100 } = {}) {
 }
 
 module.exports = {
+  WEBHOOK_PAYLOAD_SCHEMA_VERSION,
+  isRetryableHttpStatus,
+  parseRetryAfterSeconds,
   buildWatchlistAlertEmail,
   deliverEmailChannel,
   deliverWebhookChannel,

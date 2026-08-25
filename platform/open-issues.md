@@ -1506,20 +1506,28 @@ Found and deliberately scoped out while building
 `docs/audits/SENTINEL-APEX-ALERT-DELIVERY-WEBHOOK-AUTOMATION-V1-CERTIFICATION.md`.
 Tracked here individually, not buried only in certification prose.
 
-1. **Not real-time.** Both `scripts/evaluate-watchlist-changes.js` and the
-   new `scripts/deliver-watchlist-notifications.js` are manually/
-   externally triggered — no live Cloudflare Cron Trigger exists for
-   either. A customer's email/webhook only reflects reality as of
-   whenever both scripts were last run in sequence, not continuously.
-   Same root cause and same open decision as Issue 23 item 1.
-2. **No distributed lock across concurrent script invocations.** A
-   real TOCTOU race in `enqueuePendingDelivery()` was found and closed
-   with `SET…NX` this round, but a broader guard against two overlapping
-   `deliver-watchlist-notifications.js` runs (or two overlapping
-   evaluator runs) does not exist. Not exercised by the in-memory test
-   fixture (which executes commands sequentially) — a real, disclosed
-   gap against genuine concurrent-request production behavior, not a
-   test-proven-safe claim.
+1. **~~Not real-time~~ → PARTIALLY RESOLVED (Alert Orchestration &
+   Delivery Reliability v1, 2026-08-25).** Both scripts now run
+   autonomously every ~30 minutes via `.github/workflows/alert-
+   delivery.yml`'s native GitHub Actions schedule, in sequence
+   (evaluate then deliver) — no longer manual-only. **Still genuinely
+   open:** this is a 30-minute cadence, not real-time, and no live
+   Cloudflare Cron Trigger exists — `wrangler.jsonc` still explicitly
+   defers that authority pending separate operator sign-off, unchanged.
+   See `SENTINEL-APEX-ALERT-ORCHESTRATION-DELIVERY-RELIABILITY-V1-CERTIFICATION.md`
+   §6-7. Also unverified from this sandbox: whether the required
+   `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` GitHub Actions
+   secrets are actually configured (tracked as Issue 25 item 1).
+2. **~~No distributed lock across concurrent script invocations~~ →
+   RESOLVED (Alert Orchestration & Delivery Reliability v1,
+   2026-08-25).** `notification-store.js` gained an atomic per-channel
+   claim-with-lease (`SET…NX…PX`, `claimDeliveryChannel`/
+   `releaseDeliveryChannel`, `CLAIM_LEASE_MS=90s`), wired into
+   `processDueDeliveries()`. Proven, not just closed by inspection: a
+   real `Promise.all` concurrency test issues two genuinely overlapping
+   invocations against a shared store and asserts exactly one delivery
+   occurs. A crashed/killed dispatcher's claim self-expires and recovers
+   automatically — no separate lease-sweep job exists or is needed.
 3. **The SSRF guard is check-then-connect, not IP-pinned.** A webhook
    URL is validated (blocked-range table + real DNS lookup) at
    preference-save time and again immediately before every delivery
@@ -1549,6 +1557,64 @@ Tracked here individually, not buried only in certification prose.
    arbitrary public HTTPS URL" primitive, the same characteristic
    industry-standard webhook-testing features (e.g. Stripe's own "send
    test webhook") already have.
+
+## Issue 25 — Alert Orchestration & Delivery Reliability v1 real, disclosed gaps (2026-08-25)
+
+Found and deliberately scoped out while building
+`docs/audits/SENTINEL-APEX-ALERT-ORCHESTRATION-DELIVERY-RELIABILITY-V1-CERTIFICATION.md`.
+Tracked here individually per this platform's own discipline, not buried
+only in certification prose.
+
+1. **GitHub Actions secrets for the new scheduled workflow are
+   unverified as configured.** `UPSTASH_REDIS_REST_URL`/
+   `UPSTASH_REDIS_REST_TOKEN` are proven live as *Vercel* environment
+   variables (they back production today) but unverified as *also*
+   present in this repo's GitHub Actions secret store — a different
+   secret store entirely. `backup-customer-data.yml` hit this exact gap
+   first; `alert-delivery.yml` mirrors its preflight-and-skip handling
+   (a visible warning, not a silent no-op or a confusing failure) rather
+   than assuming the secrets exist. Resolvable only by an operator
+   confirming/adding them in the repo's Settings → Secrets — outside
+   this session's access.
+2. **No live production canary was run.** This sandbox has no Vercel,
+   GitHub Actions, or Cloudflare dashboard/API access to trigger and
+   observe a real scheduled firing end-to-end. All verification this
+   round is integration-level against a real in-memory Redis double.
+3. **True exactly-once remote delivery is architecturally impossible,
+   not merely unimplemented.** A webhook can be accepted by a customer's
+   endpoint while the acknowledgment is lost to us — from our side this
+   is indistinguishable from "never received," and a retry is the only
+   available recovery. Mitigated via a stable `X-Sentinel-Delivery-Id`
+   for recipient-side dedup (new this round), not eliminated. Recorded
+   here so it is never mistaken for a future TODO — it is a property of
+   distributed systems generally.
+4. **Per-customer fairness within one bounded dispatch batch is not
+   implemented.** `getDuePendingDeliveries()` returns records ordered by
+   soonest-due score; one customer's simultaneous batch of due
+   deliveries could theoretically crowd out another's within a single
+   scheduled run's 50-record cap. No evidence this occurs at current
+   scale (per-customer volume is naturally bounded by watchlist size) —
+   an evidence-based deferral, not an oversight.
+5. **No operator health-view UI.** Only structured JSON log lines
+   (`[NOTIFY-DELIVER-SUMMARY]`, `[SCHEDULED]`) exist as observability —
+   `oldest_pending_delivery_age_seconds`, claimed/skipped/cancelled/
+   delivered/retrying/terminal counts per run. No admin dashboard
+   surfaces these yet.
+6. **Email hard-bounce classification and provider idempotency keys are
+   not implemented.** Resend's synchronous send-time response does not
+   expose either; a hard bounce is an asynchronous provider webhook
+   event this integration does not subscribe to.
+7. **Manual retry has no additional throttle beyond the platform's
+   existing global per-IP rate limiter.** A customer can, in principle,
+   repeatedly retry their own permanently-broken destination — this only
+   costs their own delivery budget, not a shared resource, so it was not
+   treated as an abuse vector requiring a dedicated limit.
+8. **DNS-rebinding residual window (webhook SSRF guard) — unchanged,
+   carried forward from Issue 24 item 3.** Still open, not worsened or
+   narrowed by this round's changes.
+9. **Multi-workspace / MSSP-style shared entitlements are out of scope**
+   for this tranche, same as every prior notification/watchlist tranche
+   — no evidence of near-term demand justified building it speculatively.
 
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

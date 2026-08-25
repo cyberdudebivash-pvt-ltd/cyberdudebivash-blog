@@ -146,4 +146,47 @@ async function handleFetch(request, env) {
   }
 }
 
-module.exports = { handleFetch, dispatch, HANDLER_MODULES };
+/**
+ * Cloudflare Cron Trigger entry point (workers/entry.js's `scheduled`
+ * export calls this). Dormant by design: wrangler.jsonc's own header
+ * comment explicitly defers `triggers.crons` -- "scheduling authority is
+ * undecided... adding a schedule here would start real remote execution"
+ * -- pending a separate operator-authorized decision this module cannot
+ * make for itself. Implemented now so that decision, whenever it's made,
+ * is a pure infrastructure change (populate wrangler.jsonc's
+ * triggers.crons) with zero application code to write -- not "add a
+ * scheduled() function and claim automation exists" (the orchestration
+ * mandate's own words for the anti-pattern this avoids). The real,
+ * already-live autonomous trigger today is
+ * .github/workflows/alert-delivery.yml's native GitHub Actions schedule
+ * -- see that workflow's header for why.
+ *
+ * Calls the exact same evaluateWatchedEntities()/processDueDeliveries()
+ * functions the Node CLI scripts call -- one implementation of "what a
+ * scheduled run does," reused here, not reimplemented for this runtime.
+ * Bounded (each call's own internal batch/limit defaults apply) and
+ * idempotent-safe (processDueDeliveries()'s atomic claim/lease makes
+ * this safe to invoke even if it somehow overlapped the GitHub Actions
+ * path or another scheduled() invocation).
+ *
+ * The 4th `deps` param is a test-only seam (default {} in every real
+ * call site, including workers/entry.js's) so router.test.js can inject
+ * fakes instead of requiring real Redis-backed modules under plain
+ * node:test -- never populated in production.
+ */
+async function handleScheduled(controller, env, ctx, deps = {}) {
+  const { evaluateWatchedEntities } = deps.changeEngine || require('../../api/_lib/change-engine');
+  const { processDueDeliveries } = deps.notificationDispatch || require('../../api/_lib/notification-dispatch');
+
+  const startedAt = Date.now();
+  const evaluation = await evaluateWatchedEntities();
+  const delivery = await processDueDeliveries();
+  const summary = {
+    trigger: 'cloudflare_cron', cron: controller && controller.cron,
+    elapsed_ms: Date.now() - startedAt, evaluation, delivery,
+  };
+  console.log('[SCHEDULED]', JSON.stringify(summary));
+  return summary;
+}
+
+module.exports = { handleFetch, dispatch, handleScheduled, HANDLER_MODULES };

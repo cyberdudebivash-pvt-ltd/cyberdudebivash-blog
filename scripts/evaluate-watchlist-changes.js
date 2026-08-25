@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 /**
- * SENTINEL APEX — Watchlist Change Evaluation (manual/scheduled-fallback run)
+ * SENTINEL APEX — Watchlist Change Evaluation
  *
  * Thin CLI wrapper around api/_lib/change-engine.js's evaluateWatchedEntities().
- * Run manually today, the same posture the dossier tranche's
- * scripts/generate-cve-enrichment-index.js already established for this
- * repo -- NOT wired to a Cloudflare Cron Trigger. wrangler.jsonc's own
- * header explicitly defers "triggers.crons -- scheduling authority is
- * undecided" pending separate authorization; adding a live cron here
- * would be exactly that kind of infrastructure decision, out of scope
- * for this tranche (tracked in platform/open-issues.md).
+ * Runs on a real autonomous schedule as of Alert Orchestration v1:
+ * .github/workflows/alert-delivery.yml's native GitHub Actions
+ * `schedule:` trigger (every 30 minutes, immediately followed by
+ * scripts/deliver-watchlist-notifications.js in the same run — see that
+ * workflow's header for the cadence reasoning and why GitHub Actions
+ * rather than a Cloudflare Cron Trigger, which wrangler.jsonc still
+ * explicitly defers pending separate operator authorization). Still safe
+ * to run manually or via any other external scheduler too — this
+ * function's own idempotent/replay-safe event creation (see change-
+ * engine.js) does not depend on any particular caller.
  *
  * Usage:
  *   UPSTASH_REDIS_REST_URL=... UPSTASH_REDIS_REST_TOKEN=... \

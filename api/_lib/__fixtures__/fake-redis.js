@@ -23,6 +23,23 @@ function createFakeRedis() {
   const hashes  = new Map(); // key -> Map(field -> value)
   const sets    = new Map(); // key -> Set(member)
   const zsets   = new Map(); // key -> Map(member -> score)
+  const expirations = new Map(); // key -> epoch ms a setnxpx-created string key expires at
+
+  // Only setnxpx tracks real expiry (notification-store.js's atomic
+  // delivery claim/lease -- see redis.js's own setnxpx comment). The
+  // pre-existing setex/expire/ttl stubs below are deliberately left
+  // as-is: nothing in this codebase's test suite depends on real TTL
+  // semantics for those, so simulating it there would be unused fixture
+  // surface, not a fix for anything (see this file's header discipline:
+  // "every command this codebase actually calls is implemented; nothing
+  // beyond that surface").
+  function expireIfDue(k) {
+    const exp = expirations.get(k);
+    if (exp !== undefined && Date.now() >= exp) {
+      strings.delete(k);
+      expirations.delete(k);
+    }
+  }
 
   function matchKeys(pattern) {
     const all = [...strings.keys(), ...hashes.keys(), ...sets.keys(), ...zsets.keys()];
@@ -32,19 +49,35 @@ function createFakeRedis() {
   }
 
   return {
-    get: async k => (strings.has(k) ? strings.get(k) : null),
-    set: async (k, v) => { strings.set(k, String(v)); return 'OK'; },
+    get: async k => { expireIfDue(k); return strings.has(k) ? strings.get(k) : null; },
+    set: async (k, v) => { expirations.delete(k); strings.set(k, String(v)); return 'OK'; },
     setex: async (k, _ttl, v) => { strings.set(k, String(v)); return 'OK'; },
     setnx: async (k, v) => {
+      expireIfDue(k);
       if (strings.has(k)) return null;
       strings.set(k, String(v));
       return 'OK';
     },
+    // SET key val NX PX ttlMs -- real expiry, unlike the setex/expire/ttl
+    // stubs above (see expireIfDue's comment for why those stay stubbed).
+    // Mirrors notification-store.js's atomic claim/lease: fails (returns
+    // null) if the key exists and hasn't yet expired; otherwise creates
+    // it with a real expiry, so a test can prove lease recovery by
+    // advancing past ttlMs (e.g. via jest.useFakeTimers or a real short
+    // sleep) and re-claiming.
+    setnxpx: async (k, v, ttlMs) => {
+      expireIfDue(k);
+      if (strings.has(k)) return null;
+      strings.set(k, String(v));
+      expirations.set(k, Date.now() + Number(ttlMs));
+      return 'OK';
+    },
     del: async k => {
+      expirations.delete(k);
       const existed = strings.delete(k) || hashes.delete(k) || sets.delete(k) || zsets.delete(k);
       return existed ? 1 : 0;
     },
-    exists: async k => (strings.has(k) || hashes.has(k) || sets.has(k) || zsets.has(k) ? 1 : 0),
+    exists: async k => { expireIfDue(k); return (strings.has(k) || hashes.has(k) || sets.has(k) || zsets.has(k) ? 1 : 0); },
     incr: async k => { const v = (parseInt(strings.get(k), 10) || 0) + 1; strings.set(k, String(v)); return v; },
     expire: async () => 1,
     ttl: async () => -1,
@@ -104,11 +137,12 @@ function createFakeRedis() {
       return removed;
     },
     zcard: async k => { const z = zsets.get(k); return z ? z.size : 0; },
-    zrange: async (k, start, stop) => {
+    zrange: async (k, start, stop, withScores) => {
       const z = zsets.get(k);
       if (!z) return [];
-      const asc = [...z.entries()].sort((a, b) => a[1] - b[1]).map(e => e[0]);
-      return sliceInclusiveByRank(asc, Number(start), Number(stop));
+      const asc = [...z.entries()].sort((a, b) => a[1] - b[1]);
+      const sliced = sliceInclusiveByRank(asc, Number(start), Number(stop));
+      return withScores ? sliced.flatMap(([m, s]) => [m, String(s)]) : sliced.map(([m]) => m);
     },
     zrangebyscore: async (k, min, max) => {
       const z = zsets.get(k);
@@ -149,7 +183,7 @@ function createFakeRedis() {
     },
 
     _dump: () => ({ strings, hashes, sets, zsets }),
-    _reset: () => { strings.clear(); hashes.clear(); sets.clear(); zsets.clear(); },
+    _reset: () => { strings.clear(); hashes.clear(); sets.clear(); zsets.clear(); expirations.clear(); },
   };
 }
 

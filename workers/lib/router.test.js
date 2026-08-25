@@ -2,7 +2,7 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { handleFetch, dispatch, HANDLER_MODULES } = require('./router');
+const { handleFetch, dispatch, handleScheduled, HANDLER_MODULES } = require('./router');
 const { DIRECT_API_HANDLERS, DYNAMIC_API_HANDLERS } = require('./route-table');
 
 function fakeEnv(assetsFetchImpl) {
@@ -172,5 +172,36 @@ describe('handleFetch — malformed/oversized body handling (real handler dispat
     assert.equal(response.status, 400);
     const body = await response.json();
     assert.equal(body.error, 'Invalid signature');
+  });
+});
+
+// Dormant Cloudflare Cron Trigger entry point (Alert Orchestration v1) --
+// see handleScheduled's own doc in router.js for why it is never live
+// today. Tested via the `deps` injection seam so this stays plain
+// node:test-runnable without a real Redis-backed change-engine.js/
+// notification-dispatch.js in the loop -- those two functions already
+// have full Jest coverage (fake-redis-backed) under api/_lib/__tests__/.
+describe('handleScheduled — dormant Cloudflare Cron entry point', () => {
+  test('calls evaluateWatchedEntities then processDueDeliveries and returns a summary', async () => {
+    const calls = [];
+    const deps = {
+      changeEngine: { evaluateWatchedEntities: async () => { calls.push('evaluate'); return { evaluated: 3 }; } },
+      notificationDispatch: { processDueDeliveries: async () => { calls.push('deliver'); return { delivered: 2 }; } },
+    };
+    const summary = await handleScheduled({ cron: '*/30 * * * *' }, {}, {}, deps);
+    assert.deepEqual(calls, ['evaluate', 'deliver']);
+    assert.equal(summary.trigger, 'cloudflare_cron');
+    assert.equal(summary.cron, '*/30 * * * *');
+    assert.deepEqual(summary.evaluation, { evaluated: 3 });
+    assert.deepEqual(summary.delivery, { delivered: 2 });
+    assert.ok(typeof summary.elapsed_ms === 'number');
+  });
+
+  test('propagates a failure from either step rather than swallowing it', async () => {
+    const deps = {
+      changeEngine: { evaluateWatchedEntities: async () => { throw new Error('redis unavailable'); } },
+      notificationDispatch: { processDueDeliveries: async () => ({ delivered: 0 }) },
+    };
+    await assert.rejects(() => handleScheduled({}, {}, {}, deps), /redis unavailable/);
   });
 });

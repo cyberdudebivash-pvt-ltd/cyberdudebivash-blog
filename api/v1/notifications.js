@@ -12,6 +12,7 @@
  *  action=test-webhook               POST  Send a synthetic test delivery to the configured webhook URL now (not queued).
  *  action=deliveries                   GET   Recent delivery attempts (both channels, success and failure). ?limit=
  *  action=dead-letters                   GET   Deliveries that exhausted retries. ?limit=
+ *  action=retry-dead-letter               POST  Re-queue one dead-lettered (event_id, channel) as a fresh delivery attempt (Phase 73: a controlled new attempt, not a history reset -- the original dead-letter entry stays as a record). Body: {event_id, channel}
  *
  * Ownership is always the authenticated caller's own userId -- there is
  * no per-watchlist scoping here (notification preferences are account-
@@ -27,11 +28,14 @@ const notify = require('../_lib/notification-store');
 const { isSafeWebhookUrl } = require('../_lib/webhook-signing');
 const { deliverWebhookChannel } = require('../_lib/notification-dispatch');
 
-const VALID_ACTIONS = 'preferences, update-preferences, rotate-webhook-secret, test-webhook, deliveries, dead-letters';
+const VALID_ACTIONS = 'preferences, update-preferences, rotate-webhook-secret, test-webhook, deliveries, dead-letters, retry-dead-letter';
 
 const FIELDS = {
   'update-preferences': ['email_enabled', 'email_override', 'webhook_enabled', 'webhook_url'],
+  'retry-dead-letter': ['event_id', 'channel'],
 };
+const RETRYABLE_CHANNELS = new Set(['email', 'webhook']);
+const MAX_DEAD_LETTER_SCAN = 200;
 
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,24}$/;
 const MAX_URL_LENGTH = 500;
@@ -57,6 +61,7 @@ module.exports = async (req, res) => {
     case 'test-webhook':             return handleTestWebhook(req, res);
     case 'deliveries':                return handleDeliveries(req, res);
     case 'dead-letters':               return handleDeadLetters(req, res);
+    case 'retry-dead-letter':          return handleRetryDeadLetter(req, res);
     default:
       return apiError(res, 400, 'INVALID_ACTION', `Unknown action: "${action}". Valid: ${VALID_ACTIONS}`);
   }
@@ -147,6 +152,10 @@ async function handleUpdatePreferences(req, res) {
   }
 
   const preferences = await notify.updatePreferences(user.userId, updates);
+  // Field NAMES only, never the values themselves (Phase 78: privacy
+  // minimization) -- an audit trail needs to answer "what changed and
+  // when," not store a second copy of the customer's email/webhook URL.
+  await notify.auditNotificationAction(user.userId, 'PREFERENCES_UPDATED', { fields_changed: Object.keys(updates) });
   return successResponse(res, { preferences });
 }
 
@@ -157,6 +166,7 @@ async function handleRotateSecret(req, res) {
   if (req.method !== 'POST') return apiError(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
 
   const secret = await notify.rotateWebhookSecret(user.userId);
+  await notify.auditNotificationAction(user.userId, 'WEBHOOK_SECRET_ROTATED');
   return successResponse(res, {
     webhook_secret: secret,
     warning: 'Store this securely — it will not be shown again. Configure your endpoint to verify the X-Sentinel-Signature header using this value.',
@@ -189,6 +199,7 @@ async function handleTestWebhook(req, res) {
   const outcome = await deliverWebhookChannel({
     url: prefs.webhook_url, secret, event: testEvent,
     watchlistId: null, watchlistName: '(test delivery)',
+    deliveryId: notify.buildDeliveryId(user.userId, testEvent.event_id, 'webhook'),
   });
   await notify.recordDelivery(user.userId, {
     channel: 'webhook', eventId: testEvent.event_id, watchlistId: null,
@@ -215,4 +226,48 @@ async function handleDeadLetters(req, res) {
   const limit = Math.max(1, Math.min(parseInt(req.query.limit, 10) || 50, 200));
   const deadLetters = await notify.listDeadLetters(user.userId, { limit });
   return successResponse(res, { dead_letters: deadLetters }, { count: deadLetters.length });
+}
+
+/* ─── POST ?action=retry-dead-letter ───────────────────────────── */
+// Orchestration mandate Phase 73/74: only a dead-lettered delivery this
+// caller actually owns, on a channel still enabled/configured, may be
+// requeued -- and doing so creates a controlled NEW pending attempt
+// (fresh MAX_RETRY_ATTEMPTS budget) rather than resurrecting or mutating
+// the original dead-letter record, which stays exactly as it was: an
+// honest history entry of "this channel dead-lettered once."
+async function handleRetryDeadLetter(req, res) {
+  const user = await authenticate(req, res);
+  if (!user) return;
+  const body = await readValidatedBody(req, res, 'retry-dead-letter');
+  if (body === null) return;
+
+  const eventId = String(body.event_id || '').trim();
+  const channel = String(body.channel || '').trim();
+  if (!eventId || !RETRYABLE_CHANNELS.has(channel)) {
+    return apiError(res, 400, 'INVALID_FIELDS', 'event_id and channel ("email" or "webhook") are required.');
+  }
+
+  // Ownership + existence check via the caller's OWN dead-letter list --
+  // never trust a request-supplied event_id's ownership (Phase 45/46).
+  // A bounded scan (<=200 entries, this store's own retention cap) is
+  // sufficient; no separate by-event_id index is needed at this volume.
+  const deadLetters = await notify.listDeadLetters(user.userId, { limit: MAX_DEAD_LETTER_SCAN });
+  const match = deadLetters.find(d => d.event_id === eventId && d.channel === channel);
+  if (!match) {
+    return apiError(res, 404, 'NOT_FOUND', 'No dead-lettered delivery found for that event_id/channel on this account.');
+  }
+
+  const prefs = await notify.getPreferences(user.userId);
+  const stillEligible = channel === 'email'
+    ? prefs.email_enabled
+    : Boolean(prefs.webhook_enabled && prefs.webhook_url && prefs.has_webhook_secret);
+  if (!stillEligible) {
+    return apiError(res, 400, 'CHANNEL_NOT_ELIGIBLE', `The ${channel} channel is not currently enabled/configured — update it before retrying.`);
+  }
+
+  const result = await notify.enqueuePendingDelivery({
+    ownerId: user.userId, eventId, watchlistId: match.watchlist_id || null, channels: [channel],
+  });
+  await notify.auditNotificationAction(user.userId, 'MANUAL_RETRY_REQUESTED', { event_id: eventId, channel });
+  return successResponse(res, { requeued: result.created });
 }

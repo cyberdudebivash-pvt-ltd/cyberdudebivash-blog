@@ -34,7 +34,16 @@ async function resendRequest(method, path, body) {
   if (body) opts.body = JSON.stringify(body);
   const res  = await fetch(`${RESEND_BASE}${path}`, opts);
   const json = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(`Resend error: ${json.message || res.statusText}`);
+  if (!res.ok) {
+    // .status attached (not just embedded in the message string) so a
+    // caller can classify permanent vs. retryable failures without
+    // parsing prose -- e.g. notification-dispatch.js's alert-delivery
+    // retry classification. Additive: existing catch sites that only
+    // read err.message are unaffected.
+    const err = new Error(`Resend error: ${json.message || res.statusText}`);
+    err.status = res.status;
+    throw err;
+  }
   return json;
 }
 
