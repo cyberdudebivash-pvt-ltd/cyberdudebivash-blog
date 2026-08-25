@@ -93,6 +93,25 @@ test('buildCampaignDoc: pulls real fields, never fabricates missing ones', () =>
   assert.equal(doc.clustering_model, 'weighted_v2');
 });
 
+test('buildCveDoc/buildCampaignDoc: carry a dossier_url pivot to the dossier page (Intelligence Dossiers v1)', () => {
+  const cveDoc = buildCveDoc(makeGraph().nodes['CVE-2024-0001'], []);
+  assert.equal(cveDoc.dossier_url, '/dossier.html?type=cve&id=CVE-2024-0001');
+
+  const campaignDoc = buildCampaignDoc(makeCampaignsData().campaigns[0]);
+  assert.equal(campaignDoc.dossier_url, `/dossier.html?type=campaign&id=${encodeURIComponent(campaignDoc.id)}`);
+});
+
+test('buildActorDoc/buildIocDoc/buildReportDoc: no dossier_url — no dossier type covers them yet', () => {
+  const actorDoc = buildActorDoc(makeGraph().nodes['actor:evilcorp'], []);
+  assert.equal(actorDoc.dossier_url, undefined);
+
+  const iocDoc = buildIocDoc(makeGraph().nodes['ioc:domain:evil.test']);
+  assert.equal(iocDoc.dossier_url, undefined);
+
+  const reportDoc = buildReportDoc(makeReportsIndexData().reports[0]);
+  assert.equal(reportDoc.dossier_url, undefined);
+});
+
 test('buildActorDoc: aliases/ttps/sectors carried through unmodified', () => {
   const doc = buildActorDoc(makeGraph().nodes['actor:evilcorp'], makeReportsIndexData().reports);
   assert.deepEqual(doc.aliases, ['EC', 'Evil Corporation']);

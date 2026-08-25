@@ -33,6 +33,7 @@ if (isCloudflareWorkers()) {
     graph:       require('../intel/threat-graph.json'),
     campaigns:   require('../intel/campaigns.json'),
     reportsIndex: require('../intel/reports-index.json'),
+    cveEnrichment: require('../intel/cve-enrichment-index.json'),
   };
 } else {
   const path = require('path');
@@ -47,6 +48,7 @@ if (isCloudflareWorkers()) {
     graph:       path.join(BASE, 'api', 'intel', 'threat-graph.json'),
     campaigns:   path.join(BASE, 'api', 'intel', 'campaigns.json'),
     reportsIndex: path.join(BASE, 'api', 'intel', 'reports-index.json'),
+    cveEnrichment: path.join(BASE, 'api', 'intel', 'cve-enrichment-index.json'),
   };
 }
 
@@ -532,9 +534,45 @@ function getReportDetailAPI(reportId) {
   return getReportDetail(loadJSON(PATHS.reportsIndex), reportId);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   INTELLIGENCE DOSSIER  — evidence-backed, decision-oriented projection
+   over the same canonical CVE/Campaign data above. Not a new store: see
+   api/_lib/intelligence-dossier.js's own header for the full contract.
+═══════════════════════════════════════════════════════════════════════ */
+const { buildCveDossier, buildCampaignDossier } = require('./intelligence-dossier');
+
+const DOSSIER_SUPPORTED_TYPES = new Set(['cve', 'campaign']);
+
+function getDossierAPI(type, id, tier) {
+  const normalizedType = String(type || '').toLowerCase().trim();
+  if (!DOSSIER_SUPPORTED_TYPES.has(normalizedType)) {
+    return { found: false, dossier: null, unsupported: true };
+  }
+
+  const graph = loadGraph();
+  const reportsIndexData = loadJSON(PATHS.reportsIndex);
+
+  if (normalizedType === 'cve') {
+    const cveId = String(id || '').toUpperCase().trim();
+    const { found, item } = getCVEDetail(cveId, tier);
+    if (!found) return { found: false, dossier: null, unsupported: false };
+    const enrichmentData = loadJSON(PATHS.cveEnrichment);
+    const enrichment = (enrichmentData && enrichmentData.entries) ? (enrichmentData.entries[cveId] || null) : null;
+    const dossier = buildCveDossier({ graph, cveId, cveItem: item, enrichment, reportsIndexData, tier });
+    return { found: true, dossier, unsupported: false };
+  }
+
+  // normalizedType === 'campaign'
+  const { found, campaign } = getCampaignDetail(id, tier);
+  if (!found) return { found: false, dossier: null, unsupported: false };
+  const dossier = buildCampaignDossier({ graph, campaign, reportsIndexData, tier });
+  return { found: true, dossier, unsupported: false };
+}
+
 module.exports = {
   getIntel, getCVEDetail, searchIntel, getPlatformStats, applyTierFilter,
   getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI,
   loadJSON, PATHS, parsePagination, attestItem,
   getSearchIndex, unifiedSearch, getActorDetailAPI, getIocDetailAPI, getReportDetailAPI,
+  getDossierAPI,
 };
