@@ -20,6 +20,17 @@
  * duplicated per watching customer. If 100 customers watch the same CVE,
  * the diff runs once.
  *
+ * Alert Delivery v1: immediately after each watcher's feed append,
+ * notification-dispatch.js's dispatchNewEvent() is called (enqueue-only,
+ * never blocking on network I/O) so a customer with email/webhook
+ * notifications enabled gets a pending delivery queued for the same
+ * event, once, at fan-out time -- not recomputed per channel or
+ * duplicated on replay (persistEventIfNew's idempotency above already
+ * guarantees this loop only runs for a genuinely NEW event). Actual
+ * sending happens in a separate manually-run pass
+ * (scripts/deliver-watchlist-notifications.js) -- see that module's own
+ * docstring for why this is not yet real-time delivery.
+ *
  * Trigger (Phase 48-51): this module exposes a pure, bounded, cursor-
  * resumable batch function. It is invoked manually today via
  * scripts/evaluate-watchlist-changes.js -- not from a Cloudflare Cron
@@ -41,6 +52,11 @@ const {
   fingerprintState, WATCHABLE_STATE_SCHEMA_VERSION,
 } = require('./watchable-state');
 const { detectChanges } = require('./change-detector');
+// Safe as a normal top-level require: notification-dispatch.js requires
+// THIS module back lazily (inside a function body, not at its own
+// top-level), so only one side of the pair needs to defer -- see that
+// module's loadChangeEngine() docstring for the full reasoning.
+const notificationDispatch = require('./notification-dispatch');
 
 const CURSOR_KEY = 'watchlist_eval:cursor';
 const DEFAULT_BATCH_LIMIT = 200;
@@ -156,6 +172,13 @@ async function evaluateEntity({ entityType, entityId, intel, graph, reportsIndex
     const watchers = await store.getWatchersForEntity(entityType, entityId);
     for (const w of watchers) {
       await store.appendToOwnerFeed(w.ownerId, event.event_id, Date.parse(event.observed_at) || Date.now());
+      // Enqueue-only (see notification-dispatch.js's module docstring) --
+      // never blocks change detection on email/webhook network I/O.
+      // Failure here must never break the feed fan-out that already
+      // succeeded above; a swallowed dispatch error just means this
+      // owner's notification isn't enqueued this cycle, not that the
+      // watchlist itself is broken.
+      await notificationDispatch.dispatchNewEvent({ ownerId: w.ownerId, watchlistId: w.watchlistId, event }).catch(() => {});
     }
     created.push(event);
   }
