@@ -120,4 +120,71 @@ describe('api/og.js', () => {
     await ogHandler(req, res);
     expect(getStatus()).toBe(200);
   });
+
+  // -- Intelligence Card v3 contract (kev/epss readout tiles + visual redesign) --
+
+  test('renders with kev=true and a valid epss value (KEV ribbon + EPSS tile)', async () => {
+    const { req, res, getStatus, headers, getBody } = fakeReqRes(
+      '/api/og?title=Critical%20RCE&severity=CRITICAL&cve=CVE-2026-56705&cvss=9.8&kev=true&epss=87.4'
+    );
+    await ogHandler(req, res);
+    expect(getStatus()).toBe(200);
+    expect(headers['content-type']).toBe('image/png');
+    expect(Array.from(getBody().subarray(0, 8))).toEqual([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  });
+
+  test('treats kev=false as absent, not a rendered "Not Listed" claim', async () => {
+    // Only the literal "true" renders the KEV ribbon — this endpoint never
+    // prints a negative/unknown KEV claim itself (see module docstring and
+    // _build_risk_command_center's identical no-negative-claim discipline
+    // in automation/authority_transformer.py). Can't assert on pixels here,
+    // but this proves kev=false takes the same code path as kev absent
+    // entirely (still a normal 200 PNG, not a distinct branch that could
+    // regress into printing something).
+    const withFalse = fakeReqRes('/api/og?title=Test&severity=HIGH&kev=false');
+    const withoutKev = fakeReqRes('/api/og?title=Test&severity=HIGH');
+    await ogHandler(withFalse.req, withFalse.res);
+    await ogHandler(withoutKev.req, withoutKev.res);
+    expect(withFalse.getStatus()).toBe(200);
+    expect(withoutKev.getStatus()).toBe(200);
+  });
+
+  test('rejects an out-of-range or non-numeric epss value (dropped, not clamped-and-kept)', async () => {
+    const cases = ['epss=150', 'epss=-5', 'epss=not-a-number', 'epss=%3Cscript%3E'];
+    for (const qs of cases) {
+      const { req, res, getStatus } = fakeReqRes(`/api/og?title=Test&${qs}`);
+      await ogHandler(req, res);
+      expect(getStatus()).toBe(200);
+    }
+  });
+
+  test('never falls back to the static image for an extreme unbroken title (no whitespace at all)', async () => {
+    // Regression guard for the v3 headline-overflow bug found during
+    // manual visual QA: a title with zero word-break opportunities (e.g.
+    // a long run of the same character) was silently under-measured by
+    // satori's flex layout, painting past its allocated box into the data
+    // tiles below rather than the layout reserving space for the full
+    // painted height — visually broken output, though this JS-level test
+    // (status/PNG-magic-bytes only) can't see pixels and wouldn't have
+    // caught the visual defect itself. The fix is a hard maxHeight+
+    // overflow:'hidden' clip on the headline node; this test proves the
+    // pathological input still renders as a normal 200 PNG, not a 302
+    // fallback, after that fix.
+    const longUnbroken = 'A'.repeat(220);
+    const { req, res, getStatus, headers } = fakeReqRes(
+      `/api/og?title=${longUnbroken}&severity=CRITICAL&actor=${'B'.repeat(300)}&sector=${'C'.repeat(300)}`
+    );
+    await ogHandler(req, res);
+    expect(getStatus()).toBe(200);
+    expect(headers['content-type']).toBe('image/png');
+  });
+
+  test('renders a CVE card with epss but no kev, and a ransomware card with neither', async () => {
+    const cveOnly = fakeReqRes('/api/og?title=Test&cve=CVE-2026-11002&cvss=5.3&epss=0.8');
+    const ransomware = fakeReqRes('/api/og?title=Test&type=Ransomware&actor=Group&sector=Retail');
+    await ogHandler(cveOnly.req, cveOnly.res);
+    await ogHandler(ransomware.req, ransomware.res);
+    expect(cveOnly.getStatus()).toBe(200);
+    expect(ransomware.getStatus()).toBe(200);
+  });
 });

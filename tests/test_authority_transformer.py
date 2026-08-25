@@ -835,6 +835,62 @@ class TestAuthorityTransformerContract(unittest.TestCase):
         params = parse_qs(urlparse(url).query)
         self.assertNotIn("cve", params)
         self.assertNotIn("cvss", params)
+        self.assertNotIn("kev", params)
+        self.assertNotIn("epss", params)
+
+    def test_og_builder_sends_kev_only_when_true(self):
+        # No-negative-claim discipline: False and None both take the
+        # "omitted" path, matching _build_risk_command_center's own KEV
+        # tile semantics -- this endpoint never renders a "Not Listed" or
+        # "Unknown" claim on the share card itself.
+        for kev_value in (False, None):
+            url = _build_dynamic_og_image_url(
+                self.config, title="Test", severity="HIGH", cve_id="CVE-2026-1234",
+                cvss="7.5", type_label="Vulnerabilities", kev_listed=kev_value,
+            )
+            self.assertNotIn("kev", parse_qs(urlparse(url).query))
+
+        url = _build_dynamic_og_image_url(
+            self.config, title="Test", severity="CRITICAL", cve_id="CVE-2026-1234",
+            cvss="9.8", type_label="Vulnerabilities", kev_listed=True,
+        )
+        params = parse_qs(urlparse(url).query)
+        self.assertEqual(params["kev"], ["true"])
+
+    def test_og_builder_formats_epss_to_one_decimal(self):
+        url = _build_dynamic_og_image_url(
+            self.config, title="Test", severity="CRITICAL", cve_id="CVE-2026-1234",
+            cvss="9.8", type_label="Vulnerabilities", epss_pct=87.44,
+        )
+        params = parse_qs(urlparse(url).query)
+        self.assertEqual(params["epss"], ["87.4"])
+
+    def test_og_builder_omits_epss_when_none_but_allows_zero(self):
+        omitted = _build_dynamic_og_image_url(
+            self.config, title="Test", severity="LOW", type_label="Threat Intel", cve_id="", cvss=None,
+        )
+        self.assertNotIn("epss", parse_qs(urlparse(omitted).query))
+
+        # 0.0 is a real, meaningful EPSS score (not "unknown") -- must not
+        # be treated the same as None via a truthiness check.
+        zero = _build_dynamic_og_image_url(
+            self.config, title="Test", severity="LOW", type_label="Threat Intel", cve_id="", cvss=None,
+            epss_pct=0.0,
+        )
+        self.assertEqual(parse_qs(urlparse(zero).query)["epss"], ["0.0"])
+
+    def test_svg_thumbnail_and_dynamic_image_contract_includes_kev_and_epss(self):
+        # End-to-end: a real DiscoveredArticle with kev_listed=True and a
+        # real epss_score flows all the way through transform() into the
+        # actual image_url the post gets published with -- not just the
+        # builder function in isolation.
+        article = _make_article(
+            cve_id="CVE-2026-9999", cvss_score=9.8, kev_listed=True, epss_score=0.874,
+        )
+        result = AuthorityTransformer(self.config).transform(article)
+        params = parse_qs(urlparse(result["image_url"]).query)
+        self.assertEqual(params["kev"], ["true"])
+        self.assertEqual(params["epss"], ["87.4"])
 
 
 class TestLLMOutputSanitization(unittest.TestCase):

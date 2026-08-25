@@ -163,12 +163,12 @@ def _get_palette(labels: list) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Bumped only when api/og.js's rendered layout actually changes (e.g. this
-# Intelligence Card v2 redesign) — a fixed, deterministic cache-key
+# Intelligence Card v3 redesign) — a fixed, deterministic cache-key
 # differentiator so Vercel's long-lived edge cache (s-maxage=1yr) doesn't
 # keep serving a stale old-design PNG at a URL it already cached, without
 # fragmenting the cache per-request the way a timestamp or random value
 # would. Every card of the same design version shares this one value.
-OG_CARD_VERSION = "2"
+OG_CARD_VERSION = "3"
 
 
 def _format_og_date(published_at: Optional[str]) -> str:
@@ -189,23 +189,31 @@ def _build_dynamic_og_image_url(config: Config, title: str, severity: Optional[s
                                  cve_id: str, cvss: Optional[str], type_label: str,
                                  report_id: Optional[str] = None, published_at: Optional[str] = None,
                                  ransomware_group: Optional[str] = None,
-                                 ransomware_sector: Optional[str] = None) -> str:
+                                 ransomware_sector: Optional[str] = None,
+                                 kev_listed: Optional[bool] = None,
+                                 epss_pct: Optional[float] = None) -> str:
     """Same satori/resvg-rendered card the Vercel-side generators use
     (api/og.js) — mirrors its documented query contract exactly (title,
-    severity, cve, cvss, type, reportId, date, actor, sector; see api/og.js's
-    own docstring) rather than inventing a parallel image system. A parity
-    port, not a duplication: Python can't require() the Node module, so the
-    query-string contract is the shared interface, matching how
-    detection-engine.js/sigma_builder.py mirror each other elsewhere in this
-    repo.
+    severity, cve, cvss, type, reportId, date, actor, sector, kev, epss; see
+    api/og.js's own docstring) rather than inventing a parallel image
+    system. A parity port, not a duplication: Python can't require() the
+    Node module, so the query-string contract is the shared interface,
+    matching how detection-engine.js/sigma_builder.py mirror each other
+    elsewhere in this repo.
 
     report_id reuses the platform's one canonical report-identity scheme
     (report_integrity.build_report_context()'s "CDB-CTI-{year}-{hash}") —
-    never a second ID invented here. actor/sector are sent only when the
-    source record actually supplied them (DiscoveredArticle.ransomware_group/
-    ransomware_sector, already None-when-unknown by that dataclass's own
-    contract) — this function fabricates no attribution or victim data of
-    its own; when both are absent the card simply omits that line."""
+    never a second ID invented here. actor/sector/kev_listed/epss_pct are
+    sent only when the source record actually supplied them (DiscoveredArticle.
+    ransomware_group/ransomware_sector/kev_listed/epss_score, already
+    None-when-unknown by that dataclass's own contract, the same fields
+    _build_risk_command_center already renders into the article body) —
+    this function fabricates no attribution, victim, or risk data of its
+    own; when a field is absent the card simply omits that element.
+    kev_listed follows the platform's no-negative-claim discipline: only
+    True renders anything (a KEV ribbon); False/None are both silently
+    omitted, matching _build_risk_command_center's own KEV tile semantics —
+    this endpoint never prints a "Not Listed" claim on the share card."""
     params = {"title": title, "severity": severity or "HIGH", "type": type_label,
               "date": _format_og_date(published_at), "v": OG_CARD_VERSION}
     if cve_id:
@@ -218,6 +226,10 @@ def _build_dynamic_og_image_url(config: Config, title: str, severity: Optional[s
         params["actor"] = ransomware_group
     if ransomware_sector:
         params["sector"] = ransomware_sector
+    if kev_listed is True:
+        params["kev"] = "true"
+    if epss_pct is not None:
+        params["epss"] = f"{epss_pct:.1f}"
     return f"{config.source_base_url}/api/og?{urlencode(params)}"
 
 
@@ -2486,6 +2498,8 @@ class AuthorityTransformer:
             type_label=primary_category(article.labels) or "THREAT INTEL",
             report_id=context.report_id, published_at=article.published_at,
             ransomware_group=article.ransomware_group, ransomware_sector=article.ransomware_sector,
+            kev_listed=article.kev_listed,
+            epss_pct=(article.epss_score * 100 if article.epss_score is not None else None),
         )
 
         # Generate SEO metadata
