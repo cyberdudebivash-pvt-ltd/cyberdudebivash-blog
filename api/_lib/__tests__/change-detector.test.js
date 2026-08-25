@@ -207,6 +207,22 @@ describe('detectChanges — Campaign change types', () => {
     expect(result.events.some(e => e.change_type === 'CAMPAIGN_LAST_SEEN_ADVANCED')).toBe(false);
   });
 
+  test('a malformed last_seen value never produces a false CAMPAIGN_LAST_SEEN_ADVANCED (Phase 71)', () => {
+    const result = detectChanges({
+      entityType: 'campaign',
+      before: campaignState({ last_seen: '2026-08-01' }),
+      after: campaignState({ last_seen: 'not-a-real-date' }),
+    });
+    expect(result.events.some(e => e.change_type === 'CAMPAIGN_LAST_SEEN_ADVANCED')).toBe(false);
+
+    const bothGarbage = detectChanges({
+      entityType: 'campaign',
+      before: campaignState({ last_seen: 'zzz' }),
+      after: campaignState({ last_seen: 'aaa' }), // lexicographically "less", would be safe either way, but must not throw or fire
+    });
+    expect(bothGarbage.events.some(e => e.change_type === 'CAMPAIGN_LAST_SEEN_ADVANCED')).toBe(false);
+  });
+
   test('new attributed actor produces CAMPAIGN_NEW_ACTOR', () => {
     const result = detectChanges({
       entityType: 'campaign',

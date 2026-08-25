@@ -1,7 +1,7 @@
 'use strict';
 
 jest.mock('../redis', () => {
-  const { createFakeRedis } = require('./fixtures/fake-redis');
+  const { createFakeRedis } = require('../__fixtures__/fake-redis');
   const instance = createFakeRedis();
   global.__fakeRedisForTest = instance;
   return instance;
@@ -238,6 +238,43 @@ describe('evaluateWatchedEntities — bounded, cursor-resumable batch (Phase 48/
     const results = await engine.evaluateWatchedEntities({});
     expect(results.watched_entities_total).toBe(0);
     expect(results.evaluated).toBe(0);
+  });
+});
+
+describe('schema version change (Phase 30)', () => {
+  test('a stored snapshot from an older schema version is treated as if no snapshot existed -- re-baselined, zero events, never a false mass-change', async () => {
+    fakeCves['CVE-2026-1212'] = { cvss: 5.0, threat_level: 'medium', cisa_kev: false, exploited: false };
+    await watchCve('usr_a', 'CVE-2026-1212');
+    const intel = require('../intel');
+    await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-1212', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
+
+    // Simulate a future schema bump by corrupting the stored snapshot's
+    // own version tag directly (the real production trigger for this
+    // path -- WATCHABLE_STATE_SCHEMA_VERSION itself changing -- can't be
+    // exercised without editing source, so this reaches the same branch
+    // the same way a real version bump would: prior.schema_version !==
+    // the module's current constant).
+    const raw = await global.__fakeRedisForTest.get('snapshot:cve:CVE-2026-1212');
+    const parsed = JSON.parse(raw);
+    parsed.schema_version = '0.9-old';
+    await global.__fakeRedisForTest.set('snapshot:cve:CVE-2026-1212', JSON.stringify(parsed));
+
+    fakeCves['CVE-2026-1212'] = { ...fakeCves['CVE-2026-1212'], cisa_kev: true }; // a real change too, to prove it's suppressed by the re-baseline
+    const outcome = await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-1212', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
+    expect(outcome.status).toBe('baseline_established');
+    expect(outcome.events).toEqual([]);
+
+    const newSnapshot = await engine.loadSnapshot('cve', 'CVE-2026-1212');
+    expect(newSnapshot.schema_version).not.toBe('0.9-old');
+  });
+});
+
+describe('defensive branch: unsupported entity type reaching the engine directly', () => {
+  test('evaluateEntity never crashes on a type watchlist-store.js would already reject', async () => {
+    const intel = require('../intel');
+    const outcome = await engine.evaluateEntity({ entityType: 'malware', entityId: 'x', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
+    expect(outcome.status).toBe('unsupported_type');
+    expect(outcome.events).toEqual([]);
   });
 });
 

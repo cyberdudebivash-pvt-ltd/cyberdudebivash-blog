@@ -102,6 +102,16 @@ function strEq(a, b) {
   return (a || null) === (b || null);
 }
 
+// Phase 71 adversarial case: a malformed/non-ISO last_seen value must
+// never be treated as a valid date for comparison purposes -- a garbage
+// string can still compare ">" another string lexicographically without
+// throwing, which would produce a false CAMPAIGN_LAST_SEEN_ADVANCED event
+// from noise rather than a real date advance.
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}/;
+function validIsoDate(v) {
+  return typeof v === 'string' && ISO_DATE_RE.test(v) && !isNaN(Date.parse(v));
+}
+
 function setAdditions(beforeSet, afterSet) {
   const before = new Set(beforeSet || []);
   return (afterSet || []).filter(id => !before.has(id));
@@ -244,7 +254,7 @@ function detectCampaignChanges(before, after, observedAt) {
     }));
   }
 
-  if (before.last_seen && after.last_seen && after.last_seen > before.last_seen) {
+  if (validIsoDate(before.last_seen) && validIsoDate(after.last_seen) && after.last_seen > before.last_seen) {
     events.push(buildEvent({
       entityType: 'campaign', entityId: id, changeType: 'CAMPAIGN_LAST_SEEN_ADVANCED',
       before: before.last_seen, after: after.last_seen, observedAt,

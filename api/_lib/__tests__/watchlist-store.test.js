@@ -1,10 +1,10 @@
 'use strict';
 
-const { createFakeRedis } = require('./fixtures/fake-redis');
+const { createFakeRedis } = require('../__fixtures__/fake-redis');
 
 let fakeRedis;
 jest.mock('../redis', () => {
-  const { createFakeRedis } = require('./fixtures/fake-redis');
+  const { createFakeRedis } = require('../__fixtures__/fake-redis');
   const instance = createFakeRedis();
   global.__fakeRedisForTest = instance;
   return instance;

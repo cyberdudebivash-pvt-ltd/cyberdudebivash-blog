@@ -120,6 +120,15 @@ describe('buildCampaignWatchableState', () => {
     expect(state.actor_ids).toEqual([]);
     expect(state.confidence_bucket).toBe('UNKNOWN');
   });
+
+  test('raw IOC data is never part of watchable state, regardless of list size (Phase 16/71 -- immune to "IOC list explosion" by construction, not by truncation)', () => {
+    const hugeIocList = Array.from({ length: 5000 }, (_, i) => `1.2.3.${i % 256}`);
+    const campaign = { campaign_id: 'campaign:z', threat_actors: [], shared_cves: [], shared_iocs: hugeIocList };
+    const state = buildCampaignWatchableState({ campaign, reportsIndexData: { reports: [] } });
+    expect(JSON.stringify(state)).not.toContain('1.2.3.');
+    expect(Object.keys(state)).not.toContain('shared_iocs');
+    expect(Object.keys(state)).not.toContain('ioc_ids');
+  });
 });
 
 describe('cross-module consistency', () => {

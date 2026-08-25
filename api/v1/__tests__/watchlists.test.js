@@ -5,7 +5,7 @@
 // must 401 before touching any watchlist logic, (2) authenticate() mocked
 // to return a controlled {tier, userId} while everything downstream
 // (watchlist-store.js, change-engine.js) runs for real -- against a fake
-// in-memory Redis (api/_lib/__tests__/fixtures/fake-redis.js) rather than
+// in-memory Redis (api/_lib/__fixtures__/fake-redis.js) rather than
 // a live Upstash instance, since watchlists are customer-owned mutable
 // state, unlike the read-only canonical intel the dossier tests exercise
 // against real production data.
@@ -14,7 +14,7 @@ jest.mock('../../_lib/middleware', () => {
   return { ...actual, authenticate: jest.fn(actual.authenticate) };
 });
 jest.mock('../../_lib/redis', () => {
-  const { createFakeRedis } = require('../../_lib/__tests__/fixtures/fake-redis');
+  const { createFakeRedis } = require('../../_lib/__fixtures__/fake-redis');
   const instance = createFakeRedis();
   global.__fakeRedisForTest = instance;
   return instance;

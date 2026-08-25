@@ -131,7 +131,13 @@ async function evaluateEntity({ entityType, entityId, intel, graph, reportsIndex
   const prior = await loadSnapshot(entityType, entityId);
 
   // Phase 52: first observation ever -- establish baseline, zero events.
-  if (!prior) {
+  // Phase 30: a stored snapshot from an older WATCHABLE_STATE_SCHEMA_VERSION
+  // is treated identically -- its shape cannot be safely diffed against
+  // the current one (a schema change can rename/add/remove fields), and
+  // comparing incompatible shapes would either crash or, worse, produce a
+  // false mass-change event for every watched entity purely because the
+  // *schema* changed, not the intelligence. Re-baseline silently instead.
+  if (!prior || prior.schema_version !== WATCHABLE_STATE_SCHEMA_VERSION) {
     await saveSnapshot(entityType, entityId, currentState, fingerprint);
     return { status: 'baseline_established', entityType, entityId, events: [] };
   }
