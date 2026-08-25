@@ -1,8 +1,130 @@
 {
-  "generated": "2026-08-25T13:14:36.762Z",
+  "generated": "2026-08-25T19:00:36.032Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "utcp-http-ssrf-http-tool-invocation-follows-redirects-witho",
+      "title": "utcp-http SSRF: HTTP tool invocation follows redirects without re-validating the target",
+      "url": "/posts/utcp-http-ssrf-http-tool-invocation-follows-redirects-witho.html",
+      "generated": "2026-08-25T16:29:50.236Z",
+      "severity": "HIGH",
+      "cves": [],
+      "mitreAttack": [
+        {
+          "id": "T1041",
+          "name": "Exfiltration Over C2 Channel",
+          "tactic": "exfiltration",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/univers\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/univers\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-55532-pip-praisonai",
+      "title": "PraisonAI: Origin-validation bypass (startswith prefix match) enables unauthenticated cross-site request forgery against the PraisonAI MCP HTTP server",
+      "url": "/posts/cve-2026-55532-pip-praisonai.html",
+      "generated": "2026-08-25T15:36:48.416Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-55532",
+        "CVE-2026-55532"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://localhost\"; http.host; content:\"localhost\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://127.0.0.1\"; http.host; content:\"127.0.0.1\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://localhost.attacker.com.\"; http.host; content:\"localhost.attacker.com.\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain localhost.attacker.com\"; dns.query; content:\"localhost.attacker.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-55534-pip-praisonai",
+      "title": "PraisonAI serve agents --api-key is ignored, allowing unauthenticated remote agent execution",
+      "url": "/posts/cve-2026-55534-pip-praisonai.html",
+      "generated": "2026-08-25T15:36:48.408Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-55534",
+        "CVE-2026-55534"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 0.0.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 0.0.0.0\"; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-55525-pip-praisonaiagents",
+      "title": "praisonaiagents web_crawl vulnerable to SSRF via redirect-following",
+      "url": "/posts/cve-2026-55525-pip-praisonaiagents.html",
+      "generated": "2026-08-25T14:39:25.590Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-55525",
+        "CVE-2026-55525"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 169.254.169.254 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 169.254.169.254\"; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-55528-pip-praisonaiagents",
+      "title": "praisonaiagents: AgentServer declares auth_token but never enforces it on any route",
+      "url": "/posts/cve-2026-55528-pip-praisonaiagents.html",
+      "generated": "2026-08-25T14:39:25.586Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-55528",
+        "CVE-2026-55528"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/MervinPraison/PraisonAI\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/MervinPraison/PraisonAI\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-55526-pip-praisonaiagents",
+      "title": "praisonaiagents has an SSRF protection bypass in `spider_tools._host_is_blocked()` via DNS-resolved hostnames (`127.0.0.1.nip.io`)",
+      "url": "/posts/cve-2026-55526-pip-praisonaiagents.html",
+      "generated": "2026-08-25T14:39:25.583Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-55526",
+        "CVE-2026-55526"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://127.0.0.1.nip.io:PORT/secret\"; http.host; content:\"127.0.0.1.nip.io\"; nocase; http.uri; content:\"/secret\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain 127.0.0.1.nip.io\"; dns.query; content:\"127.0.0.1.nip.io\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-19598",
       "title": "WordPress Plugin Vulnerability Exposes 100,000 Sites to Complete Site Takeover Attacks",
@@ -4074,137 +4196,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.windowslatest.com/2026/07/10/you-cant-fully-disable-microsofts-gdid-windows-11-tracker-b\"; http.host; content:\"www.windowslatest.com\"; nocase; http.uri; content:\"/2026/07/10/you-cant-fully-disable-microsofts-gdid-windows-11-tracker-b\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.windowslatest.com\"; dns.query; content:\"www.windowslatest.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
-      ]
-    },
-    {
-      "slug": "bloodbash-feedback-needed-before-def-con-34-red-team-village",
-      "title": "BloodBash Feedback Needed Before DEF CON 34 Red Team Village Talk - AD/hybrid Recon Tool",
-      "url": "/posts/bloodbash-feedback-needed-before-def-con-34-red-team-village.html",
-      "generated": "2026-07-11T17:31:57.948Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/DotNetRussell/BloodBash&quot;&gt;https://github.com/DotNetRussell/BloodBash&lt;/a\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/DotNetRussell/BloodBash&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/DotNetRussell&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/DotNetRussell&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utp80u/bloodbash_feedback_needed_before_def_con_34_\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utp80u/bloodbash_feedback_needed_before_def_con_34_\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "scanning-malicious-websites-with-arbitrary-number-of-vpn-tun",
-      "title": "Scanning malicious websites with arbitrary number of VPN tunnels (Part 2)",
-      "url": "/posts/scanning-malicious-websites-with-arbitrary-number-of-vpn-tun.html",
-      "generated": "2026-07-11T16:31:51.721Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/moonlightelite&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/moonlightelite&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://discounttimu.substack.com/p/scanning-malicious-websites-with-cfe&quot;&gt;[link]&lt;/a&gt;&l\"; http.host; content:\"discounttimu.substack.com\"; nocase; http.uri; content:\"/p/scanning-malicious-websites-with-cfe&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&l\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1uto85z/scanning_malicious_websites_with_arbitrary_number/&\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1uto85z/scanning_malicious_websites_with_arbitrary_number/&\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain discounttimu.substack.com\"; dns.query; content:\"discounttimu.substack.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "destructive-windows-backdoor-stuffs-multiple-wipers-and-rans",
-      "title": "Destructive Windows backdoor stuffs multiple wipers and ransomware code into a single package",
-      "url": "/posts/destructive-windows-backdoor-stuffs-multiple-wipers-and-rans.html",
-      "generated": "2026-07-11T15:31:54.748Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [
-        {
-          "id": "T1486",
-          "name": "Data Encrypted for Impact",
-          "tactic": "impact",
-          "confidence": "HIGH"
-        }
-      ],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/NISMO1968&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/NISMO1968&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.theregister.com/security/2026/07/10/destructive-windows-backdoor-stuffs-multiple-wipers-\"; http.host; content:\"www.theregister.com\"; nocase; http.uri; content:\"/security/2026/07/10/destructive-windows-backdoor-stuffs-multiple-wipers-\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utmm42/destructive_windows_backdoor_stuffs_multiple\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utmm42/destructive_windows_backdoor_stuffs_multiple\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.theregister.com\"; dns.query; content:\"www.theregister.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "how-does-insider-threat-software-fit-into-your-security-work",
-      "title": "How does insider threat software fit into your security workflow?",
-      "url": "/posts/how-does-insider-threat-software-fit-into-your-security-work.html",
-      "generated": "2026-07-11T15:02:01.390Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Peace-ful-Pines&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Peace-ful-Pines&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utm5yy/how_does_insider_threat_software_fit_into_yo\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utm5yy/how_does_insider_threat_software_fit_into_yo\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
-      ]
-    },
-    {
-      "slug": "darklayer-ransomware-tower-defense-free-in-your-browser",
-      "title": "DarkLayer — Ransomware Tower Defense. Free, in your browser.",
-      "url": "/posts/darklayer-ransomware-tower-defense-free-in-your-browser.html",
-      "generated": "2026-07-11T15:02:01.386Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [
-        {
-          "id": "T1486",
-          "name": "Data Encrypted for Impact",
-          "tactic": "impact",
-          "confidence": "HIGH"
-        }
-      ],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/darklayerai&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/darklayerai&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://darklayer.ai&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"darklayer.ai&quot\\;&gt\\;[link]&lt\\;\"; nocase; http.uri; content:\"/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utlssk/darklayer_ransomware_tower_defense_free_in_y\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utlssk/darklayer_ransomware_tower_defense_free_in_y\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "cto-at-ncsc-summary-week-ending-july-12th",
-      "title": "CTO at NCSC Summary: week ending July 12th",
-      "url": "/posts/cto-at-ncsc-summary-week-ending-july-12th.html",
-      "generated": "2026-07-11T10:31:52.994Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utgdqv/cto_at_ncsc_summary_week_ending_july_12th/&q\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utgdqv/cto_at_ncsc_summary_week_ending_july_12th/&q\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/U6WIipXKXfw1xNm3PrnJ0F4U9cBmEW0lmetyAnWB6Cs.jpeg?width=640&amp;amp;\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/U6WIipXKXfw1xNm3PrnJ0F4U9cBmEW0lmetyAnWB6Cs.jpeg?width=640&amp\\;amp\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/digicat&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/digicat&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://ctoatncsc.substack.com/p/cto-at-ncsc-summary-week-ending-july-70e&quot;&gt;[link]&lt;/a&gt;&\"; http.host; content:\"ctoatncsc.substack.com\"; nocase; http.uri; content:\"/p/cto-at-ncsc-summary-week-ending-july-70e&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain ctoatncsc.substack.com\"; dns.query; content:\"ctoatncsc.substack.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
       ]
     }
   ]
