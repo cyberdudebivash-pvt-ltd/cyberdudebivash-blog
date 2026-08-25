@@ -10,11 +10,11 @@ resuming any work on this repo. See
 `docs/audits/SENTINEL-APEX-INTEL-FACTORY-PUBLICATION-RELIABILITY-V1-CERTIFICATION.md`.
 Nothing below this note is affected by it.
 
-**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4, same day, different branch each time)
-**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, this update, PR #131 open)
+**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5, same day, different branch each time)
+**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, this update, PR open)
 **Written per:** the master mandate's own "Long-Run Checkpoint Policy" — stop at a safe boundary, commit, push, update the PR, and leave a clear resume point rather than attempting the full 70-phase mandate in one uninterrupted pass.
 
-**READ THIS FIRST IF RESUMING:** §9 below (added in round 4) is the most consequential update — a genuinely new customer-facing capability (Unified Intelligence Search) shipped on top of the now-correctly-accumulating campaign data from round 3. §8 (round 3): the campaign-delivery defect is fixed AND merged (PR #130) — `campaigns.json` now correctly accumulates. §7 (round 2) still holds: **Vercel is being retired** (decision final per the user; technical cutover incomplete) **and Cloudflare Workers is the sole target platform.** Round 1's "Thread A" (build real correlation logic for `intelligence/correlations.js`) remains **NO-GO** — see §7.1. Do not restart any of these without reading §7, §8, and §9 first.
+**READ THIS FIRST IF RESUMING:** §10 below (added in round 5) is the most consequential update — the first genuinely new customer-facing **UI** in this lineage (Intelligence Dossiers: `dossier.html` + `action=dossier`), built on top of round 4's search/entity-detail backend, exactly the "minimal search UI page" round 4 itself predicted as the natural next slice (§9.6 item 2) — except delivered as a full evidence-backed dossier, not just a search results page. §9 (round 4): Unified Intelligence Search is merged (PR #131) — search index, `action=unified-search`/`actor`/`ioc`/`report` all live. §8 (round 3): the campaign-delivery defect is fixed AND merged (PR #130) — `campaigns.json` now correctly accumulates. §7 (round 2) still holds: **Vercel is being retired** (decision final per the user; technical cutover incomplete) **and Cloudflare Workers is the sole target platform.** Round 1's "Thread A" (build real correlation logic for `intelligence/correlations.js`) remains **NO-GO** — see §7.1. Do not restart any of these without reading §7, §8, §9, and §10 first.
 
 ---
 
@@ -174,3 +174,42 @@ npx tsc --noEmit
 3. **Malware node population** and **actor-attribution coverage** — unchanged from round 3's own ranking (§8's list), still real, still not a quick fix; now additionally unlocks the Malware search-type exclusion (§9.2) once real data exists.
 4. **Resolve the Vercel Cron `UNKNOWN` status** — unchanged from round 3, still mostly an operator-dashboard-access blocker, not code.
 5. Do **not** restart Thread A (SOC-workbench correlation-engine building) — unchanged reasoning from round 3.
+
+## 10. Round 5 update (2026-08-24, branch `claude/p1-intelligence-dossiers-v1`, PR open, not yet merged)
+
+Shipped CVE and Campaign Intelligence Dossiers on top of round 4's search/entity-detail backend — the first customer-facing **UI** anywhere in this v3 lineage. Full detail: `docs/audits/SENTINEL-APEX-INTELLIGENCE-DOSSIERS-V1-CERTIFICATION.md` (CONDITIONAL GO — read it before touching `api/_lib/intelligence-dossier.js` or `dossier.html` again).
+
+**10.1 — What shipped.** `api/_lib/intelligence-dossier.js` (new): `buildCveDossier()`/`buildCampaignDossier()`, a computed, decision-oriented projection (identity, deterministic assessment, risk, exploitation, relationships, evidence, timeline, ATT&CK context, detections, reports, analyst actions, data quality) over the exact same canonical sources round 4 already established — no new intelligence store. New action `GET /api/v1/intel?action=dossier&type=cve|campaign&id=...` on the existing router. New customer-facing page `dossier.html`, matching the platform's existing design system exactly (same CSS custom properties, same in-memory-only API-key pattern as `api-dashboard.html`).
+
+**10.2 — Closed a real, pre-existing Cloudflare-Workers-reachability gap, additively.** `getCVEDetail()`'s rich per-CVE archive (`api/intel/cve/*.json` — real EPSS scores 40% populated, source citations 99% populated, structured scoring explanation 98% populated) was only ever reachable on its `!isCloudflareWorkers()` branch — meaning this real, already-computed data was invisible on the platform's own declared canonical runtime. `scripts/generate-cve-enrichment-index.js` (new, same proven pattern as round 4's `generate-reports-index.js`) aggregates it into a small (1.3MB), bundleable `api/intel/cve-enrichment-index.json`. Nothing computed or invented — every field copied verbatim.
+
+**10.3 — Threat Actor and Malware dossiers deliberately NOT built.** Actor: `action=actor` (round 4) already delivers full identity/relationships/timeline for all 8 curated actors — a third dossier wrapper around already-shipped data was judged to dilute focus without a clear new outcome; CVE/Campaign dossiers link to `action=actor` rather than duplicating it. Malware: 0 populated nodes, unchanged finding from every prior round. **If resuming: do not build either without first re-verifying real data backs them**, same discipline round 4's §9.2 already established for search types.
+
+**10.4 — Detections found honestly unavailable, not force-fit.** Investigated `api/intel/products/*.json` (1,664 files) directly as a possible per-CVE detection source: only 19% have any real content, and the one sample checked had an empty `cves[]` and low-signal output (a Suricata rule matching a citation URL). No reliable CVE/campaign-keyed detection index exists anywhere in this codebase. `buildDetectionsSection()` always honestly returns `available: false`. Tracked as `platform/open-issues.md` Issue 22 with a concrete suggested-fix design (a build-time aggregator matching the same proven pattern as 10.2, gated by a quality check on what counts as a genuine detection). **If resuming: do not wire live per-request scanning of the products directory** — it would violate this dossier's own bounded-output discipline and risks surfacing low-quality "detections" the CLAUDE.md truth policy exists to prevent.
+
+**10.5 — Found and fixed two real bugs via real browser QA (Playwright/Chromium), not caught by static review or unit tests alone.** (a) A tier-bypass gap: the CVE/campaign dossier's relationship computation originally queried the graph directly regardless of tier, bypassing the same free/starter gate `action=cve`'s `attachCveRelated()` already enforces — fixed by gating inside `intelligence-dossier.js` itself, verified across all 4 tiers. (b) An XSS gap: `renderReports()` in `dossier.html` used `esc()` (HTML-escaping only, no URL-scheme validation) for a report's `href`, letting a `javascript:` URL render as a live clickable link — fixed by routing through the same `safeHref()` scheme-validator already used correctly elsewhere on the page. Also found and fixed a mobile-nav horizontal-overflow bug (a CSS rule present in `api-dashboard.html` that wasn't copied over). Final tallies: 41/41 main QA checks, 10/10 adversarial XSS/injection checks, all against real Chromium and real production data.
+
+**10.6 — Investigation/Case integration confirmed not safely reachable, not built.** Re-confirmed round 4's §9.5 finding by reading `api/v1/workbench/investigations.js`/`cases.js` directly this round: gated exclusively by `requireAnalyst()`/`X-Analyst-Key`, zero customer/session auth path anywhere in either file. An "Add to Investigation" button on this customer-facing page would be non-functional for its actual audience — not built, per the mandate's own "no half-working UI buttons" instruction.
+
+**Test baseline after round 5** (in addition to §4 and rounds 2/3/4's baselines above):
+```
+node --test tests-js/*.test.js
+# Expect: 208 tests, 208 pass, 0 fail (206 prior + 2 new: dossier_url contract)
+
+node --test workers/lib/*.test.js
+# Expect: 116 tests, 116 pass, 0 fail (unchanged)
+
+npx jest --silent
+# Expect: 1 skipped suite (unrelated, pre-existing), 1838 passed, 0 failed (was 1819; +19 new: intel-dossier.test.js)
+
+npx tsc --noEmit
+# Expect: no output
+```
+Real-browser QA (not part of the above, no CI wiring yet — ad hoc Playwright scripts in this session's scratchpad, not committed to the repo): 41/41 main + 10/10 adversarial checks passed. **If resuming and real browser QA is needed again: Playwright's Node driver is not a repo dependency** (installed ephemerally outside the repo this round, deliberately not added to `package.json` for a one-time QA pass) — re-install if needed (`PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install playwright`, browser binary is pre-installed at `/opt/pw-browsers/chromium` in this environment).
+
+**10.7 — Next recommended tranche** (ranked by evidence, not chosen automatically):
+1. **Build the detection-to-entity linkage index (Issue 22, §10.4)** — the single highest-leverage remaining gap between what the dossier promises structurally (a `detections` section) and what it can honestly deliver today.
+2. **Fix the three unauthenticated/unbounded gaps in Issue 20 (round 4 §9.4)** — still open, still the highest trust-impact-per-effort ratio of anything else currently tracked.
+3. **Saved Searches / Watchlists / Alerting**, per the master mandate's own suggested next sequence (Dossiers → Watchlists → Change Detection → Alerts) — now that both the search backend (round 4) and a real dossier UI (round 5) exist to build a "watch this CVE/campaign" feature on top of.
+4. Malware node population, actor-attribution coverage, Vercel Cron status — unchanged, still real, still not quick fixes.
+5. Do **not** restart Thread A — unchanged reasoning from round 3.

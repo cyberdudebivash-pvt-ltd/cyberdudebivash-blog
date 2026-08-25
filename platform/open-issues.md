@@ -1398,5 +1398,48 @@ to restore two of the three currently-degraded providers; add the
 desired (no code change required — activates automatically the moment the
 secret has a real value).
 
+## Issue 22 — No reliable way to key detection content by CVE or campaign ID (2026-08-24)
+
+Found during the Intelligence Dossiers v1 investigation
+(`docs/audits/SENTINEL-APEX-INTELLIGENCE-DOSSIERS-V1-CERTIFICATION.md`
+§15/§26) while deciding whether a CVE/campaign dossier could show real
+generated detection content. `api/intel/products/*.json` (1,664 files,
+one per discovered article) is the only store carrying a `.detections`
+field (Sigma/KQL/Splunk/OSQuery/Suricata), but:
+
+1. Only 314/1,664 (19%) files have any real (non-empty) detection
+   content — the LEXICON-based technique mapper needs a phrase match in a
+   short title/description that frequently doesn't fire.
+2. The one sample checked with real content had an **empty** `cves[]`
+   field and low-signal output (a Suricata rule matching a citation URL,
+   e.g. a Reddit comment link, rather than a genuine exploitation
+   indicator) — not something that should be presented to a customer as
+   "detection content for CVE-X."
+3. `detection-rules.js` (the canonical detection-rule store,
+   `storeRule()`/`getRule()`/`getRulesByTechnique()`/`searchRules()`) has
+   **no lookup by CVE or article ID at all** — only by rule ID or
+   technique ID.
+
+**Not fixed this round** — building a live per-request scan of 1,664
+files to find a match would itself violate the dossier's own bounded-
+output/performance discipline, and the underlying data is too sparse and
+unreliable to key by CVE/campaign ID safely without risking exactly the
+kind of low-quality, misleading "detection" the CLAUDE.md truth policy
+exists to prevent. `buildDetectionsSection()` in
+`api/_lib/intelligence-dossier.js` always honestly returns
+`available: false` with a clear note, per the mandate's own explicit
+permission ("No detection artifact currently available" is correct).
+
+**Suggested fix** (for whoever picks this up): a build-time aggregator
+(matching the proven `generate-reports-index.js`/
+`generate-cve-enrichment-index.js` pattern) that walks
+`api/intel/products/*.json`, keeps only entries where `cves[]` is
+genuinely populated AND at least one detection format is non-empty, and
+produces a small `cve-id → [detection refs]` lookup file bundleable the
+same way the other intel data files are. Requires a quality gate on what
+counts as a "genuine" detection (e.g. reject a Suricata rule whose only
+content match is a citation URL) before it can be surfaced to customers
+without repeating finding #2 above.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
