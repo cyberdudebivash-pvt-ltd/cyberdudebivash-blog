@@ -51,7 +51,7 @@
  * a different renderer is evaluated — not by continuing to retry this
  * one.
  */
-const { handleFetch } = require('./lib/router');
+const { handleFetch, handleScheduled } = require('./lib/router');
 const { setWasmModule } = require('./lib/resvg-wasm-init');
 import wasmModule from '@resvg/resvg-wasm/index_bg.wasm';
 
@@ -60,5 +60,13 @@ setWasmModule(wasmModule);
 export default {
   async fetch(request, env) {
     return handleFetch(request, env);
+  },
+  // Dormant until wrangler.jsonc's triggers.crons is populated (a
+  // separate, explicit operator-authorized decision -- see
+  // handleScheduled()'s own doc in lib/router.js for why this file does
+  // not make that decision itself). Exporting it now costs nothing at
+  // runtime when no cron is configured; Cloudflare simply never calls it.
+  async scheduled(controller, env, ctx) {
+    return handleScheduled(controller, env, ctx);
   },
 };
