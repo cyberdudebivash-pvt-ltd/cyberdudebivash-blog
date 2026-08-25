@@ -34,6 +34,14 @@ const redis = {
   // check -- a truthy return means "this call created it", falsy means
   // "someone/something already had".
   setnx:  (key, val)    => redisCmd('SET', key, val, 'NX'),
+  // SET key val NX PX <ms> -- atomic claim-with-lease in one round trip:
+  // "OK" if this call created the key (claim acquired), null if it already
+  // existed (someone else already holds it). The PX expiry means a worker
+  // that claims then dies before releasing self-heals -- no separate
+  // "check for expired leases" sweep is needed, Redis expires the claim
+  // key itself. Used by notification-store.js's per-channel delivery
+  // claim (see that module's docstring for why TTL alone is sufficient).
+  setnxpx: (key, val, ttlMs) => redisCmd('SET', key, val, 'NX', 'PX', String(ttlMs)),
   del:    key           => redisCmd('DEL', key),
   exists: key           => redisCmd('EXISTS', key),
   incr:   key           => redisCmd('INCR', key),
@@ -65,7 +73,9 @@ const redis = {
   zadd:     (key, score, member) => redisCmd('ZADD', key, String(score), member),
   zrem:     (key, ...members)    => redisCmd('ZREM', key, ...members),
   zcard:    key                  => redisCmd('ZCARD', key),
-  zrange:   (key, start, stop)   => redisCmd('ZRANGE', key, String(start), String(stop)),
+  zrange:   (key, start, stop, ws) => ws
+    ? redisCmd('ZRANGE', key, String(start), String(stop), 'WITHSCORES')
+    : redisCmd('ZRANGE', key, String(start), String(stop)),
   zrevrange:(key, start, stop, ws) => ws
     ? redisCmd('ZREVRANGE', key, String(start), String(stop), 'WITHSCORES')
     : redisCmd('ZREVRANGE', key, String(start), String(stop)),

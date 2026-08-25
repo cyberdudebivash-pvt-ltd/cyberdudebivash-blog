@@ -39,8 +39,23 @@ const MAX_RETRY_ATTEMPTS = 5;
 // (1st retry after a failure = index 1, etc.). Purely a next_attempt_at
 // timestamp a manually-run sweep checks against -- see module docstring.
 const BACKOFF_MINUTES = [0, 2, 10, 30, 120];
+// Upper bound on a remote endpoint's Retry-After (Phase 22 of the
+// orchestration mandate: "a malicious endpoint must not be able to defer
+// delivery for years"). A cooperative endpoint asking for a longer defer
+// than this gets capped, not obeyed verbatim.
+const MAX_RETRY_AFTER_SECONDS = 3600;
+// How long a delivery claim holds before it self-expires and becomes
+// claimable again (lease recovery -- Phase 12/51/98). Comfortably longer
+// than one channel's own worst-case latency (WEBHOOK_TIMEOUT_MS=8s in
+// notification-dispatch.js, plus Redis round trips and a slow email
+// provider call) so a healthy in-flight attempt is never preempted by
+// its own lease expiring, but short enough that a genuinely crashed
+// worker's job recovers within one dispatch cycle, not indefinitely.
+const CLAIM_LEASE_MS = 90 * 1000;
 
 const PENDING_QUEUE_KEY = 'notify:pending_queue';
+const AUDIT_LOG_KEY = 'audit:notify:log';
+const AUDIT_LOG_MAX_ENTRIES = 10000; // matches watchlist-store.js's auditWatchlistAction() bound
 
 function prefsKey(ownerId) { return `notify:prefs:${ownerId}`; }
 function deliveryLogKey(ownerId) { return `notify:delivery_log:${ownerId}`; }
@@ -50,6 +65,18 @@ function pendingMember(ownerId, eventId) { return `${ownerId}:${eventId}`; }
 function splitMember(member) {
   const idx = member.lastIndexOf(':');
   return [member.slice(0, idx), member.slice(idx + 1)];
+}
+function claimKey(deliveryId) { return `notify:claim:${deliveryId}`; }
+
+// Stable identity for one (owner, event, channel) delivery -- deliberately
+// STABLE ACROSS RETRIES of the same semantic delivery, not a fresh ID per
+// attempt: "the same semantic delivery must never create duplicate jobs
+// merely because the scheduler runs twice" (orchestration mandate Phase
+// 8). Used both as the atomic claim key's identity and as the
+// X-Sentinel-Delivery-Id a customer's webhook receiver can dedupe on --
+// one canonical construction (Principle 3), not two.
+function buildDeliveryId(ownerId, eventId, channel) {
+  return `dlv_${ownerId}_${eventId}_${channel}`;
 }
 
 function hashToObject(flatArray) {
@@ -62,6 +89,27 @@ function hashToObject(flatArray) {
 function parseJsonSafe(raw) {
   if (!raw) return null;
   try { return JSON.parse(raw); } catch (_) { return null; }
+}
+
+// Same shape/trim policy as watchlist-store.js's auditWatchlistAction()
+// -- a separate key (not a reuse of audit:watchlist:log or the payment
+// domain's audit:payment:log), since each domain's auditLog-equivalent
+// is hardcoded to its own key and mixing "NOTIFY_*" entries into either
+// would blur an otherwise-clean audit trail per domain (orchestration
+// mandate Phase 42: "record configuration created/updated, secret
+// rotated, channel enabled/disabled, manual retry"). Never logs a
+// secret value -- callers pass only non-sensitive fields.
+async function auditNotificationAction(ownerId, action, data = {}) {
+  try {
+    const entry = JSON.stringify({ owner_id: ownerId, action, ts: new Date().toISOString(), ...data });
+    await redis.zadd(AUDIT_LOG_KEY, Date.now(), entry);
+    await redis.pipeline([
+      ['ZREMRANGEBYRANK', AUDIT_LOG_KEY, '0', String(-(AUDIT_LOG_MAX_ENTRIES + 1))],
+    ]).catch(() => {});
+  } catch (_) {
+    // Audit failure must never break the main flow (matches
+    // watchlist-store.js's/payment-utils.js's auditLog() behavior).
+  }
 }
 
 /* ───────────────────────── preferences ───────────────────────── */
@@ -196,49 +244,139 @@ async function getDuePendingDeliveries(limit = 100) {
   return records;
 }
 
-// Applies one channel's attempt outcome: on success, drops the channel
-// from channels_pending; on failure, bumps its attempt count and either
-// reschedules it or (at MAX_RETRY_ATTEMPTS) dead-letters that channel
-// only, leaving any other still-pending channel untouched. Removes the
-// whole record once no channel remains pending.
-async function recordAttemptOutcome({ ownerId, eventId, channel, success }) {
+// Atomic claim-with-lease (Phase 11): the ONLY thing that may make two
+// concurrent processDueDeliveries() invocations (an overlapping scheduled
+// run, a manual run racing a scheduled one, anything) safe to run without
+// application-level double-delivery. Backed by SET...NX...PX -- a single
+// round trip decides "did I just acquire this" and sets its own
+// self-expiring recovery window, so no separate lease-sweep job is
+// needed (see CLAIM_LEASE_MS above and redis.js's setnxpx comment).
+// Returns true iff THIS call acquired the claim.
+async function claimDeliveryChannel({ ownerId, eventId, channel }) {
+  const deliveryId = buildDeliveryId(ownerId, eventId, channel);
+  const result = await redis.setnxpx(claimKey(deliveryId), String(Date.now()), CLAIM_LEASE_MS);
+  return Boolean(result);
+}
+
+// Best-effort early release after a channel's outcome is already
+// recorded, so a fast success/failure doesn't make a DIFFERENT retry of
+// the same channel wait out the full lease window unnecessarily. Purely
+// a throughput nicety -- correctness never depends on this running (the
+// PX expiry alone guarantees eventual reclaimability even if this call
+// is never reached, e.g. the process dies right after sending).
+async function releaseDeliveryChannel({ ownerId, eventId, channel }) {
+  const deliveryId = buildDeliveryId(ownerId, eventId, channel);
+  await redis.del(claimKey(deliveryId)).catch(() => {});
+}
+
+// Shared "remove this channel, persist or delete the record" tail used
+// by every exit path that drops a channel from channels_pending
+// (success, dead-letter, and clean cancellation) -- one implementation
+// of this bookkeeping (Principle 3), not three near-identical copies.
+async function removeChannelAndPersist(ownerId, eventId, record, channel) {
+  record.channels_pending = record.channels_pending.filter(c => c !== channel);
+  delete record.attempts[channel];
   const key = pendingRecordKey(ownerId, eventId);
-  const record = parseJsonSafe(await redis.get(key));
-  if (!record || !record.channels_pending.includes(channel)) return; // already resolved elsewhere
-
-  if (success) {
-    record.channels_pending = record.channels_pending.filter(c => c !== channel);
-    delete record.attempts[channel];
-  } else {
-    const prevCount = (record.attempts[channel] && record.attempts[channel].count) || 0;
-    const newCount = prevCount + 1;
-    if (newCount >= MAX_RETRY_ATTEMPTS) {
-      await moveToDeadLetter(ownerId, {
-        event_id: eventId, watchlist_id: record.watchlist_id, channel, attempts: newCount,
-      });
-      record.channels_pending = record.channels_pending.filter(c => c !== channel);
-      delete record.attempts[channel];
-    } else {
-      const delayMinutes = BACKOFF_MINUTES[Math.min(newCount, BACKOFF_MINUTES.length - 1)];
-      record.attempts[channel] = { count: newCount, next_attempt_at: Date.now() + delayMinutes * 60 * 1000 };
-    }
-  }
-
   if (record.channels_pending.length === 0) {
     await redis.del(key);
     await redis.zrem(PENDING_QUEUE_KEY, pendingMember(ownerId, eventId));
     return;
   }
-
   await redis.set(key, JSON.stringify(record));
   const nextDue = Math.min(...record.channels_pending.map(c => record.attempts[c].next_attempt_at));
   await redis.zadd(PENDING_QUEUE_KEY, nextDue, pendingMember(ownerId, eventId));
+}
+
+// Applies one channel's attempt outcome: on success, drops the channel
+// from channels_pending; on failure, bumps its attempt count and either
+// reschedules it or dead-letters that channel only, leaving any other
+// still-pending channel untouched. Removes the whole record once no
+// channel remains pending. Returns a disposition string --
+// 'delivered' | 'retrying' | 'dead_lettered' | 'unresolved' (the
+// already-resolved-elsewhere early-return) -- so a caller building a run
+// summary (Phase 55) reads the ACTUAL decision this function made
+// instead of re-deriving it from the same inputs a second time, which
+// could silently drift out of sync with the real logic above.
+//
+// retryable=false (Phase 25, permanent-failure fast path) dead-letters
+// immediately regardless of attempt count -- retrying a destination that
+// can never succeed (e.g. 404/410) only wastes the retry budget a
+// transient failure might actually need. retryAfterSeconds (Phase 22),
+// when given, overrides the BACKOFF_MINUTES table for this one
+// reschedule, bounded by MAX_RETRY_AFTER_SECONDS so a malicious or
+// misconfigured endpoint cannot defer delivery indefinitely. Both
+// default to the pre-existing always-retry-until-MAX_RETRY_ATTEMPTS
+// behavior when omitted, so this remains backward compatible with any
+// caller that only passes {ownerId, eventId, channel, success}.
+async function recordAttemptOutcome({ ownerId, eventId, channel, success, retryable, retryAfterSeconds }) {
+  const key = pendingRecordKey(ownerId, eventId);
+  const record = parseJsonSafe(await redis.get(key));
+  if (!record || !record.channels_pending.includes(channel)) return 'unresolved'; // already resolved elsewhere
+
+  if (success) {
+    await removeChannelAndPersist(ownerId, eventId, record, channel);
+    return 'delivered';
+  }
+
+  const prevCount = (record.attempts[channel] && record.attempts[channel].count) || 0;
+  const newCount = prevCount + 1;
+  const permanentNow = retryable === false;
+  if (permanentNow || newCount >= MAX_RETRY_ATTEMPTS) {
+    await moveToDeadLetter(ownerId, {
+      event_id: eventId, watchlist_id: record.watchlist_id, channel, attempts: newCount,
+      reason: permanentNow ? 'PERMANENT_FAILURE' : 'MAX_RETRY_ATTEMPTS_EXHAUSTED',
+    });
+    await removeChannelAndPersist(ownerId, eventId, record, channel);
+    return 'dead_lettered';
+  }
+
+  const boundedRetryAfterMs = retryAfterSeconds != null
+    ? Math.min(Math.max(retryAfterSeconds, 0), MAX_RETRY_AFTER_SECONDS) * 1000
+    : null;
+  const delayMs = boundedRetryAfterMs != null
+    ? boundedRetryAfterMs
+    : BACKOFF_MINUTES[Math.min(newCount, BACKOFF_MINUTES.length - 1)] * 60 * 1000;
+  record.attempts[channel] = { count: newCount, next_attempt_at: Date.now() + delayMs };
+  await redis.set(key, JSON.stringify(record));
+  const nextDue = Math.min(...record.channels_pending.map(c => record.attempts[c].next_attempt_at));
+  await redis.zadd(PENDING_QUEUE_KEY, nextDue, pendingMember(ownerId, eventId));
+  return 'retrying';
+}
+
+// Cleanly drops a channel from a pending record without touching its
+// attempt count or dead-lettering it (Phase 74: "do not continue sending
+// after explicit disable"). Not a failure -- the channel is simply no
+// longer eligible (the customer turned it off between enqueue and
+// delivery), so no retry/backoff/dead-letter semantics apply.
+async function cancelDeliveryChannel({ ownerId, eventId, channel }) {
+  const record = parseJsonSafe(await redis.get(pendingRecordKey(ownerId, eventId)));
+  if (!record || !record.channels_pending.includes(channel)) return;
+  await removeChannelAndPersist(ownerId, eventId, record, channel);
+}
+
+// Observability (Phase 52): how overdue the MOST overdue still-pending
+// channel is, in seconds. pending_queue is scored by next_attempt_at, so
+// this answers "how far behind is the dispatcher" -- the more actionable
+// SRE signal (a growing backlog with no visible errors is the classic
+// silent-failure indicator this metric exists to catch), not "time since
+// creation". 0 (never negative) when nothing is overdue yet; null when
+// the queue is empty.
+async function getOldestPendingAgeSeconds() {
+  const rows = await redis.zrange(PENDING_QUEUE_KEY, 0, 0, true); // [member, score]
+  if (!rows || rows.length < 2) return null;
+  const oldestDueAt = Number(rows[1]);
+  if (!Number.isFinite(oldestDueAt)) return null;
+  return Math.max(0, Math.floor((Date.now() - oldestDueAt) / 1000));
 }
 
 module.exports = {
   NOTIFICATION_SCHEMA_VERSION,
   MAX_RETRY_ATTEMPTS,
   BACKOFF_MINUTES,
+  MAX_RETRY_AFTER_SECONDS,
+  CLAIM_LEASE_MS,
+  buildDeliveryId,
+  auditNotificationAction,
   getPreferences,
   updatePreferences,
   rotateWebhookSecret,
@@ -248,5 +386,9 @@ module.exports = {
   listDeadLetters,
   enqueuePendingDelivery,
   getDuePendingDeliveries,
+  claimDeliveryChannel,
+  releaseDeliveryChannel,
   recordAttemptOutcome,
+  cancelDeliveryChannel,
+  getOldestPendingAgeSeconds,
 };
