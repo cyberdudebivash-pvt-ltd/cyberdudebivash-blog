@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-25T14:39:25.290Z",
+  "generated": "2026-08-25T15:36:48.147Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 12053,
+    "total_nodes": 12072,
     "actors": 8,
-    "cves": 4382,
-    "campaigns": 1193,
+    "cves": 4392,
+    "campaigns": 1199,
     "malware": 0,
-    "iocs": 887,
-    "edges": 3781
+    "iocs": 890,
+    "edges": 3791
   },
   "nodes": {
     "actor:lockbit": {
@@ -10974,7 +10974,7 @@
       "attributes": {
         "ioc_type": "ipv4",
         "confidence": 0.88,
-        "first_seen": "2026-07-31"
+        "first_seen": "2026-08-25"
       },
       "connections": []
     },
@@ -227400,7 +227400,7 @@
       "attributes": {
         "cvss": 0,
         "threat_level": "LOW",
-        "priority_score": 26,
+        "priority_score": 24,
         "exploited": false,
         "cisa_kev": false,
         "ransomware": true,
@@ -227961,6 +227961,361 @@
       "connections": [
         {
           "target": "CVE-2026-55522",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "CVE-2026-55539": {
+      "id": "CVE-2026-55539",
+      "type": "CVE",
+      "name": "PraisonAI: [Auth Bypass] PraisonAI async Jobs API (`/api/v1/runs`) has no authentication — unauthenticated job execution, result theft, cancel and delete",
+      "attributes": {
+        "cvss": 8.6,
+        "threat_level": "CRITICAL",
+        "priority_score": 85,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "PraisonAI",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-55534": {
+      "id": "CVE-2026-55534",
+      "type": "CVE",
+      "name": "PraisonAI serve agents --api-key is ignored, allowing unauthenticated remote agent execution",
+      "attributes": {
+        "cvss": 8.6,
+        "threat_level": "HIGH",
+        "priority_score": 68,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "PraisonAI",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:sha1:d5f1114aaf1a2e9f121a6e66b929149ca2201f1d",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        },
+        {
+          "target": "ioc:sha1:e5928449f73f66cc8af1de61621aa974ab255133",
+          "relationship": "linked_to",
+          "confidence": 0.9
+        },
+        {
+          "target": "ioc:ipv4:0.0.0.0",
+          "relationship": "linked_to",
+          "confidence": 0.88
+        }
+      ]
+    },
+    "ioc:sha1:d5f1114aaf1a2e9f121a6e66b929149ca2201f1d": {
+      "id": "ioc:sha1:d5f1114aaf1a2e9f121a6e66b929149ca2201f1d",
+      "type": "IOC",
+      "name": "d5f1114aaf1a2e9f121a6e66b929149ca2201f1d",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-08-25"
+      },
+      "connections": []
+    },
+    "ioc:sha1:e5928449f73f66cc8af1de61621aa974ab255133": {
+      "id": "ioc:sha1:e5928449f73f66cc8af1de61621aa974ab255133",
+      "type": "IOC",
+      "name": "e5928449f73f66cc8af1de61621aa974ab255133",
+      "attributes": {
+        "ioc_type": "sha1",
+        "confidence": 0.9,
+        "first_seen": "2026-08-25"
+      },
+      "connections": []
+    },
+    "CVE-2026-55538": {
+      "id": "CVE-2026-55538",
+      "type": "CVE",
+      "name": "PraisonAI: [Auth Bypass] `praisonai serve agents --api-key` is silently ignored — agent-invocation routes (`POST /agents`, `POST /agents/{agent_name}`) run unauthenticated",
+      "attributes": {
+        "cvss": 7.3,
+        "threat_level": "HIGH",
+        "priority_score": 66,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "PraisonAI",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-55532": {
+      "id": "CVE-2026-55532",
+      "type": "CVE",
+      "name": "PraisonAI: Origin-validation bypass (startswith prefix match) enables unauthenticated cross-site request forgery against the PraisonAI MCP HTTP server",
+      "attributes": {
+        "cvss": 7.6,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "PraisonAI",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": [
+        {
+          "target": "ioc:domain:localhost.attacker.com",
+          "relationship": "linked_to",
+          "confidence": 0.75
+        }
+      ]
+    },
+    "ioc:domain:localhost.attacker.com": {
+      "id": "ioc:domain:localhost.attacker.com",
+      "type": "IOC",
+      "name": "localhost.attacker.com",
+      "attributes": {
+        "ioc_type": "domain",
+        "confidence": 0.75,
+        "first_seen": "2026-08-25"
+      },
+      "connections": []
+    },
+    "CVE-2026-55533": {
+      "id": "CVE-2026-55533",
+      "type": "CVE",
+      "name": "PraisonAI: Authentication fail-open in Recipe server allows unauthenticated access when API key or JWT auth is configured without a secret",
+      "attributes": {
+        "cvss": 8.2,
+        "threat_level": "MEDIUM",
+        "priority_score": 63,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "PraisonAI",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-55524": {
+      "id": "CVE-2026-55524",
+      "type": "CVE",
+      "name": "praisonaiagents vulnerable to SSRF in web_crawl tool via redirect-following and DNS rebinding (validate-then-fetch gap)",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "praisonaiagents",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-55527": {
+      "id": "CVE-2026-55527",
+      "type": "CVE",
+      "name": "praisonaiagents vulnerable to arbitrary file write via unsanitized `user_id` in `FileMemory.__init__()` — path traversal to any writable location",
+      "attributes": {
+        "cvss": 7.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 59,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "praisonaiagents",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-55537": {
+      "id": "CVE-2026-55537",
+      "type": "CVE",
+      "name": "PraisonAI: Webhook SSRF via DNS fail-open in `JobSubmitRequest.validate_webhook_url()` — bypass of CVE-2026-40114",
+      "attributes": {
+        "cvss": 7.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 59,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "PraisonAI",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-55540": {
+      "id": "CVE-2026-55540",
+      "type": "CVE",
+      "name": "PraisonAI: [Path Traversal] agent tools escape the configured workspace via symlinks",
+      "attributes": {
+        "cvss": 7.1,
+        "threat_level": "MEDIUM",
+        "priority_score": 59,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "PraisonAI",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-55541": {
+      "id": "CVE-2026-55541",
+      "type": "CVE",
+      "name": "PraisonAI: `--api-key` flag on `praisonai serve` is not properly enforced",
+      "attributes": {
+        "cvss": 0,
+        "threat_level": "LOW",
+        "priority_score": 35,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "PraisonAI",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-55539": {
+      "id": "campaign:cve-2026-55539",
+      "type": "Campaign",
+      "name": "pip PraisonAI Exploitation Campaign",
+      "attributes": {
+        "severity": "CRITICAL",
+        "item_count": 1,
+        "first_seen": "2026-08-25",
+        "last_seen": "2026-08-25",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55539"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55539",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-55534": {
+      "id": "campaign:cve-2026-55534",
+      "type": "Campaign",
+      "name": "pip PraisonAI Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-25",
+        "last_seen": "2026-08-25",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55534 | 3 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55534",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-55538": {
+      "id": "campaign:cve-2026-55538",
+      "type": "Campaign",
+      "name": "pip PraisonAI Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-25",
+        "last_seen": "2026-08-25",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55538"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55538",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-55532": {
+      "id": "campaign:cve-2026-55532",
+      "type": "Campaign",
+      "name": "pip PraisonAI Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-25",
+        "last_seen": "2026-08-25",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55532 | 4 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55532",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-55533": {
+      "id": "campaign:cve-2026-55533",
+      "type": "Campaign",
+      "name": "pip PraisonAI Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-25",
+        "last_seen": "2026-08-25",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55533"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55533",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-55524": {
+      "id": "campaign:cve-2026-55524",
+      "type": "Campaign",
+      "name": "pip praisonaiagents Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-25",
+        "last_seen": "2026-08-25",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-55524"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-55524",
           "relationship": "includes",
           "confidence": 1
         }
@@ -262154,6 +262509,96 @@
       "id": "campaign:cve-2026-55522→includes→CVE-2026-55522",
       "source": "campaign:cve-2026-55522",
       "target": "CVE-2026-55522",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-55534→linked_to→ioc:sha1:d5f1114aaf1a2e9f121a6e66b929149ca2201f1d",
+      "source": "CVE-2026-55534",
+      "target": "ioc:sha1:d5f1114aaf1a2e9f121a6e66b929149ca2201f1d",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-55534→linked_to→ioc:sha1:e5928449f73f66cc8af1de61621aa974ab255133",
+      "source": "CVE-2026-55534",
+      "target": "ioc:sha1:e5928449f73f66cc8af1de61621aa974ab255133",
+      "relationship": "linked_to",
+      "confidence": 0.9,
+      "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-55534→linked_to→ioc:ipv4:0.0.0.0",
+      "source": "CVE-2026-55534",
+      "target": "ioc:ipv4:0.0.0.0",
+      "relationship": "linked_to",
+      "confidence": 0.88,
+      "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "CVE-2026-55532→linked_to→ioc:domain:localhost.attacker.com",
+      "source": "CVE-2026-55532",
+      "target": "ioc:domain:localhost.attacker.com",
+      "relationship": "linked_to",
+      "confidence": 0.75,
+      "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55539→includes→CVE-2026-55539",
+      "source": "campaign:cve-2026-55539",
+      "target": "CVE-2026-55539",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55534→includes→CVE-2026-55534",
+      "source": "campaign:cve-2026-55534",
+      "target": "CVE-2026-55534",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55538→includes→CVE-2026-55538",
+      "source": "campaign:cve-2026-55538",
+      "target": "CVE-2026-55538",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55532→includes→CVE-2026-55532",
+      "source": "campaign:cve-2026-55532",
+      "target": "CVE-2026-55532",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55533→includes→CVE-2026-55533",
+      "source": "campaign:cve-2026-55533",
+      "target": "CVE-2026-55533",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-55524→includes→CVE-2026-55524",
+      "source": "campaign:cve-2026-55524",
+      "target": "CVE-2026-55524",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-25",

@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Tue, 25 Aug 2026 14:39:25 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 25 Aug 2026 15:36:48 GMT</lastBuildDate>
     <pubDate>Tue, 25 Aug 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,7 +31,109 @@
       <height>144</height>
     </image>
 
-    <item>
+      <item>
+    <title><![CDATA[PraisonAI: [Auth Bypass] PraisonAI async Jobs API (`/api/v1/runs`) has no authentication — unauthenticated job execution, result theft, cancel and delete]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55539-pip-praisonai.html</link>
+    <description><![CDATA[Score 85/100 CRITICAL — CVSS 8.6 — ### Summary
+PraisonAI's async **Jobs API** (the FastAPI service in `praisonai/jobs/`) installs its router with no authentication middleware, no router-level dependency, and no per-route auth check. Any caller who can reach the jobs server can submit agent jobs (executed against the operator's config. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 25 Aug 2026 15:36:48 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55539-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI serve agents --api-key is ignored, allowing unauthenticated remote agent execution]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55534-pip-praisonai.html</link>
+    <description><![CDATA[Score 68/100 HIGH — CVSS 8.6 — ### Summary PraisonAI's `praisonai serve agents` command exposes `--api-key` as the documented authentication control for production/external deployments, but the configured key is not enforced on the public agent invocation compatibility endpoints. An operator can start the server with `--api-key` . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 25 Aug 2026 15:36:48 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55534-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI: [Auth Bypass] `praisonai serve agents --api-key` is silently ignored — agent-invocation routes (`POST /agents`, `POST /agents/{agent_name}`) run unauthenticated]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55538-pip-praisonai.html</link>
+    <description><![CDATA[Score 66/100 HIGH — CVSS 7.3 — ### Summary
+`praisonai serve agents` exposes HTTP routes that invoke registered agents. The CLI advertises `--api-key` with help text "API key for authentication", parses it, and forwards it into `ServeHandler`. But `_create_agents_app()` **never reads `config["api_key"]` again** and installs no aut. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 25 Aug 2026 15:36:48 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55538-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI: Origin-validation bypass (startswith prefix match) enables unauthenticated cross-site request forgery against the PraisonAI MCP HTTP server]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55532-pip-praisonai.html</link>
+    <description><![CDATA[Score 65/100 HIGH — CVSS 7.6 — ### Summary The PraisonAI MCP server exposes an HTTP-stream transport (praisonai mcp serve --transport http-stream) that binds to localhost and, by default, has no API key. Its only access control for browser-originated requests is an Origin allowlist, which the code implements as required by the MC. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 25 Aug 2026 15:36:48 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55532-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI: Authentication fail-open in Recipe server allows unauthenticated access when API key or JWT auth is configured without a secret]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55533-pip-praisonai.html</link>
+    <description><![CDATA[Score 63/100 MEDIUM — CVSS 8.2 — ### Summary The PraisonAI Recipe HTTP server silently allows unauthenticated requests when `auth` is configured as `api-key` or `jwt` but the corresponding secret is missing. This creates an authentication fail-open condition. An operator can start the Recipe server with authentication enabled, incl. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 25 Aug 2026 15:36:48 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55533-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[praisonaiagents vulnerable to SSRF in web_crawl tool via redirect-following and DNS rebinding (validate-then-fetch gap)]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55524-pip-praisonaiagents.html</link>
+    <description><![CDATA[Score 61/100 MEDIUM — CVSS 7.5 — The web_crawl tool performs its SSRF check only on the initial URL: it resolves the hostname once
+with socket.gethostbyname and rejects private/loopback/link-local results. It then passes the URL to
+a fetcher that uses httpx.Client(follow_redirects=True) - or urllib.request.urlopen when httpx is
+abs. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 25 Aug 2026 15:36:48 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55524-pip-praisonaiagents.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[praisonaiagents vulnerable to arbitrary file write via unsanitized `user_id` in `FileMemory.__init__()` — path traversal to any writable location]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55527-pip-praisonaiagents.html</link>
+    <description><![CDATA[Score 59/100 MEDIUM — CVSS 7.1 — ### Summary `praisonaiagents/memory/file_memory.py::FileMemory.__init__()` constructs all
+memory file paths by directly joining the `user_id` parameter to a base path: ```python
+self.user_path = self.base_path / user_id # LINE 145 — no sanitization
+``` No validation or normalization is applied to `u. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 25 Aug 2026 15:36:48 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55527-pip-praisonaiagents.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI: Webhook SSRF via DNS fail-open in `JobSubmitRequest.validate_webhook_url()` — bypass of CVE-2026-40114]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55537-pip-praisonai.html</link>
+    <description><![CDATA[Score 59/100 MEDIUM — CVSS 7.1 — ### Summary `praisonai/jobs/models.py::JobSubmitRequest.validate_webhook_url()` validates webhook
+URLs by resolving the hostname and checking whether the IP is private. When DNS
+resolution fails (`socket.gaierror`), the validator **silently passes** the URL via
+`except socket.gaierror: pass`. Additi. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 25 Aug 2026 15:36:48 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55537-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI: [Path Traversal] agent tools escape the configured workspace via symlinks]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55540-pip-praisonai.html</link>
+    <description><![CDATA[Score 59/100 MEDIUM — CVSS 7.1 — ### Summary
+PraisonAI's `praisonai.code` tool wrappers (exported as `CODE_TOOLS` for agents) expose a `workspace` setting that the module itself treats as a path-traversal **security boundary** — `read_file`, `write_file`, `apply_diff`, and `search_replace` explicitly call `is_path_within_directory(. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 25 Aug 2026 15:36:48 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55540-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PraisonAI: `--api-key` flag on `praisonai serve` is not properly enforced]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55541-pip-praisonai.html</link>
+    <description><![CDATA[Score 35/100 LOW — CVSS 0 — ## Summary `praisonai serve agents` and `praisonai serve unified` both accept `--api-key` for authentication. The flag is parsed but never wired into the FastAPI app — no middleware, no header check, nothing. The server runs wide open regardless of what key you set. Tested on 4.6.50 from PyPI. ## Af. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Tue, 25 Aug 2026 15:36:48 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55541-pip-praisonai.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
     <title><![CDATA[praisonaiagents has an SSRF protection bypass in `spider_tools._host_is_blocked()` via DNS-resolved hostnames (`127.0.0.1.nip.io`)]]></title>
     <link>https://blog.cyberdudebivash.in/posts/cve-2026-55526-pip-praisonaiagents.html</link>
     <description><![CDATA[Score 71/100 HIGH — CVSS 8.5 — ### Summary `praisonaiagents/tools/spider_tools.py` contains an SSRF protection bypass. The function
