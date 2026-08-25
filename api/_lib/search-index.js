@@ -78,6 +78,12 @@ function buildCveDoc(node, reportsById) {
     cvss:        typeof a.cvss === 'number' ? a.cvss : null,
     priority_score: typeof a.priority_score === 'number' ? a.priority_score : null,
     detail_url:  `/api/v1/intel?action=cve&id=${encodeURIComponent(node.id)}`,
+    // Phase 24 (Intelligence Dossiers v1): CVE is one of the two dossier-
+    // supported entity types -- additive pivot alongside detail_url, not
+    // a replacement for it. Only added where a real dossier assembler
+    // exists (cve/campaign); actor/ioc/report docs deliberately have no
+    // dossier_url below, since no dossier type covers them yet.
+    dossier_url: `/dossier.html?type=cve&id=${encodeURIComponent(node.id)}`,
   };
 }
 
@@ -105,6 +111,9 @@ function buildCampaignDoc(campaign) {
     item_count:  typeof campaign.item_count === 'number' ? campaign.item_count : (safeArray(campaign.related_intel).length || null),
     clustering_model: campaign.clustering_model || null,
     detail_url:  `/api/v1/intel?action=campaign&id=${encodeURIComponent(campaign.campaign_id)}`,
+    // Phase 24: see buildCveDoc's identical note -- campaign is the other
+    // dossier-supported entity type.
+    dossier_url: `/dossier.html?type=campaign&id=${encodeURIComponent(campaign.campaign_id)}`,
   };
 }
 
