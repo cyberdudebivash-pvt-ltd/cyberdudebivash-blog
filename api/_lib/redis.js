@@ -69,6 +69,11 @@ const redis = {
   zrevrange:(key, start, stop, ws) => ws
     ? redisCmd('ZREVRANGE', key, String(start), String(stop), 'WITHSCORES')
     : redisCmd('ZREVRANGE', key, String(start), String(stop)),
+  // ZRANGEBYSCORE key min max -- the natural primitive for "give me every
+  // due item" (notification-store.js's pending-delivery queue, scored by
+  // next_attempt_at) that no existing method covers: zrange/zrevrange are
+  // rank-based, not score-range-based.
+  zrangebyscore: (key, min, max) => redisCmd('ZRANGEBYSCORE', key, String(min), String(max)),
 
   // Pipeline: execute multiple commands
   pipeline: async (commands) => {

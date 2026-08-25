@@ -234,6 +234,48 @@ const data = await res.json();</div>
     <div id="wl-feed" style="color:var(--apex-muted);font-size:13px">Loading…</div>
     <button class="btn btn-secondary hidden" id="wl-feed-more" style="margin-top:12px;width:100%">Load more</button>
   </div>
+
+  <div class="card">
+    <div class="card-title">📨 Alert Delivery</div>
+    <div id="notify-alert" class="hidden"></div>
+    <p style="font-size:13px;color:var(--apex-muted);margin-bottom:14px">Get notified when a watched entity changes. Delivery runs on a periodic cycle, not the instant a change is detected.</p>
+
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--apex-border)">
+      <input type="checkbox" id="notify-email-enabled" style="margin-top:4px" onchange="updateNotificationPreferencesUI()">
+      <label for="notify-email-enabled" style="cursor:pointer">
+        <div style="font-weight:600">Email alerts</div>
+        <div style="font-size:12px;color:var(--apex-muted)">Sent to your account email unless overridden below.</div>
+      </label>
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label for="notify-email-override">Override email (optional)</label>
+      <input id="notify-email-override" type="email" placeholder="alerts@yourcompany.com" maxlength="255">
+      <button class="btn btn-secondary" style="margin-top:8px" onclick="updateNotificationPreferencesUI()">Save email settings</button>
+    </div>
+
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;margin-top:18px;border-top:1px solid var(--apex-border);border-bottom:1px solid var(--apex-border)">
+      <input type="checkbox" id="notify-webhook-enabled" style="margin-top:4px" onchange="updateNotificationPreferencesUI()">
+      <label for="notify-webhook-enabled" style="cursor:pointer">
+        <div style="font-weight:600">Webhook alerts</div>
+        <div style="font-size:12px;color:var(--apex-muted)">Signed HTTPS POST to your own endpoint. Requires a public HTTPS URL and a generated secret.</div>
+      </label>
+    </div>
+    <div class="form-group" style="margin-top:12px">
+      <label for="notify-webhook-url">Webhook URL</label>
+      <input id="notify-webhook-url" type="url" placeholder="https://your-app.example.com/webhooks/sentinel-apex" maxlength="500">
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn btn-secondary" onclick="updateNotificationPreferencesUI()">Save URL</button>
+        <button class="btn btn-secondary" onclick="rotateWebhookSecretUI()">Generate/rotate secret</button>
+        <button class="btn btn-secondary" onclick="testWebhookUI()">Send test delivery</button>
+      </div>
+      <div id="notify-webhook-secret-reveal" class="hidden" style="margin-top:10px;padding:10px;background:#0a0e18;border:1px solid var(--apex-border);border-radius:6px;font-family:var(--mono);font-size:12px;word-break:break-all"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📬 Delivery Log</div>
+    <div id="notify-deliveries" style="color:var(--apex-muted);font-size:13px">Loading…</div>
+  </div>
 </div>
 
 <!-- DOCS PANEL -->
@@ -650,7 +692,7 @@ function importanceColor(imp) {
 }
 
 async function loadWatchlistsPanel() {
-  await Promise.all([loadWatchlistsList(), loadWatchlistFeed(0)]);
+  await Promise.all([loadWatchlistsList(), loadWatchlistFeed(0), loadNotificationPreferences(), loadNotificationDeliveries()]);
 }
 
 async function loadWatchlistsList() {
@@ -746,6 +788,95 @@ async function loadWatchlistFeed(cursor) {
 document.getElementById('wl-feed-more').addEventListener('click', () => {
   if (wlFeedCursor != null) loadWatchlistFeed(wlFeedCursor);
 });
+
+async function loadNotificationPreferences() {
+  try {
+    const res = await fetch(`${API}/api/v1/notifications?action=preferences`, { headers: { 'X-API-Key': sessionKey } });
+    const body = await res.json();
+    if (!res.ok || !body.success) return;
+    const p = body.preferences;
+    document.getElementById('notify-email-enabled').checked = !!p.email_enabled;
+    document.getElementById('notify-email-override').value = p.email_override || '';
+    document.getElementById('notify-webhook-enabled').checked = !!p.webhook_enabled;
+    document.getElementById('notify-webhook-url').value = p.webhook_url || '';
+  } catch (e) { /* panel still usable with defaults; next save will surface any real error */ }
+}
+
+async function updateNotificationPreferencesUI() {
+  const alertEl = document.getElementById('notify-alert');
+  const payload = {
+    email_enabled: document.getElementById('notify-email-enabled').checked,
+    email_override: document.getElementById('notify-email-override').value.trim(),
+    webhook_enabled: document.getElementById('notify-webhook-enabled').checked,
+    webhook_url: document.getElementById('notify-webhook-url').value.trim(),
+  };
+  try {
+    const res = await fetch(`${API}/api/v1/notifications?action=update-preferences`, {
+      method: 'POST', headers: { 'X-API-Key': sessionKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      showAlert(alertEl, 'error', (body.error && body.error.message) || 'Could not save notification settings.');
+      loadNotificationPreferences(); // re-sync the form to whatever is actually stored
+      return;
+    }
+    showAlert(alertEl, 'success', 'Notification settings saved.');
+    loadNotificationPreferences();
+  } catch (e) {
+    showAlert(alertEl, 'error', 'Network error saving notification settings.');
+    loadNotificationPreferences();
+  }
+}
+
+async function rotateWebhookSecretUI() {
+  const alertEl = document.getElementById('notify-alert');
+  const revealEl = document.getElementById('notify-webhook-secret-reveal');
+  if (!confirm('Generate a new webhook signing secret? Any previously configured secret will stop working.')) return;
+  try {
+    const res = await fetch(`${API}/api/v1/notifications?action=rotate-webhook-secret`, {
+      method: 'POST', headers: { 'X-API-Key': sessionKey },
+    });
+    const body = await res.json();
+    if (!res.ok || !body.success) { showAlert(alertEl, 'error', (body.error && body.error.message) || 'Could not generate a secret.'); return; }
+    revealEl.classList.remove('hidden');
+    revealEl.innerHTML = `<strong>New webhook secret — store it now, it will not be shown again:</strong><br>${esc(body.webhook_secret)}<br><span style="color:var(--apex-muted)">Verify deliveries using the X-Sentinel-Signature header with this value.</span>`;
+    showAlert(alertEl, 'success', 'Webhook secret generated. Copy it now — it will not be shown again.');
+  } catch (e) { showAlert(alertEl, 'error', 'Network error generating a secret.'); }
+}
+
+async function testWebhookUI() {
+  const alertEl = document.getElementById('notify-alert');
+  try {
+    const res = await fetch(`${API}/api/v1/notifications?action=test-webhook`, {
+      method: 'POST', headers: { 'X-API-Key': sessionKey },
+    });
+    const body = await res.json();
+    if (!res.ok || !body.success) { showAlert(alertEl, 'error', (body.error && body.error.message) || 'Could not send a test delivery.'); return; }
+    if (body.success) showAlert(alertEl, 'success', 'Test delivery sent successfully.');
+    else showAlert(alertEl, 'error', `Test delivery failed: ${esc(body.error || 'unknown error')}`);
+    loadNotificationDeliveries();
+  } catch (e) { showAlert(alertEl, 'error', 'Network error sending test delivery.'); }
+}
+
+async function loadNotificationDeliveries() {
+  const el = document.getElementById('notify-deliveries');
+  try {
+    const res = await fetch(`${API}/api/v1/notifications?action=deliveries&limit=20`, { headers: { 'X-API-Key': sessionKey } });
+    const body = await res.json();
+    if (!res.ok || !body.success) { el.textContent = (body.error && body.error.message) || 'Could not load delivery log.'; return; }
+    if (!body.deliveries.length) { el.textContent = 'No delivery attempts yet.'; return; }
+    el.innerHTML = body.deliveries.map(d => `
+      <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid var(--apex-border)">
+        <div>
+          <span class="badge" style="background:${d.status === 'delivered' ? '#22c55e22' : '#ff3b3b22'};color:${d.status === 'delivered' ? '#22c55e' : '#ff3b3b'};border:1px solid ${d.status === 'delivered' ? '#22c55e44' : '#ff3b3b44'}">${esc(d.status)}</span>
+          <span style="font-size:12px;margin-left:8px">${esc(d.channel)} · ${esc(d.event_id)}</span>
+          ${d.error ? `<div style="font-size:11px;color:var(--apex-muted);margin-top:4px">${esc(d.error)}</div>` : ''}
+        </div>
+        <span style="font-size:12px;color:var(--apex-muted)">${esc(d.attempted_at)}</span>
+      </div>`).join('');
+  } catch (e) { el.textContent = 'Network error loading delivery log.'; }
+}
 
 // Check for Stripe redirect
 const params = new URLSearchParams(location.search);

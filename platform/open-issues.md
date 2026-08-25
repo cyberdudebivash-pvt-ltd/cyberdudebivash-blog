@@ -1499,4 +1499,56 @@ Tracked here individually, not buried only in certification prose.
    distinction the data model doesn't support.
 
 ---
+
+## Issue 24 — Alert Delivery v1 real, disclosed gaps (2026-08-25)
+
+Found and deliberately scoped out while building
+`docs/audits/SENTINEL-APEX-ALERT-DELIVERY-WEBHOOK-AUTOMATION-V1-CERTIFICATION.md`.
+Tracked here individually, not buried only in certification prose.
+
+1. **Not real-time.** Both `scripts/evaluate-watchlist-changes.js` and the
+   new `scripts/deliver-watchlist-notifications.js` are manually/
+   externally triggered — no live Cloudflare Cron Trigger exists for
+   either. A customer's email/webhook only reflects reality as of
+   whenever both scripts were last run in sequence, not continuously.
+   Same root cause and same open decision as Issue 23 item 1.
+2. **No distributed lock across concurrent script invocations.** A
+   real TOCTOU race in `enqueuePendingDelivery()` was found and closed
+   with `SET…NX` this round, but a broader guard against two overlapping
+   `deliver-watchlist-notifications.js` runs (or two overlapping
+   evaluator runs) does not exist. Not exercised by the in-memory test
+   fixture (which executes commands sequentially) — a real, disclosed
+   gap against genuine concurrent-request production behavior, not a
+   test-proven-safe claim.
+3. **The SSRF guard is check-then-connect, not IP-pinned.** A webhook
+   URL is validated (blocked-range table + real DNS lookup) at
+   preference-save time and again immediately before every delivery
+   attempt, with `redirect:'error'` closing the redirect-bypass vector —
+   but a DNS record that changes between that check and the `fetch()`
+   call's own resolution is a real, narrow, disclosed residual window. A
+   connect-time IP-pinning HTTP client would close it fully and was not
+   built here (this repo's zero-npm-dependency convention for `resend.js`/
+   `redis.js` extends to this module).
+4. **No native Slack/Teams/PagerDuty integration** — webhook delivery is
+   generic HTTPS POST; a customer must run their own relay to bridge
+   into those tools. Considered in scope for a future tranche, not this
+   one.
+5. **Enterprise customers with private-network-only webhook receivers
+   cannot use this feature.** The SSRF guard has no allowlist mechanism
+   for a customer's own private endpoints — by design for v1 (the same
+   guard that blocks attacker-supplied internal targets necessarily also
+   blocks a legitimate customer's internal one), but a real limitation
+   for that segment.
+6. **Email/webhook notification entitlements are flat across tiers** —
+   inherits the same documented no-centralized-entitlement-layer gap as
+   every other watchlist limit (Issue 23 item 4).
+7. **`test-webhook` has no dedicated stricter rate limit** beyond the
+   platform's existing global per-IP limiter. Acceptable for v1 (same
+   bound every other endpoint has), worth tightening if abuse is
+   observed — it is, by design, a bounded authenticated "ping an
+   arbitrary public HTTPS URL" primitive, the same characteristic
+   industry-standard webhook-testing features (e.g. Stripe's own "send
+   test webhook") already have.
+
+---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
