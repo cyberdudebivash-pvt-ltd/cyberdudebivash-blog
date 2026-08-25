@@ -1,11 +1,13 @@
 'use strict';
 
 // In-memory double implementing the same surface as api/_lib/redis.js, so
-// multi-step watchlist flows (create -> add-entity -> evaluate -> feed ->
-// delete) can be tested as real sequences of commands against real
-// semantics (SADD idempotency, ZREVRANGE ordering, ZREMRANGEBYRANK
-// trimming, SET...NX) without a live Upstash instance. Every command this
-// codebase actually calls is implemented; nothing beyond that surface.
+// multi-step watchlist and notification-delivery flows (create -> add-
+// entity -> evaluate -> feed -> delete; enqueue -> due-query -> attempt ->
+// reschedule/dead-letter) can be tested as real sequences of commands
+// against real semantics (SADD idempotency, ZREVRANGE ordering,
+// ZRANGEBYSCORE range filtering, ZREMRANGEBYRANK trimming, SET...NX)
+// without a live Upstash instance. Every command this codebase actually
+// calls is implemented; nothing beyond that surface.
 
 function sliceInclusiveByRank(sortedAscending, start, stop) {
   const len = sortedAscending.length;
@@ -107,6 +109,15 @@ function createFakeRedis() {
       if (!z) return [];
       const asc = [...z.entries()].sort((a, b) => a[1] - b[1]).map(e => e[0]);
       return sliceInclusiveByRank(asc, Number(start), Number(stop));
+    },
+    zrangebyscore: async (k, min, max) => {
+      const z = zsets.get(k);
+      if (!z) return [];
+      const lo = Number(min), hi = Number(max);
+      return [...z.entries()]
+        .filter(([, score]) => score >= lo && score <= hi)
+        .sort((a, b) => a[1] - b[1])
+        .map(([m]) => m);
     },
     zrevrange: async (k, start, stop, withScores) => {
       const z = zsets.get(k);

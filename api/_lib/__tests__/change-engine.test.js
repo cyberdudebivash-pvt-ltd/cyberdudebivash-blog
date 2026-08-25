@@ -295,3 +295,81 @@ describe('campaign evaluation', () => {
     expect(outcome.events[0].change_type).toBe('CAMPAIGN_RANSOMWARE_FLAG_ADDED');
   });
 });
+
+describe('notification dispatch integration (Alert Delivery v1)', () => {
+  const notify = require('../notification-store');
+
+  test('a genuinely new event enqueues a pending delivery for a watcher with notifications enabled', async () => {
+    fakeCves['CVE-2026-5001'] = { cvss: 5.0, threat_level: 'medium', cisa_kev: false, exploited: false };
+    await watchCve('usr_notify', 'CVE-2026-5001');
+    await notify.updatePreferences('usr_notify', { email_override: 'alerts@example.com' });
+    const intel = require('../intel');
+    await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5001', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
+
+    fakeCves['CVE-2026-5001'] = { ...fakeCves['CVE-2026-5001'], cisa_kev: true };
+    await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5001', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
+
+    // A KEV flip legitimately fires TWO events (CVE_KEV_ADDED and
+    // CVE_ACTIVE_EXPLOITATION_CONFIRMED, since classifyExploitation()
+    // derives exploitation status from the same cisa_kev field) -- this
+    // is documented, correct platform behavior from the watchlist v1
+    // round's own change-detector tests, not a bug here. One pending-
+    // delivery record is created per (owner, event_id), so two distinct
+    // events for the same owner correctly produce two records.
+    const due = await notify.getDuePendingDeliveries(10);
+    expect(due).toHaveLength(2);
+    expect(due.every(r => r.owner_id === 'usr_notify')).toBe(true);
+    expect(due.every(r => r.channels_pending.includes('email'))).toBe(true);
+    expect(new Set(due.map(r => r.event_id)).size).toBe(2); // distinct events, not a duplicate enqueue
+  });
+
+  test('a watcher with no notification channels enabled gets nothing enqueued (existing default-off-for-webhook, on-but-unresolvable-for-email posture)', async () => {
+    fakeCves['CVE-2026-5002'] = { cvss: 5.0, threat_level: 'medium', cisa_kev: false, exploited: false };
+    await watchCve('usr_silent', 'CVE-2026-5002');
+    // No preferences ever set for usr_silent, and no user:id/user:key
+    // account record exists in this fake redis for it either -- email
+    // defaults "on" but has no resolvable target, so nothing is enqueued.
+    const intel = require('../intel');
+    await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5002', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
+    fakeCves['CVE-2026-5002'] = { ...fakeCves['CVE-2026-5002'], cisa_kev: true };
+    await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5002', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
+
+    const due = await notify.getDuePendingDeliveries(10);
+    expect(due).toHaveLength(0);
+  });
+
+  test('a baseline-only run (no real change) never enqueues a notification', async () => {
+    fakeCves['CVE-2026-5003'] = { cvss: 5.0, threat_level: 'medium', cisa_kev: false, exploited: false };
+    await watchCve('usr_notify2', 'CVE-2026-5003');
+    await notify.updatePreferences('usr_notify2', { email_override: 'a@example.com' });
+    const intel = require('../intel');
+    await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5003', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex }); // baseline only
+
+    expect(await notify.getDuePendingDeliveries(10)).toHaveLength(0);
+  });
+
+  test('a notification-dispatch failure never prevents the feed fan-out that already succeeded', async () => {
+    // dispatchNewEvent is enqueue-only and error-swallowed at the call
+    // site (see change-engine.js) -- simulate a hard failure by breaking
+    // notification-store's redis access mid-flight and confirm the
+    // watcher's feed entry (the pre-existing, load-bearing behavior) is
+    // still written.
+    fakeCves['CVE-2026-5004'] = { cvss: 5.0, threat_level: 'medium', cisa_kev: false, exploited: false };
+    const wlId = await watchCve('usr_resilient', 'CVE-2026-5004');
+    await notify.updatePreferences('usr_resilient', { email_override: 'a@example.com' });
+    const intel = require('../intel');
+    await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5004', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
+
+    const originalHget = global.__fakeRedisForTest.hget;
+    global.__fakeRedisForTest.hget = async () => { throw new Error('simulated notification-store failure'); };
+    try {
+      fakeCves['CVE-2026-5004'] = { ...fakeCves['CVE-2026-5004'], cisa_kev: true };
+      const outcome = await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5004', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
+      expect(outcome.status).toBe('changed'); // detection + persistence + feed fan-out all still succeeded
+      const feed = await store.getOwnerFeedPage('usr_resilient', { limit: 10, cursor: 0 });
+      expect(feed.eventIds.length).toBeGreaterThan(0);
+    } finally {
+      global.__fakeRedisForTest.hget = originalHget;
+    }
+  });
+});
