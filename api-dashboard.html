@@ -238,7 +238,7 @@ const data = await res.json();</div>
   <div class="card">
     <div class="card-title">📨 Alert Delivery</div>
     <div id="notify-alert" class="hidden"></div>
-    <p style="font-size:13px;color:var(--apex-muted);margin-bottom:14px">Get notified when a watched entity changes. Delivery runs on a periodic cycle, not the instant a change is detected.</p>
+    <p style="font-size:13px;color:var(--apex-muted);margin-bottom:14px">Get notified when a watched entity changes. Delivery runs automatically roughly every 30 minutes, not the instant a change is detected.</p>
 
     <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--apex-border)">
       <input type="checkbox" id="notify-email-enabled" style="margin-top:4px" onchange="updateNotificationPreferencesUI()">
@@ -275,6 +275,12 @@ const data = await res.json();</div>
   <div class="card">
     <div class="card-title">📬 Delivery Log</div>
     <div id="notify-deliveries" style="color:var(--apex-muted);font-size:13px">Loading…</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⛔ Dead Letters</div>
+    <p style="font-size:13px;color:var(--apex-muted);margin-bottom:14px">Deliveries that exhausted every retry. Fix the underlying issue (e.g. your endpoint's uptime) before retrying, or it will likely dead-letter again.</p>
+    <div id="notify-dead-letters" style="color:var(--apex-muted);font-size:13px">Loading…</div>
   </div>
 </div>
 
@@ -692,7 +698,7 @@ function importanceColor(imp) {
 }
 
 async function loadWatchlistsPanel() {
-  await Promise.all([loadWatchlistsList(), loadWatchlistFeed(0), loadNotificationPreferences(), loadNotificationDeliveries()]);
+  await Promise.all([loadWatchlistsList(), loadWatchlistFeed(0), loadNotificationPreferences(), loadNotificationDeliveries(), loadDeadLetters()]);
 }
 
 async function loadWatchlistsList() {
@@ -859,6 +865,15 @@ async function testWebhookUI() {
   } catch (e) { showAlert(alertEl, 'error', 'Network error sending test delivery.'); }
 }
 
+// 'delivered' -> green, 'cancelled' -> neutral gray (a deliberate skip,
+// not a failure -- e.g. the customer disabled the channel mid-flight),
+// everything else ('failed') -> red.
+function deliveryStatusColors(status) {
+  if (status === 'delivered') return { bg: '#22c55e22', fg: '#22c55e', border: '#22c55e44' };
+  if (status === 'cancelled') return { bg: '#9ca3af22', fg: '#9ca3af', border: '#9ca3af44' };
+  return { bg: '#ff3b3b22', fg: '#ff3b3b', border: '#ff3b3b44' };
+}
+
 async function loadNotificationDeliveries() {
   const el = document.getElementById('notify-deliveries');
   try {
@@ -866,16 +881,51 @@ async function loadNotificationDeliveries() {
     const body = await res.json();
     if (!res.ok || !body.success) { el.textContent = (body.error && body.error.message) || 'Could not load delivery log.'; return; }
     if (!body.deliveries.length) { el.textContent = 'No delivery attempts yet.'; return; }
-    el.innerHTML = body.deliveries.map(d => `
+    el.innerHTML = body.deliveries.map(d => {
+      const c = deliveryStatusColors(d.status);
+      return `
       <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid var(--apex-border)">
         <div>
-          <span class="badge" style="background:${d.status === 'delivered' ? '#22c55e22' : '#ff3b3b22'};color:${d.status === 'delivered' ? '#22c55e' : '#ff3b3b'};border:1px solid ${d.status === 'delivered' ? '#22c55e44' : '#ff3b3b44'}">${esc(d.status)}</span>
+          <span class="badge" style="background:${c.bg};color:${c.fg};border:1px solid ${c.border}">${esc(d.status)}</span>
           <span style="font-size:12px;margin-left:8px">${esc(d.channel)} · ${esc(d.event_id)}</span>
           ${d.error ? `<div style="font-size:11px;color:var(--apex-muted);margin-top:4px">${esc(d.error)}</div>` : ''}
         </div>
         <span style="font-size:12px;color:var(--apex-muted)">${esc(d.attempted_at)}</span>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   } catch (e) { el.textContent = 'Network error loading delivery log.'; }
+}
+
+async function loadDeadLetters() {
+  const el = document.getElementById('notify-dead-letters');
+  try {
+    const res = await fetch(`${API}/api/v1/notifications?action=dead-letters&limit=20`, { headers: { 'X-API-Key': sessionKey } });
+    const body = await res.json();
+    if (!res.ok || !body.success) { el.textContent = (body.error && body.error.message) || 'Could not load dead letters.'; return; }
+    if (!body.dead_letters.length) { el.textContent = 'No dead-lettered deliveries.'; return; }
+    el.innerHTML = body.dead_letters.map(d => `
+      <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid var(--apex-border)">
+        <div>
+          <span class="badge" style="background:#ff3b3b22;color:#ff3b3b;border:1px solid #ff3b3b44">dead-lettered</span>
+          <span style="font-size:12px;margin-left:8px">${esc(d.channel)} · ${esc(d.event_id)} · ${esc(String(d.attempts || 0))} attempts</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:4px 10px;font-size:12px" onclick="retryDeadLetterUI('${esc(d.event_id)}','${esc(d.channel)}')">Retry</button>
+      </div>`).join('');
+  } catch (e) { el.textContent = 'Network error loading dead letters.'; }
+}
+
+async function retryDeadLetterUI(eventId, channel) {
+  const alertEl = document.getElementById('notify-alert');
+  try {
+    const res = await fetch(`${API}/api/v1/notifications?action=retry-dead-letter`, {
+      method: 'POST', headers: { 'X-API-Key': sessionKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event_id: eventId, channel }),
+    });
+    const body = await res.json();
+    if (!res.ok || !body.success) { showAlert(alertEl, 'error', (body.error && body.error.message) || 'Could not retry this delivery.'); return; }
+    showAlert(alertEl, 'success', 'Queued for a fresh delivery attempt on the next dispatch cycle.');
+    loadNotificationDeliveries();
+  } catch (e) { showAlert(alertEl, 'error', 'Network error retrying delivery.'); }
 }
 
 // Check for Stripe redirect
