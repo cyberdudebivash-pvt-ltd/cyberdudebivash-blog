@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-25T05:56:57.824Z",
+  "generated": "2026-08-25T06:42:00.389Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 12023,
+    "total_nodes": 12025,
     "actors": 8,
-    "cves": 4361,
-    "campaigns": 1188,
+    "cves": 4362,
+    "campaigns": 1189,
     "malware": 0,
     "iocs": 886,
-    "edges": 3774
+    "edges": 3775
   },
   "nodes": {
     "actor:lockbit": {
@@ -227410,6 +227410,44 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "CVE-2026-21962": {
+      "id": "CVE-2026-21962",
+      "type": "CVE",
+      "name": "CVE-2026-21962: Oracle HTTP Server and Oracle Weblogic Server Proxy Plug-in Improper Access Control Vulnerability",
+      "attributes": {
+        "cvss": 10,
+        "threat_level": "HIGH",
+        "priority_score": 66,
+        "exploited": true,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "",
+        "product": "",
+        "published": "2026-08-25",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-21962": {
+      "id": "campaign:cve-2026-21962",
+      "type": "Campaign",
+      "name": "Multi-Vendor Platform Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-25",
+        "last_seen": "2026-08-25",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-21962 | 1 item(s) confirmed exploited in the wild"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-21962",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -261539,6 +261577,15 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-24",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-21962→includes→CVE-2026-21962",
+      "source": "campaign:cve-2026-21962",
+      "target": "CVE-2026-21962",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-25",
       "sources": []
     }
   ]
