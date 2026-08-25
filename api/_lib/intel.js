@@ -572,7 +572,7 @@ function getDossierAPI(type, id, tier) {
 module.exports = {
   getIntel, getCVEDetail, searchIntel, getPlatformStats, applyTierFilter,
   getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI,
-  loadJSON, PATHS, parsePagination, attestItem,
+  loadJSON, loadGraph, PATHS, parsePagination, attestItem,
   getSearchIndex, unifiedSearch, getActorDetailAPI, getIocDetailAPI, getReportDetailAPI,
   getDossierAPI,
 };

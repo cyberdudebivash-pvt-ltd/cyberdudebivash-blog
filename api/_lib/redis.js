@@ -28,6 +28,12 @@ const redis = {
   get:    key           => redisCmd('GET', key),
   set:    (key, val)    => redisCmd('SET', key, val),
   setex:  (key, ttl, v) => redisCmd('SETEX', key, String(ttl), v),
+  // SET key val NX -- Upstash returns "OK" if the key was newly set, null
+  // if it already existed (no-op). Used for idempotent event creation
+  // (watchlist change-detection): the caller does not need a prior EXISTS
+  // check -- a truthy return means "this call created it", falsy means
+  // "someone/something already had".
+  setnx:  (key, val)    => redisCmd('SET', key, val, 'NX'),
   del:    key           => redisCmd('DEL', key),
   exists: key           => redisCmd('EXISTS', key),
   incr:   key           => redisCmd('INCR', key),

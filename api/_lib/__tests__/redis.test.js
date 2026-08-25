@@ -90,6 +90,11 @@ describe('redis.js Upstash REST client', () => {
     await expect(redis.zrem('k', 'm')).resolves.toBe('mock-result');
   });
 
+  test('setnx sends SET key val NX', async () => {
+    await redis.setnx('event:abc', '{"a":1}');
+    expect(decodeURIComponent(lastPath())).toBe('SET/event:abc/{"a":1}/NX');
+  });
+
   test('pre-existing methods are unaffected (baseline sanity check)', async () => {
     await redis.get('some-key');
     expect(decodeURIComponent(lastPath())).toBe('GET/some-key');
