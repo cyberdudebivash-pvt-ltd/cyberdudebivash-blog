@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#00ffe0"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intelligence Dossier — CYBERDUDEBIVASH SENTINEL APEX</title>
+<meta name="description" content="Evidence-backed CVE and campaign intelligence dossiers — exploitation status, relationships, ATT&CK context, and analyst actions, all sourced from real tracked data.">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:var(--apex-bg);color:var(--apex-text);min-height:100vh}
+nav{background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nlogo{font-size:17px;font-weight:900;color:var(--apex-cyan);text-decoration:none}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:#fff;background:var(--apex-surface)}.nlinks{display:flex;gap:4px}
+.ncta{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000!important;font-weight:700!important;border-radius:6px!important}
+.wrap{max-width:1000px;margin:0 auto;padding:32px 24px 64px}
+.card{background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:28px;margin-bottom:24px}
+.card-title{font-size:14px;font-weight:700;color:var(--apex-cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--apex-border);display:flex;align-items:center;justify-content:space-between}
+.form-group{margin-bottom:0}label{display:block;font-size:13px;font-weight:600;color:var(--apex-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+input,select{width:100%;padding:12px 16px;background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;color:var(--apex-text);font-size:14px;font-family:inherit;outline:none;transition:.2s}
+input:focus,select:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba(0,255,224,.1)}
+.btn{padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000}.btn-primary:hover{opacity:.9}
+.btn-secondary{background:transparent;border:2px solid var(--apex-cyan);color:var(--apex-cyan)}.btn-secondary:hover{background:rgba(0,255,224,.08)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.lookup-grid{display:grid;grid-template-columns:140px 1fr auto;gap:12px;align-items:end}
+.badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.bdg-critical{background:#ff3b3b22;color:#ff3b3b;border:1px solid #ff3b3b44}
+.bdg-high{background:#ff8c0022;color:#ff8c00;border:1px solid #ff8c0044}
+.bdg-medium{background:#eab30822;color:#eab308;border:1px solid #eab30844}
+.bdg-low{background:#6b728022;color:#6b7280;border:1px solid #6b728033}
+.bdg-confirmed{background:#ff3b3b22;color:#ff3b3b;border:1px solid #ff3b3b44}
+.bdg-assessed{background:#ff8c0022;color:#ff8c00;border:1px solid #ff8c0044}
+.bdg-unknown{background:#6b728022;color:#6b7280;border:1px solid #6b728033}
+.bdg-high-conf{background:#00ff8822;color:#00ff88;border:1px solid #00ff8844}
+.bdg-cyan{background:#00ffe022;color:#00ffe0;border:1px solid #00ffe044}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin:8px 0}
+.stat-box{background:#0a0e18;border:1px solid var(--apex-border);border-radius:10px;padding:18px;text-align:center}
+.stat-val{font-size:24px;font-weight:900;font-family:var(--mono);color:var(--apex-cyan)}
+.stat-lbl{font-size:11px;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
+.alert{padding:14px 18px;border-radius:8px;margin:16px 0;font-size:14px}
+.alert-error{background:#ff3b3b15;border:1px solid #ff3b3b40;color:#ff3b3b}
+.alert-info{background:#00ffe015;border:1px solid #00ffe040;color:#00ffe0}
+.alert-warn{background:#ff8c0015;border:1px solid #ff8c0040;color:#ff8c00}
+.hidden{display:none!important}
+.entity-header{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:8px}
+.entity-id{font-size:28px;font-weight:900;color:#fff;font-family:var(--mono)}
+.entity-sub{color:var(--apex-muted);font-size:15px;margin-bottom:16px}
+.assessment-text{font-size:15px;line-height:1.6;color:var(--apex-text);margin-bottom:12px}
+.factor-list{list-style:none;padding:0}
+.factor-list li{padding:6px 0 6px 20px;position:relative;font-size:13px;color:var(--apex-muted);font-family:var(--mono)}
+.factor-list li::before{content:'▸';position:absolute;left:0;color:var(--apex-cyan)}
+.rel-section{margin-bottom:20px}
+.rel-section h4{font-size:12px;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.rel-item{background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.rel-item a{color:var(--apex-text);text-decoration:none;font-weight:600}
+.rel-item a:hover{color:var(--apex-cyan)}
+.rel-meta{font-size:11px;color:var(--apex-muted);font-family:var(--mono)}
+.empty-state{padding:20px;text-align:center;color:var(--apex-muted);font-size:13px;background:#0a0e18;border:1px dashed var(--apex-border);border-radius:8px}
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--apex-border)}
+.timeline-item{position:relative;padding-bottom:18px}
+.timeline-item::before{content:'';position:absolute;left:-24px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--apex-cyan)}
+.timeline-date{font-family:var(--mono);font-size:11px;color:var(--apex-cyan)}
+.timeline-label{font-size:14px;color:var(--apex-text);margin-top:2px}
+.evidence-item{border:1px solid var(--apex-border);border-radius:8px;padding:12px 16px;margin-bottom:8px;background:#0a0e18}
+.evidence-claim{font-size:14px;color:var(--apex-text);margin-bottom:6px}
+.technique-chip{display:inline-block;background:#0a0e18;border:1px solid var(--apex-border);border-radius:6px;padding:4px 10px;font-family:var(--mono);font-size:12px;color:var(--apex-purple);margin:0 6px 6px 0}
+.action-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--apex-border)}
+.action-item:last-child{border-bottom:none}
+.action-check{color:var(--apex-green);font-weight:900}
+.report-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--apex-border)}
+.report-item:last-child{border-bottom:none}
+.report-item a{color:var(--apex-cyan);text-decoration:none;font-weight:600;font-size:14px}
+.loading{text-align:center;padding:60px 20px;color:var(--apex-muted)}
+.spinner{width:32px;height:32px;border:3px solid var(--apex-border);border-top-color:var(--apex-cyan);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);padding:24px;text-align:center;font-size:13px;color:var(--apex-muted)}footer a{color:var(--apex-cyan);text-decoration:none}
+@media(max-width:600px){.wrap{padding:20px 16px 48px}.lookup-grid{grid-template-columns:1fr}.entity-id{font-size:22px}.card{padding:20px}.nlinks a:not(.ncta){display:none}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-XTGLNMNNC7",{page_path:window.location.pathname,cookie_flags:"SameSite=None;Secure"});</script>
+</head>
+<body>
+<nav>
+  <a href="/" class="nlogo">CYBERDUDE<span style="color:#fff">BIVASH</span> <span style="font-size:11px;color:var(--apex-muted);font-weight:400">SENTINEL APEX</span></a>
+  <div class="nlinks">
+    <a href="/">Blog</a>
+    <a href="/api.html">API Docs</a>
+    <a href="/threat-intelligence.html">Threat Intel</a>
+    <a href="/api-dashboard.html" class="ncta">⚡ Get API Key</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="card">
+    <h1 class="card-title" style="border-bottom:none;margin-bottom:12px;font-size:14px">🔍 Intelligence Dossier Lookup</h1>
+    <div class="lookup-grid">
+      <div class="form-group">
+        <label for="lookup-type">Type</label>
+        <select id="lookup-type">
+          <option value="cve">CVE</option>
+          <option value="campaign">Campaign</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lookup-id" id="lookup-id-label">CVE ID</label>
+        <input id="lookup-id" type="text" placeholder="CVE-2024-12345">
+      </div>
+      <button class="btn btn-primary" id="lookup-btn" onclick="doLookup()">Open Dossier</button>
+    </div>
+    <div class="form-group" style="margin-top:14px">
+      <label for="api-key">API Key (required — your key is held in memory only, never stored in this browser)</label>
+      <input id="api-key" type="password" placeholder="sentinel_your_key_here">
+    </div>
+  </div>
+
+  <div id="status-area"></div>
+  <div id="dossier-root"></div>
+</div>
+
+<footer>
+  &copy; 2026 CyberDudeBivash Sentinel APEX. Dossiers are computed from live, canonical threat intelligence — never fabricated. <a href="/api-dashboard.html">Get an API key</a> · <a href="/api.html">API Docs</a>
+</footer>
+
+<script>
+const API = 'https://blog.cyberdudebivash.in';
+let sessionKey = null; // in-memory only, never persisted -- see api-dashboard.html's identical, CodeQL-reviewed pattern
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// Phase 40: only http(s) URLs may ever be rendered as a clickable link.
+// Dossier evidence source_refs can be a real citation URL OR a short
+// provenance tag (e.g. "cisa_kev") -- see intelligence-dossier.js's own
+// note on this. Anything else (javascript:, data:, a bare tag, malformed
+// input) renders as plain, escaped text instead of a link.
+function safeHref(url) {
+  try {
+    const u = new URL(url, window.location.origin);
+    if (u.protocol === 'http:' || u.protocol === 'https:') return u.href;
+  } catch (e) { /* not a URL at all */ }
+  return null;
+}
+
+function sevClass(sev) {
+  const s = String(sev || '').toUpperCase();
+  return s === 'CRITICAL' ? 'bdg-critical' : s === 'HIGH' ? 'bdg-high' : s === 'MEDIUM' ? 'bdg-medium' : 'bdg-low';
+}
+function confClass(status) {
+  const s = String(status || '').toUpperCase();
+  return s === 'CONFIRMED' ? 'bdg-confirmed' : s === 'ASSESSED' ? 'bdg-assessed' : 'bdg-unknown';
+}
+
+function showStatus(html) {
+  document.getElementById('status-area').innerHTML = html;
+}
+function clearStatus() {
+  document.getElementById('status-area').innerHTML = '';
+}
+
+document.getElementById('lookup-type').addEventListener('change', function () {
+  document.getElementById('lookup-id-label').textContent = this.value === 'campaign' ? 'Campaign ID' : 'CVE ID';
+  document.getElementById('lookup-id').placeholder = this.value === 'campaign' ? 'campaign:cve-2024-27199' : 'CVE-2024-12345';
+});
+
+function doLookup() {
+  const type = document.getElementById('lookup-type').value;
+  const id = document.getElementById('lookup-id').value.trim();
+  const key = document.getElementById('api-key').value.trim();
+  if (!id) { showStatus('<div class="alert alert-error">Enter an ID to look up.</div>'); return; }
+  if (!key) { showStatus('<div class="alert alert-error">Enter your API key. <a href="/api-dashboard.html" style="color:inherit;text-decoration:underline">Get one free</a>.</div>'); return; }
+  sessionKey = key;
+  const url = new URL(window.location.href);
+  url.searchParams.set('type', type);
+  url.searchParams.set('id', id);
+  window.history.replaceState({}, '', url);
+  loadDossier(type, id);
+}
+
+async function loadDossier(type, id) {
+  document.getElementById('dossier-root').innerHTML = '<div class="loading"><div class="spinner"></div>Assembling dossier…</div>';
+  clearStatus();
+  if (!sessionKey) {
+    document.getElementById('dossier-root').innerHTML = '';
+    showStatus('<div class="alert alert-info">Enter your API key above, then press Open Dossier.</div>');
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/api/v1/intel?action=dossier&type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`, {
+      headers: { 'X-API-Key': sessionKey },
+    });
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      document.getElementById('dossier-root').innerHTML = '';
+      const msg = (body && body.error && body.error.message) || 'Dossier could not be loaded.';
+      showStatus(`<div class="alert alert-error">${esc(msg)}</div>`);
+      return;
+    }
+    renderDossier(body.dossier, type);
+  } catch (e) {
+    document.getElementById('dossier-root').innerHTML = '';
+    showStatus('<div class="alert alert-error">Network error loading dossier. Please retry.</div>');
+  }
+}
+
+function renderRelationshipList(items, kind) {
+  if (!items || items.length === 0) {
+    return `<div class="empty-state">No evidence-backed ${esc(kind)} association currently available.</div>`;
+  }
+  return items.map(r => {
+    const conf = typeof r.confidence === 'number' ? `${Math.round(r.confidence * 100)}% confidence` : '';
+    const seen = (r.evidence && r.evidence.first_seen) ? esc(r.evidence.first_seen) : '';
+    // Graph nodes use 'CVE'/'Campaign'/'ThreatActor' (case from
+    // threat-graph.js's own addNode() convention); this dossier's own
+    // manually-built related_cves uses lowercase 'cve' (matching
+    // entity_type/the API's own type= param convention). Normalize once
+    // so a link is offered for exactly the two types that have a real
+    // dossier page, regardless of which convention this particular field
+    // happened to use.
+    const dossierType = String(r.type || '').toLowerCase() === 'campaign' ? 'campaign'
+      : String(r.type || '').toLowerCase() === 'cve' ? 'cve'
+      : null;
+    const href = (r.id && dossierType) ? `/dossier.html?type=${dossierType}&id=${encodeURIComponent(r.id)}` : null;
+    const label = esc(r.name || r.id);
+    return `<div class="rel-item">
+      <div>${href ? `<a href="${esc(href)}">${label}</a>` : `<span>${label}</span>`}</div>
+      <div class="rel-meta">${esc(r.relationship || '')} ${conf ? '· ' + conf : ''} ${seen ? '· since ' + seen : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTimeline(events) {
+  if (!events || events.length === 0) return '<div class="empty-state">No dated events currently recorded.</div>';
+  return '<div class="timeline">' + events.map(e => `
+    <div class="timeline-item">
+      <div class="timeline-date">${esc(e.date)}</div>
+      <div class="timeline-label">${esc(e.label)}</div>
+    </div>`).join('') + '</div>';
+}
+
+function renderEvidence(claims) {
+  if (!claims || claims.length === 0) return '<div class="empty-state">No individually-tracked evidence claims for this record.</div>';
+  return claims.map(c => {
+    const refs = (c.source_refs || []).map(r => {
+      const href = safeHref(r);
+      return href ? `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer nofollow" style="color:var(--apex-cyan)">${esc(r)}</a>` : `<span>${esc(r)}</span>`;
+    }).join(', ');
+    return `<div class="evidence-item">
+      <div class="evidence-claim">${esc(c.claim)}</div>
+      <div class="rel-meta"><span class="badge ${confClass(c.status)}">${esc(c.status)}</span> confidence: ${esc(c.confidence)} ${refs ? '· ' + refs : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTechniques(ctx) {
+  if (!ctx || ctx.status !== 'established' || !ctx.techniques.length) {
+    return '<div class="empty-state">No ATT&amp;CK techniques currently established for this record.</div>';
+  }
+  const chips = ctx.techniques.map(t => `<span class="technique-chip" title="via ${esc(t.via_name || t.via)}">${esc(t.id)}</span>`).join('');
+  const note = ctx.total_techniques > ctx.techniques.length ? `<div class="rel-meta" style="margin-top:8px">Showing ${ctx.techniques.length} of ${ctx.total_techniques}.</div>` : '';
+  return `<div>${chips}</div>${note}<div class="rel-meta" style="margin-top:10px">Techniques are surfaced via a linked report or threat actor — never generated directly for this record.</div>`;
+}
+
+function renderReports(reports) {
+  if (!reports || reports.length === 0) return '<div class="empty-state">No published SENTINEL APEX reports currently reference this record.</div>';
+  return reports.map(r => {
+    // Phase 40/53: esc() only escapes HTML characters, it does not
+    // validate a URL's scheme -- report URLs are internally-generated
+    // today (reports-index.json), but every customer-clickable href in
+    // this page must be validated the same way regardless of source, not
+    // just the ones this round's adversarial test happened to cover.
+    const href = safeHref(r.url);
+    const title = esc(r.title || r.report_id);
+    return `<div class="report-item">
+    <div>${href ? `<a href="${esc(href)}">${title}</a>` : `<span>${title}</span>`}<div class="rel-meta">${esc(r.report_id)}${r.date ? ' · ' + esc(r.date) : ''}</div></div>
+  </div>`;
+  }).join('');
+}
+
+function renderActions(actions) {
+  if (!actions || actions.length === 0) return '<div class="empty-state">No specific analyst actions recommended at this time.</div>';
+  return actions.map(a => `<div class="action-item"><span class="action-check">✓</span><div><div>${esc(a.action)}</div><div class="rel-meta">${esc(a.rationale)}</div></div></div>`).join('');
+}
+
+function renderDossier(d, type) {
+  clearStatus();
+  const isCve = d.entity_type === 'cve';
+  const sev = isCve ? d.risk.threat_level : d.risk.severity;
+
+  const upgradeBanner = d.tier_info && d.tier_info.relationships_gated
+    ? `<div class="alert alert-warn">🔒 ${esc(d.tier_info.upgrade_message || 'Full relationship data available on Pro plan.')} <a href="/pricing.html" style="color:inherit;font-weight:700">Upgrade →</a></div>`
+    : '';
+
+  const exploitBadge = isCve
+    ? `<span class="badge ${confClass(d.exploitation.active_exploitation.status)}">Exploitation: ${esc(d.exploitation.active_exploitation.status)}</span>`
+    : `<span class="badge ${d.attribution.status === 'ASSESSED' ? 'bdg-assessed' : 'bdg-unknown'}">Attribution: ${esc(d.attribution.status)}</span>`;
+
+  const riskStats = isCve ? `
+    <div class="stat-box"><div class="stat-val">${d.risk.cvss ?? '—'}</div><div class="stat-lbl">CVSS</div></div>
+    <div class="stat-box"><div class="stat-val">${d.risk.epss_score != null ? (d.risk.epss_score * 100).toFixed(1) + '%' : '—'}</div><div class="stat-lbl">EPSS</div></div>
+    <div class="stat-box"><div class="stat-val">${d.exploitation.kev_listed ? 'YES' : 'NO'}</div><div class="stat-lbl">CISA KEV</div></div>
+    <div class="stat-box"><div class="stat-val">${d.confidence.overall}</div><div class="stat-lbl">Confidence</div></div>
+  ` : `
+    <div class="stat-box"><div class="stat-val">${d.risk.confidence != null ? Math.round(d.risk.confidence * 100) + '%' : '—'}</div><div class="stat-lbl">Cluster Confidence</div></div>
+    <div class="stat-box"><div class="stat-val">${d.risk.item_count ?? '—'}</div><div class="stat-lbl">Linked Items</div></div>
+    <div class="stat-box"><div class="stat-val">${d.exploitation.has_kev ? 'YES' : 'NO'}</div><div class="stat-lbl">Includes KEV</div></div>
+    <div class="stat-box"><div class="stat-val">${d.confidence.overall}</div><div class="stat-lbl">Confidence</div></div>
+  `;
+
+  document.getElementById('dossier-root').innerHTML = `
+    <div class="card">
+      <div class="entity-header">
+        <h2 class="entity-id">${esc(d.entity_id)}</h2>
+        <span class="badge ${sevClass(sev)}">${esc(sev || 'UNKNOWN')}</span>
+        ${exploitBadge}
+      </div>
+      <div class="entity-sub">${esc(d.overview || '')}</div>
+      ${upgradeBanner}
+      <div class="assessment-text">${esc(d.assessment.summary)}</div>
+      <ul class="factor-list">${(d.assessment.factors || []).map(f => `<li>${esc(f)}</li>`).join('')}</ul>
+      <div class="stat-grid">${riskStats}</div>
+      <div style="margin-top:16px">
+        <a href="${API}/api/v1/intel?action=graph" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">View Threat Graph ↗</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Relationships <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--apex-muted)">campaigns: ${d.relationships.counts.campaigns} · actors: ${d.relationships.counts.actors} · CVEs: ${d.relationships.counts.cves}</span></h3>
+      <div class="rel-section"><h4>Related Campaigns</h4>${renderRelationshipList(d.relationships.related_campaigns, 'campaign')}</div>
+      <div class="rel-section"><h4>Threat Actors</h4>${renderRelationshipList(d.relationships.related_actors, 'actor')}</div>
+      <div class="rel-section"><h4>Related CVEs</h4>${renderRelationshipList(d.relationships.related_cves, 'CVE')}</div>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Evidence</h3>
+      ${renderEvidence(d.evidence)}
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Timeline</h3>
+      ${renderTimeline(d.timeline)}
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">ATT&amp;CK Context</h3>
+      ${renderTechniques(d.attack_context)}
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Detections</h3>
+      ${d.detections.available ? '' : `<div class="empty-state">${esc(d.detections.note)}</div>`}
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Related Reports</h3>
+      ${renderReports(d.reports)}
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Analyst Actions</h3>
+      ${renderActions(d.analyst_actions)}
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Data Quality</h3>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-val">${esc(d.data_quality.evidence_coverage)}</div><div class="stat-lbl">Evidence Coverage</div></div>
+        <div class="stat-box"><div class="stat-val">${esc(d.data_quality.confidence)}</div><div class="stat-lbl">Confidence</div></div>
+        <div class="stat-box"><div class="stat-val">${esc(d.data_quality.freshness)}</div><div class="stat-lbl">Freshness</div></div>
+        <div class="stat-box"><div class="stat-val">${d.data_quality.source_count}</div><div class="stat-lbl">Sources</div></div>
+      </div>
+      <div class="rel-meta" style="margin-top:12px">Generated ${esc(d.generated_at)}${d.data_updated_at ? ' · canonical data updated ' + esc(d.data_updated_at) : ''}</div>
+    </div>
+  `;
+}
+
+// Deep-link support: ?type=cve&id=CVE-2024-12345 (from a search-result "Open Dossier" pivot).
+(function initFromQuery() {
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get('type');
+  const id = params.get('id');
+  if (type === 'cve' || type === 'campaign') {
+    document.getElementById('lookup-type').value = type;
+    document.getElementById('lookup-id-label').textContent = type === 'campaign' ? 'Campaign ID' : 'CVE ID';
+  }
+  if (id) document.getElementById('lookup-id').value = id;
+  if (type && id) {
+    showStatus('<div class="alert alert-info">Enter your API key above, then press Open Dossier to load this record.</div>');
+  }
+})();
+</script>
+</body>
+</html>
