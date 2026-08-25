@@ -19,6 +19,7 @@ jest.mock('../../_lib/redis', () => {
 
 const { authenticate } = require('../../_lib/middleware');
 const handler = require('../notifications');
+const notify = require('../../_lib/notification-store');
 
 function mockReq({ method = 'GET', query = {}, body = null, ip } = {}) {
   const headers = { 'content-type': 'application/json' };
@@ -255,7 +256,7 @@ describe('test-webhook', () => {
     authenticate.mockResolvedValue(mockUser('free', 'usr_a'));
     await call('update-preferences', { method: 'POST', body: { webhook_url: 'https://example.com/hook' } });
     await call('rotate-webhook-secret', { method: 'POST' });
-    global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 503, text: () => Promise.resolve('') }));
+    global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 503, text: () => Promise.resolve(''), headers: { get: () => null } }));
     const res = await call('test-webhook', { method: 'POST' });
     expect(res.statusCode).toBe(200); // the API call itself succeeded; the delivery attempt is what failed
     expect(res.body.success).toBe(false);
@@ -310,5 +311,72 @@ describe('ownership isolation — customer A must never see customer B\'s notifi
     authenticate.mockResolvedValue(mockUser('free', 'usr_b'));
     const res = await call('deliveries', { method: 'GET' });
     expect(res.body.deliveries).toEqual([]);
+  });
+});
+
+// moveToDeadLetter() is internal-only (see notification-store.test.js's
+// own exhaustToDeadLetter helper) -- the only legitimate way to produce
+// one is exhausting recordAttemptOutcome()'s real retry count.
+async function seedDeadLetter(ownerId, eventId, channel, watchlistId = 'wl_1') {
+  await notify.enqueuePendingDelivery({ ownerId, eventId, watchlistId, channels: [channel] });
+  for (let i = 0; i < notify.MAX_RETRY_ATTEMPTS; i++) {
+    await notify.recordAttemptOutcome({ ownerId, eventId, channel, success: false });
+  }
+}
+
+describe('retry-dead-letter', () => {
+  test('404s when no matching dead-lettered delivery exists for this account', async () => {
+    authenticate.mockResolvedValue(mockUser('free', 'usr_a'));
+    const res = await call('retry-dead-letter', { method: 'POST', body: { event_id: 'evt_never', channel: 'webhook' } });
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error.code).toBe('NOT_FOUND');
+  });
+
+  test('rejects a missing event_id or an invalid channel value', async () => {
+    authenticate.mockResolvedValue(mockUser('free', 'usr_a'));
+    let res = await call('retry-dead-letter', { method: 'POST', body: { channel: 'webhook' } });
+    expect(res.statusCode).toBe(400);
+    res = await call('retry-dead-letter', { method: 'POST', body: { event_id: 'evt_1', channel: 'carrier-pigeon' } });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error.code).toBe('INVALID_FIELDS');
+  });
+
+  test('requires the channel to still be enabled/configured before requeueing', async () => {
+    authenticate.mockResolvedValue(mockUser('free', 'usr_a'));
+    await seedDeadLetter('usr_a', 'evt_1', 'webhook');
+    // webhook was never enabled for this account in this test.
+    const res = await call('retry-dead-letter', { method: 'POST', body: { event_id: 'evt_1', channel: 'webhook' } });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error.code).toBe('CHANNEL_NOT_ELIGIBLE');
+  });
+
+  test('a dead-lettered delivery on a still-enabled channel is requeued as a fresh pending delivery', async () => {
+    authenticate.mockResolvedValue(mockUser('free', 'usr_a'));
+    await call('update-preferences', { method: 'POST', body: { webhook_url: 'https://example.com/hook' } });
+    await call('rotate-webhook-secret', { method: 'POST' });
+    await call('update-preferences', { method: 'POST', body: { webhook_enabled: true } });
+    await seedDeadLetter('usr_a', 'evt_1', 'webhook');
+
+    const res = await call('retry-dead-letter', { method: 'POST', body: { event_id: 'evt_1', channel: 'webhook' } });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.requeued).toBe(true);
+
+    const due = await notify.getDuePendingDeliveries(10);
+    expect(due.some(r => r.event_id === 'evt_1' && r.channels_pending.includes('webhook'))).toBe(true);
+    // The original dead-letter entry is history, not resurrected/removed.
+    const deadLetters = await notify.listDeadLetters('usr_a', { limit: 10 });
+    expect(deadLetters).toHaveLength(1);
+  });
+
+  test('customer B cannot retry customer A\'s dead-lettered delivery (IDOR)', async () => {
+    authenticate.mockResolvedValue(mockUser('free', 'usr_a'));
+    await seedDeadLetter('usr_a', 'evt_1', 'webhook');
+
+    authenticate.mockResolvedValue(mockUser('free', 'usr_b'));
+    await call('update-preferences', { method: 'POST', body: { webhook_url: 'https://example.com/hook' } });
+    await call('rotate-webhook-secret', { method: 'POST' });
+    await call('update-preferences', { method: 'POST', body: { webhook_enabled: true } });
+    const res = await call('retry-dead-letter', { method: 'POST', body: { event_id: 'evt_1', channel: 'webhook' } });
+    expect(res.statusCode).toBe(404); // not found for B, even though it exists for A
   });
 });

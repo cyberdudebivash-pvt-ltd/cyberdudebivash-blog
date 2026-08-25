@@ -151,7 +151,9 @@ describe('deliverWebhookChannel', () => {
   });
 
   test('a non-2xx response is a failure carrying the status and a bounded error detail', async () => {
-    global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 500, text: () => Promise.resolve('x'.repeat(10000)) }));
+    global.fetch = jest.fn(() => Promise.resolve({
+      ok: false, status: 500, text: () => Promise.resolve('x'.repeat(10000)), headers: { get: () => null },
+    }));
     const result = await dispatch.deliverWebhookChannel({
       url: 'https://example.com/hook', secret: 's', event: makeEvent(), watchlistId: 'wl_1', watchlistName: 'L',
     });
@@ -179,6 +181,86 @@ describe('deliverWebhookChannel', () => {
     expect(result.success).toBe(false);
     expect(result.error).toBe('TIMEOUT');
   }, 15000);
+
+  test('includes a stable X-Sentinel-Delivery-Id header and matching delivery_id/schema_version in the payload', async () => {
+    let captured = null;
+    global.fetch = jest.fn((url, opts) => { captured = opts; return Promise.resolve({ ok: true, status: 200 }); });
+    await dispatch.deliverWebhookChannel({
+      url: 'https://example.com/hook', secret: 's', event: makeEvent(), watchlistId: 'wl_1', watchlistName: 'L',
+      deliveryId: 'dlv_usr_a_evt_1_webhook',
+    });
+    expect(captured.headers['X-Sentinel-Delivery-Id']).toBe('dlv_usr_a_evt_1_webhook');
+    const body = JSON.parse(captured.body);
+    expect(body.delivery_id).toBe('dlv_usr_a_evt_1_webhook');
+    expect(body.schema_version).toBe(dispatch.WEBHOOK_PAYLOAD_SCHEMA_VERSION);
+  });
+
+  test('classifies a permanent HTTP status (404) as non-retryable', async () => {
+    global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 404, text: () => Promise.resolve('not found'), headers: { get: () => null } }));
+    const result = await dispatch.deliverWebhookChannel({ url: 'https://example.com/hook', secret: 's', event: makeEvent(), watchlistId: 'wl_1', watchlistName: 'L' });
+    expect(result.retryable).toBe(false);
+  });
+
+  test('classifies a transient HTTP status (503) as retryable', async () => {
+    global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 503, text: () => Promise.resolve('unavailable'), headers: { get: () => null } }));
+    const result = await dispatch.deliverWebhookChannel({ url: 'https://example.com/hook', secret: 's', event: makeEvent(), watchlistId: 'wl_1', watchlistName: 'L' });
+    expect(result.retryable).toBe(true);
+  });
+
+  test('an SSRF-blocked URL is classified as non-retryable', async () => {
+    const result = await dispatch.deliverWebhookChannel({ url: 'https://127.0.0.1/x', secret: 's', event: makeEvent(), watchlistId: 'wl_1', watchlistName: 'L' });
+    expect(result.retryable).toBe(false);
+  });
+
+  test('a network error is classified as retryable', async () => {
+    global.fetch = jest.fn(() => Promise.reject(new Error('ECONNRESET')));
+    const result = await dispatch.deliverWebhookChannel({ url: 'https://example.com/hook', secret: 's', event: makeEvent(), watchlistId: 'wl_1', watchlistName: 'L' });
+    expect(result.retryable).toBe(true);
+  });
+
+  test('parses a numeric-seconds Retry-After header on a 429', async () => {
+    global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 429, text: () => Promise.resolve(''), headers: { get: (h) => h.toLowerCase() === 'retry-after' ? '120' : null } }));
+    const result = await dispatch.deliverWebhookChannel({ url: 'https://example.com/hook', secret: 's', event: makeEvent(), watchlistId: 'wl_1', watchlistName: 'L' });
+    expect(result.retryAfterSeconds).toBe(120);
+  });
+
+  test('ignores a malformed Retry-After header, falling back to normal backoff', async () => {
+    global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 429, text: () => Promise.resolve(''), headers: { get: () => 'not-a-valid-value' } }));
+    const result = await dispatch.deliverWebhookChannel({ url: 'https://example.com/hook', secret: 's', event: makeEvent(), watchlistId: 'wl_1', watchlistName: 'L' });
+    expect(result.retryAfterSeconds).toBeNull();
+  });
+});
+
+describe('isRetryableHttpStatus / parseRetryAfterSeconds — pure classification helpers', () => {
+  test('permanent statuses are not retryable', () => {
+    for (const status of [400, 401, 403, 404, 405, 410, 422]) {
+      expect(dispatch.isRetryableHttpStatus(status)).toBe(false);
+    }
+  });
+
+  test('transient and unlisted statuses default to retryable', () => {
+    for (const status of [408, 425, 429, 500, 502, 503, 504, 418, 599]) {
+      expect(dispatch.isRetryableHttpStatus(status)).toBe(true);
+    }
+  });
+
+  test('parseRetryAfterSeconds accepts the numeric-seconds form', () => {
+    expect(dispatch.parseRetryAfterSeconds('30')).toBe(30);
+  });
+
+  test('parseRetryAfterSeconds accepts a future HTTP-date form', () => {
+    const future = new Date(Date.now() + 60000).toUTCString();
+    const seconds = dispatch.parseRetryAfterSeconds(future);
+    expect(seconds).toBeGreaterThan(50);
+    expect(seconds).toBeLessThanOrEqual(60);
+  });
+
+  test('parseRetryAfterSeconds rejects zero, negative, and garbage values', () => {
+    expect(dispatch.parseRetryAfterSeconds('0')).toBeNull();
+    expect(dispatch.parseRetryAfterSeconds('-5')).toBeNull();
+    expect(dispatch.parseRetryAfterSeconds('not-a-date')).toBeNull();
+    expect(dispatch.parseRetryAfterSeconds(null)).toBeNull();
+  });
 });
 
 /* ───────────────────────── orchestration ───────────────────────── */
@@ -302,5 +384,90 @@ describe('processDueDeliveries — the sender (first attempt and retries share o
     expect(global.fetch).toHaveBeenCalledTimes(1);
     const log = await notify.listDeliveries('usr_a', { limit: 10 });
     expect(log.map(d => d.channel).sort()).toEqual(['email', 'webhook']);
+  });
+
+  test('a channel disabled between enqueue and delivery is cancelled cleanly, not sent or retried', async () => {
+    await notify.updatePreferences('usr_a', { email_override: 'a@example.com' });
+    let sendCount = 0;
+    fakeResendState.sendImpl = () => { sendCount++; return Promise.resolve({ id: 'x' }); };
+    fakeEvents['evt_1'] = makeEvent();
+    await dispatch.dispatchNewEvent({ ownerId: 'usr_a', watchlistId: null, event: fakeEvents['evt_1'] });
+    // Customer disables email AFTER the alert was already enqueued.
+    await notify.updatePreferences('usr_a', { email_enabled: false });
+
+    const results = await dispatch.processDueDeliveries({ limit: 10 });
+    expect(results.cancelled).toBe(1);
+    expect(results.attempts).toBe(0); // never actually attempted a send
+    expect(sendCount).toBe(0);
+    const log = await notify.listDeliveries('usr_a', { limit: 10 });
+    expect(log[0].status).toBe('cancelled');
+    expect(log[0].error).toBe('CHANNEL_DISABLED');
+  });
+
+  test('a 404 webhook response dead-letters on the very first attempt (permanent-failure fast path)', async () => {
+    await notify.updatePreferences('usr_a', { webhook_enabled: true, webhook_url: 'https://example.com/hook' });
+    await notify.rotateWebhookSecret('usr_a');
+    global.fetch = jest.fn(() => Promise.resolve({ ok: false, status: 404, text: () => Promise.resolve('gone'), headers: { get: () => null } }));
+    fakeEvents['evt_1'] = makeEvent();
+    await dispatch.dispatchNewEvent({ ownerId: 'usr_a', watchlistId: null, event: fakeEvents['evt_1'] });
+
+    const results = await dispatch.processDueDeliveries({ limit: 10 });
+    expect(results.delivered).toBe(0);
+    expect(results.retried).toBe(0);
+    expect(results.dead_lettered).toBe(1);
+    const deadLetters = await notify.listDeadLetters('usr_a', { limit: 10 });
+    expect(deadLetters[0].attempts).toBe(1);
+    expect(deadLetters[0].reason).toBe('PERMANENT_FAILURE');
+  });
+
+  test('a 429 with Retry-After reschedules using that value rather than the default backoff', async () => {
+    await notify.updatePreferences('usr_a', { webhook_enabled: true, webhook_url: 'https://example.com/hook' });
+    await notify.rotateWebhookSecret('usr_a');
+    global.fetch = jest.fn(() => Promise.resolve({
+      ok: false, status: 429, text: () => Promise.resolve(''),
+      headers: { get: (h) => h.toLowerCase() === 'retry-after' ? '5' : null },
+    }));
+    fakeEvents['evt_1'] = makeEvent();
+    await dispatch.dispatchNewEvent({ ownerId: 'usr_a', watchlistId: null, event: fakeEvents['evt_1'] });
+
+    await dispatch.processDueDeliveries({ limit: 10 });
+    // Default first-retry backoff is 2 minutes -- a 5-second Retry-After
+    // should make it due again well before that, not after.
+    await new Promise(r => setTimeout(r, 5100));
+    const results = await dispatch.processDueDeliveries({ limit: 10 });
+    expect(results.attempts).toBe(1);
+  }, 10000);
+
+  test('overlapping concurrent invocations deliver a channel exactly once (atomic claim)', async () => {
+    await notify.updatePreferences('usr_a', { email_override: 'a@example.com' });
+    let sendCount = 0;
+    fakeResendState.sendImpl = () => { sendCount++; return Promise.resolve({ id: 'x' }); };
+    fakeEvents['evt_1'] = makeEvent();
+    await dispatch.dispatchNewEvent({ ownerId: 'usr_a', watchlistId: null, event: fakeEvents['evt_1'] });
+
+    // Two "simultaneous" sweeps racing the same due channel -- only one
+    // may win the atomic claim (notification-store.js's SET-NX-PX), so
+    // exactly one send happens regardless of scheduler overlap (the
+    // orchestration mandate's core non-negotiable: never assume the
+    // trigger provides exactly-once execution on its own).
+    const [a, b] = await Promise.all([
+      dispatch.processDueDeliveries({ limit: 10 }),
+      dispatch.processDueDeliveries({ limit: 10 }),
+    ]);
+    expect(sendCount).toBe(1);
+    expect(a.delivered + b.delivered).toBe(1);
+    expect(a.skipped_claimed_elsewhere + b.skipped_claimed_elsewhere).toBe(1);
+    const log = await notify.listDeliveries('usr_a', { limit: 10 });
+    expect(log).toHaveLength(1); // one recorded attempt, not two
+  });
+
+  test('a claim released after a fast delivery lets an immediate next sweep find nothing left to do', async () => {
+    await notify.updatePreferences('usr_a', { email_override: 'a@example.com' });
+    fakeEvents['evt_1'] = makeEvent();
+    await dispatch.dispatchNewEvent({ ownerId: 'usr_a', watchlistId: null, event: fakeEvents['evt_1'] });
+
+    await dispatch.processDueDeliveries({ limit: 10 });
+    const again = await dispatch.processDueDeliveries({ limit: 10 });
+    expect(again.records_processed).toBe(0); // record was fully resolved and removed
   });
 });

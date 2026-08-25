@@ -218,11 +218,158 @@ describe('recordAttemptOutcome — success/failure/backoff/dead-letter, per chan
   test('an outcome for an already-resolved (owner, event, channel) is a safe no-op', async () => {
     await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_1', watchlistId: 'wl_1', channels: ['email'] });
     await notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'email', success: true });
-    // Record no longer exists -- a second, late outcome call must not throw.
-    await expect(notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'email', success: false })).resolves.toBeUndefined();
+    // Record no longer exists -- a second, late outcome call must not throw,
+    // and reports 'unresolved' rather than silently pretending it acted.
+    await expect(notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'email', success: false })).resolves.toBe('unresolved');
   });
 
   test('an outcome for a channel never enqueued (unknown record) is a safe no-op', async () => {
-    await expect(notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_never_existed', channel: 'email', success: true })).resolves.toBeUndefined();
+    await expect(notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_never_existed', channel: 'email', success: true })).resolves.toBe('unresolved');
+  });
+
+  test('return value reflects the actual disposition: delivered / retrying / dead_lettered', async () => {
+    await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_1', watchlistId: 'wl_1', channels: ['email'] });
+    await expect(notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'email', success: false })).resolves.toBe('retrying');
+
+    await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_2', watchlistId: 'wl_1', channels: ['email'] });
+    await expect(notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_2', channel: 'email', success: true })).resolves.toBe('delivered');
+
+    await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_3', watchlistId: 'wl_1', channels: ['email'] });
+    let last;
+    for (let i = 0; i < notify.MAX_RETRY_ATTEMPTS; i++) {
+      last = await notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_3', channel: 'email', success: false });
+    }
+    expect(last).toBe('dead_lettered');
+  });
+
+  test('retryable:false dead-letters immediately, on the very first failure', async () => {
+    await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_1', watchlistId: 'wl_1', channels: ['webhook'] });
+    const disposition = await notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook', success: false, retryable: false });
+    expect(disposition).toBe('dead_lettered');
+    const deadLetters = await notify.listDeadLetters('usr_a', { limit: 10 });
+    expect(deadLetters[0].reason).toBe('PERMANENT_FAILURE');
+    expect(deadLetters[0].attempts).toBe(1); // did not burn through MAX_RETRY_ATTEMPTS first
+  });
+
+  test('MAX_RETRY_ATTEMPTS exhaustion (no explicit retryable:false) is labeled distinctly from a permanent failure', async () => {
+    await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_1', watchlistId: 'wl_1', channels: ['webhook'] });
+    for (let i = 0; i < notify.MAX_RETRY_ATTEMPTS; i++) {
+      await notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook', success: false, retryable: true });
+    }
+    const deadLetters = await notify.listDeadLetters('usr_a', { limit: 10 });
+    expect(deadLetters[0].reason).toBe('MAX_RETRY_ATTEMPTS_EXHAUSTED');
+  });
+
+  test('retryAfterSeconds overrides the normal backoff table, bounded by MAX_RETRY_AFTER_SECONDS', async () => {
+    await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_1', watchlistId: 'wl_1', channels: ['webhook'] });
+    const before = Date.now();
+    await notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook', success: false, retryAfterSeconds: 999999 });
+    const raw = await global.__fakeRedisForTest.get('notify:pending:usr_a:evt_1');
+    const record = JSON.parse(raw);
+    const delayMs = record.attempts.webhook.next_attempt_at - before;
+    // Bounded to MAX_RETRY_AFTER_SECONDS even though a much larger value
+    // was requested -- Phase 22: a malicious endpoint cannot defer
+    // delivery indefinitely via Retry-After.
+    expect(delayMs).toBeLessThanOrEqual(notify.MAX_RETRY_AFTER_SECONDS * 1000 + 50);
+    expect(delayMs).toBeGreaterThan(notify.MAX_RETRY_AFTER_SECONDS * 1000 - 5000);
+  });
+});
+
+describe('cancelDeliveryChannel — clean disable-mid-flight removal', () => {
+  test('removes a channel without dead-lettering or bumping its attempt count', async () => {
+    await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_1', watchlistId: 'wl_1', channels: ['email', 'webhook'] });
+    await notify.cancelDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook' });
+    const due = await notify.getDuePendingDeliveries(10);
+    expect(due).toHaveLength(1);
+    expect(due[0].channels_pending).toEqual(['email']);
+    expect(await notify.listDeadLetters('usr_a', { limit: 10 })).toHaveLength(0);
+  });
+
+  test('cancelling the last pending channel removes the whole record', async () => {
+    await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_1', watchlistId: 'wl_1', channels: ['email'] });
+    await notify.cancelDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'email' });
+    expect(await notify.getDuePendingDeliveries(10)).toHaveLength(0);
+  });
+
+  test('cancelling an unknown (owner, event, channel) is a safe no-op', async () => {
+    await expect(notify.cancelDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_never', channel: 'email' })).resolves.toBeUndefined();
+  });
+});
+
+describe('buildDeliveryId — stable identity, not a fresh ID per attempt', () => {
+  test('same (owner, event, channel) always produces the same id', () => {
+    const a = notify.buildDeliveryId('usr_a', 'evt_1', 'webhook');
+    const b = notify.buildDeliveryId('usr_a', 'evt_1', 'webhook');
+    expect(a).toBe(b);
+    expect(a).toMatch(/^dlv_/);
+  });
+
+  test('differs by owner, event, or channel independently', () => {
+    const base = notify.buildDeliveryId('usr_a', 'evt_1', 'webhook');
+    expect(notify.buildDeliveryId('usr_b', 'evt_1', 'webhook')).not.toBe(base);
+    expect(notify.buildDeliveryId('usr_a', 'evt_2', 'webhook')).not.toBe(base);
+    expect(notify.buildDeliveryId('usr_a', 'evt_1', 'email')).not.toBe(base);
+  });
+});
+
+describe('claimDeliveryChannel / releaseDeliveryChannel — atomic claim with lease', () => {
+  test('first claim succeeds; a concurrent second claim on the same delivery fails', async () => {
+    const first = await notify.claimDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook' });
+    const second = await notify.claimDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook' });
+    expect(first).toBe(true);
+    expect(second).toBe(false);
+  });
+
+  test('releasing lets a subsequent claim succeed again', async () => {
+    await notify.claimDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook' });
+    await notify.releaseDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook' });
+    expect(await notify.claimDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook' })).toBe(true);
+  });
+
+  test('claims on different channels of the same delivery are independent', async () => {
+    expect(await notify.claimDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'email' })).toBe(true);
+    expect(await notify.claimDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook' })).toBe(true);
+  });
+
+  test('releasing an unclaimed delivery is a safe no-op', async () => {
+    await expect(notify.releaseDeliveryChannel({ ownerId: 'usr_a', eventId: 'evt_never', channel: 'email' })).resolves.toBeUndefined();
+  });
+});
+
+describe('auditNotificationAction', () => {
+  test('writes an entry to the shared audit:notify:log sorted set, never a secret value', async () => {
+    await notify.auditNotificationAction('usr_a', 'WEBHOOK_SECRET_ROTATED');
+    const raw = await global.__fakeRedisForTest.zrange('audit:notify:log', 0, -1);
+    expect(raw).toHaveLength(1);
+    const entry = JSON.parse(raw[0]);
+    expect(entry.owner_id).toBe('usr_a');
+    expect(entry.action).toBe('WEBHOOK_SECRET_ROTATED');
+    expect(entry.ts).toBeDefined();
+  });
+
+  test('a logging failure never throws or blocks the caller', async () => {
+    const original = global.__fakeRedisForTest.zadd;
+    global.__fakeRedisForTest.zadd = () => { throw new Error('redis down'); };
+    await expect(notify.auditNotificationAction('usr_a', 'PREFERENCES_UPDATED')).resolves.toBeUndefined();
+    global.__fakeRedisForTest.zadd = original;
+  });
+});
+
+describe('getOldestPendingAgeSeconds — observability', () => {
+  test('null when the queue is empty', async () => {
+    expect(await notify.getOldestPendingAgeSeconds()).toBeNull();
+  });
+
+  test('0 (not negative) when the only pending item is not yet due', async () => {
+    await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_1', watchlistId: 'wl_1', channels: ['webhook'] });
+    await notify.recordAttemptOutcome({ ownerId: 'usr_a', eventId: 'evt_1', channel: 'webhook', success: false }); // schedules a future backoff
+    expect(await notify.getOldestPendingAgeSeconds()).toBe(0);
+  });
+
+  test('reflects how overdue the most-overdue item is once its next_attempt_at has passed', async () => {
+    await notify.enqueuePendingDelivery({ ownerId: 'usr_a', eventId: 'evt_1', watchlistId: 'wl_1', channels: ['webhook'] }); // due immediately (now)
+    await new Promise(r => setTimeout(r, 20));
+    const age = await notify.getOldestPendingAgeSeconds();
+    expect(age).toBeGreaterThanOrEqual(0);
   });
 });
