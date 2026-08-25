@@ -2406,11 +2406,15 @@ function generatePostHTML(item) {
   // escHtml()-wrapped in HTML attributes below, but raw in the JSON-LD block
   // — script-tag content isn't HTML-entity-decoded, so escHtml would corrupt
   // the query string's "&" separators into literal "&amp;" text there.
-  // v=2 mirrors automation/authority_transformer.py's OG_CARD_VERSION — a
+  // v=3 mirrors automation/authority_transformer.py's OG_CARD_VERSION — a
   // fixed cache-key differentiator bumped only on an actual api/og.js
   // layout change, so Vercel's long-lived edge cache doesn't keep serving a
-  // stale pre-redesign PNG for a URL it already cached.
-  const ogImageUrl = `${CFG.baseUrl}/api/og?title=${encodeURIComponent(safeTitle)}&severity=${encodeURIComponent(sevLabel)}&cve=${encodeURIComponent(item.id||'')}&cvss=${encodeURIComponent(hasCvss?cvss:'')}&type=${encodeURIComponent(typeLabel)}&v=2`;
+  // stale pre-redesign PNG for a URL it already cached. This blog-side path
+  // has no KEV/EPSS-equivalent field on `item` to pass through (unlike the
+  // Blogger/Python pipeline's DiscoveredArticle) — kev/epss stay omitted
+  // here rather than invented, same discipline as the rest of this file's
+  // metadata assembly.
+  const ogImageUrl = `${CFG.baseUrl}/api/og?title=${encodeURIComponent(safeTitle)}&severity=${encodeURIComponent(sevLabel)}&cve=${encodeURIComponent(item.id||'')}&cvss=${encodeURIComponent(hasCvss?cvss:'')}&type=${encodeURIComponent(typeLabel)}&v=3`;
   const isCVEItem = /^CVE-/i.test(item.id);
   const cleanDescText = stripHtml(item.desc||'')
     .replace(/```[\s\S]*?```/g,' ')

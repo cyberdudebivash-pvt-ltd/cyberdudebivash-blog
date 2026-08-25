@@ -173,7 +173,7 @@ function buildDynamicOgImageUrl({ baseUrl, title, severity = 'HIGH', cveId = '',
   params.set('type', type || 'THREAT INTEL');
   // Mirrors automation/authority_transformer.py's OG_CARD_VERSION — see
   // that constant's comment for why this is a fixed, deterministic value.
-  params.set('v', '2');
+  params.set('v', '3');
   return `${baseUrl}/api/og?${params.toString()}`;
 }
 
