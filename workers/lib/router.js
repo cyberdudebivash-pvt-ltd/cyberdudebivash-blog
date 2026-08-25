@@ -36,6 +36,7 @@ const HANDLER_MODULES = {
   'api/v1/detections/rules/[id]': () => require('../../api/v1/detections/rules/[id]'),
   'api/v1/intel': () => require('../../api/v1/intel'),
   'api/v1/watchlists': () => require('../../api/v1/watchlists'),
+  'api/v1/notifications': () => require('../../api/v1/notifications'),
   'api/v1/intelligence/confidence': () => require('../../api/v1/intelligence/confidence'),
   'api/v1/intelligence/correlations': () => require('../../api/v1/intelligence/correlations'),
   'api/v1/intelligence/graph': () => require('../../api/v1/intelligence/graph'),

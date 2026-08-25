@@ -180,6 +180,13 @@ function getWatchlistEntitlements(tier) {
     max_watchlists: MAX_WATCHLISTS_PER_OWNER,
     max_entities_per_watchlist: MAX_ENTITIES_PER_WATCHLIST,
     feed_max_entries: FEED_MAX_PER_OWNER,
+    // Same flat-across-tiers posture as every limit above (a documented
+    // gap, not a decision — see platform/open-issues.md): no centralized
+    // entitlement layer exists yet to gate this by tier, and inventing a
+    // tier restriction here would be pricing this codebase has no
+    // authority to set.
+    email_notifications_enabled: true,
+    webhook_notifications_enabled: true,
   };
 }
 
