@@ -19,6 +19,8 @@
  *  action=actor        GET  Single threat actor detail + relationships (?id=actor:...)
  *  action=ioc          GET  Single IOC detail + linked intel — PRO+ only (?id=ioc:...)
  *  action=report       GET  Single published intelligence report detail (?id=SA-YYYY-NNNN)
+ *  action=dossier      GET  Evidence-backed intelligence dossier — CVE or campaign only
+ *                           (?type=cve&id=CVE-YYYY-NNNNN or ?type=campaign&id=campaign:...)
  *
  * Backward-compat rewrites in vercel.json map old paths to ?action= params.
  */
@@ -27,7 +29,8 @@ const crypto = require('crypto');
 const { authenticate, successResponse, apiError, corsHeaders } = require('../_lib/middleware');
 const { getIntel, getCVEDetail, searchIntel, getPlatformStats,
         getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI,
-        unifiedSearch, getActorDetailAPI, getIocDetailAPI, getReportDetailAPI } = require('../_lib/intel');
+        unifiedSearch, getActorDetailAPI, getIocDetailAPI, getReportDetailAPI,
+        getDossierAPI } = require('../_lib/intel');
 const sec = require('../_lib/security');
 
 /* ─── Main Router ────────────────────────────────────────────── */
@@ -374,10 +377,41 @@ module.exports = async (req, res) => {
         });
       }
 
+      /* ── GET ?action=dossier&type=cve|campaign&id=... ─────────── */
+      case 'dossier': {
+        const type = String(req.query.type || '').trim().toLowerCase();
+        if (type !== 'cve' && type !== 'campaign') {
+          return apiError(res, 400, 'UNSUPPORTED_ENTITY_TYPE',
+            `Dossier type "${type || '(missing)'}" is not supported. Valid: cve, campaign. ` +
+            'Example: GET /api/v1/intel?action=dossier&type=cve&id=CVE-2024-12345');
+        }
+        const rawId = String(req.query.id || '').trim();
+        if (!rawId) {
+          return apiError(res, 400, 'MISSING_DOSSIER_ID',
+            `${type} ID required. Example: GET /api/v1/intel?action=dossier&type=${type}&id=` +
+            (type === 'cve' ? 'CVE-2024-12345' : 'campaign:cve-2024-27199'));
+        }
+        if (type === 'cve' && !/^CVE-\d{4}-\d{4,7}$/i.test(rawId)) {
+          return apiError(res, 400, 'INVALID_CVE_ID', `Invalid CVE ID format: "${rawId}". Expected: CVE-YYYY-NNNNN`);
+        }
+        const { found, dossier } = getDossierAPI(type, rawId, user.tier);
+        if (!found) {
+          return apiError(res, 404, 'DOSSIER_NOT_FOUND',
+            `No ${type} record found for "${rawId}". A dossier can only be assembled for an entity already tracked by SENTINEL APEX.`);
+        }
+        return successResponse(res, { dossier }, {
+          endpoint:       `/api/v1/intel?action=dossier&type=${type}&id=${encodeURIComponent(rawId)}`,
+          description:    'Evidence-backed intelligence dossier — deterministic assessment, relationships, evidence, timeline, ATT&CK context, and analyst actions',
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
       /* ── Unknown action ────────────────────────────────────── */
       default:
         return apiError(res, 400, 'INVALID_ACTION',
-          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors, unified-search, actor, ioc, report`);
+          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors, unified-search, actor, ioc, report, dossier`);
     }
   } catch (e) {
     return apiError(res, 500, 'INTERNAL_ERROR',
