@@ -6,6 +6,16 @@ jest.mock('../redis', () => {
   global.__fakeRedisForTest = instance;
   return instance;
 });
+// This file's "notification dispatch integration" describe block exercises
+// notification-store.js indirectly (via change-engine.js's own dispatch
+// call) -- that store is D1-backed, not Redis-backed, as of the
+// Cloudflare-Only Alert Runtime tranche.
+jest.mock('../d1', () => {
+  const { createFakeD1 } = require('../__fixtures__/fake-d1');
+  const instance = createFakeD1();
+  global.__fakeD1ForTest = instance;
+  return instance;
+});
 
 let fakeCves = {};
 let fakeCampaigns = {};
@@ -33,6 +43,7 @@ function resetFakes() {
 
 beforeEach(() => {
   global.__fakeRedisForTest._reset();
+  global.__fakeD1ForTest._reset();
   resetFakes();
 });
 
@@ -319,7 +330,7 @@ describe('notification dispatch integration (Alert Delivery v1)', () => {
     const due = await notify.getDuePendingDeliveries(10);
     expect(due).toHaveLength(2);
     expect(due.every(r => r.owner_id === 'usr_notify')).toBe(true);
-    expect(due.every(r => r.channels_pending.includes('email'))).toBe(true);
+    expect(due.every(r => r.channel === 'email')).toBe(true);
     expect(new Set(due.map(r => r.event_id)).size).toBe(2); // distinct events, not a duplicate enqueue
   });
 
@@ -351,17 +362,23 @@ describe('notification dispatch integration (Alert Delivery v1)', () => {
   test('a notification-dispatch failure never prevents the feed fan-out that already succeeded', async () => {
     // dispatchNewEvent is enqueue-only and error-swallowed at the call
     // site (see change-engine.js) -- simulate a hard failure by breaking
-    // notification-store's redis access mid-flight and confirm the
-    // watcher's feed entry (the pre-existing, load-bearing behavior) is
-    // still written.
+    // notification-store's D1 access mid-flight and confirm the watcher's
+    // feed entry (the pre-existing, load-bearing behavior) is still
+    // written. Was a broken redis.hget before the Cloudflare-Only Alert
+    // Runtime tranche -- notification-store.js no longer touches Redis at
+    // all (fully D1-backed), so that no longer injects any real failure
+    // into this path (email_override is already set below, so
+    // getOwnerAccountEmail()'s own redis calls are short-circuited and
+    // never even reached) -- breaking d1.query is the equivalent
+    // failure-injection point in the new design.
     fakeCves['CVE-2026-5004'] = { cvss: 5.0, threat_level: 'medium', cisa_kev: false, exploited: false };
     const wlId = await watchCve('usr_resilient', 'CVE-2026-5004');
     await notify.updatePreferences('usr_resilient', { email_override: 'a@example.com' });
     const intel = require('../intel');
     await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5004', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
 
-    const originalHget = global.__fakeRedisForTest.hget;
-    global.__fakeRedisForTest.hget = async () => { throw new Error('simulated notification-store failure'); };
+    const originalQuery = global.__fakeD1ForTest.query;
+    global.__fakeD1ForTest.query = async () => { throw new Error('simulated notification-store failure'); };
     try {
       fakeCves['CVE-2026-5004'] = { ...fakeCves['CVE-2026-5004'], cisa_kev: true };
       const outcome = await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5004', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
@@ -369,7 +386,7 @@ describe('notification dispatch integration (Alert Delivery v1)', () => {
       const feed = await store.getOwnerFeedPage('usr_resilient', { limit: 10, cursor: 0 });
       expect(feed.eventIds.length).toBeGreaterThan(0);
     } finally {
-      global.__fakeRedisForTest.hget = originalHget;
+      global.__fakeD1ForTest.query = originalQuery;
     }
   });
 });

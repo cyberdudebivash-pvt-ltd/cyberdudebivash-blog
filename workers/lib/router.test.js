@@ -204,4 +204,27 @@ describe('handleScheduled — dormant Cloudflare Cron entry point', () => {
     };
     await assert.rejects(() => handleScheduled({}, {}, {}, deps), /redis unavailable/);
   });
+
+  test('registers env.DB via setD1Binding before running -- the native-binding fast path', async () => {
+    let boundDb = 'not-called';
+    const fakeDb = { marker: 'the-real-d1-binding' };
+    const deps = {
+      changeEngine: { evaluateWatchedEntities: async () => ({ evaluated: 0 }) },
+      notificationDispatch: { processDueDeliveries: async () => ({ delivered: 0 }) },
+      d1: { setD1Binding: (db) => { boundDb = db; } },
+    };
+    await handleScheduled({}, { DB: fakeDb }, {}, deps);
+    assert.equal(boundDb, fakeDb);
+  });
+
+  test('does not call setD1Binding when env has no DB (e.g. a misconfigured deploy)', async () => {
+    let called = false;
+    const deps = {
+      changeEngine: { evaluateWatchedEntities: async () => ({ evaluated: 0 }) },
+      notificationDispatch: { processDueDeliveries: async () => ({ delivered: 0 }) },
+      d1: { setD1Binding: () => { called = true; } },
+    };
+    await handleScheduled({}, {}, {}, deps);
+    assert.equal(called, false);
+  });
 });

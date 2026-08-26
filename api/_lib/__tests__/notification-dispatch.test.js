@@ -7,6 +7,19 @@ jest.mock('../redis', () => {
   return instance;
 });
 
+// notification-store.js (which this module's processDueDeliveries()/
+// dispatchNewEvent() call for all delivery-state reads/writes) is now
+// D1-backed, not Redis-backed -- watchlist-store.js (still Redis-backed,
+// out of scope for this migration) and getOwnerAccountEmail()'s own
+// direct redis.js calls are the only reason the redis mock above is still
+// needed in this file.
+jest.mock('../d1', () => {
+  const { createFakeD1 } = require('../__fixtures__/fake-d1');
+  const instance = createFakeD1();
+  global.__fakeD1ForTest = instance;
+  return instance;
+});
+
 const fakeResendState = { canSend: true, sendImpl: null };
 jest.mock('../resend', () => ({
   canSendEmail: () => fakeResendState.canSend,
@@ -42,6 +55,7 @@ function makeEvent(overrides = {}) {
 
 beforeEach(() => {
   global.__fakeRedisForTest._reset();
+  global.__fakeD1ForTest._reset();
   Object.keys(fakeEvents).forEach(k => delete fakeEvents[k]);
   fakeResendState.canSend = true;
   fakeResendState.sendImpl = null;
@@ -446,10 +460,11 @@ describe('processDueDeliveries — the sender (first attempt and retries share o
     await dispatch.dispatchNewEvent({ ownerId: 'usr_a', watchlistId: null, event: fakeEvents['evt_1'] });
 
     // Two "simultaneous" sweeps racing the same due channel -- only one
-    // may win the atomic claim (notification-store.js's SET-NX-PX), so
-    // exactly one send happens regardless of scheduler overlap (the
-    // orchestration mandate's core non-negotiable: never assume the
-    // trigger provides exactly-once execution on its own).
+    // may win the atomic D1 claim (notification-store.js's conditional
+    // UPDATE, see claimDeliveryChannel()), so exactly one send happens
+    // regardless of scheduler overlap (the orchestration mandate's core
+    // non-negotiable: never assume the trigger provides exactly-once
+    // execution on its own).
     const [a, b] = await Promise.all([
       dispatch.processDueDeliveries({ limit: 10 }),
       dispatch.processDueDeliveries({ limit: 10 }),
@@ -469,5 +484,39 @@ describe('processDueDeliveries — the sender (first attempt and retries share o
     await dispatch.processDueDeliveries({ limit: 10 });
     const again = await dispatch.processDueDeliveries({ limit: 10 });
     expect(again.records_processed).toBe(0); // record was fully resolved and removed
+  });
+
+  // D1-specific failure injection: simulates a worker that successfully
+  // claims a job then crashes/errors before recordAttemptOutcome can
+  // finish writing (a D1 write failure mid-flight, not a delivery
+  // failure). The claim must still be released via the try/finally in
+  // processDueDeliveries() -- proving a crash here does not leak the
+  // claim until its 90s lease naturally expires.
+  test('a D1 failure while recording the outcome still releases the claim via finally, not leaking it until lease expiry', async () => {
+    await notify.updatePreferences('usr_a', { email_override: 'a@example.com' });
+    fakeEvents['evt_1'] = makeEvent();
+    await dispatch.dispatchNewEvent({ ownerId: 'usr_a', watchlistId: null, event: fakeEvents['evt_1'] });
+
+    const originalRunMutationWithChanges = global.__fakeD1ForTest.runMutationWithChanges;
+    let failNext = true;
+    global.__fakeD1ForTest.runMutationWithChanges = (...args) => {
+      // Fail exactly the claim's own resolution write (recordAttemptOutcome
+      // calling DELETE on success), not the claimDeliveryChannel() call
+      // that must succeed first for this scenario to be meaningful.
+      if (failNext && args[0].startsWith('DELETE FROM notification_delivery_jobs WHERE delivery_id=? AND claim_token=?')) {
+        failNext = false;
+        throw new Error('simulated D1 write failure');
+      }
+      return originalRunMutationWithChanges(...args);
+    };
+
+    await expect(dispatch.processDueDeliveries({ limit: 10 })).rejects.toThrow('simulated D1 write failure');
+    global.__fakeD1ForTest.runMutationWithChanges = originalRunMutationWithChanges;
+
+    // The claim was released (not leaked) despite the crash -- an
+    // immediate next sweep can claim and deliver it again, it does not
+    // have to wait out the full 90s lease.
+    const recovered = await dispatch.processDueDeliveries({ limit: 10 });
+    expect(recovered.delivered).toBe(1);
   });
 });

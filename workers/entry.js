@@ -61,11 +61,15 @@ export default {
   async fetch(request, env) {
     return handleFetch(request, env);
   },
-  // Dormant until wrangler.jsonc's triggers.crons is populated (a
-  // separate, explicit operator-authorized decision -- see
-  // handleScheduled()'s own doc in lib/router.js for why this file does
-  // not make that decision itself). Exporting it now costs nothing at
-  // runtime when no cron is configured; Cloudflare simply never calls it.
+  // wrangler.jsonc's triggers.crons entry is now populated (Cloudflare-
+  // Only Alert Runtime tranche -- see handleScheduled()'s own doc in
+  // lib/router.js for the full authorization trail). Still not provably
+  // LIVE from this codebase's own evidence: this export only actually
+  // gets invoked once an operator with real Cloudflare credentials runs
+  // `wrangler deploy` from an authenticated account, which this sandbox
+  // does not have (`wrangler whoami` -> not authenticated). Exporting it
+  // costs nothing at runtime either way; Cloudflare simply never calls it
+  // until that deploy happens.
   async scheduled(controller, env, ctx) {
     return handleScheduled(controller, env, ctx);
   },
