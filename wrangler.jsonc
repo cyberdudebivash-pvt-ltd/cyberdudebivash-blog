@@ -7,21 +7,33 @@
   // remain deferred. Safe to build, dry-run, and run under a local
   // Workerd only for the routing/asset surface.
   //
-  // d1_databases and triggers.crons BELOW are new as of the Cloudflare-
-  // Only Alert Runtime tranche -- the operator has explicitly authorized
-  // Cloudflare Workers as the production alert-delivery runtime (see
-  // docs/audits/SENTINEL-APEX-CLOUDFLARE-ONLY-ALERT-RUNTIME-V1-CERTIFICATION.md),
-  // superseding this file's prior "scheduling authority is undecided"
-  // deferral for that specific subsystem. What this config change does
-  // NOT do: actually provision anything. This sandbox has no
-  // authenticated Cloudflare account access (`wrangler whoami` ->
-  // "not authenticated", confirmed before writing this) -- so
+  // d1_databases and triggers.crons were added for the Cloudflare-Only
+  // Alert Runtime tranche (alert delivery only, PR #138) -- the operator
+  // explicitly authorized Cloudflare Workers as the production alert-
+  // delivery runtime then, superseding this file's prior "scheduling
+  // authority is undecided" deferral for that specific subsystem. The
+  // Cloudflare-Only Runtime Completion v2 tranche extends the SAME
+  // database's scope to watchlists/change-detection (see migrations/
+  // 0002_watchlists_change_detection.sql) -- one database, not two,
+  // deliberately: change-engine.js already calls directly into the D1-
+  // backed notification-dispatch.js at fan-out time, and keeping both
+  // subsystems' state in one database preserves the option of a future
+  // atomic "event + match + outbox" transaction (D1 transactions cannot
+  // span databases) without forcing that design this round. database_name
+  // below was renamed from sentinel-apex-notification-delivery to
+  // sentinel-apex-core to reflect that broadened scope -- safe and
+  // costless, since no real database has ever been created against the
+  // old name in any sandbox this platform's work has run in (`wrangler
+  // whoami` has reported "not authenticated" in every one of them,
+  // including this round, confirmed before writing this).
+  //
+  // What this config change does NOT do: actually provision anything.
   // database_id below is intentionally blank (the schema marks it "not
   // required"; wrangler resolves it from database_name once a real
   // `wrangler d1 create` has run) and triggers.crons takes effect only
   // once an operator with real credentials runs `wrangler deploy`. Until
   // then this is code-complete configuration, not a live trigger --
-  // exactly the distinction the certification doc's own Known
+  // exactly the distinction each round's own certification doc Known-
   // Limitations section is built around.
 
   "name": "cyberdudebivash-blog",
@@ -100,24 +112,26 @@
     "enabled": true
   },
 
-  // D1 database binding for the alert-delivery control plane only (see
-  // migrations/0001_notification_delivery.sql and the Cloudflare Runtime
-  // Dependency Inventory §0 for exactly what this does and does not
-  // cover — watchlists/change-detection stay Redis-backed, out of
-  // scope). database_id is deliberately omitted rather than set to an
+  // D1 database binding, now covering the alert-delivery control plane
+  // (migrations/0001_notification_delivery.sql, PR #138) AND watchlists/
+  // change-detection state (migrations/0002_watchlists_change_detection.sql,
+  // this round) -- see this file's header comment for why one database,
+  // and the Cloudflare Runtime Inventory V2 doc for exactly what remains
+  // out of scope (auth, billing, ReportX, the Intel Factory content
+  // pipeline). database_id is deliberately omitted rather than set to an
   // empty string: the config schema marks it "not required" (confirmed
   // by parsing node_modules/wrangler/config-schema.json directly), and
   // wrangler resolves the binding from database_name for both --local
   // emulation and a real deploy. Add the minted UUID here the first
   // time an operator with authenticated Cloudflare access runs
-  // `wrangler d1 create sentinel-apex-notification-delivery` for real —
-  // until then this entry is code-complete configuration, not a live
-  // database (see this file's header comment; `wrangler whoami` in this
-  // sandbox: not authenticated).
+  // `wrangler d1 create sentinel-apex-core` for real — until then this
+  // entry is code-complete configuration, not a live database (see this
+  // file's header comment; `wrangler whoami` in this sandbox: not
+  // authenticated).
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "sentinel-apex-notification-delivery",
+      "database_name": "sentinel-apex-core",
       "migrations_dir": "./migrations"
     }
   ],
