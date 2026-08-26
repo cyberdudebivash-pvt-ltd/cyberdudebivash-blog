@@ -74,6 +74,7 @@ input:focus,select:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba
 .det-status-covered{background:rgba(0,255,136,.12);color:var(--apex-green)}
 .det-status-partial{background:rgba(255,140,0,.12);color:var(--apex-orange)}
 .det-status-none{background:rgba(107,114,128,.15);color:var(--apex-muted)}
+.det-status-gap{background:rgba(255,59,59,.12);color:var(--apex-red)}
 .det-fmt-btn{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;border:1px solid var(--apex-border);background:#0a0e18;color:var(--apex-cyan);cursor:pointer}
 .det-fmt-btn:hover{border-color:var(--apex-cyan)}
 .det-code{margin-top:10px;background:#05070c;border:1px solid var(--apex-border);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:11px;color:var(--apex-text);white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto}
@@ -213,6 +214,7 @@ async function loadDossier(type, id) {
     renderDossier(body.dossier, type);
     refreshWatchState(type, body.dossier.entity_id);
     refreshDetectionCoverage(type, body.dossier.entity_id, body.dossier.detections);
+    refreshDefenseCoverage(type, body.dossier.entity_id);
   } catch (e) {
     document.getElementById('dossier-root').innerHTML = '';
     showStatus('<div class="alert alert-error">Network error loading dossier. Please retry.</div>');
@@ -393,6 +395,77 @@ async function refreshDetectionCoverage(type, id, initialSummary) {
   } catch (e) {
     root.innerHTML = `<div class="empty-state">Detection coverage could not be loaded.</div>`;
   }
+}
+
+/* ───────────────────────── Your Defense Coverage (Customer Telemetry &
+   Environment-Aware Defense Coverage Fabric v1) ─────────────────────────
+   Same async-enhancement pattern as refreshDetectionCoverage() above --
+   fetched independently, in parallel, never blocking the base dossier
+   render. Safe with no Defense Profile configured (mandate Phase 37): the
+   API always returns global coverage, this panel just shows a setup
+   prompt instead of per-technique customer status in that case. */
+const CUSTOMER_STATUS_LABEL = {
+  READY: 'Ready', PARTIALLY_READY: 'Partially Ready', TELEMETRY_GAP: 'Telemetry Gap',
+  UNSUPPORTED_PLATFORM: 'Unsupported Platform', UNKNOWN: 'Unknown',
+  NO_VALIDATED_DETECTION: 'No Validated Detection', UNKNOWN_PROFILE: 'Not Assessed',
+};
+function custStatusClass(status) {
+  if (status === 'READY') return 'det-status-covered';
+  if (status === 'PARTIALLY_READY') return 'det-status-partial';
+  if (status === 'TELEMETRY_GAP' || status === 'UNSUPPORTED_PLATFORM') return 'det-status-gap';
+  return 'det-status-none';
+}
+
+async function refreshDefenseCoverage(type, id) {
+  const root = document.getElementById('defense-coverage-root');
+  if (!root) return;
+  try {
+    const res = await fetch(`${API}/api/v1/intel?action=defense-coverage&type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`, {
+      headers: { 'X-API-Key': sessionKey },
+    });
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      root.innerHTML = `<div class="empty-state">Your Defense Coverage could not be loaded.</div>`;
+      return;
+    }
+    root.innerHTML = renderDefenseCoverage(body.coverage);
+  } catch (e) {
+    root.innerHTML = `<div class="empty-state">Your Defense Coverage could not be loaded.</div>`;
+  }
+}
+
+function renderDefenseCoverage(cov) {
+  if (!cov || !cov.observed_techniques) {
+    return '<div class="empty-state">No ATT&amp;CK techniques currently established for this record — environment-specific coverage cannot be assessed without them.</div>';
+  }
+  if (!cov.profile_configured) {
+    return '<div class="empty-state">Configure your defense environment to see environment-specific detection readiness. ' +
+      '<a href="/defense-profile.html" style="color:var(--apex-cyan)">Set up your Defense Environment →</a></div>';
+  }
+  const s = cov.customer_summary;
+  const stats = `
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-val" style="color:var(--apex-green)">${s.ready}</div><div class="stat-lbl">Ready</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--apex-orange)">${s.partial}</div><div class="stat-lbl">Partial</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--apex-red)">${s.telemetry_gap}</div><div class="stat-lbl">Telemetry Gap</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--apex-muted)">${s.unsupported_platform}</div><div class="stat-lbl">Unsupported Platform</div></div>
+    </div>`;
+  const rows = cov.techniques.map(t => {
+    const label = CUSTOMER_STATUS_LABEL[t.customer_status] || t.customer_status;
+    const missing = (t.customer_missing_telemetry || []).map(m => esc(m.source_label)).join(', ');
+    return `
+    <div class="det-row">
+      <div class="det-row-head">
+        <span class="technique-chip" style="margin:0">${esc(t.id)}</span>
+        <span class="det-status ${custStatusClass(t.customer_status)}">${esc(label)}</span>
+      </div>
+      ${t.customer_explanation ? `<div class="det-validation-line">${esc(t.customer_explanation)}</div>` : ''}
+      ${missing ? `<div class="det-validation-line">Missing telemetry: ${missing}</div>` : ''}
+      ${t.recommendation ? `<div class="det-validation-line">${esc(t.recommendation)}</div>` : ''}
+    </div>`;
+  }).join('');
+  return stats + '<div style="margin-top:14px">' + rows + '</div>' +
+    '<div class="rel-meta" style="margin-top:6px"><a href="/defense-profile.html" style="color:var(--apex-cyan)">Edit your Defense Environment →</a></div>';
 }
 
 function renderDetectionCoverage(cov) {
@@ -600,6 +673,11 @@ function renderDossier(d, type) {
       <div id="detections-root">${d.detections.available || (d.detections.coverage && d.detections.coverage.observed_techniques)
         ? '<div class="loading"><div class="spinner"></div>Loading detection coverage…</div>'
         : `<div class="empty-state">${esc(d.detections.note || 'No detection artifact currently available for this record.')}</div>`}</div>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Your Defense Coverage</h3>
+      <div id="defense-coverage-root"><div class="loading"><div class="spinner"></div>Loading your environment-specific coverage…</div></div>
     </div>
 
     <div class="card">
