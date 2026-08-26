@@ -1,22 +1,28 @@
 'use strict';
 
-const { createFakeRedis } = require('../__fixtures__/fake-redis');
-
-let fakeRedis;
+// payment-utils.js requires redis.js too (via other exports) and reads
+// crypto/env at module load -- mocked here even though watchlist-store.js
+// itself no longer touches Redis (migrated to D1, Cloudflare-Only Runtime
+// Completion v2), since payment-utils.js's own module-load-time redis.js
+// require would otherwise hit the unmocked real client.
 jest.mock('../redis', () => {
   const { createFakeRedis } = require('../__fixtures__/fake-redis');
   const instance = createFakeRedis();
   global.__fakeRedisForTest = instance;
   return instance;
 });
+jest.mock('../d1', () => {
+  const { createFakeD1 } = require('../__fixtures__/fake-d1');
+  const instance = createFakeD1();
+  global.__fakeD1ForTest = instance;
+  return instance;
+});
 
-// payment-utils.js requires redis.js too (via other exports) and reads
-// crypto/env at module load -- safe to require after the mock is set up.
 const store = require('../watchlist-store');
 
 beforeEach(() => {
-  fakeRedis = global.__fakeRedisForTest;
-  fakeRedis._reset();
+  global.__fakeRedisForTest._reset();
+  global.__fakeD1ForTest._reset();
 });
 
 describe('createWatchlist', () => {
@@ -163,6 +169,41 @@ describe('entity membership', () => {
   });
 });
 
+describe('concurrency (Phase 55-59) -- real Promise.all races, not simulated sequential claims', () => {
+  test('two concurrent addEntity calls for the same entity produce exactly one membership row, not two, not a crash', async () => {
+    const created = await store.createWatchlist({ ownerId: 'usr_a', name: 'L' });
+    const [first, second] = await Promise.all([
+      store.addEntity(created.watchlist.id, 'usr_a', 'cve', 'CVE-2026-7777'),
+      store.addEntity(created.watchlist.id, 'usr_a', 'cve', 'CVE-2026-7777'),
+    ]);
+    expect(first.error).toBeUndefined();
+    expect(second.error).toBeUndefined();
+    // Exactly one of the two racing calls observes itself as the creator --
+    // the other must see `duplicate: true`, proving ON CONFLICT DO NOTHING
+    // resolved the race rather than both callers believing they created it.
+    const dupFlags = [!!first.duplicate, !!second.duplicate].sort();
+    expect(dupFlags).toEqual([false, true]);
+
+    const list = await store.listEntities(created.watchlist.id, 'usr_a');
+    expect(list.entities).toHaveLength(1);
+  });
+
+  test('two concurrent appendToOwnerFeed calls for the same (owner, event) pair produce exactly one feed entry', async () => {
+    // Mirrors the real production scenario this schema was designed for:
+    // getWatchersForEntity() can return the same ownerId twice (two
+    // different watchlists tracking the same entity), so dispatchNewEvent
+    // can legitimately call appendToOwnerFeed twice for the same
+    // (owner, event) pair within a single evaluation cycle -- see
+    // migrations/0002_watchlists_change_detection.sql's owner_feed header.
+    await Promise.all([
+      store.appendToOwnerFeed('usr_shared', 'evt_concurrent_1', Date.now()),
+      store.appendToOwnerFeed('usr_shared', 'evt_concurrent_1', Date.now()),
+    ]);
+    const feed = await store.getOwnerFeedPage('usr_shared', { limit: 10, cursor: 0 });
+    expect(feed.eventIds).toEqual(['evt_concurrent_1']);
+  });
+});
+
 describe('deleteWatchlist', () => {
   test('deleting a watchlist removes it from the reverse index so future changes stop matching it', async () => {
     const created = await store.createWatchlist({ ownerId: 'usr_a', name: 'L' });
@@ -233,12 +274,9 @@ describe('getWatchlistEntitlements', () => {
 });
 
 describe('audit log', () => {
-  test('mutating actions write to audit:watchlist:log, not the payment audit log', async () => {
+  test('mutating actions write to watchlist_audit_log, a dedicated D1 table', async () => {
     await store.createWatchlist({ ownerId: 'usr_a', name: 'L' });
-    const dump = fakeRedis._dump();
-    expect(dump.zsets.has('audit:watchlist:log')).toBe(true);
-    expect(dump.zsets.has('audit:payment:log')).toBe(false);
-    const entries = [...dump.zsets.get('audit:watchlist:log').keys()];
-    expect(entries.some(e => JSON.parse(e).action === 'WATCHLIST_CREATED')).toBe(true);
+    const entries = global.__fakeD1ForTest._dump().watchlistAuditLog;
+    expect(entries.some(e => e.action === 'WATCHLIST_CREATED')).toBe(true);
   });
 });
