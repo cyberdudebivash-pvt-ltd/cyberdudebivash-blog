@@ -35,10 +35,11 @@ name: "📨 SENTINEL APEX — Watchlist Alert Delivery"
 # tracked CVE's KEV status flips" promise still false end-to-end (nothing
 # would create new events to deliver) -- the two scripts already share an
 # identical CLI-wrapper shape, so covering both here is one extra `run`
-# line, not a parallel mechanism. Change evaluation/watchlists remain
-# Redis-backed and out of scope for the D1 migration (see the Dependency
-# Inventory doc §0) -- only the DELIVER step's own storage moved to D1;
-# the EVALUATE step's Redis requirement is unchanged.
+# line, not a parallel mechanism. Watchlists/change-detection moved from
+# Redis to Cloudflare D1 as of the Cloudflare-Only Runtime Completion v2
+# tranche (see watchlist-store.js's own header) -- the EVALUATE step now
+# needs D1 too, not just Redis (see the secrets note below for exactly
+# why each step needs each store).
 #
 # Concurrency (not correctness): cancel-in-progress:false makes an
 # overlapping invocation WAIT rather than run in parallel, which reduces
@@ -52,29 +53,31 @@ name: "📨 SENTINEL APEX — Watchlist Alert Delivery"
 # regardless of what triggers it, how many times, or which runtime it
 # executes on.
 #
-# Required GitHub Actions repository secrets:
-#   - UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN -- gates the
-#     EVALUATE step (change detection/watchlists, unchanged by this
-#     migration) AND the DELIVER step's own customer-identity lookup
-#     (notification-dispatch.js's getOwnerAccountEmail() and the
-#     watchlist-name lookup both still read the Redis-backed
-#     auth/watchlist stores -- those are separate, LEGACY subsystems this
-#     tranche does not touch; see the Dependency Inventory doc §2).
+# Required GitHub Actions repository secrets (both steps now need BOTH
+# stores, since the Cloudflare-Only Runtime Completion v2 tranche moved
+# watchlists/change-detection onto D1 alongside the already-D1-backed
+# alert-delivery control plane -- a real change from this workflow's
+# prior shape, where only the deliver step needed D1):
+#   - UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN -- gates BOTH
+#     steps' customer-identity lookups (notification-dispatch.js's
+#     getOwnerAccountEmail(), reached during the EVALUATE step's own
+#     fan-out via dispatchNewEvent(), and again from the DELIVER step) --
+#     auth/billing remain Redis-backed, LEGACY subsystems this tranche
+#     does not touch; see the Cloudflare Runtime Inventory V2 doc.
 #   - CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_D1_DATABASE_ID /
-#     CLOUDFLARE_API_TOKEN -- new this tranche, gates the DELIVER step's
-#     own delivery-state storage (api/_lib/d1.js's REST API transport --
-#     this script runs under plain Node, never inside a Worker, so it
-#     always uses the REST path, never the native env.DB binding). As of
-#     this workflow's update it is UNVERIFIED/likely NOT YET configured
-#     as GitHub Actions repository secrets (this sandbox has no
-#     authenticated Cloudflare account access to provision a real D1
-#     database or mint an API token in the first place -- `wrangler
-#     whoami` -> not authenticated, confirmed before this change). Mirrors
-#     the existing Redis preflight-and-skip pattern below: if unset, the
-#     deliver step (only) skips with a visible warning rather than
-#     failing confusingly on every scheduled run -- the evaluate step
-#     keeps running normally on its own, independent Redis-only gate, so
-#     change detection is not blocked on D1 provisioning.
+#     CLOUDFLARE_API_TOKEN -- gates BOTH steps' own D1-backed state
+#     (watchlists/snapshots/events for evaluate; delivery jobs/log for
+#     deliver) via api/_lib/d1.js's REST API transport (this script runs
+#     under plain Node, never inside a Worker, so it always uses the REST
+#     path, never the native env.DB binding). As of this workflow's
+#     update it is UNVERIFIED/likely NOT YET configured as GitHub Actions
+#     repository secrets (this sandbox has no authenticated Cloudflare
+#     account access to provision a real D1 database or mint an API
+#     token in the first place -- `wrangler whoami` -> not authenticated,
+#     confirmed before this change). If unset, BOTH steps now skip with a
+#     visible warning rather than failing confusingly on every scheduled
+#     run -- there is no longer a "D1-independent" evaluate path once
+#     watchlists/change-detection depend on D1 too.
 # RESEND_API_KEY is passed through if configured but not required --
 # deliver-watchlist-notifications.js already handles its absence
 # gracefully (email deliveries fail soft as EMAIL_NOT_CONFIGURED and
@@ -139,14 +142,17 @@ jobs:
             echo "d1_ready=true" >> "$GITHUB_OUTPUT"
           else
             echo "d1_ready=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Alert delivery skipped — CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_D1_DATABASE_ID / CLOUDFLARE_API_TOKEN are not configured as GitHub Actions repository secrets yet. Watchlist change evaluation still runs normally on its own Redis-only gate; only the D1-backed delivery step is affected."
+            echo "::warning::Watchlist change evaluation AND alert delivery both skipped — CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_D1_DATABASE_ID / CLOUDFLARE_API_TOKEN are not configured as GitHub Actions repository secrets yet. Both steps now depend on D1 (watchlists/change-detection as of the Cloudflare-Only Runtime Completion v2 tranche, delivery state since PR #138)."
           fi
 
       - name: "🔎 Evaluate watchlist changes"
-        if: steps.preflight.outputs.redis_ready == 'true'
+        if: steps.preflight.outputs.redis_ready == 'true' && steps.preflight.outputs.d1_ready == 'true'
         env:
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node scripts/evaluate-watchlist-changes.js
 
       - name: "📨 Deliver due alerts"
