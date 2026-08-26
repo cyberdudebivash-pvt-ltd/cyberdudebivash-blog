@@ -5,10 +5,14 @@
 // must 401 before touching any watchlist logic, (2) authenticate() mocked
 // to return a controlled {tier, userId} while everything downstream
 // (watchlist-store.js, change-engine.js) runs for real -- against a fake
-// in-memory Redis (api/_lib/__fixtures__/fake-redis.js) rather than
-// a live Upstash instance, since watchlists are customer-owned mutable
+// in-memory D1 (api/_lib/__fixtures__/fake-d1.js) rather than a live
+// Cloudflare D1 database, since watchlists are customer-owned mutable
 // state, unlike the read-only canonical intel the dossier tests exercise
-// against real production data.
+// against real production data. The Redis mock stays too -- change-engine.js
+// requires notification-dispatch.js, which still requires redis at module
+// load (getOwnerAccountEmail(); auth/billing remain Redis-backed, LEGACY
+// subsystems this tranche does not touch) -- both stores are needed even
+// though watchlists/change-detection themselves moved to D1.
 jest.mock('../../_lib/middleware', () => {
   const actual = jest.requireActual('../../_lib/middleware');
   return { ...actual, authenticate: jest.fn(actual.authenticate) };
@@ -17,6 +21,12 @@ jest.mock('../../_lib/redis', () => {
   const { createFakeRedis } = require('../../_lib/__fixtures__/fake-redis');
   const instance = createFakeRedis();
   global.__fakeRedisForTest = instance;
+  return instance;
+});
+jest.mock('../../_lib/d1', () => {
+  const { createFakeD1 } = require('../../_lib/__fixtures__/fake-d1');
+  const instance = createFakeD1();
+  global.__fakeD1ForTest = instance;
   return instance;
 });
 
@@ -54,6 +64,7 @@ async function call(action, { method = 'GET', query = {}, body = null, ip } = {}
 
 beforeEach(() => {
   global.__fakeRedisForTest._reset();
+  global.__fakeD1ForTest._reset();
   authenticate.mockReset();
   authenticate.mockImplementation(jest.requireActual('../../_lib/middleware').authenticate);
 });

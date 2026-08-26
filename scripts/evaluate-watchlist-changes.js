@@ -3,19 +3,24 @@
  * SENTINEL APEX — Watchlist Change Evaluation
  *
  * Thin CLI wrapper around api/_lib/change-engine.js's evaluateWatchedEntities().
- * Runs on a real autonomous schedule as of Alert Orchestration v1:
- * .github/workflows/alert-delivery.yml's native GitHub Actions
- * `schedule:` trigger (every 30 minutes, immediately followed by
- * scripts/deliver-watchlist-notifications.js in the same run — see that
- * workflow's header for the cadence reasoning and why GitHub Actions
- * rather than a Cloudflare Cron Trigger, which wrangler.jsonc still
- * explicitly defers pending separate operator authorization). Still safe
- * to run manually or via any other external scheduler too — this
- * function's own idempotent/replay-safe event creation (see change-
- * engine.js) does not depend on any particular caller.
+ * Runs on a real autonomous schedule: .github/workflows/alert-delivery.yml's
+ * native GitHub Actions `schedule:` trigger (every 30 minutes, immediately
+ * followed by scripts/deliver-watchlist-notifications.js in the same run
+ * — see that workflow's header for the cadence reasoning). Still safe to
+ * run manually or via any other external scheduler too — this function's
+ * own idempotent/replay-safe event creation (see change-engine.js) does
+ * not depend on any particular caller.
+ *
+ * Storage: watchlists/entities/snapshots/events moved from Redis to
+ * Cloudflare D1 as of the Cloudflare-Only Runtime Completion v2 tranche
+ * (see watchlist-store.js's own header). This script's own dependency
+ * check reflects that -- D1 REST env vars, not Redis. A live Cloudflare
+ * Cron Trigger for evaluation specifically remains future work; this
+ * sandbox cannot prove live execution (see that tranche's certification
+ * doc).
  *
  * Usage:
- *   UPSTASH_REDIS_REST_URL=... UPSTASH_REDIS_REST_TOKEN=... \
+ *   CLOUDFLARE_ACCOUNT_ID=... CLOUDFLARE_D1_DATABASE_ID=... CLOUDFLARE_API_TOKEN=... \
  *     node scripts/evaluate-watchlist-changes.js [--batch=200]
  *
  * Bounded and cursor-resumable (see change-engine.js's own header): a run
@@ -33,8 +38,9 @@ function parseBatchArg(argv) {
 }
 
 async function main() {
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-    console.error('[WATCHLIST-EVAL] UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN must be set.');
+  const { isConfigured } = require('../api/_lib/d1');
+  if (!isConfigured()) {
+    console.error('[WATCHLIST-EVAL] CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_D1_DATABASE_ID / CLOUDFLARE_API_TOKEN must be set.');
     process.exit(1);
     return;
   }

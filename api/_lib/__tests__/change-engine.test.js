@@ -123,6 +123,27 @@ describe('idempotency and replay safety (Phase 31/32/70)', () => {
     const pageAfterReplay = await store.getOwnerFeedPage('usr_a', { limit: 10, cursor: 0 });
     expect(pageAfterReplay.total).toBe(firstChange.events.length);
   });
+
+  // Real Promise.all concurrency (Phase 55-59), not a simulated sequential
+  // claim: two logically-concurrent calls racing to persist the exact same
+  // event_id (e.g. an overlapping evaluation run) must not double-store it,
+  // and exactly one of the two must observe itself as the actual creator.
+  test('two concurrent persistEventIfNew calls for the same event_id do not duplicate storage, and exactly one call wins', async () => {
+    const event = {
+      event_id: 'evt_race_1', entity_type: 'cve', entity_id: 'CVE-2026-9001',
+      observed_at: new Date().toISOString(), change_type: 'CVE_KEV_ADDED',
+    };
+    const [first, second] = await Promise.all([
+      engine.persistEventIfNew({ ...event }),
+      engine.persistEventIfNew({ ...event }),
+    ]);
+    const createdFlags = [first.created, second.created].sort();
+    expect(createdFlags).toEqual([false, true]);
+
+    const stored = await engine.getEventById('evt_race_1');
+    expect(stored.entity_id).toBe('CVE-2026-9001');
+    expect(global.__fakeD1ForTest._dump().changeEvents.size).toBe(1);
+  });
 });
 
 describe('catastrophic data-loss protection (Phase 72)', () => {
@@ -187,9 +208,8 @@ describe('global event / customer match separation (Phase 67/68)', () => {
 
     // Exactly as many event objects were written as distinct changes
     // detected -- never one per watcher (25 watchers, still just N events).
-    const dump = global.__fakeRedisForTest._dump();
-    const eventKeys = [...dump.strings.keys()].filter(k => k.startsWith('event:'));
-    expect(eventKeys).toHaveLength(outcome.events.length);
+    const changeEvents = global.__fakeD1ForTest._dump().changeEvents;
+    expect(changeEvents.size).toBe(outcome.events.length);
   });
 });
 
@@ -265,10 +285,8 @@ describe('schema version change (Phase 30)', () => {
     // exercised without editing source, so this reaches the same branch
     // the same way a real version bump would: prior.schema_version !==
     // the module's current constant).
-    const raw = await global.__fakeRedisForTest.get('snapshot:cve:CVE-2026-1212');
-    const parsed = JSON.parse(raw);
-    parsed.schema_version = '0.9-old';
-    await global.__fakeRedisForTest.set('snapshot:cve:CVE-2026-1212', JSON.stringify(parsed));
+    const snapshotRow = global.__fakeD1ForTest._dump().entitySnapshots.get('cve|CVE-2026-1212');
+    snapshotRow.schema_version = '0.9-old';
 
     fakeCves['CVE-2026-1212'] = { ...fakeCves['CVE-2026-1212'], cisa_kev: true }; // a real change too, to prove it's suppressed by the re-baseline
     const outcome = await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-1212', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
@@ -362,23 +380,30 @@ describe('notification dispatch integration (Alert Delivery v1)', () => {
   test('a notification-dispatch failure never prevents the feed fan-out that already succeeded', async () => {
     // dispatchNewEvent is enqueue-only and error-swallowed at the call
     // site (see change-engine.js) -- simulate a hard failure by breaking
-    // notification-store's D1 access mid-flight and confirm the watcher's
+    // notification-store's write mid-flight and confirm the watcher's
     // feed entry (the pre-existing, load-bearing behavior) is still
     // written. Was a broken redis.hget before the Cloudflare-Only Alert
-    // Runtime tranche -- notification-store.js no longer touches Redis at
-    // all (fully D1-backed), so that no longer injects any real failure
-    // into this path (email_override is already set below, so
-    // getOwnerAccountEmail()'s own redis calls are short-circuited and
-    // never even reached) -- breaking d1.query is the equivalent
-    // failure-injection point in the new design.
+    // Runtime tranche; then a broken global d1.query after Alert Delivery
+    // v1 moved notification-store onto D1. As of the Cloudflare-Only
+    // Runtime Completion v2 tranche, change-engine.js's OWN snapshot/event
+    // persistence also moved onto the same shared D1 client (see
+    // watchable-state/change-detector D1 migration), so breaking
+    // d1.query globally now fails evaluateEntity's own loadSnapshot()
+    // before it ever reaches dispatch -- too broad to isolate a
+    // notification-store-specific failure anymore. Breaking
+    // notify.enqueuePendingDelivery() directly (the exact call
+    // dispatchNewEvent makes -- see notification-dispatch.js) is the
+    // precise equivalent failure-injection point in the new design
+    // (email_override is already set below, so getOwnerAccountEmail()'s
+    // own lookup is short-circuited and never even reached).
     fakeCves['CVE-2026-5004'] = { cvss: 5.0, threat_level: 'medium', cisa_kev: false, exploited: false };
     const wlId = await watchCve('usr_resilient', 'CVE-2026-5004');
     await notify.updatePreferences('usr_resilient', { email_override: 'a@example.com' });
     const intel = require('../intel');
     await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5004', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
 
-    const originalQuery = global.__fakeD1ForTest.query;
-    global.__fakeD1ForTest.query = async () => { throw new Error('simulated notification-store failure'); };
+    const originalEnqueue = notify.enqueuePendingDelivery;
+    notify.enqueuePendingDelivery = async () => { throw new Error('simulated notification-store failure'); };
     try {
       fakeCves['CVE-2026-5004'] = { ...fakeCves['CVE-2026-5004'], cisa_kev: true };
       const outcome = await engine.evaluateEntity({ entityType: 'cve', entityId: 'CVE-2026-5004', intel, graph: fakeGraph, reportsIndexData: fakeReportsIndex });
@@ -386,7 +411,7 @@ describe('notification dispatch integration (Alert Delivery v1)', () => {
       const feed = await store.getOwnerFeedPage('usr_resilient', { limit: 10, cursor: 0 });
       expect(feed.eventIds.length).toBeGreaterThan(0);
     } finally {
-      global.__fakeD1ForTest.query = originalQuery;
+      notify.enqueuePendingDelivery = originalEnqueue;
     }
   });
 });

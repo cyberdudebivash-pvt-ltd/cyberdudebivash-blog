@@ -1668,12 +1668,19 @@ own discipline.
    accepted limitation (these are audit trails without a natural shared
    unique key across the two stores, not authoritative state). Run
    `--apply` exactly once per environment.
-7. **Watchlists and change detection remain entirely Redis-backed** — this
-   tranche migrated the delivery control plane only. A customer's
-   end-to-end "I get alerted when a tracked CVE changes" flow still
-   depends on Redis for the detection half; only the delivery half moved
-   to D1. Full pipeline Redis-independence requires a future, separately-
-   scoped tranche.
+7. **~~Watchlists and change detection remain entirely Redis-backed~~ →
+   RESOLVED (Cloudflare-Only Runtime Completion v2, 2026-08-26).**
+   `watchlist-store.js` and `change-engine.js` migrated to the same shared
+   D1 database (`sentinel-apex-core`, renamed from
+   `sentinel-apex-notification-delivery` specifically to hold both this
+   tranche's tables and the delivery-control-plane tables from
+   migration 0001) — see
+   `docs/audits/SENTINEL-APEX-CLOUDFLARE-ONLY-RUNTIME-COMPLETION-V2-CERTIFICATION.md`
+   §10-13. The full customer "I get alerted when a tracked CVE changes"
+   pipeline is now D1-backed end to end for CVE/campaign watchlists. Still
+   open, tracked as Issue 27 below: live Cloudflare Cron proof for this
+   pipeline (same unresolved blocker as item 1 above, now applying to
+   watchlists' D1 usage too, not just delivery's).
 8. **ESLint is not configured anywhere in this repository** — discovered,
    not introduced, while attempting to lint this round's changes (no
    `eslint.config.js`/`.eslintrc*` exists at all). A platform-wide gap
@@ -1686,6 +1693,68 @@ own discipline.
    trap for any future task that widens Jest's `roots`/`testMatch`
    without first checking what else lives under the directory being
    added.
+
+---
+
+## Issue 27 — Cloudflare-Only Runtime Completion v2 real, disclosed gaps (2026-08-26)
+
+Found and deliberately scoped out while migrating watchlists/change-
+detection from Redis to D1 and auditing auth/billing/ReportX for
+migration readiness. Full detail in
+`docs/audits/SENTINEL-APEX-CLOUDFLARE-ONLY-RUNTIME-COMPLETION-V2-CERTIFICATION.md`;
+tracked here individually per this platform's own discipline.
+
+1. **No live Cloudflare Cron Trigger execution has been observed for the
+   watchlists/change-detection pipeline** — the same unresolved blocker
+   as Issue 26 item 1, now also applying to this tranche's D1 usage.
+   `wrangler whoami` re-run this round: still not authenticated. GitHub
+   Actions' 30-minute bridge schedule remains the only proven live
+   scheduler for both D1-backed subsystems.
+2. **`scripts/migrate-watchlists-redis-to-d1.js` has no dedicated test
+   file**, unlike `migrate-notifications-redis-to-d1.js` (PR #138), which
+   does — an explicit time/context-budget limitation for this tranche, not
+   a silent omission. It is read-only against Redis and dry-run-by-default
+   against D1 (asserted by `tests/governance-cloudflare-runtime.test.js`),
+   which bounds the risk of running it unreviewed, but its own
+   backfill-count-reconciliation logic is unverified by an automated test.
+3. **Auth remains entirely Redis-backed**, audited and deliberately
+   deferred — see
+   `docs/audits/SENTINEL-APEX-AUTH-BILLING-DEFERRAL-AUDIT-V2.md` §A. A
+   real, pre-existing TOCTOU race in duplicate-registration
+   (`user:email:*`, a plain GET-then-SET, not atomic) was found during
+   this audit and is recorded there, not fixed — out of scope for a
+   Redis/D1 runtime tranche, and touching auth without a dedicated
+   hardening round is explicitly the kind of destabilization this
+   platform's governance forbids.
+4. **Billing remains entirely Redis-backed**, audited and deliberately
+   deferred — see the same document, §B. Three pre-existing, unrelated
+   defects were found in `api/_lib/subscriptions.js` during this audit and
+   are recorded there, not fixed: a wrong amount calculation
+   (`getSubscription()`'s `// TODO: map from plan`), a `redis.keys()`
+   full-keyspace-scan anti-pattern (`getUserSubscriptions()`), and a
+   dead/unwired `handleSubscriptionWebhook()` dispatcher — the live
+   Razorpay webhook handles one-time payment capture directly and never
+   calls it, meaning the recurring-subscription lifecycle (activate/
+   pause/halt/cancel) has no live webhook wired to it today even though
+   subscription *creation* itself is live.
+5. **ReportX / Intelligence Factory (35 files) remains entirely
+   Redis-backed**, audited at a representative-sample level (4 of 35
+   files read in full) rather than exhaustively, and deliberately
+   deferred — see
+   `docs/audits/SENTINEL-APEX-REPORTX-INTEL-FACTORY-RUNTIME-AUDIT-V2.md`.
+   The remaining 31 files were not individually read; the sample showed
+   one consistent architectural pattern repeating, and no requirement,
+   defect, or incident evidences that any of them needs to change now.
+6. **`OTX_API_KEY` vs `ALIENVAULT_OTX_KEY` naming inconsistency** found
+   while building `docs/architecture/PRODUCTION-SECRETS-INVENTORY.md` —
+   both names are referenced across GitHub Actions workflows and
+   `automation/`, unresolved (out of scope for a Redis/D1 runtime audit).
+7. **`platform/capabilities.md`'s Watchlists row and
+   `docs/architecture/INTELLIGENCE-SOURCE-OF-TRUTH-MATRIX.md`'s Watchable
+   state / Intelligence change event / Watchlist / Notification rows**
+   needed correction this round (they described the pre-this-tranche
+   Redis-only reality) — updated in the same commit as this issue entry,
+   per both documents' own "update in the same commit" discipline.
 
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
