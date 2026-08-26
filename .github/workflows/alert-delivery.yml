@@ -1,21 +1,33 @@
 name: "📨 SENTINEL APEX — Watchlist Alert Delivery"
 
-# Autonomous Alert Orchestration v1. Runs evaluate-watchlist-changes.js
-# then deliver-watchlist-notifications.js on a schedule, replacing the
-# "run manually" posture both scripts previously documented in their own
-# headers (scripts/evaluate-watchlist-changes.js, scripts/deliver-
-# watchlist-notifications.js -- both still true about WHY: wrangler.jsonc
-# explicitly defers Cloudflare Cron Trigger authority pending separate
-# operator authorization, so this uses infrastructure already proven
-# reliable in this exact repo instead: freshness-check.yml and
-# sentinel-apex.yml already run natively on a 30-minute `schedule:`
-# cadence without issue. api/cron/dispatch-intel.js's own comment
-# documents that GitHub's native scheduler is UNRELIABLE below roughly
-# 30 minutes ("observed: 5-30 minute schedules firing every ~4h in
-# practice") -- so 30 minutes here is the fastest cadence this repo's own
-# evidence supports trusting, not an arbitrary choice. This defines the
-# real internal delivery SLO: a dispatch attempt within ~30 minutes of a
-# change becoming eligible, never claimed as real-time.
+# Autonomous Alert Orchestration, GitHub-Actions-to-D1 bridge. Runs
+# evaluate-watchlist-changes.js then deliver-watchlist-notifications.js on
+# a schedule. freshness-check.yml and sentinel-apex.yml already run
+# natively on a 30-minute `schedule:` cadence without issue in this exact
+# repo; api/cron/dispatch-intel.js's own comment documents that GitHub's
+# native scheduler is UNRELIABLE below roughly 30 minutes ("observed:
+# 5-30 minute schedules firing every ~4h in practice") -- so 30 minutes
+# here is the fastest cadence this repo's own evidence supports trusting,
+# not an arbitrary choice. This defines the real internal delivery SLO: a
+# dispatch attempt within ~30 minutes of a change becoming eligible, never
+# claimed as real-time.
+#
+# Runtime policy (Cloudflare-Only Alert Runtime tranche): this workflow is
+# a BRIDGE, not the sole production scheduler going forward -- Cloudflare
+# Workers is now the operator-authorized production alert-delivery
+# runtime (workers/entry.js's `scheduled` export, wrangler.jsonc's
+# triggers.crons), kept in step with this workflow by both paths reading/
+# writing the SAME D1 database (see notification-store.js). This workflow
+# stays ACTIVE, not retired, until live Cloudflare Cron execution is
+# actually proven from an environment with real Cloudflare credentials --
+# see docs/audits/SENTINEL-APEX-CLOUDFLARE-RUNTIME-DEPENDENCY-INVENTORY.md
+# §4 for why retiring it any earlier would leave a real gap ("do not
+# leave a period with zero scheduler"). This IS the hard acceptance
+# criterion this tranche was built to satisfy: production alert execution
+# continues via this path if Cloudflare Cron is unavailable or not yet
+# deployed, and continues via Cloudflare Cron if this workflow (or GitHub
+# Actions generally) is unavailable, because neither path is the only
+# writer of delivery state.
 #
 # Scope note: this workflow schedules BOTH change evaluation and alert
 # delivery, not delivery alone. Scheduling delivery without evaluation
@@ -23,27 +35,46 @@ name: "📨 SENTINEL APEX — Watchlist Alert Delivery"
 # tracked CVE's KEV status flips" promise still false end-to-end (nothing
 # would create new events to deliver) -- the two scripts already share an
 # identical CLI-wrapper shape, so covering both here is one extra `run`
-# line, not a parallel mechanism.
+# line, not a parallel mechanism. Change evaluation/watchlists remain
+# Redis-backed and out of scope for the D1 migration (see the Dependency
+# Inventory doc §0) -- only the DELIVER step's own storage moved to D1;
+# the EVALUATE step's Redis requirement is unchanged.
 #
 # Concurrency (not correctness): cancel-in-progress:false makes an
 # overlapping invocation WAIT rather than run in parallel, which reduces
 # how often the application-level safety net below is even exercised.
 # It is not a substitute for that safety net -- GitHub Actions can still
-# retry a job, a run can still overlap a manual workflow_dispatch, and a
-# runner can still die mid-job. The actual at-least-once-safe guarantee
-# is api/_lib/notification-store.js's atomic SET-NX-PX delivery claim
-# (see notification-dispatch.js's processDueDeliveries() doc) -- true
-# regardless of what triggers it or how many times.
+# retry a job, a run can still overlap a manual workflow_dispatch or a
+# Cloudflare Cron invocation, and a runner can still die mid-job. The
+# actual at-least-once-safe guarantee is
+# api/_lib/notification-store.js's atomic D1 claim-with-lease (see
+# notification-dispatch.js's processDueDeliveries() doc) -- true
+# regardless of what triggers it, how many times, or which runtime it
+# executes on.
 #
-# Required GitHub Actions repository secrets: UPSTASH_REDIS_REST_URL,
-# UPSTASH_REDIS_REST_TOKEN. As of this workflow's introduction it is
-# UNVERIFIED whether these are already configured as GitHub Actions
-# secrets specifically (a different secret store from the Vercel
-# environment variables of the same name that already back production
-# today) -- backup-customer-data.yml hit this exact gap first and
-# documented it. Mirrors that workflow's own preflight-and-skip pattern:
-# if unset, this runs, detects it, and exits with a visible warning
-# rather than failing confusingly on every scheduled run.
+# Required GitHub Actions repository secrets:
+#   - UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN -- gates the
+#     EVALUATE step (change detection/watchlists, unchanged by this
+#     migration) AND the DELIVER step's own customer-identity lookup
+#     (notification-dispatch.js's getOwnerAccountEmail() and the
+#     watchlist-name lookup both still read the Redis-backed
+#     auth/watchlist stores -- those are separate, LEGACY subsystems this
+#     tranche does not touch; see the Dependency Inventory doc §2).
+#   - CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_D1_DATABASE_ID /
+#     CLOUDFLARE_API_TOKEN -- new this tranche, gates the DELIVER step's
+#     own delivery-state storage (api/_lib/d1.js's REST API transport --
+#     this script runs under plain Node, never inside a Worker, so it
+#     always uses the REST path, never the native env.DB binding). As of
+#     this workflow's update it is UNVERIFIED/likely NOT YET configured
+#     as GitHub Actions repository secrets (this sandbox has no
+#     authenticated Cloudflare account access to provision a real D1
+#     database or mint an API token in the first place -- `wrangler
+#     whoami` -> not authenticated, confirmed before this change). Mirrors
+#     the existing Redis preflight-and-skip pattern below: if unset, the
+#     deliver step (only) skips with a visible warning rather than
+#     failing confusingly on every scheduled run -- the evaluate step
+#     keeps running normally on its own, independent Redis-only gate, so
+#     change detection is not blocked on D1 provisioning.
 # RESEND_API_KEY is passed through if configured but not required --
 # deliver-watchlist-notifications.js already handles its absence
 # gracefully (email deliveries fail soft as EMAIL_NOT_CONFIGURED and
@@ -94,25 +125,37 @@ jobs:
         env:
           HAS_REDIS_URL: ${{ secrets.UPSTASH_REDIS_REST_URL != '' }}
           HAS_REDIS_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN != '' }}
+          HAS_CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+          HAS_CF_DB: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID != '' }}
+          HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
         run: |
           if [ "$HAS_REDIS_URL" = "true" ] && [ "$HAS_REDIS_TOKEN" = "true" ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "redis_ready=true" >> "$GITHUB_OUTPUT"
           else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Alert delivery skipped — UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN are not configured as GitHub Actions repository secrets yet. Same values already used in Vercel's environment (a different secret store) need to be added here too before this workflow can run."
+            echo "redis_ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Watchlist change evaluation AND alert delivery both skipped — UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN are not configured as GitHub Actions repository secrets. Same values already used in Vercel's environment (a different secret store) need to be added here too before this workflow can run."
+          fi
+          if [ "$HAS_CF_ACCOUNT" = "true" ] && [ "$HAS_CF_DB" = "true" ] && [ "$HAS_CF_TOKEN" = "true" ]; then
+            echo "d1_ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "d1_ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Alert delivery skipped — CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_D1_DATABASE_ID / CLOUDFLARE_API_TOKEN are not configured as GitHub Actions repository secrets yet. Watchlist change evaluation still runs normally on its own Redis-only gate; only the D1-backed delivery step is affected."
           fi
 
       - name: "🔎 Evaluate watchlist changes"
-        if: steps.preflight.outputs.ready == 'true'
+        if: steps.preflight.outputs.redis_ready == 'true'
         env:
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
         run: node scripts/evaluate-watchlist-changes.js
 
       - name: "📨 Deliver due alerts"
-        if: steps.preflight.outputs.ready == 'true'
+        if: steps.preflight.outputs.redis_ready == 'true' && steps.preflight.outputs.d1_ready == 'true'
         env:
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: node scripts/deliver-watchlist-notifications.js --limit=50

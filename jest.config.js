@@ -1,7 +1,23 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  roots: ['<rootDir>/tests', '<rootDir>/lib', '<rootDir>/api'],
+  // scripts/__tests__ added for the Cloudflare-Only Alert Runtime
+  // tranche's Redis->D1 migration tool specifically: unlike other CLI
+  // scripts in this repo (thin wrappers whose logic is already fully
+  // covered by api/_lib/__tests__/), that tool's Redis-shape-to-D1-shape
+  // mapping is its own real, untested-elsewhere logic, handling one-time
+  // production data migration -- worth direct coverage given the blast
+  // radius of a silent field-mapping bug. Deliberately scoped to the
+  // __tests__ subdirectory specifically, NOT all of scripts/: a first
+  // attempt at `<rootDir>/scripts` swept in scripts/publication-engine/*
+  // .test.js and scripts/build-cloudflare-assets.test.js too, which are
+  // node:test-style files (run via `node --test`, matching workers/lib/
+  // *.test.js's own established split) that Jest cannot execute at all
+  // ("Your test suite must contain at least one test") -- confirmed via a
+  // real failing regression run, not assumed. Scoping to scripts/__tests__
+  // (where only this tranche's genuinely-Jest-style file lives) keeps
+  // this addition truly additive.
+  roots: ['<rootDir>/tests', '<rootDir>/lib', '<rootDir>/api', '<rootDir>/scripts/__tests__'],
   testMatch: ['**/__tests__/**/*.ts', '**/__tests__/**/*.js', '**/*.test.ts', '**/*.test.js'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   collectCoverageFrom: [

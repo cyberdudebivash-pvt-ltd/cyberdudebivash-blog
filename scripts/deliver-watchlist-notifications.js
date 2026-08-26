@@ -3,21 +3,33 @@
  * SENTINEL APEX — Watchlist Notification Delivery
  *
  * Thin CLI wrapper around api/_lib/notification-dispatch.js's
- * processDueDeliveries(). Runs on a real autonomous schedule as of Alert
- * Orchestration v1: .github/workflows/alert-delivery.yml's native GitHub
- * Actions `schedule:` trigger (every 30 minutes -- see that workflow's
- * header for why that cadence, and why GitHub Actions rather than a
- * Cloudflare Cron Trigger, which wrangler.jsonc still explicitly defers
- * pending separate operator authorization). Still safe to run manually
- * or via any other external scheduler too -- processDueDeliveries()'s
- * atomic claim/lease makes concurrent/repeated invocations safe by
- * construction, not just by convention. Run AFTER evaluate-watchlist-
- * changes.js in the same cycle (the scheduled workflow already does this
- * in order) — it only ever processes already-enqueued pending
- * deliveries, it does not detect changes itself.
+ * processDueDeliveries(). Delivery state moved off Redis onto Cloudflare
+ * D1 as of the Cloudflare-Only Alert Runtime tranche (see
+ * api/_lib/d1.js and api/_lib/notification-store.js's module headers) --
+ * this script now talks to D1 via d1.js's REST API transport (it runs
+ * under plain Node, never inside a Cloudflare Worker, so there is no
+ * native env.DB binding available to it; see d1.js's own two-transport
+ * design). Runs on a real autonomous schedule:
+ * .github/workflows/alert-delivery.yml's native GitHub Actions
+ * `schedule:` trigger (every 30 minutes -- see that workflow's header for
+ * why that cadence) remains the PROVEN scheduler this sandbox can attest
+ * to; workers/entry.js's `scheduled` export now also exists as the
+ * Cloudflare-native path once an operator with real credentials runs
+ * `wrangler deploy` (see that file's header) -- both paths read/write the
+ * SAME D1 database, so there is one source of delivery truth regardless
+ * of which trigger actually fires. Still safe to run manually or via any
+ * other external scheduler too -- processDueDeliveries()'s atomic D1
+ * claim/lease makes concurrent/repeated invocations safe by construction,
+ * not just by convention. Run AFTER evaluate-watchlist-changes.js in the
+ * same cycle (the scheduled workflow already does this in order) — it
+ * only ever processes already-enqueued pending deliveries, it does not
+ * detect changes itself. evaluate-watchlist-changes.js is a SEPARATE
+ * script and still requires UPSTASH_REDIS_REST_URL/TOKEN — change
+ * detection/watchlists are explicitly out of scope for this D1 migration
+ * (see the Cloudflare Runtime Dependency Inventory doc §0).
  *
  * Usage:
- *   UPSTASH_REDIS_REST_URL=... UPSTASH_REDIS_REST_TOKEN=... \
+ *   CLOUDFLARE_ACCOUNT_ID=... CLOUDFLARE_D1_DATABASE_ID=... CLOUDFLARE_API_TOKEN=... \
  *   RESEND_API_KEY=... \
  *     node scripts/deliver-watchlist-notifications.js [--limit=100]
  *
@@ -37,8 +49,9 @@ function parseLimitArg(argv) {
 }
 
 async function main() {
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
-    console.error('[NOTIFY-DELIVER] UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN must be set.');
+  const { isConfigured } = require('../api/_lib/d1');
+  if (!isConfigured()) {
+    console.error('[NOTIFY-DELIVER] CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_D1_DATABASE_ID / CLOUDFLARE_API_TOKEN must be set.');
     process.exit(1);
     return;
   }
