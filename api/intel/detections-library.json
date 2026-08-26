@@ -1,8 +1,77 @@
 {
-  "generated": "2026-08-26T13:20:17.136Z",
+  "generated": "2026-08-26T20:06:20.539Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-54556-maven-org-http4s-http4s-ember-core-2-12",
+      "title": "http4s has HTTP/2 Denial of Service with Ember Backend",
+      "url": "/posts/cve-2026-54556-maven-org-http4s-http4s-ember-core-2-12.html",
+      "generated": "2026-08-26T16:13:35.366Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-54556"
+      ],
+      "mitreAttack": [
+        {
+          "id": "T1071",
+          "name": "Application Layer Protocol",
+          "tactic": "command-and-control",
+          "confidence": "MEDIUM"
+        },
+        {
+          "id": "T1498",
+          "name": "Network Denial of Service",
+          "tactic": "impact",
+          "confidence": "HIGH"
+        }
+      ],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/http4s/http4s/blob/c63fbff43dfe7e3bec25b789fd0a0027ec40ed62/ember-core/shared/src\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/http4s/http4s/blob/c63fbff43dfe7e3bec25b789fd0a0027ec40ed62/ember-core/shared/src\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-54550-maven-org-codehaus-izpack-izpack-installer",
+      "title": "IzPack has Path Traversal in UnpackerBase that allows writing files outside the installation directory via malicious pack entries",
+      "url": "/posts/cve-2026-54550-maven-org-codehaus-izpack-izpack-installer.html",
+      "generated": "2026-08-26T14:38:17.565Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-54550",
+        "CVE-2026-54550"
+      ],
+      "mitreAttack": [
+        {
+          "id": "T1027",
+          "name": "Obfuscated Files or Information",
+          "tactic": "defense-evasion",
+          "confidence": "MEDIUM"
+        },
+        {
+          "id": "T1547.001",
+          "name": "Registry Run Keys / Startup Folder",
+          "tactic": "persistence",
+          "confidence": "HIGH"
+        }
+      ],
+      "sigma": [
+        "title: Registry Run Key Persistence From User-Writable Path\nid: 7080b048-4dcb-5428-984f-56b6de11a5f7\nstatus: experimental\ndescription: 'Registry Run Key Persistence From User-Writable Path. Evidence basis: on disk under the victim''s privileges — including startup folders, PATH directories, or system locations. ### Deta. CYBERDUDEBIVASH SENTINEL APEX Detection Engineering.'\nreferences:\n- 'https://nvd.nist.gov/vuln/detail/CVE-2026-54550'\nauthor: CYBERDUDEBIVASH SENTINEL APEX Detection Engineering\ndate: 2026-08-26\ntags:\n- attack.t1547.001\nlogsource:\n    product: windows\n    category: registry_set\ndetection:\n    selection:\n        TargetObject|contains: \\Software\\Microsoft\\Windows\\CurrentVersion\\Run\n    filter_1:\n        Image|startswith:\n            - 'C:\\Program Files'\n            - 'C:\\Windows\\'\n    condition: selection and not filter_1\nfalsepositives:\n    - Legitimate administrative activity\n    - Authorized security testing\nlevel: medium"
+      ],
+      "kql": [
+        "DeviceRegistryEvents\n| where RegistryKey contains \"\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\"\n| where not ((InitiatingProcessFolderPath startswith \"C:\\\\Program Files\" or InitiatingProcessFolderPath startswith \"C:\\\\Windows\\\\\"))\n| project Timestamp, DeviceName, RegistryKey, RegistryValueData, InitiatingProcessFolderPath"
+      ],
+      "splunk": [
+        "| tstats count from datamodel=Endpoint where nodename=Endpoint.Registry Registry.registry_path=\"*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run*\" NOT (Registry.process_path=\"C:\\Program Files*\" OR Registry.process_path=\"C:\\Windows\\*\") by Registry.process_path Registry.registry_path _time"
+      ],
+      "osquery": [
+        "SELECT * FROM registry WHERE path LIKE '%\\Software\\Microsoft\\Windows\\CurrentVersion\\Run%';"
+      ],
+      "suricata": []
+    },
     {
       "slug": "utcp-http-ssrf-http-tool-invocation-follows-redirects-witho",
       "title": "utcp-http SSRF: HTTP tool invocation follows redirects without re-validating the target",
@@ -4156,46 +4225,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utspyr/thoughts_on_aikidodev/&quot;&gt;[link]&lt;/a\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utspyr/thoughts_on_aikidodev/&quot\\;&gt\\;[link]&lt\\;/a\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utspyr/thoughts_on_aikidodev/&quot;&gt;[comments]&l\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utspyr/thoughts_on_aikidodev/&quot\\;&gt\\;[comments]&l\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "freelancing-on-cybersec-ai",
-      "title": "Freelancing on cybersec/ai",
-      "url": "/posts/freelancing-on-cybersec-ai.html",
-      "generated": "2026-07-11T17:51:09.000Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/NewtBackground7765&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/NewtBackground7765&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utqqyu/freelancing_on_cybersecai/&quot;&gt;[link]&l\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utqqyu/freelancing_on_cybersecai/&quot\\;&gt\\;[link]&l\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utqqyu/freelancing_on_cybersecai/&quot;&gt;[comment\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utqqyu/freelancing_on_cybersecai/&quot\\;&gt\\;[comment\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "microsoft-admits-windows-11-has-a-gdid-tracker-with-no-off-s",
-      "title": "Microsoft admits Windows 11 has a GDID tracker with no off switch, first documented publicly in an FBI hacker complaint",
-      "url": "/posts/microsoft-admits-windows-11-has-a-gdid-tracker-with-no-off-s.html",
-      "generated": "2026-07-11T17:51:08.996Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1utqhu4/microsoft_admits_windows_11_has_a_gdid_track\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1utqhu4/microsoft_admits_windows_11_has_a_gdid_track\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/k_fLTUJsX4Ij27duxYghYcfq7VLlP64BC1PZia7Lz4s.jpeg?width=640&amp;amp;\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/k_fLTUJsX4Ij27duxYghYcfq7VLlP64BC1PZia7Lz4s.jpeg?width=640&amp\\;amp\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Dash-Courageous&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Dash-Courageous&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.windowslatest.com/2026/07/10/you-cant-fully-disable-microsofts-gdid-windows-11-tracker-b\"; http.host; content:\"www.windowslatest.com\"; nocase; http.uri; content:\"/2026/07/10/you-cant-fully-disable-microsofts-gdid-windows-11-tracker-b\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.windowslatest.com\"; dns.query; content:\"www.windowslatest.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
       ]
     }
   ]
