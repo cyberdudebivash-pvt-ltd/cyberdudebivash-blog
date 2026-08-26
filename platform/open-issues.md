@@ -1511,13 +1511,23 @@ Tracked here individually, not buried only in certification prose.
    autonomously every ~30 minutes via `.github/workflows/alert-
    delivery.yml`'s native GitHub Actions schedule, in sequence
    (evaluate then deliver) — no longer manual-only. **Still genuinely
-   open:** this is a 30-minute cadence, not real-time, and no live
-   Cloudflare Cron Trigger exists — `wrangler.jsonc` still explicitly
-   defers that authority pending separate operator sign-off, unchanged.
-   See `SENTINEL-APEX-ALERT-ORCHESTRATION-DELIVERY-RELIABILITY-V1-CERTIFICATION.md`
-   §6-7. Also unverified from this sandbox: whether the required
+   open:** this is a 30-minute cadence, not real-time. **Update
+   (Cloudflare-Only Alert Runtime v1, 2026-08-26):** `wrangler.jsonc`'s
+   `triggers.crons` entry now exists — the operator explicitly
+   authorized Cloudflare Cron for alert delivery specifically, superseding
+   this item's original "still explicitly defers" framing — but no LIVE
+   Cloudflare Cron Trigger invocation has been observed from this
+   sandbox (no authenticated Cloudflare account access; see
+   `SENTINEL-APEX-CLOUDFLARE-ONLY-ALERT-RUNTIME-V1-CERTIFICATION.md`
+   §2/§13). GitHub Actions' 30-minute cadence remains the only PROVEN
+   live scheduler until an operator with real credentials runs `wrangler
+   deploy` and that is independently confirmed (tracked as Issue 26 item 1).
+   Also unverified from this sandbox: whether the required
    `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` GitHub Actions
-   secrets are actually configured (tracked as Issue 25 item 1).
+   secrets are actually configured (tracked as Issue 25 item 1) — and, new
+   this round, the same is true of `CLOUDFLARE_ACCOUNT_ID`/
+   `CLOUDFLARE_D1_DATABASE_ID`/`CLOUDFLARE_API_TOKEN` (tracked as Issue 26
+   item 2).
 2. **~~No distributed lock across concurrent script invocations~~ →
    RESOLVED (Alert Orchestration & Delivery Reliability v1,
    2026-08-25).** `notification-store.js` gained an atomic per-channel
@@ -1615,6 +1625,67 @@ only in certification prose.
 9. **Multi-workspace / MSSP-style shared entitlements are out of scope**
    for this tranche, same as every prior notification/watchlist tranche
    — no evidence of near-term demand justified building it speculatively.
+
+## Issue 26 — Cloudflare-Only Alert Runtime v1 real, disclosed gaps (2026-08-26)
+
+Found and deliberately scoped out while migrating the alert-delivery
+control plane from Redis to Cloudflare D1, per the operator's "Cloudflare
+Workers is the only production runtime going forward" directive. Full
+detail in `docs/audits/SENTINEL-APEX-CLOUDFLARE-ONLY-ALERT-RUNTIME-V1-
+CERTIFICATION.md` §13/§24; tracked here individually per this platform's
+own discipline.
+
+1. **No live Cloudflare Cron Trigger execution has been observed.**
+   `wrangler.jsonc`'s `triggers.crons` is valid, schema-conformant
+   configuration, not a running schedule — it takes effect only once an
+   operator with real Cloudflare credentials runs `wrangler deploy`. This
+   sandbox has none (`wrangler whoami` → not authenticated). See the
+   deployment runbook in the certification doc §14.
+2. **`CLOUDFLARE_ACCOUNT_ID`/`CLOUDFLARE_D1_DATABASE_ID`/
+   `CLOUDFLARE_API_TOKEN` are unverified as configured GitHub Actions
+   repository secrets**, and no real D1 database has been provisioned for
+   them to point at (`wrangler d1 create` was not run against an
+   authenticated account). `alert-delivery.yml`'s deliver step has its
+   own independent preflight gate (`d1_ready`) and skips with a visible
+   warning rather than failing confusingly — but it will not actually
+   move data until an operator completes these steps.
+3. **The D1 REST API transport (`api/_lib/d1.js`'s Node/GitHub-Actions
+   fallback path) has never reached Cloudflare's real API.** Verified
+   against a real captured third-party example and this repo's own local
+   `wrangler d1 execute --local` emulation, not a live call.
+4. **The native `env.DB` Workers binding transport has never run under a
+   real deployed Worker.** Based on documented Cloudflare binding
+   semantics, partially verified via WebSearch in the prior (PR #137)
+   round for the underlying `.prepare()/.bind()/.batch()` API shape.
+5. **The Redis→D1 migration tool
+   (`scripts/migrate-notifications-redis-to-d1.js`) has not run against
+   real production data.** No live Redis credentials exist in this
+   sandbox either. Its correctness rests on a dedicated test suite
+   (`scripts/__tests__/migrate-notifications-redis-to-d1.test.js`), not a
+   live backfill.
+6. **Historical delivery-log/dead-letter/audit-log entries are not
+   idempotent under a repeated migration `--apply` run** — a disclosed,
+   accepted limitation (these are audit trails without a natural shared
+   unique key across the two stores, not authoritative state). Run
+   `--apply` exactly once per environment.
+7. **Watchlists and change detection remain entirely Redis-backed** — this
+   tranche migrated the delivery control plane only. A customer's
+   end-to-end "I get alerted when a tracked CVE changes" flow still
+   depends on Redis for the detection half; only the delivery half moved
+   to D1. Full pipeline Redis-independence requires a future, separately-
+   scoped tranche.
+8. **ESLint is not configured anywhere in this repository** — discovered,
+   not introduced, while attempting to lint this round's changes (no
+   `eslint.config.js`/`.eslintrc*` exists at all). A platform-wide gap
+   affecting every future change, not specific to this tranche.
+9. **`jest.config.js`'s test-discovery `roots` required a real fix mid-
+   tranche**: a first attempt at adding `scripts/` coverage for the new
+   migration tool's test file swept in four pre-existing, unrelated
+   `node:test`-style script test files that Jest cannot execute at all.
+   Fixed by scoping to `scripts/__tests__` specifically. Documents a real
+   trap for any future task that widens Jest's `roots`/`testMatch`
+   without first checking what else lives under the directory being
+   added.
 
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
