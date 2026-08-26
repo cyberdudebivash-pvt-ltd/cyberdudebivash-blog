@@ -1,11 +1,28 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
 
-  // Deliberately incapable of a production DNS takeover at this stage:
-  // no routes, no custom_domains, no production hostname, no production
-  // storage bindings, no cron. See PRE-MIGRATION-FORENSICS.md and
-  // CLOUDFLARE-ACCOUNT-INVENTORY.md for why each of those is deferred.
-  // Safe to build, dry-run, and run under a local Workerd only.
+  // Still deliberately incapable of a production DNS takeover: no
+  // routes, no custom_domains, no production hostname. See PRE-MIGRATION-
+  // FORENSICS.md and CLOUDFLARE-ACCOUNT-INVENTORY.md for why those
+  // remain deferred. Safe to build, dry-run, and run under a local
+  // Workerd only for the routing/asset surface.
+  //
+  // d1_databases and triggers.crons BELOW are new as of the Cloudflare-
+  // Only Alert Runtime tranche -- the operator has explicitly authorized
+  // Cloudflare Workers as the production alert-delivery runtime (see
+  // docs/audits/SENTINEL-APEX-CLOUDFLARE-ONLY-ALERT-RUNTIME-V1-CERTIFICATION.md),
+  // superseding this file's prior "scheduling authority is undecided"
+  // deferral for that specific subsystem. What this config change does
+  // NOT do: actually provision anything. This sandbox has no
+  // authenticated Cloudflare account access (`wrangler whoami` ->
+  // "not authenticated", confirmed before writing this) -- so
+  // database_id below is intentionally blank (the schema marks it "not
+  // required"; wrangler resolves it from database_name once a real
+  // `wrangler d1 create` has run) and triggers.crons takes effect only
+  // once an operator with real credentials runs `wrangler deploy`. Until
+  // then this is code-complete configuration, not a live trigger --
+  // exactly the distinction the certification doc's own Known
+  // Limitations section is built around.
 
   "name": "cyberdudebivash-blog",
   "main": "workers/entry.js",
@@ -81,6 +98,42 @@
 
   "observability": {
     "enabled": true
+  },
+
+  // D1 database binding for the alert-delivery control plane only (see
+  // migrations/0001_notification_delivery.sql and the Cloudflare Runtime
+  // Dependency Inventory §0 for exactly what this does and does not
+  // cover — watchlists/change-detection stay Redis-backed, out of
+  // scope). database_id is deliberately omitted rather than set to an
+  // empty string: the config schema marks it "not required" (confirmed
+  // by parsing node_modules/wrangler/config-schema.json directly), and
+  // wrangler resolves the binding from database_name for both --local
+  // emulation and a real deploy. Add the minted UUID here the first
+  // time an operator with authenticated Cloudflare access runs
+  // `wrangler d1 create sentinel-apex-notification-delivery` for real —
+  // until then this entry is code-complete configuration, not a live
+  // database (see this file's header comment; `wrangler whoami` in this
+  // sandbox: not authenticated).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sentinel-apex-notification-delivery",
+      "migrations_dir": "./migrations"
+    }
+  ],
+
+  // Cloudflare Cron Trigger for workers/entry.js's `scheduled` export
+  // (-> workers/lib/router.js#handleScheduled -> the same
+  // evaluateWatchedEntities()/processDueDeliveries() functions the
+  // GitHub Actions bridge in alert-delivery.yml already calls on this
+  // exact cadence). Matches that workflow's proven 30-minute schedule
+  // deliberately, so behavior is identical no matter which trigger ends
+  // up firing during the transition window. Takes effect only once an
+  // operator with real Cloudflare credentials runs `wrangler deploy` —
+  // this sandbox has none (see header comment) — so this is
+  // authorized-but-not-yet-live configuration, not a running schedule.
+  "triggers": {
+    "crons": ["*/30 * * * *"]
   }
 
   // Intentionally absent (do not add without a separate, explicit
@@ -90,15 +143,9 @@
   //   kv_namespaces          — no blog-owned namespace exists yet (see
   //                            CLOUDFLARE-ACCOUNT-INVENTORY.md Sec17
   //                            policy: reuse is not automatic)
-  //   d1_databases           — none needed; the blog has no relational
-  //                            data dependency
   //   r2_buckets              — none proven needed yet (see Sec17)
   //   services                — no service bindings to other
   //                            CYBERDUDEBIVASH platforms are justified yet
-  //   triggers.crons          — scheduling authority is undecided (see
-  //                            the cron-deduplication decision doc);
-  //                            adding a schedule here would start real
-  //                            remote execution
   //   vars / secrets with real values — local/dry-run testing uses
   //                            synthetic values passed via `wrangler dev
   //                            --var`/`.dev.vars`, never committed here
