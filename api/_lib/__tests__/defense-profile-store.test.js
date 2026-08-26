@@ -107,7 +107,13 @@ describe('saveProfile — create + update', () => {
       technologies: [{ category: 'siem', technology_id: 'other', custom_label: '<script>alert(1)</script>MySIEM' }],
     });
     const other = result.profile.technologies.find(t => t.technology_id === 'other');
-    expect(other.label).not.toMatch(/<script>/);
+    // Case-insensitive and checks for any surviving tag delimiter, not just
+    // a literal lowercase "<script>" -- matches what sanitize() actually
+    // guarantees (strips every <...> sequence outright) rather than a
+    // narrower, case-sensitive check a CodeQL "Bad HTML filtering regexp"
+    // scan correctly flagged as an incomplete XSS regression test.
+    expect(other.label).not.toMatch(/<script/i);
+    expect(other.label).not.toContain('<');
     expect(other.custom_unmapped).toBe(true);
   });
 
