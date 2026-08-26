@@ -185,6 +185,27 @@ function getRulesByTechnique(techniqueId) {
 }
 
 /**
+ * Get rules linked to a specific CVE ID (matched against source.articles,
+ * which the live pipeline populates with a raw CVE-ID string when the
+ * source article's own primary identifier is a CVE -- verified directly
+ * against real committed data, see docs/audits/SENTINEL-APEX-DETECTION-
+ * CAPABILITY-INVENTORY-V1.md Section 2.1). Threat-to-Defense Fabric v1.
+ */
+function getRulesByCVE(cveId) {
+  const store = loadCanonical();
+  const id = String(cveId || '').toUpperCase();
+  return store.rules.filter(r => (r.source.articles || []).some(a => String(a).toUpperCase() === id));
+}
+
+/**
+ * Get rules linked to a specific campaign ID. Threat-to-Defense Fabric v1.
+ */
+function getRulesByCampaign(campaignId) {
+  const store = loadCanonical();
+  return store.rules.filter(r => (r.source.campaigns || []).includes(campaignId));
+}
+
+/**
  * Get rules by governance status (GENERATED, REVIEW, APPROVED, PUBLISHED)
  */
 function getRulesByStatus(status) {
@@ -342,6 +363,8 @@ module.exports = {
   storeRules,
   getRule,
   getRulesByTechnique,
+  getRulesByCVE,
+  getRulesByCampaign,
   getRulesByStatus,
   updateRuleStatus,
   searchRules,
