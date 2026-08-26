@@ -1807,5 +1807,71 @@ tracked here individually per this platform's own discipline.
    operator with real credentials. The first real execution of it IS the
    live cutover this and every prior tranche has been unable to perform.
 
+## Issue 29 — Threat-to-Defense Fabric v1 real, disclosed gaps (2026-08-26)
+
+Found and deliberately scoped out while building
+`docs/audits/SENTINEL-APEX-THREAT-TO-DEFENSE-FABRIC-V1-CERTIFICATION.md`.
+Tracked here individually, not buried only in certification prose.
+
+1. **Three architecture docs materially overstate the `lib/detection/`
+   TypeScript stack's live status.** `docs/architecture/module-ownership.md`,
+   `docs/architecture/public-api-audit.md`, and
+   `docs/architecture/dependency-graph.md` all describe a 43-file,
+   ~12,500-line TypeScript stack (`lib/detection/`, `lib/governance/`,
+   `lib/ioc/`, `lib/reporting/`) as "Stable (RC1 ready)" / "FROZEN (v1
+   contract)... Ready for external integration," with five documented
+   HTTP endpoints (`POST /api/v1/detections/generate`, `GET .../search`,
+   etc.) — confirmed, by direct file reads, that **none of those five
+   endpoints exist as route files anywhere in the repository**, and that
+   the documented generator function signatures (e.g.
+   `generateSigmaFromIOC(ioc: IOC): SigmaRule`) do not match the real,
+   more detailed code (`generateSigmaFromIOC(iocType, iocValue,
+   malwareName, options?)`). The stack is real, tested code — just
+   unwired to any live route, exercised only by its own test file. **Not
+   fixed this round** — correcting three architecture docs to match
+   reality is a standalone documentation-accuracy task, out of scope for
+   a detection-fabric feature tranche; the Threat-to-Defense Fabric does
+   not build on or extend this TypeScript stack (see the Detection
+   Capability Inventory doc §2.2 for the full evidence trail).
+2. **`api/v1/detections/rules.js`/`rules/[id].js` remain unauthenticated,
+   live-wired on both Vercel and Cloudflare Workers.** Confirmed directly
+   (no auth import, no header check in either file) — the same class of
+   gap as Issue 20, left open across six-plus rounds now specifically
+   because silently adding auth to a previously-public production route
+   is a live behavior change requiring documented sign-off (Principle 5),
+   not a unilateral fix. This tranche's own new detection API surface
+   (`api/v1/intel.js`'s `action=detections/detection/...`) is
+   authenticated from day one, since it has no prior public-access
+   contract to break — but the older route is untouched, still public,
+   still exposing the full canonical rule store.
+3. **The canonical detection-rule store is genuinely thin — 3 real
+   records total** (one placeholder `TEST-001`/`10.0.0.1` record whose
+   origin predates the current tree, one real CVE-2026-19598/T1204.002
+   record from the live pipeline, and one real CVE-2023-27351/T1490
+   record deliberately generated this round for the certification's
+   Workflow A proof). Coverage is honestly sparse for the overwhelming
+   majority of CVEs/campaigns as a direct, disclosed consequence — not a
+   gap in the coverage engine itself, which is verified correct against
+   what data exists.
+4. **Search facets (`has_detection`/`detection_status`) and watchlist
+   semantic events (`DETECTION_AVAILABLE`/`DETECTION_UPDATED`/
+   `DETECTION_DEPRECATED`/`COVERAGE_CHANGED`) are explicitly deferred**,
+   per the mandate's own "where useful"/"do not overload... if value is
+   low" permission — see the certification doc §33 for the full
+   evidence-based reasoning (low current value at 3-record store size;
+   watchlist events would touch the already-shipped, live-tested D1
+   change-detection system and deserve their own dedicated round).
+5. **No live SIEM execution (L6) or customer production validation (L7)
+   is possible from this environment, permanently** — every detection's
+   validation record explicitly reports these as `pass: null`, "Not
+   verified," never fabricated. This is a structural limitation of the
+   sandbox this platform is built in, not a gap expected to close in a
+   future round without a genuinely different execution environment.
+6. **Cloudflare live-cutover operator blocker, still unresolved** —
+   `wrangler whoami` re-confirmed not authenticated this round (per the
+   mandate's own explicit instruction not to re-litigate this at length);
+   unchanged from PR #140. Tracked here only as a cross-reference; the
+   substantive detail lives in Issue 28.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

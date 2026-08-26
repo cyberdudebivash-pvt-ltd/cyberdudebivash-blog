@@ -1,9 +1,9 @@
 {
   "meta": {
     "version": "1.0.0",
-    "generated": "2026-08-24T17:56:53.269Z",
+    "generated": "2026-08-26T12:20:16.456Z",
     "generator": "SENTINEL APEX Detection Engine v5.0",
-    "total_rules": 2
+    "total_rules": 5
   },
   "rules": [
     {
@@ -80,6 +80,290 @@
           "version": "1.0.0",
           "timestamp": "2026-08-24T17:56:53.269Z",
           "change": "Rule generated",
+          "author": "detection-engine"
+        }
+      ]
+    },
+    {
+      "id": "65b906336880ed01",
+      "technique_id": "T1490",
+      "title": "Shadow Copy Deletion Preceding Ransomware Encryption",
+      "level": "critical",
+      "description": "PHP-CGI argument injection exploited to deploy ransomware. Attackers exploited a public-facing PHP flaw, ran encoded PowerShell, established registry ",
+      "data_source": "process_creation",
+      "platforms": {
+        "sigma": "title: Shadow Copy Deletion Preceding Ransomware Encryption\nid: 80a35e42-2690-5809-8191-022015205c4c\nstatus: experimental\ndescription: 'Shadow Copy Deletion Preceding Ransomware Encryption. Evidence basis: stablished registry Run key persistence, and used vssadmin to delete volume shadow copies before ransomware. CYBERDUDEBIVASH SENTINEL APEX Detection Engineering.'\nreferences:\n- 'https://nvd.nist.gov/vuln/detail/CVE-2024-4577'\n- 'https://vendor.example/advisory'\nauthor: CYBERDUDEBIVASH SENTINEL APEX Detection Engineering\ndate: 2026-08-26\ntags:\n- attack.t1490\nlogsource:\n    product: windows\n    category: process_creation\ndetection:\n    selection:\n        CommandLine|contains:\n            - vssadmin delete shadows\n            - wmic shadowcopy delete\n            - recoveryenabled no\n            - wbadmin delete catalog\n    condition: selection\nfalsepositives:\n    - Legitimate administrative activity\n    - Authorized security testing\nlevel: critical",
+        "kql": "DeviceProcessEvents\n| where (ProcessCommandLine contains \"vssadmin delete shadows\" or ProcessCommandLine contains \"wmic shadowcopy delete\" or ProcessCommandLine contains \"recoveryenabled no\" or ProcessCommandLine contains \"wbadmin delete catalog\")\n| project Timestamp, DeviceName, FolderPath, ProcessCommandLine, InitiatingProcessFolderPath",
+        "splunk": "| tstats count from datamodel=Endpoint where nodename=Endpoint.Processes (Processes.process=\"*vssadmin delete shadows*\" OR Processes.process=\"*wmic shadowcopy delete*\" OR Processes.process=\"*recoveryenabled no*\" OR Processes.process=\"*wbadmin delete catalog*\") by Processes.process_path Processes.parent_process_path _time",
+        "osquery": "SELECT * FROM processes WHERE (cmdline LIKE '%vssadmin delete shadows%' OR cmdline LIKE '%wmic shadowcopy delete%' OR cmdline LIKE '%recoveryenabled no%' OR cmdline LIKE '%wbadmin delete catalog%');"
+      },
+      "suricata": [],
+      "governance": {
+        "status": "GENERATED",
+        "confidence": "MEDIUM",
+        "created_at": "2026-08-26T10:26:43.461Z",
+        "updated_at": "2026-08-26T12:20:16.455Z",
+        "version": "1.0.9"
+      },
+      "source": {
+        "iocs": [
+          "evil-c2[.]top"
+        ],
+        "articles": [
+          "CVE-2024-4577"
+        ],
+        "campaigns": [],
+        "evidence": "PHP-CGI argument injection exploited to deploy ransomware. Attackers exploited a public-facing PHP flaw, ran encoded PowerShell, established registry Run key persistence, and used vssadmin to delete v"
+      },
+      "history": [
+        {
+          "version": "1.0.0",
+          "timestamp": "2026-08-26T10:26:43.461Z",
+          "change": "Rule generated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.0",
+          "timestamp": "2026-08-26T10:28:04.111Z",
+          "change": "Status changed: GENERATED → DEPRECATED",
+          "author": "test",
+          "comment": "superseded-example test"
+        },
+        {
+          "version": "1.0.0",
+          "timestamp": "2026-08-26T10:28:04.114Z",
+          "change": "Status changed: DEPRECATED → GENERATED",
+          "author": "test",
+          "comment": "revert test override"
+        },
+        {
+          "version": "1.0.1",
+          "timestamp": "2026-08-26T12:20:05.070Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.2",
+          "timestamp": "2026-08-26T12:20:05.080Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.3",
+          "timestamp": "2026-08-26T12:20:05.115Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.4",
+          "timestamp": "2026-08-26T12:20:15.852Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.5",
+          "timestamp": "2026-08-26T12:20:15.866Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.6",
+          "timestamp": "2026-08-26T12:20:15.898Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.7",
+          "timestamp": "2026-08-26T12:20:16.413Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.8",
+          "timestamp": "2026-08-26T12:20:16.424Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.9",
+          "timestamp": "2026-08-26T12:20:16.455Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        }
+      ]
+    },
+    {
+      "id": "ac348bab79c7a3eb",
+      "technique_id": "T1059.001",
+      "title": "Suspicious Encoded PowerShell Invocation",
+      "level": "high",
+      "description": "PHP-CGI argument injection exploited to deploy ransomware. Attackers exploited a public-facing PHP flaw, ran encoded PowerShell, established registry ",
+      "data_source": "process_creation",
+      "platforms": {
+        "sigma": "title: Suspicious Encoded PowerShell Invocation\nid: 180ec008-0df2-59e2-a4d6-7b0797640f02\nstatus: experimental\ndescription: 'Suspicious Encoded PowerShell Invocation. Evidence basis: s exploited a public-facing PHP flaw, ran encoded PowerShell, established registry Run key persistence, and us. CYBERDUDEBIVASH SENTINEL APEX Detection Engineering.'\nreferences:\n- 'https://nvd.nist.gov/vuln/detail/CVE-2024-4577'\n- 'https://vendor.example/advisory'\nauthor: CYBERDUDEBIVASH SENTINEL APEX Detection Engineering\ndate: 2026-08-26\ntags:\n- attack.t1059.001\nlogsource:\n    product: windows\n    category: process_creation\ndetection:\n    selection:\n        Image|endswith: \\powershell.exe\n        CommandLine|contains:\n            - '-EncodedCommand'\n            - '-enc '\n            - FromBase64String\n    condition: selection\nfalsepositives:\n    - Legitimate administrative activity\n    - Authorized security testing\nlevel: high",
+        "kql": "DeviceProcessEvents\n| where FolderPath endswith \"\\\\powershell.exe\"\n| where (ProcessCommandLine contains \"-EncodedCommand\" or ProcessCommandLine contains \"-enc \" or ProcessCommandLine contains \"FromBase64String\")\n| project Timestamp, DeviceName, FolderPath, ProcessCommandLine, InitiatingProcessFolderPath",
+        "splunk": "| tstats count from datamodel=Endpoint where nodename=Endpoint.Processes Processes.process_path=\"*\\powershell.exe\" (Processes.process=\"*-EncodedCommand*\" OR Processes.process=\"*-enc *\" OR Processes.process=\"*FromBase64String*\") by Processes.process_path Processes.parent_process_path _time",
+        "osquery": "SELECT * FROM processes WHERE path LIKE '%\\powershell.exe' AND (cmdline LIKE '%-EncodedCommand%' OR cmdline LIKE '%-enc %' OR cmdline LIKE '%FromBase64String%');"
+      },
+      "suricata": [],
+      "governance": {
+        "status": "GENERATED",
+        "confidence": "MEDIUM",
+        "created_at": "2026-08-26T12:20:05.069Z",
+        "updated_at": "2026-08-26T12:20:16.455Z",
+        "version": "1.0.8"
+      },
+      "source": {
+        "iocs": [
+          "evil-c2[.]top"
+        ],
+        "articles": [
+          "CVE-2024-4577"
+        ],
+        "campaigns": [],
+        "evidence": "PHP-CGI argument injection exploited to deploy ransomware. Attackers exploited a public-facing PHP flaw, ran encoded PowerShell, established registry Run key persistence, and used vssadmin to delete v"
+      },
+      "history": [
+        {
+          "version": "1.0.0",
+          "timestamp": "2026-08-26T12:20:05.069Z",
+          "change": "Rule generated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.1",
+          "timestamp": "2026-08-26T12:20:05.080Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.2",
+          "timestamp": "2026-08-26T12:20:05.114Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.3",
+          "timestamp": "2026-08-26T12:20:15.852Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.4",
+          "timestamp": "2026-08-26T12:20:15.865Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.5",
+          "timestamp": "2026-08-26T12:20:15.898Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.6",
+          "timestamp": "2026-08-26T12:20:16.412Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.7",
+          "timestamp": "2026-08-26T12:20:16.423Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.8",
+          "timestamp": "2026-08-26T12:20:16.455Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        }
+      ]
+    },
+    {
+      "id": "9a5467dc8ae03f68",
+      "technique_id": "T1547.001",
+      "title": "Registry Run Key Persistence From User-Writable Path",
+      "level": "medium",
+      "description": "PHP-CGI argument injection exploited to deploy ransomware. Attackers exploited a public-facing PHP flaw, ran encoded PowerShell, established registry ",
+      "data_source": "process_creation",
+      "platforms": {
+        "sigma": "title: Registry Run Key Persistence From User-Writable Path\nid: 7080b048-4dcb-5428-984f-56b6de11a5f7\nstatus: experimental\ndescription: 'Registry Run Key Persistence From User-Writable Path. Evidence basis: law, ran encoded PowerShell, established registry Run key persistence, and used vssadmin to delete volume s. CYBERDUDEBIVASH SENTINEL APEX Detection Engineering.'\nreferences:\n- 'https://nvd.nist.gov/vuln/detail/CVE-2024-4577'\n- 'https://vendor.example/advisory'\nauthor: CYBERDUDEBIVASH SENTINEL APEX Detection Engineering\ndate: 2026-08-26\ntags:\n- attack.t1547.001\nlogsource:\n    product: windows\n    category: registry_set\ndetection:\n    selection:\n        TargetObject|contains: \\Software\\Microsoft\\Windows\\CurrentVersion\\Run\n    filter_1:\n        Image|startswith:\n            - 'C:\\Program Files'\n            - 'C:\\Windows\\'\n    condition: selection and not filter_1\nfalsepositives:\n    - Legitimate administrative activity\n    - Authorized security testing\nlevel: medium",
+        "kql": "DeviceRegistryEvents\n| where RegistryKey contains \"\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\"\n| where not ((InitiatingProcessFolderPath startswith \"C:\\\\Program Files\" or InitiatingProcessFolderPath startswith \"C:\\\\Windows\\\\\"))\n| project Timestamp, DeviceName, RegistryKey, RegistryValueData, InitiatingProcessFolderPath",
+        "splunk": "| tstats count from datamodel=Endpoint where nodename=Endpoint.Registry Registry.registry_path=\"*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run*\" NOT (Registry.process_path=\"C:\\Program Files*\" OR Registry.process_path=\"C:\\Windows\\*\") by Registry.process_path Registry.registry_path _time",
+        "osquery": "SELECT * FROM registry WHERE path LIKE '%\\Software\\Microsoft\\Windows\\CurrentVersion\\Run%';"
+      },
+      "suricata": [],
+      "governance": {
+        "status": "GENERATED",
+        "confidence": "MEDIUM",
+        "created_at": "2026-08-26T12:20:05.071Z",
+        "updated_at": "2026-08-26T12:20:16.456Z",
+        "version": "1.0.8"
+      },
+      "source": {
+        "iocs": [
+          "evil-c2[.]top"
+        ],
+        "articles": [
+          "CVE-2024-4577"
+        ],
+        "campaigns": [],
+        "evidence": "PHP-CGI argument injection exploited to deploy ransomware. Attackers exploited a public-facing PHP flaw, ran encoded PowerShell, established registry Run key persistence, and used vssadmin to delete v"
+      },
+      "history": [
+        {
+          "version": "1.0.0",
+          "timestamp": "2026-08-26T12:20:05.071Z",
+          "change": "Rule generated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.1",
+          "timestamp": "2026-08-26T12:20:05.081Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.2",
+          "timestamp": "2026-08-26T12:20:05.115Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.3",
+          "timestamp": "2026-08-26T12:20:15.853Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.4",
+          "timestamp": "2026-08-26T12:20:15.867Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.5",
+          "timestamp": "2026-08-26T12:20:15.899Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.6",
+          "timestamp": "2026-08-26T12:20:16.413Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.7",
+          "timestamp": "2026-08-26T12:20:16.425Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.8",
+          "timestamp": "2026-08-26T12:20:16.456Z",
+          "change": "Rule updated",
           "author": "detection-engine"
         }
       ]

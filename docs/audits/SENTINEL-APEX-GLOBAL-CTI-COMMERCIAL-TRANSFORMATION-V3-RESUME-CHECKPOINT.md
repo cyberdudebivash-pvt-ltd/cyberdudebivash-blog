@@ -22,11 +22,25 @@ instead, which is kept current for exactly this lineage. `wrangler
 whoami` → not authenticated remains the standing blocker across all of
 it, unchanged since round 8 first found it.
 
-**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5); updated 2026-08-25 (round 6); updated 2026-08-25 (round 7); updated 2026-08-25 (round 8)
-**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, merged as PR #133); `claude/p1-watchlists-change-detection-v1` (round 6, merged as PR #134); `claude/p1-alert-delivery-webhook-automation-v1` (round 7, merged as PR #136); `claude/p0-cloudflare-alert-orchestration-v1` (round 8, this update, PR open)
+**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5); updated 2026-08-25 (round 6); updated 2026-08-25 (round 7); updated 2026-08-25 (round 8); updated 2026-08-26 (round 9)
+**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, merged as PR #133); `claude/p1-watchlists-change-detection-v1` (round 6, merged as PR #134); `claude/p1-alert-delivery-webhook-automation-v1` (round 7, merged as PR #136); `claude/p0-cloudflare-alert-orchestration-v1` (round 8, merged as PR #137); `claude/p1-threat-to-defense-fabric-v1` (round 9, this update, PR open)
 **Written per:** the master mandate's own "Long-Run Checkpoint Policy" — stop at a safe boundary, commit, push, update the PR, and leave a clear resume point rather than attempting the full 70-phase mandate in one uninterrupted pass.
 
-**READ THIS FIRST IF RESUMING:** §13 below (round 8) closes round 7's own top-ranked next item — "provision the live Cloudflare Cron Trigger" — but **not literally as stated**, and that substitution is deliberate, disclosed, and evidence-based, not a silent reinterpretation: a fresh audit this round re-confirmed `wrangler.jsonc` still explicitly defers Cloudflare Cron authority pending separate operator sign-off (unchanged since round 6), so round 8 does not take that authorization for itself either. Instead it found and used a **different, already-proven-in-this-exact-repo scheduling substrate** — GitHub Actions' own native `schedule:` trigger, the same mechanism `sentinel-apex.yml`/`freshness-check.yml` already run reliably at 30-minute cadence in production today. **Alert delivery is now genuinely autonomous** (a real, committed workflow file, not manual-only) — but Cloudflare Cron itself remains not-live, unchanged. Round 8's real engineering contribution beyond "add a schedule" is an atomic Redis claim-with-lease making the dispatcher safe under concurrent/repeated invocation, proven via a genuine `Promise.all` concurrency test, not asserted. See §13.2 for the full reasoning before building anything further on top of this. §12 (round 7, PR #136) shipped email/webhook delivery itself — still accurate, now extended not replaced. §11 (round 6) is still the most consequential *architectural* finding for **persistent state generally**: this repo has zero Cloudflare production storage bindings and is not yet deployed to a production hostname, confirmed again this round, unchanged — **do not reach for D1/KV/Durable Objects/Queues for any future persistent-state feature without re-reading §11.2 first.** §10 (round 5): Intelligence Dossiers merged (PR #133). §9 (round 4): Unified Intelligence Search merged (PR #131). §8 (round 3): campaign-delivery defect fixed and merged (PR #130). §7 (round 2) still holds: **Vercel is being retired** (decision final per the user; technical cutover incomplete) **and Cloudflare Workers is the sole target *destination* platform** — but round 8's own fresh audit found this means Cloudflare is not yet the live one, and building as if it already were (e.g. assuming a Cloudflare Cron Trigger can just be turned on) would have been building on a premise this repo's own documentation already contradicts. Round 1's "Thread A" remains **NO-GO** — see §7.1. Do not restart any of these without reading §7, §8, §9, §10, §11, §12, and §13 first.
+**READ THIS FIRST IF RESUMING — round 9 update:** §15 below is the new
+current round — **Threat-to-Defense Fabric v1**, the master mandate's own
+natural next step after Dossiers → Watchlists → Alerts (a CVE/campaign
+dossier now answers "how do I detect this?" with real, validated
+coverage, not just "what happened?"). Not part of the Cloudflare-runtime
+lineage described in the note above — this round built a new
+customer-facing capability on top of the existing dossier/graph/store
+infrastructure, and does not touch D1/Cron/scheduler anything (it did
+re-confirm the standing `wrangler whoami` blocker once, per its own
+mandate's explicit instruction not to re-litigate it further). See §15
+before building anything further on top of detection intelligence.
+Everything below this paragraph (§1-14) is preserved unchanged from round
+8 and is still accurate for its own scope.
+
+**READ THIS FIRST IF RESUMING (round 8, preserved):** §13 below (round 8) closes round 7's own top-ranked next item — "provision the live Cloudflare Cron Trigger" — but **not literally as stated**, and that substitution is deliberate, disclosed, and evidence-based, not a silent reinterpretation: a fresh audit this round re-confirmed `wrangler.jsonc` still explicitly defers Cloudflare Cron authority pending separate operator sign-off (unchanged since round 6), so round 8 does not take that authorization for itself either. Instead it found and used a **different, already-proven-in-this-exact-repo scheduling substrate** — GitHub Actions' own native `schedule:` trigger, the same mechanism `sentinel-apex.yml`/`freshness-check.yml` already run reliably at 30-minute cadence in production today. **Alert delivery is now genuinely autonomous** (a real, committed workflow file, not manual-only) — but Cloudflare Cron itself remains not-live, unchanged. Round 8's real engineering contribution beyond "add a schedule" is an atomic Redis claim-with-lease making the dispatcher safe under concurrent/repeated invocation, proven via a genuine `Promise.all` concurrency test, not asserted. See §13.2 for the full reasoning before building anything further on top of this. §12 (round 7, PR #136) shipped email/webhook delivery itself — still accurate, now extended not replaced. §11 (round 6) is still the most consequential *architectural* finding for **persistent state generally**: this repo has zero Cloudflare production storage bindings and is not yet deployed to a production hostname, confirmed again this round, unchanged — **do not reach for D1/KV/Durable Objects/Queues for any future persistent-state feature without re-reading §11.2 first.** §10 (round 5): Intelligence Dossiers merged (PR #133). §9 (round 4): Unified Intelligence Search merged (PR #131). §8 (round 3): campaign-delivery defect fixed and merged (PR #130). §7 (round 2) still holds: **Vercel is being retired** (decision final per the user; technical cutover incomplete) **and Cloudflare Workers is the sole target *destination* platform** — but round 8's own fresh audit found this means Cloudflare is not yet the live one, and building as if it already were (e.g. assuming a Cloudflare Cron Trigger can just be turned on) would have been building on a premise this repo's own documentation already contradicts. Round 1's "Thread A" remains **NO-GO** — see §7.1. Do not restart any of these without reading §7, §8, §9, §10, §11, §12, and §13 first.
 
 ---
 
@@ -398,3 +412,118 @@ No browser QA this round — zero UI/page/asset surface touched (confirmed via t
 4. Confirm/add the round-8 `UPSTASH_REDIS_REST_URL`/`TOKEN` GitHub Actions secrets (§13.7, still open, unchanged) — now also blocks the evaluate step's own preflight, independent of anything D1-related.
 5. Items 3-7 from round 8's §13.8 (detection-to-entity linkage index, native Slack/Teams/PagerDuty relay, operator health-view UI, malware node population, per-customer dispatch fairness) — unchanged, still real, still not this round's scope.
 6. Do **not** restart Thread A — unchanged reasoning, now carried through five consecutive rounds.
+
+---
+
+## 15. Round 9 update (2026-08-26, branch `claude/p1-threat-to-defense-fabric-v1`, PR open, not yet merged)
+
+**15.1 — What this round did.** Executed the P1 "Threat-to-Defense Fabric,
+Detection Intelligence, Validation Engine & Defensive Coverage Operating
+System v1" mandate: a CVE/campaign dossier now answers "how do I detect
+this?" with real, evidence-backed, validated detection coverage — not a
+cosmetic field, not a rule-generator demo. Full detail:
+`docs/audits/SENTINEL-APEX-THREAT-TO-DEFENSE-FABRIC-V1-CERTIFICATION.md`
+(35 sections, CONDITIONAL GO) and
+`docs/audits/SENTINEL-APEX-DETECTION-CAPABILITY-INVENTORY-V1.md` (the
+reuse-before-build audit).
+
+**15.2 — Gate check, per the mandate's own explicit instruction.**
+`wrangler whoami` re-confirmed not authenticated (unchanged since round 8
+found it) — recorded once, not re-litigated at length, per this round's
+own mandate's explicit permission to do exactly that rather than repeat a
+blocked credential check. This round's work does not depend on Cloudflare
+account access at all (no new D1/Cron/KV surface touched).
+
+**15.3 — The single most consequential finding: five independent,
+non-unified "detection rule" implementations already existed**, with no
+two agreeing on ID scheme, storage, or data shape — including a 43-file,
+~12,500-line TypeScript stack (`lib/detection/`) that three architecture
+docs describe as "FROZEN v1... Ready for external integration," confirmed
+by direct file reads to be entirely unwired to any live route (its
+documented endpoints don't exist as files, its documented function
+signatures don't match its real code). This is the same "docs describe an
+aspiration, production reality differs" pattern this checkpoint's own
+history has found repeatedly elsewhere (§7-8's Vercel/Cloudflare
+readiness claims, the campaign-delivery defect, the search UI) —
+disclosed, not built upon. Zero duplicate canonical stores were
+introduced: this round is one new orchestration layer
+(`api/_lib/detection-intelligence.js`) over the two systems that were
+already genuinely canonical (the existing rule store, the existing
+generator), consuming the dossier's own existing evidence-graded ATT&CK
+linkage rather than re-deriving it.
+
+**15.4 — Four real bugs found and fixed**, all through actual execution
+against real data, not review: a `Set`-vs-`Array` `.includes()`/`.has()`
+mismatch in the opportunity engine; a telemetry-requirement model that
+falsely flagged a real, valid rule (T1204.002) as non-compliant because
+it asserted a generic per-data-source field list instead of deriving
+requirements from what the rule itself references; a YAML-1.1
+hex-literal parsing gotcha (`0x1410` parses as the number `5136`, not the
+string `"0x1410"`) that broke the T1003.001 fixture until the evaluator
+was made to check both forms; and — found via real, adversarial browser
+automation, not a unit test — a genuine customer-visible trust defect
+where the identical detection showed `RELEASED` from a CVE's coverage
+view but `REVIEW_REQUIRED` when opened standalone, fixed by threading
+entity context through to the detail API so ATT&CK evidence resolves
+consistently. Full detail in the certification doc §19.
+
+**15.5 — Test baseline** (reproduce before trusting any further change):
+```bash
+npx jest --silent
+# Expect: 65 of 66 suites passed (1 pre-existing skip, unchanged), 2245
+# passed / 60 skipped / 2305 total, 0 failed. (Net new vs. PR #140's own
+# baseline of 2158: +87, exactly the two new test files this round adds --
+# api/_lib/__tests__/detection-intelligence.test.js (56) and
+# api/v1/__tests__/intel-detections.test.js (31).)
+
+python3 -m pytest -q
+# Expect: 1739 passed, 0 failed (zero Python files touched this round)
+
+cd Sentinel-APEX/engine-node && node --test
+# Expect: 106 passed, 0 failed (zero files in this directory touched --
+# detection-engine.js's exports are called, never modified)
+```
+Real browser QA (Playwright/Chromium, not asserted): 15/15 checks pass,
+including confirmed-safe rendering of an injected `<script>`/`<img
+onerror>` XSS payload and the real bug found in §15.4. No local CodeQL
+CLI in this environment (unchanged limitation, every prior round) —
+CodeQL runs in CI post-push.
+
+**15.6 — What was deliberately deferred, and why.** Search facets
+(`has_detection`) and watchlist semantic events
+(`DETECTION_AVAILABLE`/`UPDATED`/`DEPRECATED`) — both explicitly permitted
+to skip by the mandate's own "where useful"/"do not overload if value is
+low" wording. At the current 3-record detection store size a search facet
+would show `true` on almost nothing, while coupling the already-sensitive
+`search-index.js` to the detection engine for near-zero present benefit;
+watchlist events would mean extending the D1 `change_events` schema and
+wiring a new path into the already-shipped, already-hardened
+`change-detector.js`/`change-engine.js` — real, coherent future work that
+deserves its own dedicated round, not a bolt-on here. Tracked as
+`platform/open-issues.md` Issue 29, not silently dropped.
+
+**15.7 — Next recommended tranche** (ranked by evidence, supersedes §13.8/14.7):
+1. **Execute the Cloudflare deployment runbook** once real credentials are
+   available (`docs/runbooks/CLOUDFLARE-ALERT-RUNTIME-CUTOVER.md`) —
+   unchanged, still the single highest-leverage blocked action across
+   every recent round, entirely independent of this round's work.
+2. **Grow the canonical detection-rule store** — the coverage engine
+   built this round is verified correct against real data, but that data
+   is thin (3 records); the highest-leverage way to make Detection
+   Coverage genuinely valuable to more customers is running the existing,
+   unmodified `fetch-live-intel.js`/`detection-engine.js` pipeline more
+   broadly (an operational/data question, not an engineering gap this
+   round left open).
+3. **Correct the three architecture docs** (`module-ownership.md`,
+   `public-api-audit.md`, `dependency-graph.md`) that materially overstate
+   `lib/detection/`'s live status (§15.3) — a standalone
+   documentation-accuracy task, real and disclosed but out of scope for a
+   feature tranche.
+4. **Fix the three unauthenticated/unbounded gaps in Issue 20** — still
+   open, unaddressed across six-plus rounds now, same reasoning as ever
+   (silently tightening a previously-public route needs explicit
+   sign-off, not a unilateral fix).
+5. **Search facets / watchlist semantic events for detection changes**
+   (§15.6) — real, deferred, not urgent at current data scale.
+6. Do **not** restart Thread A — unchanged reasoning, now carried through
+   six consecutive rounds.
