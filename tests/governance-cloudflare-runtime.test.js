@@ -148,4 +148,41 @@ describe('Cloudflare Runtime Dependency Guard', () => {
       }
     });
   });
+
+  describe('Workers-runtime DNS compatibility -- regression guard (Cloudflare Live Cutover v1)', () => {
+    // dns.lookup()/dns.promises.lookup() are documented by Cloudflare as
+    // unsupported under Workers nodejs_compat (throw "Not implemented" --
+    // developers.cloudflare.com/workers/runtime-apis/nodejs/dns/), found
+    // this round by direct doc verification after this exact function was
+    // re-examined for live-cutover readiness. resolve4()/resolve6() are
+    // the supported equivalents and are what webhook-signing.js's SSRF
+    // guard now uses. This guard exists so a future edit can't silently
+    // reintroduce dns.lookup() into the one file in this codebase that
+    // performs a DNS resolution on the Workers-deployed alert-delivery
+    // path -- a regression that would only surface once deployed to a
+    // real Worker (local Node/Jest testing does not catch it, and even
+    // this platform's own local `wrangler dev --local` probe of this
+    // exact wrangler version did NOT catch it -- see the Live Cutover v1
+    // certification's SSRF section for that discrepancy).
+    test('webhook-signing.js does not call dns.lookup or dns.promises.lookup', () => {
+      // Strips full-line `//` comments first -- this file's own header
+      // explains why (its Redis checks hit the same class of trap): the
+      // module's real header comment here explains the switch away from
+      // dns.lookup() in prose, which would otherwise false-positive a
+      // naive whole-file regex the same way a Redis-history comment could
+      // trip the Tier 1 checks above.
+      const codeOnly = read('api/_lib/webhook-signing.js')
+        .split('\n')
+        .filter(line => !line.trim().startsWith('//'))
+        .join('\n');
+      expect(codeOnly).not.toMatch(/dns\.lookup\(/);
+      expect(codeOnly).not.toMatch(/dns\.promises\.lookup\(/);
+    });
+
+    test('webhook-signing.js uses resolve4/resolve6 for its SSRF DNS check', () => {
+      const src = read('api/_lib/webhook-signing.js');
+      expect(src).toMatch(/dns\.promises\.resolve4\(/);
+      expect(src).toMatch(/dns\.promises\.resolve6\(/);
+    });
+  });
 });

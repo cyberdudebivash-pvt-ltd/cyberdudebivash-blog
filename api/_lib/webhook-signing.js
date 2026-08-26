@@ -142,6 +142,21 @@ function isBlockedIp(ip) {
 // address is caught, not just an IP literal typed directly into the URL.
 // Fails closed on any lookup error (unresolvable host is not deliverable
 // anyway, and "can't verify it's safe" must not mean "assume it's safe").
+//
+// Uses resolve4()/resolve6(), never lookup() -- confirmed via Cloudflare's
+// own Workers runtime-APIs docs (developers.cloudflare.com/workers/
+// runtime-apis/nodejs/dns/) that dns.lookup()/dns.promises.lookup() throw
+// "Not implemented" under nodejs_compat on the real Workers runtime, while
+// resolve4()/resolve6() are supported there. A local `wrangler dev --local`
+// probe of this exact wrangler version surprisingly returned working
+// results for lookup() too (Miniflare's local DNS emulation apparently
+// diverges from documented live-Workers behavior here) -- but per this
+// platform's own "never claim live proof from local emulation" discipline,
+// that discrepancy is not trusted over Cloudflare's own documented
+// contract for the real deployed runtime. Each address family is resolved
+// independently: a host with only an A record (or only AAAA) is the
+// common case, not a failure, so one family failing while the other
+// succeeds must not be treated as DNS_LOOKUP_FAILED.
 async function isSafeWebhookUrl(rawUrl) {
   let parsed;
   try {
@@ -166,14 +181,16 @@ async function isSafeWebhookUrl(rawUrl) {
   if (net.isIP(bareHost)) {
     return isBlockedIp(bareHost) ? { safe: false, reason: 'BLOCKED_IP' } : { safe: true };
   }
-  let addresses;
-  try {
-    addresses = await dns.promises.lookup(hostname, { all: true, verbatim: true });
-  } catch (_) {
-    return { safe: false, reason: 'DNS_LOOKUP_FAILED' };
-  }
+  const [v4, v6] = await Promise.all([
+    dns.promises.resolve4(hostname).catch(err => ({ __dnsError: err })),
+    dns.promises.resolve6(hostname).catch(err => ({ __dnsError: err })),
+  ]);
+  const v4Failed = v4 && v4.__dnsError;
+  const v6Failed = v6 && v6.__dnsError;
+  if (v4Failed && v6Failed) return { safe: false, reason: 'DNS_LOOKUP_FAILED' };
+  const addresses = [...(v4Failed ? [] : v4), ...(v6Failed ? [] : v6)];
   if (!addresses.length) return { safe: false, reason: 'DNS_LOOKUP_FAILED' };
-  if (addresses.some(a => isBlockedIp(a.address))) return { safe: false, reason: 'BLOCKED_IP' };
+  if (addresses.some(a => isBlockedIp(a))) return { safe: false, reason: 'BLOCKED_IP' };
   return { safe: true };
 }
 
