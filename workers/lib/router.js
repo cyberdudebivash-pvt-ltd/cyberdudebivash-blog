@@ -32,6 +32,7 @@ const HANDLER_MODULES = {
   'api/v1/billing/webhook': () => require('../../api/v1/billing/webhook'),
   'api/v1/customer/dashboard': () => require('../../api/v1/customer/dashboard'),
   'api/v1/customer/download': () => require('../../api/v1/customer/download'),
+  'api/v1/defense-profile': () => require('../../api/v1/defense-profile'),
   'api/v1/detections/rules': () => require('../../api/v1/detections/rules'),
   'api/v1/detections/rules/[id]': () => require('../../api/v1/detections/rules/[id]'),
   'api/v1/intel': () => require('../../api/v1/intel'),

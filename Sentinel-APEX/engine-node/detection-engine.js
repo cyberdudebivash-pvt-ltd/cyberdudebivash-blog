@@ -524,4 +524,12 @@ module.exports = {
   toSigma, toKql, toSplunk, toOsquery, buildForTechnique, buildDetections,
   buildSuricata, suricataFor, normalizeIocType, refang, uuid5,
   validateKql, validateSplunk, validateOsquery, validateSuricata,
+  // Additive (Customer Telemetry & Defense Context Fabric v1): FIELD_MAP's
+  // _kql_table/_splunk_dm/_osquery_table values ARE the real vendor schema
+  // targets (e.g. Microsoft Sentinel/Defender XDR's DeviceProcessEvents)
+  // this platform's format generators already compile against -- exported
+  // so the new customer-compatibility engine reads these real values
+  // instead of re-declaring them as a second, driftable copy. No existing
+  // export changes shape; this is a pure addition.
+  FIELD_MAP,
 };

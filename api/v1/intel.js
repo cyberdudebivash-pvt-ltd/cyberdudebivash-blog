@@ -26,6 +26,9 @@
  *  action=detection-download GET Raw single-format download (?id=&format=sigma|kql|splunk|osquery|suricata)
  *  action=detection-coverage GET ATT&CK detection coverage for a CVE or campaign (?type=cve|campaign&id=...)
  *  action=detection-pack     GET Pro/Enterprise: evidence-backed pack of released detections (?type=cve|campaign&id=...)
+ *  action=defense-coverage   GET Customer-environment-aware detection coverage for a CVE or campaign
+ *                                 (?type=cve|campaign&id=...) -- extends detection-coverage with the caller's
+ *                                 own Defense Profile (see api/v1/defense-profile.js); safe with no profile configured.
  *
  * Backward-compat rewrites in vercel.json map old paths to ?action= params.
  */
@@ -38,6 +41,8 @@ const { getIntel, getCVEDetail, searchIntel, getPlatformStats,
         getDossierAPI } = require('../_lib/intel');
 const detectionRules = require('../_lib/detection-rules');
 const detectionIntelligence = require('../_lib/detection-intelligence');
+const defenseProfileStore = require('../_lib/defense-profile-store');
+const defenseCompatibility = require('../_lib/defense-compatibility');
 const sec = require('../_lib/security');
 
 /* ─── Main Router ────────────────────────────────────────────── */
@@ -571,10 +576,38 @@ module.exports = async (req, res) => {
         });
       }
 
+      /* ── GET ?action=defense-coverage&type=cve|campaign&id=... ─ */
+      case 'defense-coverage': {
+        const type = String(req.query.type || '').trim().toLowerCase();
+        if (type !== 'cve' && type !== 'campaign') {
+          return apiError(res, 400, 'UNSUPPORTED_ENTITY_TYPE',
+            `Coverage type "${type || '(missing)'}" is not supported. Valid: cve, campaign.`);
+        }
+        const id = String(req.query.id || '').trim();
+        if (!id) return apiError(res, 400, 'MISSING_COVERAGE_ID', `${type} ID required.`);
+        const { found, dossier } = getDossierAPI(type, id, user.tier);
+        if (!found) {
+          return apiError(res, 404, 'ENTITY_NOT_FOUND', `No ${type} record found for "${id}".`);
+        }
+        // Ownership is always re-derived from the authenticated caller's
+        // userId (mandate Phase 9) -- a missing profile is not an error,
+        // it is the documented safe default (mandate Phase 37): global
+        // coverage is still fully computed and returned either way.
+        const { profile } = await defenseProfileStore.getProfile(user.userId);
+        const coverage = defenseCompatibility.computeCustomerCoverage({ attackContext: dossier.attack_context, entityType: type, entityId: id, profile });
+        return successResponse(res, { coverage }, {
+          endpoint:       `/api/v1/intel?action=defense-coverage&type=${type}&id=${encodeURIComponent(id)}`,
+          description:    "Detection coverage cross-referenced against the caller's own Defense Profile -- READY/PARTIALLY_READY/TELEMETRY_GAP/UNSUPPORTED_PLATFORM/UNKNOWN/NO_VALIDATED_DETECTION are all deterministic, never LLM-decided",
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
       /* ── Unknown action ────────────────────────────────────── */
       default:
         return apiError(res, 400, 'INVALID_ACTION',
-          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors, unified-search, actor, ioc, report, dossier, detections, detection, detection-download, detection-coverage, detection-pack`);
+          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors, unified-search, actor, ioc, report, dossier, detections, detection, detection-download, detection-coverage, detection-pack, defense-coverage`);
     }
   } catch (e) {
     return apiError(res, 500, 'INTERNAL_ERROR',
