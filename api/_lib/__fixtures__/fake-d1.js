@@ -48,6 +48,14 @@ function createFakeD1() {
   let evalCursor = null; // null until first write, matching "no row yet"
   let nextWlAuditId = 1;
 
+  // Defense Profiles (Customer Telemetry & Environment-Aware Defense
+  // Coverage Fabric v1) -- migrations/0003_defense_profiles.sql
+  const defenseProfiles = new Map(); // id -> row
+  const defenseProfileTechnologies = []; // { profile_id, category, technology_id, custom_label, created_at }
+  const defenseProfileTelemetry = []; // { profile_id, data_source, status, updated_at }
+  const defenseProfileAuditLog = []; // rows with an autoincrement id
+  let nextDpAuditId = 1;
+
   function cloneRow(row) { return row ? { ...row } : row; }
 
   function trimToNewest(arr, ownerId, limit) {
@@ -463,6 +471,96 @@ function createFakeD1() {
       return { rows: [] };
     }
 
+    /* ── defense_profiles ────────────────────────────────────────── */
+
+    if (sql.startsWith('SELECT * FROM defense_profiles WHERE owner_id = ?')) {
+      const row = [...defenseProfiles.values()].find(r => r.owner_id === p[0]);
+      return { rows: row ? [cloneRow(row)] : [] };
+    }
+    if (sql.startsWith('UPDATE defense_profiles SET name = ?, updated_at = ? WHERE id = ?')) {
+      const [name, updated_at, id] = p;
+      const row = defenseProfiles.get(id);
+      if (row) { row.name = name; row.updated_at = updated_at; lastAffected = 1; } else { lastAffected = 0; }
+      return { rows: [] };
+    }
+    if (sql.startsWith('INSERT INTO defense_profiles (id, owner_id, name, schema_version, created_at, updated_at)')) {
+      const [id, owner_id, name, schema_version, created_at, updated_at] = p;
+      defenseProfiles.set(id, { id, owner_id, name, schema_version, created_at, updated_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.startsWith('DELETE FROM defense_profiles WHERE id = ?')) {
+      lastAffected = defenseProfiles.delete(p[0]) ? 1 : 0;
+      return { rows: [] };
+    }
+
+    /* ── defense_profile_technologies ───────────────────────────── */
+
+    if (sql.startsWith('SELECT category, technology_id, custom_label FROM defense_profile_technologies WHERE profile_id = ?')) {
+      const rows = defenseProfileTechnologies
+        .filter(t => t.profile_id === p[0])
+        .sort((a, b) => (a.category + a.technology_id).localeCompare(b.category + b.technology_id))
+        .map(t => ({ category: t.category, technology_id: t.technology_id, custom_label: t.custom_label }));
+      return { rows };
+    }
+    if (sql.startsWith('DELETE FROM defense_profile_technologies WHERE profile_id = ?')) {
+      const before = defenseProfileTechnologies.length;
+      for (let i = defenseProfileTechnologies.length - 1; i >= 0; i--) {
+        if (defenseProfileTechnologies[i].profile_id === p[0]) defenseProfileTechnologies.splice(i, 1);
+      }
+      lastAffected = before - defenseProfileTechnologies.length;
+      return { rows: [] };
+    }
+    if (sql.startsWith('INSERT INTO defense_profile_technologies (profile_id, category, technology_id, custom_label, created_at)')) {
+      const [profile_id, category, technology_id, custom_label, created_at] = p;
+      defenseProfileTechnologies.push({ profile_id, category, technology_id, custom_label, created_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+
+    /* ── defense_profile_telemetry ──────────────────────────────── */
+
+    if (sql.startsWith('SELECT data_source, status FROM defense_profile_telemetry WHERE profile_id = ?')) {
+      const rows = defenseProfileTelemetry
+        .filter(t => t.profile_id === p[0])
+        .sort((a, b) => a.data_source.localeCompare(b.data_source))
+        .map(t => ({ data_source: t.data_source, status: t.status }));
+      return { rows };
+    }
+    if (sql.startsWith('DELETE FROM defense_profile_telemetry WHERE profile_id = ?')) {
+      const before = defenseProfileTelemetry.length;
+      for (let i = defenseProfileTelemetry.length - 1; i >= 0; i--) {
+        if (defenseProfileTelemetry[i].profile_id === p[0]) defenseProfileTelemetry.splice(i, 1);
+      }
+      lastAffected = before - defenseProfileTelemetry.length;
+      return { rows: [] };
+    }
+    if (sql.startsWith('INSERT INTO defense_profile_telemetry (profile_id, data_source, status, updated_at)')) {
+      const [profile_id, data_source, status, updated_at] = p;
+      defenseProfileTelemetry.push({ profile_id, data_source, status, updated_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+
+    /* ── defense_profile_audit_log ──────────────────────────────── */
+
+    if (sql.startsWith('INSERT INTO defense_profile_audit_log')) {
+      const [action, data, ts] = p;
+      defenseProfileAuditLog.push({ id: nextDpAuditId++, action, data, ts });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.startsWith('DELETE FROM defense_profile_audit_log')) {
+      const [limit] = p;
+      const keepIds = new Set(defenseProfileAuditLog.slice().sort((a, b) => b.id - a.id).slice(0, limit).map(r => r.id));
+      const before = defenseProfileAuditLog.length;
+      for (let i = defenseProfileAuditLog.length - 1; i >= 0; i--) {
+        if (!keepIds.has(defenseProfileAuditLog[i].id)) defenseProfileAuditLog.splice(i, 1);
+      }
+      lastAffected = before - defenseProfileAuditLog.length;
+      return { rows: [] };
+    }
+
     throw new Error(`fake-d1: no matching statement branch for SQL: ${sql}`);
   }
 
@@ -475,6 +573,7 @@ function createFakeD1() {
     _dump: () => ({
       preferences, jobs, deliveryLog, deadLetters, auditLog,
       watchlists, watchlistEntities, watchlistAuditLog, entitySnapshots, changeEvents, ownerFeed,
+      defenseProfiles, defenseProfileTechnologies, defenseProfileTelemetry, defenseProfileAuditLog,
     }),
     _reset: () => {
       preferences.clear(); jobs.clear();
@@ -483,6 +582,8 @@ function createFakeD1() {
       watchlists.clear(); watchlistEntities.length = 0; watchlistAuditLog.length = 0;
       entitySnapshots.clear(); changeEvents.clear(); ownerFeed.length = 0;
       evalCursor = null; nextWlAuditId = 1;
+      defenseProfiles.clear(); defenseProfileTechnologies.length = 0;
+      defenseProfileTelemetry.length = 0; defenseProfileAuditLog.length = 0; nextDpAuditId = 1;
     },
   };
 }
