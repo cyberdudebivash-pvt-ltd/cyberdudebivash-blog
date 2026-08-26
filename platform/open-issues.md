@@ -1873,5 +1873,62 @@ Tracked here individually, not buried only in certification prose.
    unchanged from PR #140. Tracked here only as a cross-reference; the
    substantive detail lives in Issue 28.
 
+## Issue 30 — Customer Telemetry & Environment-Aware Defense Coverage
+Fabric v1 real, disclosed gaps (2026-08-26)
+
+Found and deliberately scoped out while building
+`docs/audits/SENTINEL-APEX-CUSTOMER-TELEMETRY-DEFENSE-CONTEXT-V1-CERTIFICATION.md`.
+
+1. **Inherits Issue 29 item 3's thin detection corpus.** Customer-specific
+   compatibility can only ever be as rich as the underlying global
+   coverage it wraps — 3 `RELEASED` detections total, unchanged this
+   round. Most techniques on most entities honestly show
+   `NO_VALIDATED_DETECTION` for every customer regardless of declared
+   environment. Not a defect in the compatibility engine (verified
+   correct against what data exists) — a direct, disclosed consequence
+   of corpus size.
+2. **Provider field-level telemetry mapping is two-tiered, and most
+   vendors sit in the weaker tier.** Microsoft Defender XDR/Sentinel
+   (verified directly against `detection-engine.js`'s own `FIELD_MAP`),
+   Sysmon (Event IDs 1/10/13), Windows Security Events (4688; 4657 at
+   lower confidence), and Linux auditd carry real, documented field
+   names. CrowdStrike Falcon, SentinelOne, Splunk CIM data models, and
+   every cloud-provider network log source are honestly labeled
+   `confidence: "general"` — source-existence only, no asserted field
+   names — per the mandate's own "do not map fields without evidence"
+   instruction. Extending these to `"documented"` confidence would
+   require primary-source vendor schema documentation this session did
+   not independently verify to the same standard as the Microsoft/Sysmon
+   entries.
+3. **No literal real-data proof of the "customer's only SIEM has a
+   detection in a different format" scenario exists**, because every
+   currently `RELEASED` detection is generated with sigma+kql+splunk+
+   osquery simultaneously (confirmed by reading
+   `detectionEngine.buildForTechnique()`) — no real detection today is
+   missing a native format for a real customer's declared SIEM to expose.
+   `UNSUPPORTED_PLATFORM` is instead proven with real data via IBM QRadar
+   (a real SIEM with genuinely zero validated generator support in this
+   platform), and the literal single-format-missing branch is covered by
+   a clearly-labeled synthetic unit test. This will resolve naturally
+   once a narrower-format detection enters the real corpus.
+4. **No automated accessibility scanner (axe-core or equivalent) was
+   run** against either new page (`defense-profile.html`, the new
+   dossier section) — native semantic HTML elements were used
+   throughout and manually reviewed, but not independently tool-audited,
+   matching `dossier.html`'s own pre-existing (also not independently
+   tool-audited) precedent.
+5. **No production performance/load measurement** — sandbox limitation,
+   consistent with every prior round's honest disclosure.
+6. **No SIEM/EDR connector, telemetry auto-verification, or deployment
+   path exists** — entirely out of scope by explicit mandate boundary
+   (Phase 4/44/63/64/124), not a gap in this tranche's own execution.
+   The mandate's own §120 names the likely next transformation
+   ("SENTINEL APEX™ Controlled SIEM Deployment Gateway v1") as
+   explicitly future scope, not started here.
+7. **Cloudflare live-cutover operator blocker, still unresolved** —
+   `wrangler whoami` re-confirmed not authenticated this round; unchanged
+   from every prior round. Cross-reference only; substantive detail
+   remains in Issue 28.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

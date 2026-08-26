@@ -22,12 +22,27 @@ instead, which is kept current for exactly this lineage. `wrangler
 whoami` → not authenticated remains the standing blocker across all of
 it, unchanged since round 8 first found it.
 
-**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5); updated 2026-08-25 (round 6); updated 2026-08-25 (round 7); updated 2026-08-25 (round 8); updated 2026-08-26 (round 9)
-**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, merged as PR #133); `claude/p1-watchlists-change-detection-v1` (round 6, merged as PR #134); `claude/p1-alert-delivery-webhook-automation-v1` (round 7, merged as PR #136); `claude/p0-cloudflare-alert-orchestration-v1` (round 8, merged as PR #137); `claude/p1-threat-to-defense-fabric-v1` (round 9, this update, PR open)
+**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5); updated 2026-08-25 (round 6); updated 2026-08-25 (round 7); updated 2026-08-25 (round 8); updated 2026-08-26 (round 9); updated 2026-08-26 (round 10)
+**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, merged as PR #133); `claude/p1-watchlists-change-detection-v1` (round 6, merged as PR #134); `claude/p1-alert-delivery-webhook-automation-v1` (round 7, merged as PR #136); `claude/p0-cloudflare-alert-orchestration-v1` (round 8, merged as PR #137); `claude/p1-threat-to-defense-fabric-v1` (round 9, merged as PR #141); `claude/p1-customer-telemetry-defense-context-v1` (round 10, this update, PR open)
 **Written per:** the master mandate's own "Long-Run Checkpoint Policy" — stop at a safe boundary, commit, push, update the PR, and leave a clear resume point rather than attempting the full 70-phase mandate in one uninterrupted pass.
 
-**READ THIS FIRST IF RESUMING — round 9 update:** §15 below is the new
-current round — **Threat-to-Defense Fabric v1**, the master mandate's own
+**READ THIS FIRST IF RESUMING — round 10 update:** §16 below is the new
+current round — **Customer Telemetry & Environment-Aware Defense Coverage
+Fabric v1**, the natural next step after round 9's Threat-to-Defense
+Fabric ("does a validated detection exist?" → "can *this customer's*
+declared environment actually use it?"). Built entirely on top of round
+9's `detection-intelligence.js` (unchanged, wrapped not modified) plus one
+new D1-backed customer-owned store, following `watchlist-store.js`'s exact
+ownership pattern. Not part of the Cloudflare-runtime lineage note above —
+re-confirmed the standing `wrangler whoami` blocker once, unchanged, per
+mandate instruction not to re-litigate it. See §16 before building
+anything further on top of detection intelligence or customer environment
+state.
+Everything below this paragraph through §15 is preserved unchanged from
+round 9 and is still accurate for its own scope.
+
+**READ THIS FIRST IF RESUMING — round 9 update (preserved):** §15 below —
+**Threat-to-Defense Fabric v1**, the master mandate's own
 natural next step after Dossiers → Watchlists → Alerts (a CVE/campaign
 dossier now answers "how do I detect this?" with real, validated
 coverage, not just "what happened?"). Not part of the Cloudflare-runtime
@@ -35,8 +50,7 @@ lineage described in the note above — this round built a new
 customer-facing capability on top of the existing dossier/graph/store
 infrastructure, and does not touch D1/Cron/scheduler anything (it did
 re-confirm the standing `wrangler whoami` blocker once, per its own
-mandate's explicit instruction not to re-litigate it further). See §15
-before building anything further on top of detection intelligence.
+mandate's explicit instruction not to re-litigate it further).
 Everything below this paragraph (§1-14) is preserved unchanged from round
 8 and is still accurate for its own scope.
 
@@ -527,3 +541,94 @@ deserves its own dedicated round, not a bolt-on here. Tracked as
    (§15.6) — real, deferred, not urgent at current data scale.
 6. Do **not** restart Thread A — unchanged reasoning, now carried through
    six consecutive rounds.
+
+## 16. Round 10 update — Customer Telemetry & Environment-Aware Defense Coverage Fabric v1
+
+**16.1 — What this round is.** PR #141 (round 9) answered "does a
+validated detection exist for this threat?" This round answers "can
+*this specific customer*, with *their* declared SIEM/EDR/cloud/telemetry,
+actually use it?" without touching global truth at all. New: a
+customer-owned Defense Profile (D1, one per owner, `watchlist-store.js`'s
+exact ownership pattern), a deterministic compatibility engine
+(`api/_lib/defense-compatibility.js`), a new `api/v1/defense-profile.js`
+CRUD router, a new `action=defense-coverage` on `intel.js`, a new
+`defense-profile.html` settings wizard, and a new "Your Defense Coverage"
+section on `dossier.html`. Zero lines of `detection-intelligence.js`
+changed — every global coverage/validation/release-gate function is
+called unmodified.
+
+**16.2 — The consequential reuse finding.** `detection-engine.js`'s
+`FIELD_MAP` (previously unexported) already encodes the real vendor
+schema each format targets — `_kql_table: 'DeviceProcessEvents'` etc. is
+Microsoft Sentinel/Defender XDR's actual Advanced Hunting table name, not
+a generic placeholder. This meant the "field mapping engine" the mandate
+asked for as new work was largely already built as a side effect of the
+existing multi-format generator — this round exports `FIELD_MAP`
+(one additive line) and reads it directly rather than re-declaring a
+second, driftable copy of the same vendor table names. Verified by a
+dedicated test asserting exact string equality between the new taxonomy's
+labels and the real generator's own constants.
+
+**16.3 — Test baseline** (reproduce before trusting any further change):
+```bash
+npx jest --silent
+# Expect: 70 of 71 suites passed (1 pre-existing skip, unchanged), 2339
+# passed / 60 skipped / 2399 total, 0 failed. (Net new vs. PR #141's own
+# baseline of 2305: +94, exactly the five new test files this round adds.)
+
+python3 -m pytest -q
+# Expect: 1739 passed, 0 failed (zero Python files touched this round)
+
+node --test Sentinel-APEX/renderer/tests/*.test.js Sentinel-APEX/engine-node/tests/*.test.js workers/lib/*.test.js
+# Expect: 290 passed, 0 failed. workers/lib/route-table.test.js's own
+# filesystem-parity governance guard was updated in the SAME commit as
+# the new api/v1/defense-profile.js file (34 -> 35 routable handlers) --
+# do not "fix" that count without adding a matching route-table.js entry
+# first if you ever see it fail again for a genuinely new handler file.
+```
+Real browser QA (Playwright/Chromium, real handler code intercepted at
+the network layer, real committed CVE-2023-27351 data, not asserted):
+12/12 checks pass across desktop (1440px) and mobile (375px) on both new
+pages — wizard save/reload persistence, an injected `<img onerror>` XSS
+payload in a custom SIEM label never executing, workflow D (no profile →
+setup prompt) and workflow A (configured profile → real `READY` badge,
+screenshotted) both rendering correctly end-to-end. Zero uncaught page
+errors. No local CodeQL CLI in this environment (unchanged limitation,
+every prior round) — CodeQL runs in CI post-push.
+
+**16.4 — What was deliberately deferred, and why.** No SIEM/EDR
+connector or deployment path (explicit mandate boundary, Phase 4/44/63/
+64/124 — this tranche is read-only compatibility assessment only).
+Provider field-level mapping beyond Microsoft/Sysmon/Windows-Security-
+Events/Linux-auditd is honestly source-label-only (`confidence:
+"general"`), not independently verified to the same standard. No
+automated accessibility scanner run (native semantic HTML used
+throughout, matching `dossier.html`'s own precedent). All tracked
+individually as `platform/open-issues.md` Issue 30, not silently dropped.
+
+**16.5 — Next recommended tranche** (ranked by evidence, supersedes §15.7):
+1. **Execute the Cloudflare deployment runbook** once real credentials
+   are available — unchanged, still the single highest-leverage blocked
+   action across every recent round, entirely independent of this
+   round's work.
+2. **Grow the canonical detection-rule store** (unchanged from §15.7.2)
+   — the compatibility engine built this round is verified correct
+   against real data, but that data is thin; more real detections is the
+   highest-leverage way to make both Threat-to-Defense Fabric AND this
+   round's customer-aware coverage genuinely valuable to more customers.
+3. **The mandate's own explicitly-named likely-next transformation**:
+   "SENTINEL APEX™ Controlled SIEM Deployment Gateway v1" — customer
+   explicitly authorizes a connector, platform verifies environment,
+   compatible validated detection previewed, customer approves, deploy
+   through a scoped connector with read-back verification and rollback.
+   Explicitly NOT started this round (mandate Phase 120's own framing:
+   "future scope").
+4. **Correct the three architecture docs** that materially overstate
+   `lib/detection/`'s live status (§15.3/Issue 29 item 1) — unchanged,
+   still a standalone documentation-accuracy task.
+5. **Fix the three unauthenticated/unbounded gaps in Issue 20** — still
+   open, unaddressed across seven-plus rounds now, same reasoning as
+   ever (silently tightening a previously-public route needs explicit
+   sign-off, not a unilateral fix).
+6. Do **not** restart Thread A — unchanged reasoning, now carried through
+   seven consecutive rounds.
