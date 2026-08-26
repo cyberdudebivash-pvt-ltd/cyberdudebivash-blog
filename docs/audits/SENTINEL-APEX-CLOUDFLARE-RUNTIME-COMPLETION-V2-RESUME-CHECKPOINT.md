@@ -1,20 +1,39 @@
 # SENTINEL APEX — Cloudflare-Only Runtime Completion v2 — Resume Checkpoint
 
-**Date:** 2026-08-26
-**Branch:** `claude/p0-cloudflare-runtime-completion-v2`
+**Date:** 2026-08-26 (round 1); updated 2026-08-26 (round 2)
+**Branch:** `claude/p0-cloudflare-runtime-completion-v2` (round 1, merged
+as PR #139); `claude/p0-cloudflare-live-cutover-v1` (round 2, this update)
 **Written per:** the same "Long-Run Checkpoint Policy" established by the
 Global CTI Commercial Transformation v3 lineage — stop at a safe boundary,
 commit, push, open/update the PR, and leave a clear resume point.
 
-**READ THIS FIRST IF RESUMING:** this tranche migrated **watchlists and
-change-detection** from Redis to Cloudflare D1 (joining the alert-delivery
-control plane, already D1-backed since PR #138, in the same shared
-`sentinel-apex-core` database) and produced three dedicated audit
-documents covering auth, billing, and the 35-file ReportX/Intelligence
-Factory surface — all deliberately deferred, not migrated, with real
-evidence for why. **It did not** achieve live Cloudflare Cron proof or
-GitHub Actions scheduler retirement — this sandbox still has no
-authenticated Cloudflare account access
+**READ THIS FIRST IF RESUMING — round 2 update:** round 2 was a tranche
+dedicated *specifically* to live production activation (not another
+migration), and confirmed the same `wrangler whoami` → not-authenticated
+blocker round 1 (and every round since PR #137) already found — this is
+now a third independent confirmation, from a session whose entire mandate
+was proving live status, which is itself evidence the gap is genuinely
+environmental. Round 2's real contribution: found and fixed a live
+Workers-runtime bug in `webhook-signing.js`'s SSRF guard (`dns.promises.
+lookup()` is undocumented-as-unsupported under Workers `nodejs_compat` —
+switched to `resolve4()`/`resolve6()`), and produced a new runbook
+(`docs/runbooks/CLOUDFLARE-ALERT-RUNTIME-CUTOVER.md`) with every command
+verified against Cloudflare's current documentation. See §17 below (round
+2) for full detail before resuming this lineage again. **Round 1's own
+content below (§1-16) is unchanged and still accurate** — this was an
+activation attempt, not a re-migration; no watchlist/change-detection/
+delivery code from round 1 was modified in round 2 except the one file
+named above.
+
+**READ THIS FIRST IF RESUMING — round 1 (original):** this tranche
+migrated **watchlists and change-detection** from Redis to Cloudflare D1
+(joining the alert-delivery control plane, already D1-backed since PR
+#138, in the same shared `sentinel-apex-core` database) and produced
+three dedicated audit documents covering auth, billing, and the 35-file
+ReportX/Intelligence Factory surface — all deliberately deferred, not
+migrated, with real evidence for why. **It did not** achieve live
+Cloudflare Cron proof or GitHub Actions scheduler retirement — this
+sandbox still has no authenticated Cloudflare account access
 (`wrangler whoami` → not authenticated, re-verified this round, unchanged
 since PR #137). Read
 `docs/audits/SENTINEL-APEX-CLOUDFLARE-ONLY-RUNTIME-COMPLETION-V2-CERTIFICATION.md`
@@ -206,3 +225,97 @@ checkpoint, only the final commit/push/draft-PR/subscribe step (mandate
 Phase 68-73, tracked as this session's own task list item) may still be
 pending — check `git status` and the branch's push state before assuming
 Thread A-D over finishing this tranche's own delivery.
+
+---
+
+## 17. Round 2 — Cloudflare Live Cutover v1 (2026-08-26)
+
+**Branch:** `claude/p0-cloudflare-live-cutover-v1`. **Certification:**
+`docs/audits/SENTINEL-APEX-CLOUDFLARE-LIVE-CUTOVER-V1-CERTIFICATION.md`
+— CONDITIONAL GO. **Runbook (new):**
+`docs/runbooks/CLOUDFLARE-ALERT-RUNTIME-CUTOVER.md`.
+
+**17.1 — What this round was asked to do.** A dedicated mandate to prove
+the Cloudflare-native monitoring runtime live in production (real D1,
+real deployed Worker, real Cron invocation observed) and, only once
+proven, retire the GitHub Actions scheduler bridge. Not another
+migration tranche — round 1 (§1-16 above) already finished the code-side
+migration work this round assumes as its starting point.
+
+**17.2 — The gate, confirmed again.** `wrangler whoami` → not
+authenticated, re-run fresh at this round's start. Per the mandate's own
+explicit instruction ("if not authenticated: STOP production mutation,
+do not fabricate deployment success"), no D1 migration was applied to a
+real database, no Worker was deployed to a real account, no Cron Trigger
+was activated, and — correctly — the GitHub Actions scheduler was **not**
+touched. This is the third independent round to hit this exact wall
+(PR #137, PR #138, this round), now from a session whose entire mandate
+was specifically to get past it, which is stronger evidence than before
+that the gap is genuinely environmental (no Cloudflare credentials exist
+in any sandbox this lineage has ever run in) rather than something a
+differently-scoped or differently-instructed session could route around.
+
+**17.3 — What WAS accomplished despite the gate.** `wrangler deploy
+--dry-run` succeeds without authentication — confirmed the Worker bundle
+compiles (10,596 files, 17,871.19 KiB / gzip 3,012.92 KiB) and both
+declared bindings (`env.DB` → `sentinel-apex-core`, `env.ASSETS`) resolve
+by name. Official Cloudflare documentation was fetched live (not recalled
+from training data) for Cron Trigger configuration/deployment/
+verification, D1 migration commands, and `wrangler deploy`/`secret`/
+`tail` syntax — all now cited precisely in the new runbook rather than
+assumed.
+
+**17.4 — The real finding: a live Workers-runtime SSRF-guard bug.**
+Cloudflare's current docs (`developers.cloudflare.com/workers/
+runtime-apis/nodejs/dns/`) state `dns.lookup`/`dns.promises.lookup`
+throw "Not implemented" under Workers `nodejs_compat`.
+`api/_lib/webhook-signing.js`'s `isSafeWebhookUrl()` called exactly that
+function — meaning every hostname-based webhook URL (the common case)
+would have been rejected as unsafe on a real deployed Worker, even
+though all 44 of this file's Jest tests pass (Jest runs under real
+Node, never exercising this gap). **Empirically probed, not just cited**:
+a standalone scratch Worker run via `wrangler dev --local` under this
+exact repo's pinned wrangler (`4.123.0`) showed `dns.promises.lookup()`
+*actually working* in local emulation — a genuine, disclosed discrepancy
+between Miniflare's local DNS behavior and Cloudflare's documented live
+behavior. The documented behavior was trusted over the more permissive
+local result, per this platform's own "never claim live proof from local
+emulation" discipline (this is the clearest concrete illustration of that
+rule this whole lineage has produced — local emulation actively
+disagreed with production docs here, not merely "unverified"). **Fixed**:
+switched to `dns.promises.resolve4()`/`resolve6()` (both confirmed
+supported by the same docs and the same local probe), each family
+resolved independently so a single-family host (the common case) isn't
+treated as a failure. All 44 existing tests pass unchanged against the
+rewrite; a new governance guard
+(`tests/governance-cloudflare-runtime.test.js`) now asserts `dns.lookup`/
+`dns.promises.lookup` never reappear in this file. **Still unverified
+against a real deployed Worker** — this is the single highest-value next
+step for whoever runs the new runbook for real, precisely because this
+bug class evaded both Node testing and local Workers emulation.
+
+**17.5 — Full regression this round.** Jest 2158/2158 (2 more than round
+1's 2156 — the new DNS-guard tests), pytest 658/658, node:test 208+64+106+120
+= 498/498. Total 3,314/3,314, 0 failed, 0 skipped-unexpectedly (the 1
+pre-existing e2e-suite skip is unchanged and unrelated).
+
+**17.6 — Governance doc updates this round.** `platform/open-issues.md`
+gained Issue 28 (this round's findings, full detail in §17.4 above,
+tracked individually per this platform's own discipline).
+`platform/capabilities.md`'s Alert Delivery row got a one-paragraph
+addition noting the SSRF fix and the new runbook — not a rewrite, since
+nothing about the row's underlying CONDITIONAL-GO status changed.
+`docs/architecture/PRODUCTION-RUNTIME-POLICY.md`,
+`INTELLIGENCE-SOURCE-OF-TRUTH-MATRIX.md` were deliberately **not**
+touched this round — nothing in production reality changed (still not
+live), so rewriting them would have been unjustified churn, not honesty.
+
+**17.7 — Next exact action if resuming.** Unchanged in kind from §1-16's
+own Thread A: an operator with real, authenticated Cloudflare credentials
+needs to run `docs/runbooks/CLOUDFLARE-ALERT-RUNTIME-CUTOVER.md` end to
+end. That runbook is now the single most current, most precisely-cited
+resource for doing so — read it before attempting a live cutover from
+any future session, rather than re-deriving the command sequence from
+scratch. Once real Cron proof exists (runbook §11), return to this
+lineage to actually retire the GitHub Actions scheduler (runbook §12) —
+still not done as of this checkpoint, and still correctly so.

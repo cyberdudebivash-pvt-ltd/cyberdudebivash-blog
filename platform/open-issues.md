@@ -1757,4 +1757,55 @@ tracked here individually per this platform's own discipline.
    per both documents' own "update in the same commit" discipline.
 
 ---
+
+## Issue 28 — Cloudflare Live Cutover v1 real, disclosed gaps (2026-08-26)
+
+Found while attempting to prove the Cloudflare-native monitoring runtime
+live in production and retire the GitHub Actions scheduler. Full detail
+in `docs/audits/SENTINEL-APEX-CLOUDFLARE-LIVE-CUTOVER-V1-CERTIFICATION.md`;
+tracked here individually per this platform's own discipline.
+
+1. **~~No live Cloudflare Cron Trigger execution has been observed~~ →
+   RE-CONFIRMED, third independent attempt (2026-08-26).** A tranche
+   dedicated specifically to live production activation re-ran
+   `wrangler whoami`: still not authenticated. This is not a new finding
+   — it is the same blocker Issue 26 item 1 and Issue 27 item 1 already
+   recorded — but it is now confirmed by a session whose *entire mandate*
+   was live cutover, not a side effect of a broader migration tranche,
+   which is itself useful evidence that this gap is genuinely
+   environmental (no credentials exist in any sandbox this lineage runs
+   in) and not something a differently-scoped session could route
+   around.
+2. **A real Workers-runtime SSRF-guard bug was found and fixed:**
+   `api/_lib/webhook-signing.js`'s `isSafeWebhookUrl()` called
+   `dns.promises.lookup()`, which Cloudflare's own current documentation
+   states throws "Not implemented" under Workers `nodejs_compat` — a
+   full functional regression for hostname-based webhook URLs (the
+   common case) on a real deployed Worker, invisible to this repo's
+   Node-based Jest suite. Fixed by switching to `dns.promises.resolve4()`/
+   `resolve6()`, both confirmed supported by the same docs. **Not yet
+   verified against a real deployed Worker** — only against real Node
+   (Jest) and local `wrangler dev --local` emulation, which was itself
+   found to disagree with the documented live behavior for the *old*
+   `lookup()`-based code (local emulation returned working results where
+   live Workers documentation says it should throw). This discrepancy is
+   the clearest evidence in this platform's history for why "verified
+   locally" and "verified live" must never be conflated — recorded
+   precisely for that reason, not as an incidental footnote.
+3. **No dedicated D1-backed cron-health observability
+   (`last_cron_invocation_at`, `cron_failures`)** — today's observability
+   for the scheduled path is Cloudflare's own log/dashboard mechanism
+   (`[SCHEDULED]` structured log line, Trigger Events, Workers Logs),
+   which is legitimate but requires an operator to look, rather than a
+   self-reporting API endpoint. Judged out of this tranche's coherent
+   scope (production activation, not new observability features) —
+   recorded as an open item, not silently built or silently ignored.
+4. **`docs/runbooks/CLOUDFLARE-ALERT-RUNTIME-CUTOVER.md` (new) has never
+   been executed end-to-end** — every command in it is verified against
+   Cloudflare's current documentation or local emulation individually,
+   but the runbook as a whole sequence has not been dry-run by an
+   operator with real credentials. The first real execution of it IS the
+   live cutover this and every prior tranche has been unable to perform.
+
+---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

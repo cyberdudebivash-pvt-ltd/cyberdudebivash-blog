@@ -10,6 +10,18 @@ resuming any work on this repo. See
 `docs/audits/SENTINEL-APEX-INTEL-FACTORY-PUBLICATION-RELIABILITY-V1-CERTIFICATION.md`.
 Nothing below this note is affected by it.
 
+**Cloudflare runtime lineage has continued past round 8 below, tracked in
+its own dedicated checkpoint, not here:** round 8 (§13-14, PR #137)
+merged, then PR #138 (Cloudflare-Only Alert Runtime v1), PR #139
+(Cloudflare-Only Runtime Completion v2, watchlists/change-detection
+migrated to D1), and a live-cutover attempt (`claude/p0-cloudflare-live-
+cutover-v1`, 2026-08-26) all followed. None of that is recorded in this
+file's own §13-onward numbering below (which stops at round 8) — see
+`docs/audits/SENTINEL-APEX-CLOUDFLARE-RUNTIME-COMPLETION-V2-RESUME-CHECKPOINT.md`
+instead, which is kept current for exactly this lineage. `wrangler
+whoami` → not authenticated remains the standing blocker across all of
+it, unchanged since round 8 first found it.
+
 **Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5); updated 2026-08-25 (round 6); updated 2026-08-25 (round 7); updated 2026-08-25 (round 8)
 **Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, merged as PR #133); `claude/p1-watchlists-change-detection-v1` (round 6, merged as PR #134); `claude/p1-alert-delivery-webhook-automation-v1` (round 7, merged as PR #136); `claude/p0-cloudflare-alert-orchestration-v1` (round 8, this update, PR open)
 **Written per:** the master mandate's own "Long-Run Checkpoint Policy" — stop at a safe boundary, commit, push, update the PR, and leave a clear resume point rather than attempting the full 70-phase mandate in one uninterrupted pass.
