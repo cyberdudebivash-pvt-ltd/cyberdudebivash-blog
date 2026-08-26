@@ -1,15 +1,15 @@
 {
-  "generated": "2026-08-26T14:12:31.234Z",
+  "generated": "2026-08-26T14:38:17.353Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 12258,
+    "total_nodes": 12264,
     "actors": 8,
-    "cves": 4558,
-    "campaigns": 1211,
+    "cves": 4560,
+    "campaigns": 1213,
     "malware": 0,
     "iocs": 891,
-    "edges": 3804
+    "edges": 3806
   },
   "nodes": {
     "actor:lockbit": {
@@ -231691,6 +231691,118 @@
         "type": "CVE_REPORT"
       },
       "connections": []
+    },
+    "CVE-2026-54511": {
+      "id": "CVE-2026-54511",
+      "type": "CVE",
+      "name": "@logtape/syslog: syslog log injection via unescaped control characters and unvalidated SD-NAME keys",
+      "attributes": {
+        "cvss": 8.6,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "@logtape/syslog",
+        "published": "2026-08-26",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-54550": {
+      "id": "CVE-2026-54550",
+      "type": "CVE",
+      "name": "IzPack has Path Traversal in UnpackerBase that allows writing files outside the installation directory via malicious pack entries",
+      "attributes": {
+        "cvss": 7.4,
+        "threat_level": "MEDIUM",
+        "priority_score": 60,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "maven",
+        "product": "org.codehaus.izpack:izpack-installer",
+        "published": "2026-08-26",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CISA-1452cb882ba00141": {
+      "id": "CISA-1452cb882ba00141",
+      "type": "Intel",
+      "name": "CISA Vulnerability Review",
+      "attributes": {
+        "cvss": 0,
+        "threat_level": "LOW",
+        "priority_score": 36,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "CISA US-CERT",
+        "product": "Multiple Products",
+        "published": "2026-08-26",
+        "type": "ADVISORY"
+      },
+      "connections": []
+    },
+    "REDDIT_CYBER-ee1e5fa4ba4b07b2": {
+      "id": "REDDIT_CYBER-ee1e5fa4ba4b07b2",
+      "type": "Intel",
+      "name": "Cyber Security Insurers Cover Only ~32% of Ransomware Incident Cost",
+      "attributes": {
+        "cvss": 0,
+        "threat_level": "LOW",
+        "priority_score": 26,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": true,
+        "vendor": "reddit_cyber",
+        "product": "Threat Intelligence",
+        "published": "2026-08-26",
+        "type": "RANSOMWARE"
+      },
+      "connections": []
+    },
+    "campaign:cve-2026-54511": {
+      "id": "campaign:cve-2026-54511",
+      "type": "Campaign",
+      "name": "npm @logtape/syslog Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-08-26",
+        "last_seen": "2026-08-26",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-54511"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-54511",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-54550": {
+      "id": "campaign:cve-2026-54550",
+      "type": "Campaign",
+      "name": "maven org.codehaus.izpack:izpack-installer Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-08-26",
+        "last_seen": "2026-08-26",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-54550"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-54550",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -266090,6 +266202,24 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-25",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-54511→includes→CVE-2026-54511",
+      "source": "campaign:cve-2026-54511",
+      "target": "CVE-2026-54511",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-26",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-54550→includes→CVE-2026-54550",
+      "source": "campaign:cve-2026-54550",
+      "target": "CVE-2026-54550",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-08-26",
       "sources": []
     }
   ]

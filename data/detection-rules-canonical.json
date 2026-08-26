@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "1.0.0",
-    "generated": "2026-08-26T12:20:16.456Z",
+    "generated": "2026-08-26T14:38:17.560Z",
     "generator": "SENTINEL APEX Detection Engine v5.0",
     "total_rules": 5
   },
@@ -285,10 +285,10 @@
       "technique_id": "T1547.001",
       "title": "Registry Run Key Persistence From User-Writable Path",
       "level": "medium",
-      "description": "PHP-CGI argument injection exploited to deploy ransomware. Attackers exploited a public-facing PHP flaw, ran encoded PowerShell, established registry ",
+      "description": "IzPack has Path Traversal in UnpackerBase that allows writing files outside the installation directory via malicious pack entries. ### Summary IzPack'",
       "data_source": "process_creation",
       "platforms": {
-        "sigma": "title: Registry Run Key Persistence From User-Writable Path\nid: 7080b048-4dcb-5428-984f-56b6de11a5f7\nstatus: experimental\ndescription: 'Registry Run Key Persistence From User-Writable Path. Evidence basis: law, ran encoded PowerShell, established registry Run key persistence, and used vssadmin to delete volume s. CYBERDUDEBIVASH SENTINEL APEX Detection Engineering.'\nreferences:\n- 'https://nvd.nist.gov/vuln/detail/CVE-2024-4577'\n- 'https://vendor.example/advisory'\nauthor: CYBERDUDEBIVASH SENTINEL APEX Detection Engineering\ndate: 2026-08-26\ntags:\n- attack.t1547.001\nlogsource:\n    product: windows\n    category: registry_set\ndetection:\n    selection:\n        TargetObject|contains: \\Software\\Microsoft\\Windows\\CurrentVersion\\Run\n    filter_1:\n        Image|startswith:\n            - 'C:\\Program Files'\n            - 'C:\\Windows\\'\n    condition: selection and not filter_1\nfalsepositives:\n    - Legitimate administrative activity\n    - Authorized security testing\nlevel: medium",
+        "sigma": "title: Registry Run Key Persistence From User-Writable Path\nid: 7080b048-4dcb-5428-984f-56b6de11a5f7\nstatus: experimental\ndescription: 'Registry Run Key Persistence From User-Writable Path. Evidence basis: on disk under the victim''s privileges — including startup folders, PATH directories, or system locations. ### Deta. CYBERDUDEBIVASH SENTINEL APEX Detection Engineering.'\nreferences:\n- 'https://nvd.nist.gov/vuln/detail/CVE-2026-54550'\n- 'https://github.com/advisories/GHSA-f63g-88cj-hjf9'\n- 'https://github.com/izpack/izpack/security/advisories/GHSA-f63g-88cj-hjf9'\n- 'https://github.com/izpack/izpack/pull/1193'\nauthor: CYBERDUDEBIVASH SENTINEL APEX Detection Engineering\ndate: 2026-08-26\ntags:\n- attack.t1547.001\nlogsource:\n    product: windows\n    category: registry_set\ndetection:\n    selection:\n        TargetObject|contains: \\Software\\Microsoft\\Windows\\CurrentVersion\\Run\n    filter_1:\n        Image|startswith:\n            - 'C:\\Program Files'\n            - 'C:\\Windows\\'\n    condition: selection and not filter_1\nfalsepositives:\n    - Legitimate administrative activity\n    - Authorized security testing\nlevel: medium",
         "kql": "DeviceRegistryEvents\n| where RegistryKey contains \"\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\"\n| where not ((InitiatingProcessFolderPath startswith \"C:\\\\Program Files\" or InitiatingProcessFolderPath startswith \"C:\\\\Windows\\\\\"))\n| project Timestamp, DeviceName, RegistryKey, RegistryValueData, InitiatingProcessFolderPath",
         "splunk": "| tstats count from datamodel=Endpoint where nodename=Endpoint.Registry Registry.registry_path=\"*\\Software\\Microsoft\\Windows\\CurrentVersion\\Run*\" NOT (Registry.process_path=\"C:\\Program Files*\" OR Registry.process_path=\"C:\\Windows\\*\") by Registry.process_path Registry.registry_path _time",
         "osquery": "SELECT * FROM registry WHERE path LIKE '%\\Software\\Microsoft\\Windows\\CurrentVersion\\Run%';"
@@ -298,18 +298,16 @@
         "status": "GENERATED",
         "confidence": "MEDIUM",
         "created_at": "2026-08-26T12:20:05.071Z",
-        "updated_at": "2026-08-26T12:20:16.456Z",
-        "version": "1.0.8"
+        "updated_at": "2026-08-26T14:38:17.560Z",
+        "version": "1.0.9"
       },
       "source": {
-        "iocs": [
-          "evil-c2[.]top"
-        ],
+        "iocs": [],
         "articles": [
-          "CVE-2024-4577"
+          "CVE-2026-54550"
         ],
         "campaigns": [],
-        "evidence": "PHP-CGI argument injection exploited to deploy ransomware. Attackers exploited a public-facing PHP flaw, ran encoded PowerShell, established registry Run key persistence, and used vssadmin to delete v"
+        "evidence": "IzPack has Path Traversal in UnpackerBase that allows writing files outside the installation directory via malicious pack entries. ### Summary IzPack's `UnpackerBase.unpack()` resolves pack-file targe"
       },
       "history": [
         {
@@ -363,6 +361,12 @@
         {
           "version": "1.0.8",
           "timestamp": "2026-08-26T12:20:16.456Z",
+          "change": "Rule updated",
+          "author": "detection-engine"
+        },
+        {
+          "version": "1.0.9",
+          "timestamp": "2026-08-26T14:38:17.560Z",
           "change": "Rule updated",
           "author": "detection-engine"
         }
