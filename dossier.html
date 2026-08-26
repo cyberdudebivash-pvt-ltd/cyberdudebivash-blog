@@ -68,6 +68,16 @@ input:focus,select:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba
 .evidence-item{border:1px solid var(--apex-border);border-radius:8px;padding:12px 16px;margin-bottom:8px;background:#0a0e18}
 .evidence-claim{font-size:14px;color:var(--apex-text);margin-bottom:6px}
 .technique-chip{display:inline-block;background:#0a0e18;border:1px solid var(--apex-border);border-radius:6px;padding:4px 10px;font-family:var(--mono);font-size:12px;color:var(--apex-purple);margin:0 6px 6px 0}
+.det-row{border:1px solid var(--apex-border);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.det-row-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.det-status{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600}
+.det-status-covered{background:rgba(0,255,136,.12);color:var(--apex-green)}
+.det-status-partial{background:rgba(255,140,0,.12);color:var(--apex-orange)}
+.det-status-none{background:rgba(107,114,128,.15);color:var(--apex-muted)}
+.det-fmt-btn{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:5px;border:1px solid var(--apex-border);background:#0a0e18;color:var(--apex-cyan);cursor:pointer}
+.det-fmt-btn:hover{border-color:var(--apex-cyan)}
+.det-code{margin-top:10px;background:#05070c;border:1px solid var(--apex-border);border-radius:6px;padding:10px 12px;font-family:var(--mono);font-size:11px;color:var(--apex-text);white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto}
+.det-validation-line{font-family:var(--mono);font-size:11px;color:var(--apex-muted);margin-top:6px}
 .action-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--apex-border)}
 .action-item:last-child{border-bottom:none}
 .action-check{color:var(--apex-green);font-weight:900}
@@ -202,6 +212,7 @@ async function loadDossier(type, id) {
     }
     renderDossier(body.dossier, type);
     refreshWatchState(type, body.dossier.entity_id);
+    refreshDetectionCoverage(type, body.dossier.entity_id, body.dossier.detections);
   } catch (e) {
     document.getElementById('dossier-root').innerHTML = '';
     showStatus('<div class="alert alert-error">Network error loading dossier. Please retry.</div>');
@@ -341,6 +352,163 @@ function renderTechniques(ctx) {
   return `<div>${chips}</div>${note}<div class="rel-meta" style="margin-top:10px">Techniques are surfaced via a linked report or threat actor — never generated directly for this record.</div>`;
 }
 
+/* ───────────────────────── Detection Coverage (Threat-to-Defense Fabric v1) ─────────────────────────
+   Same async-enhancement pattern as refreshWatchState(): the initial
+   dossier render shows a coarse summary, then this fetches the full,
+   per-technique action=detection-coverage view and replaces the
+   #detections-root container in place. Individual detection content
+   (Sigma/KQL/etc.) is fetched lazily, only when a customer clicks
+   "View" -- never eagerly fanned out per technique, avoiding an N+1
+   request storm on page load. */
+const STATUS_LABEL = {
+  COVERED: 'Covered', PARTIALLY_COVERED: 'Review Required',
+  UNSUPPORTED_TELEMETRY: 'Unsupported', NO_VALIDATED_DETECTION: 'No Validated Detection',
+};
+function detStatusClass(status) {
+  return status === 'COVERED' ? 'det-status-covered' : status === 'PARTIALLY_COVERED' ? 'det-status-partial' : 'det-status-none';
+}
+
+async function refreshDetectionCoverage(type, id, initialSummary) {
+  const root = document.getElementById('detections-root');
+  if (!root) return;
+  // One dossier is shown per page load, so this single module-level slot
+  // is always correct -- read by fetchDetection() below so a detection
+  // opened from this page's coverage view resolves the same
+  // entity-scoped, evidence-graded status the coverage view just showed
+  // (never a different, more conservative status for the identical rule).
+  currentEntityContext = { type, id };
+  if (!initialSummary || !initialSummary.available) {
+    if (!initialSummary || !(initialSummary.coverage && initialSummary.coverage.observed_techniques)) return; // nothing to fetch -- already showing the honest empty state
+  }
+  try {
+    const res = await fetch(`${API}/api/v1/intel?action=detection-coverage&type=${encodeURIComponent(type)}&id=${encodeURIComponent(id)}`, {
+      headers: { 'X-API-Key': sessionKey },
+    });
+    const body = await res.json();
+    if (!res.ok || !body.success) {
+      root.innerHTML = `<div class="empty-state">Detection coverage could not be loaded.</div>`;
+      return;
+    }
+    root.innerHTML = renderDetectionCoverage(body.coverage);
+  } catch (e) {
+    root.innerHTML = `<div class="empty-state">Detection coverage could not be loaded.</div>`;
+  }
+}
+
+function renderDetectionCoverage(cov) {
+  if (!cov || cov.observed_techniques === 0) {
+    return '<div class="empty-state">No ATT&amp;CK techniques currently established for this record — detection coverage cannot be assessed without them.</div>';
+  }
+  const stats = `
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-val">${cov.observed_techniques}</div><div class="stat-lbl">Observed Techniques</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--apex-green)">${cov.validated}</div><div class="stat-lbl">Validated</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--apex-orange)">${cov.review_required}</div><div class="stat-lbl">Review Required</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--apex-muted)">${cov.uncovered}</div><div class="stat-lbl">Uncovered</div></div>
+    </div>`;
+  const rows = cov.techniques.map(t => {
+    const label = STATUS_LABEL[t.status] || t.status;
+    const detButtons = (t.rule_ids || []).map(rid => `<button class="det-fmt-btn" onclick="viewDetectionDetail('${esc(rid)}')">View ${esc(rid.slice(0, 8))}…</button>`).join(' ');
+    return `
+    <div class="det-row">
+      <div class="det-row-head">
+        <span class="technique-chip" style="margin:0">${esc(t.id)}</span>
+        <span class="det-status ${detStatusClass(t.status)}">${esc(label)}</span>
+      </div>
+      <div class="det-validation-line">Evidence: ${esc(t.evidence_state)} · Opportunity: ${esc(t.opportunity)}${t.entity_scoped ? '' : (t.rule_ids && t.rule_ids.length ? ' · detection exists for this technique, not yet confirmed specific to this record' : '')}</div>
+      ${detButtons ? `<div style="margin-top:8px">${detButtons}</div>` : ''}
+      <div id="det-detail-${esc((t.rule_ids || [])[0] || '')}"></div>
+    </div>`;
+  }).join('');
+  return stats + '<div style="margin-top:14px">' + rows + '</div>' +
+    '<div class="rel-meta" style="margin-top:6px">A technique only counts as Covered when an independently evidence-linked detection has passed structural and fixture validation — never based on rule content alone.</div>';
+}
+
+let currentEntityContext = { type: null, id: null };
+const detectionCache = {};
+
+async function fetchDetection(id) {
+  if (detectionCache[id]) return detectionCache[id];
+  const ctx = currentEntityContext.type && currentEntityContext.id
+    ? `&entity_type=${encodeURIComponent(currentEntityContext.type)}&entity_id=${encodeURIComponent(currentEntityContext.id)}`
+    : '';
+  const res = await fetch(`${API}/api/v1/intel?action=detection&id=${encodeURIComponent(id)}${ctx}`, { headers: { 'X-API-Key': sessionKey } });
+  const body = await res.json();
+  if (!res.ok || !body.success) throw new Error((body.error && body.error.message) || 'Detection could not be loaded.');
+  detectionCache[id] = body.detection;
+  return body.detection;
+}
+
+async function viewDetectionDetail(id) {
+  const container = document.getElementById(`det-detail-${id}`);
+  if (!container) return;
+  if (container.dataset.open === '1') { container.innerHTML = ''; container.dataset.open = '0'; return; }
+  container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading…</div>';
+  try {
+    const det = await fetchDetection(id);
+    const formats = Object.keys(det.formats || {});
+    const fmtButtons = formats.map(f => `
+      <button class="det-fmt-btn" onclick="showFormat('${esc(id)}','${esc(f)}')">${esc(f)}</button>
+      <button class="det-fmt-btn" onclick="copyDetectionFormat('${esc(id)}','${esc(f)}')">Copy</button>
+      <button class="det-fmt-btn" onclick="downloadDetection('${esc(id)}','${esc(f)}')">Download</button>
+    `).join(' ');
+    const fp = (det.false_positive_guidance || []).map(g => `<li>${esc(g)}</li>`).join('');
+    container.innerHTML = `
+      <div class="det-code" style="white-space:normal">
+        <div><strong>${esc(det.name)}</strong> · v${esc(det.version)} · <span class="det-status ${detStatusClass(det.status === 'RELEASED' ? 'COVERED' : det.status === 'REVIEW_REQUIRED' ? 'PARTIALLY_COVERED' : 'NONE')}">${esc(det.status)}</span></div>
+        <div class="rel-meta" style="margin-top:6px">Required telemetry: ${esc(det.telemetry_requirements.source_label)}</div>
+        <div class="rel-meta">Fields referenced: ${(det.telemetry_requirements.required_fields || []).map(esc).join(', ') || '—'}</div>
+        <div style="margin-top:8px">${fmtButtons}</div>
+        <ul class="factor-list" style="margin-top:8px">${fp}</ul>
+        <div id="det-fmt-body-${esc(id)}"></div>
+      </div>`;
+    container.dataset.open = '1';
+  } catch (e) {
+    container.innerHTML = `<div class="empty-state">${esc(e.message)}</div>`;
+  }
+}
+
+async function showFormat(id, format) {
+  const det = await fetchDetection(id);
+  const body = document.getElementById(`det-fmt-body-${id}`);
+  if (!body) return;
+  const content = det.formats[format] && det.formats[format].content;
+  const text = Array.isArray(content) ? content.join('\n') : (content || '');
+  body.innerHTML = `<div class="det-code">${esc(text)}</div>`;
+}
+
+async function copyDetectionFormat(id, format) {
+  try {
+    const det = await fetchDetection(id);
+    const content = det.formats[format] && det.formats[format].content;
+    const text = Array.isArray(content) ? content.join('\n') : (content || '');
+    await navigator.clipboard.writeText(text);
+    showStatus('<div class="alert alert-info">Copied to clipboard.</div>');
+  } catch (e) {
+    showStatus('<div class="alert alert-error">Copy failed.</div>');
+  }
+}
+
+async function downloadDetection(id, format) {
+  try {
+    const res = await fetch(`${API}/api/v1/intel?action=detection-download&id=${encodeURIComponent(id)}&format=${encodeURIComponent(format)}`, {
+      headers: { 'X-API-Key': sessionKey },
+    });
+    if (!res.ok) { showStatus('<div class="alert alert-error">Download failed.</div>'); return; }
+    const blob = await res.blob();
+    const disposition = res.headers.get('Content-Disposition') || '';
+    const match = disposition.match(/filename="([^"]+)"/);
+    const filename = match ? match[1] : `detection-${id}-${format}.txt`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    showStatus('<div class="alert alert-error">Download failed.</div>');
+  }
+}
+
 function renderReports(reports) {
   if (!reports || reports.length === 0) return '<div class="empty-state">No published SENTINEL APEX reports currently reference this record.</div>';
   return reports.map(r => {
@@ -428,8 +596,10 @@ function renderDossier(d, type) {
     </div>
 
     <div class="card">
-      <h3 class="card-title">Detections</h3>
-      ${d.detections.available ? '' : `<div class="empty-state">${esc(d.detections.note)}</div>`}
+      <h3 class="card-title">Detection Coverage</h3>
+      <div id="detections-root">${d.detections.available || (d.detections.coverage && d.detections.coverage.observed_techniques)
+        ? '<div class="loading"><div class="spinner"></div>Loading detection coverage…</div>'
+        : `<div class="empty-state">${esc(d.detections.note || 'No detection artifact currently available for this record.')}</div>`}</div>
     </div>
 
     <div class="card">

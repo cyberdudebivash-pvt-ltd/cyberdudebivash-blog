@@ -25,6 +25,7 @@
 'use strict';
 
 const { getNeighbors } = require('./threat-graph');
+const detectionIntelligence = require('./detection-intelligence');
 
 const DOSSIER_SCHEMA_VERSION = '1.0';
 
@@ -159,12 +160,14 @@ function buildAttackContext(relatedActorNodes, matchingReports) {
 // available" is the honest, mandate-sanctioned default until a clean,
 // reliable, CVE/campaign-keyed detection index exists (tracked in
 // platform/open-issues.md).
-function buildDetectionsSection() {
-  return {
-    available: false,
-    formats: [],
-    note: 'No detection artifact currently available for this record.',
-  };
+// Threat-to-Defense Fabric v1: delegates to detection-intelligence.js,
+// which cross-references the canonical detection-rule store
+// (api/_lib/detection-rules.js) by technique ID and CVE/campaign ID
+// against the already-evidence-graded attack_context this function's
+// callers pass in. See docs/audits/SENTINEL-APEX-DETECTION-CAPABILITY-
+// INVENTORY-V1.md for why no new detection store was built.
+function buildDetectionsSection(attackContext, entityType, entityId) {
+  return detectionIntelligence.buildDossierDetectionsSection(attackContext, entityType, entityId);
 }
 
 /* ───────────────────────── CVE dossier ───────────────────────── */
@@ -369,7 +372,7 @@ function buildCveDossier({ graph, cveId, cveItem, enrichment, reportsIndexData, 
 
     attack_context: buildAttackContext(actorNodes, reports),
 
-    detections: buildDetectionsSection(),
+    detections: buildDetectionsSection(buildAttackContext(actorNodes, reports), 'cve', cveId),
 
     reports: reports.map(r => ({ report_id: r.report_id, title: r.title, url: r.url, date: r.date })),
 
@@ -541,7 +544,7 @@ function buildCampaignDossier({ graph, campaign, reportsIndexData, tier }) {
 
     attack_context: buildAttackContext(actorNodes, reports),
 
-    detections: buildDetectionsSection(),
+    detections: buildDetectionsSection(buildAttackContext(actorNodes, reports), 'campaign', campaignId),
 
     reports: reports.map(r => ({ report_id: r.report_id, title: r.title, url: r.url, date: r.date })),
 

@@ -21,6 +21,11 @@
  *  action=report       GET  Single published intelligence report detail (?id=SA-YYYY-NNNN)
  *  action=dossier      GET  Evidence-backed intelligence dossier — CVE or campaign only
  *                           (?type=cve&id=CVE-YYYY-NNNNN or ?type=campaign&id=campaign:...)
+ *  action=detections   GET  List validated detection intelligence (?entity_type=&entity_id=&attack_technique=&format=&validation_status=&limit=&cursor=)
+ *  action=detection    GET  Single detection detail (?id=...)
+ *  action=detection-download GET Raw single-format download (?id=&format=sigma|kql|splunk|osquery|suricata)
+ *  action=detection-coverage GET ATT&CK detection coverage for a CVE or campaign (?type=cve|campaign&id=...)
+ *  action=detection-pack     GET Pro/Enterprise: evidence-backed pack of released detections (?type=cve|campaign&id=...)
  *
  * Backward-compat rewrites in vercel.json map old paths to ?action= params.
  */
@@ -31,6 +36,8 @@ const { getIntel, getCVEDetail, searchIntel, getPlatformStats,
         getGraph, getCampaigns, getCampaignDetail, getTopActorsAPI,
         unifiedSearch, getActorDetailAPI, getIocDetailAPI, getReportDetailAPI,
         getDossierAPI } = require('../_lib/intel');
+const detectionRules = require('../_lib/detection-rules');
+const detectionIntelligence = require('../_lib/detection-intelligence');
 const sec = require('../_lib/security');
 
 /* ─── Main Router ────────────────────────────────────────────── */
@@ -408,10 +415,166 @@ module.exports = async (req, res) => {
         });
       }
 
+      /* ── GET ?action=detections&entity_type=&entity_id=&attack_technique=&format=&validation_status=&limit=&cursor= ─── */
+      case 'detections': {
+        const entityType = String(req.query.entity_type || '').trim().toLowerCase();
+        const entityId = String(req.query.entity_id || '').trim();
+        let rules;
+        if (entityType === 'cve' && entityId) {
+          rules = detectionRules.getRulesByCVE(entityId);
+        } else if (entityType === 'campaign' && entityId) {
+          rules = detectionRules.getRulesByCampaign(entityId);
+        } else {
+          const filters = {};
+          if (req.query.attack_technique) filters.technique_id = String(req.query.attack_technique).trim();
+          rules = detectionRules.searchRules(filters);
+        }
+        const format = String(req.query.format || '').trim().toLowerCase();
+        if (format) {
+          rules = rules.filter(r => (format === 'suricata' ? (r.suricata || []).length > 0 : !!r.platforms[format]));
+        }
+        let detections = rules.map(r => detectionIntelligence.toCanonicalDetectionObject(r));
+        const validationStatus = String(req.query.validation_status || '').trim().toUpperCase();
+        if (validationStatus) detections = detections.filter(d => d.status === validationStatus);
+
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit || '25', 10) || 25));
+        const cursor = Math.max(0, parseInt(req.query.cursor || '0', 10) || 0);
+        const paged = detections.slice(cursor, cursor + limit);
+
+        return successResponse(res, {
+          detections: paged,
+          pagination: {
+            total: detections.length,
+            limit,
+            cursor,
+            next_cursor: cursor + limit < detections.length ? cursor + limit : null,
+          },
+        }, {
+          endpoint:       '/api/v1/intel?action=detections',
+          description:    'Evidence-backed, validated detection intelligence -- Sigma/KQL/Splunk/OSQuery/Suricata, each carrying its L1-L7 validation record',
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
+      /* ── GET ?action=detection&id=...&entity_type=&entity_id= ─── */
+      case 'detection': {
+        const id = String(req.query.id || '').trim();
+        if (!id) {
+          return apiError(res, 400, 'MISSING_DETECTION_ID', 'Detection ID required. Example: GET /api/v1/intel?action=detection&id=...');
+        }
+        const rule = detectionRules.getRule(id);
+        if (!rule) {
+          return apiError(res, 404, 'DETECTION_NOT_FOUND', `No detection found for ID "${id}".`);
+        }
+        // Optional entity context (mandate Phase 57's "Search -> Dossier ->
+        // Detection Coverage -> Detection Detail" flow): a customer arriving
+        // here from a specific CVE/campaign's coverage view already has
+        // that entity's evidence-graded ATT&CK linkage established -- reuse
+        // it so this same rule reports the identical status the coverage
+        // view just showed, rather than the conservative UNKNOWN-evidence
+        // default a bare catalog lookup must use. Never trusts the rule's
+        // own source.articles/source.campaigns claim on its own; only an
+        // entity whose dossier independently confirms this technique
+        // resolves a non-UNKNOWN evidence state (same integrity check
+        // computeCoverage() applies).
+        let attackEvidenceState = 'UNKNOWN';
+        const ctxType = String(req.query.entity_type || '').trim().toLowerCase();
+        const ctxId = String(req.query.entity_id || '').trim();
+        if ((ctxType === 'cve' || ctxType === 'campaign') && ctxId) {
+          const { found: ctxFound, dossier: ctxDossier } = getDossierAPI(ctxType, ctxId, user.tier);
+          if (ctxFound) {
+            const match = (ctxDossier.attack_context.techniques || []).find(t => t.id === rule.technique_id);
+            if (match) attackEvidenceState = detectionIntelligence.classifyAttackEvidence(match);
+          }
+        }
+        return successResponse(res, { detection: detectionIntelligence.toCanonicalDetectionObject(rule, { attackEvidenceState }) }, {
+          endpoint:       `/api/v1/intel?action=detection&id=${id}`,
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
+      /* ── GET ?action=detection-download&id=&format= ───────────── */
+      case 'detection-download': {
+        const id = String(req.query.id || '').trim();
+        const format = String(req.query.format || '').trim().toLowerCase();
+        if (!id || !format) {
+          return apiError(res, 400, 'MISSING_PARAMETERS', 'Both id and format required. Example: GET /api/v1/intel?action=detection-download&id=...&format=sigma');
+        }
+        if (!detectionIntelligence.SUPPORTED_FORMATS.includes(format)) {
+          return apiError(res, 400, 'UNSUPPORTED_FORMAT',
+            `Format "${format}" is not supported. Supported: ${detectionIntelligence.SUPPORTED_FORMATS.join(', ')}.`);
+        }
+        const rule = detectionRules.getRule(id);
+        if (!rule) return apiError(res, 404, 'DETECTION_NOT_FOUND', `No detection found for ID "${id}".`);
+        const content = format === 'suricata' ? (rule.suricata || []).join('\n') : rule.platforms[format];
+        if (!content) return apiError(res, 404, 'FORMAT_NOT_AVAILABLE', `Detection "${id}" has no "${format}" content.`);
+        // Safe filename: derived only from the already-validated rule id
+        // (hex string) and format (checked against SUPPORTED_FORMATS
+        // above) -- no user-controlled path component, no traversal risk.
+        const ext = format === 'sigma' ? 'yml' : format === 'suricata' ? 'rules' : 'txt';
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="detection-${rule.id}-${format}.${ext}"`);
+        return res.send(content);
+      }
+
+      /* ── GET ?action=detection-coverage&type=cve|campaign&id=... ─ */
+      case 'detection-coverage': {
+        const type = String(req.query.type || '').trim().toLowerCase();
+        if (type !== 'cve' && type !== 'campaign') {
+          return apiError(res, 400, 'UNSUPPORTED_ENTITY_TYPE',
+            `Coverage type "${type || '(missing)'}" is not supported. Valid: cve, campaign.`);
+        }
+        const id = String(req.query.id || '').trim();
+        if (!id) return apiError(res, 400, 'MISSING_COVERAGE_ID', `${type} ID required.`);
+        const { found, dossier } = getDossierAPI(type, id, user.tier);
+        if (!found) {
+          return apiError(res, 404, 'ENTITY_NOT_FOUND', `No ${type} record found for "${id}".`);
+        }
+        const coverage = detectionIntelligence.computeCoverage({ attackContext: dossier.attack_context, entityType: type, entityId: id });
+        return successResponse(res, { coverage }, {
+          endpoint:       `/api/v1/intel?action=detection-coverage&type=${type}&id=${encodeURIComponent(id)}`,
+          description:    'Observed ATT&CK techniques for this entity cross-referenced against validated detection coverage -- never counts an unreleased or unvalidated rule as covered',
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
+      /* ── GET ?action=detection-pack&type=cve|campaign&id=... — PRO+ only ─ */
+      case 'detection-pack': {
+        if (user.tier !== 'pro' && user.tier !== 'enterprise') {
+          return apiError(res, 403, 'TIER_RESTRICTED',
+            'Detection packs require Pro or Enterprise plan. Upgrade at https://blog.cyberdudebivash.in/pricing.html',
+            { 'X-Upgrade-URL': 'https://blog.cyberdudebivash.in/pricing.html' });
+        }
+        const type = String(req.query.type || '').trim().toLowerCase();
+        if (type !== 'cve' && type !== 'campaign') {
+          return apiError(res, 400, 'UNSUPPORTED_ENTITY_TYPE', `Pack type "${type || '(missing)'}" is not supported. Valid: cve, campaign.`);
+        }
+        const id = String(req.query.id || '').trim();
+        if (!id) return apiError(res, 400, 'MISSING_PACK_ID', `${type} ID required.`);
+        const { found, dossier } = getDossierAPI(type, id, user.tier);
+        if (!found) {
+          return apiError(res, 404, 'ENTITY_NOT_FOUND', `No ${type} record found for "${id}".`);
+        }
+        const pack = detectionIntelligence.buildDetectionPack({ attackContext: dossier.attack_context, entityType: type, entityId: id });
+        return successResponse(res, { pack }, {
+          endpoint:       `/api/v1/intel?action=detection-pack&type=${type}&id=${encodeURIComponent(id)}`,
+          description:    'A pack contains only RELEASED (fully validated) detections -- never a generated-but-unvalidated rule',
+          tier:           user.tier,
+          requests_used:  user.requestsUsed,
+          requests_limit: user.requestsLimit,
+        });
+      }
+
       /* ── Unknown action ────────────────────────────────────── */
       default:
         return apiError(res, 400, 'INVALID_ACTION',
-          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors, unified-search, actor, ioc, report, dossier`);
+          `Unknown action: "${action}". Valid actions: live, top, cve, iocs, ransomware, search, stats, graph, campaigns, campaign, top-actors, unified-search, actor, ioc, report, dossier, detections, detection, detection-download, detection-coverage, detection-pack`);
     }
   } catch (e) {
     return apiError(res, 500, 'INTERNAL_ERROR',
