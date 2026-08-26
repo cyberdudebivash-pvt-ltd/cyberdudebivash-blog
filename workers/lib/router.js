@@ -148,35 +148,62 @@ async function handleFetch(request, env) {
 
 /**
  * Cloudflare Cron Trigger entry point (workers/entry.js's `scheduled`
- * export calls this). Dormant by design: wrangler.jsonc's own header
- * comment explicitly defers `triggers.crons` -- "scheduling authority is
- * undecided... adding a schedule here would start real remote execution"
- * -- pending a separate operator-authorized decision this module cannot
- * make for itself. Implemented now so that decision, whenever it's made,
- * is a pure infrastructure change (populate wrangler.jsonc's
- * triggers.crons) with zero application code to write -- not "add a
- * scheduled() function and claim automation exists" (the orchestration
- * mandate's own words for the anti-pattern this avoids). The real,
- * already-live autonomous trigger today is
+ * export calls this). wrangler.jsonc's `triggers.crons` entry now exists
+ * (Cloudflare-Only Alert Runtime tranche -- the operator has explicitly
+ * authorized Cloudflare Workers as the production alert-delivery runtime,
+ * see docs/audits/SENTINEL-APEX-CLOUDFLARE-ONLY-ALERT-RUNTIME-V1-
+ * CERTIFICATION.md), superseding this comment's own prior "scheduling
+ * authority is undecided" framing for this subsystem specifically. Still
+ * not LIVE from this codebase's own evidence, though: this sandbox has no
+ * authenticated Cloudflare account access (`wrangler whoami` -> not
+ * authenticated, confirmed before writing this), so the config exists but
+ * takes effect only once an operator with real credentials runs `wrangler
+ * deploy` -- exactly the "code-complete configuration, not a live
+ * trigger" distinction wrangler.jsonc's own header comment makes. The
+ * real, already-live autonomous trigger today remains
  * .github/workflows/alert-delivery.yml's native GitHub Actions schedule
- * -- see that workflow's header for why.
+ * -- see that workflow's header for the retirement sequencing.
  *
  * Calls the exact same evaluateWatchedEntities()/processDueDeliveries()
  * functions the Node CLI scripts call -- one implementation of "what a
  * scheduled run does," reused here, not reimplemented for this runtime.
  * Bounded (each call's own internal batch/limit defaults apply) and
- * idempotent-safe (processDueDeliveries()'s atomic claim/lease makes
+ * idempotent-safe (processDueDeliveries()'s atomic D1 claim/lease makes
  * this safe to invoke even if it somehow overlapped the GitHub Actions
- * path or another scheduled() invocation).
+ * path or another scheduled() invocation -- both paths read/write the
+ * same D1 database, so there is one source of delivery truth regardless
+ * of which trigger fires).
  *
  * The 4th `deps` param is a test-only seam (default {} in every real
  * call site, including workers/entry.js's) so router.test.js can inject
- * fakes instead of requiring real Redis-backed modules under plain
+ * fakes instead of requiring real Redis/D1-backed modules under plain
  * node:test -- never populated in production.
  */
 async function handleScheduled(controller, env, ctx, deps = {}) {
   const { evaluateWatchedEntities } = deps.changeEngine || require('../../api/_lib/change-engine');
   const { processDueDeliveries } = deps.notificationDispatch || require('../../api/_lib/notification-dispatch');
+  const { setD1Binding } = deps.d1 || require('../../api/_lib/d1');
+
+  // env.DB is Cloudflare's native D1 binding (wrangler.jsonc's
+  // d1_databases entry), only ever available once a real invocation
+  // hands us `env` -- unlike workers/entry.js's setWasmModule() call at
+  // module load time, this can't happen any earlier. Registering it here
+  // (not in dispatch()/handleFetch()) is a deliberate, disclosed scope
+  // boundary: this scheduled handler is the one Cloudflare-triggered
+  // entry point this tranche activates, so it's the one place that gets
+  // the zero-latency native-binding fast path. The HTTP-triggered
+  // api/v1/notifications.js routes reached via dispatch() do NOT get env
+  // threaded to them (dispatch() calls `handler(req, res)` with no env
+  // param -- confirmed by reading it fresh before this migration began)
+  // and so fall back to d1.js's REST API transport even when running
+  // under Cloudflare Workers -- correct, just one HTTP round trip slower
+  // than the native binding would be. Widening dispatch()'s signature to
+  // thread env through ~30 unrelated Vercel-style (req,res) handlers is a
+  // materially larger architectural change than this tranche's actual
+  // scope (migrating alert orchestration specifically, per the Cloudflare
+  // Runtime Dependency Inventory's own §0) -- revisit only with its own
+  // evidence and justification, not as a side effect of this change.
+  if (env && env.DB) setD1Binding(env.DB);
 
   const startedAt = Date.now();
   const evaluation = await evaluateWatchedEntities();

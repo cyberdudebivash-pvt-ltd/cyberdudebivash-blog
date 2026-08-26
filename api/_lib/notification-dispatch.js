@@ -291,15 +291,32 @@ async function dispatchNewEvent({ ownerId, watchlistId, event }) {
 
 // The sender. Safe to invoke repeatedly/CONCURRENTLY is now an explicit
 // design goal, not an assumption to avoid violating -- notify.
-// claimDeliveryChannel()'s atomic SET-NX-PX makes at-least-once
-// scheduling (an overlapping cron run, a manual run racing a scheduled
-// one, a retried GitHub Actions job) safe at the application level
-// regardless of what triggers this function or how many times (see
+// claimDeliveryChannel()'s atomic conditional UPDATE (D1) makes at-least-
+// once scheduling (an overlapping cron run, a manual run racing a
+// scheduled one, a retried GitHub Actions job) safe at the application
+// level regardless of what triggers this function or how many times (see
 // notification-store.js's CLAIM_LEASE_MS doc). This is the orchestration
 // mandate's core non-negotiable: never assume the trigger mechanism
 // itself provides exactly-once execution.
+//
+// notify.getDuePendingDeliveries() returns flat per-(owner,event,channel)
+// job rows (one D1 table row each) rather than the pre-D1 Redis version's
+// grouped-by-event records with a nested channels_pending array -- see
+// notification-store.js's module header for the schema rationale. This
+// function groups them back by (owner_id, event_id) below purely so the
+// underlying event/watchlist/preferences are fetched once per event
+// rather than once per channel -- an efficiency detail carried over from
+// the old code, not a correctness one: each job is still claimed,
+// delivered, and resolved fully independently of any sibling channel on
+// the same event. There is also no separate per-channel "is this one
+// actually due yet" check anymore (the old code needed one because a
+// whole grouped record could be returned once its SOONEST-due channel
+// was due, even while a sibling channel's own next_attempt_at was still
+// in the future) -- getDuePendingDeliveries()'s own WHERE clause already
+// filters to genuinely-due rows one at a time, so every job reaching this
+// loop is due by construction.
 async function processDueDeliveries({ limit = 100 } = {}) {
-  const records = await notify.getDuePendingDeliveries(limit);
+  const jobs = await notify.getDuePendingDeliveries(limit);
   const results = {
     records_processed: 0, attempts: 0, delivered: 0, retried: 0, dead_lettered: 0,
     // Additive fields -- kept alongside the field names above so
@@ -307,18 +324,23 @@ async function processDueDeliveries({ limit = 100 } = {}) {
     // lines keep working unchanged (Principle 5).
     claimed: 0, skipped_claimed_elsewhere: 0, cancelled: 0,
   };
-  const now = Date.now();
 
-  for (const record of records) {
+  const groups = new Map();
+  for (const job of jobs) {
+    const key = `${job.owner_id}:${job.event_id}`;
+    if (!groups.has(key)) groups.set(key, { owner_id: job.owner_id, event_id: job.event_id, watchlist_id: job.watchlist_id, jobs: [] });
+    groups.get(key).jobs.push(job);
+  }
+
+  for (const group of groups.values()) {
     results.records_processed++;
-    const event = await loadChangeEngine().getEventById(record.event_id);
-    const watchlistResult = record.watchlist_id ? await store.getWatchlist(record.watchlist_id, record.owner_id) : null;
+    const event = await loadChangeEngine().getEventById(group.event_id);
+    const watchlistResult = group.watchlist_id ? await store.getWatchlist(group.watchlist_id, group.owner_id) : null;
     const watchlistName = watchlistResult && watchlistResult.watchlist ? watchlistResult.watchlist.name : '(deleted watchlist)';
-    const prefs = await notify.getPreferences(record.owner_id);
+    const prefs = await notify.getPreferences(group.owner_id);
 
-    for (const channel of record.channels_pending) {
-      const due = record.attempts[channel] && record.attempts[channel].next_attempt_at <= now;
-      if (!due) continue;
+    for (const job of group.jobs) {
+      const channel = job.channel;
 
       // A customer who disabled this channel between enqueue and delivery
       // must not receive it -- cancel cleanly, not as a failure/retry/
@@ -329,21 +351,26 @@ async function processDueDeliveries({ limit = 100 } = {}) {
           ? Boolean(prefs.webhook_enabled && prefs.webhook_url && prefs.has_webhook_secret)
           : false;
       if (!stillEligible) {
-        await notify.cancelDeliveryChannel({ ownerId: record.owner_id, eventId: record.event_id, channel });
-        await notify.recordDelivery(record.owner_id, {
-          channel, eventId: record.event_id, watchlistId: record.watchlist_id,
-          status: 'cancelled', error: 'CHANNEL_DISABLED', attempt: (record.attempts[channel] || {}).count || 0,
+        await notify.cancelDeliveryChannel({ deliveryId: job.delivery_id });
+        await notify.recordDelivery(group.owner_id, {
+          channel, eventId: group.event_id, watchlistId: group.watchlist_id,
+          status: 'cancelled', error: 'CHANNEL_DISABLED', attempt: job.attempt_count,
         });
         results.cancelled++;
         continue;
       }
 
       // Atomic claim: if another concurrent invocation already holds this
-      // channel's delivery, skip it THIS cycle without touching its state
-      // -- its own lease recovers it if that other invocation never
-      // finishes (crash-safe by construction, not by a cleanup sweep).
-      const claimed = await notify.claimDeliveryChannel({ ownerId: record.owner_id, eventId: record.event_id, channel });
-      if (!claimed) { results.skipped_claimed_elsewhere++; continue; }
+      // job (or held it recently enough that its lease hasn't expired),
+      // skip it THIS cycle without touching its state -- its own lease
+      // recovers it if that other invocation never finishes (crash-safe
+      // by construction, not by a cleanup sweep). getDuePendingDeliveries()
+      // already filtered to jobs whose lease (if any) had expired at read
+      // time, so a claim failure here means a DIFFERENT invocation
+      // claimed it in the gap between that read and this call, not a
+      // stale lease this call itself could have taken.
+      const claim = await notify.claimDeliveryChannel({ deliveryId: job.delivery_id });
+      if (!claim.claimed) { results.skipped_claimed_elsewhere++; continue; }
       results.claimed++;
 
       try {
@@ -351,10 +378,10 @@ async function processDueDeliveries({ limit = 100 } = {}) {
         // enqueue and delivery -- fail this channel out cleanly (dead-letter
         // after retries, same as any other failure) rather than throwing.
         if (!event) {
-          const disposition = await notify.recordAttemptOutcome({ ownerId: record.owner_id, eventId: record.event_id, channel, success: false });
-          await notify.recordDelivery(record.owner_id, {
-            channel, eventId: record.event_id, watchlistId: record.watchlist_id,
-            status: 'failed', error: 'EVENT_NOT_FOUND', attempt: (record.attempts[channel] || {}).count || 0,
+          const disposition = await notify.recordAttemptOutcome({ deliveryId: job.delivery_id, claimToken: claim.claimToken, success: false });
+          await notify.recordDelivery(group.owner_id, {
+            channel, eventId: group.event_id, watchlistId: group.watchlist_id,
+            status: 'failed', error: 'EVENT_NOT_FOUND', attempt: job.attempt_count,
           });
           results.attempts++;
           if (disposition === 'retrying') results.retried++;
@@ -364,14 +391,14 @@ async function processDueDeliveries({ limit = 100 } = {}) {
 
         let outcome;
         if (channel === 'email') {
-          const email = prefs.email_override || await getOwnerAccountEmail(record.owner_id);
+          const email = prefs.email_override || await getOwnerAccountEmail(group.owner_id);
           outcome = await deliverEmailChannel({ email, event, watchlistName });
         } else if (channel === 'webhook') {
-          const secret = await notify.getWebhookSecret(record.owner_id);
+          const secret = await notify.getWebhookSecret(group.owner_id);
           outcome = secret
             ? await deliverWebhookChannel({
-                url: prefs.webhook_url, secret, event, watchlistId: record.watchlist_id, watchlistName,
-                deliveryId: notify.buildDeliveryId(record.owner_id, record.event_id, channel),
+                url: prefs.webhook_url, secret, event, watchlistId: group.watchlist_id, watchlistName,
+                deliveryId: job.delivery_id,
               })
             : { success: false, error: 'NO_SECRET_CONFIGURED', retryable: true };
         } else {
@@ -380,13 +407,13 @@ async function processDueDeliveries({ limit = 100 } = {}) {
 
         results.attempts++;
         const disposition = await notify.recordAttemptOutcome({
-          ownerId: record.owner_id, eventId: record.event_id, channel,
+          deliveryId: job.delivery_id, claimToken: claim.claimToken,
           success: outcome.success, retryable: outcome.retryable, retryAfterSeconds: outcome.retryAfterSeconds,
         });
-        await notify.recordDelivery(record.owner_id, {
-          channel, eventId: record.event_id, watchlistId: record.watchlist_id,
+        await notify.recordDelivery(group.owner_id, {
+          channel, eventId: group.event_id, watchlistId: group.watchlist_id,
           status: outcome.success ? 'delivered' : 'failed', error: outcome.error,
-          attempt: ((record.attempts[channel] || {}).count || 0) + 1,
+          attempt: job.attempt_count + 1,
         });
         if (disposition === 'delivered') results.delivered++;
         else if (disposition === 'retrying') results.retried++;
@@ -394,7 +421,7 @@ async function processDueDeliveries({ limit = 100 } = {}) {
       } finally {
         // Best-effort early release -- see releaseDeliveryChannel's own
         // doc for why correctness never depends on this line running.
-        await notify.releaseDeliveryChannel({ ownerId: record.owner_id, eventId: record.event_id, channel });
+        await notify.releaseDeliveryChannel({ deliveryId: job.delivery_id, claimToken: claim.claimToken });
       }
     }
   }

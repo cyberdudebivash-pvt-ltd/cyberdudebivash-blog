@@ -16,6 +16,15 @@ jest.mock('../../_lib/redis', () => {
   global.__fakeRedisForTest = instance;
   return instance;
 });
+// notification-store.js's own delivery-state reads/writes are D1-backed,
+// not Redis-backed (see that module's header) -- the redis mock above
+// remains for authenticate()'s customer-identity lookups only.
+jest.mock('../../_lib/d1', () => {
+  const { createFakeD1 } = require('../../_lib/__fixtures__/fake-d1');
+  const instance = createFakeD1();
+  global.__fakeD1ForTest = instance;
+  return instance;
+});
 
 const { authenticate } = require('../../_lib/middleware');
 const handler = require('../notifications');
@@ -49,6 +58,7 @@ async function call(action, { method = 'GET', query = {}, body = null, ip } = {}
 
 beforeEach(() => {
   global.__fakeRedisForTest._reset();
+  global.__fakeD1ForTest._reset();
   authenticate.mockReset();
   authenticate.mockImplementation(jest.requireActual('../../_lib/middleware').authenticate);
   global.fetch = undefined;
@@ -316,11 +326,22 @@ describe('ownership isolation — customer A must never see customer B\'s notifi
 
 // moveToDeadLetter() is internal-only (see notification-store.test.js's
 // own exhaustToDeadLetter helper) -- the only legitimate way to produce
-// one is exhausting recordAttemptOutcome()'s real retry count.
+// one is exhausting recordAttemptOutcome()'s real retry count, claiming
+// before each resolve exactly as notification-dispatch.js's
+// processDueDeliveries() does (recordAttemptOutcome() only applies once a
+// matching claim_token exists -- the D1 claim/lease stale-worker guard).
+// claimDeliveryChannel() also enforces next_attempt_at<=now (a job that
+// just backed off genuinely isn't due again yet) -- forcing the row due
+// between attempts simulates time passing, exactly like notification-
+// store.test.js's own forceDueNow() helper.
 async function seedDeadLetter(ownerId, eventId, channel, watchlistId = 'wl_1') {
   await notify.enqueuePendingDelivery({ ownerId, eventId, watchlistId, channels: [channel] });
+  const deliveryId = notify.buildDeliveryId(ownerId, eventId, channel);
   for (let i = 0; i < notify.MAX_RETRY_ATTEMPTS; i++) {
-    await notify.recordAttemptOutcome({ ownerId, eventId, channel, success: false });
+    const job = global.__fakeD1ForTest._dump().jobs.get(deliveryId);
+    if (job) job.next_attempt_at = Date.now();
+    const claim = await notify.claimDeliveryChannel({ deliveryId });
+    await notify.recordAttemptOutcome({ deliveryId, claimToken: claim.claimToken, success: false });
   }
 }
 
@@ -362,7 +383,7 @@ describe('retry-dead-letter', () => {
     expect(res.body.requeued).toBe(true);
 
     const due = await notify.getDuePendingDeliveries(10);
-    expect(due.some(r => r.event_id === 'evt_1' && r.channels_pending.includes('webhook'))).toBe(true);
+    expect(due.some(r => r.event_id === 'evt_1' && r.channel === 'webhook')).toBe(true);
     // The original dead-letter entry is history, not resurrected/removed.
     const deadLetters = await notify.listDeadLetters('usr_a', { limit: 10 });
     expect(deadLetters).toHaveLength(1);
