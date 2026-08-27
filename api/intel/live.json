@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-27T00:33:54.751Z",
+  "generated": "2026-08-27T08:18:23.016Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -9,8 +9,8 @@
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
   "total_published": 3706,
   "s2n_stats": {
-    "passed": 109,
-    "suppressed": 4,
+    "passed": 111,
+    "suppressed": 5,
     "avg_qs": 0.49
   },
   "items": [
@@ -275,44 +275,43 @@
       }
     },
     {
-      "id": "CVE-2026-54591",
-      "title": "asyncssh has SCP Path Traversal to Arbitrary File Write",
-      "description": "| | |\n|---|---|\n| Product | asyncssh (all versions through 2.23.0) |\n| Related | CVE-2019-6111 (same class in OpenSSH) |\n| Fix | AsyncSSH 2.23.1 |\n\nA malicious SSH server can write arbitrary files on the asyncssh SCP client's filesystem by sending filenames containing ../ travers... [Full analysis a",
-      "cvss": 8.1,
+      "id": "CVE-2026-8452",
+      "title": "Recent Citrix NetScaler Vulnerability Exploited in the Wild",
+      "description": "CISA is urging government agencies to immediately patch the Citrix NetScaler vulnerability tracked as CVE-2026-8452. The post Recent Citrix NetScaler Vulnerability Exploited in the Wild appeared first on SecurityWeek .",
+      "cvss": 0,
       "final_ps": 47,
-      "quality_score": 0.493,
+      "quality_score": 0.505,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
-      "source": "sentinel_apex",
+      "source": "securityweek",
       "sources_confirmed": 1,
       "merged_sources": [
-        "sentinel_apex"
+        "securityweek"
       ],
-      "first_seen": "2026-08-26",
-      "last_seen": "2026-08-26",
-      "exploited": false,
+      "first_seen": "2026-08-27",
+      "last_seen": "2026-08-27",
+      "exploited": true,
       "cisa_kev": false,
       "ransomware": false,
-      "vendor": "",
-      "product": "",
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
       "due_date": null,
       "cves": [
-        "CVE-2026-54591",
-        "CVE-2019-6111"
+        "CVE-2026-8452"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-2wxc-x7rj-hg8f"
+        "https://www.securityweek.com/recent-citrix-netscaler-vulnerability-exploited-in-the-wild/"
       ],
       "explanation": {
         "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.65",
           "recency=0d (score=1.00)",
-          "QS=0.493"
+          "QS=0.505"
         ],
         "priority": [
-          "base_ps=47 (no boosts)"
+          "+8 exploited_in_wild"
         ],
         "suppression": null,
         "merge": null
@@ -362,14 +361,57 @@
       }
     },
     {
-      "id": "CVE-2026-54606",
-      "title": "SunEditor Embed Plugin has DOM XSS via External Script Element After Iframe Embed",
-      "description": "Summary\n\nA DOM-based Cross-Site Scripting (XSS) vulnerability exists in the SunEditor Embed plugin. Crafted iframe embed HTML followed by an external <script src=...> element bypasses the plugin’s sanitization logic. The plugin recreates and appends the attacker-controlled script... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 46,
+      "id": "CVE-2019-1068",
+      "title": "CISA Adds Six Exploited Flaws to KEV, Including NetScaler, Linux, and SQL Server Bugs",
+      "description": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) on Wednesday added six flaws to its Known Exploited Vulnerabilities (KEV) catalog, including a high-severity security vulnerability impacting Citrix NetScaler ADC and NetScaler Gateway, citing evidence of active exploitation. The vulne",
+      "cvss": 0,
+      "final_ps": 45,
+      "quality_score": 0.468,
+      "threat_level": "MEDIUM",
+      "type": "CLOUD_SECURITY",
+      "source": "thehackernews",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "thehackernews"
+      ],
+      "first_seen": "2026-08-27",
+      "last_seen": "2026-08-27",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "The Hacker News",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2019-1068"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://thehackernews.com/2026/08/cisa-adds-six-exploited-flaws-to-kev.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.468"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-54550",
+      "title": "IzPack has Path Traversal in UnpackerBase that allows writing files outside the installation directory via malicious pac",
+      "description": "Summary\n\nIzPack's UnpackerBase.unpack() resolves pack-file target paths without any\ncanonical-path or directory-containment check. An attacker who distributes a\ntrojanized installer JAR (the format is unsigned) can include pack entries whose\ntargetPath contains ../ sequences. Whe... [Full analysis a",
+      "cvss": 7.4,
+      "final_ps": 45,
       "quality_score": 0.493,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
+      "type": "AI_SECURITY",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -384,11 +426,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-54606"
+        "CVE-2026-54550"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-w93q-cq9w-58p7"
+        "https://github.com/advisories/GHSA-f63g-88cj-hjf9"
       ],
       "explanation": {
         "quality": [
@@ -398,7 +440,7 @@
           "QS=0.493"
         ],
         "priority": [
-          "base_ps=46 (no boosts)"
+          "base_ps=45 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -444,6 +486,49 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-63041",
+      "title": "CVE-2026-63041: Apache APISIX: attach-consumer-label does not strip client-supplied consumer-label headers",
+      "description": "Posted by Abhishek Choudhary on Aug 25 Severity:\n\nAffected versions:\n\n- Apache APISIX 3.11.0 through 3.17.0\n\nDescription:\n\nReliance on Untrusted Inputs in a Security Decision vulnerability in Apache APISIX.\n\nThis vulnerability allows an attacker to escalate privilege or perform a... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 44,
+      "quality_score": 0.478,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-08-26",
+      "last_seen": "2026-08-26",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-63041"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://seclists.org/oss-sec/2026/q3/589"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=1d (score=0.85)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "base_ps=44 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2204,7 +2289,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-60367",
@@ -2246,7 +2333,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-60369",
@@ -4271,96 +4360,6 @@
         ],
         "priority": [
           "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-63041",
-      "title": "CVE-2026-63041: Apache APISIX: attach-consumer-label does not strip client-supplied consumer-label headers",
-      "description": "Posted by Abhishek Choudhary on Aug 25 Severity:\n\nAffected versions:\n\n- Apache APISIX 3.11.0 through 3.17.0\n\nDescription:\n\nReliance on Untrusted Inputs in a Security Decision vulnerability in Apache APISIX.\n\nThis vulnerability allows an attacker to escalate privilege or perform a... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-26",
-      "last_seen": "2026-08-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-63041"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://seclists.org/oss-sec/2026/q3/589"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-54550",
-      "title": "IzPack has Path Traversal in UnpackerBase that allows writing files outside the installation directory via malicious pac",
-      "description": "Summary\n\nIzPack's UnpackerBase.unpack() resolves pack-file target paths without any\ncanonical-path or directory-containment check. An attacker who distributes a\ntrojanized installer JAR (the format is unsigned) can include pack entries whose\ntargetPath contains ../ sequences. Whe... [Full analysis a",
-      "cvss": 7.4,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "AI_SECURITY",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-08-26",
-      "last_seen": "2026-08-26",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-54550"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-f63g-88cj-hjf9"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
         ],
         "suppression": null,
         "merge": null
