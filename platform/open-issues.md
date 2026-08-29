@@ -1998,5 +1998,66 @@ Found and deliberately scoped out while building
    from every prior round. Cross-reference only; substantive detail
    remains in Issue 28.
 
+## Issue 32 — Threat Hunting Workspace v1 real, disclosed gaps (2026-08-29)
+
+Found and deliberately scoped out while building
+`docs/audits/SENTINEL-APEX-THREAT-HUNTING-DETECTION-FEEDBACK-V1-CERTIFICATION.md`.
+
+1. **Remote read-only hunt-query execution is deferred**, not implemented.
+   Neither `mock-siem-connector.js` nor `microsoft-sentinel-connector.js`
+   implements ad-hoc log/query execution — both only implement lifecycle
+   operations on a specific analytics-rule resource, scoped to the ARM
+   management API. Real ad-hoc KQL execution needs a structurally
+   different API surface (Azure Monitor Logs query endpoint), a different
+   OAuth resource/scope, and a different Azure RBAC role (Log Analytics
+   Reader, not the Sentinel-contributor-shaped role this platform's
+   connector documents) — none of which exists, is tested, or has
+   credentials to verify in this platform today. Hunt queries remain data
+   (view/copy/download) only. Ranked #2 in this tranche's own
+   next-transformation list (see the resume checkpoint).
+2. **"Validated defect" detection-feedback-review trigger is not
+   implemented.** `computeFeedbackSignal()`'s two real triggers are a
+   single `QUERY_ERROR`/`TELEMETRY_MISMATCH` report and 3+-distinct-owner
+   `TOO_BROAD`/`TOO_NARROW` reports — an analyst-confirmed root-cause
+   trigger would require a review workflow for feedback itself, which
+   doesn't exist yet.
+3. **Evidence model is deliberately minimal** — `hunt_evidence_links` is
+   description + optional reference URL, not the internal SOC Workbench's
+   full 13-type/graph-linked/MITRE-mapped `evidence-manager.js` model.
+   That richer system is Redis-backed and has no customer-tenancy concept
+   (see Issue 1's exact reasoning pattern for why two systems solving
+   related problems for different tenancies isn't automatically a
+   duplication defect) — a richer customer-facing evidence type system is
+   a disclosed future item, not attempted here.
+4. **Case/incident promotion is a manual `linked_case_reference` text
+   field, not an automated bridge** into the internal Workbench's
+   `case-manager.js` — that system has zero `owner_id`/customer-tenancy
+   concept, so a real automated cross-domain promotion would need either
+   system to learn the other's identity model, a materially larger change
+   with no explicit requirement forcing it this tranche.
+5. **The Watchlist-events entry point (`watchlists.html` or equivalent)
+   was not added** — only `dossier.html` and `deployments.html` gained a
+   "Start a hunt →" link this round, to avoid touching a third
+   already-shipped file for one more optional link. A small, well-scoped
+   follow-up whenever picked up next.
+6. **No tier/entitlement gate exists on hunt creation** — available to
+   any authenticated tier today, unlike connectors/deployments' own
+   paid-tier gating. Whether hunts should be tier-gated is a product
+   decision, not made unilaterally here.
+7. **No server-side length cap on `hunt_observations.summary`/
+   `hunt_evidence_links.description`** beyond the whole endpoint's
+   existing `maxBodyBytes: 20480` request-size guard — a completeness
+   gap, not a security one (still bounded), left for a future round if
+   abuse is ever observed.
+8. **No automated Lighthouse/accessibility measurement this round** —
+   same disclosed, unchanged sandbox-tooling limitation as every prior
+   tranche.
+9. **Inherits every pre-existing, already-disclosed platform limitation
+   unchanged**: the thin real detection corpus (Issue 30/31), the
+   Microsoft Sentinel vendor-sandbox-execution gap (Issue 31 item 1), and
+   the Cloudflare live-cutover operator blocker (`wrangler whoami`
+   unauthenticated, Issue 28) — re-confirmed, not re-litigated, this
+   round.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

@@ -463,6 +463,7 @@ function renderDefenseCoverage(cov) {
       ${missing ? `<div class="det-validation-line">Missing telemetry: ${missing}</div>` : ''}
       ${t.recommendation ? `<div class="det-validation-line">${esc(t.recommendation)}</div>` : ''}
       ${t.customer_status === 'READY' && t.recommended_detection ? `<div class="det-validation-line"><a href="/deployments.html?connector_setup=1&detection_id=${encodeURIComponent(t.recommended_detection.detection_id)}&entity_type=${encodeURIComponent(cov.entity_type)}&entity_id=${encodeURIComponent(cov.entity_id)}" style="color:var(--apex-cyan)">Deploy this detection to your SIEM →</a></div>` : ''}
+      ${t.recommended_detection ? `<div class="det-validation-line"><a href="/hunts.html?entity_type=${encodeURIComponent(cov.entity_type)}&entity_id=${encodeURIComponent(cov.entity_id)}&detection_id=${encodeURIComponent(t.recommended_detection.detection_id)}" style="color:var(--apex-cyan)">Start a hunt for this →</a></div>` : ''}
     </div>`;
   }).join('');
   return stats + '<div style="margin-top:14px">' + rows + '</div>' +
