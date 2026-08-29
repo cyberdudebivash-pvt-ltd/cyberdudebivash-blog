@@ -87,7 +87,7 @@ describe('resolveRoute — pretty-URL rewrites', () => {
 });
 
 describe('resolveRoute — direct api/** filesystem routes', () => {
-  test('every real handler file on disk has a route (35-function parity check)', () => {
+  test('every real handler file on disk has a route (38-function parity check)', () => {
     const files = [];
     function walk(dir) {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -99,9 +99,10 @@ describe('resolveRoute — direct api/** filesystem routes', () => {
     }
     walk(path.join(__dirname, '..', '..', 'api'));
 
-    // 35 (prior baseline) + api/v1/connectors.js + api/v1/deployments.js
-    // (Controlled SIEM Deployment Gateway v1).
-    assert.equal(files.length, 37, 'expected exactly 37 routable api/** functions — update route-table.js if this changes');
+    // 35 (pre-SIEM-gateway baseline) + api/v1/connectors.js + api/v1/deployments.js
+    // (Controlled SIEM Deployment Gateway v1) + api/v1/hunts.js (Threat
+    // Hunting Workspace & Detection Feedback Intelligence v1).
+    assert.equal(files.length, 38, 'expected exactly 38 routable api/** functions — update route-table.js if this changes');
 
     const INDEX_HANDLERS = new Set(['api/v1/products/index', 'api/v1/quality/index', 'api/v1/reports/index']);
     // [id]-bracket files have no single literal URL — checked with a real
@@ -194,12 +195,13 @@ describe('resolveRoute — no match', () => {
 });
 
 describe('table sanity', () => {
-  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 37 handlers with no overlap', () => {
-    // 35 (prior baseline) + api/v1/connectors + api/v1/deployments
-    // (Controlled SIEM Deployment Gateway v1).
+  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 38 handlers with no overlap', () => {
+    // 35 (pre-SIEM-gateway baseline) + api/v1/connectors + api/v1/deployments
+    // (Controlled SIEM Deployment Gateway v1) + api/v1/hunts (Threat Hunting
+    // Workspace & Detection Feedback Intelligence v1).
     const dynamicPaths = DYNAMIC_API_HANDLERS.map(([, handlerPath]) => handlerPath);
     const all = [...DIRECT_API_HANDLERS, ...dynamicPaths];
-    assert.equal(all.length, 37);
-    assert.equal(new Set(all).size, 37, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
+    assert.equal(all.length, 38);
+    assert.equal(new Set(all).size, 38, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
   });
 });
