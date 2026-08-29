@@ -390,6 +390,7 @@ function renderDeploymentList(deployments) {
         ${['VERIFIED','DRIFTED','DEPLOYED'].includes(d.state) ? `<button class="btn btn-secondary btn-sm" onclick="verifyDeployment('${esc(d.deployment_id)}')">Verify Now</button>` : ''}
         ${d.rollback_available ? `<button class="btn btn-secondary btn-sm" onclick="rollbackDeployment('${esc(d.deployment_id)}')">Roll Back</button>` : ''}
         ${['VERIFIED','DRIFTED','FAILED_RETRYABLE'].includes(d.state) ? `<button class="btn btn-danger btn-sm" onclick="disableDeployment('${esc(d.deployment_id)}')">Disable Rule</button>` : ''}
+        <a class="btn btn-secondary btn-sm" href="/hunts.html?entity_type=${encodeURIComponent(d.entity_type)}&entity_id=${encodeURIComponent(d.entity_id)}&detection_id=${encodeURIComponent(d.detection_id)}">Start Hunt →</a>
       </div>
     </div>
   `).join('');
