@@ -67,6 +67,18 @@ function createFakeD1() {
   let nextDepAuditId = 1;
   const mockSiemResources = new Map(); // "connectorId|resourceName" -> row
 
+  // Threat Hunting Workspace & Detection Feedback Intelligence v1 --
+  // migrations/0005_threat_hunting_workspace.sql
+  const hunts = new Map(); // hunt_id -> row
+  const huntRefs = []; // { hunt_id, ref_kind, ref_id, created_at }
+  const huntQueries = new Map(); // query_id -> row
+  const huntObservations = new Map(); // observation_id -> row
+  const huntEvidenceLinks = new Map(); // evidence_id -> row
+  const huntFindings = new Map(); // finding_id -> row
+  const huntTimeline = []; // rows with an autoincrement id
+  let nextHuntTimelineId = 1;
+  const detectionFeedback = new Map(); // feedback_id -> row
+
   function cloneRow(row) { return row ? { ...row } : row; }
 
   function trimToNewest(arr, ownerId, limit) {
@@ -769,6 +781,192 @@ function createFakeD1() {
       return { rows: [] };
     }
 
+    /* ── hunts (Threat Hunting Workspace v1) ──────────────────────── */
+
+    if (sql.startsWith('SELECT * FROM hunts WHERE hunt_id = ?')) {
+      const [huntId, ownerId] = p;
+      const row = hunts.get(huntId);
+      return { rows: row && row.owner_id === ownerId ? [cloneRow(row)] : [] };
+    }
+    if (sql.startsWith('SELECT * FROM hunts WHERE owner_id = ? AND status')) {
+      const [ownerId, status, limit] = p;
+      const rows = [...hunts.values()].filter((r) => r.owner_id === ownerId && r.status === status)
+        .sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || '')).slice(0, limit);
+      return { rows: rows.map(cloneRow) };
+    }
+    if (sql.startsWith('SELECT * FROM hunts WHERE owner_id = ? ORDER')) {
+      const [ownerId, limit] = p;
+      const rows = [...hunts.values()].filter((r) => r.owner_id === ownerId)
+        .sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || '')).slice(0, limit);
+      return { rows: rows.map(cloneRow) };
+    }
+    if (sql.includes('INSERT INTO hunts')) {
+      const [hunt_id, owner_id, title, priority, hypothesis, hypothesis_source, created_by, created_at, updated_at] = p;
+      hunts.set(hunt_id, {
+        hunt_id, owner_id, title, status: 'DRAFT', priority, hypothesis, hypothesis_source,
+        linked_case_reference: null, disposition: null, disposition_summary: null, disposition_by: null, disposition_at: null,
+        created_by, created_at, updated_at, closed_at: null,
+      });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    // Generic dynamic UPDATE hunts SET <cols>, updated_at = ? WHERE hunt_id = ?
+    if (sql.startsWith('UPDATE hunts SET')) {
+      const setMatch = sql.match(/UPDATE hunts SET (.+), updated_at = \? WHERE hunt_id = \?/s);
+      const cols = setMatch[1].split(',').map((c) => c.trim().replace(/\s*=\s*\?$/, ''));
+      const updatedAt = p[p.length - 2];
+      const huntId = p[p.length - 1];
+      const row = hunts.get(huntId);
+      if (row) {
+        cols.forEach((col, i) => { row[col] = p[i]; });
+        row.updated_at = updatedAt;
+        lastAffected = 1;
+      } else lastAffected = 0;
+      return { rows: [] };
+    }
+
+    /* ── hunt_refs ─────────────────────────────────────────────────── */
+
+    if (sql.includes('ON CONFLICT (hunt_id, ref_kind, ref_id) DO NOTHING')) {
+      const [hunt_id, ref_kind, ref_id, created_at] = p;
+      const exists = huntRefs.some((r) => r.hunt_id === hunt_id && r.ref_kind === ref_kind && r.ref_id === ref_id);
+      if (exists) { lastAffected = 0; return { rows: [] }; }
+      huntRefs.push({ hunt_id, ref_kind, ref_id, created_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.startsWith('SELECT ref_kind, ref_id, created_at FROM hunt_refs WHERE hunt_id = ?')) {
+      const rows = huntRefs.filter((r) => r.hunt_id === p[0]).sort((a, b) => (a.created_at || '').localeCompare(b.created_at || ''));
+      return { rows: rows.map((r) => ({ ref_kind: r.ref_kind, ref_id: r.ref_id, created_at: r.created_at })) };
+    }
+    if (sql.startsWith('SELECT hunt_id FROM hunt_refs WHERE ref_kind = ? AND ref_id = ?')) {
+      const [refKind, refId] = p;
+      const rows = huntRefs.filter((r) => r.ref_kind === refKind && r.ref_id === refId).map((r) => ({ hunt_id: r.hunt_id }));
+      return { rows };
+    }
+
+    /* ── hunt_queries ──────────────────────────────────────────────── */
+
+    if (sql.includes('INSERT INTO hunt_queries')) {
+      const [query_id, hunt_id, source_detection_id, source_detection_version, format, query_snapshot, validation_status, added_by, created_at] = p;
+      huntQueries.set(query_id, { query_id, hunt_id, source_detection_id, source_detection_version, format, query_snapshot, validation_status, added_by, created_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.startsWith('SELECT * FROM hunt_queries WHERE hunt_id = ?')) {
+      const [huntId, limit] = p;
+      const rows = [...huntQueries.values()].filter((r) => r.hunt_id === huntId).sort((a, b) => (a.created_at || '').localeCompare(b.created_at || '')).slice(0, limit);
+      return { rows: rows.map(cloneRow) };
+    }
+
+    /* ── hunt_observations ─────────────────────────────────────────── */
+
+    if (sql.includes('INSERT INTO hunt_observations')) {
+      const [observation_id, hunt_id, query_id, summary, created_by, created_at] = p;
+      huntObservations.set(observation_id, { observation_id, hunt_id, query_id, summary, created_by, created_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.startsWith('SELECT * FROM hunt_observations WHERE hunt_id = ?')) {
+      const [huntId, limit] = p;
+      const rows = [...huntObservations.values()].filter((r) => r.hunt_id === huntId).sort((a, b) => (a.created_at || '').localeCompare(b.created_at || '')).slice(0, limit);
+      return { rows: rows.map(cloneRow) };
+    }
+
+    /* ── hunt_evidence_links ───────────────────────────────────────── */
+
+    if (sql.includes('INSERT INTO hunt_evidence_links')) {
+      const [evidence_id, hunt_id, observation_id, description, reference_url, created_by, created_at] = p;
+      huntEvidenceLinks.set(evidence_id, { evidence_id, hunt_id, observation_id, description, reference_url, created_by, created_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.startsWith('SELECT * FROM hunt_evidence_links WHERE hunt_id = ?')) {
+      const [huntId, limit] = p;
+      const rows = [...huntEvidenceLinks.values()].filter((r) => r.hunt_id === huntId).sort((a, b) => (a.created_at || '').localeCompare(b.created_at || '')).slice(0, limit);
+      return { rows: rows.map(cloneRow) };
+    }
+
+    /* ── hunt_findings ─────────────────────────────────────────────── */
+
+    if (sql.includes('INSERT INTO hunt_findings')) {
+      const [finding_id, hunt_id, classification, confidence, summary, evidence_refs, created_by, created_at] = p;
+      huntFindings.set(finding_id, { finding_id, hunt_id, classification, confidence, summary, evidence_refs, created_by, created_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.startsWith('SELECT * FROM hunt_findings WHERE hunt_id = ?')) {
+      const [huntId, limit] = p;
+      const rows = [...huntFindings.values()].filter((r) => r.hunt_id === huntId).sort((a, b) => (a.created_at || '').localeCompare(b.created_at || '')).slice(0, limit);
+      return { rows: rows.map(cloneRow) };
+    }
+
+    /* ── hunt_timeline ─────────────────────────────────────────────── */
+
+    if (sql.includes('INSERT INTO hunt_timeline')) {
+      const [hunt_id, event_type, summary, actor, created_at] = p;
+      huntTimeline.push({ id: nextHuntTimelineId++, hunt_id, event_type, summary, actor, created_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.startsWith('DELETE FROM hunt_timeline')) {
+      const [limit] = p;
+      const keepIds = new Set(huntTimeline.slice().sort((a, b) => b.id - a.id).slice(0, limit).map((r) => r.id));
+      const before = huntTimeline.length;
+      for (let i = huntTimeline.length - 1; i >= 0; i--) {
+        if (!keepIds.has(huntTimeline[i].id)) huntTimeline.splice(i, 1);
+      }
+      lastAffected = before - huntTimeline.length;
+      return { rows: [] };
+    }
+    if (sql.startsWith('SELECT event_type, summary, actor, created_at FROM hunt_timeline WHERE hunt_id = ?')) {
+      const [huntId, limit] = p;
+      const rows = huntTimeline.filter((r) => r.hunt_id === huntId).sort((a, b) => a.id - b.id).slice(0, limit);
+      return { rows: rows.map((r) => ({ event_type: r.event_type, summary: r.summary, actor: r.actor, created_at: r.created_at })) };
+    }
+
+    /* ── detection_feedback ────────────────────────────────────────── */
+
+    if (sql.includes('INSERT INTO detection_feedback')) {
+      const [feedback_id, owner_id, detection_id, detection_version, hunt_id, deployment_id, classification, summary, created_by, created_at] = p;
+      detectionFeedback.set(feedback_id, { feedback_id, owner_id, detection_id, detection_version, hunt_id, deployment_id, classification, summary, created_by, created_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.startsWith('SELECT * FROM detection_feedback WHERE owner_id = ? AND detection_id = ?')) {
+      const [ownerId, detectionId, limit] = p;
+      const rows = [...detectionFeedback.values()].filter((r) => r.owner_id === ownerId && r.detection_id === detectionId)
+        .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || '')).slice(0, limit);
+      return { rows: rows.map(cloneRow) };
+    }
+    if (sql.startsWith('SELECT * FROM detection_feedback WHERE owner_id = ? ORDER')) {
+      const [ownerId, limit] = p;
+      const rows = [...detectionFeedback.values()].filter((r) => r.owner_id === ownerId)
+        .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || '')).slice(0, limit);
+      return { rows: rows.map(cloneRow) };
+    }
+    if (sql.startsWith('SELECT * FROM detection_feedback WHERE hunt_id = ?')) {
+      const [huntId, limit] = p;
+      const rows = [...detectionFeedback.values()].filter((r) => r.hunt_id === huntId)
+        .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || '')).slice(0, limit);
+      return { rows: rows.map(cloneRow) };
+    }
+    if (sql.includes('COUNT(DISTINCT owner_id) AS distinct_owners')) {
+      const [detectionId, detectionVersion] = p;
+      const matched = [...detectionFeedback.values()].filter((r) => r.detection_id === detectionId && r.detection_version === detectionVersion);
+      const byClassification = new Map();
+      for (const row of matched) {
+        if (!byClassification.has(row.classification)) byClassification.set(row.classification, new Set());
+        byClassification.get(row.classification).add(row.owner_id);
+      }
+      const rows = [...byClassification.entries()].map(([classification, owners]) => ({
+        classification,
+        distinct_owners: owners.size,
+        total: matched.filter((r) => r.classification === classification).length,
+      }));
+      return { rows };
+    }
+
     throw new Error(`fake-d1: no matching statement branch for SQL: ${sql}`);
   }
 
@@ -784,6 +982,7 @@ function createFakeD1() {
       defenseProfiles, defenseProfileTechnologies, defenseProfileTelemetry, defenseProfileAuditLog,
       siemConnectors, siemConnectorAuditLog, detectionDeployments, deploymentApprovals,
       deploymentAttempts, deploymentAuditLog, mockSiemResources,
+      hunts, huntRefs, huntQueries, huntObservations, huntEvidenceLinks, huntFindings, huntTimeline, detectionFeedback,
     }),
     _reset: () => {
       preferences.clear(); jobs.clear();
@@ -797,6 +996,9 @@ function createFakeD1() {
       siemConnectors.clear(); siemConnectorAuditLog.length = 0; nextConnAuditId = 1;
       detectionDeployments.clear(); deploymentApprovals.length = 0; deploymentAttempts.length = 0;
       deploymentAuditLog.length = 0; nextDepAuditId = 1; mockSiemResources.clear();
+      hunts.clear(); huntRefs.length = 0; huntQueries.clear(); huntObservations.clear();
+      huntEvidenceLinks.clear(); huntFindings.clear(); huntTimeline.length = 0; nextHuntTimelineId = 1;
+      detectionFeedback.clear();
     },
   };
 }
