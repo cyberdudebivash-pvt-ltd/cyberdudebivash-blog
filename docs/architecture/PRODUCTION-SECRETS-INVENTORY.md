@@ -109,6 +109,13 @@ repository secrets) — never in this repository.
 | `PRODUCTS_BUCKET` | Bucket name for digital product delivery |
 | `BACKUP_ENCRYPTION_KEY` | Backup artifact encryption |
 
+## 12a. SIEM connector credential encryption (Controlled SIEM Deployment Gateway v1)
+
+| Name | Used by |
+|---|---|
+| `CONNECTOR_CREDENTIAL_MASTER_KEY` | `api/_lib/connector-crypto.js` — AES-256-GCM envelope encryption of `siem_connectors.credential_ciphertext` (e.g. a Microsoft Sentinel service principal's client secret). Connector credential save/rotate/decrypt hard-refuses without it. |
+| `CONNECTOR_CREDENTIAL_MASTER_KEY_PREVIOUS` | Same file — set only during a master-key rotation window so previously-encrypted credentials remain decryptable until re-encrypted under the new key. |
+
 ## 12. Non-secret configuration (inventoried for completeness — public values, not credentials)
 
 | Name | Used by |

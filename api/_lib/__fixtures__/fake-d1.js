@@ -56,6 +56,17 @@ function createFakeD1() {
   const defenseProfileAuditLog = []; // rows with an autoincrement id
   let nextDpAuditId = 1;
 
+  // Controlled SIEM Deployment Gateway v1 -- migrations/0004_siem_deployment_gateway.sql
+  const siemConnectors = new Map(); // id -> row
+  const siemConnectorAuditLog = [];
+  let nextConnAuditId = 1;
+  const detectionDeployments = new Map(); // deployment_id -> row
+  const deploymentApprovals = []; // { approval_id, deployment_id, ..., created_at }
+  const deploymentAttempts = []; // { attempt_id, deployment_id, ..., started_at }
+  const deploymentAuditLog = [];
+  let nextDepAuditId = 1;
+  const mockSiemResources = new Map(); // "connectorId|resourceName" -> row
+
   function cloneRow(row) { return row ? { ...row } : row; }
 
   function trimToNewest(arr, ownerId, limit) {
@@ -561,6 +572,203 @@ function createFakeD1() {
       return { rows: [] };
     }
 
+    /* ── siem_connectors (Controlled SIEM Deployment Gateway v1) ──── */
+
+    if (sql.includes('INSERT INTO siem_connector_audit_log')) {
+      const [action, data, ts] = p;
+      siemConnectorAuditLog.push({ id: nextConnAuditId++, action, data, ts });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.includes('DELETE FROM siem_connector_audit_log')) {
+      const [limit] = p;
+      const keepIds = new Set(siemConnectorAuditLog.slice().sort((a, b) => b.id - a.id).slice(0, limit).map(r => r.id));
+      const before = siemConnectorAuditLog.length;
+      for (let i = siemConnectorAuditLog.length - 1; i >= 0; i--) {
+        if (!keepIds.has(siemConnectorAuditLog[i].id)) siemConnectorAuditLog.splice(i, 1);
+      }
+      lastAffected = before - siemConnectorAuditLog.length;
+      return { rows: [] };
+    }
+    if (sql.includes('SELECT * FROM siem_connectors WHERE owner_id = ?')) {
+      const rows = [...siemConnectors.values()].filter(r => r.owner_id === p[0]).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+      return { rows: rows.map(cloneRow) };
+    }
+    if (sql.includes('SELECT * FROM siem_connectors WHERE id = ? AND owner_id = ?')) {
+      const [id, ownerId] = p;
+      const row = siemConnectors.get(id);
+      return { rows: row && row.owner_id === ownerId ? [cloneRow(row)] : [] };
+    }
+    if (sql.includes('INSERT INTO siem_connectors')) {
+      const [id, owner_id, platform, name, target_config, credential_ciphertext, credential_configured, created_at, updated_at] = p;
+      siemConnectors.set(id, {
+        id, owner_id, platform, name, target_config, credential_ciphertext, credential_configured,
+        health_status: 'NEVER_TESTED', last_connection_check_at: null, last_connection_result: null,
+        disabled_at: null, created_at, updated_at,
+      });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.includes('UPDATE siem_connectors SET credential_ciphertext = ?')) {
+      const [credential_ciphertext, credential_configured, health_status, updated_at, id, ownerId] = p;
+      const row = siemConnectors.get(id);
+      if (row && row.owner_id === ownerId) {
+        Object.assign(row, { credential_ciphertext, credential_configured, health_status, updated_at });
+        lastAffected = 1;
+      } else lastAffected = 0;
+      return { rows: [] };
+    }
+    if (sql.includes('UPDATE siem_connectors SET health_status = ?, last_connection_check_at = ?')) {
+      const [health_status, last_connection_check_at, last_connection_result, updated_at, id, ownerId] = p;
+      const row = siemConnectors.get(id);
+      if (row && row.owner_id === ownerId) {
+        Object.assign(row, { health_status, last_connection_check_at, last_connection_result, updated_at });
+        lastAffected = 1;
+      } else lastAffected = 0;
+      return { rows: [] };
+    }
+    if (sql.includes('UPDATE siem_connectors SET disabled_at = ?')) {
+      const [disabled_at, updated_at, id, ownerId] = p;
+      const row = siemConnectors.get(id);
+      if (row && row.owner_id === ownerId) {
+        Object.assign(row, { disabled_at, credential_ciphertext: null, credential_configured: 0, health_status: 'DISABLED', updated_at });
+        lastAffected = 1;
+      } else lastAffected = 0;
+      return { rows: [] };
+    }
+
+    /* ── detection_deployments / deployment_approvals / deployment_attempts / deployment_audit_log ── */
+
+    if (sql.includes('INSERT INTO deployment_audit_log')) {
+      const [action, data, ts] = p;
+      deploymentAuditLog.push({ id: nextDepAuditId++, action, data, ts });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.includes('DELETE FROM deployment_audit_log')) {
+      const [limit] = p;
+      const keepIds = new Set(deploymentAuditLog.slice().sort((a, b) => b.id - a.id).slice(0, limit).map(r => r.id));
+      const before = deploymentAuditLog.length;
+      for (let i = deploymentAuditLog.length - 1; i >= 0; i--) {
+        if (!keepIds.has(deploymentAuditLog[i].id)) deploymentAuditLog.splice(i, 1);
+      }
+      lastAffected = before - deploymentAuditLog.length;
+      return { rows: [] };
+    }
+    if (sql.includes('SELECT * FROM detection_deployments WHERE deployment_id = ? AND owner_id = ?')) {
+      const [deploymentId, ownerId] = p;
+      const row = detectionDeployments.get(deploymentId);
+      return { rows: row && row.owner_id === ownerId ? [cloneRow(row)] : [] };
+    }
+    if (sql.includes('SELECT * FROM detection_deployments WHERE owner_id = ? ORDER BY created_at DESC')) {
+      const rows = [...detectionDeployments.values()].filter(r => r.owner_id === p[0]).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+      return { rows: rows.map(cloneRow) };
+    }
+    if (sql.includes('FROM detection_deployments') && sql.includes('AND connector_id = ? AND detection_id = ? AND entity_type = ? AND entity_id = ?')) {
+      const [ownerId, connectorId, detectionId, entityType, entityId, ...stateList] = p;
+      const rows = [...detectionDeployments.values()]
+        .filter(r => r.owner_id === ownerId && r.connector_id === connectorId && r.detection_id === detectionId
+          && r.entity_type === entityType && r.entity_id === entityId && stateList.includes(r.state))
+        .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+      return { rows: rows.length ? [cloneRow(rows[0])] : [] };
+    }
+    if (sql.includes('INSERT INTO detection_deployments')) {
+      const [deployment_id, owner_id, connector_id, detection_id, detection_version, entity_type, entity_id, format, remote_resource_name, created_at, updated_at] = p;
+      detectionDeployments.set(deployment_id, {
+        deployment_id, owner_id, connector_id, detection_id, detection_version, entity_type, entity_id,
+        format, remote_resource_name, state: 'DRAFT', desired_hash: null, observed_hash: null,
+        remote_resource_id: null, remote_etag: null, enabled_desired: 0,
+        deployed_intent_snapshot: null, previous_intent_snapshot: null, pending_action: null, last_error: null,
+        previous_deployment_id: null, created_at, approved_at: null, deployed_at: null, verified_at: null, updated_at,
+      });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    // Atomic claim (deployment-store.js#claimForExecution) -- distinguished
+    // from the generic dynamic-column UPDATE below by its literal state
+    // check, which no other detection_deployments UPDATE issues.
+    if (sql.includes("UPDATE detection_deployments SET state = 'DEPLOYING'") && sql.includes("state IN ('APPROVED', 'FAILED_RETRYABLE')")) {
+      const [updated_at, deploymentId] = p;
+      const row = detectionDeployments.get(deploymentId);
+      if (row && (row.state === 'APPROVED' || row.state === 'FAILED_RETRYABLE')) {
+        row.state = 'DEPLOYING'; row.updated_at = updated_at;
+        lastAffected = 1;
+      } else lastAffected = 0;
+      return { rows: [] };
+    }
+    // Generic dynamic UPDATE detection_deployments SET <cols>, updated_at = ? WHERE deployment_id = ?
+    // (deployment-store.js#updateDeployment()'s only mutation path besides the claim above).
+    if (sql.startsWith('UPDATE detection_deployments SET')) {
+      const setMatch = sql.match(/UPDATE detection_deployments SET (.+), updated_at = \? WHERE deployment_id = \?/s);
+      const cols = setMatch[1].split(',').map(c => c.trim().replace(/\s*=\s*\?$/, ''));
+      const updatedAt = p[p.length - 2];
+      const deploymentId = p[p.length - 1];
+      const row = detectionDeployments.get(deploymentId);
+      if (row) {
+        cols.forEach((col, i) => { row[col] = p[i]; });
+        row.updated_at = updatedAt;
+        lastAffected = 1;
+      } else lastAffected = 0;
+      return { rows: [] };
+    }
+    if (sql.includes('INSERT INTO deployment_approvals')) {
+      const [approval_id, deployment_id, owner_id, detection_version, connector_id, target_config_hash, approved_hash, enabled_requested, created_at] = p;
+      deploymentApprovals.push({ approval_id, deployment_id, owner_id, detection_version, connector_id, target_config_hash, approved_hash, enabled_requested, created_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.includes('FROM deployment_approvals WHERE deployment_id = ? ORDER BY created_at DESC LIMIT 1')) {
+      const rows = deploymentApprovals.filter(a => a.deployment_id === p[0]).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+      return { rows: rows.length ? [cloneRow(rows[0])] : [] };
+    }
+    if (sql.includes('INSERT INTO deployment_attempts')) {
+      const [attempt_id, deployment_id, action, result, error_code, http_status, started_at, finished_at] = p;
+      deploymentAttempts.push({ attempt_id, deployment_id, action, result, error_code, http_status, started_at, finished_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.includes('FROM deployment_attempts WHERE deployment_id = ? ORDER BY started_at DESC')) {
+      const rows = deploymentAttempts.filter(a => a.deployment_id === p[0]).sort((a, b) => (b.started_at || '').localeCompare(a.started_at || ''));
+      return { rows: rows.map(cloneRow) };
+    }
+
+    /* ── mock_siem_resources (mock-siem-connector.js) ─────────────── */
+
+    if (sql.includes('SELECT etag FROM mock_siem_resources')) {
+      const [connectorId, resourceName] = p;
+      const row = mockSiemResources.get(`${connectorId}|${resourceName}`);
+      return { rows: row ? [{ etag: row.etag }] : [] };
+    }
+    if (sql.includes('SELECT payload, etag FROM mock_siem_resources')) {
+      const [connectorId, resourceName] = p;
+      const row = mockSiemResources.get(`${connectorId}|${resourceName}`);
+      return { rows: row ? [{ payload: row.payload, etag: row.etag }] : [] };
+    }
+    if (sql.includes('SELECT payload FROM mock_siem_resources')) {
+      const [connectorId, resourceName] = p;
+      const row = mockSiemResources.get(`${connectorId}|${resourceName}`);
+      return { rows: row ? [{ payload: row.payload }] : [] };
+    }
+    if (sql.includes('UPDATE mock_siem_resources SET payload = ?, etag = ?, updated_at = ?')) {
+      const [payload, etag, updated_at, connectorId, resourceName] = p;
+      const key = `${connectorId}|${resourceName}`;
+      const row = mockSiemResources.get(key);
+      if (row) { row.payload = payload; row.etag = etag; row.updated_at = updated_at; lastAffected = 1; }
+      else lastAffected = 0;
+      return { rows: [] };
+    }
+    if (sql.includes('INSERT INTO mock_siem_resources')) {
+      const [connector_id, resource_name, payload, etag, created_at, updated_at] = p;
+      mockSiemResources.set(`${connector_id}|${resource_name}`, { connector_id, resource_name, payload, etag, created_at, updated_at });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.includes('DELETE FROM mock_siem_resources')) {
+      const [connectorId, resourceName] = p;
+      lastAffected = mockSiemResources.delete(`${connectorId}|${resourceName}`) ? 1 : 0;
+      return { rows: [] };
+    }
+
     throw new Error(`fake-d1: no matching statement branch for SQL: ${sql}`);
   }
 
@@ -574,6 +782,8 @@ function createFakeD1() {
       preferences, jobs, deliveryLog, deadLetters, auditLog,
       watchlists, watchlistEntities, watchlistAuditLog, entitySnapshots, changeEvents, ownerFeed,
       defenseProfiles, defenseProfileTechnologies, defenseProfileTelemetry, defenseProfileAuditLog,
+      siemConnectors, siemConnectorAuditLog, detectionDeployments, deploymentApprovals,
+      deploymentAttempts, deploymentAuditLog, mockSiemResources,
     }),
     _reset: () => {
       preferences.clear(); jobs.clear();
@@ -584,6 +794,9 @@ function createFakeD1() {
       evalCursor = null; nextWlAuditId = 1;
       defenseProfiles.clear(); defenseProfileTechnologies.length = 0;
       defenseProfileTelemetry.length = 0; defenseProfileAuditLog.length = 0; nextDpAuditId = 1;
+      siemConnectors.clear(); siemConnectorAuditLog.length = 0; nextConnAuditId = 1;
+      detectionDeployments.clear(); deploymentApprovals.length = 0; deploymentAttempts.length = 0;
+      deploymentAuditLog.length = 0; nextDepAuditId = 1; mockSiemResources.clear();
     },
   };
 }

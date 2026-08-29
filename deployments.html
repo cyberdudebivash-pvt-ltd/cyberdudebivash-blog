@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#00ffe0"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controlled SIEM Deployment — CYBERDUDEBIVASH SENTINEL APEX</title>
+<meta name="description" content="Deploy a validated, environment-compatible detection into your authorized SIEM with explicit preview, approval, and remote read-back verification.">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:var(--apex-bg);color:var(--apex-text);min-height:100vh}
+nav{background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nlogo{font-size:17px;font-weight:900;color:var(--apex-cyan);text-decoration:none}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:#fff;background:var(--apex-surface)}.nlinks{display:flex;gap:4px}
+.ncta{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000!important;font-weight:700!important;border-radius:6px!important}
+.wrap{max-width:960px;margin:0 auto;padding:32px 24px 64px}
+.card{background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:28px;margin-bottom:24px}
+.card-title{font-size:14px;font-weight:700;color:var(--apex-cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--apex-border);display:flex;align-items:center;justify-content:space-between}
+.form-group{margin-bottom:14px}label{display:block;font-size:13px;font-weight:600;color:var(--apex-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+input,select,textarea{width:100%;padding:12px 16px;background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;color:var(--apex-text);font-size:14px;font-family:inherit;outline:none;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba(0,255,224,.1)}
+.btn{padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000}.btn-primary:hover{opacity:.9}
+.btn-secondary{background:transparent;border:2px solid var(--apex-cyan);color:var(--apex-cyan)}.btn-secondary:hover{background:rgba(0,255,224,.08)}
+.btn-danger{background:transparent;border:2px solid var(--apex-red);color:var(--apex-red)}.btn-danger:hover{background:rgba(255,59,59,.08)}
+.btn-sm{padding:8px 14px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.alert{padding:14px 18px;border-radius:8px;margin:16px 0;font-size:14px}
+.alert-error{background:#ff3b3b15;border:1px solid #ff3b3b40;color:#ff3b3b}
+.alert-info{background:#00ffe015;border:1px solid #00ffe040;color:#00ffe0}
+.alert-warn{background:#ff8c0015;border:1px solid #ff8c0040;color:#ff8c00}
+.hidden{display:none!important}
+.rel-meta{font-size:11px;color:var(--apex-muted);font-family:var(--mono)}
+.empty-state{padding:20px;text-align:center;color:var(--apex-muted);font-size:13px;background:#0a0e18;border:1px dashed var(--apex-border);border-radius:8px}
+.loading{text-align:center;padding:60px 20px;color:var(--apex-muted)}
+.spinner{width:32px;height:32px;border:3px solid var(--apex-border);border-top-color:var(--apex-cyan);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+pre.code{background:#050810;border:1px solid var(--apex-border);border-radius:8px;padding:14px;font-family:var(--mono);font-size:12px;overflow-x:auto;white-space:pre-wrap;word-break:break-word;max-height:280px;overflow-y:auto}
+.item{background:#0a0e18;border:1px solid var(--apex-border);border-radius:10px;padding:16px;margin-bottom:12px}
+.item-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-family:var(--mono)}
+.badge-ready,.badge-verified,.badge-connected{background:#00ff8820;color:var(--apex-green)}
+.badge-warn,.badge-drifted,.badge-review{background:#ff8c0020;color:var(--apex-orange)}
+.badge-danger,.badge-failed,.badge-terminal{background:#ff3b3b20;color:var(--apex-red)}
+.badge-neutral{background:#6b728020;color:var(--apex-muted)}
+.diff-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);padding:24px;text-align:center;font-size:13px;color:var(--apex-muted)}footer a{color:var(--apex-cyan);text-decoration:none}
+@media(max-width:700px){.wrap{padding:20px 16px 48px}.card{padding:20px}.nlinks a:not(.ncta){display:none}.grid2,.diff-col{grid-template-columns:1fr}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-XTGLNMNNC7",{page_path:window.location.pathname,cookie_flags:"SameSite=None;Secure"});</script>
+</head>
+<body>
+<nav>
+  <a href="/" class="nlogo">CYBERDUDE<span style="color:#fff">BIVASH</span> <span style="font-size:11px;color:var(--apex-muted);font-weight:400">SENTINEL APEX</span></a>
+  <div class="nlinks">
+    <a href="/">Blog</a>
+    <a href="/dossier.html">Dossiers</a>
+    <a href="/defense-profile.html">Defense Environment</a>
+    <a href="/api-dashboard.html" class="ncta">⚡ Get API Key</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="card">
+    <h1 class="card-title" style="border-bottom:none;margin-bottom:12px;font-size:14px">🛰️ Controlled SIEM Deployment</h1>
+    <div class="rel-meta" style="margin-bottom:14px;font-size:12px">
+      Deploys detection CONTENT only, into a SIEM environment you explicitly authorize. Nothing is ever created or changed
+      remotely without your explicit approval on this page. This gateway never isolates endpoints, blocks IPs/domains,
+      disables users, or takes any automated response action — deployment delivers detection logic, it is not SOAR.
+    </div>
+    <div class="form-group">
+      <label for="api-key">API Key (required — your key is held in memory only, never stored in this browser)</label>
+      <input id="api-key" type="password" placeholder="sentinel_your_key_here">
+    </div>
+    <button class="btn btn-primary" id="load-btn" onclick="loadAll()">Load Connectors &amp; Deployments</button>
+  </div>
+
+  <div id="status-area"></div>
+  <div id="root"></div>
+</div>
+
+<footer>
+  &copy; 2026 CyberDudeBivash Sentinel APEX. Deployment history is private to your account. <a href="/api-dashboard.html">Get an API key</a> · <a href="/defense-profile.html">Configure your Defense Environment</a>
+</footer>
+
+<script>
+const API = 'https://blog.cyberdudebivash.in';
+let sessionKey = null; // in-memory only, never persisted -- same discipline as defense-profile.html/dossier.html
+let platformsCache = null;
+let connectorsCache = [];
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function showStatus(html) { document.getElementById('status-area').innerHTML = html; }
+function clearStatus() { document.getElementById('status-area').innerHTML = ''; }
+
+async function api(path, opts = {}) {
+  const res = await fetch(`${API}${path}`, {
+    ...opts,
+    headers: { 'X-API-Key': sessionKey, ...(opts.body ? { 'Content-Type': 'application/json' } : {}), ...(opts.headers || {}) },
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok || !body.success) {
+    const err = new Error((body.error && body.error.message) || `Request failed (${res.status}).`);
+    err.code = body.error && body.error.code;
+    throw err;
+  }
+  return body;
+}
+
+async function loadAll() {
+  const key = document.getElementById('api-key').value.trim();
+  if (!key) { showStatus('<div class="alert alert-error">Enter your API key. <a href="/api-dashboard.html" style="color:inherit;text-decoration:underline">Get one free</a>.</div>'); return; }
+  sessionKey = key;
+  clearStatus();
+  document.getElementById('root').innerHTML = '<div class="loading"><div class="spinner"></div>Loading…</div>';
+  try {
+    const [platforms, connectors, deployments] = await Promise.all([
+      api('/api/v1/connectors?action=platforms'),
+      api('/api/v1/connectors?action=list'),
+      api('/api/v1/deployments?action=list'),
+    ]);
+    platformsCache = platforms.platforms;
+    connectorsCache = connectors.connectors;
+    renderRoot(deployments.deployments);
+    prefillFromQueryString();
+  } catch (e) {
+    document.getElementById('root').innerHTML = '';
+    showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`);
+  }
+}
+
+function renderRoot(deployments) {
+  document.getElementById('root').innerHTML = `
+    <div class="card">
+      <h3 class="card-title">Your SIEM Connectors <button class="btn btn-secondary btn-sm" onclick="toggleAddConnector()">+ Add Connector</button></h3>
+      <div id="add-connector-form" class="hidden"></div>
+      <div id="connector-list">${renderConnectorList()}</div>
+    </div>
+    <div class="card">
+      <h3 class="card-title">Deploy a Validated Detection</h3>
+      <div class="grid2">
+        <div class="form-group"><label for="dep-connector">Connector</label>
+          <select id="dep-connector">${connectorsCache.map(c => `<option value="${esc(c.id)}">${esc(c.name)} (${esc(c.platform_label)})</option>`).join('') || '<option value="">Add a connector first</option>'}</select>
+        </div>
+        <div class="form-group"><label for="dep-entity-type">Entity Type</label>
+          <select id="dep-entity-type"><option value="cve">CVE</option><option value="campaign">Campaign</option></select>
+        </div>
+        <div class="form-group"><label for="dep-entity-id">Entity ID (e.g. CVE-2023-27351)</label><input id="dep-entity-id" type="text"></div>
+        <div class="form-group"><label for="dep-detection-id">Detection ID</label><input id="dep-detection-id" type="text"></div>
+      </div>
+      <label class="row" style="font-weight:400;text-transform:none;letter-spacing:0"><input type="checkbox" id="dep-enabled" style="width:auto"> Enable the rule immediately on deployment (default: deployed disabled)</label>
+      <div class="row" style="margin-top:14px"><button class="btn btn-primary" id="preview-btn" onclick="previewDeployment()">Preview Deployment</button></div>
+      <div id="preview-result"></div>
+    </div>
+    <div class="card">
+      <h3 class="card-title">Your Deployments</h3>
+      <div id="deployment-list">${renderDeploymentList(deployments)}</div>
+    </div>
+  `;
+}
+
+function toggleAddConnector() {
+  const el = document.getElementById('add-connector-form');
+  el.classList.toggle('hidden');
+  if (!el.classList.contains('hidden')) renderAddConnectorForm();
+}
+
+function renderAddConnectorForm() {
+  const options = platformsCache.map(p => `<option value="${esc(p.id)}" ${!p.capabilities.deploy_supported ? 'disabled' : ''}>${esc(p.label)}${p.capabilities.deploy_supported ? '' : ' (not yet supported)'}</option>`).join('');
+  document.getElementById('add-connector-form').innerHTML = `
+    <div class="item">
+      <div class="form-group"><label for="new-platform">Platform</label><select id="new-platform" onchange="renderPlatformFields()">${options}</select></div>
+      <div class="form-group"><label for="new-name">Connector Name</label><input id="new-name" type="text" placeholder="Production SOC" maxlength="100"></div>
+      <div id="new-platform-fields"></div>
+      <div class="row"><button class="btn btn-primary" id="create-connector-btn" onclick="createConnector()">Save Connector</button></div>
+    </div>
+  `;
+  renderPlatformFields();
+}
+
+function fieldLabel(field) {
+  return field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function renderPlatformFields() {
+  const platformId = document.getElementById('new-platform').value;
+  const platform = platformsCache.find(p => p.id === platformId);
+  if (!platform) return;
+  if (platform.is_sandbox) {
+    document.getElementById('new-platform-fields').innerHTML = '<div class="rel-meta">Sandbox connectors need no target/credential — safe to try the full workflow risk-free. Optionally set a "simulate" value below (e.g. RATE_LIMITED, SERVER_ERROR, AUTH_FAILED) to exercise a specific failure path.</div><div class="form-group"><label for="target-input-simulate">Simulate (optional, sandbox only)</label><input id="target-input-simulate" data-field="simulate" type="text" placeholder="leave blank for normal behavior"></div>';
+    return;
+  }
+  const targetInputs = platform.required_target_fields.map(f =>
+    `<div class="form-group"><label for="target-input-${esc(f)}">${esc(fieldLabel(f))}</label><input id="target-input-${esc(f)}" data-field="${esc(f)}" type="text"></div>`
+  ).join('');
+  const credInputs = platform.required_credential_fields.map(f =>
+    `<div class="form-group"><label for="cred-input-${esc(f)}">${esc(fieldLabel(f))}</label><input id="cred-input-${esc(f)}" data-field="${esc(f)}" type="password"></div>`
+  ).join('');
+  document.getElementById('new-platform-fields').innerHTML = `
+    ${platform.least_privilege_role ? `<div class="rel-meta">Least-privilege role: ${esc(platform.least_privilege_role)}</div>` : ''}
+    <div class="grid2">${targetInputs}</div>
+    <div class="grid2" style="margin-top:8px">${credInputs}</div>
+  `;
+}
+
+async function createConnector() {
+  const btn = document.getElementById('create-connector-btn');
+  btn.disabled = true;
+  clearStatus();
+  try {
+    const platform = document.getElementById('new-platform').value;
+    const name = document.getElementById('new-name').value.trim();
+    const platformDef = platformsCache.find(p => p.id === platform);
+    const target_config = {};
+    const credential = {};
+    // Generic collection: every rendered input carries data-field, so this
+    // works for both the sandbox's optional "simulate" field and a real
+    // platform's required target/credential fields without special-casing.
+    document.querySelectorAll('#new-platform-fields [id^="target-input-"]').forEach(el => { if (el.value) target_config[el.dataset.field] = el.value; });
+    document.querySelectorAll('#new-platform-fields [id^="cred-input-"]').forEach(el => { if (el.value) credential[el.dataset.field] = el.value; });
+    const body = await api('/api/v1/connectors?action=create', { method: 'POST', body: JSON.stringify({ platform, name, target_config, credential: platformDef.is_sandbox ? undefined : credential }) });
+    connectorsCache.push(body.connector);
+    showStatus('<div class="alert alert-info">Connector saved. Run "Test Connection" before deploying.</div>');
+    document.getElementById('connector-list').innerHTML = renderConnectorList();
+    document.getElementById('add-connector-form').classList.add('hidden');
+    renderRoot([]); // re-render dropdown with new connector; deployment list refreshed on next load
+    await refreshDeployments();
+  } catch (e) {
+    showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`);
+  }
+  if (btn) btn.disabled = false;
+}
+
+function healthBadgeClass(status) {
+  if (status === 'CONNECTED') return 'badge-connected';
+  if (status === 'NEVER_TESTED') return 'badge-neutral';
+  return 'badge-danger';
+}
+
+function renderConnectorList() {
+  if (!connectorsCache.length) return '<div class="empty-state">No connectors yet. Add a Sandbox / Test Connector to try the full workflow safely.</div>';
+  return connectorsCache.map(c => `
+    <div class="item">
+      <div class="item-head">
+        <div><strong>${esc(c.name)}</strong> <span class="rel-meta">${esc(c.platform_label)}</span></div>
+        <span class="badge ${healthBadgeClass(c.health_status)}">${esc(c.health_status)}</span>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn btn-secondary btn-sm" onclick="testConnection('${esc(c.id)}')">Test Connection</button>
+        ${!c.disabled ? `<button class="btn btn-danger btn-sm" onclick="disableConnector('${esc(c.id)}')">Disconnect</button>` : '<span class="rel-meta">Disconnected</span>'}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function testConnection(id) {
+  clearStatus();
+  try {
+    const body = await api(`/api/v1/connectors?action=test-connection&id=${encodeURIComponent(id)}`, { method: 'POST', body: JSON.stringify({}) });
+    showStatus(`<div class="alert ${body.result === 'CONNECTED' ? 'alert-info' : 'alert-warn'}">Connection test: <strong>${esc(body.result)}</strong> — ${esc(body.detail || '')}</div>`);
+    const c = connectorsCache.find(x => x.id === id);
+    if (c) c.health_status = body.result === 'CONNECTED' ? 'CONNECTED' : c.health_status;
+    document.getElementById('connector-list').innerHTML = renderConnectorList();
+  } catch (e) {
+    showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`);
+  }
+}
+
+async function disableConnector(id) {
+  if (!confirm('Disconnect this connector? Future deployments through it will be blocked; existing remote rules are left as-is; history is preserved.')) return;
+  clearStatus();
+  try {
+    await api(`/api/v1/connectors?action=disable&id=${encodeURIComponent(id)}`, { method: 'POST', body: JSON.stringify({}) });
+    connectorsCache = connectorsCache.map(c => c.id === id ? { ...c, disabled: true } : c);
+    document.getElementById('connector-list').innerHTML = renderConnectorList();
+    showStatus('<div class="alert alert-info">Connector disconnected.</div>');
+  } catch (e) {
+    showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`);
+  }
+}
+
+/* Arrives here via dossier.html's "Deploy this detection to your SIEM"
+ * link (?detection_id=&entity_type=&entity_id=) -- pre-fills the form
+ * only, never auto-submits (still requires an explicit "Preview
+ * Deployment" click, matching the "no auto-deploy" boundary). */
+function prefillFromQueryString() {
+  const params = new URLSearchParams(window.location.search);
+  const detectionId = params.get('detection_id');
+  const entityType = params.get('entity_type');
+  const entityId = params.get('entity_id');
+  if (detectionId) document.getElementById('dep-detection-id').value = detectionId;
+  if (entityType) document.getElementById('dep-entity-type').value = entityType;
+  if (entityId) document.getElementById('dep-entity-id').value = entityId;
+}
+
+let lastPreviewDeploymentId = null;
+
+async function previewDeployment() {
+  const btn = document.getElementById('preview-btn');
+  btn.disabled = true;
+  clearStatus();
+  document.getElementById('preview-result').innerHTML = '';
+  try {
+    const body = await api('/api/v1/deployments?action=preview', {
+      method: 'POST',
+      body: JSON.stringify({
+        connector_id: document.getElementById('dep-connector').value,
+        detection_id: document.getElementById('dep-detection-id').value.trim(),
+        entity_type: document.getElementById('dep-entity-type').value,
+        entity_id: document.getElementById('dep-entity-id').value.trim(),
+        enabled: document.getElementById('dep-enabled').checked,
+      }),
+    });
+    lastPreviewDeploymentId = body.preview.deployment_id;
+    renderPreview(body.preview);
+  } catch (e) {
+    document.getElementById('preview-result').innerHTML = `<div class="alert alert-error">Deployment blocked: ${esc(e.message)}${e.code ? ` <span class="rel-meta">(${esc(e.code)})</span>` : ''}</div>`;
+  }
+  btn.disabled = false;
+}
+
+function renderPreview(p) {
+  const diff = p.diff ? `
+    <div class="form-group"><label>Configuration Diff (current remote vs. proposed)</label>
+      <div class="diff-col">
+        <pre class="code">${esc(JSON.stringify(p.diff.current, null, 2))}</pre>
+        <pre class="code">${esc(JSON.stringify(p.diff.proposed, null, 2))}</pre>
+      </div>
+    </div>` : '';
+  document.getElementById('preview-result').innerHTML = `
+    <div class="item" style="margin-top:16px">
+      <div class="item-head"><strong>${esc(p.action)}</strong><span class="badge badge-ready">${esc(p.validation_status)}</span></div>
+      <div class="form-group"><label>Target</label><div>${esc(p.target.name)} — ${esc(p.target.platform)}</div></div>
+      <div class="form-group"><label>Resource Name</label><div class="rel-meta">${esc(p.resource_name)}</div></div>
+      <div class="form-group"><label>Detection</label><div>${esc(p.detection_id)} v${esc(p.detection_version)} — ${esc(p.severity)} — ATT&amp;CK ${esc((p.attack||[]).map(a=>a.id).join(', '))}</div></div>
+      <div class="form-group"><label>Query (${esc(p.format)})</label><pre class="code">${esc(p.query)}</pre></div>
+      <div class="form-group"><label>Enabled on Deploy</label><div>${p.enabled ? 'Yes' : 'No (safe default)'}</div></div>
+      <div class="form-group"><label>Compatibility</label><div>${esc(p.compatibility.explanation)}</div></div>
+      ${diff}
+      <div class="rel-meta" style="margin:8px 0">Rollback available for this target: ${p.rollback_available ? 'yes' : 'no'}</div>
+      <div class="row"><button class="btn btn-primary" onclick="approveAndDeploy()">Approve &amp; Deploy Detection</button></div>
+      <div id="deploy-progress"></div>
+    </div>
+  `;
+}
+
+async function approveAndDeploy() {
+  clearStatus();
+  document.getElementById('deploy-progress').innerHTML = '<div class="rel-meta">Approving…</div>';
+  try {
+    await api(`/api/v1/deployments?action=approve&id=${encodeURIComponent(lastPreviewDeploymentId)}`, { method: 'POST', body: JSON.stringify({}) });
+    document.getElementById('deploy-progress').innerHTML = '<div class="rel-meta">Approved. Deploying…</div>';
+    const result = await api(`/api/v1/deployments?action=execute&id=${encodeURIComponent(lastPreviewDeploymentId)}`, { method: 'POST', body: JSON.stringify({}) });
+    document.getElementById('deploy-progress').innerHTML = renderDeploymentStateBanner(result.deployment);
+    await refreshDeployments();
+  } catch (e) {
+    document.getElementById('deploy-progress').innerHTML = `<div class="alert alert-error">${esc(e.message)}</div>`;
+  }
+}
+
+function renderDeploymentStateBanner(d) {
+  const map = { VERIFIED: 'alert-info', DRIFTED: 'alert-warn', FAILED_RETRYABLE: 'alert-warn', FAILED_TERMINAL: 'alert-error' };
+  return `<div class="alert ${map[d.state] || 'alert-info'}">Deployment state: <strong>${esc(d.state)}</strong>${d.last_error ? ` — ${esc(d.last_error.message)}` : ''}</div>`;
+}
+
+function stateBadgeClass(state) {
+  if (['VERIFIED'].includes(state)) return 'badge-verified';
+  if (['DRIFTED', 'FAILED_RETRYABLE', 'UPDATE_REQUIRED', 'APPROVAL_REQUIRED'].includes(state)) return 'badge-warn';
+  if (['FAILED_TERMINAL'].includes(state)) return 'badge-terminal';
+  return 'badge-neutral';
+}
+
+function renderDeploymentList(deployments) {
+  if (!deployments || !deployments.length) return '<div class="empty-state">No deployments yet.</div>';
+  return deployments.map(d => `
+    <div class="item">
+      <div class="item-head">
+        <div><strong>${esc(d.detection_id)}</strong> <span class="rel-meta">v${esc(d.detection_version)} → ${esc(d.remote_resource_name)}</span></div>
+        <span class="badge ${stateBadgeClass(d.state)}">${esc(d.state)}</span>
+      </div>
+      <div class="rel-meta" style="margin:6px 0">${esc(d.entity_type)}:${esc(d.entity_id)} · connector ${esc(d.connector_id)} · updated ${esc(d.updated_at)}</div>
+      <div class="row">
+        ${['VERIFIED','DRIFTED','DEPLOYED'].includes(d.state) ? `<button class="btn btn-secondary btn-sm" onclick="verifyDeployment('${esc(d.deployment_id)}')">Verify Now</button>` : ''}
+        ${d.rollback_available ? `<button class="btn btn-secondary btn-sm" onclick="rollbackDeployment('${esc(d.deployment_id)}')">Roll Back</button>` : ''}
+        ${['VERIFIED','DRIFTED','FAILED_RETRYABLE'].includes(d.state) ? `<button class="btn btn-danger btn-sm" onclick="disableDeployment('${esc(d.deployment_id)}')">Disable Rule</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function refreshDeployments() {
+  const body = await api('/api/v1/deployments?action=list');
+  document.getElementById('deployment-list').innerHTML = renderDeploymentList(body.deployments);
+}
+
+async function verifyDeployment(id) {
+  clearStatus();
+  try {
+    const body = await api(`/api/v1/deployments?action=verify&id=${encodeURIComponent(id)}`, { method: 'POST', body: JSON.stringify({}) });
+    showStatus(renderDeploymentStateBanner(body.deployment));
+    await refreshDeployments();
+  } catch (e) {
+    showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`);
+  }
+}
+
+async function rollbackDeployment(id) {
+  clearStatus();
+  try {
+    const preview = await api(`/api/v1/deployments?action=preview-rollback&id=${encodeURIComponent(id)}`, { method: 'POST', body: JSON.stringify({}) });
+    if (!confirm(`Roll back from v${preview.preview.from_version} to v${preview.preview.to_version}? This requires a fresh approval.`)) return;
+    await api(`/api/v1/deployments?action=approve&id=${encodeURIComponent(id)}`, { method: 'POST', body: JSON.stringify({}) });
+    const result = await api(`/api/v1/deployments?action=execute&id=${encodeURIComponent(id)}`, { method: 'POST', body: JSON.stringify({}) });
+    showStatus(renderDeploymentStateBanner(result.deployment));
+    await refreshDeployments();
+  } catch (e) {
+    showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`);
+  }
+}
+
+async function disableDeployment(id) {
+  if (!confirm('Disable this rule in the remote SIEM? This does not delete it, and can be re-enabled with a new deployment.')) return;
+  clearStatus();
+  try {
+    const body = await api(`/api/v1/deployments?action=disable&id=${encodeURIComponent(id)}`, { method: 'POST', body: JSON.stringify({}) });
+    showStatus(renderDeploymentStateBanner(body.deployment));
+    await refreshDeployments();
+  } catch (e) {
+    showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`);
+  }
+}
+</script>
+</body>
+</html>

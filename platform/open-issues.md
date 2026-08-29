@@ -1925,7 +1925,75 @@ Found and deliberately scoped out while building
    The mandate's own §120 names the likely next transformation
    ("SENTINEL APEX™ Controlled SIEM Deployment Gateway v1") as
    explicitly future scope, not started here.
+   **RESOLVED 2026-08-29** — see Issue 31 below and
+   `docs/audits/SENTINEL-APEX-CONTROLLED-SIEM-DEPLOYMENT-GATEWAY-V1-CERTIFICATION.md`.
 7. **Cloudflare live-cutover operator blocker, still unresolved** —
+   `wrangler whoami` re-confirmed not authenticated this round; unchanged
+   from every prior round. Cross-reference only; substantive detail
+   remains in Issue 28.
+
+## Issue 31 — Controlled SIEM Deployment Gateway v1 real, disclosed gaps (2026-08-29)
+
+Found and deliberately scoped out while building
+`docs/audits/SENTINEL-APEX-CONTROLLED-SIEM-DEPLOYMENT-GATEWAY-V1-CERTIFICATION.md`.
+
+1. **Vendor sandbox execution NOT VERIFIED.** No Azure tenant,
+   subscription, or credentials exist in this or any prior sandbox this
+   platform's work has run in. The Microsoft Sentinel connector is
+   verified against Microsoft's own current, live-fetched REST API
+   documentation and covered by 22 unit tests against a mocked `fetch` —
+   never proven against a real Azure Sentinel workspace. The single
+   largest honestly-disclosed gap in this tranche.
+2. **Only Microsoft Sentinel is deploy-capable.** Splunk Enterprise
+   Security, Elastic Security, IBM QRadar, and Google SecOps are declared
+   in `siem-connector-taxonomy.js#KNOWN_PLATFORMS` with every capability
+   flag `false` and a specific `not_implemented_reason` each (Splunk:
+   Cloud-vs-Enterprise API/auth semantics not verified against current
+   docs this round; Elastic/QRadar/SecOps: no validated detection-format
+   generator exists anywhere in this platform for them at all, so there
+   is nothing real yet to deploy).
+3. **Rollback does not re-run the release/compatibility gate against
+   historical content.** Real, load-bearing discovery this round:
+   `detection-rules.js#storeRule()` overwrites a rule's format content in
+   place on every version bump — its `history[]` records only
+   version/timestamp/change metadata, never a content snapshot. This
+   tranche's own `detection_deployments.deployed_intent_snapshot` /
+   `previous_intent_snapshot` columns are therefore the only place a
+   prior deployed version's exact content survives; rollback redeploys
+   that captured snapshot rather than re-deriving and re-validating the
+   historical version from the canonical store (which cannot reproduce
+   it). It does check the detection has not since been `REVOKED` before
+   restoring old content. Closing this properly would require the
+   canonical detection store itself to retain per-version content
+   snapshots — a change to a shared, already-certified store, out of this
+   tranche's scope (Zero Unnecessary Modification).
+4. **`deleteRemote()` (Microsoft Sentinel) is a lower-confidence
+   implementation** than PUT/GET/disable-via-update: it follows the
+   standard ARM DELETE-on-resource-URI convention, but the specific
+   "Alert Rules - Delete" Microsoft Learn reference page was not itself
+   fetched this round (PUT/GET's exact request/response schema WAS
+   live-fetched and verified). DISABLE (verified, tested) is the
+   recommended default lifecycle action; hard delete is a deliberately
+   secondary, lower-confidence capability.
+5. **Inherits Issue 30 item 1's thin detection corpus** — most techniques
+   on most entities still show `NO_VALIDATED_DETECTION` regardless of
+   connector or declared environment, unchanged by this tranche.
+6. **No separation-of-duties (analyst-previews / admin-approves).** No
+   role model beyond `tier` exists anywhere in this platform (confirmed:
+   no workspace/tenant/role concept anywhere, matching Issue 30's own
+   finding) — this tranche does not invent one. The approval record's own
+   schema (a distinct `owner_id` per approval, independent of the
+   deployment row's owner) does not block adding this later; there is
+   simply no role system yet to hang it on.
+7. **Cloudflare Queues remain unintroduced, by evidence-based choice, not
+   oversight** — see the certification doc §29. Revisit only if a real
+   workload shape emerges that the existing D1 atomic-claim pattern
+   (§18) cannot serve.
+8. **pytest not run this round** — no Python file touched by this
+   tranche, and this sandbox's Python test environment is not
+   provisioned; judged out of scope to provision solely to verify
+   zero-impact on code never touched.
+9. **Cloudflare live-cutover operator blocker, still unresolved** —
    `wrangler whoami` re-confirmed not authenticated this round; unchanged
    from every prior round. Cross-reference only; substantive detail
    remains in Issue 28.

@@ -99,7 +99,9 @@ describe('resolveRoute — direct api/** filesystem routes', () => {
     }
     walk(path.join(__dirname, '..', '..', 'api'));
 
-    assert.equal(files.length, 35, 'expected exactly 35 routable api/** functions — update route-table.js if this changes');
+    // 35 (prior baseline) + api/v1/connectors.js + api/v1/deployments.js
+    // (Controlled SIEM Deployment Gateway v1).
+    assert.equal(files.length, 37, 'expected exactly 37 routable api/** functions — update route-table.js if this changes');
 
     const INDEX_HANDLERS = new Set(['api/v1/products/index', 'api/v1/quality/index', 'api/v1/reports/index']);
     // [id]-bracket files have no single literal URL — checked with a real
@@ -192,10 +194,12 @@ describe('resolveRoute — no match', () => {
 });
 
 describe('table sanity', () => {
-  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 35 handlers with no overlap', () => {
+  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 37 handlers with no overlap', () => {
+    // 35 (prior baseline) + api/v1/connectors + api/v1/deployments
+    // (Controlled SIEM Deployment Gateway v1).
     const dynamicPaths = DYNAMIC_API_HANDLERS.map(([, handlerPath]) => handlerPath);
     const all = [...DIRECT_API_HANDLERS, ...dynamicPaths];
-    assert.equal(all.length, 35);
-    assert.equal(new Set(all).size, 35, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
+    assert.equal(all.length, 37);
+    assert.equal(new Set(all).size, 37, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
   });
 });

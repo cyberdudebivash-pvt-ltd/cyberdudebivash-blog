@@ -100,6 +100,8 @@ const DIRECT_API_HANDLERS = new Set([
   'api/v1/watchlists',
   'api/v1/notifications',
   'api/v1/defense-profile',
+  'api/v1/connectors',
+  'api/v1/deployments',
   'api/v1/analysis/assessments',
   'api/v1/analysis/findings',
   'api/v1/billing/webhook',
