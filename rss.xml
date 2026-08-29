@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Fri, 28 Aug 2026 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 29 Aug 2026 00:20:07 GMT</lastBuildDate>
     <pubDate>Fri, 28 Aug 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,6 +31,102 @@
       <height>144</height>
     </image>
 
+    <item>
+    <title><![CDATA[alos-http has unauthenticated remote DoS: malformed path starting with "?" triggers out-of-bounds panic in sanitizeRequestPath, crashing entire server]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55484-go-github-com-guno1928-alos-http.html</link>
+    <description><![CDATA[Score 68/100 HIGH — CVSS 7.5 — ### Summary
+A single unauthenticated HTTP request to a path starting with `?` (e.g. `GET ? HTTP/1.1`) crashes the entire server process.
+The request line parser passes the path to `sanitizeRequestPath` which indexes the first byte of the path after stripping the query string. It does so without chec. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Sat, 29 Aug 2026 00:20:07 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55484-go-github-com-guno1928-alos-http.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[MapFish Print has XXE that allows reading arbitrary files of certain types]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55848-maven-org-mapfish-print-print-lib.html</link>
+    <description><![CDATA[Score 67/100 HIGH — CVSS 8.6 — ### Summary
+XXE on MapFish Print allows reading arbitrary files of certain types. Eg /etc/passwd or k8 secrets and certs. https://github.com/mapfish/mapfish-print/commit/13020c0fbc299e5f604e4e66066311c4bf04d507 ### Details
+To trigger the XXE it is required to host a remote script and dtd file. When . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Sat, 29 Aug 2026 00:20:07 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55848-maven-org-mapfish-print-print-lib.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[RestrictedPython guard hooks can be shadowed via positional-only arguments]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55830-pip-restrictedpython.html</link>
+    <description><![CDATA[Score 64/100 MEDIUM — CVSS 8.3 — ### Impact RestrictedPython rewrites sensitive operations to go through guard hooks. Attribute access becomes `_getattr_(obj, name)`, item access becomes `_getitem_(obj, key)`, writes go through `_write_`, and print goes through `_print_`. The embedding application supplies these hooks to enforce it. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Sat, 29 Aug 2026 00:20:07 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55830-pip-restrictedpython.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[free5GC AUSF authentication contexts can be overwritten by concurrent requests for the same SUPI]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55784-go-github-com-free5gc-ausf.html</link>
+    <description><![CDATA[Score 61/100 MEDIUM — CVSS 7.5 — ### Summary The AUSF component of free5GC stores per-subscriber authentication state in a global `sync.Map` keyed only by SUPI. Every incoming authentication request creates a new `AusfUeContext` and stores it under that SUPI key without checking whether an authentication procedure is already in pro. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Sat, 29 Aug 2026 00:20:07 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55784-go-github-com-free5gc-ausf.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[SeaweedFS: Path traversal in the S3 gateway X-Amz-Copy-Source header allows cross-bucket object read]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55874-go-github-com-seaweedfs-seaweedfs.html</link>
+    <description><![CDATA[Score 61/100 MEDIUM — CVSS 7.7 — ### Summary
+The SeaweedFS S3 API gateway did not reject `..` path segments in the `X-Amz-Copy-Source` header used by `CopyObject` and `UploadPartCopy`. The request URL path was hardened against traversal in 4.30 (CVE-2026-54917), but the copy-source header was only checked for emptiness, so a `..` s. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Sat, 29 Aug 2026 00:20:07 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55874-go-github-com-seaweedfs-seaweedfs.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Fortigate syslog message parser can be exploited to modify or delete fields from the original message]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55841-maven-org-graylog2-graylog2-server.html</link>
+    <description><![CDATA[Score 61/100 MEDIUM — CVSS 7.5 — ### Impact A security issue has been identified in Graylog affecting the parsing of syslog messages that use a key-value format, such as those generated by Fortigate devices. The vulnerability allows attackers to overwrite individual message fields, or to produce invalid messages which Graylog will . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Sat, 29 Aug 2026 00:20:07 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55841-maven-org-graylog2-graylog2-server.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[ownCloud Flaw Exploited to Steal Nuclear Records From Philippine Research Body]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2023-49105-the-hacker-news-threat-intelligence.html</link>
+    <description><![CDATA[Score 58/100 MEDIUM — CVSS 9.8 — The U.S. Cybersecurity and Infrastructure Security Agency (CISA) on Thursday added a critical security flaw impacting ownCloud to its Known Exploited Vulnerabilities (KEV) catalog following reports that a Chinese-speaking threat actor weaponized the vulnerability to target a nuclear research body in. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Sat, 29 Aug 2026 00:20:07 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2023-49105-the-hacker-news-threat-intelligence.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Snipe-IT has an Improper Privilege Management issue]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55843-composer-snipe-snipe-it.html</link>
+    <description><![CDATA[Score 56/100 MEDIUM — CVSS 6.5 — ## Impact The `update()` method in `UsersController` passes the `permission` request field unconditionally to `NormalizePermissionsPayloadAction`, which returns an empty array when the field is absent. The result is passed to `PreserveUnauthorizedPrivilegedPermissionsAction`, which selectively resto. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Sat, 29 Aug 2026 00:20:07 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55843-composer-snipe-snipe-it.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Portainer has Unauthenticated Restore Endpoint that Allows Admin Takeover on Uninitialized Instances]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-55761-go-github-com-portainer-portainer.html</link>
+    <description><![CDATA[Score 54/100 MEDIUM — CVSS 5.9 — ## Summary
+Portainer supports restoring an instance from a backup archive via the /api/restore endpoint. This endpoint is intentionally unauthenticated to allow restoring before the first admin account is created, and remains accessible for the five-minute initialization window that opens each time . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Sat, 29 Aug 2026 00:20:07 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-55761-go-github-com-portainer-portainer.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[PaperCut releases second emergency patch for exploited flaws]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/papercut-releases-second-emergency-patch-for-exploited-flaws.html</link>
+    <description><![CDATA[Score 31/100 LOW — CVSS 0 — PaperCut has released a second emergency security update for two actively exploited vulnerabilities in its PaperCut NG and MF print management software after researchers discovered multiple ways to bypass the initial fixes. [...]. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Sat, 29 Aug 2026 00:20:07 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/papercut-releases-second-emergency-patch-for-exploited-flaws.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CLOUD_SECURITY</category>
+  </item>
   <item>
     <title>ATF Confirms Cyber Incident After Ransomware Group Claims Attack</title>
     <link>https://blog.cyberdudebivash.in/posts/atf-confirms-cyber-incident-after-ransomware-group-claims-at.html</link>
