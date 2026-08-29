@@ -22,22 +22,23 @@ instead, which is kept current for exactly this lineage. `wrangler
 whoami` → not authenticated remains the standing blocker across all of
 it, unchanged since round 8 first found it.
 
-**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5); updated 2026-08-25 (round 6); updated 2026-08-25 (round 7); updated 2026-08-25 (round 8); updated 2026-08-26 (round 9); updated 2026-08-26 (round 10)
-**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, merged as PR #133); `claude/p1-watchlists-change-detection-v1` (round 6, merged as PR #134); `claude/p1-alert-delivery-webhook-automation-v1` (round 7, merged as PR #136); `claude/p0-cloudflare-alert-orchestration-v1` (round 8, merged as PR #137); `claude/p1-threat-to-defense-fabric-v1` (round 9, merged as PR #141); `claude/p1-customer-telemetry-defense-context-v1` (round 10, this update, PR open)
+**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5); updated 2026-08-25 (round 6); updated 2026-08-25 (round 7); updated 2026-08-25 (round 8); updated 2026-08-26 (round 9); updated 2026-08-26 (round 10); updated 2026-08-29 (round 11)
+**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, merged as PR #133); `claude/p1-watchlists-change-detection-v1` (round 6, merged as PR #134); `claude/p1-alert-delivery-webhook-automation-v1` (round 7, merged as PR #136); `claude/p0-cloudflare-alert-orchestration-v1` (round 8, merged as PR #137); `claude/p1-threat-to-defense-fabric-v1` (round 9, merged as PR #141); `claude/p1-customer-telemetry-defense-context-v1` (round 10, merged as PR #142); `claude/controlled-detection-deployment-auu51p` (round 11, this update, PR open)
 **Written per:** the master mandate's own "Long-Run Checkpoint Policy" — stop at a safe boundary, commit, push, update the PR, and leave a clear resume point rather than attempting the full 70-phase mandate in one uninterrupted pass.
 
-**READ THIS FIRST IF RESUMING — round 10 update:** §16 below is the new
-current round — **Customer Telemetry & Environment-Aware Defense Coverage
-Fabric v1**, the natural next step after round 9's Threat-to-Defense
-Fabric ("does a validated detection exist?" → "can *this customer's*
-declared environment actually use it?"). Built entirely on top of round
-9's `detection-intelligence.js` (unchanged, wrapped not modified) plus one
-new D1-backed customer-owned store, following `watchlist-store.js`'s exact
-ownership pattern. Not part of the Cloudflare-runtime lineage note above —
-re-confirmed the standing `wrangler whoami` blocker once, unchanged, per
-mandate instruction not to re-litigate it. See §16 before building
-anything further on top of detection intelligence or customer environment
-state.
+**READ THIS FIRST IF RESUMING — round 11 update:** §17 below is the new
+current round — **Controlled SIEM Deployment Gateway v1**, the mandate's
+own explicitly-named next transformation after round 10's Customer
+Telemetry Fabric ("can this customer's environment use this detection?" →
+"can we safely put that detection INTO their SIEM, prove what changed,
+and roll it back?"). Built entirely on top of round 9/10's engines
+(`detection-intelligence.js`, `defense-compatibility.js`, unchanged,
+wrapped not modified) plus new D1-backed connector/deployment stores
+following `watchlist-store.js`'s exact ownership pattern, and a new
+AES-256-GCM credential-encryption module mirroring `scripts/backup-
+customer-data.js`'s existing algorithm. Not part of the Cloudflare-runtime
+lineage note above. See §17 before building anything further on top of
+detection deployment, connector, or remote-SIEM state.
 Everything below this paragraph through §15 is preserved unchanged from
 round 9 and is still accurate for its own scope.
 
@@ -632,3 +633,42 @@ individually as `platform/open-issues.md` Issue 30, not silently dropped.
    sign-off, not a unilateral fix).
 6. Do **not** restart Thread A — unchanged reasoning, now carried through
    seven consecutive rounds.
+
+---
+
+## §17 — Round 11: Controlled SIEM Deployment Gateway v1 (2026-08-29)
+
+**Branch:** `claude/controlled-detection-deployment-auu51p`. **Base:** `main` @ `d5e76534`, fresh-pulled and confirmed before any code was written. **PR:** opened this round (draft).
+
+**17.1 — What this closes.** The mandate's own explicitly-named next transformation (§16.5 item 3 above, verbatim): "customer explicitly authorizes a connector, platform verifies environment, compatible validated detection previewed, customer approves, deploy through a scoped connector with read-back verification and rollback." Built entirely on round 9/10's engines (`detection-intelligence.js`, `defense-compatibility.js`), unmodified.
+
+**17.2 — Connector framework.** `api/_lib/connectors/connector-contract.js` defines the shared interface (`testConnection`/`mapIntent`/`toCanonicalObserved`/`deploy`/`readBack`/`disable`/`deleteRemote`) and a uniform `ConnectorError` shape. `api/_lib/siem-connector-taxonomy.js#KNOWN_PLATFORMS` declares 6 platforms (`mock-siem`, `microsoft-sentinel`, `splunk-enterprise-security`, `elastic-security`, `qradar`, `google-secops`) with per-platform capability flags — only the first two have `deploy_supported: true`.
+
+**17.3 — First supported connector.** Microsoft Sentinel (`Microsoft.SecurityInsights/alertRules`, ARM REST, api-version `2025-06-01`), selected with evidence (already-modeled `kql` format, already-field-verified `FIELD_MAP` targets, real live-fetched API docs), not blindly — see the certification doc §5. A deterministic, fully D1-backed mock/Sandbox connector (`mock-siem`) is the second, permanent, customer-selectable, zero-live-dependency platform.
+
+**17.4 — Auth model.** Azure AD OAuth2 client-credentials (service principal), least-privilege role "Microsoft Sentinel Contributor" scoped to one workspace — never subscription/tenant-wide.
+
+**17.5 — Secret model.** AES-256-GCM envelope encryption (`api/_lib/connector-crypto.js`), mirroring `scripts/backup-customer-data.js`'s existing algorithm/wire-format rather than a new convention. Master key: `CONNECTOR_CREDENTIAL_MASTER_KEY` (+ `_PREVIOUS` for rotation), Cloudflare/Vercel secret only, never committed. Decrypted only inside the one internal function (`getConnectorWithCredential()`) the deployment engine calls — never returned by any customer-facing read path (proven by test).
+
+**17.6 — Deployment states.** `DRAFT → PREVIEWED → APPROVAL_REQUIRED → APPROVED → DEPLOYING → DEPLOYED → VERIFYING → VERIFIED / DRIFTED / FAILED_RETRYABLE / FAILED_TERMINAL`, plus `DISABLED`. One row per (connector, detection, entity) triple for its entire lifecycle — update/rollback rotate a content snapshot in place rather than spawning sibling rows (see §17.9).
+
+**17.7 — Read-back.** Every deploy is followed by an independent `readBack()`, canonicalized (`{query,severity,enabled,techniques}`, techniques sorted) and hashed; a 2xx from `deploy()` alone is never treated as sufficient.
+
+**17.8 — Drift.** On-demand `verifyDeployment()` compares fresh read-back against `deployed_intent_snapshot` (not a possibly-stale `desired_hash` — a real comparison-baseline bug caught during this round's own review, fixed before any test was written against it). A mismatch is `DRIFTED`; the remote resource is never auto-overwritten (proven by test).
+
+**17.9 — Rollback.** **Real, load-bearing discovery this round:** `detection-rules.js#storeRule()` overwrites a rule's content in place on every version bump — no historical content survives in the canonical store. This tranche's own `detection_deployments.deployed_intent_snapshot`/`previous_intent_snapshot` columns are therefore the only place a prior version's exact content survives, enabling one level of undo (matching the mandate's own literal "deploy v1 → update v2 → rollback to v1" scenario, proven end-to-end by test) without re-validating the historical version against the release/compatibility gate (which cannot be re-run against content the canonical store no longer has).
+
+**17.10 — Tests.** 92 new tests (connector-crypto 9, siem-connector-store 14, deployment-engine 14, mock-siem-connector 16, microsoft-sentinel-connector 22, connectors route 10, deployments route 7), all passing. Full regression: Jest 2431/2491 passed (60 pre-existing skips, 0 failed — 2339 pre-existing + 92 new, exactly this round's new test count, zero regressions); `node --test` 290/290 (unchanged, untouched); `pytest` not run (no Python touched, environment not provisioned this round).
+
+**17.11 — Browser QA.** Real Chromium/Playwright, real production handler code behind a plain local HTTP server, real committed detection data (`65b906336880ed01`, T1490), middleware.js's own real dev-auth-bypass path (not a mock of `authenticate()` itself). 11/12 checks passed — full preview→approve→deploy→VERIFIED lifecycle proven live; the one non-pass is the same pre-existing external-network-blocked noise every prior round's browser QA discloses.
+
+**17.12 — Sandbox/live verification.** Microsoft Sentinel: **NOT VERIFIED against a live Azure tenant** (none exists in this sandbox) — verified only against Microsoft's own current REST API documentation plus mocked-fetch unit tests. Do not claim otherwise in any future round building on this one.
+
+**17.13 — Known limitations** (full detail: `platform/open-issues.md` Issue 31): vendor sandbox unverified (§17.12); only Microsoft Sentinel deploy-capable; rollback doesn't re-validate historical content (§17.9); `deleteRemote()` lower-confidence than PUT/GET/disable; detection corpus still thin (inherited); no separation-of-duties role model (none exists in this platform yet to hang one on).
+
+**17.14 — Next recommended tranche** (ranked by evidence, supersedes §16.5):
+1. **Execute the Cloudflare deployment runbook** once real credentials are available — unchanged, still the single highest-leverage blocked action across every round in this lineage.
+2. **Grow the canonical detection-rule store** — unchanged reasoning from every prior round; now doubly valuable since it also directly grows what this round's deployment gateway can actually deploy.
+3. **A real Microsoft Sentinel vendor-sandbox verification pass**, if and when real Azure credentials become available to any future session — the single highest-leverage way to convert this round's CONDITIONAL GO into an unqualified one.
+4. **Threat Hunting Workspace / Detection Performance Feedback / MSSP Multi-Workspace Defense Operations** — the mandate's own §147 ranking for the transformation after this one. Explicitly NOT a "Controlled SOAR Recommendation Layer" or any automated-response capability — this gateway's boundary (detection delivery, never automated response) is permanent, not a placeholder (see the certification doc §116/§79's "SIEM Push Is Not SOAR").
+5. Do **not** restart Thread A — unchanged reasoning, now carried through eight consecutive rounds.
