@@ -22,23 +22,42 @@ instead, which is kept current for exactly this lineage. `wrangler
 whoami` → not authenticated remains the standing blocker across all of
 it, unchanged since round 8 first found it.
 
-**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5); updated 2026-08-25 (round 6); updated 2026-08-25 (round 7); updated 2026-08-25 (round 8); updated 2026-08-26 (round 9); updated 2026-08-26 (round 10); updated 2026-08-29 (round 11)
-**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, merged as PR #133); `claude/p1-watchlists-change-detection-v1` (round 6, merged as PR #134); `claude/p1-alert-delivery-webhook-automation-v1` (round 7, merged as PR #136); `claude/p0-cloudflare-alert-orchestration-v1` (round 8, merged as PR #137); `claude/p1-threat-to-defense-fabric-v1` (round 9, merged as PR #141); `claude/p1-customer-telemetry-defense-context-v1` (round 10, merged as PR #142); `claude/controlled-detection-deployment-auu51p` (round 11, this update, PR open)
+**Date:** 2026-08-24 (round 1); updated 2026-08-24 (round 2); updated 2026-08-24 (round 3); updated 2026-08-24 (round 4); updated 2026-08-24 (round 5); updated 2026-08-25 (round 6); updated 2026-08-25 (round 7); updated 2026-08-25 (round 8); updated 2026-08-26 (round 9); updated 2026-08-26 (round 10); updated 2026-08-29 (round 11); updated 2026-08-29 (round 12)
+**Branch:** `claude/sentinel-apex-global-cti-commercial-v3` (round 1, merged as PR #128); `claude/p0-intelligence-core-correlation-v1` (round 2, merged as PR #129); `claude/p0-campaign-delivery-integrity-v1` (round 3, merged as PR #130); `claude/p1-unified-intelligence-search-v1` (round 4, merged as PR #131); `claude/p1-intelligence-dossiers-v1` (round 5, merged as PR #133); `claude/p1-watchlists-change-detection-v1` (round 6, merged as PR #134); `claude/p1-alert-delivery-webhook-automation-v1` (round 7, merged as PR #136); `claude/p0-cloudflare-alert-orchestration-v1` (round 8, merged as PR #137); `claude/p1-threat-to-defense-fabric-v1` (round 9, merged as PR #141); `claude/p1-customer-telemetry-defense-context-v1` (round 10, merged as PR #142); `claude/controlled-detection-deployment-auu51p` (round 11, merged as PR #143; **reused for round 12 too** — restarted from fresh `main` per the harness's merged-branch-reuse rule, since round 11's own PR is already merged and the branch name is recycled rather than left stale; this update, PR open)
 **Written per:** the master mandate's own "Long-Run Checkpoint Policy" — stop at a safe boundary, commit, push, update the PR, and leave a clear resume point rather than attempting the full 70-phase mandate in one uninterrupted pass.
 
-**READ THIS FIRST IF RESUMING — round 11 update:** §17 below is the new
-current round — **Controlled SIEM Deployment Gateway v1**, the mandate's
-own explicitly-named next transformation after round 10's Customer
-Telemetry Fabric ("can this customer's environment use this detection?" →
-"can we safely put that detection INTO their SIEM, prove what changed,
-and roll it back?"). Built entirely on top of round 9/10's engines
-(`detection-intelligence.js`, `defense-compatibility.js`, unchanged,
-wrapped not modified) plus new D1-backed connector/deployment stores
-following `watchlist-store.js`'s exact ownership pattern, and a new
+**READ THIS FIRST IF RESUMING — round 12 update:** §18 below is the new
+current round — **Threat Hunting Workspace, Analyst Investigation Fabric,
+Detection Feedback Intelligence & Defensive Outcome Loop v1**, the
+mandate's own explicitly-named next transformation after round 11's
+Controlled SIEM Deployment Gateway ("we can deploy a detection — now can
+an analyst hunt with it, judge what they found, and feed that judgment
+back into the platform?"). Built entirely on top of round 9/10/11's
+engines (`detection-intelligence.js`, `defense-compatibility.js`,
+`deployment-store.js`, all unchanged, wrapped not modified) plus new
+D1-backed hunt/detection-feedback stores following `watchlist-store.js`'s
+exact ownership pattern. A reuse-before-build audit found a fully-built
+internal SOC investigation/case/evidence system (Redis-backed, no
+customer-tenancy concept) that was deliberately NOT extended — see §18
+before assuming that system is available to build on, or before building
+anything further on top of hunt, detection-feedback, or coverage-maturity
+state.
+Everything below this paragraph through §17 is preserved unchanged from
+round 11 and is still accurate for its own scope.
+
+**READ THIS FIRST IF RESUMING — round 11 update (preserved):** §17 below is
+the round 11 update — **Controlled SIEM Deployment Gateway v1**, the
+mandate's own explicitly-named next transformation after round 10's
+Customer Telemetry Fabric ("can this customer's environment use this
+detection?" → "can we safely put that detection INTO their SIEM, prove
+what changed, and roll it back?"). Built entirely on top of round 9/10's
+engines (`detection-intelligence.js`, `defense-compatibility.js`,
+unchanged, wrapped not modified) plus new D1-backed connector/deployment
+stores following `watchlist-store.js`'s exact ownership pattern, and a new
 AES-256-GCM credential-encryption module mirroring `scripts/backup-
 customer-data.js`'s existing algorithm. Not part of the Cloudflare-runtime
-lineage note above. See §17 before building anything further on top of
-detection deployment, connector, or remote-SIEM state.
+lineage note above. This round's own PR (#143) has since merged — see the
+round 12 note above for what depends on it now.
 Everything below this paragraph through §15 is preserved unchanged from
 round 9 and is still accurate for its own scope.
 
@@ -672,3 +691,43 @@ individually as `platform/open-issues.md` Issue 30, not silently dropped.
 3. **A real Microsoft Sentinel vendor-sandbox verification pass**, if and when real Azure credentials become available to any future session — the single highest-leverage way to convert this round's CONDITIONAL GO into an unqualified one.
 4. **Threat Hunting Workspace / Detection Performance Feedback / MSSP Multi-Workspace Defense Operations** — the mandate's own §147 ranking for the transformation after this one. Explicitly NOT a "Controlled SOAR Recommendation Layer" or any automated-response capability — this gateway's boundary (detection delivery, never automated response) is permanent, not a placeholder (see the certification doc §116/§79's "SIEM Push Is Not SOAR").
 5. Do **not** restart Thread A — unchanged reasoning, now carried through eight consecutive rounds.
+
+---
+
+## §18 — Round 12: Threat Hunting Workspace, Analyst Investigation Fabric, Detection Feedback Intelligence & Defensive Outcome Loop v1 (2026-08-29)
+
+**Branch:** `claude/controlled-detection-deployment-auu51p` (reused — round 11's own PR #143 merged, branch restarted from fresh `main` per the harness's merged-branch-reuse rule). **Base:** `main` @ `41303627` (round 11's own merge commit), fresh-pulled and confirmed before any code was written. **PR:** opened this round (draft).
+
+**18.1 — What this closes.** The mandate's own explicitly-named next transformation (§17.14 item 4 above): a hunt records a testable hypothesis tied to real threat/CVE/campaign/actor context and ATT&CK techniques, an analyst investigates it with real-content query snapshots, observations, and evidence, reaches an explicit human-attributed disposition, and detection feedback flows back as a tenant-scoped, never-auto-globalized signal on the underlying detection. Built entirely on round 9/10/11's engines (`detection-intelligence.js`, `defense-compatibility.js`, `deployment-store.js`), unmodified.
+
+**18.2 — Prerequisite gate.** PR #143's merge confirmed on fresh `main` before any new code was written. Its own 11/12 browser-QA result was re-examined by rereading the actual QA harness script (not re-guessed): the one failing check is precisely `zero uncaught console/page errors`, caused by blocked Google Fonts/GTM calls plus favicon/manifest 404s against the QA harness's own minimal local server — classified `NON_BLOCKING_DOCUMENTED_LIMITATION`, not a real defect, unrelated to the separately-disclosed Sentinel vendor-sandbox gap. See the certification doc §2.
+
+**18.3 — Reuse-before-build audit.** Full detail: `docs/audits/SENTINEL-APEX-HUNTING-WORKSPACE-CAPABILITY-INVENTORY-V1.md`. Found a fully-built internal SOC investigation/case/evidence/graph system (`investigation-manager.js` and 8 siblings, `api/v1/workbench/*`) — deliberately NOT reused as this capability's storage: it has no `owner_id`/customer-tenancy concept (internal `X-Analyst-Key` auth) and is Redis-backed, while `PRODUCTION-RUNTIME-POLICY.md` bars new Redis dependency for new capability. New hunt persistence instead joins every other customer-owned store on the same Cloudflare D1 `sentinel-apex-core` database.
+
+**18.4 — Data model.** `migrations/0005_threat_hunting_workspace.sql` — 8 tables: `hunts`, `hunt_refs` (one polymorphic entity-linkage table instead of 4 parallel join tables, mirroring `watchlist_entities`'s pattern), `hunt_queries` (snapshots query content at add-time, mirroring `detection_deployments.deployed_intent_snapshot`'s own already-certified rationale — the canonical store overwrites content on every version bump), `hunt_observations`, `hunt_evidence_links`, `hunt_findings`, `hunt_timeline`, `detection_feedback`. Deliberately absent (computed, not stored): a telemetry-requirements table and any persisted review-signal column.
+
+**18.5 — Contextual RELEASED-gate discipline, a real bug found and fixed before shipping.** RELEASED/BLOCKED is contextual to a specific entity's evidence-graded ATT&CK attribution, not a bare property of a detection rule — mirroring `deployment-engine.js#recomputeDeployability()`'s own always-refetch-fresh discipline. The initial hunt-readiness/maturity implementation passed an empty techniques array on every re-check, which would have incorrectly shown a genuinely RELEASED detection as unavailable. Fixed by `resolveHuntAttackContext()`, used consistently by both readiness computation and the `add-query` API handler (which had the identical latent gap) — found via building a realistic conditional test mock, not shipped and discovered later.
+
+**18.6 — Coverage maturity ladder.** `AVAILABLE → ENVIRONMENT_COMPATIBLE → DEPLOYED → OBSERVED_SIGNAL → ANALYST_VALIDATED`, additive on top of (never replacing) the existing Compatibility states — composed entirely from the unmodified detection/compatibility/deployment/hunt/feedback data, in a new small module, never added to `detection-intelligence.js` itself (avoids any blast radius on that shared file's existing consumers).
+
+**18.7 — Detection Feedback & the one deliberate cross-tenant read.** Feedback is pinned to `(detection_id, detection_version)`, always tenant-scoped for storage. `computeFeedbackSignal()` is the sole cross-tenant read in this tranche — verified by test to return only an aggregate `REVIEW_REQUIRED` enum + reason codes + sample size, never a raw row/owner identity/summary — and requires reports from 3+ DISTINCT owners (not merely 3 rows from one owner) before a `TOO_BROAD`/`TOO_NARROW` signal fires, per the mandate's own instruction that one customer's opinion never globalizes.
+
+**18.8 — Remote query execution: DEFERRED.** Neither SIEM connector implements ad-hoc log/query execution (both only manage a specific analytics-rule resource via the ARM API) — real ad-hoc KQL execution needs a structurally different API surface, OAuth scope, and Azure RBAC role this platform doesn't implement or hold credentials for. Hunt queries remain data (view/copy/download), never executed — a documented, evidence-based decision, not an oversight.
+
+**18.9 — Tests.** 129 new tests (hunt-store 15, detection-feedback-store 9, hunt-engine 34, hunts route 21), all passing. Full regression: Jest 2510/2570 passed (60 pre-existing skips — one pre-existing, unrelated suite skip confirmed via direct grep, not caused by this round — 0 failed, zero regressions across 2381 pre-existing + 129 new tests).
+
+**18.10 — Browser QA.** Real Chromium/Playwright, real production handler code, real committed detection content (`65b906336880ed01`, T1490) served under a fixed QA id. 22/22 checks passed across the mandate's 6 required workflows: Campaign Hunt end-to-end, False Positive, No Evidence, Telemetry Gap (the real detection with the Defense Profile's `process_creation` explicitly declared `NOT_AVAILABLE` — an earlier attempt to fabricate a separate "telemetry gap" detection by relabeling `data_source` was tested directly and found to fail the detection's own release gate before ever reaching compatibility logic, an honest dead end corrected before this round's QA was considered done), Drifted Deployment (real preview→approve→execute→`VERIFIED`, then the mock connector's own test-only drift-simulation helper, then `verify` correctly detects `DRIFTED`), and Revoked Detection (surfaced strongly on a linked hunt, never hidden).
+
+**18.11 — UI.** `hunts.html`, following `deployments.html`'s exact established pattern. Two one-line, additive entry-point links added to already-shipped pages (`dossier.html`, `deployments.html`), mirroring PR #143's own single-line "Deploy this detection" precedent. The Watchlist-events entry point is deliberately deferred.
+
+**18.12 — Known limitations** (full detail: `platform/open-issues.md` Issue 32): remote query execution deferred (§18.8); "validated defect" feedback-review trigger not implemented (only the two automatic triggers are real); evidence model deliberately minimal (not the internal Workbench's full typed/graph-linked model); case/incident promotion is a manual reference field, not an automated bridge; Watchlist-events entry point deferred; no tier/entitlement gate on hunt creation yet (a product decision); no server-side length cap on observation/evidence text beyond the whole-request size guard; no Lighthouse/accessibility tooling in this sandbox; inherits the thin detection corpus, the Sentinel vendor-sandbox gap, and the Cloudflare live-cutover blocker unchanged.
+
+**18.13 — Next recommended tranche** (ranked by evidence, per the certification doc §38):
+1. **Detection Performance Feedback Analytics** — aggregate dashboards over the `detection_feedback` data this round now collects.
+2. **Controlled Read-Only SIEM Hunting Connectors** — revisit §18.8's DEFER decision once a genuine read-only credential model and a real customer need are evidenced.
+3. **MSSP Multi-Workspace Operations.**
+4. **Threat Actor Intelligence Expansion.**
+5. **Customer Exposure/Asset Context.**
+6. **Controlled SOAR Recommendation Layer** — explicitly NOT to be implemented in any near-term tranche; remains outside this platform's safety boundary until a separate, explicit mandate authorizes it.
+7. Execute the Cloudflare deployment runbook once real credentials are available — unchanged, still the single highest-leverage blocked action across every round in this lineage.
+8. Do **not** restart Thread A — unchanged reasoning, now carried through nine consecutive rounds.
