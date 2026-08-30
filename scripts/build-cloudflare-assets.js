@@ -55,13 +55,18 @@ const PUBLIC_ROOT_FILES = [
   'order-confirmation.html', 'owasp-llm-top10.html', 'pricing.html',
   'privacy.html', 'products.html', 'search.html',
   'security-disclosure.html', 'terms.html', 'threat-intelligence.html',
-  // Detection Performance Intelligence v1 -- added with this tranche.
-  // NOTE: hunts.html/deployments.html/dossier.html/defense-profile.html/
-  // workbench.html predate this tranche and were found ALSO missing from
-  // this list while adding these two -- a pre-existing gap, not introduced
-  // here; flagged in platform/open-issues.md rather than silently widened
-  // by fixing unrelated pages as a side effect of this change.
+  // Detection Performance Intelligence v1.
   'detection-quality.html', 'review-queue.html',
+  // Controlled Read-Only SIEM Hunting Connectors v1 -- closes the
+  // pre-existing gap flagged in platform/open-issues.md Issue 33 item 1
+  // (found while adding the two rows above, deliberately deferred then as
+  // unrelated to that tranche). Fixed here because hunts.html is this
+  // tranche's own Hunt Workspace -- the new remote-hunting UI added to it
+  // would otherwise be unreachable under the Cloudflare Workers static-
+  // asset path (dist-public/) even though Vercel already serves it (every
+  // root-level .html file, none excluded by .vercelignore). Verified all
+  // 5 files exist at the repo root before adding.
+  'hunts.html', 'deployments.html', 'dossier.html', 'defense-profile.html', 'workbench.html',
   // CSS — confirmed via <link href=>
   'apex-v12.css', 'apex-v13.css', 'mobile-first.css',
   // Client-side JS — confirmed via <script src=> (including from posts/**)
