@@ -66,3 +66,19 @@ Unchanged from PR #144: `detection_feedback` has no automatic expiry or retentio
 ## 8. Maintenance rule
 
 Any new function that reads `detection_feedback` (or any future table carrying analyst-entered or customer-entered free text) across more than one `owner_id` must be checked against §3/§4 before merging, and must carry its own `SAFETY CONTRACT` test proving it. Update this document in the same commit that adds such a function — mirroring `docs/architecture/INTELLIGENCE-SOURCE-OF-TRUTH-MATRIX.md`'s own maintenance discipline.
+
+---
+
+## 9. Remote telemetry (Controlled Read-Only SIEM Hunting Connectors v1, 2026-08-30)
+
+A new data category this tranche introduces: **remote SIEM query-execution telemetry** — the bounded, normalized rows a connector's `executeHuntQuery()` returns. This section extends the boundary in §1 to cover it explicitly.
+
+**Chain**: `Released Detection → Trusted Hunt Query Template (hunt_queries) → Customer-Authorized SIEM Connector → Ephemeral Remote Results (API response only) → Analyst-Selected Observation (hunt_observations) → Evidence → Finding → Detection Feedback`.
+
+**Tenant-private, always, same as §2**: every field of every row returned by a query execution; `hunt_query_executions.error_code`/`.error_classification`/`.result_row_count` (metadata only, but still owner-scoped); `hunt_observations.selected_fields_json` (the one analyst-selected field subset).
+
+**What may cross into the global aggregate (§3), unchanged by this tranche**: nothing new. A query execution NEVER writes to `detection_feedback` directly — the only path is the existing `submitDetectionFeedback()`, called with a `classification` enum value and a human-authored `summary` string, never raw result fields. Proven by test (`hunt-query-privacy-security.test.js`): a result row's sensitive-looking values never appear in `computeGlobalReviewMetrics()`/`computeFeedbackSignal()` output, even after being selected as an observation and used as the basis for real feedback.
+
+**Explicit clarification the mandate required**: a REMOTE QUERY RESULT is not, and never automatically becomes, either GLOBAL CTI or DETECTION FEEDBACK. It becomes an Observation only when an analyst explicitly selects it; it becomes Detection Feedback only when an analyst (or, for a genuine `QUERY_DEFECT`, the engine itself submitting on the caller's own behalf) explicitly classifies it via the existing `submitDetectionFeedback()` path — never automatically from the mere fact that a query returned a row.
+
+**What is never exposed by this tranche, under any circumstance**: a raw `hunt_query_executions` row for any owner other than the authenticated caller; any remote result row outside the single API response that produced it; a `workspace_id`/connector credential in any log or error message surfaced to the customer (connection status is reported as `CONNECTED`/`AUTH_EXPIRED`/`INSUFFICIENT_PERMISSION`/`UNAVAILABLE`, never a raw vendor error body).
