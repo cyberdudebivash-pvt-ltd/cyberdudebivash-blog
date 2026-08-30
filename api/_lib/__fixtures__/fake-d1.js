@@ -79,6 +79,10 @@ function createFakeD1() {
   let nextHuntTimelineId = 1;
   const detectionFeedback = new Map(); // feedback_id -> row
 
+  // Detection Performance Intelligence v1 -- migrations/0006_detection_
+  // performance_intelligence.sql
+  const detectionVersions = new Map(); // "detection_id|version" -> row
+
   function cloneRow(row) { return row ? { ...row } : row; }
 
   function trimToNewest(arr, ownerId, limit) {
@@ -951,7 +955,7 @@ function createFakeD1() {
         .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || '')).slice(0, limit);
       return { rows: rows.map(cloneRow) };
     }
-    if (sql.includes('COUNT(DISTINCT owner_id) AS distinct_owners')) {
+    if (sql.includes('COUNT(DISTINCT owner_id) AS distinct_owners') && sql.includes('GROUP BY classification')) {
       const [detectionId, detectionVersion] = p;
       const matched = [...detectionFeedback.values()].filter((r) => r.detection_id === detectionId && r.detection_version === detectionVersion);
       const byClassification = new Map();
@@ -965,6 +969,72 @@ function createFakeD1() {
         total: matched.filter((r) => r.classification === classification).length,
       }));
       return { rows };
+    }
+
+    /* ── detection_feedback: Detection Performance Intelligence v1 aggregate reads ── */
+
+    // computeTenantPerformance() -- owner-scoped, per-classification counts + last-seen timestamp.
+    if (sql.includes('COUNT(*) AS total, MAX(created_at) AS last_at') && sql.includes('GROUP BY classification')) {
+      const [ownerId, detectionId, detectionVersion] = p;
+      const matched = [...detectionFeedback.values()].filter((r) => r.owner_id === ownerId && r.detection_id === detectionId && r.detection_version === detectionVersion);
+      const byClassification = new Map();
+      for (const row of matched) {
+        if (!byClassification.has(row.classification)) byClassification.set(row.classification, []);
+        byClassification.get(row.classification).push(row);
+      }
+      const rows = [...byClassification.entries()].map(([classification, rowsForClass]) => ({
+        classification,
+        total: rowsForClass.length,
+        last_at: rowsForClass.reduce((max, r) => (!max || r.created_at > max ? r.created_at : max), null),
+      }));
+      return { rows };
+    }
+    // computeGlobalReviewMetrics() -- GLOBAL (cross-owner) single-row totals, no GROUP BY.
+    if (sql.includes('COUNT(DISTINCT owner_id) AS global_owner_count')) {
+      const [detectionId, detectionVersion] = p;
+      const matched = [...detectionFeedback.values()].filter((r) => r.detection_id === detectionId && r.detection_version === detectionVersion);
+      const owners = new Set(matched.map((r) => r.owner_id));
+      const lastFeedbackAt = matched.reduce((max, r) => (!max || r.created_at > max ? r.created_at : max), null);
+      return { rows: [{ global_owner_count: owners.size, last_feedback_at: lastFeedbackAt }] };
+    }
+
+    /* ── detection_deployments: Detection Performance Intelligence v1 (countDeploymentsByDetection) ── */
+
+    if (sql.includes('COUNT(*) AS total, COUNT(DISTINCT owner_id) AS distinct_owners') && sql.includes('FROM detection_deployments')) {
+      const [detectionId, ...stateList] = p;
+      const matched = [...detectionDeployments.values()].filter((r) => r.detection_id === detectionId && stateList.includes(r.state));
+      const owners = new Set(matched.map((r) => r.owner_id));
+      return { rows: [{ total: matched.length, distinct_owners: owners.size }] };
+    }
+
+    /* ── detection_versions (Detection Performance Intelligence v1) ──── */
+
+    if (sql.includes('ON CONFLICT(detection_id, version) DO NOTHING')) {
+      const [
+        detection_id, version, title, technique_id, level, description, data_source,
+        platforms_json, suricata_json, governance_status_at_snapshot, confidence_at_snapshot,
+        content_hash, snapshot_source, snapshot_reason, snapshot_author, snapshotted_at,
+      ] = p;
+      const key = `${detection_id}|${version}`;
+      if (detectionVersions.has(key)) { lastAffected = 0; return { rows: [] }; }
+      detectionVersions.set(key, {
+        detection_id, version, title, technique_id, level, description, data_source,
+        platforms_json, suricata_json, governance_status_at_snapshot, confidence_at_snapshot,
+        content_hash, snapshot_source, snapshot_reason, snapshot_author, snapshotted_at,
+      });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.startsWith('SELECT * FROM detection_versions WHERE detection_id = ? AND version = ?')) {
+      const [detectionId, version] = p;
+      const row = detectionVersions.get(`${detectionId}|${version}`);
+      return { rows: row ? [cloneRow(row)] : [] };
+    }
+    if (sql.startsWith('SELECT * FROM detection_versions WHERE detection_id = ? ORDER BY snapshotted_at ASC')) {
+      const [detectionId] = p;
+      const rows = [...detectionVersions.values()].filter((r) => r.detection_id === detectionId)
+        .sort((a, b) => (a.snapshotted_at || '').localeCompare(b.snapshotted_at || ''));
+      return { rows: rows.map(cloneRow) };
     }
 
     throw new Error(`fake-d1: no matching statement branch for SQL: ${sql}`);
@@ -983,6 +1053,7 @@ function createFakeD1() {
       siemConnectors, siemConnectorAuditLog, detectionDeployments, deploymentApprovals,
       deploymentAttempts, deploymentAuditLog, mockSiemResources,
       hunts, huntRefs, huntQueries, huntObservations, huntEvidenceLinks, huntFindings, huntTimeline, detectionFeedback,
+      detectionVersions,
     }),
     _reset: () => {
       preferences.clear(); jobs.clear();
@@ -999,6 +1070,7 @@ function createFakeD1() {
       hunts.clear(); huntRefs.length = 0; huntQueries.clear(); huntObservations.clear();
       huntEvidenceLinks.clear(); huntFindings.clear(); huntTimeline.length = 0; nextHuntTimelineId = 1;
       detectionFeedback.clear();
+      detectionVersions.clear();
     },
   };
 }
