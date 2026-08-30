@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "1.0.0",
-    "generated": "2026-08-26T14:38:17.560Z",
+    "generated": "2026-08-30T04:21:33.041Z",
     "generator": "SENTINEL APEX Detection Engine v5.0",
     "total_rules": 5
   },
@@ -21,10 +21,10 @@
       },
       "suricata": [],
       "governance": {
-        "status": "GENERATED",
+        "status": "REVOKED",
         "confidence": "HIGH",
         "created_at": "2026-07-31T09:32:05.649Z",
-        "updated_at": "2026-07-31T09:32:05.649Z",
+        "updated_at": "2026-08-30T04:21:33.057Z",
         "version": "1.0.0"
       },
       "source": {
@@ -43,6 +43,13 @@
           "timestamp": "2026-07-31T09:32:05.649Z",
           "change": "Rule generated",
           "author": "detection-engine"
+        },
+        {
+          "version": "1.0.0",
+          "timestamp": "2026-08-30T04:21:33.057Z",
+          "change": "Status changed: GENERATED → REVOKED",
+          "author": "detection-integrity-remediation-v1",
+          "comment": "Revoked: content is incomplete test/seed data, never real shippable detection logic. Sigma is missing 3 mandatory fields (title, a properly-shaped logsource object, detection.condition); data_source is an empty string; source.articles references \"TEST-001\", confirmed absent from the entire real intelligence corpus; source.iocs is an RFC1918 placeholder address. No genuine threat-intelligence evidence exists to construct a real, non-fabricated corrected detection -- see docs/audits/SENTINEL-APEX-READONLY-SIEM-HUNTING-CONNECTORS-V1-CERTIFICATION.md for the full evidence trail."
         }
       ]
     },
@@ -286,7 +293,7 @@
       "title": "Registry Run Key Persistence From User-Writable Path",
       "level": "medium",
       "description": "IzPack has Path Traversal in UnpackerBase that allows writing files outside the installation directory via malicious pack entries. ### Summary IzPack'",
-      "data_source": "process_creation",
+      "data_source": "registry_set",
       "platforms": {
         "sigma": "title: Registry Run Key Persistence From User-Writable Path\nid: 7080b048-4dcb-5428-984f-56b6de11a5f7\nstatus: experimental\ndescription: 'Registry Run Key Persistence From User-Writable Path. Evidence basis: on disk under the victim''s privileges — including startup folders, PATH directories, or system locations. ### Deta. CYBERDUDEBIVASH SENTINEL APEX Detection Engineering.'\nreferences:\n- 'https://nvd.nist.gov/vuln/detail/CVE-2026-54550'\n- 'https://github.com/advisories/GHSA-f63g-88cj-hjf9'\n- 'https://github.com/izpack/izpack/security/advisories/GHSA-f63g-88cj-hjf9'\n- 'https://github.com/izpack/izpack/pull/1193'\nauthor: CYBERDUDEBIVASH SENTINEL APEX Detection Engineering\ndate: 2026-08-26\ntags:\n- attack.t1547.001\nlogsource:\n    product: windows\n    category: registry_set\ndetection:\n    selection:\n        TargetObject|contains: \\Software\\Microsoft\\Windows\\CurrentVersion\\Run\n    filter_1:\n        Image|startswith:\n            - 'C:\\Program Files'\n            - 'C:\\Windows\\'\n    condition: selection and not filter_1\nfalsepositives:\n    - Legitimate administrative activity\n    - Authorized security testing\nlevel: medium",
         "kql": "DeviceRegistryEvents\n| where RegistryKey contains \"\\\\Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\"\n| where not ((InitiatingProcessFolderPath startswith \"C:\\\\Program Files\" or InitiatingProcessFolderPath startswith \"C:\\\\Windows\\\\\"))\n| project Timestamp, DeviceName, RegistryKey, RegistryValueData, InitiatingProcessFolderPath",
@@ -298,8 +305,8 @@
         "status": "GENERATED",
         "confidence": "MEDIUM",
         "created_at": "2026-08-26T12:20:05.071Z",
-        "updated_at": "2026-08-26T14:38:17.560Z",
-        "version": "1.0.9"
+        "updated_at": "2026-08-30T04:21:33.041Z",
+        "version": "1.0.10"
       },
       "source": {
         "iocs": [],
@@ -369,6 +376,12 @@
           "timestamp": "2026-08-26T14:38:17.560Z",
           "change": "Rule updated",
           "author": "detection-engine"
+        },
+        {
+          "version": "1.0.10",
+          "timestamp": "2026-08-30T04:21:33.041Z",
+          "change": "Corrected data_source metadata from \"process_creation\" to \"registry_set\". The rule's own Sigma logsource has always declared category: registry_set and referenced TargetObject (a registry field), which is not a recognized process_creation field -- this was a genuine, provable metadata defect from generation time, not a content change. No detection logic (Sigma/KQL/Splunk/OSQuery) was altered. See docs/audits/SENTINEL-APEX-READONLY-SIEM-HUNTING-CONNECTORS-V1-CERTIFICATION.md for the full evidence trail.",
+          "author": "detection-integrity-remediation-v1"
         }
       ]
     }
