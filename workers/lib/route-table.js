@@ -110,6 +110,7 @@ const DIRECT_API_HANDLERS = new Set([
   'api/v1/customer/dashboard',
   'api/v1/customer/download',
   'api/v1/detections/rules',
+  'api/v1/detections/performance',
   'api/v1/intelligence/confidence',
   'api/v1/intelligence/correlations',
   'api/v1/intelligence/graph',

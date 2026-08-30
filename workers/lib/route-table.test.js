@@ -101,8 +101,9 @@ describe('resolveRoute — direct api/** filesystem routes', () => {
 
     // 35 (pre-SIEM-gateway baseline) + api/v1/connectors.js + api/v1/deployments.js
     // (Controlled SIEM Deployment Gateway v1) + api/v1/hunts.js (Threat
-    // Hunting Workspace & Detection Feedback Intelligence v1).
-    assert.equal(files.length, 38, 'expected exactly 38 routable api/** functions — update route-table.js if this changes');
+    // Hunting Workspace & Detection Feedback Intelligence v1) +
+    // api/v1/detections/performance.js (Detection Performance Intelligence v1).
+    assert.equal(files.length, 39, 'expected exactly 39 routable api/** functions — update route-table.js if this changes');
 
     const INDEX_HANDLERS = new Set(['api/v1/products/index', 'api/v1/quality/index', 'api/v1/reports/index']);
     // [id]-bracket files have no single literal URL — checked with a real
@@ -195,13 +196,14 @@ describe('resolveRoute — no match', () => {
 });
 
 describe('table sanity', () => {
-  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 38 handlers with no overlap', () => {
+  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 39 handlers with no overlap', () => {
     // 35 (pre-SIEM-gateway baseline) + api/v1/connectors + api/v1/deployments
     // (Controlled SIEM Deployment Gateway v1) + api/v1/hunts (Threat Hunting
-    // Workspace & Detection Feedback Intelligence v1).
+    // Workspace & Detection Feedback Intelligence v1) + api/v1/detections/
+    // performance (Detection Performance Intelligence v1).
     const dynamicPaths = DYNAMIC_API_HANDLERS.map(([, handlerPath]) => handlerPath);
     const all = [...DIRECT_API_HANDLERS, ...dynamicPaths];
-    assert.equal(all.length, 38);
-    assert.equal(new Set(all).size, 38, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
+    assert.equal(all.length, 39);
+    assert.equal(new Set(all).size, 39, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
   });
 });
