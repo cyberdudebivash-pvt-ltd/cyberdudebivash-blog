@@ -125,6 +125,69 @@ async function computeFeedbackSignal(detectionId, detectionVersion) {
   };
 }
 
+/**
+ * Tenant-scoped performance record (Detection Performance Intelligence v1)
+ * -- "your operational feedback" for one (detection_id, detection_version)
+ * pair, computed fresh on demand from this owner's OWN detection_feedback
+ * rows only (owner_id = ? in the WHERE clause, matching every other
+ * function in this file except computeFeedbackSignal). Deliberately not
+ * materialized into a separate counts table -- see migrations/0006's
+ * header for why: no evidence justifies it at this platform's scale, and
+ * an on-demand GROUP BY over one owner's own rows for one detection is
+ * cheap. classification_counts only includes classifications this owner
+ * has actually reported (zero-filling every possible classification would
+ * add noise, not information, for a customer detail page).
+ */
+async function computeTenantPerformance(ownerId, detectionId, detectionVersion) {
+  const rows = await d1.query(
+    'SELECT classification, COUNT(*) AS total, MAX(created_at) AS last_at FROM detection_feedback ' +
+      'WHERE owner_id = ? AND detection_id = ? AND detection_version = ? GROUP BY classification',
+    [ownerId, detectionId, detectionVersion]
+  );
+  const classificationCounts = {};
+  let total = 0;
+  let lastFeedbackAt = null;
+  for (const row of rows) {
+    const count = Number(row.total) || 0;
+    classificationCounts[row.classification] = count;
+    total += count;
+    if (!lastFeedbackAt || row.last_at > lastFeedbackAt) lastFeedbackAt = row.last_at;
+  }
+  return { total_feedback: total, classification_counts: classificationCounts, last_feedback_at: lastFeedbackAt };
+}
+
+/**
+ * Review-priority support metrics -- GLOBAL (cross-tenant) like
+ * computeFeedbackSignal, and subject to the exact same safety contract:
+ * aggregate counts and a timestamp only, never a raw row, owner_id, or
+ * free-text summary. Composes computeFeedbackSignal() unchanged rather
+ * than re-deriving the trigger/threshold math (Single Source of Truth) --
+ * adds only the two extra aggregate fields (distinct_owners_total,
+ * last_feedback_at) Review Priority needs that computeFeedbackSignal
+ * itself has no reason to expose to its own existing caller
+ * (api/v1/hunts.js's feedback-signal action).
+ */
+async function computeGlobalReviewMetrics(detectionId, detectionVersion) {
+  const signal = await computeFeedbackSignal(detectionId, detectionVersion);
+  // Column alias deliberately does NOT contain the substring "AS distinct_owners"
+  // (unqualified) -- that exact text is also what computeFeedbackSignal's own
+  // query above emits per-classification, and fake-d1.js's test double
+  // dispatches on substring matches, not real SQL parsing (see that file's
+  // header); a shared prefix would misroute this statement to the wrong
+  // branch. "global_owner_count" avoids the collision outright.
+  const rows = await d1.query(
+    'SELECT COUNT(DISTINCT owner_id) AS global_owner_count, MAX(created_at) AS last_feedback_at ' +
+      'FROM detection_feedback WHERE detection_id = ? AND detection_version = ?',
+    [detectionId, detectionVersion]
+  );
+  const row = rows[0] || {};
+  return {
+    ...signal,
+    distinct_owners_total: Number(row.global_owner_count) || 0,
+    last_feedback_at: row.last_feedback_at || null,
+  };
+}
+
 module.exports = {
   FEEDBACK_CLASSIFICATIONS,
   generateId,
@@ -133,4 +196,6 @@ module.exports = {
   listFeedbackForOwner,
   listFeedbackForHunt,
   computeFeedbackSignal,
+  computeTenantPerformance,
+  computeGlobalReviewMetrics,
 };
