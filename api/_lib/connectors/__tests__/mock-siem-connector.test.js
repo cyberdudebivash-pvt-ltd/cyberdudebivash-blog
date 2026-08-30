@@ -125,6 +125,135 @@ describe('out-of-band drift simulation helper', () => {
   });
 });
 
+describe('testHuntQueryConnection', () => {
+  test('CONNECTED by default', async () => {
+    const result = await connector.testHuntQueryConnection({ target_config: {} });
+    expect(result.result).toBe('CONNECTED');
+  });
+  for (const [sim, expected] of [['AUTH_FAILED', 'AUTH_FAILED'], ['PERMISSION_DENIED', 'INSUFFICIENT_PERMISSION'], ['TARGET_NOT_FOUND', 'TARGET_NOT_FOUND'], ['UNAVAILABLE', 'UNAVAILABLE']]) {
+    test(`simulate=${sim} -> ${expected}`, async () => {
+      const result = await connector.testHuntQueryConnection({ target_config: { simulate: sim } });
+      expect(result.result).toBe(expected);
+    });
+  }
+});
+
+describe('executeHuntQuery — connector-level failures', () => {
+  const c = { id: 'conn_1', target_config: {} };
+  const bounds = { query: 'DeviceProcessEvents | take 10', format: 'kql', timeStart: '2026-08-29T00:00:00Z', timeEnd: '2026-08-30T00:00:00Z', rowLimit: 50 };
+
+  for (const [sim, code, retryable] of [
+    ['AUTH_FAILED', 'AUTH_FAILED', false],
+    ['PERMISSION_DENIED', 'PERMISSION_DENIED', false],
+    ['RATE_LIMITED', 'RATE_LIMITED', true],
+    ['SERVER_ERROR', 'REMOTE_ERROR', true],
+    ['TIMEOUT', 'TIMEOUT', true],
+  ]) {
+    test(`simulate=${sim} throws ConnectorError code=${code}`, async () => {
+      await expect(connector.executeHuntQuery({ id: 'conn_1', target_config: { simulate: sim } }, bounds))
+        .rejects.toMatchObject({ code, retryable });
+    });
+  }
+
+  test('rejects a non-positive rowLimit as QUERY_REJECTED, never silently unbounded', async () => {
+    await expect(connector.executeHuntQuery(c, { ...bounds, rowLimit: 0 })).rejects.toMatchObject({ code: 'QUERY_REJECTED' });
+    await expect(connector.executeHuntQuery(c, { ...bounds, rowLimit: -5 })).rejects.toMatchObject({ code: 'QUERY_REJECTED' });
+  });
+
+  test('rejects a missing time range as QUERY_REJECTED, never an unbounded historical query', async () => {
+    await expect(connector.executeHuntQuery(c, { ...bounds, timeStart: null })).rejects.toMatchObject({ code: 'QUERY_REJECTED' });
+    await expect(connector.executeHuntQuery(c, { ...bounds, timeEnd: undefined })).rejects.toMatchObject({ code: 'QUERY_REJECTED' });
+  });
+});
+
+describe('executeHuntQuery — deterministic result-shape scenarios', () => {
+  const c = { id: 'conn_1', target_config: {} };
+  const bounds = { format: 'kql', timeStart: '2026-08-29T00:00:00Z', timeEnd: '2026-08-30T00:00:00Z', rowLimit: 50 };
+  const { HUNT_SIMULATE_MARKER, HUNT_SIMULATE } = connector;
+
+  test('no marker -> zero rows (NO_SIGNAL), never fabricated activity', async () => {
+    const result = await connector.executeHuntQuery(c, { ...bounds, query: 'DeviceProcessEvents | take 10' });
+    expect(result.rows).toEqual([]);
+    expect(result.truncated).toBe(false);
+  });
+
+  test('ZERO_RESULTS marker -> zero rows', async () => {
+    const result = await connector.executeHuntQuery(c, { ...bounds, query: `q ${HUNT_SIMULATE_MARKER}${HUNT_SIMULATE.ZERO_RESULTS}` });
+    expect(result.rows).toEqual([]);
+    expect(result.truncated).toBe(false);
+  });
+
+  test('ONE_RESULT marker -> exactly one row', async () => {
+    const result = await connector.executeHuntQuery(c, { ...bounds, query: `q ${HUNT_SIMULATE_MARKER}${HUNT_SIMULATE.ONE_RESULT}` });
+    expect(result.rows.length).toBe(1);
+    expect(result.truncated).toBe(false);
+  });
+
+  test('HUNDRED_RESULTS marker -> exactly 100 rows, within a 50 rowLimit stays bounded', async () => {
+    const result = await connector.executeHuntQuery(c, { ...bounds, rowLimit: 50, query: `q ${HUNT_SIMULATE_MARKER}${HUNT_SIMULATE.HUNDRED_RESULTS}` });
+    expect(result.rows.length).toBe(50);
+    expect(result.truncated).toBe(true);
+  });
+
+  test('HUNDRED_RESULTS marker fits entirely under a 200 rowLimit -> not truncated', async () => {
+    const result = await connector.executeHuntQuery(c, { ...bounds, rowLimit: 200, query: `q ${HUNT_SIMULATE_MARKER}${HUNT_SIMULATE.HUNDRED_RESULTS}` });
+    expect(result.rows.length).toBe(100);
+    expect(result.truncated).toBe(false);
+  });
+
+  test('OVER_LIMIT marker -> the app stays bounded at rowLimit and reports truncated', async () => {
+    const result = await connector.executeHuntQuery(c, { ...bounds, rowLimit: 25, query: `q ${HUNT_SIMULATE_MARKER}${HUNT_SIMULATE.OVER_LIMIT}` });
+    expect(result.rows.length).toBe(25);
+    expect(result.truncated).toBe(true);
+  });
+});
+
+describe('executeHuntQuery — simulated genuine query defect', () => {
+  const c = { id: 'conn_1', target_config: {} };
+  const bounds = { format: 'kql', timeStart: '2026-08-29T00:00:00Z', timeEnd: '2026-08-30T00:00:00Z', rowLimit: 50 };
+  const { HUNT_SIMULATE_MARKER, HUNT_SIMULATE } = connector;
+
+  test('QUERY_ERROR marker throws a non-retryable QUERY_REJECTED, the one code the feedback router treats as a genuine detection defect', async () => {
+    await expect(connector.executeHuntQuery(c, { ...bounds, query: `q ${HUNT_SIMULATE_MARKER}${HUNT_SIMULATE.QUERY_ERROR}` }))
+      .rejects.toMatchObject({ code: 'QUERY_REJECTED', retryable: false });
+  });
+});
+
+describe('normalizeResults — malformed schema and hostile fields', () => {
+  const c = { id: 'conn_1', target_config: {} };
+  const bounds = { format: 'kql', timeStart: '2026-08-29T00:00:00Z', timeEnd: '2026-08-30T00:00:00Z', rowLimit: 50 };
+  const { HUNT_SIMULATE_MARKER, HUNT_SIMULATE } = connector;
+
+  test('a malformed vendor response is normalized without throwing, dropping what cannot be safely interpreted', async () => {
+    const result = await connector.executeHuntQuery(c, { ...bounds, query: `q ${HUNT_SIMULATE_MARKER}${HUNT_SIMULATE.MALFORMED_SCHEMA}` });
+    expect(() => connector.normalizeResults(c, result.rows)).not.toThrow();
+    const normalized = connector.normalizeResults(c, result.rows);
+    // 'not-an-object' and null are structurally dropped; the object row
+    // survives with zero usable fields (its only field's value was itself
+    // an object, never carried through) -- observable, not silently lost.
+    expect(normalized).toEqual([{ fields: {}, source_row_index: 0 }]);
+  });
+
+  test('hostile field values (XSS string, __proto__/constructor field names, a real own "__proto__" data property) normalize to inert primitives with dangerous keys stripped, and never pollute Object.prototype', async () => {
+    const result = await connector.executeHuntQuery(c, { ...bounds, query: `q ${HUNT_SIMULATE_MARKER}${HUNT_SIMULATE.HOSTILE_FIELDS}` });
+    const normalized = connector.normalizeResults(c, result.rows);
+    expect(normalized.length).toBe(1);
+    const { fields } = normalized[0];
+    expect(fields.host).toBe('<script>alert(1)</script>'); // carried through as inert data -- rendering layer is responsible for escaping
+    expect(fields.user).toBe('__proto__'); // a *value* of "__proto__" is harmless data, only the *key* is dangerous
+    expect(fields.detail).toBe('"; DROP TABLE hunt_observations; --');
+    expect(Object.prototype.hasOwnProperty.call(fields, '__proto__')).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(fields, 'constructor')).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(fields, 'prototype')).toBe(false);
+    expect(({}).polluted).toBeUndefined(); // global Object.prototype was never touched
+  });
+
+  test('non-array input normalizes to an empty array rather than throwing', () => {
+    expect(connector.normalizeResults(c, null)).toEqual([]);
+    expect(connector.normalizeResults(c, 'not-an-array')).toEqual([]);
+  });
+});
+
 describe('connector isolation by connector_id', () => {
   test('two different connectors deploying the same resource name do not collide', async () => {
     const intent = fixtureIntent();
