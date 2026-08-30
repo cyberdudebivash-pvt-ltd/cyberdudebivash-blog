@@ -55,6 +55,13 @@ const PUBLIC_ROOT_FILES = [
   'order-confirmation.html', 'owasp-llm-top10.html', 'pricing.html',
   'privacy.html', 'products.html', 'search.html',
   'security-disclosure.html', 'terms.html', 'threat-intelligence.html',
+  // Detection Performance Intelligence v1 -- added with this tranche.
+  // NOTE: hunts.html/deployments.html/dossier.html/defense-profile.html/
+  // workbench.html predate this tranche and were found ALSO missing from
+  // this list while adding these two -- a pre-existing gap, not introduced
+  // here; flagged in platform/open-issues.md rather than silently widened
+  // by fixing unrelated pages as a side effect of this change.
+  'detection-quality.html', 'review-queue.html',
   // CSS — confirmed via <link href=>
   'apex-v12.css', 'apex-v13.css', 'mobile-first.css',
   // Client-side JS — confirmed via <script src=> (including from posts/**)

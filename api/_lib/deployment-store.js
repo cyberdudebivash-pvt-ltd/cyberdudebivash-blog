@@ -96,6 +96,32 @@ async function listDeployments(ownerId) {
   return rows.map(toPublicDeployment);
 }
 
+// Mirrors hunt-engine.js's own (unexported) LIVE_DEPLOYMENT_STATES exactly
+// -- "currently deployed in some customer's environment," not "has ever
+// had a deployment record" (a long-removed/failed attempt shouldn't count
+// toward how many customers presently run this detection).
+const LIVE_DEPLOYMENT_STATES = ['DEPLOYED', 'VERIFYING', 'VERIFIED', 'DRIFTED', 'UPDATE_REQUIRED'];
+
+/**
+ * Detection Performance Intelligence v1: GLOBAL (cross-tenant) count of
+ * how many distinct customers currently have a live deployment of this
+ * detection -- a Review Priority input ("number of affected deployments").
+ * Safe to compute cross-tenant because it returns only a count, never an
+ * owner_id, connector_id, or any other identifying field -- same
+ * aggregate-only contract as detection-feedback-store.js's
+ * computeFeedbackSignal()/computeGlobalReviewMetrics().
+ */
+async function countDeploymentsByDetection(detectionId) {
+  const placeholders = LIVE_DEPLOYMENT_STATES.map(() => '?').join(',');
+  const rows = await d1.query(
+    `SELECT COUNT(*) AS total, COUNT(DISTINCT owner_id) AS distinct_owners
+     FROM detection_deployments WHERE detection_id = ? AND state IN (${placeholders})`,
+    [detectionId, ...LIVE_DEPLOYMENT_STATES]
+  );
+  const row = rows[0] || {};
+  return { total: Number(row.total) || 0, distinct_owners: Number(row.distinct_owners) || 0 };
+}
+
 /** Finds the current non-terminal deployment for this exact (connector,
  *  detection, entity) triple, if one exists — the idempotency check that
  *  keeps repeated PREVIEW calls from spawning sibling rows (Section 41). */
@@ -200,6 +226,7 @@ module.exports = {
   getDeploymentRaw,
   getDeployment,
   listDeployments,
+  countDeploymentsByDetection,
   findActiveDeployment,
   createDraftDeployment,
   claimForExecution,

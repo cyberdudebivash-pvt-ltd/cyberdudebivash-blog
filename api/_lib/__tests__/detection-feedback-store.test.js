@@ -113,3 +113,97 @@ describe('computeFeedbackSignal — the one deliberate cross-tenant aggregate re
     expect(Object.keys(signal).sort()).toEqual(['reason_codes', 'sample_size', 'signal']);
   });
 });
+
+describe('computeTenantPerformance — owner-scoped, additive (Detection Performance Intelligence v1)', () => {
+  test('returns only the calling owner\'s own counts, isolated from other owners', async () => {
+    await feedbackStore.submitFeedback(OWNER_A, { detectionId: 'det_p', detectionVersion: '1.0.0', classification: 'TRUE_POSITIVE', createdBy: OWNER_A });
+    await feedbackStore.submitFeedback(OWNER_A, { detectionId: 'det_p', detectionVersion: '1.0.0', classification: 'TRUE_POSITIVE', createdBy: OWNER_A });
+    await feedbackStore.submitFeedback(OWNER_B, { detectionId: 'det_p', detectionVersion: '1.0.0', classification: 'FALSE_POSITIVE', createdBy: OWNER_B });
+
+    const perfA = await feedbackStore.computeTenantPerformance(OWNER_A, 'det_p', '1.0.0');
+    expect(perfA.total_feedback).toBe(2);
+    expect(perfA.classification_counts).toEqual({ TRUE_POSITIVE: 2 });
+
+    const perfB = await feedbackStore.computeTenantPerformance(OWNER_B, 'det_p', '1.0.0');
+    expect(perfB.total_feedback).toBe(1);
+    expect(perfB.classification_counts).toEqual({ FALSE_POSITIVE: 1 });
+  });
+
+  test('a version this owner never gave feedback on returns zero counts, not an error', async () => {
+    const perf = await feedbackStore.computeTenantPerformance(OWNER_A, 'det_untouched', '1.0.0');
+    expect(perf).toEqual({ total_feedback: 0, classification_counts: {}, last_feedback_at: null });
+  });
+
+  test('tracks the most recent feedback timestamp for this owner/detection/version', async () => {
+    await feedbackStore.submitFeedback(OWNER_A, { detectionId: 'det_q', detectionVersion: '1.0.0', classification: 'USEFUL_SIGNAL', createdBy: OWNER_A });
+    const perf = await feedbackStore.computeTenantPerformance(OWNER_A, 'det_q', '1.0.0');
+    expect(perf.last_feedback_at).toEqual(expect.any(String));
+  });
+});
+
+describe('computeGlobalReviewMetrics — extends computeFeedbackSignal additively, same cross-tenant safety contract', () => {
+  test('composes the exact same signal/reason_codes/sample_size computeFeedbackSignal produces, plus distinct_owners_total and last_feedback_at', async () => {
+    await feedbackStore.submitFeedback(OWNER_A, { detectionId: 'det_r', detectionVersion: '1.0.0', classification: 'QUERY_ERROR', createdBy: OWNER_A });
+    await feedbackStore.submitFeedback(OWNER_B, { detectionId: 'det_r', detectionVersion: '1.0.0', classification: 'TRUE_POSITIVE', createdBy: OWNER_B });
+
+    const baseline = await feedbackStore.computeFeedbackSignal('det_r', '1.0.0');
+    const extended = await feedbackStore.computeGlobalReviewMetrics('det_r', '1.0.0');
+
+    expect(extended.signal).toBe(baseline.signal);
+    expect(extended.reason_codes).toEqual(baseline.reason_codes);
+    expect(extended.sample_size).toBe(baseline.sample_size);
+    expect(extended.distinct_owners_total).toBe(2);
+    expect(extended.last_feedback_at).toEqual(expect.any(String));
+  });
+
+  test('zero feedback -- zero distinct owners, null timestamp, no error', async () => {
+    const extended = await feedbackStore.computeGlobalReviewMetrics('det_never_seen', '1.0.0');
+    expect(extended.distinct_owners_total).toBe(0);
+    expect(extended.last_feedback_at).toBeNull();
+  });
+
+  test('SAFETY CONTRACT: still never exposes owner_id, created_by, or free-text summary', async () => {
+    await feedbackStore.submitFeedback(OWNER_A, {
+      detectionId: 'det_secret2', detectionVersion: '1.0.0', classification: 'QUERY_ERROR',
+      summary: 'my internal SIEM hostname is soc-prod-02.internal.corp', createdBy: OWNER_A,
+    });
+    const extended = await feedbackStore.computeGlobalReviewMetrics('det_secret2', '1.0.0');
+    const serialized = JSON.stringify(extended);
+    expect(serialized).not.toContain(OWNER_A);
+    expect(serialized).not.toContain('soc-prod-02');
+  });
+});
+
+describe('Aggregation replay-safety and revision handling (on-demand computation, no materialized counters)', () => {
+  test('rebuilding the same aggregate twice in a row (no writes in between) produces byte-identical results -- proves recomputation is deterministic, never drifts', async () => {
+    await feedbackStore.submitFeedback(OWNER_A, { detectionId: 'det_stable', detectionVersion: '1.0.0', classification: 'TOO_BROAD', createdBy: OWNER_A });
+    await feedbackStore.submitFeedback(OWNER_B, { detectionId: 'det_stable', detectionVersion: '1.0.0', classification: 'TOO_BROAD', createdBy: OWNER_B });
+    await feedbackStore.submitFeedback(OWNER_C, { detectionId: 'det_stable', detectionVersion: '1.0.0', classification: 'TOO_BROAD', createdBy: OWNER_C });
+
+    const first = await feedbackStore.computeGlobalReviewMetrics('det_stable', '1.0.0');
+    const second = await feedbackStore.computeGlobalReviewMetrics('det_stable', '1.0.0');
+    expect(second).toEqual(first);
+
+    const perfFirst = await feedbackStore.computeTenantPerformance(OWNER_A, 'det_stable', '1.0.0');
+    const perfSecond = await feedbackStore.computeTenantPerformance(OWNER_A, 'det_stable', '1.0.0');
+    expect(perfSecond).toEqual(perfFirst);
+  });
+
+  test('a revision (a NEW feedback row correcting an earlier one) is audit-preserving, never a destructive overwrite -- both the original and the correction are counted', async () => {
+    // Analyst initially reports FALSE_POSITIVE, then later -- after further
+    // investigation -- submits a NEW TRUE_POSITIVE report for the same
+    // detection/version. There is no update/delete path for feedback rows
+    // (raw feedback is append-only and remains canonical, per the mandate) --
+    // the aggregate must reflect BOTH observations, never silently drop or
+    // replace the first.
+    await feedbackStore.submitFeedback(OWNER_A, { detectionId: 'det_revised', detectionVersion: '1.0.0', classification: 'FALSE_POSITIVE', createdBy: OWNER_A });
+    await feedbackStore.submitFeedback(OWNER_A, { detectionId: 'det_revised', detectionVersion: '1.0.0', classification: 'TRUE_POSITIVE', createdBy: OWNER_A });
+
+    const perf = await feedbackStore.computeTenantPerformance(OWNER_A, 'det_revised', '1.0.0');
+    expect(perf.total_feedback).toBe(2);
+    expect(perf.classification_counts).toEqual({ FALSE_POSITIVE: 1, TRUE_POSITIVE: 1 });
+
+    const raw = await feedbackStore.listFeedbackForOwner(OWNER_A, { detectionId: 'det_revised' });
+    expect(raw.length).toBe(2); // the original observation is preserved, not overwritten
+  });
+});

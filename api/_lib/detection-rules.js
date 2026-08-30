@@ -14,6 +14,7 @@
 const fs = require('fs');
 const crypto = require('crypto');
 const { isCloudflareWorkers } = require('./runtime-env');
+const versionStore = require('./detection-version-store');
 
 // Workers has no filesystem — __dirname-based CANONICAL_PATH throws
 // there (same failure mode already fixed in intel.js/threat-graph.js/
@@ -140,6 +141,20 @@ function storeRule(ruleSpec, sourceMetadata = {}) {
   store.meta.generated = timestamp;
 
   saveCanonical(store);
+
+  // Additive, fire-and-forget: captures this version's content as an
+  // immutable snapshot (migrations/0006, api/_lib/detection-version-
+  // store.js) before the NEXT storeRule() call overwrites it in place
+  // above. Deliberately not awaited -- storeRule() must stay synchronous
+  // for its one real caller (fetch-live-intel.js#genMultiPlatformDetections(),
+  // itself synchronous) -- so a snapshot failure (including D1 being
+  // unconfigured in this environment) never blocks or fails rule storage
+  // itself. See that store's header for the accepted, disclosed residual
+  // risk (process exit before this completes), which is strictly no worse
+  // than this function's own pre-existing unconditional overwrite.
+  versionStore.snapshotVersion(canonicalRule, { source: 'LIVE_CAPTURE', reason: sourceMetadata.change, author: sourceMetadata.author })
+    .catch(err => console.warn('[DETECTION RULES] Version snapshot failed (non-blocking):', err.message));
+
   return canonicalRule;
 }
 
