@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#00ffe0"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detection Quality &amp; Performance — CYBERDUDEBIVASH SENTINEL APEX</title>
+<meta name="description" content="Evidence-backed detection quality: validation status, operational evidence sufficiency, deterministic quality state, version history, and your own operational feedback -- never a single magic score.">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:var(--apex-bg);color:var(--apex-text);min-height:100vh}
+nav{background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nlogo{font-size:17px;font-weight:900;color:var(--apex-cyan);text-decoration:none}.nlinks a{color:var(--apex-muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 12px;border-radius:6px}.nlinks a:hover{color:#fff;background:var(--apex-surface)}.nlinks{display:flex;gap:4px}
+.ncta{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000!important;font-weight:700!important;border-radius:6px!important}
+.wrap{max-width:1040px;margin:0 auto;padding:32px 24px 64px}
+.card{background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:28px;margin-bottom:24px}
+.card-title{font-size:14px;font-weight:700;color:var(--apex-cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--apex-border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.form-group{margin-bottom:14px}label{display:block;font-size:13px;font-weight:600;color:var(--apex-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+input{width:100%;padding:12px 16px;background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;color:var(--apex-text);font-size:14px;font-family:inherit;outline:none;transition:.2s}
+input:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba(0,255,224,.1)}
+.btn{padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000}.btn-primary:hover{opacity:.9}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.alert{padding:14px 18px;border-radius:8px;margin:16px 0;font-size:14px}
+.alert-error{background:#ff3b3b15;border:1px solid #ff3b3b40;color:#ff3b3b}
+.alert-info{background:#00ffe015;border:1px solid #00ffe040;color:#00ffe0}
+.hidden{display:none!important}
+.rel-meta{font-size:11px;color:var(--apex-muted);font-family:var(--mono)}
+.empty-state{padding:20px;text-align:center;color:var(--apex-muted);font-size:13px;background:#0a0e18;border:1px dashed var(--apex-border);border-radius:8px}
+.loading{text-align:center;padding:60px 20px;color:var(--apex-muted)}
+.spinner{width:32px;height:32px;border:3px solid var(--apex-border);border-top-color:var(--apex-cyan);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.axis{background:#0a0e18;border:1px solid var(--apex-border);border-radius:10px;padding:16px}
+.axis-label{font-size:11px;font-weight:700;color:var(--apex-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.axis-value{font-size:15px;font-weight:700;font-family:var(--mono)}
+.item{background:#0a0e18;border:1px solid var(--apex-border);border-radius:10px;padding:16px;margin-bottom:12px}
+.item-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-family:var(--mono)}
+.badge-ready,.badge-verified,.badge-connected,.badge-active,.badge-confirmed,.badge-healthy,.badge-released,.badge-present{background:#00ff8820;color:var(--apex-green)}
+.badge-warn,.badge-drifted,.badge-review,.badge-paused,.badge-inconclusive,.badge-tuning{background:#ff8c0020;color:var(--apex-orange)}
+.badge-danger,.badge-failed,.badge-terminal,.badge-revoked,.badge-technical,.badge-blocked{background:#ff3b3b20;color:var(--apex-red)}
+.badge-neutral,.badge-draft,.badge-closed,.badge-insufficient,.badge-absent{background:#6b728020;color:var(--apex-muted)}
+.section-label{font-size:12px;font-weight:700;color:var(--apex-cyan);text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+.reason-box{background:#0a0e18;border-left:3px solid var(--apex-purple);border-radius:0 8px 8px 0;padding:16px;font-size:14px;line-height:1.6;margin-top:12px}
+footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);padding:24px;text-align:center;font-size:13px;color:var(--apex-muted)}footer a{color:var(--apex-cyan);text-decoration:none}
+@media(max-width:700px){.wrap{padding:20px 16px 48px}.card{padding:20px}.nlinks a:not(.ncta){display:none}.grid2,.grid4{grid-template-columns:1fr}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XTGLNMNNC7"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-XTGLNMNNC7",{page_path:window.location.pathname,cookie_flags:"SameSite=None;Secure"});</script>
+</head>
+<body>
+<nav>
+  <a href="/" class="nlogo">CYBERDUDE<span style="color:#fff">BIVASH</span> <span style="font-size:11px;color:var(--apex-muted);font-weight:400">SENTINEL APEX</span></a>
+  <div class="nlinks">
+    <a href="/">Blog</a>
+    <a href="/hunts.html">Hunts</a>
+    <a href="/deployments.html">SIEM Deployments</a>
+    <a href="/api-dashboard.html" class="ncta">⚡ Get API Key</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="card">
+    <h1 class="card-title" style="border-bottom:none;margin-bottom:12px;font-size:14px">📊 Detection Quality &amp; Performance</h1>
+    <div class="rel-meta" style="margin-bottom:14px;font-size:12px">
+      Four separate, plain-language signals -- Validation, Evidence Sufficiency, Quality State, and Version History --
+      never collapsed into one opaque score. Quality State is a deterministic function of the canonical validation gate
+      and privacy-safe, cross-tenant operational feedback: it is never an ML prediction, a fabricated confidence
+      percentage, or a false-positive-rate claim. Feedback counts are real observations from real defensive use, not a
+      statistically validated efficacy rate -- see the reason shown for exactly why a state was reached.
+    </div>
+    <div class="grid2">
+      <div class="form-group">
+        <label for="api-key">API Key (held in memory only, never stored in this browser)</label>
+        <input id="api-key" type="password" placeholder="sentinel_your_key_here">
+      </div>
+      <div class="form-group">
+        <label for="detection-id">Detection ID</label>
+        <input id="detection-id" type="text" placeholder="e.g. 65b906336880ed01">
+      </div>
+    </div>
+    <button class="btn btn-primary" id="load-btn" onclick="loadDetection()">Load Detection Quality</button>
+  </div>
+
+  <div id="status-area"></div>
+  <div id="root"></div>
+</div>
+
+<footer>
+  &copy; 2026 CyberDudeBivash Sentinel APEX. Your own operational feedback is private to your account; Quality State is a
+  shared, aggregate-only product signal. <a href="/hunts.html">Threat Hunting Workspace</a> · <a href="/api-dashboard.html">Get an API key</a>
+</footer>
+
+<script>
+const API = 'https://blog.cyberdudebivash.in';
+let sessionKey = null; // in-memory only, never persisted -- same discipline as hunts.html/deployments.html
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function showStatus(html) { document.getElementById('status-area').innerHTML = html; }
+function clearStatus() { document.getElementById('status-area').innerHTML = ''; }
+
+async function api(path, opts = {}) {
+  const res = await fetch(`${API}${path}`, { ...opts, headers: { 'X-API-Key': sessionKey, ...(opts.headers || {}) } });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok || !body.success) {
+    const err = new Error((body.error && body.error.message) || `Request failed (${res.status}).`);
+    err.code = body.error && body.error.code;
+    throw err;
+  }
+  return body;
+}
+
+function badgeClass(value) {
+  const v = String(value || '').toUpperCase();
+  if (['HEALTHY', 'RELEASED', 'OPERATIONAL_EVIDENCE_PRESENT'].includes(v)) return 'badge-ready';
+  if (['TUNING_RECOMMENDED', 'REVIEW_REQUIRED'].includes(v)) return 'badge-warn';
+  if (['TECHNICAL_FAILURE', 'BLOCKED', 'REVOKED'].includes(v)) return 'badge-danger';
+  return 'badge-neutral';
+}
+
+function maybePrefillFromQueryString() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id') || params.get('detection_id');
+  if (id) document.getElementById('detection-id').value = id;
+}
+maybePrefillFromQueryString();
+
+async function loadDetection() {
+  const key = document.getElementById('api-key').value.trim();
+  const detectionId = document.getElementById('detection-id').value.trim();
+  if (!key) { showStatus('<div class="alert alert-error">Enter your API key. <a href="/api-dashboard.html" style="color:inherit;text-decoration:underline">Get one free</a>.</div>'); return; }
+  if (!detectionId) { showStatus('<div class="alert alert-error">Enter a detection ID.</div>'); return; }
+  sessionKey = key;
+  clearStatus();
+  document.getElementById('root').innerHTML = '<div class="loading"><div class="spinner"></div>Loading…</div>';
+  try {
+    const [qualityResp, historyResp] = await Promise.all([
+      api(`/api/v1/detections/performance?action=quality&detection_id=${encodeURIComponent(detectionId)}`),
+      api(`/api/v1/detections/performance?action=version-history&detection_id=${encodeURIComponent(detectionId)}`),
+    ]);
+    const quality = qualityResp.quality;
+    let myPerformance = null;
+    try {
+      const perfResp = await api(`/api/v1/detections/performance?action=my-performance&detection_id=${encodeURIComponent(detectionId)}&detection_version=${encodeURIComponent(quality.detection_version)}`);
+      myPerformance = perfResp.performance;
+    } catch (_) { /* non-fatal -- render everything else regardless */ }
+    render(quality, historyResp.history, myPerformance);
+  } catch (e) {
+    document.getElementById('root').innerHTML = '';
+    showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`);
+  }
+}
+
+function render(quality, history, myPerformance) {
+  const root = document.getElementById('root');
+  let html = '';
+
+  html += `<div class="card">
+    <div class="card-title">Detection ${esc(quality.detection_id)} — v${esc(quality.detection_version)}${quality.is_current_version ? '' : ' <span class="badge badge-neutral">Historical Version</span>'}</div>
+    <div class="grid4">
+      <div class="axis">
+        <div class="axis-label">Validation</div>
+        <div class="axis-value"><span class="badge ${badgeClass(quality.canonical_status)}">${esc(quality.canonical_status)}</span></div>
+        ${(quality.validation_reasons || []).length ? `<div class="rel-meta" style="margin-top:8px">${quality.validation_reasons.map(esc).join(', ')}</div>` : ''}
+        ${quality.validation_evaluated_for_this_version ? '' : '<div class="rel-meta" style="margin-top:8px">Reflects the CURRENT version only — not re-evaluated for this historical version.</div>'}
+      </div>
+      <div class="axis">
+        <div class="axis-label">Evidence Sufficiency</div>
+        <div class="axis-value"><span class="badge ${badgeClass(quality.evidence_sufficiency)}">${esc(quality.evidence_sufficiency)}</span></div>
+      </div>
+      <div class="axis">
+        <div class="axis-label">Quality State</div>
+        <div class="axis-value"><span class="badge ${badgeClass(quality.quality_state)}">${esc(quality.quality_state)}</span></div>
+      </div>
+      <div class="axis">
+        <div class="axis-label">Operational Evidence</div>
+        <div class="axis-value">${quality.operational_evidence.sample_size} report(s) · ${quality.operational_evidence.distinct_owners_total} customer(s)</div>
+      </div>
+    </div>
+    <div class="reason-box"><strong>Why:</strong> ${esc(quality.reason)}</div>
+    ${quality.tuning_recommendations.length ? `<div class="section-label">Tuning Recommendations</div>` + quality.tuning_recommendations.map(r => `<div class="item">${esc(r)}</div>`).join('') : ''}
+  </div>`;
+
+  if (myPerformance) {
+    const counts = Object.entries(myPerformance.classification_counts || {});
+    html += `<div class="card">
+      <div class="card-title">Your Operational Feedback (private to your account)</div>
+      ${counts.length ? counts.map(([cls, n]) => `<span class="badge badge-neutral" style="margin:4px 6px 4px 0">${esc(cls)}: ${n}</span>`).join('') : '<div class="empty-state">You have not submitted feedback for this detection version yet. <a href="/hunts.html" style="color:var(--apex-cyan)">Submit feedback from a hunt →</a></div>'}
+      ${myPerformance.last_feedback_at ? `<div class="rel-meta" style="margin-top:12px">Last submitted: ${esc(myPerformance.last_feedback_at)}</div>` : ''}
+    </div>`;
+  }
+
+  html += `<div class="card">
+    <div class="card-title">Version History</div>
+    ${(history.versions || []).slice().reverse().map(v => `
+      <div class="item">
+        <div class="item-head">
+          <strong>v${esc(v.version)}</strong>
+          <span class="rel-meta">${esc(v.timestamp)}</span>
+        </div>
+        <div class="rel-meta" style="margin-top:6px">${esc(v.change)} — ${esc(v.author)}</div>
+        <div style="margin-top:8px">
+          ${v.content_available
+            ? `<span class="badge badge-ready">Content Available</span> <span class="rel-meta">(${esc(v.snapshot_source)}, formats: ${(v.formats || []).join(', ') || 'none'})</span>`
+            : '<span class="badge badge-neutral">Content Unavailable — predates version snapshotting</span>'}
+        </div>
+      </div>`).join('') || '<div class="empty-state">No version history available.</div>'}
+  </div>`;
+
+  root.innerHTML = html;
+}
+</script>
+</body>
+</html>

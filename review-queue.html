@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#00ffe0"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detection Review Queue — Internal — CYBERDUDEBIVASH SENTINEL APEX</title>
+<meta name="description" content="Internal-only detection review queue: deterministic quality state and review priority across every canonical detection. Requires an operator admin key.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--apex-cyan:#00ffe0;--apex-red:#ff3b3b;--apex-orange:#ff8c00;--apex-green:#00ff88;--apex-purple:#a855f7;--apex-bg:#07090f;--apex-surface:#0d1117;--apex-card:#111827;--apex-border:#1f2937;--apex-text:#e2e8f0;--apex-muted:#6b7280;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:var(--apex-bg);color:var(--apex-text);min-height:100vh}
+nav{background:rgba(7,9,15,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--apex-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nlogo{font-size:17px;font-weight:900;color:var(--apex-cyan);text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding:32px 24px 64px}
+.card{background:var(--apex-card);border:1px solid var(--apex-border);border-radius:14px;padding:28px;margin-bottom:24px}
+.card-title{font-size:14px;font-weight:700;color:var(--apex-cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--apex-border)}
+.form-group{margin-bottom:14px}label{display:block;font-size:13px;font-weight:600;color:var(--apex-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em}
+input{width:100%;padding:12px 16px;background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;color:var(--apex-text);font-size:14px;font-family:inherit;outline:none}
+input:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba(0,255,224,.1)}
+.btn{padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;background:linear-gradient(135deg,#00ffe0,#0099ff);color:#000}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.alert{padding:14px 18px;border-radius:8px;margin:16px 0;font-size:14px}
+.alert-error{background:#ff3b3b15;border:1px solid #ff3b3b40;color:#ff3b3b}
+.rel-meta{font-size:11px;color:var(--apex-muted);font-family:var(--mono)}
+.empty-state{padding:20px;text-align:center;color:var(--apex-muted);font-size:13px;background:#0a0e18;border:1px dashed var(--apex-border);border-radius:8px}
+.loading{text-align:center;padding:60px 20px;color:var(--apex-muted)}
+.spinner{width:32px;height:32px;border:3px solid var(--apex-border);border-top-color:var(--apex-cyan);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;color:var(--apex-muted);text-transform:uppercase;font-size:11px;letter-spacing:.05em;border-bottom:1px solid var(--apex-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--apex-border);vertical-align:top}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-family:var(--mono)}
+.badge-crit{background:#ff3b3b20;color:var(--apex-red)}
+.badge-high{background:#ff8c0020;color:var(--apex-orange)}
+.badge-med{background:#00ffe020;color:var(--apex-cyan)}
+.badge-low,.badge-none{background:#6b728020;color:var(--apex-muted)}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:#0a0e18;border:1px solid var(--apex-border);color:var(--apex-muted);cursor:pointer}
+.filter-btn.active{border-color:var(--apex-cyan);color:var(--apex-cyan)}
+@media(max-width:800px){.wrap{padding:20px 16px 48px}.card{padding:20px}table{font-size:12px}}
+</style>
+</head>
+<body>
+<nav><a href="/" class="nlogo">CYBERDUDE<span style="color:#fff">BIVASH</span> <span style="font-size:11px;color:var(--apex-muted);font-weight:400">SENTINEL APEX — INTERNAL</span></a></nav>
+
+<div class="wrap">
+  <div class="card">
+    <div class="card-title">🛡 Detection Review Queue (Internal)</div>
+    <div class="rel-meta" style="margin-bottom:14px;font-size:12px">
+      Every canonical detection's current quality state and deterministic review priority, sorted worst-first. No
+      customer-private content appears anywhere below -- only the detection's own public fields and privacy-safe,
+      aggregate-only counts. This is not a "best detection" leaderboard: there is no ranking of healthy detections
+      against each other, only a prioritized list of what needs attention.
+    </div>
+    <div class="form-group">
+      <label for="admin-key">Operator Admin Key</label>
+      <input id="admin-key" type="password" placeholder="X-Admin-Key">
+    </div>
+    <button class="btn" id="load-btn" onclick="loadQueue()">Load Review Queue</button>
+  </div>
+
+  <div id="status-area"></div>
+  <div id="root"></div>
+</div>
+
+<script>
+const API = 'https://blog.cyberdudebivash.in';
+let queueCache = [];
+let activeFilter = 'ALL';
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function showStatus(html) { document.getElementById('status-area').innerHTML = html; }
+function clearStatus() { document.getElementById('status-area').innerHTML = ''; }
+
+function tierClass(tier) {
+  return { CRITICAL: 'badge-crit', HIGH: 'badge-high', MEDIUM: 'badge-med', LOW: 'badge-low', NONE: 'badge-none' }[tier] || 'badge-none';
+}
+
+async function loadQueue() {
+  const key = document.getElementById('admin-key').value.trim();
+  if (!key) { showStatus('<div class="alert alert-error">Enter the operator admin key.</div>'); return; }
+  clearStatus();
+  document.getElementById('root').innerHTML = '<div class="loading"><div class="spinner"></div>Loading…</div>';
+  try {
+    const res = await fetch(`${API}/api/v1/detections/performance?action=review-queue`, { headers: { 'X-Admin-Key': key } });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok || !body.success) throw new Error((body.error && body.error.message) || `Request failed (${res.status}).`);
+    queueCache = body.queue;
+    activeFilter = 'ALL';
+    render();
+  } catch (e) {
+    document.getElementById('root').innerHTML = '';
+    showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`);
+  }
+}
+
+function setFilter(tier) { activeFilter = tier; render(); }
+
+function render() {
+  const root = document.getElementById('root');
+  const tiers = ['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'NONE'];
+  const filtered = activeFilter === 'ALL' ? queueCache : queueCache.filter(e => e.priority_tier === activeFilter);
+
+  let html = '<div class="card">';
+  html += '<div class="filter-bar">' + tiers.map(t => `<button class="filter-btn${t === activeFilter ? ' active' : ''}" onclick="setFilter('${t}')">${t} (${t === 'ALL' ? queueCache.length : queueCache.filter(e => e.priority_tier === t).length})</button>`).join('') + '</div>';
+
+  if (!filtered.length) {
+    html += '<div class="empty-state">No detections match this filter.</div>';
+  } else {
+    html += `<table><thead><tr>
+      <th>Detection</th><th>Priority</th><th>Quality State</th><th>Reason</th><th>Deployments</th><th>Evidence</th><th>Recommendations</th>
+    </tr></thead><tbody>`;
+    for (const e of filtered) {
+      html += `<tr>
+        <td><strong>${esc(e.title)}</strong><br><span class="rel-meta">${esc(e.detection_id)} · v${esc(e.detection_version)} · ${esc(e.technique_id)}</span></td>
+        <td><span class="badge ${tierClass(e.priority_tier)}">${esc(e.priority_tier)}</span></td>
+        <td><span class="badge ${tierClass(e.priority_tier)}">${esc(e.quality_state)}</span></td>
+        <td style="max-width:280px">${esc(e.reason)}</td>
+        <td>${e.factors.affected_deployments} customer(s)${e.factors.multiple_environments ? ' <span class="rel-meta">(multiple)</span>' : ''}</td>
+        <td>${esc(e.evidence_sufficiency)}</td>
+        <td style="max-width:240px">${(e.tuning_recommendations || []).map(r => `<div class="rel-meta">${esc(r)}</div>`).join('') || '<span class="rel-meta">—</span>'}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+  }
+  html += '</div>';
+  root.innerHTML = html;
+}
+</script>
+</body>
+</html>

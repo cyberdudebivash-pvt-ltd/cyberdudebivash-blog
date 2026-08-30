@@ -347,6 +347,7 @@ function renderDeploymentLinkage() {
         <div><strong>${esc(l.detection_id)}</strong></div>
         <span class="badge ${l.detection_status === 'REVOKED' ? 'badge-revoked' : l.detection_status === 'RELEASED' ? 'badge-ready' : 'badge-neutral'}">${esc(l.detection_status)}</span>
       </div>
+      <div class="rel-meta" style="margin-top:4px"><a href="/detection-quality.html?id=${encodeURIComponent(l.detection_id)}" style="color:var(--apex-cyan)">View Quality &amp; Performance →</a></div>
       ${l.detection_status === 'REVOKED' ? '<div class="alert alert-error" style="margin:8px 0 0">This detection has been REVOKED — do not rely on it.</div>' : ''}
       ${(l.deployments || []).map(d => `<div class="rel-meta" style="margin-top:4px">Deployment ${esc(d.deployment_id)}: <span class="badge ${d.state === 'DRIFTED' ? 'badge-drifted' : d.state === 'VERIFIED' ? 'badge-verified' : 'badge-neutral'}">${esc(d.state)}</span>${d.state === 'DRIFTED' ? ' — REMOTE DETECTION DRIFTED (query here ≠ active remote rule)' : ''}</div>`).join('') || '<div class="rel-meta">Not deployed via the Controlled SIEM Deployment Gateway.</div>'}
     </div>
