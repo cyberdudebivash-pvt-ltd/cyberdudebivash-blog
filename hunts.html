@@ -100,6 +100,20 @@ let sessionKey = null; // in-memory only, never persisted -- same discipline as 
 let huntsCache = [];
 let currentHunt = null; // full detail bundle for the open hunt, or null when on the dashboard
 
+/* ── Controlled Read-Only SIEM Hunting Connectors v1 ──
+ * connectorsCache/platformsCache are session-scoped (loaded once, not
+ * per-hunt) -- a customer's connector list doesn't change per hunt.
+ * queryHuntState is per-query_id UI state (selected connector, time
+ * range, row limit, the last preview/run outcome) -- never persisted,
+ * cleared on full page reload, exactly like every other in-memory-only
+ * state on this page. Remote result ROWS live only in this object until
+ * the analyst explicitly selects one to become a real observation (via
+ * the existing add-observation action) -- never auto-saved. */
+let huntConnectorsCache = null;
+let huntPlatformsCache = null;
+const queryHuntState = {};
+let huntExecutionsCache = [];
+
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -225,22 +239,35 @@ async function createHunt() {
 
 /* ─────────────────────────── Hunt Detail ─────────────────────────── */
 
+async function ensureConnectorsLoaded() {
+  if (huntConnectorsCache && huntPlatformsCache) return;
+  const [connectors, platforms] = await Promise.all([
+    api('/api/v1/connectors?action=list'),
+    api('/api/v1/connectors?action=platforms'),
+  ]);
+  huntConnectorsCache = connectors.connectors;
+  huntPlatformsCache = platforms.platforms;
+}
+
 async function openHunt(huntId) {
   clearStatus();
   document.getElementById('root').innerHTML = '<div class="loading"><div class="spinner"></div>Loading hunt…</div>';
   try {
-    const [detail, queries, observations, evidence, findings, timeline] = await Promise.all([
+    const [detail, queries, observations, evidence, findings, timeline, executions] = await Promise.all([
       api(`/api/v1/hunts?action=get&id=${encodeURIComponent(huntId)}`),
       api(`/api/v1/hunts?action=queries&id=${encodeURIComponent(huntId)}`),
       api(`/api/v1/hunts?action=observations&id=${encodeURIComponent(huntId)}`),
       api(`/api/v1/hunts?action=evidence&id=${encodeURIComponent(huntId)}`),
       api(`/api/v1/hunts?action=findings&id=${encodeURIComponent(huntId)}`),
       api(`/api/v1/hunts?action=timeline&id=${encodeURIComponent(huntId)}`),
+      api(`/api/v1/hunts?action=query-executions&id=${encodeURIComponent(huntId)}`),
     ]);
     currentHunt = {
       hunt: detail.hunt, refs: detail.refs, readiness: detail.telemetry_readiness, deploymentLinkage: detail.deployment_linkage,
       queries: queries.items, observations: observations.items, evidence: evidence.items, findings: findings.items, timeline: timeline.items,
     };
+    huntExecutionsCache = executions.executions;
+    await ensureConnectorsLoaded();
     renderHuntDetail();
   } catch (e) {
     renderDashboard();
@@ -280,13 +307,16 @@ function renderHuntDetail() {
         <button class="btn btn-secondary btn-sm" onclick="addDetectionRef()">Link Detection</button>
       </div>
 
-      <div class="section-label">Hunt Queries <span class="rel-meta">(data — view / copy / download only, never executed remotely)</span></div>
+      <div class="section-label">Hunt Queries <span class="rel-meta">(view the query text below; remote execution against an authorized, read-only connector is explicit, per query, further down)</span></div>
       <div id="query-list">${renderQueryList()}</div>
       <div class="row" style="margin-top:8px">
         <input id="new-query-detection-id" type="text" placeholder="Detection ID" style="max-width:200px">
         <input id="new-query-format" type="text" placeholder="Format (e.g. kql, optional)" style="max-width:200px">
         <button class="btn btn-secondary btn-sm" onclick="addQuery()">Add Query from Detection</button>
       </div>
+
+      <div class="section-label">Recent Query Executions <span class="rel-meta">(bounded metadata only — never raw telemetry)</span></div>
+      <div id="execution-history-list">${renderExecutionHistory()}</div>
 
       <div class="section-label">Observations</div>
       <div id="observation-list">${renderObservationList()}</div>
@@ -361,6 +391,184 @@ function renderQueryList() {
       <div class="item-head"><strong>${esc(q.source_detection_id)} v${esc(q.source_detection_version)}</strong><span class="badge badge-neutral">${esc(q.format)}</span></div>
       <pre class="code">${esc(q.query_snapshot)}</pre>
       <div class="rel-meta">Validation status at time added: ${esc(q.validation_status)}</div>
+      <div id="hq-panel-${esc(q.query_id)}">${renderHuntQueryPanel(q)}</div>
+    </div>
+  `).join('');
+}
+
+/* ── Controlled Read-Only SIEM Hunting Connectors v1 — per-query panel ──
+ * VIEW QUERY (above) -> PREVIEW PARAMETERS -> explicit RUN QUERY. Never
+ * auto-runs on page load; a remote call only ever happens from an
+ * explicit click on "Run Query" below, and only once Preview has
+ * confirmed readiness. */
+
+function huntStateFor(queryId) {
+  if (!queryHuntState[queryId]) {
+    const end = new Date();
+    const start = new Date(end.getTime() - 24 * 60 * 60 * 1000);
+    queryHuntState[queryId] = {
+      connectorId: '', rowLimit: 100,
+      timeStart: start.toISOString().slice(0, 16), timeEnd: end.toISOString().slice(0, 16),
+      preview: null, running: false, result: null,
+    };
+  }
+  return queryHuntState[queryId];
+}
+
+function connectorOptionsFor() {
+  const supported = (huntConnectorsCache || []).filter(c => {
+    const platform = (huntPlatformsCache || []).find(p => p.id === c.platform);
+    return platform && platform.capabilities && platform.capabilities.hunt_query_supported && !c.disabled;
+  });
+  if (!supported.length) return '<option value="">— No hunting-capable connector configured —</option>';
+  return '<option value="">— Select connector —</option>' +
+    supported.map(c => `<option value="${esc(c.id)}">${esc(c.name)} (${esc(c.platform_label)})</option>`).join('');
+}
+
+function updateHuntState(queryId, field, value) { huntStateFor(queryId)[field] = value; }
+
+function rerenderHuntPanel(queryId) {
+  const q = currentHunt.queries.find(x => x.query_id === queryId);
+  const el = document.getElementById(`hq-panel-${queryId}`);
+  if (q && el) el.innerHTML = renderHuntQueryPanel(q);
+}
+
+function renderHuntQueryPanel(q) {
+  const st = huntStateFor(q.query_id);
+  const preview = st.preview;
+  const previewOk = preview && !preview.error;
+  const ready = previewOk && preview.readiness && preview.readiness.ready;
+  return `
+    <div class="section-label" style="margin-top:14px;font-size:11px">
+      Read-Only Remote Hunting <span class="badge badge-ready" style="font-size:10px">READ ONLY</span>
+    </div>
+    <div class="grid3">
+      <select id="hq-connector-${esc(q.query_id)}" onchange="updateHuntState('${esc(q.query_id)}','connectorId',this.value); updateHuntState('${esc(q.query_id)}','preview',null); rerenderHuntPanel('${esc(q.query_id)}')">
+        ${connectorOptionsFor()}
+      </select>
+      <input type="datetime-local" value="${esc(st.timeStart)}" onchange="updateHuntState('${esc(q.query_id)}','timeStart',this.value)">
+      <input type="datetime-local" value="${esc(st.timeEnd)}" onchange="updateHuntState('${esc(q.query_id)}','timeEnd',this.value)">
+    </div>
+    <div class="row" style="margin-top:8px">
+      <input type="number" min="1" max="1000" value="${esc(st.rowLimit)}" style="max-width:120px" placeholder="Row limit" onchange="updateHuntState('${esc(q.query_id)}','rowLimit',this.value)">
+      <button class="btn btn-secondary btn-sm" onclick="previewHuntQuery('${esc(q.query_id)}')">Preview</button>
+      <button class="btn btn-primary btn-sm" ${ready && !st.running ? '' : 'disabled'} onclick="runHuntQuery('${esc(q.query_id)}')">${st.running ? 'Running…' : 'Run Query'}</button>
+    </div>
+    ${renderHuntPreviewStatus(st)}
+    ${renderHuntResultStatus(q, st)}
+  `;
+}
+
+function renderHuntPreviewStatus(st) {
+  if (!st.preview) return '';
+  if (st.preview.error) return `<div class="alert alert-error" style="margin-top:8px">${esc(st.preview.message)}</div>`;
+  const p = st.preview;
+  const r = p.readiness;
+  const linkage = p.detection_linkage;
+  let html = `<div class="rel-meta" style="margin-top:8px">Connector: <strong style="color:var(--apex-text)">${esc(p.connector.platform_label)}</strong> · Read-only: <strong style="color:var(--apex-text)">${p.read_only ? 'YES' : 'NO'}</strong> · Default/max rows: ${esc(p.default_row_limit)} / ${esc(p.max_row_limit)}</div>`;
+  if (r.ready) {
+    html += `<div class="alert alert-info" style="margin-top:6px">Required telemetry is available. Ready to run.</div>`;
+  } else {
+    html += `<div class="alert alert-warn" style="margin-top:6px">RUN disabled — ${esc(r.reason)}: ${esc(r.detail || 'Required telemetry is not fully available.')}</div>`;
+  }
+  if (linkage && (linkage.deployments || []).some(d => d.state === 'DRIFTED')) {
+    html += `<div class="alert alert-warn" style="margin-top:6px">This detection's remote deployment has DRIFTED — this query may not represent the currently active remote rule.</div>`;
+  }
+  return html;
+}
+
+function renderHuntResultStatus(q, st) {
+  if (!st.result) return '';
+  const r = st.result;
+  // A request-level rejection (api() threw -- e.g. NOT_READY, INVALID_TIME_RANGE, IDOR NOT_FOUND).
+  if (r.error === true) return `<div class="alert alert-error" style="margin-top:8px">${esc(r.message)}</div>`;
+  // A completed remote execution that did NOT succeed (TIMED_OUT/RATE_LIMITED/FAILED) -- this
+  // response shape carries error_code/error_classification/message, never a `results` array, so it
+  // must be handled before any code below ever touches r.results.
+  if (r.state !== 'SUCCEEDED' && r.state !== 'PARTIAL') {
+    return `<div class="alert alert-warn" style="margin-top:8px">Execution ${esc(r.execution_id)}: <strong>${esc(r.state)}</strong> — ${esc(r.message || 'No further detail.')}${r.error_classification ? ` (${esc(r.error_classification)})` : ''}</div>`;
+  }
+  let html = `<div class="alert ${r.state === 'SUCCEEDED' ? 'alert-info' : 'alert-warn'}" style="margin-top:8px">Execution ${esc(r.execution_id)}: <strong>${esc(r.state)}</strong>${r.truncated ? ' — results truncated at the row limit' : ''} — ${r.results.length} row(s) returned.</div>`;
+  if (!r.results.length) {
+    html += `<div class="empty-state">No matching activity (NO_SIGNAL) — this is a legitimate hunt outcome, not a detection failure.</div>`;
+  } else {
+    html += '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;font-family:var(--mono)">';
+    const cols = Object.keys(r.results[0].fields);
+    html += `<tr>${cols.map(c => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--apex-border);color:var(--apex-muted)">${esc(c)}</th>`).join('')}<th></th></tr>`;
+    r.results.forEach((row, i) => {
+      html += `<tr>${cols.map(c => `<td style="padding:6px;border-bottom:1px solid var(--apex-border)">${esc(row.fields[c])}</td>`).join('')}<td><button class="btn btn-secondary btn-sm" onclick="selectHuntObservation('${esc(q.query_id)}', ${i})">Select as Observation</button></td></tr>`;
+    });
+    html += '</table></div>';
+  }
+  return html;
+}
+
+async function previewHuntQuery(queryId) {
+  const st = huntStateFor(queryId);
+  if (!st.connectorId) { showStatus('<div class="alert alert-error">Select a connector first.</div>'); return; }
+  clearStatus();
+  try {
+    const body = await api(`/api/v1/hunts?action=query-preview&id=${encodeURIComponent(currentHunt.hunt.hunt_id)}&query_id=${encodeURIComponent(queryId)}&connector_id=${encodeURIComponent(st.connectorId)}`);
+    st.preview = body.preview;
+  } catch (e) {
+    st.preview = { error: true, message: e.message };
+  }
+  rerenderHuntPanel(queryId);
+}
+
+async function runHuntQuery(queryId) {
+  const st = huntStateFor(queryId);
+  if (!st.connectorId) return;
+  st.running = true;
+  rerenderHuntPanel(queryId);
+  clearStatus();
+  try {
+    const body = await api(`/api/v1/hunts?action=query-run&id=${encodeURIComponent(currentHunt.hunt.hunt_id)}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        query_id: queryId, connector_id: st.connectorId,
+        time_start: new Date(st.timeStart).toISOString(), time_end: new Date(st.timeEnd).toISOString(),
+        row_limit: Number(st.rowLimit) || undefined,
+      }),
+    });
+    st.result = body;
+  } catch (e) {
+    st.result = { error: true, message: e.message };
+  }
+  st.running = false;
+  rerenderHuntPanel(queryId);
+  const executions = await api(`/api/v1/hunts?action=query-executions&id=${encodeURIComponent(currentHunt.hunt.hunt_id)}`);
+  huntExecutionsCache = executions.executions;
+  const histEl = document.getElementById('execution-history-list');
+  if (histEl) histEl.innerHTML = renderExecutionHistory();
+}
+
+/* Analyst-explicit selection only -- this is the ONE moment a remote
+ * result row is ever persisted, via the existing, unmodified
+ * add-observation action (never automatic, never bulk). */
+async function selectHuntObservation(queryId, rowIndex) {
+  const st = huntStateFor(queryId);
+  if (!st.result || !st.result.results || !st.result.results[rowIndex]) return;
+  const row = st.result.results[rowIndex];
+  const summary = prompt('Describe why this result is relevant (required):', '');
+  if (!summary || !summary.trim()) return;
+  clearStatus();
+  try {
+    await api(`/api/v1/hunts?action=add-observation&id=${encodeURIComponent(currentHunt.hunt.hunt_id)}`, {
+      method: 'POST',
+      body: JSON.stringify({ query_id: queryId, summary: summary.trim(), execution_id: st.result.execution_id, selected_fields: row.fields }),
+    });
+    await reloadChildLists();
+  } catch (e) { showStatus(`<div class="alert alert-error">${esc(e.message)}</div>`); }
+}
+
+function renderExecutionHistory() {
+  if (!huntExecutionsCache.length) return '<div class="empty-state">No query executions yet.</div>';
+  return huntExecutionsCache.map(e => `
+    <div class="rel-meta" style="padding:6px 0;border-bottom:1px solid var(--apex-border)">
+      ${esc(e.created_at)} — <strong style="color:var(--apex-text)">${esc(e.state)}</strong>
+      ${e.result_row_count !== null ? ` — ${esc(e.result_row_count)} row(s)` : ''}
+      ${e.error_code ? ` — ${esc(e.error_code)}${e.error_classification ? ` (${esc(e.error_classification)})` : ''}` : ''}
     </div>
   `).join('');
 }
@@ -423,18 +631,20 @@ function renderDispositionSection() {
 
 async function reloadChildLists() {
   const huntId = currentHunt.hunt.hunt_id;
-  const [detail, queries, observations, evidence, findings, timeline] = await Promise.all([
+  const [detail, queries, observations, evidence, findings, timeline, executions] = await Promise.all([
     api(`/api/v1/hunts?action=get&id=${encodeURIComponent(huntId)}`),
     api(`/api/v1/hunts?action=queries&id=${encodeURIComponent(huntId)}`),
     api(`/api/v1/hunts?action=observations&id=${encodeURIComponent(huntId)}`),
     api(`/api/v1/hunts?action=evidence&id=${encodeURIComponent(huntId)}`),
     api(`/api/v1/hunts?action=findings&id=${encodeURIComponent(huntId)}`),
     api(`/api/v1/hunts?action=timeline&id=${encodeURIComponent(huntId)}`),
+    api(`/api/v1/hunts?action=query-executions&id=${encodeURIComponent(huntId)}`),
   ]);
   currentHunt = {
     hunt: detail.hunt, refs: detail.refs, readiness: detail.telemetry_readiness, deploymentLinkage: detail.deployment_linkage,
     queries: queries.items, observations: observations.items, evidence: evidence.items, findings: findings.items, timeline: timeline.items,
   };
+  huntExecutionsCache = executions.executions;
   renderHuntDetail();
 }
 
