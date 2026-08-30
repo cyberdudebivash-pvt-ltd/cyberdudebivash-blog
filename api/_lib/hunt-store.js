@@ -143,17 +143,33 @@ async function listQueries(huntId) {
   return d1.query('SELECT * FROM hunt_queries WHERE hunt_id = ? ORDER BY created_at ASC LIMIT ?', [huntId, CHILD_LIST_LIMIT]);
 }
 
-async function addObservation(huntId, { queryId, summary, createdBy }) {
+const MAX_SELECTED_FIELDS_JSON_LENGTH = 8000; // defense in depth on top of normalizeObservationRows' own per-field cap -- bounds one observation row's total size
+
+/** executionId/selectedFields are optional (Controlled Read-Only SIEM
+ *  Hunting Connectors v1) -- omitted entirely by every pre-existing,
+ *  manually-authored observation, exactly as before this tranche.
+ *  selectedFields, when supplied, is the ONE normalized result row
+ *  (connector-contract.js#normalizeObservationRows' `fields` object) the
+ *  analyst explicitly chose to keep -- never a bulk/automatic capture. */
+async function addObservation(huntId, { queryId, summary, createdBy, executionId, selectedFields }) {
   const observationId = generateId('hob');
+  let selectedFieldsJson = null;
+  if (selectedFields && typeof selectedFields === 'object') {
+    const serialized = JSON.stringify(selectedFields);
+    selectedFieldsJson = serialized.length > MAX_SELECTED_FIELDS_JSON_LENGTH
+      ? JSON.stringify({ truncated: true, reason: 'Selected fields exceeded the stored-size bound.' })
+      : serialized;
+  }
   await d1.run(
-    'INSERT INTO hunt_observations (observation_id, hunt_id, query_id, summary, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-    [observationId, huntId, queryId || null, summary, createdBy, new Date().toISOString()]
+    'INSERT INTO hunt_observations (observation_id, hunt_id, query_id, summary, created_by, created_at, execution_id, selected_fields_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [observationId, huntId, queryId || null, summary, createdBy, new Date().toISOString(), executionId || null, selectedFieldsJson]
   );
   return observationId;
 }
 
 async function listObservations(huntId) {
-  return d1.query('SELECT * FROM hunt_observations WHERE hunt_id = ? ORDER BY created_at ASC LIMIT ?', [huntId, CHILD_LIST_LIMIT]);
+  const rows = await d1.query('SELECT * FROM hunt_observations WHERE hunt_id = ? ORDER BY created_at ASC LIMIT ?', [huntId, CHILD_LIST_LIMIT]);
+  return rows.map((r) => ({ ...r, selected_fields_json: r.selected_fields_json ? JSON.parse(r.selected_fields_json) : null }));
 }
 
 async function addEvidence(huntId, { observationId, description, referenceUrl, createdBy }) {
