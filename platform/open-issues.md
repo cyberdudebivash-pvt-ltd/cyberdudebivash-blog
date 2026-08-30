@@ -2059,5 +2059,80 @@ Found and deliberately scoped out while building
    unauthenticated, Issue 28) — re-confirmed, not re-litigated, this
    round.
 
+## Issue 33 — Detection Performance Intelligence v1 real, disclosed gaps (2026-08-30)
+
+Found and deliberately scoped out while building
+`docs/audits/SENTINEL-APEX-DETECTION-PERFORMANCE-INTELLIGENCE-V1-CERTIFICATION.md`.
+
+1. **Pre-existing Cloudflare asset-manifest gap, discovered (not caused) by
+   this tranche.** `scripts/build-cloudflare-assets.js`'s `PUBLIC_ROOT_FILES`
+   allowlist was already missing `hunts.html`, `deployments.html`,
+   `dossier.html`, `defense-profile.html`, and `workbench.html` before this
+   tranche touched the file — those pages are not served under the
+   Cloudflare Workers static-asset path (`dist-public/`) today, independent
+   of Vercel (which serves any root `.html` file directly, no manifest
+   needed). This tranche added its own 2 new pages
+   (`detection-quality.html`, `review-queue.html`) to the list but
+   deliberately did not fix the pre-existing 5-page gap — unrelated to
+   Detection Performance Intelligence, and fixing 5 unrelated pages as a
+   side effect of adding 2 new ones would violate this tranche's own
+   surgical-change discipline. A small, well-scoped follow-up.
+2. **Feedback submission has no request-level idempotency key.** A
+   genuine network-retry duplicate `feedback-submit` call would create two
+   `detection_feedback` rows, each counted as an independent observation.
+   Pre-existing since PR #144 (Threat Hunting Workspace v1); this tranche
+   introduces zero new feedback-write paths (all 4 of its new endpoints
+   are read-only except the pre-existing, unmodified `feedback-submit`
+   action), so it neither introduces nor fixes this — flagged here rather
+   than fixed opportunistically in an unrelated tranche.
+3. **No environment-tagging exists on `detection_feedback`** to
+   distinguish sandbox/test feedback from production feedback at the
+   platform level. This tranche's global aggregation (`computeFeedbackSignal`/
+   `computeGlobalReviewMetrics`) therefore cannot yet reliably exclude
+   non-production signal from a shared detection's Quality State. Would
+   require a schema change to a table this tranche deliberately did not
+   modify beyond its own additive `detection_versions` migration.
+4. **A past (non-current) detection version's canonical validation-gate
+   status cannot be re-evaluated historically.** `detection_versions`
+   deliberately does not capture evidence-linkage fields
+   (`source.articles`/`campaigns`) — capturing them was evaluated and
+   rejected as scope creep beyond fixing the real, provable content-loss
+   defect this tranche targets. `computeDetectionQuality()` for a
+   non-current version therefore only ever applies the feedback-derived
+   Quality State tiers, never the gate-derived ones (that CAN and does
+   apply to the current version). A disclosed, deliberate scope boundary.
+5. **Version content from before this tranche's backfill is permanently
+   unrecoverable** for the 3 real canonical rules with multi-version
+   history (`65b906336880ed01`, `ac348bab79c7a3eb`, `9a5467dc8ae03f68`) —
+   `detection-rules.js#storeRule()`'s pre-existing overwrite-in-place
+   behavior already destroyed it before this tranche's snapshot hook
+   existed. This tranche stops all future loss; it cannot undo past loss.
+6. **No separately implemented minimum-cohort-size/suppression gate** for
+   privacy-safe global aggregation, beyond the existing (PR #144,
+   unchanged) 3-distinct-owner threshold for TOO_BROAD/TOO_NARROW
+   triggers. Sufficient at this platform's current scale (5 canonical
+   detections); revisit only with real evidence the corpus has grown
+   enough to need a dedicated gate.
+7. **Two real, pre-existing structural defects in the live canonical
+   detection corpus were surfaced (not created) by the new Review Queue**:
+   rules `fbc0da003ab2d073` ("Suspicious PowerShell Execution") and
+   `9a5467dc8ae03f68` ("Registry Run Key Persistence From User-Writable
+   Path") are canonically `BLOCKED` today (`fbc0da003ab2d073`'s reasons:
+   `INVALID_QUERY`, `INVALID_LOGSOURCE`, `UNSUPPORTED_TELEMETRY`),
+   independent of any customer feedback. Not fixed here — an unrelated,
+   unrequested content change to the real committed canonical store is
+   out of this tranche's scope. Actionable via the existing, unchanged
+   `updateRuleStatus()`/manual-review governance path.
+8. **Detection Tuning & Candidate Recommendation Engine is deliberately
+   NOT implemented** — `TUNING_RECOMMENDED` produces deterministic,
+   human-readable guidance text only, never an auto-generated replacement
+   query or candidate version. Ranked #2 in this tranche's own
+   next-transformation list (see the resume checkpoint).
+9. **No automated Lighthouse/accessibility measurement this round** —
+   same disclosed, unchanged sandbox-tooling limitation as every prior
+   tranche.
+10. **Inherits every pre-existing, already-disclosed platform limitation
+    unchanged**: Issues 1-32 re-confirmed, not re-litigated, this round.
+
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*
