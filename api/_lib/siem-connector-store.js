@@ -90,6 +90,17 @@ function validateTargetConfig(platformId, targetConfig) {
     }
     clean[field] = value.trim().slice(0, 500);
   }
+  // Optional fields (Controlled Read-Only SIEM Hunting Connectors v1):
+  // present-if-supplied, never required -- e.g. microsoft-sentinel's
+  // workspace_id is needed only for hunt query execution, never for
+  // deploy, so it must never become a required_target_fields entry (that
+  // would break every existing deploy-only connector's validation).
+  for (const field of (platform.optional_target_fields || [])) {
+    const value = cfg[field];
+    if (typeof value === 'string' && value.trim()) {
+      clean[field] = value.trim().slice(0, 500);
+    }
+  }
   // Sandbox-only escape hatch for contract/QA testing (Section 91) --
   // never present on a real platform's required_target_fields, so it can
   // never be mistaken for a real target identifier.

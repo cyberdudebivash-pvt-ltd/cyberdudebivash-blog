@@ -22,20 +22,31 @@
  *  action=reopen&id=                 POST  Body: {reason?}
  *  action=add-ref&id=                POST  Body: {ref_kind, ref_id}
  *  action=add-query&id=              POST  Body: {source_detection_id, format?} -- snapshots a RELEASED detection's query content; data, never executed
- *  action=add-observation&id=        POST  Body: {query_id?, summary}
+ *  action=add-observation&id=        POST  Body: {query_id?, summary, execution_id?, selected_fields?} -- selected_fields is the ONE analyst-selected result row, never a bulk capture
  *  action=add-evidence&id=           POST  Body: {observation_id?, description, reference_url?}
  *  action=add-finding&id=            POST  Body: {classification, confidence, summary, evidence_refs?}
  *  action=feedback-submit            POST  Body: {detection_id, hunt_id?, deployment_id?, classification, summary?}
  *
+ *  Controlled Read-Only SIEM Hunting Connectors v1 (bounded, explicit,
+ *  read-only remote execution against a customer-authorized connector --
+ *  never auto-run):
+ *  action=query-preview&id=          GET   query: {query_id, connector_id} -- VIEW QUERY / PREVIEW PARAMETERS; no remote call, no execution record
+ *  action=query-run&id=              POST  Body: {query_id, connector_id, time_start, time_end, row_limit?} -- the explicit RUN QUERY action
+ *  action=query-executions&id=       GET   Bounded execution history (metadata only, never raw telemetry) for this hunt
+ *
  * Every action requires authenticate() -- ownership is always re-derived
  * from the authenticated caller's userId, never trusted from the request
- * body. A hunt_id/deployment_id supplied to feedback-submit is independently
- * ownership-verified by hunt-engine.js before any row is written.
+ * body. A hunt_id/deployment_id supplied to feedback-submit, and a
+ * query_id/connector_id supplied to query-preview/query-run, are all
+ * independently ownership-verified by hunt-engine.js/hunt-query-engine.js
+ * before any row is read or written -- a queryId or connectorId belonging
+ * to another tenant is NOT_FOUND here, never partial cross-tenant access.
  *
  * No autonomous investigation authority is exposed here: nothing in this
- * file can classify a finding, set a disposition, or close a hunt without
- * an explicit, authenticated, human-attributed call -- this router only
- * ever forwards the caller's own explicit action.
+ * file can classify a finding, set a disposition, close a hunt, or select
+ * which remote result becomes an observation without an explicit,
+ * authenticated, human-attributed call -- this router only ever forwards
+ * the caller's own explicit action.
  */
 'use strict';
 
@@ -45,10 +56,12 @@ const { parseBody } = require('../_lib/payment-utils');
 const huntStore = require('../_lib/hunt-store');
 const feedbackStore = require('../_lib/detection-feedback-store');
 const engine = require('../_lib/hunt-engine');
+const huntQueryEngine = require('../_lib/hunt-query-engine');
 
 const VALID_ACTIONS =
   'list, get, queries, observations, evidence, findings, timeline, feedback-list, feedback-signal, detection-maturity, ' +
-  'create, update, close, reopen, add-ref, add-query, add-observation, add-evidence, add-finding, feedback-submit';
+  'create, update, close, reopen, add-ref, add-query, add-observation, add-evidence, add-finding, feedback-submit, ' +
+  'query-preview, query-run, query-executions';
 
 const FIELDS = {
   create: ['title', 'entity_type', 'entity_id', 'detection_id', 'priority'],
@@ -57,10 +70,11 @@ const FIELDS = {
   reopen: ['reason'],
   'add-ref': ['ref_kind', 'ref_id'],
   'add-query': ['source_detection_id', 'format'],
-  'add-observation': ['query_id', 'summary'],
+  'add-observation': ['query_id', 'summary', 'execution_id', 'selected_fields'],
   'add-evidence': ['observation_id', 'description', 'reference_url'],
   'add-finding': ['classification', 'confidence', 'summary', 'evidence_refs'],
   'feedback-submit': ['detection_id', 'hunt_id', 'deployment_id', 'classification', 'summary'],
+  'query-run': ['query_id', 'connector_id', 'time_start', 'time_end', 'row_limit'],
 };
 
 const BLOCK_STATUS = {
@@ -72,6 +86,12 @@ const BLOCK_STATUS = {
   DETECTION_NOT_RELEASED: 409,
   FORMAT_NOT_AVAILABLE: 400,
   MISSING_PARAMETERS: 400,
+  HUNT_QUERY_NOT_SUPPORTED: 400,
+  FORMAT_MISMATCH: 400,
+  NOT_READY: 409,
+  INVALID_TIME_RANGE: 400,
+  QUERY_ALREADY_RUNNING: 409,
+  CONNECTOR_DISABLED: 409,
 };
 
 module.exports = async (req, res) => {
@@ -103,6 +123,9 @@ module.exports = async (req, res) => {
     case 'add-evidence': return handleAddEvidence(req, res);
     case 'add-finding': return handleAddFinding(req, res);
     case 'feedback-submit': return handleFeedbackSubmit(req, res);
+    case 'query-preview': return handleQueryPreview(req, res);
+    case 'query-run': return handleQueryRun(req, res);
+    case 'query-executions': return handleQueryExecutions(req, res);
     default:
       return apiError(res, 400, 'INVALID_ACTION', `Unknown action: "${action}". Valid: ${VALID_ACTIONS}`);
   }
@@ -312,7 +335,13 @@ async function handleAddObservation(req, res) {
   if (body === null) return;
   const summary = String(body.summary || '').trim();
   if (!summary) return apiError(res, 400, 'MISSING_PARAMETERS', 'summary is required.');
-  const observationId = await huntStore.addObservation(owned.id, { queryId: body.query_id, summary, createdBy: user.userId });
+  const selectedFields = (body.selected_fields && typeof body.selected_fields === 'object' && !Array.isArray(body.selected_fields))
+    ? body.selected_fields : undefined;
+  const observationId = await huntStore.addObservation(owned.id, {
+    queryId: body.query_id, summary, createdBy: user.userId,
+    executionId: body.execution_id ? String(body.execution_id).trim() : undefined,
+    selectedFields,
+  });
   await huntStore.appendTimeline(owned.id, 'OBSERVATION_ADDED', 'Observation recorded.', user.userId);
   return successResponse(res, { observation_id: observationId });
 }
@@ -372,4 +401,63 @@ async function handleFeedbackSubmit(req, res) {
   });
   if (result.error) return respondBlocked(res, result);
   return successResponse(res, { feedback_id: result.feedback_id, detection_version: result.detection_version });
+}
+
+/** VIEW QUERY / PREVIEW PARAMETERS -- read-only, no remote call, no
+ *  execution record created. query_id/connector_id ownership is
+ *  re-verified inside hunt-query-engine.js, never trusted here. */
+async function handleQueryPreview(req, res) {
+  if (req.method !== 'GET') return apiError(res, 405, 'METHOD_NOT_ALLOWED', 'GET required');
+  const user = await authenticate(req, res);
+  if (!user) return;
+  const owned = await requireOwnedHunt(req, res, user.userId);
+  if (!owned) return;
+  const queryId = String(req.query.query_id || '').trim();
+  const connectorId = String(req.query.connector_id || '').trim();
+  if (!queryId || !connectorId) return apiError(res, 400, 'MISSING_PARAMETERS', 'query_id and connector_id are required.');
+  const result = await huntQueryEngine.previewQuery(user.userId, owned.id, queryId, connectorId);
+  if (result.error) return respondBlocked(res, result);
+  return successResponse(res, { preview: result });
+}
+
+/** The explicit RUN QUERY action -- never auto-run. A remote-execution
+ *  OUTCOME (TIMED_OUT/RATE_LIMITED/FAILED, an expected result of a
+ *  bounded read-only hunt query) is still a successful API call and
+ *  returns 200 with the outcome in the body; only a request-level
+ *  rejection (not ready, bad bounds, ownership failure, unsupported
+ *  connector) maps to an HTTP error status via respondBlocked. */
+async function handleQueryRun(req, res) {
+  const user = await authenticate(req, res);
+  if (!user) return;
+  const owned = await requireOwnedHunt(req, res, user.userId);
+  if (!owned) return;
+  const body = await readValidatedBody(req, res, 'query-run');
+  if (body === null) return;
+  const queryId = String(body.query_id || '').trim();
+  const connectorId = String(body.connector_id || '').trim();
+  if (!queryId || !connectorId) return apiError(res, 400, 'MISSING_PARAMETERS', 'query_id and connector_id are required.');
+  const result = await huntQueryEngine.runQuery(user.userId, owned.id, queryId, connectorId, {
+    timeStart: body.time_start, timeEnd: body.time_end, rowLimit: body.row_limit, actor: user.userId,
+  });
+  if (result.error && result.error !== 'QUERY_EXECUTION_FAILED') return respondBlocked(res, result);
+  if (result.error === 'QUERY_EXECUTION_FAILED') {
+    return successResponse(res, {
+      execution_id: result.execution_id, state: result.state,
+      error_code: result.error_code, error_classification: result.error_classification, message: result.message,
+    });
+  }
+  return successResponse(res, { execution_id: result.execution_id, state: result.state, truncated: result.truncated, results: result.results });
+}
+
+/** Bounded execution history (metadata only -- never raw telemetry) for
+ *  this hunt, matching the mandate's "bounded query history" requirement. */
+async function handleQueryExecutions(req, res) {
+  if (req.method !== 'GET') return apiError(res, 405, 'METHOD_NOT_ALLOWED', 'GET required');
+  const user = await authenticate(req, res);
+  if (!user) return;
+  const owned = await requireOwnedHunt(req, res, user.userId);
+  if (!owned) return;
+  const result = await huntQueryEngine.listExecutions(user.userId, owned.id, { limit: req.query.limit });
+  if (result.error) return respondBlocked(res, result);
+  return successResponse(res, { executions: result.executions });
 }

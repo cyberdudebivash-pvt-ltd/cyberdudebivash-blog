@@ -2077,6 +2077,15 @@ Found and deliberately scoped out while building
    Detection Performance Intelligence, and fixing 5 unrelated pages as a
    side effect of adding 2 new ones would violate this tranche's own
    surgical-change discipline. A small, well-scoped follow-up.
+   **RESOLVED (Controlled Read-Only SIEM Hunting Connectors v1, 2026-08-30)**:
+   fixed as part of that tranche, on the explicit test this mandate itself
+   set ("fix only if it can affect the new Hunt Workspace or SIEM connector
+   UI") — `hunts.html` is central to that tranche's own new remote-hunting
+   UI, so all 5 pages (`hunts.html`, `deployments.html`, `dossier.html`,
+   `defense-profile.html`, `workbench.html`) were added to
+   `PUBLIC_ROOT_FILES` in one change. See that tranche's certification doc
+   §5 for the verification (rebuilt `dist-public/`, confirmed all 5 files
+   present).
 2. **Feedback submission has no request-level idempotency key.** A
    genuine network-retry duplicate `feedback-submit` call would create two
    `detection_feedback` rows, each counted as an independent observation.
@@ -2123,6 +2132,27 @@ Found and deliberately scoped out while building
    unrequested content change to the real committed canonical store is
    out of this tranche's scope. Actionable via the existing, unchanged
    `updateRuleStatus()`/manual-review governance path.
+   **RESOLVED (Controlled Read-Only SIEM Hunting Connectors v1, 2026-08-30)**:
+   both given an explicit, evidence-based disposition via
+   `scripts/remediate-blocked-detections.js` (see that tranche's
+   certification doc §3 for the full root-cause evidence). `9a5467dc8ae03f68`:
+   genuine metadata defect (`data_source` stored as `process_creation` but
+   the rule's own Sigma content has always declared
+   `logsource.category: registry_set` and referenced `TargetObject`, a
+   registry field) — **FIXED** via a new immutable version (v1.0.10,
+   `data_source` corrected to `registry_set`), which clears
+   `UNSUPPORTED_TELEMETRY`; the historical v1.0.9 snapshot is preserved
+   unmodified and its failure is now a permanent regression fixture.
+   `fbc0da003ab2d073`: confirmed fabricated/incomplete test-seed content
+   (source.articles references `TEST-001`, absent from the entire real
+   intelligence corpus; source.iocs is an RFC1918 placeholder; 3 mandatory
+   Sigma fields missing) with no genuine detection logic to correct —
+   **REVOKED** (`governance.status` set to `REVOKED` via the existing,
+   unmodified `updateRuleStatus()`, no content change, no version bump).
+   Neither detection was deployed to any customer at time of remediation
+   (verified via `deployment-store.js#listDeployments()` — zero matches for
+   either detection_id), so no customer-facing `UPDATE_REQUIRED`/rollback
+   notice was needed.
 8. **Detection Tuning & Candidate Recommendation Engine is deliberately
    NOT implemented** — `TUNING_RECOMMENDED` produces deterministic,
    human-readable guidance text only, never an auto-generated replacement
@@ -2133,6 +2163,92 @@ Found and deliberately scoped out while building
    tranche.
 10. **Inherits every pre-existing, already-disclosed platform limitation
     unchanged**: Issues 1-32 re-confirmed, not re-litigated, this round.
+
+## Issue 34 — Controlled Read-Only SIEM Hunting Connectors v1 real, disclosed gaps (2026-08-30)
+
+Found and deliberately scoped out while building
+`docs/audits/SENTINEL-APEX-READONLY-SIEM-HUNTING-CONNECTORS-V1-CERTIFICATION.md`.
+See that doc and Issue 33 items 1/7 (both resolved by this tranche) for
+the P0 remediation this tranche's own dependency order required first.
+
+1. **Only Microsoft Sentinel and the Sandbox connector support
+   `hunt_query_supported` — Splunk/Elastic/QRadar/Google SecOps remain
+   entirely unimplemented**, `hunt_query_supported: false` alongside their
+   pre-existing `deploy_supported: false`. Building 5 shallow hunting
+   connectors instead of one deep one was explicitly against this
+   mandate's own priority; see
+   `docs/audits/SENTINEL-APEX-READONLY-SIEM-HUNTING-INVENTORY-V1.md`.
+2. **Vendor sandbox execution for Microsoft Sentinel hunting is NOT
+   VERIFIED** — same disclosed limitation as the deploy path
+   (Issue 31 item 1): no Azure tenant/credentials in this sandbox. The
+   Log Analytics Query API contract (endpoint, OAuth scope, `timespan`
+   parameter, response shape) is verified against current official
+   Microsoft documentation, and every request/response code path is
+   covered by unit tests against a mocked `fetch` — never claimed as
+   proven against a live workspace.
+3. **v1 hunt-query parameterization supports exactly one parameter
+   type: time range** (`timespan`, Microsoft's own native, non-query-text
+   API field). IOC/hostname/username/entity-id parameterization is
+   deliberately deferred — no real canonical detection content in this
+   platform has such placeholders today, and inventing the mechanism
+   ahead of real demand would be exactly the kind of speculative
+   over-build this platform's governance forbids.
+4. **No trusted "internal query template" (non-detection-derived) query
+   source exists or was built.** The one query source v1 supports is a
+   RELEASED canonical detection's own snapshotted content, added via the
+   pre-existing, unmodified `hunt-store.js#addQuery()` — `hunt_queries`
+   itself already is the trusted, versioned template registry this
+   tranche needs; no second `hunt_query_templates` table was created.
+   Ad-hoc/arbitrary analyst-authored query execution remains explicitly
+   out of scope, deferred per the mandate's own instruction.
+5. **A customer's existing SIEM deployment credential is never assumed
+   sufficient for hunting.** Microsoft Sentinel hunting requires a
+   genuinely different OAuth scope (`https://api.loganalytics.io/.default`
+   vs. deploy's `https://management.azure.com/.default`) and RBAC role
+   (built-in "Reader" on the target Log Analytics workspace vs. "Microsoft
+   Sentinel Contributor") — verified live against current Microsoft
+   documentation, not assumed. `workspace_id` (the Log Analytics
+   workspace's own GUID, distinct from the ARM `workspace_name` deploy
+   already requires) is an OPTIONAL `target_config` field so this can
+   never retroactively break an existing deploy-only connector's
+   validation; a connector missing it simply reports hunting as
+   `UNAVAILABLE` with a clear detail message rather than erroring at
+   connector-creation time.
+6. **One in-flight query execution per hunt, not per connector or per
+   owner** — a simple, D1-backed concurrency bound (a stale `RUNNING` row
+   older than 60s never blocks a retry). Not a rate-limiter, not
+   configurable per tier; sufficient at this platform's current scale,
+   revisit only with real evidence of abuse.
+7. **Row limit (max 1,000) and time-range bound (max 30 days) are v1
+   technical ceilings, not commercial entitlement tiers.** No pricing
+   differentiation exists yet for hunt-query result size or lookback
+   window — a product decision, not made unilaterally here.
+8. **No query execution history export (CSV/JSON) exists.** The bounded
+   execution-history list (`action=query-executions`) is metadata-only,
+   view-only in the UI — deliberately, since an export surface would
+   need its own formula-injection hardening the mandate explicitly
+   flagged as a v1 risk to avoid rather than half-mitigate.
+9. **No environment-tagging exists on `hunt_query_executions`** any more
+   than it does on `detection_feedback` (Issue 33 item 3) — a QA/sandbox
+   hunt query execution is indistinguishable from a production one in
+   the stored metadata. Same disclosed, unfixed limitation, same reason
+   (would require a schema change beyond this tranche's own additive
+   migration).
+10. **`Object.freeze()` is not applied to the normalized `fields` object
+    returned to the caller** — the primitive-only/dangerous-key-stripping
+    discipline (`connector-contract.js#normalizeObservationRows()`) is
+    proven by test to prevent prototype pollution, but a caller could
+    still mutate its own copy of the returned object in memory (never
+    persisted, never shared across requests) — a defense-in-depth
+    hardening left for a future round if ever found to matter in
+    practice, not a proven vulnerability today.
+11. **No automated Lighthouse/accessibility measurement this round** —
+    same disclosed, unchanged sandbox-tooling limitation as every prior
+    tranche.
+12. **Inherits every pre-existing, already-disclosed platform limitation
+    unchanged**: Issues 1-33 re-confirmed (Issue 33 items 1 and 7
+    resolved by this tranche specifically, as noted above), not
+    re-litigated wholesale, this round.
 
 ---
 *CyberDudeBivash® Sentinel APEX — Open Architectural Issues*

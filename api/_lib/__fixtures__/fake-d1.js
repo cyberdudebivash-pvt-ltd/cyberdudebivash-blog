@@ -83,6 +83,10 @@ function createFakeD1() {
   // performance_intelligence.sql
   const detectionVersions = new Map(); // "detection_id|version" -> row
 
+  // Controlled Read-Only SIEM Hunting Connectors v1 --
+  // migrations/0007_readonly_siem_hunting.sql
+  const huntQueryExecutions = new Map(); // execution_id -> row
+
   function cloneRow(row) { return row ? { ...row } : row; }
 
   function trimToNewest(arr, ownerId, limit) {
@@ -866,8 +870,12 @@ function createFakeD1() {
     /* ── hunt_observations ─────────────────────────────────────────── */
 
     if (sql.includes('INSERT INTO hunt_observations')) {
-      const [observation_id, hunt_id, query_id, summary, created_by, created_at] = p;
-      huntObservations.set(observation_id, { observation_id, hunt_id, query_id, summary, created_by, created_at });
+      const [observation_id, hunt_id, query_id, summary, created_by, created_at, execution_id, selected_fields_json] = p;
+      huntObservations.set(observation_id, {
+        observation_id, hunt_id, query_id, summary, created_by, created_at,
+        execution_id: execution_id === undefined ? null : execution_id,
+        selected_fields_json: selected_fields_json === undefined ? null : selected_fields_json,
+      });
       lastAffected = 1;
       return { rows: [] };
     }
@@ -1037,6 +1045,45 @@ function createFakeD1() {
       return { rows: rows.map(cloneRow) };
     }
 
+    /* ── hunt_query_executions (Controlled Read-Only SIEM Hunting Connectors v1) ── */
+
+    if (sql.includes('INSERT INTO hunt_query_executions')) {
+      const [
+        execution_id, owner_id, hunt_id, query_id, connector_id, detection_id, detection_version,
+        format, time_start, time_end, row_limit, started_at, created_at,
+      ] = p;
+      huntQueryExecutions.set(execution_id, {
+        execution_id, owner_id, hunt_id, query_id, connector_id, detection_id, detection_version,
+        format, time_start, time_end, row_limit, state: 'RUNNING',
+        result_row_count: null, error_code: null, error_classification: null,
+        started_at, completed_at: null, created_at,
+      });
+      lastAffected = 1;
+      return { rows: [] };
+    }
+    if (sql.includes('UPDATE hunt_query_executions') && sql.includes('SET state = ?')) {
+      const [state, result_row_count, error_code, error_classification, completed_at, executionId] = p;
+      const row = huntQueryExecutions.get(executionId);
+      if (row) {
+        Object.assign(row, { state, result_row_count, error_code, error_classification, completed_at });
+        lastAffected = 1;
+      } else lastAffected = 0;
+      return { rows: [] };
+    }
+    if (sql.startsWith('SELECT * FROM hunt_query_executions WHERE execution_id = ? AND owner_id = ?')) {
+      const [executionId, ownerId] = p;
+      const row = huntQueryExecutions.get(executionId);
+      return { rows: row && row.owner_id === ownerId ? [cloneRow(row)] : [] };
+    }
+    if (sql.startsWith('SELECT * FROM hunt_query_executions WHERE owner_id = ? AND hunt_id = ?')) {
+      const [ownerId, huntId, limit] = p;
+      const rows = [...huntQueryExecutions.values()]
+        .filter((r) => r.owner_id === ownerId && r.hunt_id === huntId)
+        .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+        .slice(0, limit);
+      return { rows: rows.map(cloneRow) };
+    }
+
     throw new Error(`fake-d1: no matching statement branch for SQL: ${sql}`);
   }
 
@@ -1053,7 +1100,7 @@ function createFakeD1() {
       siemConnectors, siemConnectorAuditLog, detectionDeployments, deploymentApprovals,
       deploymentAttempts, deploymentAuditLog, mockSiemResources,
       hunts, huntRefs, huntQueries, huntObservations, huntEvidenceLinks, huntFindings, huntTimeline, detectionFeedback,
-      detectionVersions,
+      detectionVersions, huntQueryExecutions,
     }),
     _reset: () => {
       preferences.clear(); jobs.clear();
@@ -1071,6 +1118,7 @@ function createFakeD1() {
       huntEvidenceLinks.clear(); huntFindings.clear(); huntTimeline.length = 0; nextHuntTimelineId = 1;
       detectionFeedback.clear();
       detectionVersions.clear();
+      huntQueryExecutions.clear();
     },
   };
 }

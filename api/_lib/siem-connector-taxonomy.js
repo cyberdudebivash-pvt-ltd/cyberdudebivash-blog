@@ -31,6 +31,38 @@
  * "not yet implemented" rather than 404) but are NOT built this round —
  * building five shallow connectors instead of one deep one is explicitly
  * against this mandate's own priority.
+ *
+ * hunt_query_supported (Controlled Read-Only SIEM Hunting Connectors v1):
+ * a SEPARATE capability from deploy_supported, deliberately never assumed
+ * equal to it (mandate Section 18) — verified via real, current Microsoft
+ * documentation (learn.microsoft.com/azure/azure-monitor/logs/api/
+ * access-api, fetched live) that the Log Analytics Query API
+ * (api.loganalytics.azure.com) is a GENUINELY DIFFERENT Azure resource/
+ * OAuth scope (`https://api.loganalytics.io/.default`) than the Analytics
+ * Rules ARM API deploy_supported uses (`https://management.azure.com/
+ * .default`), requiring a DIFFERENT least-privilege RBAC role (built-in
+ * "Reader" role on the Log Analytics workspace — NOT "Microsoft Sentinel
+ * Contributor", which grants no data-plane query access at all). A
+ * customer's existing deployment credential (same Azure AD app
+ * registration/service principal is fully able to hold BOTH role
+ * assignments simultaneously, which is normal Azure practice) MAY also
+ * carry hunting permission if their admin granted it — this is never
+ * assumed, only ever verified live via testHuntQueryConnection()'s own
+ * real, read-only test call, mirroring testConnection()'s exact contract.
+ *
+ * optional_target_fields (new in this tranche): hunting needs one target
+ * identifier deploy_supported never did — workspace_id, the Log Analytics
+ * workspace's own GUID ("Workspace ID" in the Azure Portal overview blade,
+ * NOT the ARM resource name `workspace_name` deploy already requires) —
+ * because the Log Analytics Query API addresses a workspace by this GUID,
+ * never by its ARM resource path. This is deliberately OPTIONAL, never
+ * added to required_target_fields: doing so would force every EXISTING
+ * deploy-only connector's target_config validation to suddenly demand a
+ * field those customers never needed and may not have supplied, breaking
+ * backward compatibility for a capability they never asked for (Section
+ * 0 Level 3). A connector missing workspace_id simply reports hunting as
+ * not configured (testHuntQueryConnection() -> UNAVAILABLE with a clear
+ * detail message) rather than erroring at creation time.
  */
 
 const KNOWN_PLATFORMS = Object.freeze({
@@ -43,6 +75,7 @@ const KNOWN_PLATFORMS = Object.freeze({
       auth_supported: true, read_supported: true, deploy_supported: true,
       update_supported: true, disable_supported: true, delete_supported: true,
       readback_supported: true, rollback_supported: true,
+      hunt_query_supported: true,
     }),
     required_target_fields: [],
     required_credential_fields: [],
@@ -63,10 +96,12 @@ const KNOWN_PLATFORMS = Object.freeze({
       delete_supported: true,    // standard ARM DELETE convention; lower-confidence than create/read/update — see connector module header
       readback_supported: true,
       rollback_supported: true,
+      hunt_query_supported: true, // separate OAuth scope/RBAC role from deploy_supported -- see this file's header
     }),
     required_target_fields: ['tenant_id', 'subscription_id', 'resource_group', 'workspace_name', 'client_id'],
+    optional_target_fields: ['workspace_id'], // Log Analytics workspace GUID -- required only for hunt_query_supported, see this file's header
     required_credential_fields: ['client_secret'],
-    least_privilege_role: 'Microsoft Sentinel Contributor (scoped to the target Log Analytics workspace, never subscription- or tenant-wide)',
+    least_privilege_role: 'Microsoft Sentinel Contributor (scoped to the target Log Analytics workspace, never subscription- or tenant-wide) for deployment; Reader (same workspace scope) additionally required for hunt query execution -- see hunt_query_supported above',
   },
   'splunk-enterprise-security': {
     label: 'Splunk Enterprise Security',
@@ -77,6 +112,7 @@ const KNOWN_PLATFORMS = Object.freeze({
       auth_supported: false, read_supported: false, deploy_supported: false,
       update_supported: false, disable_supported: false, delete_supported: false,
       readback_supported: false, rollback_supported: false,
+      hunt_query_supported: false,
     }),
     required_target_fields: [],
     required_credential_fields: [],
@@ -92,6 +128,7 @@ const KNOWN_PLATFORMS = Object.freeze({
       auth_supported: false, read_supported: false, deploy_supported: false,
       update_supported: false, disable_supported: false, delete_supported: false,
       readback_supported: false, rollback_supported: false,
+      hunt_query_supported: false,
     }),
     required_target_fields: [],
     required_credential_fields: [],
@@ -107,6 +144,7 @@ const KNOWN_PLATFORMS = Object.freeze({
       auth_supported: false, read_supported: false, deploy_supported: false,
       update_supported: false, disable_supported: false, delete_supported: false,
       readback_supported: false, rollback_supported: false,
+      hunt_query_supported: false,
     }),
     required_target_fields: [],
     required_credential_fields: [],
@@ -122,6 +160,7 @@ const KNOWN_PLATFORMS = Object.freeze({
       auth_supported: false, read_supported: false, deploy_supported: false,
       update_supported: false, disable_supported: false, delete_supported: false,
       readback_supported: false, rollback_supported: false,
+      hunt_query_supported: false,
     }),
     required_target_fields: [],
     required_credential_fields: [],

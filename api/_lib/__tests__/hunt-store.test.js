@@ -126,6 +126,35 @@ describe('hunt_observations / hunt_evidence_links', () => {
     expect(evidence[0].evidence_id).toBe(evId);
     expect(evidence[0].observation_id).toBe(obsId);
   });
+
+  test('a manually-authored observation (pre-hunting-connector shape) has null execution_id/selected_fields_json -- fully backward compatible', async () => {
+    const row = await huntStore.createHunt(OWNER_A, { title: 'X', hypothesis: 'h', hypothesisSource: 'ANALYST_CREATED', priority: 'LOW', createdBy: OWNER_A });
+    await huntStore.addObservation(row.hunt_id, { queryId: null, summary: 'Manually typed note', createdBy: OWNER_A });
+    const observations = await huntStore.listObservations(row.hunt_id);
+    expect(observations[0].execution_id).toBeNull();
+    expect(observations[0].selected_fields_json).toBeNull();
+  });
+
+  test('a hunting-connector-derived observation carries execution_id and the analyst-selected field subset', async () => {
+    const row = await huntStore.createHunt(OWNER_A, { title: 'X', hypothesis: 'h', hypothesisSource: 'ANALYST_CREATED', priority: 'LOW', createdBy: OWNER_A });
+    const obsId = await huntStore.addObservation(row.hunt_id, {
+      queryId: 'hq_1', summary: 'Suspicious registry write on host-3', createdBy: OWNER_A,
+      executionId: 'hqx_abc123', selectedFields: { host: 'host-3', user: 'jdoe' },
+    });
+    const observations = await huntStore.listObservations(row.hunt_id);
+    expect(observations[0].observation_id).toBe(obsId);
+    expect(observations[0].execution_id).toBe('hqx_abc123');
+    expect(observations[0].selected_fields_json).toEqual({ host: 'host-3', user: 'jdoe' });
+  });
+
+  test('an oversized selected_fields payload is stored truncated rather than unbounded', async () => {
+    const row = await huntStore.createHunt(OWNER_A, { title: 'X', hypothesis: 'h', hypothesisSource: 'ANALYST_CREATED', priority: 'LOW', createdBy: OWNER_A });
+    const huge = {};
+    for (let i = 0; i < 2000; i++) huge[`field_${i}`] = 'x'.repeat(20);
+    await huntStore.addObservation(row.hunt_id, { summary: 'x', createdBy: OWNER_A, selectedFields: huge });
+    const observations = await huntStore.listObservations(row.hunt_id);
+    expect(observations[0].selected_fields_json).toEqual({ truncated: true, reason: expect.any(String) });
+  });
 });
 
 describe('hunt_findings — evidence_refs JSON round-trip', () => {
