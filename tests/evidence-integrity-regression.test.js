@@ -136,8 +136,16 @@ describe('publication and acquisition workflow regressions', () => {
     expect(classifierStep).toBeDefined();
     expect(classifierStep).toContain('case "$CHECK_EXIT" in');
 
-    const monitorErrorCase = classifierStep.split('1)')[1].split(';;')[0];
-    const runtimeOutageCase = classifierStep.split('2)')[1].split(';;')[0];
+    const shellCaseBody = (text, caseValue) => {
+      const marker = new RegExp(`^\\s*${caseValue}\\)\\s*$`, 'm');
+      const match = marker.exec(text);
+      expect(match).not.toBeNull();
+      const afterMarker = text.slice(match.index + match[0].length);
+      return afterMarker.split(/^\s*;;\s*$/m)[0];
+    };
+
+    const monitorErrorCase = shellCaseBody(classifierStep, 1);
+    const runtimeOutageCase = shellCaseBody(classifierStep, 2);
     expect(monitorErrorCase).toContain('recovery_required=false');
     expect(monitorErrorCase).toContain('exit 1');
     expect(runtimeOutageCase).toContain('recovery_required=true');
@@ -155,7 +163,7 @@ describe('publication and acquisition workflow regressions', () => {
     expect(recoveryStep).toContain("const workflowId = 'sentinel-apex.yml';");
     expect(recoveryStep).toContain('createWorkflowDispatch');
     expect(recoveryStep).toContain("current.conclusion !== 'success'");
-    expect((workflow.match(/createWorkflowDispatch/g) || [])).toHaveLength(1);
+    expect((workflow.match(/github\.rest\.actions\.createWorkflowDispatch\s*\(/g) || [])).toHaveLength(1);
 
     // A successful recovery is not enough by itself. The monitor must refresh
     // the canonical main branch and run the same classifier again; unresolved
