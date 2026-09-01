@@ -2,107 +2,21 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
 
   // Still deliberately incapable of a production DNS takeover: no
-  // routes, no custom_domains, no production hostname. See PRE-MIGRATION-
-  // FORENSICS.md and CLOUDFLARE-ACCOUNT-INVENTORY.md for why those
-  // remain deferred. Safe to build, dry-run, and run under a local
-  // Workerd only for the routing/asset surface.
-  //
-  // d1_databases and triggers.crons were added for the Cloudflare-Only
-  // Alert Runtime tranche (alert delivery only, PR #138) -- the operator
-  // explicitly authorized Cloudflare Workers as the production alert-
-  // delivery runtime then, superseding this file's prior "scheduling
-  // authority is undecided" deferral for that specific subsystem. The
-  // Cloudflare-Only Runtime Completion v2 tranche extends the SAME
-  // database's scope to watchlists/change-detection (see migrations/
-  // 0002_watchlists_change_detection.sql) -- one database, not two,
-  // deliberately: change-engine.js already calls directly into the D1-
-  // backed notification-dispatch.js at fan-out time, and keeping both
-  // subsystems' state in one database preserves the option of a future
-  // atomic "event + match + outbox" transaction (D1 transactions cannot
-  // span databases) without forcing that design this round. database_name
-  // below was renamed from sentinel-apex-notification-delivery to
-  // sentinel-apex-core to reflect that broadened scope -- safe and
-  // costless, since no real database has ever been created against the
-  // old name in any sandbox this platform's work has run in (`wrangler
-  // whoami` has reported "not authenticated" in every one of them,
-  // including this round, confirmed before writing this).
-  //
-  // What this config change does NOT do: actually provision anything.
-  // database_id below is intentionally blank (the schema marks it "not
-  // required"; wrangler resolves it from database_name once a real
-  // `wrangler d1 create` has run) and triggers.crons takes effect only
-  // once an operator with real credentials runs `wrangler deploy`. Until
-  // then this is code-complete configuration, not a live trigger --
-  // exactly the distinction each round's own certification doc Known-
-  // Limitations section is built around.
+  // routes, no custom_domains, no production hostname. Safe to build,
+  // dry-run, and validate locally until an authenticated operator performs
+  // the already-governed production deployment.
 
   "name": "cyberdudebivash-blog",
   "main": "workers/entry.js",
-
-  // Set to the date this config was authored. Cloudflare recommends
-  // matching this to "today" at write time and only advancing it after
-  // deliberately reviewing the compatibility-flag changelog between
-  // dates — not on every deploy. Revisit before the first real staging
-  // deploy if time has passed since this was written.
   "compatibility_date": "2026-08-17",
-
-  // Required, not optional: api/_lib/security.js, api/_lib/middleware.js
-  // and others call require('crypto') and use Buffer directly (HMAC
-  // signing/verification, API key hashing, raw webhook body handling —
-  // see PRE-MIGRATION-FORENSICS.md Sec3). Without nodejs_compat those
-  // requires fail to resolve at all. This flag does NOT provide a real
-  // filesystem — Sec7's certification work covers what that means for
-  // the fs/path-using modules separately; nodejs_compat alone does not
-  // make fs.readFileSync work against files that don't exist in the
-  // Worker's isolate.
   "compatibility_flags": ["nodejs_compat"],
 
-  // Points at the generated allowlist build (scripts/build-cloudflare-
-  // assets.js), never the repository root — see that script's header
-  // comment for why. Not committed; run `npm run build:cloudflare-assets`
-  // (or the script directly) before any wrangler command that needs it.
-  // html_handling: "none" matches vercel.json's cleanUrls: false exactly
-  // — /posts/foo.html is served directly at that literal path, 200, no
-  // redirect. The Cloudflare default (auto-trailing-slash) does NOT
-  // match this: it 307-redirects /posts/foo.html -> /posts/foo, a real
-  // parity break caught via a real local Workerd probe (every posts/**
-  // and cve/**.html request came back 307, not 200) and confirmed
-  // against Cloudflare's own html-handling docs before fixing, not
-  // assumed from the symptom alone.
-  //
-  // Side effect, also caught via a real probe (not assumed): "none"
-  // disables Cloudflare's automatic "/" -> index.html resolution too, not
-  // just the .html-suffix redirect -- GET / 404'd with this flag set,
-  // even though GET /index.html served the same file at 200 the whole
-  // time. Fixed at the Worker level instead of by dropping this flag:
-  // workers/lib/route-table.js's ASSET_REWRITES rewrites "/" to
-  // "/index.html" before it ever reaches env.ASSETS.fetch(), reusing the
-  // exact mechanism /feed -> /rss.xml already relied on. Reverting this
-  // flag would silently reintroduce the far larger .html 307 regression
-  // (5000+ pages) to avoid a single-path problem that's already fixed
-  // elsewhere -- do not revert without also removing that route-table
-  // entry and re-verifying both paths.
   "assets": {
     "directory": "./dist-public",
     "binding": "ASSETS",
     "html_handling": "none"
   },
 
-  // .wasm → CompiledWasm: @resvg/resvg-wasm's index_bg.wasm, imported at
-  // the top of workers/entry.js. Without this explicit rule Wrangler
-  // does NOT auto-detect .wasm imports (confirmed via a real `wrangler
-  // dev` failure — "WebAssembly.instantiate(): Wasm code generation
-  // disallowed by embedder" — the import silently resolved to something
-  // that wasn't a real precompiled WebAssembly.Module, not assumed from
-  // docs alone) — Data/Text/CompiledWasm module types all require an
-  // explicit rule per Cloudflare's own docs, there is no zero-config
-  // default for any of them.
-  //
-  // .woff → Data: api/og.js's 3 Inter font weights, embedded into the
-  // Worker bundle at build time (workers/lib/og-fonts-init.js's
-  // Cloudflare branch dynamically imports them). Data modules resolve to
-  // an ArrayBuffer, which satori's fonts option accepts the same as the
-  // Buffer fs.readFileSync returns on the unchanged Vercel/Node path.
   "rules": [
     { "type": "CompiledWasm", "globs": ["**/*.wasm"], "fallthrough": true },
     { "type": "Data", "globs": ["**/*.woff"], "fallthrough": true }
@@ -112,22 +26,9 @@
     "enabled": true
   },
 
-  // D1 database binding, now covering the alert-delivery control plane
-  // (migrations/0001_notification_delivery.sql, PR #138) AND watchlists/
-  // change-detection state (migrations/0002_watchlists_change_detection.sql,
-  // this round) -- see this file's header comment for why one database,
-  // and the Cloudflare Runtime Inventory V2 doc for exactly what remains
-  // out of scope (auth, billing, ReportX, the Intel Factory content
-  // pipeline). database_id is deliberately omitted rather than set to an
-  // empty string: the config schema marks it "not required" (confirmed
-  // by parsing node_modules/wrangler/config-schema.json directly), and
-  // wrangler resolves the binding from database_name for both --local
-  // emulation and a real deploy. Add the minted UUID here the first
-  // time an operator with authenticated Cloudflare access runs
-  // `wrangler d1 create sentinel-apex-core` for real — until then this
-  // entry is code-complete configuration, not a live database (see this
-  // file's header comment; `wrangler whoami` in this sandbox: not
-  // authenticated).
+  // Canonical customer/control-plane D1 database. The migration directory now
+  // also contains 0008_premium_intelligence_commerce.sql; applying migrations
+  // is an explicit operator step before enabling premium commerce in production.
   "d1_databases": [
     {
       "binding": "DB",
@@ -136,16 +37,19 @@
     }
   ],
 
-  // Cloudflare Cron Trigger for workers/entry.js's `scheduled` export
-  // (-> workers/lib/router.js#handleScheduled -> the same
-  // evaluateWatchedEntities()/processDueDeliveries() functions the
-  // GitHub Actions bridge in alert-delivery.yml already calls on this
-  // exact cadence). Matches that workflow's proven 30-minute schedule
-  // deliberately, so behavior is identical no matter which trigger ends
-  // up firing during the transition window. Takes effect only once an
-  // operator with real Cloudflare credentials runs `wrangler deploy` —
-  // this sandbox has none (see header comment) — so this is
-  // authorized-but-not-yet-live configuration, not a running schedule.
+  // Premium ReportX artifacts. This binding is intentionally Cloudflare-native:
+  // no AWS SDK, S3 compatibility credentials, or public bucket URL is used by
+  // the commerce engine. Create the bucket before deployment with an authorized
+  // Cloudflare operator (`wrangler r2 bucket create sentinel-apex-premium-reports`).
+  // Checkout fails closed if the bound artifact cannot be HEAD-verified against
+  // the exact artifact SHA-256 pinned by ReportX human certification.
+  "r2_buckets": [
+    {
+      "binding": "PREMIUM_REPORTS",
+      "bucket_name": "sentinel-apex-premium-reports"
+    }
+  ],
+
   "triggers": {
     "crons": ["*/30 * * * *"]
   }
@@ -154,13 +58,7 @@
   // authorization step):
   //   routes                — would start claiming a hostname/path
   //   custom_domains        — would touch DNS
-  //   kv_namespaces          — no blog-owned namespace exists yet (see
-  //                            CLOUDFLARE-ACCOUNT-INVENTORY.md Sec17
-  //                            policy: reuse is not automatic)
-  //   r2_buckets              — none proven needed yet (see Sec17)
-  //   services                — no service bindings to other
-  //                            CYBERDUDEBIVASH platforms are justified yet
-  //   vars / secrets with real values — local/dry-run testing uses
-  //                            synthetic values passed via `wrangler dev
-  //                            --var`/`.dev.vars`, never committed here
+  //   kv_namespaces         — no blog-owned namespace is justified here
+  //   services              — no service bindings to other platforms required
+  //   vars / secrets with real values — use Cloudflare secrets/vars; never commit
 }
