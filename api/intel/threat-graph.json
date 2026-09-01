@@ -1,15 +1,15 @@
 {
-  "generated": "2026-09-01T12:39:37.158Z",
+  "generated": "2026-09-01T17:06:47.139Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 12477,
+    "total_nodes": 12483,
     "actors": 8,
-    "cves": 4693,
-    "campaigns": 1229,
+    "cves": 4695,
+    "campaigns": 1232,
     "malware": 0,
     "iocs": 893,
-    "edges": 3842
+    "edges": 3845
   },
   "nodes": {
     "actor:lockbit": {
@@ -106891,17 +106891,17 @@
     "CVE-2026-9586": {
       "id": "CVE-2026-9586",
       "type": "CVE",
-      "name": "CVE-2026-9586 - Unauthenticated SQL Injection Leading to Remote Code Execution in Switchvox SMB",
+      "name": "Off the Hook: Discovering and Observing Active Exploitation of Sangoma Switchvox CVE-2026-9586",
       "attributes": {
-        "cvss": 9.8,
-        "threat_level": "MEDIUM",
-        "priority_score": 55,
-        "exploited": false,
+        "cvss": 0,
+        "threat_level": "LOW",
+        "priority_score": 31,
+        "exploited": true,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "Unknown Vendor",
-        "product": "Unknown Product",
-        "published": "2026-07-17",
+        "vendor": "reddit_netsec",
+        "product": "Threat Intelligence",
+        "published": "2026-09-01",
         "type": "CVE_REPORT"
       },
       "connections": [
@@ -235758,6 +235758,120 @@
         "type": "RANSOMWARE"
       },
       "connections": []
+    },
+    "GHSA-1a9a9aa520120e82": {
+      "id": "GHSA-1a9a9aa520120e82",
+      "type": "Intel",
+      "name": "MLFLOW_ALLOW_PICKLE_DESERIALIZATION=False safety control bypassed by mlflow.statsmodels flavor — RCE via crafted model artifact",
+      "attributes": {
+        "cvss": 8.8,
+        "threat_level": "HIGH",
+        "priority_score": 66,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "pip",
+        "product": "mlflow",
+        "published": "2026-09-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-73089": {
+      "id": "CVE-2026-73089",
+      "type": "CVE",
+      "name": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "browserslist",
+        "published": "2026-09-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-73088": {
+      "id": "CVE-2026-73088",
+      "type": "CVE",
+      "name": "Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)",
+      "attributes": {
+        "cvss": 7.5,
+        "threat_level": "MEDIUM",
+        "priority_score": 61,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "browserslist",
+        "published": "2026-09-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-85a27850": {
+      "id": "campaign:cluster-85a27850",
+      "type": "Campaign",
+      "name": "pip mlflow Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-09-01",
+        "last_seen": "2026-09-01",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-1a9a9aa520120e82",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-73089": {
+      "id": "campaign:cve-2026-73089",
+      "type": "Campaign",
+      "name": "npm browserslist Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-09-01",
+        "last_seen": "2026-09-01",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-73089"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-73089",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-73088": {
+      "id": "campaign:cve-2026-73088",
+      "type": "Campaign",
+      "name": "npm browserslist Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-09-01",
+        "last_seen": "2026-09-01",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-73088"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-73088",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
     }
   },
   "edges": [
@@ -270499,6 +270613,33 @@
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-08-31",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-85a27850→includes→GHSA-1a9a9aa520120e82",
+      "source": "campaign:cluster-85a27850",
+      "target": "GHSA-1a9a9aa520120e82",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-09-01",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-73089→includes→CVE-2026-73089",
+      "source": "campaign:cve-2026-73089",
+      "target": "CVE-2026-73089",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-09-01",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-73088→includes→CVE-2026-73088",
+      "source": "campaign:cve-2026-73088",
+      "target": "CVE-2026-73088",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-09-01",
       "sources": []
     }
   ]
