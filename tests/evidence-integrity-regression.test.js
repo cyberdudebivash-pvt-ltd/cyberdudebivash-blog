@@ -122,10 +122,21 @@ describe('publication and acquisition workflow regressions', () => {
     expect(workflow).toContain('git diff --cached --name-status');
   });
 
-  test('critical freshness fails and can trigger recovery', () => {
+  test('critical runtime freshness is the only condition wired to auto-recovery', () => {
     const workflow = fs.readFileSync(path.join(root, '.github/workflows/freshness-check.yml'), 'utf8');
-    expect(workflow).toContain("if (statusLevel === 'CRITICAL') process.exit(2)");
-    expect(workflow).toContain('if: failure()');
+    const classifier = fs.readFileSync(path.join(root, 'scripts/check-intel-freshness.js'), 'utf8');
+
+    // Classification belongs in a testable script; the workflow only maps
+    // the classifier's dedicated runtime-stale exit code (2) to recovery.
+    expect(workflow).toContain('node scripts/check-intel-freshness.js live-intel.json intel-state.json');
+    expect(workflow).toContain('if [ "$CHECK_EXIT" -eq 2 ]; then');
+    expect(workflow).toContain('recovery_required=true');
+    expect(workflow).toContain("if: always() && steps.freshness.outputs.recovery_required == 'true'");
+
+    // Do not regress to the old broad `if: failure()` dispatch semantics,
+    // which treated stale content or malformed telemetry as pipeline death.
+    expect(workflow).not.toMatch(/name:\s*["']?Auto-recovery trigger["']?[\s\S]*?if:\s*failure\(\)/);
+    expect(classifier).toContain('process.exitCode = result.exitCode');
   });
 
   test('newsletter uses the first-party endpoint before fallback', () => {
