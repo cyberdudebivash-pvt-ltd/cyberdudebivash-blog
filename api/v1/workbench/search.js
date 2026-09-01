@@ -8,6 +8,11 @@ const { requireAnalyst } = require('../../_lib/analyst-auth');
 const manager = new IntelligenceManager(redis);
 const graphEngine = new GraphEngine(redis, manager);
 
+const DEFAULT_LIMIT = 50;
+const MAX_LIMIT = 100;
+const MAX_QUERY_LENGTH = 200;
+const ALLOWED_TYPES = new Set(['all', 'investigations', 'intelligence', 'entities', 'evidence']);
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -32,6 +37,12 @@ function fail(res, status, code, message) {
   });
 }
 
+function parseLimit(raw) {
+  const n = Number.parseInt(raw || String(DEFAULT_LIMIT), 10);
+  if (!Number.isFinite(n)) return DEFAULT_LIMIT;
+  return Math.min(MAX_LIMIT, Math.max(1, n));
+}
+
 module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') {
     Object.entries(CORS_HEADERS).forEach(([k, v]) => res.setHeader(k, v));
@@ -45,12 +56,18 @@ module.exports = async (req, res) => {
   const caller = await requireAnalyst(req, res, fail);
   if (!caller) return;
 
-  const query = req.query.q || '';
-  const type = req.query.type || 'all';
-  const limit = parseInt(req.query.limit || '50', 10);
+  const query = String(req.query.q || '').trim();
+  const type = String(req.query.type || 'all').toLowerCase().trim();
+  const limit = parseLimit(req.query.limit);
 
-  if (!query || query.length < 2) {
+  if (query.length < 2) {
     return fail(res, 400, 'QUERY_TOO_SHORT', 'Query must be at least 2 characters');
+  }
+  if (query.length > MAX_QUERY_LENGTH) {
+    return fail(res, 400, 'QUERY_TOO_LONG', `Query must not exceed ${MAX_QUERY_LENGTH} characters`);
+  }
+  if (!ALLOWED_TYPES.has(type)) {
+    return fail(res, 400, 'INVALID_TYPE', `type must be one of: ${[...ALLOWED_TYPES].join(', ')}`);
   }
 
   try {
@@ -58,11 +75,13 @@ module.exports = async (req, res) => {
     return ok(res, {
       query,
       type,
+      limit,
       results,
       resultCount: results.length,
     });
   } catch (e) {
-    return fail(res, 500, 'SEARCH_FAILED', e.message);
+    console.error('[WORKBENCH SEARCH] failed:', e && e.message ? e.message : 'unknown');
+    return fail(res, 500, 'SEARCH_FAILED', 'Workbench search is temporarily unavailable.');
   }
 };
 
@@ -70,25 +89,21 @@ async function performSearch(query, type, limit) {
   const results = [];
   const searchTerm = query.toLowerCase();
 
-  // Search investigations
   if (type === 'all' || type === 'investigations') {
     const investigations = await searchInvestigations(searchTerm, limit);
     results.push(...investigations);
   }
 
-  // Search intelligence
   if (type === 'all' || type === 'intelligence') {
     const intelligence = await searchIntelligence(searchTerm, limit);
     results.push(...intelligence);
   }
 
-  // Search graph entities
   if (type === 'all' || type === 'entities') {
     const entities = await searchGraphEntities(searchTerm, limit);
     results.push(...entities);
   }
 
-  // Search evidence
   if (type === 'all' || type === 'evidence') {
     const evidence = await searchEvidence(searchTerm, limit);
     results.push(...evidence);
@@ -98,7 +113,7 @@ async function performSearch(query, type, limit) {
 }
 
 async function searchInvestigations(query, limit) {
-  const investigations = await redis.zrevrange('investigations:all', 0, 100);
+  const investigations = await redis.zrevrange('investigations:all', 0, Math.min(MAX_LIMIT, limit * 2));
   const results = [];
 
   for (const investId of investigations.slice(0, limit)) {
@@ -134,7 +149,7 @@ async function searchIntelligence(query, limit) {
   const allIntelligence = await redis.smembers('graph:entities:all');
   const results = [];
 
-  for (const intelId of allIntelligence.slice(0, limit * 2)) {
+  for (const intelId of allIntelligence.slice(0, Math.min(MAX_LIMIT * 2, limit * 2))) {
     try {
       const intel = await manager.getIntelligence(intelId);
       if (!intel) continue;
@@ -152,11 +167,10 @@ async function searchIntelligence(query, limit) {
           status: intel.status,
           createdAt: intel.createdAt,
         });
-
         if (results.length >= limit) break;
       }
-    } catch (e) {
-      // Skip if intelligence not found
+    } catch (_) {
+      // Missing/stale internal record: skip without exposing storage errors.
     }
   }
 
@@ -167,7 +181,7 @@ async function searchGraphEntities(query, limit) {
   const allEntities = await redis.smembers('graph:entities:all');
   const results = [];
 
-  for (const entityId of allEntities.slice(0, limit * 2)) {
+  for (const entityId of allEntities.slice(0, Math.min(MAX_LIMIT * 2, limit * 2))) {
     try {
       const entity = await graphEngine.getEntity(entityId);
       if (!entity) continue;
@@ -181,11 +195,10 @@ async function searchGraphEntities(query, limit) {
           confidence: entity.confidence,
           createdAt: entity.createdAt,
         });
-
         if (results.length >= limit) break;
       }
-    } catch (e) {
-      // Skip if entity not found
+    } catch (_) {
+      // Missing/stale internal record: skip without exposing storage errors.
     }
   }
 
@@ -193,14 +206,13 @@ async function searchGraphEntities(query, limit) {
 }
 
 async function searchEvidence(query, limit) {
-  const allEvidence = await redis.zrevrange('evidence:all', 0, limit * 2);
+  const allEvidence = await redis.zrevrange('evidence:all', 0, Math.min(MAX_LIMIT * 2, limit * 2));
   const results = [];
 
   for (const evidId of allEvidence) {
     try {
       const evidKey = `evidence:${evidId}`;
       const data = await redis.hgetall(evidKey);
-
       if (!data || data.length === 0) continue;
 
       const evid = {};
@@ -220,13 +232,14 @@ async function searchEvidence(query, limit) {
           title: evid.title,
           createdAt: evid.createdAt,
         });
-
         if (results.length >= limit) break;
       }
-    } catch (e) {
-      // Skip if evidence not found
+    } catch (_) {
+      // Missing/stale internal record: skip without exposing storage errors.
     }
   }
 
   return results.slice(0, limit);
 }
+
+module.exports._test = { parseLimit, performSearch, ALLOWED_TYPES, MAX_LIMIT, MAX_QUERY_LENGTH };
