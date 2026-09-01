@@ -126,20 +126,54 @@ describe('publication and acquisition workflow regressions', () => {
     const workflow = fs.readFileSync(path.join(root, '.github/workflows/freshness-check.yml'), 'utf8');
     const classifier = fs.readFileSync(path.join(root, 'scripts/check-intel-freshness.js'), 'utf8');
 
-    // Classification belongs in a testable script; the workflow only maps
-    // the classifier's dedicated runtime-stale exit code (2) to recovery.
+    // Classification belongs in a testable script. The workflow maps the
+    // classifier's dedicated runtime-outage exit code (2) to recovery while
+    // preserving exit 1 as a fail-closed monitor/feed-integrity failure.
     expect(workflow).toContain('node scripts/check-intel-freshness.js live-intel.json intel-state.json');
-    expect(workflow).toContain('if [ "$CHECK_EXIT" -eq 2 ]; then');
-    expect(workflow).toContain('recovery_required=true');
 
-    // Scope the assertion to the recovery step itself. A later alert step is
-    // intentionally allowed to use `if: failure()` so monitor corruption is
-    // surfaced without authorizing the generator recovery workflow.
-    const recoveryStep = workflow.split('- name: "Auto-recovery trigger"')[1]
-      .split('- name: "Alert on failed monitor"')[0];
+    const classifierStep = workflow.split('- name: "Classify runtime and content freshness"')[1]
+      .split('- name: "Dispatch recovery and wait for completion"')[0];
+    expect(classifierStep).toBeDefined();
+    expect(classifierStep).toContain('case "$CHECK_EXIT" in');
+
+    const monitorErrorCase = classifierStep.split('1)')[1].split(';;')[0];
+    const runtimeOutageCase = classifierStep.split('2)')[1].split(';;')[0];
+    expect(monitorErrorCase).toContain('recovery_required=false');
+    expect(monitorErrorCase).toContain('exit 1');
+    expect(runtimeOutageCase).toContain('recovery_required=true');
+    expect(runtimeOutageCase).not.toContain('exit 2');
+
+    // Recovery is authorized only by the explicit output produced by exit 2.
+    // The single dispatch site must target the canonical generator workflow,
+    // wait for a successful completion, and must never be driven by generic
+    // workflow failure state.
+    const recoveryStep = workflow.split('- name: "Dispatch recovery and wait for completion"')[1]
+      .split('- name: "Re-verify production after recovery"')[0];
     expect(recoveryStep).toBeDefined();
-    expect(recoveryStep).toContain("if: always() && steps.freshness.outputs.recovery_required == 'true'");
+    expect(recoveryStep).toContain("if: steps.freshness.outputs.recovery_required == 'true'");
     expect(recoveryStep).not.toContain('if: failure()');
+    expect(recoveryStep).toContain("const workflowId = 'sentinel-apex.yml';");
+    expect(recoveryStep).toContain('createWorkflowDispatch');
+    expect(recoveryStep).toContain("current.conclusion !== 'success'");
+    expect((workflow.match(/createWorkflowDispatch/g) || [])).toHaveLength(1);
+
+    // A successful recovery is not enough by itself. The monitor must refresh
+    // the canonical main branch and run the same classifier again; unresolved
+    // post-recovery failure remains red rather than being masked as healed.
+    const postRecoveryStep = workflow.split('- name: "Re-verify production after recovery"')[1]
+      .split('- name: "Monitor result summary"')[0];
+    expect(postRecoveryStep).toBeDefined();
+    expect(postRecoveryStep).toContain("if: steps.freshness.outputs.recovery_required == 'true'");
+    expect(postRecoveryStep).toContain('git fetch --depth=1 origin main');
+    expect(postRecoveryStep).toContain('git reset --hard origin/main');
+    expect(postRecoveryStep).toContain('POST_OUTPUT=$(node scripts/check-intel-freshness.js live-intel.json intel-state.json 2>&1)');
+    expect(postRecoveryStep).toContain('if [ "$POST_EXIT" -ne 0 ]; then');
+    expect(postRecoveryStep).toContain('exit "$POST_EXIT"');
+
+    // The monitor is deliberately staggered behind the generator (:00/:30)
+    // to avoid a same-boundary read/write race. Runtime timestamps remain the
+    // authority, so this cadence change is optimization rather than truth.
+    expect(workflow).toContain("- cron: '10,40 * * * *'");
 
     // The CLI returns the classifier result from main() and binds that exact
     // return value to process.exitCode. Dedicated classifier tests exercise
