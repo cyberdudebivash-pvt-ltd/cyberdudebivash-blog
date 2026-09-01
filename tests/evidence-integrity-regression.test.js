@@ -131,11 +131,15 @@ describe('publication and acquisition workflow regressions', () => {
     expect(workflow).toContain('node scripts/check-intel-freshness.js live-intel.json intel-state.json');
     expect(workflow).toContain('if [ "$CHECK_EXIT" -eq 2 ]; then');
     expect(workflow).toContain('recovery_required=true');
-    expect(workflow).toContain("if: always() && steps.freshness.outputs.recovery_required == 'true'");
 
-    // Do not regress to the old broad `if: failure()` dispatch semantics,
-    // which treated stale content or malformed telemetry as pipeline death.
-    expect(workflow).not.toMatch(/name:\s*["']?Auto-recovery trigger["']?[\s\S]*?if:\s*failure\(\)/);
+    // Scope the assertion to the recovery step itself. A later alert step is
+    // intentionally allowed to use `if: failure()` so monitor corruption is
+    // surfaced without authorizing the generator recovery workflow.
+    const recoveryStep = workflow.split('- name: "Auto-recovery trigger"')[1]
+      .split('- name: "Alert on failed monitor"')[0];
+    expect(recoveryStep).toBeDefined();
+    expect(recoveryStep).toContain("if: always() && steps.freshness.outputs.recovery_required == 'true'");
+    expect(recoveryStep).not.toContain('if: failure()');
     expect(classifier).toContain('process.exitCode = result.exitCode');
   });
 
