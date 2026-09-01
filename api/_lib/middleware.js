@@ -68,15 +68,16 @@ function generateApiKey() {
   return `sentinel_${raw}`;
 }
 
-// Parse API key from request
+// Parse API key from request. Credentials in URL query strings are
+// deliberately rejected: URLs are routinely captured by access logs,
+// browser history, analytics and referrer propagation. Supported transports
+// are headers only: Authorization: Bearer or X-API-Key.
 function extractApiKey(req) {
-  // Header: Authorization: Bearer sentinel_xxx  OR  X-API-Key: sentinel_xxx
   const auth = req.headers['authorization'] || '';
   if (auth.startsWith('Bearer ')) return auth.slice(7).trim();
   const xkey = req.headers['x-api-key'] || '';
   if (xkey) return xkey.trim();
-  // Query param fallback (not recommended but supported)
-  return req.query?.api_key || null;
+  return null;
 }
 
 // Core auth + rate limit middleware
@@ -84,6 +85,15 @@ async function authenticate(req, res) {
   // CORS preflight
   if (req.method === 'OPTIONS') {
     respond(res, 204, {});
+    return null;
+  }
+
+  // Fail explicitly when an old integration attempts to put its secret in
+  // the URL. This makes migration obvious without ever hashing/logging the
+  // query-string value as a credential.
+  if (req.query && Object.prototype.hasOwnProperty.call(req.query, 'api_key')) {
+    recordAuthFailure('query_key_rejected');
+    apiError(res, 400, 'QUERY_API_KEY_REJECTED', 'API keys must not be passed in URLs. Use Authorization: Bearer <key> or X-API-Key header.');
     return null;
   }
 
