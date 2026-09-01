@@ -1,77 +1,84 @@
 'use strict';
 /**
- * GET /api/v1/ioc/[id]
- * GET /api/v1/ioc/[id]/history
- * GET /api/v1/ioc/[id]/mentions
- * GET /api/v1/ioc/[id]/correlations
- *
- * Get individual IOC with full metadata, history, and related IOCs
+ * Legacy compatibility endpoint for IOC detail/subresources.
+ * Canonical successor: /api/v1/intel?action=ioc&id=ioc:...
  */
 
-const iocCanonical = require('../../_lib/ioc-canonical');
+const sec = require('../../_lib/security');
+const { authenticate, apiError } = require('../../_lib/middleware');
+const { getSearchIndex, getIocDetailAPI } = require('../../_lib/intel');
+
+function markDeprecated(res) {
+  res.setHeader('Deprecation', 'true');
+  res.setHeader('Link', '</api/v1/intel?action=ioc>; rel="successor-version"');
+  res.setHeader('X-Sentinel-Deprecated-Endpoint', '/api/v1/ioc/:id');
+}
+
+function resolveCanonicalId(rawId) {
+  const raw = String(rawId || '').trim();
+  if (!raw || raw.length > 512) return null;
+  const lower = raw.toLowerCase();
+  const docs = (getSearchIndex().documents || []).filter(d => d.type === 'ioc');
+  const exact = docs.find(d => String(d.id || '').toLowerCase() === lower || String(d.name || '').toLowerCase() === lower);
+  return exact ? exact.id : null;
+}
 
 module.exports = async (req, res) => {
+  const ok = await sec.guardRequest(req, res, { allowedMethods: ['GET', 'OPTIONS'], maxBodyBytes: 2048 });
+  if (!ok) return;
+  if (!(await sec.globalIpRateLimit(req, res))) return;
+
+  const user = await authenticate(req, res);
+  if (!user) return;
+  if (user.tier !== 'pro' && user.tier !== 'enterprise') {
+    return apiError(res, 403, 'TIER_RESTRICTED', 'IOC detail requires Pro or Enterprise plan.');
+  }
+
+  markDeprecated(res);
+
   try {
-    const { id } = req.query;
+    const canonicalId = resolveCanonicalId(req.query && req.query.id);
+    if (!canonicalId) return apiError(res, 404, 'IOC_NOT_FOUND', 'IOC not found in the canonical SENTINEL APEX threat graph.');
 
-    if (!id) {
-      return res.status(400).json({ error: 'IOC ID required' });
+    const result = getIocDetailAPI(canonicalId);
+    if (!result || !result.found || !result.ioc) {
+      return apiError(res, 404, 'IOC_NOT_FOUND', 'IOC not found in the canonical SENTINEL APEX threat graph.');
     }
 
-    // GET /api/v1/ioc/[id]/history
-    if (req.url.includes('/history')) {
-      const ioc = iocCanonical.getIOC(id);
-      if (!ioc) return res.status(404).json({ error: 'IOC not found' });
-      return res.json({
-        ioc_id: id,
-        type: ioc.type,
-        value: ioc.value,
-        history: ioc.history,
-        first_seen: ioc.first_seen,
-        last_seen: ioc.last_seen,
+    const ioc = result.ioc;
+    const path = String(req.url || '').split('?')[0];
+
+    if (path.endsWith('/history')) {
+      return res.status(200).json({
+        success: true,
+        ioc_id: ioc.id,
+        value: ioc.name,
+        timeline: ioc.timeline || [],
+        deprecated: true,
+        successor: `/api/v1/intel?action=ioc&id=${encodeURIComponent(ioc.id)}`,
       });
     }
 
-    // GET /api/v1/ioc/[id]/mentions
-    if (req.url.includes('/mentions')) {
-      const mentions = iocCanonical.getIOCMentions(id);
-      if (!mentions) return res.status(404).json({ error: 'IOC not found' });
-      return res.json(mentions);
-    }
-
-    // GET /api/v1/ioc/[id]/correlations
-    if (req.url.includes('/correlations')) {
-      const ioc = iocCanonical.getIOC(id);
-      if (!ioc) return res.status(404).json({ error: 'IOC not found' });
-      const correlated = iocCanonical.getCorrelatedIOCs(id);
-      return res.json({
-        ioc_id: id,
-        type: ioc.type,
-        value: ioc.value,
-        correlations: correlated,
-        related_count: correlated.length,
+    if (path.endsWith('/mentions') || path.endsWith('/correlations')) {
+      return res.status(200).json({
+        success: true,
+        ioc_id: ioc.id,
+        value: ioc.name,
+        linked_intel: ioc.linked_intel || [],
+        related_count: (ioc.linked_intel || []).length,
+        deprecated: true,
+        successor: `/api/v1/intel?action=ioc&id=${encodeURIComponent(ioc.id)}`,
       });
     }
 
-    // GET /api/v1/ioc/[id] — full IOC details
-    const ioc = iocCanonical.getIOC(id);
-    if (!ioc) {
-      return res.status(404).json({ error: 'IOC not found' });
-    }
-
-    res.json({
+    return res.status(200).json({
+      success: true,
       ioc,
-      sources_count: {
-        articles: ioc.sources.articles.length,
-        detections: ioc.sources.detections.length,
-        campaigns: ioc.sources.campaigns.length,
-        total_mentions: ioc.sources.articles.length + ioc.sources.detections.length + ioc.sources.campaigns.length,
-      },
-      related_iocs: iocCanonical.getCorrelatedIOCs(id).length,
+      deprecated: true,
+      successor: `/api/v1/intel?action=ioc&id=${encodeURIComponent(ioc.id)}`,
     });
-
   } catch (e) {
-    console.error('[IOC API] Error:', e.message);
-    res.status(500).json({ error: e.message });
+    console.error('[IOC API] canonical compatibility detail failed:', e && e.message ? e.message : 'unknown');
+    return apiError(res, 500, 'IOC_DETAIL_FAILED', 'IOC detail is temporarily unavailable.');
   }
 };
