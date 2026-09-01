@@ -118,6 +118,11 @@ async function getOrderByRazorpayOrderId(razorpayOrderId) {
   return rows[0] || null;
 }
 
+async function getOrderByPaymentId(paymentId) {
+  const rows = await d1.query('SELECT * FROM premium_orders WHERE razorpay_payment_id=? LIMIT 1', [paymentId]);
+  return rows[0] || null;
+}
+
 async function claimVerifiedPayment({ orderId, paymentId, verifiedAt = now() }) {
   return d1.runMutationWithChanges(`
     UPDATE premium_orders
@@ -142,12 +147,24 @@ async function grantEntitlement({ ownerId, reportId, orderId, grantedAt = now() 
 }
 
 async function markOrderEntitled(orderId, entitledAt = now()) {
-  const affected = await d1.runMutationWithChanges(`
+  await d1.runMutationWithChanges(`
     UPDATE premium_orders
-    SET state='ENTITLED', entitled_at=?, updated_at=?
+    SET state='ENTITLED', entitled_at=COALESCE(entitled_at, ?), updated_at=?
     WHERE order_id=? AND state IN ('PAYMENT_VERIFIED', 'ENTITLED')
   `, [entitledAt, entitledAt, orderId]);
-  return affected >= 0;
+  return getOrderByInternalId(orderId);
+}
+
+async function markFullyRefunded({ orderId, ownerId, reportId, refundedAt = now() }) {
+  await d1.runMutationWithChanges(`
+    UPDATE premium_orders SET state='REFUNDED', updated_at=?
+    WHERE order_id=? AND state IN ('PAYMENT_VERIFIED', 'ENTITLED', 'REFUNDED')
+  `, [refundedAt, orderId]);
+  await d1.runMutationWithChanges(`
+    UPDATE premium_entitlements SET status='REFUNDED', updated_at=?
+    WHERE owner_id=? AND report_id=? AND order_id=? AND status IN ('ACTIVE', 'REFUNDED')
+  `, [refundedAt, ownerId, reportId, orderId]);
+  return getOrderByInternalId(orderId);
 }
 
 async function getEntitlement(ownerId, reportId) {
@@ -191,9 +208,11 @@ module.exports = {
   createOrderSnapshot,
   getOrderByInternalId,
   getOrderByRazorpayOrderId,
+  getOrderByPaymentId,
   claimVerifiedPayment,
   grantEntitlement,
   markOrderEntitled,
+  markFullyRefunded,
   getEntitlement,
   listLibrary,
   recordDownload,
