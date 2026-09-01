@@ -2,24 +2,20 @@ name: "⚡ SENTINEL APEX — Intel Feed Freshness Monitor"
 
 on:
   schedule:
-    - cron: '*/30 * * * *'   # Every 30 minutes
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 concurrency:
   group: blog-freshness-check
   cancel-in-progress: true
 
-# contents:read for checkout; actions:write because the "Auto-recovery
-# trigger" step below calls github.rest.actions.createWorkflowDispatch()
-# to re-run sentinel-apex.yml on CRITICAL staleness -- traced from the
-# step's actual API call, not assumed.
 permissions:
   contents: read
   actions: write
 
 jobs:
   freshness-check:
-    name: "Verify SENTINEL APEX pipeline is operational"
+    name: "Verify SENTINEL APEX runtime and intel freshness"
     runs-on: ubuntu-latest
     timeout-minutes: 3
 
@@ -29,139 +25,40 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: "Setup Node.js"
+      - name: "Setup Node.js 22"
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
 
-      - name: "Check live-intel.json freshness"
+      - name: "Classify runtime and content freshness"
+        id: freshness
+        shell: bash
         run: |
           echo "⚡ SENTINEL APEX — Freshness Check — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          set +e
+          node scripts/check-intel-freshness.js live-intel.json intel-state.json
+          CHECK_EXIT=$?
+          set -e
 
-          # Verify live-intel.json exists in repository
-          echo "🔗 Verifying live-intel.json in repository..."
-          if [ ! -f "live-intel.json" ]; then
-            echo "::error title=Feed File Missing::live-intel.json not found in repository"
-            exit 1
+          if [ "$CHECK_EXIT" -eq 2 ]; then
+            echo "recovery_required=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "recovery_required=false" >> "$GITHUB_OUTPUT"
           fi
+          echo "classifier_exit=${CHECK_EXIT}" >> "$GITHUB_OUTPUT"
 
-          FILE_SIZE=$(wc -c < live-intel.json)
-          echo "✅ Found live-intel.json — ${FILE_SIZE} bytes"
-
-          if [ "$FILE_SIZE" -lt 10000 ]; then
-            echo "::error title=Feed Too Small::live-intel.json is only ${FILE_SIZE} bytes — possible corruption"
-            exit 1
-          fi
-
-          # ── Freshness check ───────────────────────────────────────────────
-          # IMPORTANT: pubDate/published fields reflect CVE/article PUBLICATION dates,
-          # NOT when the pipeline ran. We use intel-state.json's lastReportGeneratedAt,
-          # live-intel.json's item _addedAt, or metadata.generated (set on each pipeline
-          # run) for true freshness -- in that priority order. lastReportGeneratedAt is
-          # the most reliable of the three: live-intel.json's 150-item window is sorted
-          # by priority (not recency) and trimmed to size, so a genuinely new, real
-          # report can be trimmed out of the window if its priority is lower than what's
-          # already there -- leaving every item's _addedAt stale even while the pipeline
-          # is actively publishing (confirmed in production: 15 real reports generated
-          # and committed with 0 quality-gate rejections, yet none of the 15 made it into
-          # the window, so max _addedAt stayed frozen days in the past). state.lastRun and
-          # metadata.generated both update on every run regardless of whether anything new
-          # was actually published, so neither can substitute for lastReportGeneratedAt.
-          node -e "
-            const raw = require('fs').readFileSync('./live-intel.json', 'utf8');
-            let d;
-            try { d = JSON.parse(raw); } catch(e) {
-              console.error('::error title=Feed Parse Error::live-intel.json is invalid JSON: ' + e.message);
-              process.exit(1);
-            }
-
-            const items = d.items || [];
-            if (items.length < 10) {
-              console.error('::error title=Feed Empty::Only ' + items.length + ' items in feed (expected 50+)');
-              process.exit(1);
-            }
-
-            console.log('Items in feed  : ' + items.length);
-
-            // PRIMARY: intel-state.json's lastReportGeneratedAt -- set only when a
-            // report was actually written, immune to window-trimming (see comment above).
-            let lastReportGeneratedAt = null;
-            try {
-              const state = JSON.parse(require('fs').readFileSync('./intel-state.json', 'utf8'));
-              lastReportGeneratedAt = state.lastReportGeneratedAt || null;
-            } catch (e) { /* intel-state.json missing/corrupt -- fall through */ }
-
-            // SECONDARY: latest _addedAt across the live-intel.json window.
-            const withAddedAt = items.filter(i => i._addedAt);
-            let latestIngestDate = null;
-            let latestIngestId = null;
-            if (withAddedAt.length > 0) {
-              const sorted = [...withAddedAt].sort((a,b) => new Date(b._addedAt) - new Date(a._addedAt));
-              latestIngestDate = new Date(sorted[0]._addedAt);
-              latestIngestId = sorted[0].id;
-            }
-
-            // TERTIARY FALLBACK: metadata.generated only if nothing else is available
-            const metaGenerated = (d.metadata || {}).generated || d.lastUpdated || null;
-
-            // Determine freshness reference — prefer the most direct signal available
-            let freshnessDate = null;
-            let freshnessSource = '';
-
-            if (lastReportGeneratedAt) {
-              freshnessDate = new Date(lastReportGeneratedAt);
-              freshnessSource = 'intel-state.json lastReportGeneratedAt';
-            } else if (latestIngestDate) {
-              freshnessDate = latestIngestDate;
-              freshnessSource = 'latest _addedAt (' + latestIngestId + ') [lastReportGeneratedAt unavailable]';
-            } else if (metaGenerated) {
-              freshnessDate = new Date(metaGenerated);
-              freshnessSource = 'metadata.generated (fallback — no item timestamps)';
-            } else {
-              // No timestamps available at all
-              console.error('::error title=Malformed Feed::No lastReportGeneratedAt, _addedAt, or metadata.generated available. Pipeline may be corrupted.');
-              process.exit(1);
-            }
-
-            const ageMinutes = Math.floor((Date.now() - freshnessDate.getTime()) / 60000);
-
-            console.log('Items in feed  : ' + items.length);
-            console.log('Freshness ref  : ' + freshnessSource);
-            console.log('Timestamp      : ' + freshnessDate.toISOString());
-            console.log('Age (minutes)  : ' + ageMinutes);
-
-            // PRODUCTION STABLE THRESHOLDS (Enhanced with Auto-Recovery):
-            // - Feed should refresh every 30 min (APEX pipeline runs :00/:30)
-            // - WARN at 90 min (3+ missed runs, likely backlog/delays)
-            // - CRITICAL at 180 min (6+ missed runs, definite pipeline failure)
-            // - CRITICAL exits non-zero so recovery and alert steps actually run
-            let statusLevel = 'HEALTHY';
-            if (ageMinutes > 180) {
-              console.warn('::warning title=Pipeline Down (CRITICAL - AUTO-RECOVERY)::Latest items ' + ageMinutes + ' minutes old — pipeline stalled. Auto-recovery will trigger.');
-              statusLevel = 'CRITICAL';
-            } else if (ageMinutes > 90) {
-              console.warn('::warning title=Pipeline Degraded (WARN)::Latest items ' + ageMinutes + ' minutes old — ' + Math.floor(ageMinutes / 30) + ' missed runs detected. Monitor for recovery.');
-              statusLevel = 'DEGRADED';
-            } else {
-              console.log('✅ Pipeline healthy — latest items ' + ageMinutes + ' minutes old');
-              statusLevel = 'HEALTHY';
-            }
-
-            console.log('Status level: ' + statusLevel);
-            if (statusLevel === 'CRITICAL') process.exit(2);
-            process.exit(0);
-          " 2>&1
-
-          echo "✅ Freshness check complete"
+          # Exit 2 is a proven runtime outage and intentionally makes this
+          # check red after authorizing recovery. Exit 1 is monitor/feed
+          # corruption and also red, but it must NOT trigger the generator.
+          exit "$CHECK_EXIT"
 
       - name: "Auto-recovery trigger"
-        if: failure()
+        if: always() && steps.freshness.outputs.recovery_required == 'true'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            // Auto-trigger sentinel-apex.yml recovery only on CRITICAL (exit code 2)
-            console.log('Checking for CRITICAL freshness failure — triggering recovery workflow...');
+            console.log('Proven runtime outage detected — dispatching sentinel-apex.yml recovery...');
             try {
               await github.rest.actions.createWorkflowDispatch({
                 owner: context.repo.owner,
@@ -173,18 +70,19 @@ jobs:
                   debug: 'true'
                 }
               });
-              // createWorkflowDispatch responds 204 No Content -- GitHub never
-              // returns the created run's id synchronously, so run.data.id was
-              // always undefined here and threw on every call, which this
-              // catch block silently reported as "trigger failed" even when
-              // the dispatch itself was accepted.
               console.log('✅ Recovery workflow dispatch accepted for sentinel-apex.yml');
-            } catch(e) {
-              console.warn('⚠️ Auto-recovery trigger failed: ' + e.message);
+            } catch (e) {
+              core.setFailed('Recovery workflow dispatch failed: ' + e.message);
             }
 
-      - name: "Alert on failure"
+      - name: "Alert on failed monitor"
         if: failure()
+        shell: bash
         run: |
-          echo "::error title=SENTINEL APEX Feed Alert::Intel feed stale — auto-recovery workflow triggered. Manual trigger: https://github.com/cyberdudebivash/cyberdudebivash-blog/actions/workflows/sentinel-apex.yml"
+          if [ "${{ steps.freshness.outputs.recovery_required }}" = "true" ]; then
+            echo "::error title=SENTINEL APEX Runtime Alert::Generator runtime exceeded the critical freshness threshold. Recovery dispatch was authorized."
+          else
+            echo "::error title=SENTINEL APEX Monitor Alert::Freshness monitoring/feed validation failed, but runtime outage was NOT proven. Automatic recovery was intentionally suppressed."
+          fi
+          echo "Classifier exit: ${{ steps.freshness.outputs.classifier_exit }}"
           echo "Timestamp: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
