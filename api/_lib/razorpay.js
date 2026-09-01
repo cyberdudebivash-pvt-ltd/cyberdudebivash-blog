@@ -13,7 +13,6 @@ const WEBHOOK_SECRET   = process.env.RAZORPAY_WEBHOOK_SECRET  || '';
 
 const RAZORPAY_BASE = 'https://api.razorpay.com/v1';
 
-/** True once both API keys are configured (Vercel env). */
 function configured() {
   return Boolean(KEY_ID && KEY_SECRET);
 }
@@ -40,29 +39,28 @@ async function razorpayRequest(method, path, body = null) {
 }
 
 /**
- * Create a Razorpay Order. Amount must already be in the smallest currency
- * unit (paise for INR) — caller is responsible for the rupees→paise conversion.
+ * Create a Razorpay Order. `amountMinor` must already be the exact smallest
+ * unit for `currency` (for example paise for INR, cents for USD). This helper
+ * performs NO currency conversion; callers own the catalog money semantics.
  */
-async function createOrder(amountInPaise, currency, receipt, notes = {}) {
+async function createOrder(amountMinor, currency, receipt, notes = {}) {
   return razorpayRequest('POST', '/orders', {
-    amount:          amountInPaise,
+    amount:          amountMinor,
     currency,
     receipt,
     notes,
-    payment_capture: 1, // auto-capture — funds settle without a separate capture call
+    payment_capture: 1,
   });
 }
 
-/** Fetch a payment by ID — server-side confirmation lookup. */
+async function fetchOrder(orderId) {
+  return razorpayRequest('GET', `/orders/${orderId}`);
+}
+
 async function fetchPayment(paymentId) {
   return razorpayRequest('GET', `/payments/${paymentId}`);
 }
 
-/**
- * Verify the checkout.js client success-callback signature.
- * HMAC-SHA256("{order_id}|{payment_id}", key_secret) === razorpay_signature
- * A valid signature is cryptographic proof the payment was completed.
- */
 function verifyPaymentSignature(orderId, paymentId, signature) {
   if (!KEY_SECRET || !orderId || !paymentId || !signature) return false;
   const expected = crypto
@@ -72,14 +70,10 @@ function verifyPaymentSignature(orderId, paymentId, signature) {
   try {
     return crypto.timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(String(signature), 'hex'));
   } catch (_) {
-    return false; // malformed signature (wrong length/encoding)
+    return false;
   }
 }
 
-/**
- * Verify a Razorpay webhook signature.
- * HMAC-SHA256(rawBody, webhook_secret) === X-Razorpay-Signature header
- */
 function verifyWebhookSignature(rawBody, signature) {
   if (!WEBHOOK_SECRET || !signature) return false;
   const expected = crypto
@@ -96,8 +90,9 @@ function verifyWebhookSignature(rawBody, signature) {
 module.exports = {
   configured,
   createOrder,
+  fetchOrder,
   fetchPayment,
   verifyPaymentSignature,
   verifyWebhookSignature,
-  KEY_ID, // safe to expose client-side — required by checkout.js
+  KEY_ID,
 };

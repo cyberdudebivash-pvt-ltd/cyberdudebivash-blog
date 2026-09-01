@@ -13,6 +13,8 @@
 const { toNodeRequest, createNodeResponse } = require('./node-compat');
 const { resolveRoute } = require('./route-table');
 const { applyBaselineHeaders } = require('./security-headers');
+const { setD1Binding: setHttpD1Binding } = require('../../api/_lib/d1');
+const { setR2Binding } = require('../../api/_lib/premium-report-storage');
 
 // Static require() map, not a dynamic require(computedPath) — esbuild
 // must see each module reference at build time to bundle it; a
@@ -40,6 +42,7 @@ const HANDLER_MODULES = {
   'api/v1/detections/rules/[id]': () => require('../../api/v1/detections/rules/[id]'),
   'api/v1/hunts': () => require('../../api/v1/hunts'),
   'api/v1/intel': () => require('../../api/v1/intel'),
+  'api/v1/premium-intelligence': () => require('../../api/v1/premium-intelligence'),
   'api/v1/watchlists': () => require('../../api/v1/watchlists'),
   'api/v1/notifications': () => require('../../api/v1/notifications'),
   'api/v1/intelligence/confidence': () => require('../../api/v1/intelligence/confidence'),
@@ -65,9 +68,6 @@ const HANDLER_MODULES = {
 async function dispatch(handlerPath, request, routeQuery) {
   const load = HANDLER_MODULES[handlerPath];
   if (!load) {
-    // route-table.js resolved a handler this map doesn't know about — a
-    // real bug (see router.test.js's parity check), not a client error.
-    // Fail closed rather than guess.
     return new Response('Not Found', { status: 404 });
   }
 
@@ -79,10 +79,6 @@ async function dispatch(handlerPath, request, routeQuery) {
   try {
     req = await toNodeRequest(request, handlerConfig);
   } catch (err) {
-    // Both branches match api/_lib/middleware.js#apiError()'s response
-    // shape exactly -- the shared helper most handlers already use for
-    // every other 4xx -- so these get the same contract as any other
-    // validation failure instead of a platform-specific error page.
     if (err && err.isBodyParseError) {
       return applyBaselineHeaders(new Response(JSON.stringify({
         error: { code: 'INVALID_JSON', message: 'Request body is not valid JSON.' },
@@ -95,7 +91,7 @@ async function dispatch(handlerPath, request, routeQuery) {
         meta:  { platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0', timestamp: new Date().toISOString() },
       }), { status: 413, headers: { 'content-type': 'application/json' } }));
     }
-    throw err; // genuinely unexpected -- surface it, don't mask a real bug
+    throw err;
   }
   req.query = { ...req.query, ...routeQuery };
 
@@ -106,17 +102,22 @@ async function dispatch(handlerPath, request, routeQuery) {
 
 /**
  * @param {Request} request
- * @param {{ ASSETS: { fetch(req: Request): Promise<Response> } }} env
+ * @param {{ ASSETS: { fetch(req: Request): Promise<Response> }, DB?: object, PREMIUM_REPORTS?: object }} env
  */
 async function handleFetch(request, env) {
+  // Register Cloudflare-native state/storage bindings for HTTP handlers before
+  // any route module runs. Existing D1-backed HTTP APIs previously fell back to
+  // the REST transport because env was not threaded through dispatch(); this
+  // setter pattern preserves every existing (req,res) handler signature while
+  // giving premium commerce and the rest of the D1-backed HTTP surface the
+  // zero-extra-hop native binding in Workers. R2 has no credential fallback by
+  // design: premium downloads fail closed unless the binding is present.
+  if (env && env.DB) setHttpD1Binding(env.DB);
+  if (env && env.PREMIUM_REPORTS) setR2Binding(env.PREMIUM_REPORTS);
+
   const url = new URL(request.url);
   const route = resolveRoute(url.pathname);
 
-  // Static-asset paths (no route match, or an explicit alias to another
-  // static file) never pass through applyBaselineHeaders() — those are
-  // genuinely static responses and get their security headers from
-  // dist-public/_headers instead, not duplicated here. See security-
-  // headers.js's header comment for why the two must stay separate.
   if (!route) {
     return env.ASSETS.fetch(request);
   }
@@ -126,11 +127,6 @@ async function handleFetch(request, env) {
       return applyBaselineHeaders(new Response('Not Found', { status: 404 }));
 
     case 'redirect': {
-      // Not Response.redirect(): per the Fetch spec, the Headers on a
-      // Response.redirect() result have an "immutable" guard, so
-      // applyBaselineHeaders()'s .set() calls throw on it (confirmed via
-      // a real test failure, not assumed). Constructing the Response
-      // directly gives a normal, mutable Headers object instead.
       const destination = new URL(route.to, url);
       return applyBaselineHeaders(new Response(null, {
         status: route.status,
@@ -153,61 +149,14 @@ async function handleFetch(request, env) {
 
 /**
  * Cloudflare Cron Trigger entry point (workers/entry.js's `scheduled`
- * export calls this). wrangler.jsonc's `triggers.crons` entry now exists
- * (Cloudflare-Only Alert Runtime tranche -- the operator has explicitly
- * authorized Cloudflare Workers as the production alert-delivery runtime,
- * see docs/audits/SENTINEL-APEX-CLOUDFLARE-ONLY-ALERT-RUNTIME-V1-
- * CERTIFICATION.md), superseding this comment's own prior "scheduling
- * authority is undecided" framing for this subsystem specifically. Still
- * not LIVE from this codebase's own evidence, though: this sandbox has no
- * authenticated Cloudflare account access (`wrangler whoami` -> not
- * authenticated, confirmed before writing this), so the config exists but
- * takes effect only once an operator with real credentials runs `wrangler
- * deploy` -- exactly the "code-complete configuration, not a live
- * trigger" distinction wrangler.jsonc's own header comment makes. The
- * real, already-live autonomous trigger today remains
- * .github/workflows/alert-delivery.yml's native GitHub Actions schedule
- * -- see that workflow's header for the retirement sequencing.
- *
- * Calls the exact same evaluateWatchedEntities()/processDueDeliveries()
- * functions the Node CLI scripts call -- one implementation of "what a
- * scheduled run does," reused here, not reimplemented for this runtime.
- * Bounded (each call's own internal batch/limit defaults apply) and
- * idempotent-safe (processDueDeliveries()'s atomic D1 claim/lease makes
- * this safe to invoke even if it somehow overlapped the GitHub Actions
- * path or another scheduled() invocation -- both paths read/write the
- * same D1 database, so there is one source of delivery truth regardless
- * of which trigger fires).
- *
- * The 4th `deps` param is a test-only seam (default {} in every real
- * call site, including workers/entry.js's) so router.test.js can inject
- * fakes instead of requiring real Redis/D1-backed modules under plain
- * node:test -- never populated in production.
+ * export calls this). wrangler.jsonc's triggers.crons entry is code-complete
+ * but still requires an authenticated deploy before Cloudflare invokes it.
  */
 async function handleScheduled(controller, env, ctx, deps = {}) {
   const { evaluateWatchedEntities } = deps.changeEngine || require('../../api/_lib/change-engine');
   const { processDueDeliveries } = deps.notificationDispatch || require('../../api/_lib/notification-dispatch');
   const { setD1Binding } = deps.d1 || require('../../api/_lib/d1');
 
-  // env.DB is Cloudflare's native D1 binding (wrangler.jsonc's
-  // d1_databases entry), only ever available once a real invocation
-  // hands us `env` -- unlike workers/entry.js's setWasmModule() call at
-  // module load time, this can't happen any earlier. Registering it here
-  // (not in dispatch()/handleFetch()) is a deliberate, disclosed scope
-  // boundary: this scheduled handler is the one Cloudflare-triggered
-  // entry point this tranche activates, so it's the one place that gets
-  // the zero-latency native-binding fast path. The HTTP-triggered
-  // api/v1/notifications.js routes reached via dispatch() do NOT get env
-  // threaded to them (dispatch() calls `handler(req, res)` with no env
-  // param -- confirmed by reading it fresh before this migration began)
-  // and so fall back to d1.js's REST API transport even when running
-  // under Cloudflare Workers -- correct, just one HTTP round trip slower
-  // than the native binding would be. Widening dispatch()'s signature to
-  // thread env through ~30 unrelated Vercel-style (req,res) handlers is a
-  // materially larger architectural change than this tranche's actual
-  // scope (migrating alert orchestration specifically, per the Cloudflare
-  // Runtime Dependency Inventory's own §0) -- revisit only with its own
-  // evidence and justification, not as a side effect of this change.
   if (env && env.DB) setD1Binding(env.DB);
 
   const startedAt = Date.now();

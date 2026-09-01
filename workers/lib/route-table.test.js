@@ -8,45 +8,29 @@ const { resolveRoute, DIRECT_API_HANDLERS, DYNAMIC_API_HANDLERS, APEX_SUBPATH_HA
 
 describe('resolveRoute — blocked paths', () => {
   for (const p of ['/CLAUDE.md', '/OPERATIONS.md', '/AUDIT-REPORT-2026-05-28.md', '/BUSINESS-TRANSFORMATION-ROADMAP-2026.md']) {
-    test(`blocks exact path ${p}`, () => {
-      assert.deepEqual(resolveRoute(p), { type: 'blocked' });
-    });
+    test(`blocks exact path ${p}`, () => assert.deepEqual(resolveRoute(p), { type: 'blocked' }));
   }
-
   for (const p of ['/Sentinel-APEX/README.md', '/eito/anything', '/platform/open-issues.md', '/prompts/x.txt']) {
-    test(`blocks prefix-matched path ${p}`, () => {
-      assert.deepEqual(resolveRoute(p), { type: 'blocked' });
-    });
+    test(`blocks prefix-matched path ${p}`, () => assert.deepEqual(resolveRoute(p), { type: 'blocked' }));
   }
-
   test('does not block a path that merely starts similarly', () => {
-    // /platform-review.html must NOT be blocked by the /platform/ prefix rule
     assert.notDeepEqual(resolveRoute('/platform-review.html'), { type: 'blocked' });
   });
 });
 
 describe('resolveRoute — redirect', () => {
-  test('/rss redirects permanently to /rss.xml', () => {
-    assert.deepEqual(resolveRoute('/rss'), { type: 'redirect', to: '/rss.xml', status: 308 });
-  });
+  test('/rss redirects permanently to /rss.xml', () => assert.deepEqual(resolveRoute('/rss'), { type: 'redirect', to: '/rss.xml', status: 308 }));
 });
 
 describe('resolveRoute — feed asset aliases', () => {
   for (const p of ['/feed', '/feed.xml', '/atom.xml']) {
-    test(`${p} resolves to the /rss.xml asset`, () => {
-      assert.deepEqual(resolveRoute(p), { type: 'asset', path: '/rss.xml' });
-    });
+    test(`${p} resolves to the /rss.xml asset`, () => assert.deepEqual(resolveRoute(p), { type: 'asset', path: '/rss.xml' }));
   }
 });
 
 describe('resolveRoute — root index alias', () => {
-  test('/ resolves to the /index.html asset (compensates for html_handling: "none" disabling Cloudflare\'s automatic root resolution — see wrangler.jsonc and ASSET_REWRITES\' comment)', () => {
-    assert.deepEqual(resolveRoute('/'), { type: 'asset', path: '/index.html' });
-  });
-
-  test('does not rewrite a non-root path that merely starts with /', () => {
-    assert.equal(resolveRoute('/about.html'), null);
-  });
+  test('/ resolves to the /index.html asset', () => assert.deepEqual(resolveRoute('/'), { type: 'asset', path: '/index.html' }));
+  test('does not rewrite a non-root path that merely starts with /', () => assert.equal(resolveRoute('/about.html'), null));
 });
 
 describe('resolveRoute — pretty-URL rewrites', () => {
@@ -78,16 +62,13 @@ describe('resolveRoute — pretty-URL rewrites', () => {
     ['/api/v1/admin/payments/razorpay-orders', 'api/v1/admin', { action: 'razorpay-orders' }],
     ['/api/v1/admin/payments/product-orders', 'api/v1/admin', { action: 'product-orders' }],
   ];
-
   for (const [p, handlerPath, query] of cases) {
-    test(`${p} -> ${handlerPath}?${new URLSearchParams(query)}`, () => {
-      assert.deepEqual(resolveRoute(p), { type: 'handler', handlerPath, query });
-    });
+    test(`${p} -> ${handlerPath}?${new URLSearchParams(query)}`, () => assert.deepEqual(resolveRoute(p), { type: 'handler', handlerPath, query }));
   }
 });
 
 describe('resolveRoute — direct api/** filesystem routes', () => {
-  test('every real handler file on disk has a route (38-function parity check)', () => {
+  test('every real handler file on disk has a route (40-function parity check)', () => {
     const files = [];
     function walk(dir) {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -98,18 +79,11 @@ describe('resolveRoute — direct api/** filesystem routes', () => {
       }
     }
     walk(path.join(__dirname, '..', '..', 'api'));
-
-    // 35 (pre-SIEM-gateway baseline) + api/v1/connectors.js + api/v1/deployments.js
-    // (Controlled SIEM Deployment Gateway v1) + api/v1/hunts.js (Threat
-    // Hunting Workspace & Detection Feedback Intelligence v1) +
-    // api/v1/detections/performance.js (Detection Performance Intelligence v1).
-    assert.equal(files.length, 39, 'expected exactly 39 routable api/** functions — update route-table.js if this changes');
+    // 39-handler baseline + api/v1/premium-intelligence.js.
+    assert.equal(files.length, 40, 'expected exactly 40 routable api/** functions — update route-table.js if this changes');
 
     const INDEX_HANDLERS = new Set(['api/v1/products/index', 'api/v1/quality/index', 'api/v1/reports/index']);
-    // [id]-bracket files have no single literal URL — checked with a real
-    // sample id in the "dynamic [id] segments" describe block instead.
     const DYNAMIC_FILE_SUFFIX = /\[id]$/;
-
     for (const file of files) {
       const rel = path.relative(path.join(__dirname, '..', '..'), file).replace(/\\/g, '/').replace(/\.js$/, '');
       if (DYNAMIC_FILE_SUFFIX.test(rel)) {
@@ -127,33 +101,23 @@ describe('resolveRoute — direct api/** filesystem routes', () => {
   test('api/v1/products/index.js is reached at /api/v1/products, not /api/v1/products/index', () => {
     assert.deepEqual(resolveRoute('/api/v1/products'), { type: 'handler', handlerPath: 'api/v1/products/index', query: {} });
   });
+
+  test('premium intelligence commerce is a direct Cloudflare-routable handler', () => {
+    assert.deepEqual(resolveRoute('/api/v1/premium-intelligence'), { type: 'handler', handlerPath: 'api/v1/premium-intelligence', query: {} });
+  });
 });
 
 describe('resolveRoute — dynamic [id] segments', () => {
-  test('/api/v1/ioc/search hits the static search handler, not [id]', () => {
-    assert.deepEqual(resolveRoute('/api/v1/ioc/search'), { type: 'handler', handlerPath: 'api/v1/ioc/search', query: {} });
-  });
-
-  test('/api/v1/ioc/<anything else> hits [id] with that value', () => {
-    assert.deepEqual(resolveRoute('/api/v1/ioc/T1059.001'), { type: 'handler', handlerPath: 'api/v1/ioc/[id]', query: { id: 'T1059.001' } });
-  });
-
-  test('/api/v1/detections/rules (bare) hits the list handler, not [id]', () => {
-    assert.deepEqual(resolveRoute('/api/v1/detections/rules'), { type: 'handler', handlerPath: 'api/v1/detections/rules', query: {} });
-  });
-
-  test('/api/v1/detections/rules/<id> hits [id] with that value', () => {
-    assert.deepEqual(resolveRoute('/api/v1/detections/rules/rule-42'), { type: 'handler', handlerPath: 'api/v1/detections/rules/[id]', query: { id: 'rule-42' } });
-  });
+  test('/api/v1/ioc/search hits the static search handler, not [id]', () => assert.deepEqual(resolveRoute('/api/v1/ioc/search'), { type: 'handler', handlerPath: 'api/v1/ioc/search', query: {} }));
+  test('/api/v1/ioc/<anything else> hits [id] with that value', () => assert.deepEqual(resolveRoute('/api/v1/ioc/T1059.001'), { type: 'handler', handlerPath: 'api/v1/ioc/[id]', query: { id: 'T1059.001' } }));
+  test('/api/v1/detections/rules (bare) hits the list handler, not [id]', () => assert.deepEqual(resolveRoute('/api/v1/detections/rules'), { type: 'handler', handlerPath: 'api/v1/detections/rules', query: {} }));
+  test('/api/v1/detections/rules/<id> hits [id] with that value', () => assert.deepEqual(resolveRoute('/api/v1/detections/rules/rule-42'), { type: 'handler', handlerPath: 'api/v1/detections/rules/[id]', query: { id: 'rule-42' } }));
 });
 
-describe('resolveRoute — apex sub-path routing (Cloudflare mirror of vercel.json\'s :apexSubpath* rewrites)', () => {
+describe('resolveRoute — apex sub-path routing', () => {
   test('every APEX_SUBPATH_HANDLERS entry is also a known DIRECT_API_HANDLERS base path', () => {
-    for (const base of APEX_SUBPATH_HANDLERS) {
-      assert.ok(DIRECT_API_HANDLERS.has(base), `${base} is in APEX_SUBPATH_HANDLERS but not DIRECT_API_HANDLERS`);
-    }
+    for (const base of APEX_SUBPATH_HANDLERS) assert.ok(DIRECT_API_HANDLERS.has(base), `${base} is in APEX_SUBPATH_HANDLERS but not DIRECT_API_HANDLERS`);
   });
-
   const cases = [
     ['/api/v1/workbench/investigations/inv-123', 'api/v1/workbench/investigations', 'inv-123'],
     ['/api/v1/workbench/investigations/inv-123/timeline', 'api/v1/workbench/investigations', 'inv-123/timeline'],
@@ -165,45 +129,24 @@ describe('resolveRoute — apex sub-path routing (Cloudflare mirror of vercel.js
     ['/api/v1/intelligence/similarity/e1/find', 'api/v1/intelligence/similarity', 'e1/find'],
     ['/api/v1/intelligence/publish/status/intel-123', 'api/v1/intelligence/publish', 'status/intel-123'],
   ];
-
   for (const [p, handlerPath, apexSubpath] of cases) {
-    test(`${p} -> ${handlerPath} with apexSubpath=${apexSubpath}`, () => {
-      assert.deepEqual(resolveRoute(p), { type: 'handler', handlerPath, query: { apexSubpath } });
-    });
+    test(`${p} -> ${handlerPath} with apexSubpath=${apexSubpath}`, () => assert.deepEqual(resolveRoute(p), { type: 'handler', handlerPath, query: { apexSubpath } }));
   }
-
-  test('the bare base path (no sub-path) still resolves via the exact-match rule, not the prefix rule', () => {
-    assert.deepEqual(resolveRoute('/api/v1/intelligence/objects'), { type: 'handler', handlerPath: 'api/v1/intelligence/objects', query: {} });
-  });
-
-  test('a path that merely starts similarly (no separating slash) is not treated as a sub-path', () => {
-    assert.equal(resolveRoute('/api/v1/intelligence/objectsextra'), null);
-  });
-
-  test('a handler NOT in APEX_SUBPATH_HANDLERS still 404s on a sub-path (e.g. api/v1/auth has its own pretty-URL rewrites, not apexSubpath)', () => {
-    assert.equal(resolveRoute('/api/v1/auth/some-unmapped-subpath'), null);
-  });
+  test('bare base path resolves via exact match', () => assert.deepEqual(resolveRoute('/api/v1/intelligence/objects'), { type: 'handler', handlerPath: 'api/v1/intelligence/objects', query: {} }));
+  test('similar prefix without separating slash is not a sub-path', () => assert.equal(resolveRoute('/api/v1/intelligence/objectsextra'), null));
+  test('handler not in APEX_SUBPATH_HANDLERS still has no arbitrary sub-path', () => assert.equal(resolveRoute('/api/v1/auth/some-unmapped-subpath'), null));
 });
 
 describe('resolveRoute — no match', () => {
-  test('a plain content path defers to the static asset layer', () => {
-    assert.equal(resolveRoute('/posts/some-article.html'), null);
-  });
-
-  test('an unrecognized api-shaped path also defers (404s as a missing asset, not a fabricated handler)', () => {
-    assert.equal(resolveRoute('/api/v1/does-not-exist'), null);
-  });
+  test('plain content defers to static assets', () => assert.equal(resolveRoute('/posts/some-article.html'), null));
+  test('unknown API path defers to missing asset', () => assert.equal(resolveRoute('/api/v1/does-not-exist'), null));
 });
 
 describe('table sanity', () => {
-  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 39 handlers with no overlap', () => {
-    // 35 (pre-SIEM-gateway baseline) + api/v1/connectors + api/v1/deployments
-    // (Controlled SIEM Deployment Gateway v1) + api/v1/hunts (Threat Hunting
-    // Workspace & Detection Feedback Intelligence v1) + api/v1/detections/
-    // performance (Detection Performance Intelligence v1).
+  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 40 handlers with no overlap', () => {
     const dynamicPaths = DYNAMIC_API_HANDLERS.map(([, handlerPath]) => handlerPath);
     const all = [...DIRECT_API_HANDLERS, ...dynamicPaths];
-    assert.equal(all.length, 39);
-    assert.equal(new Set(all).size, 39, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
+    assert.equal(all.length, 40);
+    assert.equal(new Set(all).size, 40, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
   });
 });

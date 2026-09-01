@@ -1,32 +1,29 @@
 /**
  * POST /api/v1/billing/razorpay-webhook
- * Razorpay webhook handler — backup confirmation path for instant checkout.
- * Covers the case where the browser closes/redirects before the client-side
- * verify-razorpay-payment call completes. Idempotent against the same
- * replay guard used by action=verify-razorpay-payment (payment:rzp:txn:seen:*).
+ * Razorpay webhook handler — durable backup confirmation path for both API
+ * subscription payments and Premium Intelligence one-time report purchases.
  *
- * CRITICAL: Configure in Razorpay Dashboard → Settings → Webhooks
- *   URL:    https://blog.cyberdudebivash.in/api/v1/billing/razorpay-webhook
- *   Events: payment.captured, order.paid
+ * Premium report orders are D1-backed and idempotently recoverable here if a
+ * buyer closes the browser before the checkout callback can call
+ * /api/v1/premium-intelligence?action=verify. Processed full refunds revoke the
+ * corresponding premium entitlement; partial refunds do not.
  */
 'use strict';
 const redis     = require('../../_lib/redis');
 const razorpay  = require('../../_lib/razorpay');
 const sec       = require('../../_lib/security');
+const premiumCommerce = require('../../_lib/premium-commerce-service');
 const {
   PLANS, normalizeEmail, parseHash, now, auditLog, upgradeUserTier,
   SUBMISSION_TTL_SECONDS,
 } = require('../../_lib/payment-utils');
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'POST required' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'POST required' });
 
   const sig = req.headers['x-razorpay-signature'];
   if (!sig) return res.status(400).json({ error: 'Missing X-Razorpay-Signature' });
 
-  // Raw body required for signature verification — see security.js readRawBody
   let rawBody;
   try {
     rawBody = await sec.readRawBody(req);
@@ -57,9 +54,33 @@ module.exports = async (req, res) => {
         const paymentId = payment.id;
         if (!orderId || !paymentId) break;
 
+        let remoteOrder = null;
+        try {
+          remoteOrder = await razorpay.fetchOrder(orderId);
+        } catch (err) {
+          console.warn(`[RAZORPAY WEBHOOK] Order metadata lookup unavailable for ${orderId}: ${err.message}`);
+        }
+
+        const premiumByNotes = remoteOrder && remoteOrder.notes && remoteOrder.notes.commerce === 'premium_intelligence';
+        if (premiumByNotes) {
+          const result = await premiumCommerce.processWebhookPayment(payment);
+          if (!result.handled) throw new Error('Premium order metadata exists but local commerce order was not found');
+          console.log(`[RAZORPAY WEBHOOK] Premium entitlement completed: order=${result.order_id} report=${result.report_id}`);
+          break;
+        }
+
+        if (!remoteOrder) {
+          const possiblePremium = await premiumCommerce.processWebhookPayment(payment);
+          if (possiblePremium.handled) {
+            console.log(`[RAZORPAY WEBHOOK] Premium entitlement completed via D1 fallback: order=${possiblePremium.order_id}`);
+            break;
+          }
+        }
+
+        /* Existing API subscription path (Redis) — intentionally unchanged. */
         const dupKey = `payment:rzp:txn:seen:${paymentId}`;
         const dup    = await redis.exists(dupKey).catch(() => 0);
-        if (dup && parseInt(dup, 10) > 0) break; // already processed via verify-razorpay-payment
+        if (dup && parseInt(dup, 10) > 0) break;
 
         const order = parseHash(await redis.hgetall(`payment:rzp:order:${orderId}`));
         if (!order || order.status === 'paid') break;
@@ -71,18 +92,29 @@ module.exports = async (req, res) => {
           status: 'paid', paymentId, verifiedAt: now(),
         });
         await redis.expire(`payment:rzp:order:${orderId}`, SUBMISSION_TTL_SECONDS);
-
         await upgradeUserTier(email, tier, {
           transactionId: paymentId,
-          gateway:       'razorpay_webhook',
+          gateway: 'razorpay_webhook',
           orderId,
         });
-
         await auditLog('RAZORPAY_WEBHOOK_PAYMENT_CAPTURED', {
           email, planType: order.planType, orderId, paymentId, amount: order.amount,
         });
         break;
       }
+
+      case 'refund.processed': {
+        const refund = event.payload?.refund?.entity || {};
+        const payment = event.payload?.payment?.entity || {};
+        const result = await premiumCommerce.processWebhookRefund(refund, payment);
+        if (result.handled && result.full_refund) {
+          console.log(`[RAZORPAY WEBHOOK] Premium entitlement revoked after full refund: order=${result.order_id} report=${result.report_id}`);
+        }
+        // Legacy subscription refunds are outside this new one-time report
+        // commerce store and continue under their existing billing governance.
+        break;
+      }
+
       default:
         console.log(`[RAZORPAY WEBHOOK] Unhandled event: ${event.event}`);
     }
@@ -94,6 +126,4 @@ module.exports = async (req, res) => {
   }
 };
 
-// Disable Vercel's automatic body parsing — we need the exact raw bytes
-// Razorpay signed, not a re-serialization of the parsed object.
 module.exports.config = { api: { bodyParser: false } };

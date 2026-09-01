@@ -6,11 +6,9 @@
  * Vercel's own filesystem-routing convention for api/** (any .js file
  * under api/, except api/_lib/** and api/intel/**, is a routable
  * function — see VERCEL_MIGRATION_INVENTORY.md Sec5 for the enumerated
- * 32-function list this was transcribed from). Kept as pure data + a pure
+ * function list this was transcribed from). Kept as pure data + a pure
  * matching function, independent of any Cloudflare-specific dispatch code,
  * so it's fully unit-testable without a Workers runtime.
- *
- * resolveRoute() expects a bare pathname (no query string).
  */
 
 const BLOCKED_PREFIXES = [
@@ -24,9 +22,6 @@ const BLOCKED_PREFIXES = [
   '/OPERATIONS.md',
 ];
 
-// [pattern, handlerPath, buildQuery(match)] — 1:1 with vercel.json's
-// `rewrites` array. handlerPath is the api/** file (no extension) Vercel's
-// own filesystem convention already routes the *destination* path to.
 const PRETTY_URL_REWRITES = [
   [/^\/api\/v1\/intel\/live$/, 'api/v1/intel', () => ({ action: 'live' })],
   [/^\/api\/v1\/intel\/top-threats$/, 'api/v1/intel', () => ({ action: 'top' })],
@@ -59,36 +54,17 @@ const PRETTY_URL_REWRITES = [
   [/^\/api\/v1\/admin\/payments\/product-orders$/, 'api/v1/admin', () => ({ action: 'product-orders' })],
 ];
 
-// vercel.json rewrites these to the literal static file /rss.xml — served
-// by Cloudflare's static asset layer, not a handler.
 const ASSET_REWRITES = [
   [/^\/feed$/, '/rss.xml'],
   [/^\/feed\.xml$/, '/rss.xml'],
   [/^\/atom\.xml$/, '/rss.xml'],
-
-  // Not a vercel.json rewrite -- a Cloudflare-specific compensation.
-  // wrangler.jsonc's assets.html_handling is set to "none" (required so
-  // /posts/foo.html etc. serve literally instead of 307-redirecting to
-  // /posts/foo -- see that file's comment), but "none" also disables
-  // Cloudflare's automatic "/" -> index.html resolution as a side effect:
-  // confirmed via a real Workerd probe, GET / 404'd while GET /index.html
-  // served the same file at 200. Rewriting "/" here restores the
-  // universal static-hosting convention (and Vercel's actual current
-  // behavior) without reverting html_handling and reintroducing the much
-  // larger 307 regression across every posts/**, cve/**, etc. page.
   [/^\/$/, '/index.html'],
 ];
 
-// [pattern, destination, status] — vercel.json's `redirects` (permanent: true → 308).
 const REDIRECTS = [
   [/^\/rss$/, '/rss.xml', 308],
 ];
 
-// Every routable api/** function reachable at its own literal path via
-// Vercel's filesystem convention (i.e. not through one of the pretty-URL
-// rewrites above). api/_lib/** (underscore-prefixed) and api/intel/**
-// (.json data) are deliberately excluded — see route-table.test.js for a
-// cross-check against VERCEL_MIGRATION_INVENTORY.md's count.
 const DIRECT_API_HANDLERS = new Set([
   'api/og',
   'api/cron/dispatch-intel',
@@ -96,6 +72,7 @@ const DIRECT_API_HANDLERS = new Set([
   'api/v1/auth',
   'api/v1/billing',
   'api/v1/intel',
+  'api/v1/premium-intelligence',
   'api/v1/newsletter',
   'api/v1/watchlists',
   'api/v1/notifications',
@@ -129,30 +106,11 @@ const DIRECT_API_HANDLERS = new Set([
   'api/v1/workbench/search',
 ]);
 
-// The 2 known [id]-style dynamic segments. api/v1/ioc/search (static) is
-// checked ahead of the api/v1/ioc/[id] pattern by resolveRoute() below, so
-// "search" itself is never swallowed as an id.
 const DYNAMIC_API_HANDLERS = [
   [/^\/api\/v1\/detections\/rules\/([^/]+)$/, 'api/v1/detections/rules/[id]'],
   [/^\/api\/v1\/ioc\/([^/]+)$/, 'api/v1/ioc/[id]'],
 ];
 
-// These 7 handlers do their own internal routing on segments beyond their
-// own base path (e.g. /api/v1/intelligence/objects/{id}/approve) via
-// api/_lib/request-path.js's resolvePathParts(), which reads
-// req.query.apexSubpath. On Vercel this is delivered by a
-// `/mountPath/:apexSubpath*` -> `/mountPath?apexSubpath=:apexSubpath*`
-// wildcard rewrite per mount point (vercel.json). Cloudflare has no
-// declarative rewrite config to mirror that in, so resolveRoute() below
-// does the equivalent prefix match itself and returns the remaining
-// segments as query.apexSubpath — router.js's dispatch() already merges
-// route.query into req.query (line 93), so this reaches
-// resolvePathParts() exactly the way the real query param would.
-// Without this, every sub-path request 404s here the same way it did on
-// Vercel before that fix existed: DIRECT_API_HANDLERS only matches the
-// bare base path, and there is no other rule that would catch a deeper
-// path -- confirmed via platform/open-issues.md Issue 19's real Workerd
-// probe (cases.js), the same defect class, not yet closed on this side.
 const APEX_SUBPATH_HANDLERS = new Set([
   'api/v1/workbench/investigations',
   'api/v1/workbench/cases',
@@ -163,14 +121,6 @@ const APEX_SUBPATH_HANDLERS = new Set([
   'api/v1/intelligence/publish',
 ]);
 
-/**
- * @param {string} pathname bare path, no query string (e.g. url.pathname)
- * @returns {null
- *   | { type: 'blocked' }
- *   | { type: 'redirect', to: string, status: number }
- *   | { type: 'asset', path: string }
- *   | { type: 'handler', handlerPath: string, query: Record<string,string> }}
- */
 function resolveRoute(pathname) {
   if (BLOCKED_PREFIXES.some(p => pathname === p || pathname.startsWith(p))) {
     return { type: 'blocked' };
@@ -193,8 +143,6 @@ function resolveRoute(pathname) {
   if (DIRECT_API_HANDLERS.has(directPath)) {
     return { type: 'handler', handlerPath: directPath, query: {} };
   }
-  // Vercel drops a trailing /index from the routable URL — api/v1/products/
-  // index.js is reached at /api/v1/products, not /api/v1/products/index.
   if (DIRECT_API_HANDLERS.has(`${directPath}/index`)) {
     return { type: 'handler', handlerPath: `${directPath}/index`, query: {} };
   }
@@ -210,7 +158,7 @@ function resolveRoute(pathname) {
     if (m) return { type: 'handler', handlerPath, query: { id: m[1] } };
   }
 
-  return null; // not an API route — defer to the static asset layer
+  return null;
 }
 
 module.exports = {
