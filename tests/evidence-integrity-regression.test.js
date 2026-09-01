@@ -163,7 +163,7 @@ describe('publication and acquisition workflow regressions', () => {
     expect(recoveryStep).toContain("const workflowId = 'sentinel-apex.yml';");
     expect(recoveryStep).toContain('createWorkflowDispatch');
     expect(recoveryStep).toContain("current.conclusion !== 'success'");
-    expect((workflow.match(/createWorkflowDispatch/g) || [])).toHaveLength(1);
+    expect((workflow.match(/github\.rest\.actions\.createWorkflowDispatch\s*\(/g) || [])).toHaveLength(1);
 
     // A successful recovery is not enough by itself. The monitor must refresh
     // the canonical main branch and run the same classifier again; unresolved
