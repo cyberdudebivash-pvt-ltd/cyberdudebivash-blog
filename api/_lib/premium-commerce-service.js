@@ -231,6 +231,26 @@ async function processWebhookPayment(payment) {
   return { handled: true, order_id: completed.order_id, report_id: completed.report_id, state: completed.state };
 }
 
+async function processWebhookRefund(refund, payment) {
+  const paymentId = String((refund && refund.payment_id) || (payment && payment.id) || '');
+  if (!paymentId) return { handled: false };
+  const order = await store.getOrderByPaymentId(paymentId);
+  if (!order) return { handled: false };
+
+  // A partial refund must not revoke access to a purchased report. Razorpay's
+  // payment entity exposes amount_refunded; full refunds also transition the
+  // payment to `refunded`. Only a processed full refund revokes entitlement.
+  const paymentAmount = Number((payment && payment.amount) || order.amount_minor);
+  const amountRefunded = Number((payment && payment.amount_refunded) || (refund && refund.amount) || 0);
+  const refundStatus = String((refund && refund.status) || '').toLowerCase();
+  const paymentStatus = String((payment && payment.status) || '').toLowerCase();
+  const fullyRefunded = refundStatus === 'processed' && (paymentStatus === 'refunded' || (paymentAmount > 0 && amountRefunded >= paymentAmount));
+  if (!fullyRefunded) return { handled: true, full_refund: false, order_id: order.order_id };
+
+  await store.markFullyRefunded({ orderId: order.order_id, ownerId: order.owner_id, reportId: order.report_id });
+  return { handled: true, full_refund: true, order_id: order.order_id, report_id: order.report_id };
+}
+
 async function listLibrary(user, limit) {
   if (!user || !user.userId) throw Object.assign(new Error('Authenticated customer required'), { code: 'UNAUTHORIZED' });
   return store.listLibrary(user.userId, limit);
@@ -272,6 +292,7 @@ module.exports = {
   createCheckout,
   verifyCheckout,
   processWebhookPayment,
+  processWebhookRefund,
   listLibrary,
   downloadReport,
 };
