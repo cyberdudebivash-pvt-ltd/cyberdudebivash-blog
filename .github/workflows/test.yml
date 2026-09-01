@@ -6,25 +6,38 @@ on:
     paths:
       - 'lib/**'
       - 'api/**'
+      - 'scripts/check-intel-freshness.js'
+      - 'scripts/__tests__/**'
       - 'tests/**/*.js'
       - 'tests/**/*.ts'
       - 'jest.config.js'
       - 'jest.setup.ts'
       - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/test.yml'
+      - '.github/workflows/freshness-check.yml'
   pull_request:
     branches: [main, develop]
     paths:
       - 'lib/**'
       - 'api/**'
+      - 'scripts/check-intel-freshness.js'
+      - 'scripts/__tests__/**'
       - 'tests/**/*.js'
       - 'tests/**/*.ts'
       - 'jest.config.js'
       - 'jest.setup.ts'
       - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/test.yml'
+      - '.github/workflows/freshness-check.yml'
 
 concurrency:
   group: test-${{ github.ref }}
   cancel-in-progress: false
+
+env:
+  NODE_VERSION: '22'
 
 jobs:
   test:
@@ -36,38 +49,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install dependencies
-        run: |
-          echo "📦 Installing dependencies with fallback strategy..."
-          if npm ci --legacy-peer-deps 2>&1 | tee /tmp/npm-install.log; then
-            echo "✅ Dependencies installed successfully"
-          else
-            echo "⚠️  npm ci failed, attempting npm install as fallback..."
-            if npm install --legacy-peer-deps 2>&1 | tee -a /tmp/npm-install.log; then
-              echo "✅ Dependencies installed successfully (via fallback)"
-            else
-              echo "❌ Both npm ci and npm install failed"
-              echo "Installation log:"
-              tail -30 /tmp/npm-install.log
-              exit 1
-            fi
-          fi
+      - name: Install locked dependencies
+        run: npm ci --legacy-peer-deps
 
       - name: Check TypeScript compilation
         run: npx tsc --noEmit
 
-      - name: Run all tests
+      # test:ci already runs Jest with --coverage. This is the canonical test
+      # execution and the only place the full Jest suite is run with coverage.
+      - name: Run Jest with coverage
         run: npm run test:ci
         env:
           NODE_ENV: test
 
-      - name: Upload coverage reports
+      - name: Upload coverage to Codecov
+        if: success()
         uses: codecov/codecov-action@v3
         with:
           files: ./coverage/coverage-final.json
@@ -75,13 +77,39 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: false
 
-      - name: Archive test results
-        if: always()
+      - name: Archive canonical coverage artifact
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-node20
+          name: test-results-node22
           path: coverage/
+          if-no-files-found: error
           retention-days: 30
+
+  build-check:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install locked dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Validate production entrypoint syntax
+        run: node --check fetch-live-intel.js
+
+      - name: Dependency audit (advisory)
+        continue-on-error: true
+        run: npm audit --omit=dev --audit-level=high
 
   test-e2e:
     name: End-to-End Tests
@@ -93,20 +121,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install dependencies
-        run: |
-          if npm ci --legacy-peer-deps 2>&1 | tee /tmp/npm-install.log; then
-            echo "✅ Dependencies installed successfully"
-          else
-            echo "⚠️  npm ci failed, attempting npm install as fallback..."
-            npm install --legacy-peer-deps 2>&1 | tee -a /tmp/npm-install.log || exit 1
-          fi
+      - name: Install locked dependencies
+        run: npm ci --legacy-peer-deps
 
       - name: Run E2E tests
         run: npm run test:e2e
@@ -123,20 +145,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install dependencies
-        run: |
-          if npm ci --legacy-peer-deps 2>&1 | tee /tmp/npm-install.log; then
-            echo "✅ Dependencies installed successfully"
-          else
-            echo "⚠️  npm ci failed, attempting npm install as fallback..."
-            npm install --legacy-peer-deps 2>&1 | tee -a /tmp/npm-install.log || exit 1
-          fi
+      - name: Install locked dependencies
+        run: npm ci --legacy-peer-deps
 
       - name: Run governance tests
         run: npm run test:governance
@@ -153,20 +169,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install dependencies
-        run: |
-          if npm ci --legacy-peer-deps 2>&1 | tee /tmp/npm-install.log; then
-            echo "✅ Dependencies installed successfully"
-          else
-            echo "⚠️  npm ci failed, attempting npm install as fallback..."
-            npm install --legacy-peer-deps 2>&1 | tee -a /tmp/npm-install.log || exit 1
-          fi
+      - name: Install locked dependencies
+        run: npm ci --legacy-peer-deps
 
       - name: Run performance tests
         run: npm run test:performance
@@ -183,20 +193,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install dependencies
-        run: |
-          if npm ci --legacy-peer-deps 2>&1 | tee /tmp/npm-install.log; then
-            echo "✅ Dependencies installed successfully"
-          else
-            echo "⚠️  npm ci failed, attempting npm install as fallback..."
-            npm install --legacy-peer-deps 2>&1 | tee -a /tmp/npm-install.log || exit 1
-          fi
+      - name: Install locked dependencies
+        run: npm ci --legacy-peer-deps
 
       - name: Run resilience tests
         run: npm run test:resilience
@@ -206,10 +210,8 @@ jobs:
   coverage-check:
     name: Coverage Verification
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: test-resilience
-    # romeovs/lcov-reporter-action needs pull-requests:write to post its
-    # comment; without it the default (read-only) GITHUB_TOKEN gets a 403.
+    timeout-minutes: 10
+    needs: [test, test-resilience]
     permissions:
       contents: read
       pull-requests: write
@@ -218,64 +220,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # Reuse the coverage generated by the canonical Jest execution instead
+      # of running the complete test suite a second time. The blocking floor
+      # remains jest.config.js#coverageThreshold and has already been enforced
+      # by the upstream `test` job.
+      - name: Download canonical coverage artifact
+        uses: actions/download-artifact@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          name: test-results-node22
+          path: coverage
 
-      - name: Install dependencies
+      - name: Verify coverage artifact integrity
+        shell: bash
         run: |
-          if npm ci --legacy-peer-deps 2>&1 | tee /tmp/npm-install.log; then
-            echo "✅ Dependencies installed successfully"
-          else
-            echo "⚠️  npm ci failed, attempting npm install as fallback..."
-            npm install --legacy-peer-deps 2>&1 | tee -a /tmp/npm-install.log || exit 1
-          fi
-
-      - name: Generate coverage report
-        run: npm run test:coverage
-        env:
-          NODE_ENV: test
-
-      - name: Check coverage thresholds
-        run: |
-          npx nyc check-coverage --lines 80 --functions 80 --branches 70 || true
+          test -s coverage/coverage-final.json
+          test -s coverage/lcov.info
+          echo "Canonical coverage artifact is present and non-empty."
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request'
-        continue-on-error: true # advisory report; must never block the merge gate
+        continue-on-error: true
         uses: romeovs/lcov-reporter-action@v0.3.1
         with:
           lcov-file: ./coverage/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-  build-check:
-    name: Build Verification
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: |
-          if npm ci --legacy-peer-deps 2>&1 | tee /tmp/npm-install.log; then
-            echo "✅ Dependencies installed successfully"
-          else
-            echo "⚠️  npm ci failed, attempting npm install as fallback..."
-            npm install --legacy-peer-deps 2>&1 | tee -a /tmp/npm-install.log || exit 1
-          fi
-
-      - name: Build validation
-        run: npm run fetch-intel --dry-run || true
-
-      - name: Dependency audit
-        run: npm audit --production || true

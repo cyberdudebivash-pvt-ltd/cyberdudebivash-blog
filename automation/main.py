@@ -12,14 +12,22 @@ import argparse
 import json
 import sys
 import time
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 
 from .authority_transformer import AuthorityTransformer
 from .blogger_publisher import BloggerPublisher, BloggerPublishError, BloggerAuthError, BloggerRateLimitError
+from .canonical_rss import discover_local_canonical_rss
 from .config import Config
 from .content_discovery import ContentDiscoveryEngine, DiscoveredArticle, PublicationState
 from .logger import setup_logger
+from .publication_scheduler import (
+    candidate_discovery_limit,
+    classify_publication_family,
+    is_canonical_report,
+    select_publication_batch,
+)
 from .publication_verifier import fetch_back_and_verify
 from .report_integrity import PublicationIntegrityError, compute_artifact_hash
 from .search_console_submitter import SearchConsoleSubmitter
@@ -64,11 +72,13 @@ def _merge_retry_and_fresh(
     fresh_articles: list[DiscoveredArticle],
     state: PublicationState,
 ) -> list[DiscoveredArticle]:
-    """Prefer current discovery data over stale retries for the same source.
+    """Legacy-compatible fresh-over-retry merge helper.
 
-    Editorial normalization can change a content hash while the canonical
-    source URL remains stable. Publishing both variants creates duplicate
-    reports and can keep obsolete placeholder content in the retry queue.
+    Existing unit tests and certification documentation import this helper
+    directly. The live pipeline now delegates finite-slot allocation to
+    publication_scheduler.select_publication_batch(), but this function is
+    retained as a stable compatibility surface for callers that only need
+    duplicate-safe concatenation.
     """
     fresh_hashes = {article.content_hash for article in fresh_articles}
     fresh_urls = {article.url.strip() for article in fresh_articles if article.url}
@@ -100,6 +110,22 @@ def run_health_check(config: Config) -> bool:
     return True
 
 
+def _empty_selection_metrics() -> dict:
+    return {
+        "candidate_count": 0,
+        "fresh_candidates": 0,
+        "retry_candidates": 0,
+        "canonical_candidates": 0,
+        "fresh_selected": 0,
+        "retry_selected": 0,
+        "strategic_selected": 0,
+        "vulnerability_selected": 0,
+        "canonical_selected": 0,
+        "selected_families": {},
+        "selected_sources": {},
+    }
+
+
 def run_pipeline(config: Config, dry_run: bool = False) -> dict:
     """Execute the full syndication pipeline."""
     run_start = datetime.now(timezone.utc).isoformat()
@@ -114,6 +140,7 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         "requeued": 0,
         "integrity_blocked": 0,
         "fetch_back_discrepancies": 0,
+        **_empty_selection_metrics(),
         "posts": [],
         "errors": [],
     }
@@ -128,38 +155,86 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         report["errors"].append(msg)
         report["run_status"] = "FAILED"
         report["run_end"] = datetime.now(timezone.utc).isoformat()
+        _write_run_report(report, config.logs_dir)
         return report
 
-    # Initialise components
-    discovery = ContentDiscoveryEngine(config)
+    # The Blogger write budget remains the original config value (normally 5).
+    # Discovery gets a bounded wider candidate window so source-priority sorting
+    # cannot discard strategic intelligence before the commercial scheduler can
+    # make a cross-family decision.
+    discovery_config = replace(
+        config,
+        max_posts_per_run=candidate_discovery_limit(config.max_posts_per_run),
+    )
+    discovery = ContentDiscoveryEngine(discovery_config)
     transformer = AuthorityTransformer(config)
     publisher = BloggerPublisher(config) if not dry_run else None
     submitter = SearchConsoleSubmitter(config)
     amplifier = SocialAmplifier(config)
 
-    # --- Retry Queue: prepend previously-failed articles for retry ---
+    # --- Retry Queue ---
     retry_items = discovery.state.get_retry_queue()
-    retry_articles = []
+    retry_articles: list[DiscoveredArticle] = []
     for item in retry_items:
         try:
-            retry_articles.append(DiscoveredArticle.from_dict(item))
-        except KeyError:
-            pass  # Malformed queue entry — skip silently
+            article = DiscoveredArticle.from_dict(item)
+        except (KeyError, TypeError):
+            continue  # Malformed persisted entry — ignore, never break publication.
+        if discovery.state.is_published(article.content_hash):
+            continue
+        if discovery.state.is_source_url_published(article.url):
+            continue
+        retry_articles.append(article)
 
     if retry_articles:
         logger.info("Loaded retry queue", extra={"retry_count": len(retry_articles)})
 
     # --- Content Discovery ---
-    fresh_articles = discovery.discover()
-    # Retry articles first (skip if already published or in fresh batch)
-    articles = _merge_retry_and_fresh(retry_articles, fresh_articles, discovery.state)
-    articles = articles[: config.max_posts_per_run]
+    # First-party repo RSS is read directly from the checked-out artifact so a
+    # just-generated malware/campaign/breach report does not have to wait for a
+    # deployment/CDN propagation cycle before Blogger can see it. The existing
+    # remote own-RSS source still runs below and remains the fallback.
+    canonical_fresh = discover_local_canonical_rss(
+        config,
+        discovery.state,
+        max_items=discovery_config.max_posts_per_run,
+    )
+    external_fresh = discovery.discover()
+    fresh_articles = canonical_fresh + external_fresh
+
+    selection = select_publication_batch(
+        retry_articles,
+        fresh_articles,
+        config.max_posts_per_run,
+    )
+    articles = selection.articles
+    report.update(selection.metrics)
+    report["canonical_candidates"] = len(canonical_fresh)
+    # Preserve the historical `discovered` field semantics used by workflow
+    # summaries: this is the selected/attempted publication batch, while the
+    # new candidate_count field exposes the larger pre-allocation pool.
     report["discovered"] = len(articles)
+
+    logger.info(
+        "Commercial publication allocation complete",
+        extra={
+            "candidate_count": report["candidate_count"],
+            "canonical_candidates": report["canonical_candidates"],
+            "selected": report["discovered"],
+            "fresh_selected": report["fresh_selected"],
+            "retry_selected": report["retry_selected"],
+            "strategic_selected": report["strategic_selected"],
+            "vulnerability_selected": report["vulnerability_selected"],
+            "selected_families": report["selected_families"],
+            "selected_sources": report["selected_sources"],
+        },
+    )
 
     if not articles:
         logger.info("No new articles to syndicate this run")
         report["run_status"] = "SUCCESS"
         report["run_end"] = datetime.now(timezone.utc).isoformat()
+        _write_run_report(report, config.logs_dir)
         return report
 
     # --- Transform and Publish ---
@@ -168,6 +243,8 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             "source_url": article.url,
             "title": article.title,
             "content_hash": article.content_hash,
+            "scheduler_family": classify_publication_family(article),
+            "canonical_handoff": is_canonical_report(article),
             "status": "pending",
             "blogger_post_id": None,
             "blogger_url": None,
@@ -199,7 +276,12 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
             if dry_run:
                 logger.info(
                     "DRY RUN — would publish",
-                    extra={"title": transformed["title"][:60], "labels": transformed["labels"]},
+                    extra={
+                        "title": transformed["title"][:60],
+                        "labels": transformed["labels"],
+                        "scheduler_family": post_result["scheduler_family"],
+                        "canonical_handoff": post_result["canonical_handoff"],
+                    },
                 )
                 post_result["status"] = "dry_run"
                 report["skipped"] += 1
@@ -257,7 +339,8 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                     logger.warning(
                         "Post-publication fetch-back found a discrepancy",
                         extra={
-                            "post_id": blogger_post_id, "blogger_url": blogger_url,
+                            "post_id": blogger_post_id,
+                            "blogger_url": blogger_url,
                             "defects": list(fetch_back.defects),
                         },
                     )
@@ -297,6 +380,8 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
                         "title": transformed["title"][:60],
                         "blogger_url": blogger_url,
                         "post_id": blogger_post_id,
+                        "scheduler_family": post_result["scheduler_family"],
+                        "canonical_handoff": post_result["canonical_handoff"],
                         "social": social_result,
                     },
                 )
@@ -378,10 +463,14 @@ def run_pipeline(config: Config, dry_run: bool = False) -> dict:
         "Pipeline complete",
         extra={
             "run_status": report["run_status"],
+            "candidate_count": report["candidate_count"],
             "discovered": report["discovered"],
             "published": report["published"],
             "failed": report["failed"],
             "skipped": report["skipped"],
+            "strategic_selected": report["strategic_selected"],
+            "vulnerability_selected": report["vulnerability_selected"],
+            "selected_families": report["selected_families"],
             "integrity_blocked": report["integrity_blocked"],
             "fetch_back_discrepancies": report["fetch_back_discrepancies"],
         },

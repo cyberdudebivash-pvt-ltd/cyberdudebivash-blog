@@ -184,9 +184,37 @@ async function updateDeployment(deploymentId, fields) {
   );
 }
 
+async function getLatestApproval(deploymentId) {
+  const rows = await d1.query(
+    'SELECT * FROM deployment_approvals WHERE deployment_id = ? ORDER BY created_at DESC LIMIT 1',
+    [deploymentId]
+  );
+  return rows[0] || null;
+}
+
+/**
+ * Generate a strictly increasing persisted approval timestamp for a
+ * deployment. JavaScript Date/ISO timestamps have millisecond precision;
+ * a fast UPDATE -> ROLLBACK sequence can therefore create two approvals
+ * with the same created_at. The existing ORDER BY created_at DESC query then
+ * has no deterministic winner, and execution can validate against the stale
+ * hash. Deriving the next timestamp from the persisted latest approval makes
+ * sequential approvals strictly ordered across separate request isolates and
+ * preserves the existing additive D1 schema/query contract.
+ */
+async function nextApprovalCreatedAt(deploymentId) {
+  const latest = await getLatestApproval(deploymentId);
+  const wallClockMs = Date.now();
+  const latestMs = latest && latest.created_at ? Date.parse(latest.created_at) : Number.NaN;
+  const nextMs = Number.isFinite(latestMs) && wallClockMs <= latestMs
+    ? latestMs + 1
+    : wallClockMs;
+  return new Date(nextMs).toISOString();
+}
+
 async function recordApproval(deploymentId, ownerId, { detectionVersion, connectorId, targetConfigHash, approvedHash, enabledRequested }) {
   const approvalId = generateId('appr');
-  const nowIso = new Date().toISOString();
+  const nowIso = await nextApprovalCreatedAt(deploymentId);
   await d1.run(
     `INSERT INTO deployment_approvals
       (approval_id, deployment_id, owner_id, detection_version, connector_id, target_config_hash, approved_hash, enabled_requested, created_at)
@@ -194,14 +222,6 @@ async function recordApproval(deploymentId, ownerId, { detectionVersion, connect
     [approvalId, deploymentId, ownerId, detectionVersion, connectorId, targetConfigHash, approvedHash, enabledRequested ? 1 : 0, nowIso]
   );
   return approvalId;
-}
-
-async function getLatestApproval(deploymentId) {
-  const rows = await d1.query(
-    'SELECT * FROM deployment_approvals WHERE deployment_id = ? ORDER BY created_at DESC LIMIT 1',
-    [deploymentId]
-  );
-  return rows[0] || null;
 }
 
 async function recordAttempt(deploymentId, { action, result, errorCode, httpStatus, startedAt, finishedAt }) {
