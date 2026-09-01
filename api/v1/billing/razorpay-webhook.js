@@ -5,8 +5,8 @@
  *
  * Premium report orders are D1-backed and idempotently recoverable here if a
  * buyer closes the browser before the checkout callback can call
- * /api/v1/premium-intelligence?action=verify. Legacy plan billing remains on
- * its existing Redis path unchanged.
+ * /api/v1/premium-intelligence?action=verify. Processed full refunds revoke the
+ * corresponding premium entitlement; partial refunds do not.
  */
 'use strict';
 const redis     = require('../../_lib/redis');
@@ -19,9 +19,7 @@ const {
 } = require('../../_lib/payment-utils');
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'POST required' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'POST required' });
 
   const sig = req.headers['x-razorpay-signature'];
   if (!sig) return res.status(400).json({ error: 'Missing X-Razorpay-Signature' });
@@ -56,13 +54,6 @@ module.exports = async (req, res) => {
         const paymentId = payment.id;
         if (!orderId || !paymentId) break;
 
-        /* ── Premium Intelligence order path (D1) ──────────────────
-         * First use Razorpay's own server-side order metadata to classify the
-         * event. If that lookup is temporarily unavailable, ask the D1
-         * commerce store whether the order is one of ours; a handled premium
-         * order MUST fail the webhook with 500 if entitlement creation fails
-         * so Razorpay retries instead of silently losing paid fulfillment.
-         */
         let remoteOrder = null;
         try {
           remoteOrder = await razorpay.fetchOrder(orderId);
@@ -79,9 +70,6 @@ module.exports = async (req, res) => {
         }
 
         if (!remoteOrder) {
-          // Safe fallback for a transient Razorpay order-lookup failure. The
-          // D1 lookup inside processWebhookPayment is exact by razorpay_order_id
-          // and returns {handled:false} for a legacy plan order.
           const possiblePremium = await premiumCommerce.processWebhookPayment(payment);
           if (possiblePremium.handled) {
             console.log(`[RAZORPAY WEBHOOK] Premium entitlement completed via D1 fallback: order=${possiblePremium.order_id}`);
@@ -89,7 +77,7 @@ module.exports = async (req, res) => {
           }
         }
 
-        /* ── Existing API subscription path (Redis) ──────────────── */
+        /* Existing API subscription path (Redis) — intentionally unchanged. */
         const dupKey = `payment:rzp:txn:seen:${paymentId}`;
         const dup    = await redis.exists(dupKey).catch(() => 0);
         if (dup && parseInt(dup, 10) > 0) break;
@@ -104,18 +92,29 @@ module.exports = async (req, res) => {
           status: 'paid', paymentId, verifiedAt: now(),
         });
         await redis.expire(`payment:rzp:order:${orderId}`, SUBMISSION_TTL_SECONDS);
-
         await upgradeUserTier(email, tier, {
           transactionId: paymentId,
-          gateway:       'razorpay_webhook',
+          gateway: 'razorpay_webhook',
           orderId,
         });
-
         await auditLog('RAZORPAY_WEBHOOK_PAYMENT_CAPTURED', {
           email, planType: order.planType, orderId, paymentId, amount: order.amount,
         });
         break;
       }
+
+      case 'refund.processed': {
+        const refund = event.payload?.refund?.entity || {};
+        const payment = event.payload?.payment?.entity || {};
+        const result = await premiumCommerce.processWebhookRefund(refund, payment);
+        if (result.handled && result.full_refund) {
+          console.log(`[RAZORPAY WEBHOOK] Premium entitlement revoked after full refund: order=${result.order_id} report=${result.report_id}`);
+        }
+        // Legacy subscription refunds are outside this new one-time report
+        // commerce store and continue under their existing billing governance.
+        break;
+      }
+
       default:
         console.log(`[RAZORPAY WEBHOOK] Unhandled event: ${event.event}`);
     }
@@ -123,8 +122,6 @@ module.exports = async (req, res) => {
     res.status(200).json({ received: true, event: event.event });
   } catch (e) {
     console.error(`[RAZORPAY WEBHOOK] Handler error: ${e.message}`);
-    // 500 is deliberate: Razorpay retries signed webhook deliveries, which is
-    // preferable to acknowledging a captured payment whose entitlement failed.
     res.status(500).json({ error: 'Webhook handler failed' });
   }
 };
