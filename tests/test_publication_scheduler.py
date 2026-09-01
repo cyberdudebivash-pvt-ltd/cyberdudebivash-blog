@@ -79,6 +79,27 @@ def test_retry_backlog_cannot_monopolise_when_fresh_work_exists():
     assert result.metrics["strategic_selected"] >= 3
 
 
+def test_global_strategic_reserve_survives_mixed_fresh_and_retry_allocation():
+    retry = [
+        article(i, source="nvd", title=f"CVE-2026-{35000 + i} retry vulnerability")
+        for i in range(6)
+    ]
+    fresh = [
+        article(100, source="ransomware_intel", title="Fresh ransomware campaign"),
+        article(101, source="breach_intel", title="Fresh public data breach notice"),
+        article(102, source="global_rss", title="Fresh malware loader campaign"),
+        article(103, source="nvd", title="CVE-2026-35999 fresh vulnerability"),
+    ]
+
+    result = select_publication_batch(retry, fresh, 5)
+
+    assert len(result.articles) == 5
+    assert result.metrics["strategic_selected"] >= 3
+    assert result.metrics["vulnerability_selected"] <= 2
+    assert result.metrics["fresh_selected"] >= 3
+    assert result.metrics["retry_selected"] <= 2
+
+
 def test_retry_can_use_spare_capacity_when_fresh_supply_is_thin():
     retry = [
         article(i, source="nvd", title=f"CVE-2026-{40000 + i} retry vulnerability")
