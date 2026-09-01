@@ -140,7 +140,12 @@ describe('publication and acquisition workflow regressions', () => {
     expect(recoveryStep).toBeDefined();
     expect(recoveryStep).toContain("if: always() && steps.freshness.outputs.recovery_required == 'true'");
     expect(recoveryStep).not.toContain('if: failure()');
-    expect(classifier).toContain('process.exitCode = result.exitCode');
+
+    // The CLI returns the classifier result from main() and binds that exact
+    // return value to process.exitCode. Dedicated classifier tests exercise
+    // 0/1/2 semantics; this regression guard verifies the executable wiring.
+    expect(classifier).toContain('return result.exitCode;');
+    expect(classifier).toContain('process.exitCode = main();');
   });
 
   test('newsletter uses the first-party endpoint before fallback', () => {
