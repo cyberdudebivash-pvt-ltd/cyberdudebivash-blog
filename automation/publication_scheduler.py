@@ -1,6 +1,6 @@
 """Commercial publication scheduling for the Blogger syndication pipeline.
 
-The discovery layer intentionally collects from heterogeneous sources.  This
+The discovery layer intentionally collects from heterogeneous sources. This
 module owns the *finite Blogger write budget* and prevents a high-volume source
 (such as NVD) or the durable retry queue from monopolising every slot.
 
@@ -14,7 +14,7 @@ Policy invariants for a normal five-post run:
 - preserve throughput: when one lane has insufficient candidates, unused slots
   are immediately returned to the other lane.
 
-This is scheduling only.  It never bypasses the existing evidence-integrity,
+This is scheduling only. It never bypasses the existing evidence-integrity,
 publication, fetch-back, retry, or authentication gates.
 """
 
@@ -60,9 +60,9 @@ def candidate_discovery_limit(max_posts: int) -> int:
     """Return a bounded pre-scheduling candidate budget.
 
     ContentDiscoveryEngine historically truncates before the publisher sees
-    the result.  Running it with a wider *candidate* budget allows this module
+    the result. Running it with a wider *candidate* budget allows this module
     to enforce cross-family fairness while keeping enrichment/network work
-    bounded.  Own canonical RSS is merged separately, so a global-RSS burst
+    bounded. Own canonical RSS is merged separately, so a global-RSS burst
     cannot hide a just-generated first-party report.
     """
     requested = max(1, int(max_posts or 1))
@@ -101,7 +101,7 @@ def classify_publication_family(article: DiscoveredArticle) -> str:
     """Map an article to the scheduler's commercial delivery family.
 
     The classifier deliberately uses only evidence already present on the
-    discovered article.  It does not infer a malware family from unrelated
+    discovered article. It does not infer a malware family from unrelated
     metadata and it does not change ReportX's own publication-family label.
     """
     text = _text(article)
@@ -167,11 +167,15 @@ def _priority_key(article: DiscoveredArticle) -> tuple[int, float, str]:
     )
 
 
+def _identity(article: DiscoveredArticle) -> tuple[str, str]:
+    return (str(article.content_hash or ""), str(article.url or ""))
+
+
 def _dedupe_fresh(articles: list[DiscoveredArticle]) -> list[DiscoveredArticle]:
     """Dedupe without suppressing a material CISA KEV update.
 
-    Canonical reports are considered before external candidates.  Exact URL,
-    hash, and normalised-title duplicates collapse.  A canonical report for a
+    Canonical reports are considered before external candidates. Exact URL,
+    hash, and normalised-title duplicates collapse. A canonical report for a
     CVE also suppresses an NVD duplicate for that CVE, but never suppresses a
     CISA KEV record because KEV is a distinct exploitation-status update.
     """
@@ -273,7 +277,7 @@ def _balanced_select(pool: list[DiscoveredArticle], slots: int) -> list[Discover
     vulnerability = [a for a in unique if classify_publication_family(a) == "vulnerability"]
 
     # If enough strategic intelligence exists, vulnerability-only records may
-    # consume at most 40% of this sub-batch.  If strategic supply is low, the
+    # consume at most 40% of this sub-batch. If strategic supply is low, the
     # unused reserve is returned immediately to preserve publication throughput.
     strategic_target = min(len(strategic), math.ceil(slots * 0.60))
     selected = _round_robin_strategic(strategic, strategic_target)
@@ -291,8 +295,8 @@ def _balanced_select(pool: list[DiscoveredArticle], slots: int) -> list[Discover
 
     # Defensive final fill for future classifier families.
     if len(selected) < slots:
-        selected_keys = {(a.content_hash, a.url) for a in selected}
-        remaining = [a for a in unique if (a.content_hash, a.url) not in selected_keys]
+        selected_keys = {_identity(a) for a in selected}
+        remaining = [a for a in unique if _identity(a) not in selected_keys]
         remaining.sort(key=_priority_key, reverse=True)
         selected.extend(remaining[: slots - len(selected)])
 
@@ -303,12 +307,77 @@ def _without_selected(
     pool: list[DiscoveredArticle],
     selected: list[DiscoveredArticle],
 ) -> list[DiscoveredArticle]:
-    selected_keys = {(str(a.content_hash or ""), str(a.url or "")) for a in selected}
-    return [
+    selected_keys = {_identity(a) for a in selected}
+    return [article for article in pool if _identity(article) not in selected_keys]
+
+
+def _enforce_global_strategic_reserve(
+    selected: list[DiscoveredArticle],
+    fresh: list[DiscoveredArticle],
+    retry: list[DiscoveredArticle],
+    max_posts: int,
+) -> list[DiscoveredArticle]:
+    """Enforce the 60% strategic reserve across both origin lanes.
+
+    Fresh and retry quotas are selected independently first. Without this
+    final cross-lane pass, a two-item vulnerability retry allocation could
+    dilute a three-item fresh batch from 60% strategic to only 40% strategic.
+    Replacement prefers unselected *fresh* strategic intelligence and evicts
+    retry vulnerability records before fresh ones, preserving the fresh floor.
+    """
+    if not selected:
+        return selected
+
+    all_candidates = fresh + retry
+    strategic_candidates = [
         article
-        for article in pool
-        if (str(article.content_hash or ""), str(article.url or "")) not in selected_keys
+        for article in all_candidates
+        if classify_publication_family(article) in _STRATEGIC_FAMILIES
     ]
+    target = min(len(strategic_candidates), math.ceil(max_posts * 0.60), len(selected))
+    current = sum(
+        1 for article in selected
+        if classify_publication_family(article) in _STRATEGIC_FAMILIES
+    )
+    deficit = target - current
+    if deficit <= 0:
+        return selected
+
+    selected_keys = {_identity(article) for article in selected}
+    replacement_fresh = [
+        article for article in fresh
+        if _identity(article) not in selected_keys
+        and classify_publication_family(article) in _STRATEGIC_FAMILIES
+    ]
+    replacement_retry = [
+        article for article in retry
+        if _identity(article) not in selected_keys
+        and classify_publication_family(article) in _STRATEGIC_FAMILIES
+    ]
+    replacement_fresh.sort(key=_priority_key, reverse=True)
+    replacement_retry.sort(key=_priority_key, reverse=True)
+    replacements = replacement_fresh + replacement_retry
+
+    retry_keys = {_identity(article) for article in retry}
+    victims = [
+        (index, article)
+        for index, article in enumerate(selected)
+        if classify_publication_family(article) == "vulnerability"
+    ]
+    # Evict retry vulnerability items first; within an origin lane evict
+    # non-canonical/older items before canonical/newer ones.
+    victims.sort(
+        key=lambda pair: (
+            0 if _identity(pair[1]) in retry_keys else 1,
+            1 if is_canonical_report(pair[1]) else 0,
+            _published_epoch(pair[1]),
+        )
+    )
+
+    for replacement, (index, _) in zip(replacements[:deficit], victims[:deficit]):
+        selected[index] = replacement
+
+    return selected
 
 
 def select_publication_batch(
@@ -346,7 +415,7 @@ def select_publication_batch(
     retry_selected = _balanced_select(retry, min(retry_cap, len(retry)))
     selected = fresh_selected + retry_selected
 
-    # Preserve throughput.  Fresh work gets first refusal on unused capacity;
+    # Preserve throughput. Fresh work gets first refusal on unused capacity;
     # only after it is exhausted may retries exceed the normal retry cap.
     if len(selected) < max_posts:
         fresh_remaining = _without_selected(fresh, fresh_selected)
@@ -360,16 +429,20 @@ def select_publication_batch(
         retry_selected.extend(extra_retry)
         selected.extend(extra_retry)
 
-    selected = selected[:max_posts]
+    selected = _enforce_global_strategic_reserve(
+        selected[:max_posts], fresh, retry, max_posts
+    )
     families = Counter(classify_publication_family(a) for a in selected)
     sources = Counter(str(a.source or "unknown") for a in selected)
+    fresh_keys = {_identity(article) for article in fresh}
+    retry_keys = {_identity(article) for article in retry}
 
     metrics = {
         "candidate_count": len(fresh) + len(retry),
         "fresh_candidates": len(fresh),
         "retry_candidates": len(retry),
-        "fresh_selected": sum(1 for a in selected if a in fresh_selected),
-        "retry_selected": sum(1 for a in selected if a in retry_selected),
+        "fresh_selected": sum(1 for a in selected if _identity(a) in fresh_keys),
+        "retry_selected": sum(1 for a in selected if _identity(a) in retry_keys),
         "strategic_selected": sum(
             1 for a in selected if classify_publication_family(a) in _STRATEGIC_FAMILIES
         ),
