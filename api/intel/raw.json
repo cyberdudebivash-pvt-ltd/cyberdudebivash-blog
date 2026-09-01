@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-01T17:06:47.235Z",
+  "generated": "2026-09-01T20:01:17.822Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,8 +8,102 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 118,
+  "count": 121,
   "items": [
+    {
+      "id": "GHSA-e4851e9a7206a350",
+      "title": "pnpm: Environment secrets exfiltrated via env-placeholder expansion in proxy settings read from an untrusted pnpm-worksp",
+      "description": "## Summary pnpm expands `${VAR}` environment placeholders in the `httpProxy` / `httpsProxy` / `noProxy` settings read from a project's `pnpm-workspace.yaml`. Because a project manifest is repository-controlled, a malicious repository that a victim merely clones and runs `pnpm install` in can route a",
+      "cvss": 7.4,
+      "final_ps": 65,
+      "quality_score": 0.548,
+      "threat_level": "HIGH",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-01",
+      "last_seen": "2026-09-01",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "pnpm",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-vx52-2968-3vc6",
+        "https://github.com/pnpm/pnpm/security/advisories/GHSA-vx52-2968-3vc6",
+        "https://github.com/pnpm/pnpm/pull/12871",
+        "https://github.com/pnpm/pnpm/pull/12898"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-88c1ba06d4dac43b",
+      "title": "pnpm: pacquet trust-lockfile install can create dependency symlinks outside the project",
+      "description": "## Summary A crafted lockfile alias could reach several install-time filesystem joins. With `--trust-lockfile` or a frozen lockfile, traversal segments could create links outside the intended project or `node_modules` boundary. This patch validates dependency names and every virtual-store slot befor",
+      "cvss": 7.1,
+      "final_ps": 64,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-01",
+      "last_seen": "2026-09-01",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "pnpm",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-2rx9-3g3h-c2jv",
+        "https://github.com/pnpm/pnpm/security/advisories/GHSA-2rx9-3g3h-c2jv",
+        "https://github.com/pnpm/pnpm/pull/12872",
+        "https://github.com/pnpm/pnpm/commit/51300fd41c5e4c8f47635108e373cc3d1f324fa7"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "+3 supply_chain"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
     {
       "id": "GHSA-1a9a9aa520120e82",
       "title": "MLFLOW_ALLOW_PICKLE_DESERIALIZATION=False safety control bypassed by mlflow.statsmodels flavor — RCE via crafted model a",
@@ -55,6 +149,102 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-73089",
+      "title": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM",
+      "description": "## Vulnerability Details **File**: `index.js`\n**Location**: `cache` (browserslist()'s result cache, line ~402) and\n`parseCache` (parseQueries()'s AST cache) ### Root Cause\n```js\nvar cache = {}\nvar parseCache = {} function browserslist(queries, opts) { ... var cacheKey = JSON.stringify([queries, cont",
+      "cvss": 7.5,
+      "final_ps": 60,
+      "quality_score": 0.578,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-01",
+      "last_seen": "2026-09-01",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "browserslist",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73089",
+        "CVE-2026-73089"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-c83g-rgw3-j3cx",
+        "https://github.com/browserslist/browserslist/security/advisories/GHSA-c83g-rgw3-j3cx",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-73089",
+        "https://github.com/browserslist/browserslist/commit/f2931a3ff2a3a31abf84ef01a7400b270aad6405"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.578"
+        ],
+        "priority": [
+          "base_ps=60 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-82329",
+      "title": "Attackers Exploit Critical JFrog Artifactory Flaw to Mint Admin Tokens Days After Disclosure",
+      "description": "Threat actors are exploiting a newly patched critical security flaw impacting JFrog Artifactory merely days after public disclosure, according to watchTowr. The vulnerability in question is CVE-2026-82329 (CVSS score: 9.8), a case of authentication bypass that could lead to administrative access in ",
+      "cvss": 9.8,
+      "final_ps": 60,
+      "quality_score": 0.478,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "thehackernews",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "thehackernews"
+      ],
+      "first_seen": "2026-09-01",
+      "last_seen": "2026-09-01",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "The Hacker News",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-82329"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://thehackernews.com/2026/09/attackers-exploit-critical-jfrog.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.55 (thehackernews)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.478"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -554,52 +744,6 @@
         ],
         "priority": [
           "+10 CVSS≥9",
-          "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-9586",
-      "title": "Off the Hook: Discovering and Observing Active Exploitation of Sangoma Switchvox CVE-2026-9586",
-      "description": "submitted by /u/scopedsecurity [link] [comments]",
-      "cvss": 0,
-      "final_ps": 42,
-      "quality_score": 0.385,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "reddit_netsec",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "reddit_netsec"
-      ],
-      "first_seen": "2026-09-01",
-      "last_seen": "2026-09-01",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "reddit_netsec",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-9586"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.reddit.com/r/netsec/comments/1w4aj8x/off_the_hook_discovering_and_observing_active/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.42 (reddit_netsec)",
-          "data_confidence=0.40",
-          "recency=0d (score=1.00)",
-          "QS=0.385"
-        ],
-        "priority": [
           "+8 exploited_in_wild"
         ],
         "suppression": null,
@@ -1559,7 +1703,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=6d (score=0.40)",
+          "recency=7d (score=0.40)",
           "QS=0.432"
         ],
         "priority": [
@@ -1605,7 +1749,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=6d (score=0.40)",
+          "recency=7d (score=0.40)",
           "QS=0.432"
         ],
         "priority": [
@@ -1651,7 +1795,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=6d (score=0.40)",
+          "recency=7d (score=0.40)",
           "QS=0.432"
         ],
         "priority": [
@@ -2746,7 +2890,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=12d (score=0.20)",
+          "recency=13d (score=0.20)",
           "QS=0.412"
         ],
         "priority": [
@@ -2792,7 +2936,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=12d (score=0.20)",
+          "recency=13d (score=0.20)",
           "QS=0.412"
         ],
         "priority": [
@@ -2838,7 +2982,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=12d (score=0.20)",
+          "recency=13d (score=0.20)",
           "QS=0.412"
         ],
         "priority": [
@@ -2884,7 +3028,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=12d (score=0.20)",
+          "recency=13d (score=0.20)",
           "QS=0.412"
         ],
         "priority": [
@@ -2976,7 +3120,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=12d (score=0.20)",
+          "recency=13d (score=0.20)",
           "QS=0.412"
         ],
         "priority": [
@@ -3022,7 +3166,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=12d (score=0.20)",
+          "recency=13d (score=0.20)",
           "QS=0.412"
         ],
         "priority": [
@@ -3068,7 +3212,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=12d (score=0.20)",
+          "recency=13d (score=0.20)",
           "QS=0.412"
         ],
         "priority": [
@@ -3114,7 +3258,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=6d (score=0.40)",
+          "recency=7d (score=0.40)",
           "QS=0.432"
         ],
         "priority": [
@@ -3160,7 +3304,7 @@
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
           "data_confidence=0.70",
-          "recency=6d (score=0.40)",
+          "recency=7d (score=0.40)",
           "QS=0.432"
         ],
         "priority": [
@@ -5118,10 +5262,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-73089",
-      "title": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM",
+      "id": "CVE-2026-73086",
+      "title": "nanoid: Integer Overflow or Wraparound",
       "description": "",
-      "cvss": 7.5,
+      "cvss": 7.4,
       "final_ps": 21,
       "quality_score": 0.523,
       "threat_level": "LOW",
@@ -5137,18 +5281,18 @@
       "cisa_kev": false,
       "ransomware": false,
       "vendor": "npm",
-      "product": "browserslist",
+      "product": "nanoid",
       "due_date": null,
       "cves": [
-        "CVE-2026-73089",
-        "CVE-2026-73089"
+        "CVE-2026-73086",
+        "CVE-2026-73086"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-c83g-rgw3-j3cx",
-        "https://github.com/browserslist/browserslist/security/advisories/GHSA-c83g-rgw3-j3cx",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-73089",
-        "https://github.com/browserslist/browserslist/commit/f2931a3ff2a3a31abf84ef01a7400b270aad6405"
+        "https://github.com/advisories/GHSA-xwg4-73v4-xw9w",
+        "https://github.com/ai/nanoid/security/advisories/GHSA-xwg4-73v4-xw9w",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-73086",
+        "https://github.com/ai/nanoid/commit/7087969281cab8ba8ae3babf1894e819068b3bb4"
       ],
       "explanation": {
         "quality": [

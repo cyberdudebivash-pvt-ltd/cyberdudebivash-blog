@@ -1,15 +1,15 @@
 {
-  "generated": "2026-09-01T17:06:47.139Z",
+  "generated": "2026-09-01T20:01:17.726Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0",
   "stats": {
-    "total_nodes": 12483,
+    "total_nodes": 12489,
     "actors": 8,
-    "cves": 4695,
-    "campaigns": 1232,
+    "cves": 4696,
+    "campaigns": 1235,
     "malware": 0,
     "iocs": 893,
-    "edges": 3845
+    "edges": 3848
   },
   "nodes": {
     "actor:lockbit": {
@@ -235726,15 +235726,15 @@
     "CVE-2026-82329": {
       "id": "CVE-2026-82329",
       "type": "CVE",
-      "name": "Critical JFrog Artifactory Vulnerability Reportedly Exploited in the Wild",
+      "name": "Attackers Exploit Critical JFrog Artifactory Flaw to Mint Admin Tokens Days After Disclosure",
       "attributes": {
-        "cvss": 0,
-        "threat_level": "LOW",
-        "priority_score": 31,
-        "exploited": true,
+        "cvss": 9.8,
+        "threat_level": "MEDIUM",
+        "priority_score": 51,
+        "exploited": false,
         "cisa_kev": false,
         "ransomware": false,
-        "vendor": "SecurityWeek",
+        "vendor": "The Hacker News",
         "product": "Threat Intelligence",
         "published": "2026-09-01",
         "type": "CVE_REPORT"
@@ -235868,6 +235868,120 @@
       "connections": [
         {
           "target": "CVE-2026-73088",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "GHSA-e4851e9a7206a350": {
+      "id": "GHSA-e4851e9a7206a350",
+      "type": "Intel",
+      "name": "pnpm: Environment secrets exfiltrated via env-placeholder expansion in proxy settings read from an untrusted pnpm-workspace.yaml",
+      "attributes": {
+        "cvss": 7.4,
+        "threat_level": "HIGH",
+        "priority_score": 66,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "pnpm",
+        "published": "2026-09-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "GHSA-88c1ba06d4dac43b": {
+      "id": "GHSA-88c1ba06d4dac43b",
+      "type": "Intel",
+      "name": "pnpm: pacquet trust-lockfile install can create dependency symlinks outside the project",
+      "attributes": {
+        "cvss": 7.1,
+        "threat_level": "HIGH",
+        "priority_score": 65,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "pnpm",
+        "published": "2026-09-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "CVE-2026-73086": {
+      "id": "CVE-2026-73086",
+      "type": "CVE",
+      "name": "nanoid: Integer Overflow or Wraparound",
+      "attributes": {
+        "cvss": 7.4,
+        "threat_level": "MEDIUM",
+        "priority_score": 62,
+        "exploited": false,
+        "cisa_kev": false,
+        "ransomware": false,
+        "vendor": "npm",
+        "product": "nanoid",
+        "published": "2026-09-01",
+        "type": "CVE_REPORT"
+      },
+      "connections": []
+    },
+    "campaign:cluster-d4deea86": {
+      "id": "campaign:cluster-d4deea86",
+      "type": "Campaign",
+      "name": "npm pnpm Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-09-01",
+        "last_seen": "2026-09-01",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-e4851e9a7206a350",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cluster-7e4b59ba": {
+      "id": "campaign:cluster-7e4b59ba",
+      "type": "Campaign",
+      "name": "npm pnpm Exploitation Campaign",
+      "attributes": {
+        "severity": "HIGH",
+        "item_count": 1,
+        "first_seen": "2026-09-01",
+        "last_seen": "2026-09-01",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900"
+      },
+      "connections": [
+        {
+          "target": "GHSA-88c1ba06d4dac43b",
+          "relationship": "includes",
+          "confidence": 1
+        }
+      ]
+    },
+    "campaign:cve-2026-73086": {
+      "id": "campaign:cve-2026-73086",
+      "type": "Campaign",
+      "name": "npm nanoid Exploitation Campaign",
+      "attributes": {
+        "severity": "MEDIUM",
+        "item_count": 1,
+        "first_seen": "2026-09-01",
+        "last_seen": "2026-09-01",
+        "confidence": 0.9,
+        "reasoning": "1 intel item(s) clustered with composite confidence 0.900 | Single CVE basis: CVE-2026-73086 | 2 shared IOC(s) across items"
+      },
+      "connections": [
+        {
+          "target": "CVE-2026-73086",
           "relationship": "includes",
           "confidence": 1
         }
@@ -270637,6 +270751,33 @@
       "id": "campaign:cve-2026-73088→includes→CVE-2026-73088",
       "source": "campaign:cve-2026-73088",
       "target": "CVE-2026-73088",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-09-01",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-d4deea86→includes→GHSA-e4851e9a7206a350",
+      "source": "campaign:cluster-d4deea86",
+      "target": "GHSA-e4851e9a7206a350",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-09-01",
+      "sources": []
+    },
+    {
+      "id": "campaign:cluster-7e4b59ba→includes→GHSA-88c1ba06d4dac43b",
+      "source": "campaign:cluster-7e4b59ba",
+      "target": "GHSA-88c1ba06d4dac43b",
+      "relationship": "includes",
+      "confidence": 1,
+      "first_seen": "2026-09-01",
+      "sources": []
+    },
+    {
+      "id": "campaign:cve-2026-73086→includes→CVE-2026-73086",
+      "source": "campaign:cve-2026-73086",
+      "target": "CVE-2026-73086",
       "relationship": "includes",
       "confidence": 1,
       "first_seen": "2026-09-01",
