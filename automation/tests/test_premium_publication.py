@@ -40,6 +40,45 @@ def _article(**overrides):
     return DiscoveredArticle(**values)
 
 
+def _generic_article(title: str, *, source: str = "rss", labels=None, summary=None, full_content=None, **overrides):
+    """Return a non-CVE fixture whose metadata is internally consistent.
+
+    The base fixture intentionally represents a CVE advisory and therefore
+    carries CVE-specific title/content/labels and structured vulnerability
+    fields. Reusing it for malware/incident classifier cases while clearing
+    only ``cve_id`` creates contradictory evidence: the classifier correctly
+    sees the remaining CVE content and labels and returns a vulnerability
+    report. Family-classification tests must isolate the signal they intend
+    to exercise rather than smuggling CVE evidence in through fixture defaults.
+    """
+    values = dict(
+        url="https://example.test/intel/report",
+        title=title,
+        summary=summary or title,
+        source=source,
+        full_content=full_content or (title + ". Enterprise threat intelligence source material."),
+        labels=labels if labels is not None else ["Threat Intelligence"],
+        source_publisher="Example Publisher",
+        cve_id=None,
+        cvss_score=None,
+        cvss_vector=None,
+        cwe_ids=None,
+        affected_vendor=None,
+        affected_product=None,
+        epss_score=None,
+        epss_percentile=None,
+        kev_listed=None,
+        kev_date_added=None,
+        kev_due_date=None,
+        kev_required_action=None,
+        ransomware_group=None,
+        ransomware_sector=None,
+        ransomware_country=None,
+    )
+    values.update(overrides)
+    return _article(**values)
+
+
 _CORE = [
     "Executive Summary", "Verified Facts", "Threat Classification", "Threat Severity Assessment",
     "Business Impact", "Technical Analysis", "CVE Analysis", "MITRE ATT&CK Mapping", "IOC Intelligence",
@@ -82,11 +121,16 @@ def _transformed(article=None, **overrides):
 
 def test_report_type_classifier_covers_requested_commercial_families():
     assert infer_report_type(_article()) == "CVE_VULNERABILITY_REPORT"
-    assert infer_report_type(_article(cve_id=None, source="ransomware_intel", ransomware_group="Akira")) == "RANSOMWARE_REPORT"
-    assert infer_report_type(_article(cve_id=None, source="breach_intel")) == "DATA_BREACH_REPORT"
-    assert infer_report_type(_article(cve_id=None, source="rss", title="New malware campaign uses credential stealer")) == "MALWARE_CAMPAIGN"
-    assert infer_report_type(_article(cve_id=None, source="rss", title="Deep malware analysis of a new backdoor")) == "MALWARE_ANALYSIS"
-    assert infer_report_type(_article(cve_id=None, source="rss", title="Security incident disrupts enterprise services")) == "CYBER_INCIDENT_REPORT"
+    assert infer_report_type(_generic_article("Akira ransomware claim", source="ransomware_intel", ransomware_group="Akira")) == "RANSOMWARE_REPORT"
+    assert infer_report_type(_generic_article("Data breach disclosed", source="breach_intel")) == "DATA_BREACH_REPORT"
+    assert infer_report_type(_generic_article("New malware campaign uses credential stealer")) == "MALWARE_CAMPAIGN"
+    assert infer_report_type(_generic_article("Deep malware analysis of a new backdoor")) == "MALWARE_ANALYSIS"
+    assert infer_report_type(_generic_article("Security incident disrupts enterprise services")) == "CYBER_INCIDENT_REPORT"
+
+
+def test_structured_vulnerability_signal_remains_authoritative_over_generic_incident_words():
+    article = _article(title="Security incident involving CVE-2026-99999", labels=["Threat Intelligence", "Incident Response"])
+    assert infer_report_type(article) == "CVE_VULNERABILITY_REPORT"
 
 
 def test_premium_prompt_expands_source_window_and_preserves_evidence_boundary():
