@@ -14,7 +14,7 @@
     <copyright>Copyright 2026 CyberDudeBivash. All rights reserved.</copyright>
     <managingEditor>bivash@cyberdudebivash.com (CyberDudeBivash)</managingEditor>
     <webMaster>bivash@cyberdudebivash.com (CyberDudeBivash)</webMaster>
-    <lastBuildDate>Wed, 02 Sep 2026 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 02 Sep 2026 17:53:02 GMT</lastBuildDate>
     <pubDate>Wed, 02 Sep 2026 12:00:00 +0000</pubDate>
     <ttl>60</ttl>
     <category>Cybersecurity</category>
@@ -31,6 +31,151 @@
       <height>144</height>
     </image>
 
+    <item>
+    <title><![CDATA[EasyAdmin custom-action dispatcher bypasses access_control on other routes]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-81892-composer-easycorp-easyadmin-bundle.html</link>
+    <description><![CDATA[Score 63/100 MEDIUM — CVSS 8.1 — ## Summary EasyAdmin serves all backend requests through a single dashboard route and, for custom actions (`Action::linkToRoute()` / `MenuItem::linkToRoute()`), swaps the executed controller based on the `routeName` query parameter on the `kernel.controller` event. That swap happens **after** Symfon. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-81892-composer-easycorp-easyadmin-bundle.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-75975-npm-fast-uri.html</link>
+    <description><![CDATA[Score 58/100 MEDIUM — CVSS 7.5 — ### Impact `fast-uri` does not validate the complete RFC 3986 grammar for bracketed IPv6 literals, so a malformed literal with invalid trailing text is silently truncated to a different valid IPv6 address with no error reported. For example, `normalize('http://[::not-valid]/private')` returns `http:. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-75975-npm-fast-uri.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-75899-npm-fast-uri.html</link>
+    <description><![CDATA[Score 58/100 MEDIUM — CVSS 7.5 — ### Impact `fast-uri` decodes a hostname's percent escapes twice in a single `normalize()` or `resolve()` call: once during parsing and again during authority recomposition. A nested percent-encoded host therefore survives the first decode and is turned into a live destination by the second, so `nor. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-75899-npm-fast-uri.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[NLTK: Default ENFORCE=False Disables All pathsec Security Controls]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-62388-pip-nltk.html</link>
+    <description><![CDATA[Score 58/100 MEDIUM — CVSS 7.5 — NLTK's pathsec.py security module defaults to ENFORCE=False (line 24), which means all 8 security validation functions only emit RuntimeWarning instead of raising exceptions when violations are detected. The pathsec module was introduced as the fix for CVE-2024-39705 (arbitrary code execution via pi. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-62388-pip-nltk.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[fast-uri vulnerable to host confusion via skipped IDN canonicalization on scheme-relative references]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-75931-npm-fast-uri.html</link>
+    <description><![CDATA[Score 56/100 MEDIUM — CVSS 7.5 — ### Impact `fast-uri` canonicalizes a host to its ASCII form only when the input carries an explicit scheme. When `resolve()` resolves a scheme-relative reference (`//host/`) against a scheme-bearing base, it still emits the host verbatim even though the effective scheme is known, so re-parsing the . Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-75931-npm-fast-uri.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[fast-uri vulnerable to host confusion via percent-encoded scheme normalization]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-76172-npm-fast-uri.html</link>
+    <description><![CDATA[Score 56/100 MEDIUM — CVSS 7.5 — ### Impact `fast-uri` decodes percent-encoded characters in the scheme component with the legacy global `unescape()` and serializes the result back as raw characters, without re-escaping it or validating it as a scheme. A scheme that decodes to characters outside the RFC 3986 scheme grammar can ther. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-76172-npm-fast-uri.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Mistune: Denial of Service — RecursionError via Excessive Emphasis Markers in Markdown]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-76098-pip-mistune.html</link>
+    <description><![CDATA[Score 56/100 MEDIUM — CVSS 7.5 — ## Summary
+Mistune v3.3.2 is vulnerable to a Denial of Service (DoS) attack via uncontrolled recursion in the HTML rendering of deeply-nested emphasis tokens. By submitting Markdown containing approximately 1,000 consecutive asterisk characters, an attacker causes the Python process to crash with Re. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-76098-pip-mistune.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[ApostropheCMS: 2nd-order prototype pollution via PATCH leading to single-request persistent DoS]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-71553-npm-apostrophe.html</link>
+    <description><![CDATA[Score 56/100 MEDIUM — CVSS 7.5 — The vulnerability is a single-request persistent DoS by submitting e.g.
+"PATCH /api/v1/article/ " with a valid editor session and body of
+{"toString.call":"x"}, overwriting the global toString function with
+value x. Fabian. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-71553-npm-apostrophe.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[Orval: Generation-time SSRF + remote/local file inclusion via unrestricted $ref]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-62680-npm-orval.html</link>
+    <description><![CDATA[Score 55/100 MEDIUM — CVSS 7.1 — ### Summary Orval resolves OpenAPI `$ref`s by fetching remote `http(s)` URLs and reading local files (including
+absolute / out-of-tree paths), inlining the referenced schema into the generated client. Running
+`orval` on a spec whose `$ref` points at an attacker/internal URL or an arbitrary local fil. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-62680-npm-orval.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[CVE-2026-82955 - Eclipse aeriOS KrakenD JWT Validation Security Bypass]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-82955.html</link>
+    <description><![CDATA[Score 51/100 MEDIUM — CVSS 9.5 — CVE-2026-82955 - Eclipse aeriOS KrakenD JWT Validation Security Bypass. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-82955.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[CVE-2026-78604 - Elastic Agent Incorrect Permission Assignment Privilege Escalation]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-78604.html</link>
+    <description><![CDATA[Score 44/100 LOW — CVSS 7.8 — CVE-2026-78604 - Elastic Agent Incorrect Permission Assignment Privilege Escalation. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-78604.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[CVE-2026-79989 - Arbitrary user password reset leading to administrator account takeover]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-79989.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — CVE-2026-79989 - Arbitrary user password reset leading to administrator account takeover. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-79989.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[CVE-2026-79990 - GQL entry mutation siteId bypasses schema site scope, enabling cross-site content read/write/delete]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-79990.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 7.5 — CVE-2026-79990 - GQL entry mutation siteId bypasses schema site scope, enabling cross-site content read/write/delete. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-79990.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[CVE-2026-19760 - WP Fastest Cache <= 1.5.0 - Unauthenticated Stored Cross-Site Scripting via HTTP Host Header]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-19760.html</link>
+    <description><![CDATA[Score 43/100 LOW — CVSS 9.1 — CVE ID : CVE-2026-19760
+
+ Published : Aug. 26, 2026, 5:30 a.m. | 32minutes ago
+
+ Description : The WP Fastest Cache WordPress Cache Plugin plugin for WordPress is vulnerable to Stored Cross-Site Scripting via HTTP Host Header in all versions up to, and including, 1.5.0 due to ins... [Full analysis a. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-19760.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
+  <item>
+    <title><![CDATA[CVE-2026-78590 - Kibana Fleet Path Traversal Vulnerability]]></title>
+    <link>https://blog.cyberdudebivash.in/posts/cve-2026-78590.html</link>
+    <description><![CDATA[Score 42/100 LOW — CVSS 7.3 — CVE-2026-78590 - Kibana Fleet Path Traversal Vulnerability. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.]]></description>
+    <pubDate>Wed, 02 Sep 2026 17:53:02 GMT</pubDate>
+    <guid isPermaLink="true">https://blog.cyberdudebivash.in/posts/cve-2026-78590.html</guid>
+    <category>Threat Intelligence</category>
+    <category>CVE_REPORT</category>
+  </item>
   <item>
     <title>Communicating Under Pressure: Best Practices for Service Providers</title>
     <link>https://blog.cyberdudebivash.in/posts/communicating-under-pressure-best-practices-for-service-pro.html</link>
