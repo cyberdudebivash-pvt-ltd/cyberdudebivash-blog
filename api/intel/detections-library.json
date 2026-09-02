@@ -1,8 +1,84 @@
 {
-  "generated": "2026-09-02T16:40:13.981Z",
+  "generated": "2026-09-02T21:06:57.120Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-62680-npm-orval",
+      "title": "Orval: Generation-time SSRF + remote/local file inclusion via unrestricted $ref",
+      "url": "/posts/cve-2026-62680-npm-orval.html",
+      "generated": "2026-09-02T17:53:02.196Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-62680"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://attacker/internal-evil.json#/...`\"; http.host; content:\"attacker\"; nocase; http.uri; content:\"/internal-evil.json#/...`\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-62388-pip-nltk",
+      "title": "NLTK: Default ENFORCE=False Disables All pathsec Security Controls",
+      "url": "/posts/cve-2026-62388-pip-nltk.html",
+      "generated": "2026-09-02T17:53:02.175Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-62388",
+        "CVE-2024-39705"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 169.254.169.254 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 169.254.169.254\"; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://169.254.169.254/...\"; http.host; content:\"169.254.169.254\"; nocase; http.uri; content:\"/...\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-75899-npm-fast-uri",
+      "title": "fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding",
+      "url": "/posts/cve-2026-75899-npm-fast-uri.html",
+      "generated": "2026-09-02T17:53:02.171Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-75899"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://%256c%256f%2563%2561%256c%2568%256f%2573%2574/\"; http.host; content:\"%256c%256f%2563%2561%256c%2568%256f%2573%2574\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://localhost/`.\"; http.host; content:\"localhost\"; nocase; http.uri; content:\"/`.\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-75975-npm-fast-uri",
+      "title": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization",
+      "url": "/posts/cve-2026-75975-npm-fast-uri.html",
+      "generated": "2026-09-02T17:53:02.168Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-75975"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://[::not-valid]/private\"; http.host; content:\"[\"; nocase; http.uri; content:\"/private\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://[::]/private`,\"; http.host; content:\"[\"; nocase; http.uri; content:\"/private`,\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-73086-npm-nanoid",
       "title": "nanoid: Integer Overflow or Wraparound",
@@ -4149,84 +4225,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uuhlp1/passive_security_measurement_of_10020_it_dom\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uuhlp1/passive_security_measurement_of_10020_it_dom\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain doi.org\"; dns.query; content:\"doi.org\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
-      ]
-    },
-    {
-      "slug": "what-s-stopping-big-orgs-to-replicate-those-ai-security-star",
-      "title": "What's stopping big orgs to replicate those AI Security startups themselves?",
-      "url": "/posts/what-s-stopping-big-orgs-to-replicate-those-ai-security-star.html",
-      "generated": "2026-07-12T13:07:06.302Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/SkyberSec123&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/SkyberSec123&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uuerfr/whats_stopping_big_orgs_to_replicate_those_a\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uuerfr/whats_stopping_big_orgs_to_replicate_those_a\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
-      ]
-    },
-    {
-      "slug": "hacking-apple-sql-injection-to-remote-code-execution",
-      "title": "Hacking Apple - SQL Injection to Remote Code Execution",
-      "url": "/posts/hacking-apple-sql-injection-to-remote-code-execution.html",
-      "generated": "2026-07-12T11:02:02.454Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uuc6ek/hacking_apple_sql_injection_to_remote_code/&\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uuc6ek/hacking_apple_sql_injection_to_remote_code/&\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/MKJieF6gfPqwRk7anMhxEQtbpsveFbdUzDPuIkICH3k.png?width=640&amp;amp;c\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/MKJieF6gfPqwRk7anMhxEQtbpsveFbdUzDPuIkICH3k.png?width=640&amp\\;amp\\;c\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/ni5arga&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/ni5arga&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://projectdiscovery.io/blog/hacking-apple-with-sql-injection&quot;&gt;[link]&lt;/a&gt;&lt;/span\"; http.host; content:\"projectdiscovery.io\"; nocase; http.uri; content:\"/blog/hacking-apple-with-sql-injection&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain projectdiscovery.io\"; dns.query; content:\"projectdiscovery.io\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
-      ]
-    },
-    {
-      "slug": "can-gamification-actually-improve-security-awareness",
-      "title": "Can gamification actually improve security awareness?",
-      "url": "/posts/can-gamification-actually-improve-security-awareness.html",
-      "generated": "2026-07-12T07:01:59.929Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://breachnoir.com/&quot;&gt;https://breachnoir.com&lt;/a&gt;&lt;/p&gt;\"; http.host; content:\"breachnoir.com\"; nocase; http.uri; content:\"/&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/imjustsadrightnow&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/imjustsadrightnow&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uu73zh/can_gamification_actually_improve_security/&\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uu73zh/can_gamification_actually_improve_security/&\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain breachnoir.com\"; dns.query; content:\"breachnoir.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "anonymity-security",
-      "title": "Anonymity + security",
-      "url": "/posts/anonymity-security.html",
-      "generated": "2026-07-12T04:31:52.100Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/frosty_fan1&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/frosty_fan1&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uu50lk/anonymity_security/&quot;&gt;[link]&lt;/a&gt\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uu50lk/anonymity_security/&quot\\;&gt\\;[link]&lt\\;/a&gt\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uu50lk/anonymity_security/&quot;&gt;[comments]&lt;/\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uu50lk/anonymity_security/&quot\\;&gt\\;[comments]&lt\\;/\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
       ]
     }
   ]
