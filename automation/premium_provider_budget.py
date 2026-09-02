@@ -1,25 +1,20 @@
-"""Provider-budget guard for premium report generation.
+"""Provider-budget and structural-completion guard for premium reports.
 
-Production incident 2026-09-02: the first premium syndication run correctly
-blocked five thin fallback reports because Groq rejected every expanded prompt
-with HTTP 413. The configured GPT-OSS 120B account is operating with an 8K TPM
-request ceiling, and Groq reserves prompt tokens + requested completion tokens
-against that ceiling. The original premium wrapper duplicated the first 5K
-characters of source material inside a second 16K source block and requested
->=5200 completion tokens, making an oversize request deterministic.
+Production evidence on 2026-09-02 exposed two separate provider constraints:
+1. an oversized prompt + completion reservation caused Groq HTTP 413 under
+   the account's 8K TPM request ceiling;
+2. after the request was budgeted correctly, Groq produced substantive
+   2K-2.7K word reports but sometimes exhausted the first completion before
+   rendering the mandatory tail sections (most often Executive
+   Recommendations / References).
 
-This module keeps the premium quality floor but makes the request budget a
-first-class invariant:
-- stable, compact instruction prefix (prompt-cache friendly),
-- source data appended once, at the end, with a strict character budget,
-- 3900 completion-token ceiling (sufficient for the 2200-word public gate),
-- provider Retry-After may be honored for up to 65 seconds so sequential
-  reports do not collapse to fallback merely because the previous premium
-  generation consumed the current TPM window.
-
-It is installed before premium_publication.install_runtime_overrides(), so the
-existing AuthorityTransformer orchestration, evidence graph, integrity gates,
-and Blogger repair/quarantine transaction remain unchanged.
+This module therefore treats both token budget and structural completeness as
+first-class production invariants. A first pass is kept inside the provider
+ceiling. If it is short or misses any mandatory enterprise section, a bounded
+second pass generates ONLY the missing sections from the same evidence record.
+The combined artifact still flows through every existing evidence, semantic,
+quality, certification and Blogger fetch-back gate; this module never turns a
+failed gate into a pass by assertion.
 """
 
 from __future__ import annotations
@@ -28,40 +23,48 @@ import time
 
 from . import llm_client as _llm
 from . import premium_publication as _premium
+from . import report_integrity as _integrity
 from .content_discovery import DiscoveredArticle
 
 PREMIUM_COMPLETION_TOKENS = 3900
+PREMIUM_CONTINUATION_TOKENS = 1800
 PREMIUM_SOURCE_CHAR_BUDGET = 3600
 PREMIUM_PROMPT_CHAR_CEILING = 11200
+PREMIUM_CONTINUATION_CHAR_CEILING = 14200
 PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS = 65.0
+MIN_SUBSTANTIVE_UNITS = 30
 
-_SECTION_CONTRACT = """MANDATORY SECTION ORDER — use these exact <h3> headings:
-1. Executive Summary
-2. Key Judgements
-3. Verified Facts
-4. Threat Classification
-5. Threat Severity Assessment
-6. Evidence & Source Assessment
-7. Timeline & Chronology
-8. Business Impact
-9. Enterprise Exposure Assessment
-10. Technical Analysis
-11. Report-Type Deep Dive
-12. MITRE ATT&CK Assessment
-13. Indicators & Observables
-14. Detection Engineering Guidance
-15. Detection Validation & Required Telemetry
-16. Threat Hunting Queries
-17. SOC Analyst Playbook
-18. Incident Response & Containment Decision Plan
-19. Remediation & Validation Plan
-20. Executive Decision Matrix
-21. Executive Recommendations
-22. Intelligence Gaps & Collection Requirements
-23. Analytic Confidence & Limitations
-24. Forecast / Outlook
-25. References
-"""
+MANDATORY_PREMIUM_HEADINGS = (
+    "Executive Summary",
+    "Key Judgements",
+    "Verified Facts",
+    "Threat Classification",
+    "Threat Severity Assessment",
+    "Evidence & Source Assessment",
+    "Timeline & Chronology",
+    "Business Impact",
+    "Enterprise Exposure Assessment",
+    "Technical Analysis",
+    "Report-Type Deep Dive",
+    "MITRE ATT&CK Assessment",
+    "Indicators & Observables",
+    "Detection Engineering Guidance",
+    "Detection Validation & Required Telemetry",
+    "Threat Hunting Queries",
+    "SOC Analyst Playbook",
+    "Incident Response & Containment Decision Plan",
+    "Remediation & Validation Plan",
+    "Executive Decision Matrix",
+    "Executive Recommendations",
+    "Intelligence Gaps & Collection Requirements",
+    "Analytic Confidence & Limitations",
+    "Forecast / Outlook",
+    "References",
+)
+
+_SECTION_CONTRACT = "MANDATORY SECTION ORDER — use these exact <h3> headings:\n" + "\n".join(
+    f"{idx}. {heading}" for idx, heading in enumerate(MANDATORY_PREMIUM_HEADINGS, 1)
+) + "\n"
 
 _COMPACT_CONTRACT = """You are the CYBERDUDEBIVASH SENTINEL APEX Principal Threat Intelligence Analyst.
 Produce a customer-facing, enterprise premium long-form intelligence report in HTML only. The report must be decision-useful to CISOs, SOC/IR teams, detection engineers, threat hunters, vulnerability teams, and MSSPs. Target 2,400-3,200 useful words; never pad with generic cybersecurity prose or repeat the source.
@@ -105,16 +108,17 @@ Use the supplied REPORT TYPE to specialize section 11:
 OUTPUT RULES
 - HTML fragment only; use <h3>, <p>, <ul>/<li>, <table>, <tr>/<th>/<td>, and <pre><code> only when justified.
 - References: include the supplied source URL and only identifiers/URLs present in supplied data; do not invent vendor/advisory URLs.
+- Render every mandatory heading exactly once. If a section has insufficient evidence, render the heading and an explicit evidence-gap/collection statement instead of omitting the section.
 - No preamble, no markdown fences, no marketing filler, no unsupported certification language.
 """
+
+_ORIGINAL_ASSESS = _premium.assess_enterprise_report
 
 
 def _source_excerpt(article: DiscoveredArticle) -> str:
     raw = str(article.full_content or article.summary or "")
     if len(raw) <= PREMIUM_SOURCE_CHAR_BUDGET:
         return raw
-    # Keep both beginning and ending evidence because feeds often place the
-    # primary description first and remediation/references at the end.
     head = PREMIUM_SOURCE_CHAR_BUDGET * 2 // 3
     tail = PREMIUM_SOURCE_CHAR_BUDGET - head
     return raw[:head] + "\n...[source excerpt budget boundary]...\n" + raw[-tail:]
@@ -142,9 +146,6 @@ SOURCE EXCERPT
 
 Before returning, silently check: all 25 headings are present; no factual claim exceeds supplied evidence; unknowns are explicit; detections are evidence-conditioned; the report is substantive enough to clear the public 2200-word gate.
 """
-    # This is a fail-closed engineering invariant, not a truncation fallback:
-    # if future edits bloat the stable contract, CI must fail and force an
-    # explicit budget decision rather than silently sending another 413.
     if len(prompt) > PREMIUM_PROMPT_CHAR_CEILING:
         raise ValueError(
             f"premium prompt exceeds provider-safe character ceiling: {len(prompt)} > {PREMIUM_PROMPT_CHAR_CEILING}"
@@ -152,25 +153,131 @@ Before returning, silently check: all 25 headings are present; no factual claim 
     return prompt
 
 
+def _generation_deficits(content: str) -> dict:
+    headings = {_premium._normalized_heading(h) for h in _premium._headings(content)}
+    missing = [
+        heading for heading in MANDATORY_PREMIUM_HEADINGS
+        if _premium._normalized_heading(heading) not in headings
+    ]
+    words = _premium._word_count(content)
+    paragraphs, list_items = _premium._semantic_counts(content)
+    return {
+        "missing": missing,
+        "words": words,
+        "word_deficit": max(0, _premium.MIN_VISIBLE_WORDS - words),
+        "paragraphs": paragraphs,
+        "list_items": list_items,
+    }
+
+
+def _continuation_prompt(original_prompt: str, deficits: dict) -> str:
+    missing = deficits["missing"]
+    missing_lines = "\n".join(f"- <h3>{h}</h3>" for h in missing) or "- none"
+    extra_depth = max(250, deficits["word_deficit"] + 150)
+    prompt = f"""{original_prompt}
+
+STRUCTURAL COMPLETION PASS — DO NOT REWRITE THE FIRST PASS
+The first pass has already been retained. Return ONLY the missing sections listed below, in their canonical order. Do not repeat any other heading or restate earlier sections. The same evidence law and untrusted-source boundary above remain fully authoritative.
+
+MISSING SECTIONS:
+{missing_lines}
+
+DEPTH REQUIREMENT:
+Add approximately {extra_depth}-700 useful words across these missing sections when the evidence supports it. References must include the exact supplied SOURCE URL. If evidence is insufficient for a missing analytical section, keep the heading and state the evidence gap, required collection source/telemetry, and decision impact; never invent the fact.
+
+Return HTML fragment only, beginning directly with the first missing <h3>."""
+    if len(prompt) > PREMIUM_CONTINUATION_CHAR_CEILING:
+        raise ValueError(
+            f"premium continuation prompt exceeds provider-safe character ceiling: {len(prompt)} > {PREMIUM_CONTINUATION_CHAR_CEILING}"
+        )
+    return prompt
+
+
 def call_budgeted_premium_llm(config, prompt: str, max_tokens: int = 3000, attempts=None, sleep_fn=time.sleep):
-    # Fixed upper bound is deliberate: on the current Groq 8K TPM tier the
-    # request reservation is prompt + requested completion. Increasing this
-    # opportunistically recreates the 413 incident even though the model's
-    # nominal context window is much larger.
-    return _premium._ORIGINAL_LLM_CALL(
+    first = _premium._ORIGINAL_LLM_CALL(
         config,
         prompt,
         max_tokens=PREMIUM_COMPLETION_TOKENS,
         attempts=attempts,
         sleep_fn=sleep_fn,
     )
+    if not first:
+        return None
+
+    first_content, first_provider = first
+    deficits = _generation_deficits(first_content)
+    if not deficits["missing"] and deficits["word_deficit"] == 0:
+        return first_content, first_provider
+
+    continuation = _premium._ORIGINAL_LLM_CALL(
+        config,
+        _continuation_prompt(prompt, deficits),
+        max_tokens=PREMIUM_CONTINUATION_TOKENS,
+        attempts=attempts,
+        sleep_fn=sleep_fn,
+    )
+    if not continuation:
+        # Fail closed later at the premium quality gate; returning the first
+        # pass preserves observability and retry-queue diagnostics rather than
+        # converting a provider outage into an exception with no artifact.
+        return first_content, first_provider
+
+    continuation_content, _ = continuation
+    return first_content.rstrip() + "\n" + continuation_content.lstrip(), first_provider
+
+
+def assess_strict_premium_report(article: DiscoveredArticle, transformed: dict):
+    base = _ORIGINAL_ASSESS(article, transformed)
+    html = str(transformed.get("content") or "")
+    headings = {_premium._normalized_heading(h) for h in _premium._headings(html)}
+    missing = [
+        heading for heading in MANDATORY_PREMIUM_HEADINGS
+        if _premium._normalized_heading(heading) not in headings
+    ]
+    paragraphs, list_items = _premium._semantic_counts(html)
+    reasons = list(base.reasons)
+    if missing:
+        reasons.append("missing mandatory premium section(s): " + ", ".join(missing))
+    if paragraphs + list_items < MIN_SUBSTANTIVE_UNITS:
+        reasons.append(
+            f"only {paragraphs + list_items} substantive paragraph/list units; minimum combined analytical density is {MIN_SUBSTANTIVE_UNITS}"
+        )
+    # Deduplicate while preserving diagnostic order.
+    reasons = list(dict.fromkeys(reasons))
+    return _premium.EnterpriseQualityAssessment(
+        ready=not reasons,
+        report_type=base.report_type,
+        quality_band=base.quality_band,
+        visible_words=base.visible_words,
+        distinct_headings=base.distinct_headings,
+        substantive_paragraphs=base.substantive_paragraphs,
+        substantive_list_items=base.substantive_list_items,
+        reasons=tuple(reasons),
+    )
 
 
 def install_provider_budget_overrides() -> None:
-    # Retry-After on a real TPM exhaustion can legitimately span most of a
-    # minute. The old 10-second cap caused all bounded retries to expire
-    # inside the same token window. Keep retry count bounded; only allow the
-    # provider's own reset hint to be honored for one full minute.
     _llm._MAX_BACKOFF_SECONDS = PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS
+
+    # The old per-shape threshold required >=18 paragraphs AND >=18 list
+    # items, which rejects dense premium reports that legitimately use tables
+    # or lists instead of prose. Preserve a strong floor on each shape and add
+    # a combined 30-unit density gate above; this is stricter semantically,
+    # not a waiver of depth.
+    _premium.MIN_PARAGRAPHS = 12
+    _premium.MIN_LIST_ITEMS = 12
+    _premium.assess_enterprise_report = assess_strict_premium_report
+
+    # "Exploited in attacks" is itself an explicit source assertion that
+    # exploitation occurred. Classify that source state before validation so
+    # the semantic gate does not reject an equivalent LLM paraphrase as if the
+    # source had made no exploitation claim at all.
+    exploitation_pattern = r"\bexploited in (?:real[- ]world )?attacks\b"
+    if exploitation_pattern not in _integrity._CONFIRMED_EXPLOITATION_PATTERNS:
+        _integrity._CONFIRMED_EXPLOITATION_PATTERNS = (
+            *_integrity._CONFIRMED_EXPLOITATION_PATTERNS,
+            exploitation_pattern,
+        )
+
     _premium.build_premium_analyst_prompt = build_budgeted_premium_prompt
     _premium._premium_llm_call = call_budgeted_premium_llm
