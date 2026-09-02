@@ -2,18 +2,8 @@ name: "⚡ CYBERDUDEBIVASH® — Blogger Syndication Engine"
 
 on:
   # RX-STABILIZATION-1 — automatic publication restored 2026-08-12T18:1x UTC.
-  # Paused 2026-08-12T17:1x UTC during RX-PR0 (report renderer recovery);
-  # restored now that RX-PR0 (#70), its CodeRabbit follow-up (#71), and
-  # RX-PR1 (counterpart repo, #176) are all merged and live-verified —
-  # a dry run against real current NVD data (workflow run 31626154994)
-  # showed 3/3 discovered articles using the restored rich template with
-  # zero integrity-gate blocks and zero failures.
   schedule:
     # Runs every 2 hours at :15 (00:15, 02:15, … 22:15) = 12 runs/day.
-    # Reduced from twice-hourly to cut Vercel deployment usage — each run
-    # commits to main and triggers a deploy. Offset from the sentinel-apex
-    # intel pipeline (:00/:30) so pushes never collide. Syndication 12×/day
-    # is ample for SEO freshness; use "Run workflow" for an immediate push.
     - cron: "15 */2 * * *"
   # Production deployment runs immediately after the dedicated evidence gate
   # passes on main. State/log-only publication commits do not retrigger that
@@ -46,24 +36,20 @@ permissions:
 
 jobs:
   syndicate:
-    name: "📡 Syndicate to Blogger"
+    name: "📡 Syndicate Premium Reports to Blogger"
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Premium long-form generation uses a larger output budget and performs
+    # bounded Blogger fetch-back/repair verification before success.
+    timeout-minutes: 20
 
     steps:
-      # ──────────────────────────────────────────────
-      # 1. Checkout with full history for push access
-      # ──────────────────────────────────────────────
       - name: "📥 Checkout Repository"
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # ──────────────────────────────────────────────
-      # 2. Python Setup
-      # ──────────────────────────────────────────────
       - name: "🐍 Set Up Python 3.11"
         uses: actions/setup-python@v5
         with:
@@ -71,36 +57,28 @@ jobs:
           cache: "pip"
           cache-dependency-path: requirements.txt
 
-      # ──────────────────────────────────────────────
-      # 3. Install Dependencies
-      # ──────────────────────────────────────────────
       - name: "📦 Install Dependencies"
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-timeout
 
-      # ──────────────────────────────────────────────
-      # 4. Validate Syntax & Imports
-      # ──────────────────────────────────────────────
-      - name: "✅ Validate Module Imports"
+      - name: "✅ Validate Premium Publication Modules"
         run: |
           python -c "
           from automation.config import Config
           from automation.content_discovery import ContentDiscoveryEngine
           from automation.authority_transformer import AuthorityTransformer
           from automation.blogger_publisher import BloggerPublisher
+          from automation.premium_publication import PremiumAuthorityTransformer, VerifiedBloggerPublisher, assess_enterprise_report, assess_live_artifact
+          from automation.premium_main import main as premium_main
           from automation.seo_optimizer import SEOOptimizer
           from automation.social_amplifier import SocialAmplifier
           from automation.rss_aggregator import GlobalRSSAggregator
           from automation.threat_feeds import CISAAdvisoriesSource, RansomwareIntelSource, DataBreachIntelSource, ThreatActorIntelSource
-          from automation.main import run_pipeline
-          print('All modules imported successfully')
+          print('Premium publication modules imported successfully')
           "
 
-      # ──────────────────────────────────────────────
-      # 5. Run Unit Tests
-      # ──────────────────────────────────────────────
       - name: "🧪 Run Unit & Integration Tests"
         run: |
           python -m pytest tests/ automation/tests/ \
@@ -109,18 +87,12 @@ jobs:
             -q
         continue-on-error: false
 
-      # ──────────────────────────────────────────────
-      # 6. Configure Git Identity
-      # ──────────────────────────────────────────────
       - name: "🔧 Configure Git"
         run: |
           git config user.name "CYBERDUDEBIVASH"
           git config user.email "bivash@cyberdudebivash.com"
 
-      # ──────────────────────────────────────────────
-      # 7. Run Syndication Pipeline
-      # ──────────────────────────────────────────────
-      - name: "⚡ Run Syndication Pipeline"
+      - name: "⚡ Run Premium Syndication Pipeline"
         env:
           BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
           BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
@@ -134,19 +106,6 @@ jobs:
           TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           TWITTER_ACCESS_SECRET: ${{ secrets.TWITTER_ACCESS_SECRET }}
           NEWSLETTER_SIGNUP_URL: ${{ secrets.NEWSLETTER_SIGNUP_URL }}
-          # COMMERCIAL-QUALITY-2026-08-19: these 4 were never wired into this
-          # step's environment at all -- automation/llm_client.py reads them
-          # via automation.config.Config.from_env(), and every one of them
-          # came back "" regardless of whatever secrets actually exist in
-          # this repo, so call_llm() failed closed with no_api_key on every
-          # provider for every real run checked (all of today's, spanning
-          # 10:46-16:48 UTC). That silently collapsed 100% of live
-          # publishing onto the lean reportx_composer fallback -- correct,
-          # safe degradation behavior, but never the rich, LLM-authored
-          # analyst path it was falling back FROM. Wiring these through is
-          # necessary but not sufficient: at least one of the four secrets
-          # below must also actually be set in this repository's Settings ->
-          # Secrets and variables -> Actions for call_llm() to ever succeed.
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -160,20 +119,12 @@ jobs:
           fi
 
           set +e
-          python -m automation.main \
+          python -m automation.premium_main \
             $DRY_RUN_FLAG \
             --max-posts ${{ github.event.inputs.max_posts || '5' }} \
             2>&1 | tee logs/pipeline-output.txt
           PIPELINE_EXIT=${PIPESTATUS[0]}
 
-          # run_status (SUCCESS / DEGRADED / FAILED) is set by
-          # automation/main.py::_pipeline_run_status() and persisted to the
-          # latest logs/run-*.json. FAILED is the only state that ever
-          # produces a nonzero PIPELINE_EXIT above; DEGRADED (e.g. one
-          # article correctly blocked by the evidence-integrity gate while
-          # the rest of the run published) exits 0 by design, so it needs
-          # its own annotation here or it would pass through this step
-          # silently despite deserving operator attention.
           RUN_STATUS=$(python -c "
           import json, glob
           try:
@@ -186,19 +137,15 @@ jobs:
           echo "Pipeline run_status: ${RUN_STATUS}"
 
           if [ "$PIPELINE_EXIT" -ne 0 ]; then
-            echo "::error::Syndication pipeline exited with code ${PIPELINE_EXIT} (run_status=${RUN_STATUS}). Review the run summary for authentication or unexpected-error details."
+            echo "::error::Premium syndication pipeline exited with code ${PIPELINE_EXIT} (run_status=${RUN_STATUS})."
           elif [ "$RUN_STATUS" = "DEGRADED" ]; then
-            echo "::warning::Syndication pipeline completed DEGRADED — one or more articles were correctly blocked by the evidence-integrity gate, deferred by a self-healing rate limit, or queued for retry, while the rest of the run published successfully. Review the run summary for details; no operator action is required unless this persists across runs."
+            echo "::warning::Premium syndication completed DEGRADED — reports below the premium public quality floor, evidence integrity gate, Blogger artifact verification, or provider availability requirements were held/requeued rather than published thin or corrupted."
           fi
           exit $PIPELINE_EXIT
 
-      # ──────────────────────────────────────────────
-      # 8. Commit State & Logs
-      # ──────────────────────────────────────────────
       - name: "💾 Commit Publication State"
         if: always()
         run: |
-          # Stage state file and logs (not pipeline logs to reduce noise)
           git add data/published_posts.json || true
           git add logs/*.json || true
 
@@ -217,9 +164,8 @@ jobs:
             print(0)
           ")
 
-          git commit -m "syndication: auto-published [${PUBLISHED} total posts] — $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git commit -m "syndication: premium-published [${PUBLISHED} total posts] — $(date -u '+%Y-%m-%d %H:%M UTC')"
 
-          # Push with retry + rebase to handle concurrent writes
           for attempt in 1 2 3; do
             git pull --rebase origin ${{ github.ref_name }} --quiet 2>/dev/null || true
             if git push origin ${{ github.ref_name }}; then
@@ -235,22 +181,17 @@ jobs:
             fi
           done
 
-      # ──────────────────────────────────────────────
-      # 9. Pipeline Summary
-      # ──────────────────────────────────────────────
       - name: "📊 Pipeline Summary"
         if: always()
         run: |
-          echo "=== CYBERDUDEBIVASH® Blogger Syndication Summary ==="
+          echo "=== CYBERDUDEBIVASH® Premium Blogger Syndication Summary ==="
           echo "Run timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 
-          # Parse latest run report
           LATEST_REPORT=$(ls -t logs/run-*.json 2>/dev/null | head -1)
           if [ -n "$LATEST_REPORT" ]; then
             echo "Run report: $LATEST_REPORT"
             python -c "
           import json
-          import sys
           try:
             with open('$LATEST_REPORT') as f:
               r = json.load(f)
@@ -259,6 +200,7 @@ jobs:
             print(f'Published:  {r.get(\"published\", 0)}')
             print(f'Failed:     {r.get(\"failed\", 0)}')
             print(f'Integrity blocked: {r.get(\"integrity_blocked\", 0)}')
+            print(f'Fetch-back discrepancies: {r.get(\"fetch_back_discrepancies\", 0)}')
             print(f'Dry run:    {r.get(\"dry_run\", False)}')
             if r.get('errors'):
               print(f'Errors: {r[\"errors\"]}')
@@ -266,7 +208,7 @@ jobs:
             print(f'Could not parse report: {e}')
             "
           else
-            echo "No run report found (no new content discovered)"
+            echo "No run report found"
           fi
 
           TOTAL=$(python -c "
@@ -279,15 +221,12 @@ jobs:
             print(0)
           " 2>/dev/null || echo "0")
           echo "Total syndicated posts (all time): ${TOTAL}"
-          echo "Target blog: https://cyberbivash.blogspot.com"
+          echo "Public CTI: https://cti.cyberdudebivash.in"
           echo "Source: https://blog.cyberdudebivash.in"
 
-      # ──────────────────────────────────────────────
-      # 10. Failure Alert
-      # ──────────────────────────────────────────────
       - name: "🚨 Flag Pipeline Failure"
         if: failure()
         run: |
-          echo "::error::CYBERDUDEBIVASH® Blogger Syndication Pipeline FAILED"
+          echo "::error::CYBERDUDEBIVASH® Premium Blogger Syndication Pipeline FAILED"
           echo "::error::Check logs above for diagnosis"
           echo "::error::Contact: bivash@cyberdudebivash.com"
