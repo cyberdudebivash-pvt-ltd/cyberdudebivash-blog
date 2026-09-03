@@ -1,19 +1,16 @@
 name: "⚡ CYBERDUDEBIVASH® — Blogger Syndication Engine"
 
 on:
-  # RX-STABILIZATION-1 — automatic publication restored 2026-08-12T18:1x UTC.
+  # P0-GLOBAL-CTI-FACTORY-2026-09-03: capacity is achieved with small proven
+  # Blogger bursts, never one unsafe giant publication batch. Four runs/hour
+  # × 24 hours × max 5 writes = 480 write opportunities/day. The production
+  # premium gate remains authoritative, so only evidence-safe premium reports
+  # consume a Blogger write. At the post-#165 40% observed yield this cadence
+  # already provides ~192/day capacity; yield hardening raises the margin.
   schedule:
-    # Runs every 2 hours at :47 (was :15; 00:47, 02:47, … 22:47) = 12 runs/day.
-    # This workflow's commit message ("syndication: premium-published...")
-    # does not match vercel-ignore-build.sh's bot-throttle patterns, so it is
-    # not subject to the Vercel deploy-window constraint — the minute here
-    # only needs to avoid colliding with the other 8 cron schedules in this
-    # repo. A repo-wide GitHub Actions scheduled-trigger stall on 2026-09-03
-    # (root cause: 6+ workflows clustered on :00/:15/:30/:40, which GitHub's
-    # own docs identify as high-load, delay-prone times) meant zero intel
-    # reports published that day; every scheduled workflow here now uses a
-    # distinct minute offset. See sentinel-apex.yml for the full incident note.
-    - cron: "47 */2 * * *"
+    # Deliberately offset from :00/:15/:30/:45, which previously contributed
+    # to scheduled-trigger delay during GitHub's high-load windows.
+    - cron: "7,22,37,52 * * * *"
   # Production deployment runs immediately after the dedicated evidence gate
   # passes on main. State/log-only publication commits do not retrigger that
   # gate, so this cannot create a workflow loop.
@@ -32,11 +29,13 @@ on:
           - "false"
           - "true"
       max_posts:
-        description: "Max posts per run (default: 5; Blogger quota-safe)"
+        description: "Max posts per run (default/max production burst: 5)"
         required: false
         default: "5"
 
 concurrency:
+  # All content writers remain serialized. A delayed run queues rather than
+  # racing Blogger state, retry state or publication commits.
   group: main-content-writers
   cancel-in-progress: false
 
@@ -48,8 +47,8 @@ jobs:
     name: "📡 Syndicate Premium Reports to Blogger"
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    # Premium long-form generation uses a larger output budget and performs
-    # bounded Blogger fetch-back/repair verification before success.
+    # Keep the existing hard timeout. Factory throughput is obtained by
+    # model-scoped pacing and cadence, not by allowing runaway long jobs.
     timeout-minutes: 20
 
     steps:
@@ -79,13 +78,14 @@ jobs:
           from automation.content_discovery import ContentDiscoveryEngine
           from automation.authority_transformer import AuthorityTransformer
           from automation.blogger_publisher import BloggerPublisher
+          from automation.premium_factory_throughput import install_factory_throughput_overrides
           from automation.premium_publication import PremiumAuthorityTransformer, VerifiedBloggerPublisher, assess_enterprise_report, assess_live_artifact
           from automation.premium_main import main as premium_main
           from automation.seo_optimizer import SEOOptimizer
           from automation.social_amplifier import SocialAmplifier
           from automation.rss_aggregator import GlobalRSSAggregator
           from automation.threat_feeds import CISAAdvisoriesSource, RansomwareIntelSource, DataBreachIntelSource, ThreatActorIntelSource
-          print('Premium publication modules imported successfully')
+          print('Premium publication + Global CTI factory modules imported successfully')
           "
 
       - name: "🧪 Run Unit & Integration Tests"
@@ -120,6 +120,8 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '5' }}
+          CDB_FACTORY_RETRY_QUEUE_LIMIT: "500"
+          CDB_FACTORY_RETRY_ATTEMPTS: "5"
         run: |
           DRY_RUN_FLAG=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
@@ -211,6 +213,10 @@ jobs:
             print(f'Integrity blocked: {r.get(\"integrity_blocked\", 0)}')
             print(f'Fetch-back discrepancies: {r.get(\"fetch_back_discrepancies\", 0)}')
             print(f'Dry run:    {r.get(\"dry_run\", False)}')
+            factory = r.get('factory_throughput') or {}
+            if factory:
+              print(f'Factory UTC today: {factory.get(\"published_today_utc\", 0)} / floor {factory.get(\"daily_floor\", 150)} / goal {factory.get(\"daily_goal\", 200)}')
+              print(f'Factory theoretical write capacity/day: {factory.get(\"theoretical_daily_write_capacity\", 0)}')
             if r.get('errors'):
               print(f'Errors: {r[\"errors\"]}')
           except Exception as e:
@@ -230,6 +236,7 @@ jobs:
             print(0)
           " 2>/dev/null || echo "0")
           echo "Total syndicated posts (all time): ${TOTAL}"
+          echo "Factory target: minimum 150 premium reports/day; operating goal 200/day"
           echo "Public CTI: https://cti.cyberdudebivash.in"
           echo "Source: https://blog.cyberdudebivash.in"
 
