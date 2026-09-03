@@ -3,8 +3,17 @@ name: "⚡ CYBERDUDEBIVASH® — Blogger Syndication Engine"
 on:
   # RX-STABILIZATION-1 — automatic publication restored 2026-08-12T18:1x UTC.
   schedule:
-    # Runs every 2 hours at :15 (00:15, 02:15, … 22:15) = 12 runs/day.
-    - cron: "15 */2 * * *"
+    # Runs every 2 hours at :47 (was :15; 00:47, 02:47, … 22:47) = 12 runs/day.
+    # This workflow's commit message ("syndication: premium-published...")
+    # does not match vercel-ignore-build.sh's bot-throttle patterns, so it is
+    # not subject to the Vercel deploy-window constraint — the minute here
+    # only needs to avoid colliding with the other 8 cron schedules in this
+    # repo. A repo-wide GitHub Actions scheduled-trigger stall on 2026-09-03
+    # (root cause: 6+ workflows clustered on :00/:15/:30/:40, which GitHub's
+    # own docs identify as high-load, delay-prone times) meant zero intel
+    # reports published that day; every scheduled workflow here now uses a
+    # distinct minute offset. See sentinel-apex.yml for the full incident note.
+    - cron: "47 */2 * * *"
   # Production deployment runs immediately after the dedicated evidence gate
   # passes on main. State/log-only publication commits do not retrigger that
   # gate, so this cannot create a workflow loop.

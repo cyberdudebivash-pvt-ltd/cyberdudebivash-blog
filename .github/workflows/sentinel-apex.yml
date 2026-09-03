@@ -1,11 +1,15 @@
 name: "⚡ SENTINEL APEX v5.0 — High-Frequency Global Intel Pipeline"
 on:
   schedule:
-    # Runs at :00 and :30. Interleaved with blogger-syndication (:15/:45) so
-    # pushes to main land every ~15 min — longer than the Vercel build time,
-    # which prevents deploy starvation (rapid pushes canceling in-flight
-    # deploys so nothing ever publishes). Intel still refreshes every 30 min.
-    - cron: "0,30 * * * *"
+    # Runs every 30 min, offset to :03/:33. GitHub Actions documents that
+    # scheduled (cron) triggers can be delayed or dropped during periods of
+    # high load, and explicitly calls out the start of every hour as a high
+    # load time. This repo runs 9 separate cron schedules; stacking them all
+    # on :00/:15/:30/:45 caused a multi-hour repo-wide scheduler stall on
+    # 2026-09-03 (root cause of the missing Sep 3 Blogger publications).
+    # Every scheduled workflow in this repo now uses a distinct minute
+    # offset — see the same rationale note in each sibling workflow file.
+    - cron: "3,33 * * * *"
   workflow_dispatch:
     inputs:
       force_reset_state:

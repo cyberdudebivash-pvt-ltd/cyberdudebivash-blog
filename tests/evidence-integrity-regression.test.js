@@ -178,10 +178,14 @@ describe('publication and acquisition workflow regressions', () => {
     expect(postRecoveryStep).toContain('if [ "$POST_EXIT" -ne 0 ]; then');
     expect(postRecoveryStep).toContain('exit "$POST_EXIT"');
 
-    // The monitor is deliberately staggered behind the generator (:00/:30)
-    // to avoid a same-boundary read/write race. Runtime timestamps remain the
-    // authority, so this cadence change is optimization rather than truth.
-    expect(workflow).toContain("- cron: '10,40 * * * *'");
+    // The monitor is deliberately staggered ten minutes behind the generator
+    // (sentinel-apex.yml: :03/:33) to avoid a same-boundary read/write race.
+    // Runtime timestamps remain the authority, so this cadence change is
+    // optimization rather than truth. Minutes shifted from :10/:40 to
+    // :13/:43 (preserving the same 10-minute offset) after a repo-wide
+    // GitHub Actions scheduled-trigger stall on 2026-09-03, traced to 6+
+    // cron schedules clustered on :00/:15/:30/:40 — see sentinel-apex.yml.
+    expect(workflow).toContain("- cron: '13,43 * * * *'");
 
     // The CLI returns the classifier result from main() and binds that exact
     // return value to process.exitCode. Dedicated classifier tests exercise
