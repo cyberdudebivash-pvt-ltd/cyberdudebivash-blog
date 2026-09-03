@@ -26,7 +26,10 @@ name: "💾 SENTINEL APEX — Customer Data Backup"
 
 on:
   schedule:
-    - cron: '0 3 * * *' # 03:00 UTC daily
+    # 03:14 UTC daily (was 03:00) so this doesn't stack with the other 8 cron
+    # schedules in this repo on the same wall-clock minute — see
+    # sentinel-apex.yml for the incident note.
+    - cron: '14 3 * * *'
   workflow_dispatch:
 
 permissions:

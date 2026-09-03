@@ -96,7 +96,13 @@ name: "📨 SENTINEL APEX — Watchlist Alert Delivery"
 
 on:
   schedule:
-    - cron: '*/30 * * * *' # Every 30 minutes -- see cadence note above
+    # Every 30 minutes -- see cadence note above. Minutes :27/:57 (was
+    # :00/:30) so this doesn't stack with the other 8 cron schedules in this
+    # repo -- a repo-wide GitHub Actions scheduled-trigger stall on
+    # 2026-09-03 was traced to 6+ schedules clustered on :00/:15/:30/:40,
+    # which GitHub documents as high-load, delay-prone times. See
+    # sentinel-apex.yml for the full incident note.
+    - cron: '27,57 * * * *'
   workflow_dispatch:
 
 concurrency:

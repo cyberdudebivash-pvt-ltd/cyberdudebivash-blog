@@ -2,11 +2,18 @@ name: "⚡ SENTINEL APEX — Intel Feed Freshness Monitor"
 
 on:
   schedule:
-    # The generator runs at :00/:30. Check ten minutes later instead of
-    # racing the writer at the same nominal cron boundary. GitHub scheduled
-    # runs may start late under load, so correctness still comes from the
-    # runtime timestamp classifier below, not from assuming exact cron time.
-    - cron: '10,40 * * * *'
+    # The generator (sentinel-apex.yml) runs at :03/:33. Check ten minutes
+    # later instead of racing the writer at the same nominal cron boundary.
+    # GitHub scheduled runs may start late under load, so correctness still
+    # comes from the runtime timestamp classifier below, not from assuming
+    # exact cron time. (Minutes shifted from :10/:40 to :13/:43 — and every
+    # other scheduled workflow in this repo given its own distinct minute —
+    # after a repo-wide GitHub Actions scheduled-trigger stall on 2026-09-03
+    # caused by 6+ cron schedules clustered on :00/:15/:30/:40, which GitHub
+    # documents as high-load, delay-prone times. This watchdog is itself
+    # schedule-triggered, so during that stall it could not fire either —
+    # spreading the load reduces the chance of a repeat.)
+    - cron: '13,43 * * * *'
   workflow_dispatch:
 
 concurrency:

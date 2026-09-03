@@ -2,8 +2,13 @@ name: "🏥 SENTINEL APEX Pipeline Health Certification v1.0"
 
 on:
   schedule:
-    # Every 30 minutes — independent validation of pipeline health
-    - cron: '*/30 * * * *'
+    # Every 30 minutes — independent validation of pipeline health.
+    # Minutes :19/:49 (was :00/:30) so this doesn't stack with the other 8
+    # cron schedules in this repo — a repo-wide GitHub Actions scheduled-
+    # trigger stall on 2026-09-03 was traced to 6+ schedules clustered on
+    # :00/:15/:30/:40, which GitHub documents as high-load, delay-prone
+    # times. See sentinel-apex.yml for the full incident note.
+    - cron: '19,49 * * * *'
   workflow_dispatch:
     inputs:
       attempt_recovery:

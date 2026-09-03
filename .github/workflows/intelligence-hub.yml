@@ -11,7 +11,13 @@ on:
       - 'tests-js/**'
       - '.github/workflows/intelligence-hub.yml'
   schedule:
-    - cron: '20 */6 * * *'   # Pick up newly ingested intelligence every 6 hours
+    # :23 (was :20) — outside the Vercel first-10-minutes deploy window, same
+    # as before this change; this content already waited for the next even-hour
+    # window to deploy and that latency characteristic is unchanged. Offset
+    # only to give this schedule its own distinct minute, away from the other
+    # 8 cron schedules in this repo (see sentinel-apex.yml for the incident
+    # this fixes).
+    - cron: '23 */6 * * *'   # Pick up newly ingested intelligence every 6 hours
   workflow_dispatch:
 
 permissions:

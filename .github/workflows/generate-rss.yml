@@ -7,7 +7,14 @@ on:
       - 'posts/**'
       - 'generate-rss.js'
   schedule:
-    - cron: '0 */6 * * *'   # Regenerate every 6 hours
+    # :09 — every 6h fire lands on an even UTC hour (0,6,12,18), inside the
+    # first-10-minutes Vercel deploy window (vercel-ignore-build.sh). Offset
+    # from :00 (and from cve-pages.yml's :05) so this schedule doesn't collide
+    # with sibling cron schedules (see sentinel-apex.yml for the incident this
+    # fixes — cve-pages.yml and generate-rss.yml previously shared "0 */6 * * *"
+    # verbatim, guaranteeing a simultaneous GitHub Actions scheduler collision
+    # every 6 hours).
+    - cron: '9 */6 * * *'   # Regenerate every 6 hours
   workflow_dispatch:
 
 permissions:
