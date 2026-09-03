@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import html as html_lib
 import re
+from urllib.parse import urlsplit
 
 from . import premium_incident_recovery as _recovery
 from . import premium_publication as _premium
@@ -108,6 +109,37 @@ def _first_late_section_offset(content: str) -> int | None:
     return None
 
 
+def _validated_http_url(value: str) -> str | None:
+    """Return a canonical link candidate only for safe HTTP(S) absolute URLs.
+
+    ``SOURCE URL`` ultimately originates in external feed/discovery data and
+    must never become an HTML ``href`` solely because it was copied into the
+    trusted prompt envelope.  HTML escaping prevents attribute breakout but
+    does not make dangerous schemes such as ``javascript:`` safe.  Require an
+    absolute HTTP(S) URL with a real host, no embedded credentials, and no
+    control/whitespace characters.  Invalid input causes terminal reference
+    recovery to fail closed so the existing publication gate rejects the
+    incomplete artifact.
+    """
+    candidate = str(value or "").strip()
+    if not candidate or any(ch.isspace() or ord(ch) < 0x20 or ord(ch) == 0x7F for ch in candidate):
+        return None
+    try:
+        parsed = urlsplit(candidate)
+        # Accessing .port also validates malformed/non-numeric/out-of-range
+        # ports, which should not be emitted into a customer-facing citation.
+        _ = parsed.port
+    except (TypeError, ValueError):
+        return None
+    if parsed.scheme.lower() not in {"http", "https"}:
+        return None
+    if not parsed.hostname:
+        return None
+    if parsed.username is not None or parsed.password is not None:
+        return None
+    return candidate
+
+
 def _executive_recommendations_html(family: str, exploitation_status: str) -> str:
     if family == "ransomware_claim":
         recommendations = (
@@ -159,12 +191,13 @@ def strict_tail_sections(content: str, prompt: str) -> tuple[str, int]:
         added += 1
 
     if "references" in missing:
-        if not source_url:
-            # References cannot be manufactured without the actual canonical
-            # source.  Leave the artifact incomplete so existing fail-closed
-            # gates reject it rather than synthesizing a citation.
+        validated_url = _validated_http_url(source_url)
+        if validated_url is None:
+            # References cannot be manufactured or linked from an unsafe
+            # external value. Leave the artifact incomplete so existing
+            # fail-closed gates reject it rather than emitting an unsafe href.
             return content, 0
-        safe_url = html_lib.escape(source_url, quote=True)
+        safe_url = html_lib.escape(validated_url, quote=True)
         safe_title = html_lib.escape(source_title)
         repaired = repaired.rstrip() + (
             "\n<h3>References</h3><ul>"
