@@ -10,6 +10,8 @@ it fell back.
 """
 from unittest.mock import Mock, patch
 
+import requests
+
 from automation.config import Config
 from automation import llm_client
 from automation.llm_client import _call_openai_compat, _raw_retry_after_seconds, call_llm
@@ -230,12 +232,63 @@ def test_raw_retry_after_seconds_is_never_capped():
     assert _raw_retry_after_seconds(_rate_limited_response("200")) == 200.0
 
 
-def test_rate_limit_log_captures_the_uncapped_provider_value_and_body():
+def test_rate_limit_beyond_the_ceiling_skips_retry_and_raises_immediately():
+    # Production incident 2026-09-03 (continued): the diagnostics above
+    # proved every retry scheduled against a raw Retry-After this far past
+    # our own ceiling still hit a second 429 anyway, 12/12 samples, zero
+    # variance -- confirming this is Groq's tokens-per-day quota (minutes
+    # to tens of minutes to reset), not a transient tokens-per-minute one.
+    # Paying the capped 65s wait anyway only delays call_llm's own
+    # model/provider fallback chain from reaching a model that can answer
+    # right now, so this must raise immediately instead of sleeping at all.
+    old_backoff = llm_client._MAX_BACKOFF_SECONDS
+    llm_client._MAX_BACKOFF_SECONDS = 65.0
+    try:
+        resp = _rate_limited_response("200", body='{"error": "please retry in 200s"}')
+        resp.raise_for_status = Mock(side_effect=requests.exceptions.HTTPError("429 Client Error"))
+        fake_sleep = Mock()
+        with patch("automation.llm_client.requests.post", return_value=resp), \
+             patch.object(llm_client, "logger") as fake_logger:
+            try:
+                _call_openai_compat(
+                    url="https://api.groq.com/openai/v1/chat/completions",
+                    api_key="k", model="m", prompt="p", max_tokens=100,
+                    extra_headers={}, sleep_fn=fake_sleep,
+                )
+                assert False, "expected HTTPError to propagate"
+            except requests.exceptions.HTTPError:
+                pass
+
+        # No wasted wait on a model that provably will not recover in time.
+        fake_sleep.assert_not_called()
+
+        skip_calls = [
+            c for c in fake_logger.info.call_args_list
+            if c.args and c.args[0] == "LLM provider rate-limited beyond the retry ceiling, skipping remaining retries"
+        ]
+        assert len(skip_calls) == 1
+        logged = skip_calls[0].kwargs["extra"]
+        assert logged["raw_retry_after_seconds"] == 200.0
+        assert logged["backoff_ceiling_seconds"] == 65.0
+        assert "200s" in logged["response_body"]
+
+        # The old, always-retries log line must never fire for this case.
+        assert not any(
+            c.args and c.args[0] == "LLM provider rate-limited, retrying"
+            for c in fake_logger.info.call_args_list
+        )
+    finally:
+        llm_client._MAX_BACKOFF_SECONDS = old_backoff
+
+
+def test_rate_limit_within_the_ceiling_still_retries_once_then_succeeds():
+    # A raw Retry-After inside our own backoff ceiling is honored exactly
+    # as before this change: still worth one bounded wait-then-retry.
     old_backoff = llm_client._MAX_BACKOFF_SECONDS
     llm_client._MAX_BACKOFF_SECONDS = 65.0
     try:
         responses = [
-            _rate_limited_response("200", body='{"error": "please retry in 200s"}'),
+            _rate_limited_response("30", body='{"error": "please retry in 30s"}'),
             _success_response("generated"),
         ]
         fake_sleep = Mock()
@@ -247,21 +300,16 @@ def test_rate_limit_log_captures_the_uncapped_provider_value_and_body():
                 extra_headers={}, sleep_fn=fake_sleep,
             )
         assert result == "generated"
+        fake_sleep.assert_called_once_with(30.0)
 
-        # We only ever waited the capped 65s ...
-        fake_sleep.assert_called_once_with(65.0)
-
-        # ... but the log records what the provider actually asked for,
-        # proving the two are different rather than silently discarding it.
         rate_limit_calls = [
             c for c in fake_logger.info.call_args_list
             if c.args and c.args[0] == "LLM provider rate-limited, retrying"
         ]
         assert len(rate_limit_calls) == 1
         logged = rate_limit_calls[0].kwargs["extra"]
-        assert logged["delay_seconds"] == 65.0
-        assert logged["raw_retry_after_seconds"] == 200.0
-        assert "200s" in logged["response_body"]
+        assert logged["delay_seconds"] == 30.0
+        assert logged["raw_retry_after_seconds"] == 30.0
     finally:
         llm_client._MAX_BACKOFF_SECONDS = old_backoff
 
