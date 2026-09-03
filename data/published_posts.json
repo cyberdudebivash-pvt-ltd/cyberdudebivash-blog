@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "last_updated": "2026-09-03T00:17:55.685031+00:00",
+  "last_updated": "2026-09-03T04:40:55.900297+00:00",
   "total_published": 5388,
   "posts": {
     "478502dbbea55754": {
@@ -92606,31 +92606,6 @@
     {
       "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-72852",
       "error": "Publication blocked: evidence-graph correctness controls failed -- content is not reliable enough to publish at any tier (see the composer's DowngradeResult.failed_controls)",
-      "timestamp": "2026-08-22T08:48:03.462206+00:00"
-    },
-    {
-      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-72852",
-      "error": "Publication blocked: evidence-graph correctness controls failed -- content is not reliable enough to publish at any tier (see the composer's DowngradeResult.failed_controls)",
-      "timestamp": "2026-08-22T10:40:43.941814+00:00"
-    },
-    {
-      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-77946",
-      "error": "Publication blocked: unverified exploitation assertion matched /\\bconfirmed exploitation\\b/; unverified exploitation assertion matched /\\bexploited in the wild\\b/",
-      "timestamp": "2026-08-22T13:01:24.242810+00:00"
-    },
-    {
-      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-72852",
-      "error": "Publication blocked: evidence-graph correctness controls failed -- content is not reliable enough to publish at any tier (see the composer's DowngradeResult.failed_controls)",
-      "timestamp": "2026-08-22T13:02:27.455493+00:00"
-    },
-    {
-      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-72852",
-      "error": "Publication blocked: evidence-graph correctness controls failed -- content is not reliable enough to publish at any tier (see the composer's DowngradeResult.failed_controls)",
-      "timestamp": "2026-08-22T16:41:52.531958+00:00"
-    },
-    {
-      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-72852",
-      "error": "Publication blocked: evidence-graph correctness controls failed -- content is not reliable enough to publish at any tier (see the composer's DowngradeResult.failed_controls)",
       "timestamp": "2026-08-22T18:49:58.486791+00:00"
     },
     {
@@ -93102,81 +93077,34 @@
       "url": "https://blog.cyberdudebivash.in/posts/pnpm-environment-secrets-exfiltrated-via-env-placeholder-ex.html",
       "error": "Publication blocked: evidence-graph correctness controls failed -- content is not reliable enough to publish at any tier (see the composer's DowngradeResult.failed_controls)",
       "timestamp": "2026-09-03T00:17:55.603575+00:00"
+    },
+    {
+      "url": "https://blog.cyberdudebivash.in/posts/cve-2026-83548-the-hacker-news-threat-intelligence.html",
+      "error": "Publication blocked: unverified exploitation assertion matched /\\bconfirmed exploitation\\b/",
+      "timestamp": "2026-09-03T04:38:28.881904+00:00"
+    },
+    {
+      "url": "https://www.ransomware.live/id/R3JlZW5iZXJnIFRyYXVyaWdAU2lsZW50UmFuc29tR3JvdXA=",
+      "error": "Publication blocked: premium public-report gate: only 17 distinct analytical headings; minimum is 18; premium public-report gate: missing core enterprise section(s): executive recommendations, references, soc analyst playbook",
+      "timestamp": "2026-09-03T04:39:01.668567+00:00"
+    },
+    {
+      "url": "https://blog.cyberdudebivash.in/posts/cve-2026-73667-go-github-com-openchoreo-openchoreo.html",
+      "error": "Publication blocked: premium public-report gate: only 17 distinct analytical headings; minimum is 18; premium public-report gate: missing core enterprise section(s): executive recommendations, references, soc analyst playbook",
+      "timestamp": "2026-09-03T04:39:55.723847+00:00"
+    },
+    {
+      "url": "https://blog.cyberdudebivash.in/posts/sonicwall-patches-two-new-actively-exploited-zero-days-in-sm.html",
+      "error": "Publication blocked: premium public-report gate: visible analytical depth 2198 words is below production floor 2200; premium public-report gate: missing core enterprise section(s): executive recommendations, references",
+      "timestamp": "2026-09-03T04:40:37.542571+00:00"
+    },
+    {
+      "url": "https://therecord.media/russian-national-facing-20-years-malware-campaign",
+      "error": "Publication blocked: premium public-report gate: primary narrative is not LLM-authored; deterministic fallback is safe for resilience but below the premium public-report depth mandate; premium public-report gate: visible analytical depth 661 words is below production floor 2200; premium public-report gate: only 1 distinct analytical headings; minimum is 18; premium public-report gate: only 9 substantive paragraphs; minimum is 18; premium public-report gate: only 5 substantive list items; minimum is 18; premium public-report gate: missing core enterprise section(s): business impact, detection engineering guidance, executive recommendations, executive summary, references, soc analyst playbook, technical analysis, threat classification, threat hunting queries, verified facts",
+      "timestamp": "2026-09-03T04:40:55.806629+00:00"
     }
   ],
   "retry_queue": [
-    {
-      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-72852",
-      "title": "CVE-2026-72852 — CVSS 7.8 HIGH Severity | NVD Vulnerability Record",
-      "summary": "hank-ai/darknet sizes a convolutional layer's weight and output heap buffers by multiplying configuration fields taken from a .cfg file in unchecked 32-bit int arithmetic. In src-lib/convolutional_layer.cpp, l.nweights is computed as (c / groups) * n * size * size and l.outputs as l.out_h * l.out_w * l.out_c, and both feed xcalloc directly. A .cfg whose true dimension product exceeds INT_MAX wraps to a small or zero value, so the allocation is undersized; for example width and height of 256 with filters of 65536 gives 2^32, which wraps to 0. forward_convolutional_layer then re-derives the GEMM dimensions with a different operand order, computing k as l.size*l.size*l.c / l.groups where the allocation divided before multiplying, and reads and writes through the undersized buffer. Loading the crafted .cfg for inference or training is sufficient and no valid .weights file is required. The reported proof of concept observed a heap buffer overflow read in gemm_nn_fast under AddressSanitizer and glibc allocator metadata corruption in a release build of the same input, indicating an out-of-bounds write. CVSS Score: 7.8 CWE: CWE-190, CWE-787",
-      "published_at": "2026-08-20T19:17:00.830000",
-      "content_hash": "c4bace92ab30e805",
-      "labels": [
-        "CYBERDUDEBIVASH",
-        "Threat Intelligence",
-        "Vulnerabilities"
-      ],
-      "source": "nvd",
-      "full_content": "CVE ID: CVE-2026-72852\nDescription: hank-ai/darknet sizes a convolutional layer's weight and output heap buffers by multiplying configuration fields taken from a .cfg file in unchecked 32-bit int arithmetic. In src-lib/convolutional_layer.cpp, l.nweights is computed as (c / groups) * n * size * size and l.outputs as l.out_h * l.out_w * l.out_c, and both feed xcalloc directly. A .cfg whose true dimension product exceeds INT_MAX wraps to a small or zero value, so the allocation is undersized; for example width and height of 256 with filters of 65536 gives 2^32, which wraps to 0. forward_convolutional_layer then re-derives the GEMM dimensions with a different operand order, computing k as l.size*l.size*l.c / l.groups where the allocation divided before multiplying, and reads and writes through the undersized buffer. Loading the crafted .cfg for inference or training is sufficient and no valid .weights file is required. The reported proof of concept observed a heap buffer overflow read in gemm_nn_fast under AddressSanitizer and glibc allocator metadata corruption in a release build of the same input, indicating an out-of-bounds write.\nCVSS Score: 7.8\nCVSS Vector: CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H\nCWEs: CWE-190, CWE-787",
-      "source_publisher": null,
-      "cve_id": "CVE-2026-72852",
-      "cvss_score": 7.8,
-      "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
-      "cwe_ids": [
-        "CWE-190",
-        "CWE-787"
-      ],
-      "affected_vendor": null,
-      "affected_product": null,
-      "epss_score": 0.00141,
-      "epss_percentile": 0.03907,
-      "kev_listed": false,
-      "kev_date_added": null,
-      "kev_due_date": null,
-      "kev_required_action": null,
-      "ransomware_group": null,
-      "ransomware_sector": null,
-      "ransomware_country": null,
-      "last_error": "Publication blocked: evidence-graph correctness controls failed -- content is not reliable enough to publish at any tier (see the composer's DowngradeResult.failed_controls)",
-      "attempts": 10,
-      "added_at": "2026-08-22T18:49:58.654775+00:00"
-    },
-    {
-      "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-78122",
-      "title": "CVE-2026-78122 — CVSS 7.4 HIGH Severity | NVD Vulnerability Record",
-      "summary": "docker-socket-proxy fails to properly gate read endpoints in the /containers Docker API namespace when the CONTAINERS environment variable is set. Attackers can use GET requests to /containers/{id}/archive, /containers/{id}/export, /containers/{id}/logs, and /containers/{id}/top to read arbitrary files and download entire container filesystems as tar archives. CVSS Score: 7.4 CWE: CWE-1220",
-      "published_at": "2026-08-22T23:16:22.923000",
-      "content_hash": "d3849bbbeb101d29",
-      "labels": [
-        "CYBERDUDEBIVASH",
-        "Threat Intelligence",
-        "Vulnerabilities",
-        "SOC Operations"
-      ],
-      "source": "nvd",
-      "full_content": "CVE ID: CVE-2026-78122\nDescription: docker-socket-proxy fails to properly gate read endpoints in the /containers Docker API namespace when the CONTAINERS environment variable is set. Attackers can use GET requests to /containers/{id}/archive, /containers/{id}/export, /containers/{id}/logs, and /containers/{id}/top to read arbitrary files and download entire container filesystems as tar archives.\nCVSS Score: 7.4\nCVSS Vector: CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N\nCWEs: CWE-1220",
-      "source_publisher": null,
-      "cve_id": "CVE-2026-78122",
-      "cvss_score": 7.4,
-      "cvss_vector": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N",
-      "cwe_ids": [
-        "CWE-1220"
-      ],
-      "affected_vendor": null,
-      "affected_product": null,
-      "epss_score": 0.00309,
-      "epss_percentile": 0.23709,
-      "kev_listed": false,
-      "kev_date_added": null,
-      "kev_due_date": null,
-      "kev_required_action": null,
-      "ransomware_group": null,
-      "ransomware_sector": null,
-      "ransomware_country": null,
-      "last_error": "Publication blocked: evidence-graph correctness controls failed -- content is not reliable enough to publish at any tier (see the composer's DowngradeResult.failed_controls)",
-      "attempts": 14,
-      "added_at": "2026-08-24T13:13:47.066746+00:00"
-    },
     {
       "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-76844",
       "title": "CVE-2026-76844 — CVSS 7.4 HIGH Severity | NVD Vulnerability Record",
@@ -93423,43 +93351,6 @@
       "added_at": "2026-09-02T11:22:29.331627+00:00"
     },
     {
-      "url": "https://blog.cyberdudebivash.in/posts/cve-2026-83548-the-hacker-news-threat-intelligence.html",
-      "title": "Attackers Exploit Two SonicWall SMA 1000 Zero-Days That May Form an Attack Chain",
-      "summary": "CVE-2026-83548 (CVSS 10) — SonicWall has released security updates to address two security flaws impacting its Secure Mobile Access (SMA) 1000 series VPN. Source-attributed analysis and response guidance by CYBERDUDEBIVASH SENTINEL APEX.",
-      "published_at": "2026-09-02T12:00:00+00:00",
-      "content_hash": "8c6def08c07605cc",
-      "labels": [
-        "CYBERDUDEBIVASH",
-        "Threat Intelligence",
-        "Vulnerabilities",
-        "Zero-Day",
-        "CVE Analysis",
-        "Vulnerability Intelligence",
-        "Cybersecurity"
-      ],
-      "source": "rss",
-      "full_content": null,
-      "source_publisher": "CYBERDUDEBIVASH",
-      "cve_id": null,
-      "cvss_score": null,
-      "cvss_vector": null,
-      "cwe_ids": null,
-      "affected_vendor": null,
-      "affected_product": null,
-      "epss_score": null,
-      "epss_percentile": null,
-      "kev_listed": null,
-      "kev_date_added": null,
-      "kev_due_date": null,
-      "kev_required_action": null,
-      "ransomware_group": null,
-      "ransomware_sector": null,
-      "ransomware_country": null,
-      "last_error": "Publication blocked: unverified exploitation assertion matched /\\bconfirmed exploitation\\b/",
-      "attempts": 1,
-      "added_at": "2026-09-02T16:34:56.572038+00:00"
-    },
-    {
       "url": "https://blog.cyberdudebivash.in/posts/cve-2026-9586-the-hacker-news-threat-intelligence.html",
       "title": "Attackers Exploit Critical Switchvox Flaw to Deploy Reverse Shells Without Credentials",
       "summary": "CVE-2026-9586 (CVSS 9.3) — Threat actors are exploiting a severe security vulnerability in Sangoma Switchvox, an enterprise VoIP platform, that could allow. Source-attributed analysis and response guidance by CYBERDUDEBIVASH SENTINEL APEX.",
@@ -93636,41 +93527,6 @@
       "added_at": "2026-09-02T21:05:11.785805+00:00"
     },
     {
-      "url": "https://blog.cyberdudebivash.in/posts/sonicwall-patches-two-new-actively-exploited-zero-days-in-sm.html",
-      "title": "SonicWall Patches Two New Actively Exploited Zero-Days in SMA 1000 VPNs",
-      "summary": "SonicWall Patches Two New Actively Exploited Zero-Days in SMA 1000 VPNs. Cybersecurity analysis, IOCs, and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.",
-      "published_at": "2026-09-02T12:00:00+00:00",
-      "content_hash": "d1fce3ae8fd5944b",
-      "labels": [
-        "CYBERDUDEBIVASH",
-        "Threat Intelligence",
-        "Zero-Day",
-        "Cyber Threat Intelligence",
-        "Cybersecurity"
-      ],
-      "source": "rss",
-      "full_content": null,
-      "source_publisher": "CYBERDUDEBIVASH",
-      "cve_id": null,
-      "cvss_score": null,
-      "cvss_vector": null,
-      "cwe_ids": null,
-      "affected_vendor": null,
-      "affected_product": null,
-      "epss_score": null,
-      "epss_percentile": null,
-      "kev_listed": null,
-      "kev_date_added": null,
-      "kev_due_date": null,
-      "kev_required_action": null,
-      "ransomware_group": null,
-      "ransomware_sector": null,
-      "ransomware_country": null,
-      "last_error": "Publication blocked: premium public-report gate: visible analytical depth 2181 words is below production floor 2200; premium public-report gate: missing core enterprise section(s): executive recommendations, references",
-      "attempts": 2,
-      "added_at": "2026-09-03T00:15:22.338212+00:00"
-    },
-    {
       "url": "https://blog.cyberdudebivash.in/posts/cve-2026-63490-maven-com-github-jknack-handlebars-springmvc.html",
       "title": "Handlebars.java: Arbitrary file read in `SpringTemplateLoader` via URL-fragment suffix bypass",
       "summary": "### Summary\n`com.github.jknack.handlebars.springmvc.SpringTemplateLoader` resolves Spring MVC view names into URLs via Spring's `ResourceLoader` **without applying the path-containment check** that protects every other URL-based loader in the project (`ClassPathTemplateLoader`, `FileTemplateLoader`,. Full analysis, Sigma/YARA rules, IOCs, Attack Chain by CYBERDUDEBIVASH SENTINEL APEX v4.0.",
@@ -93740,40 +93596,6 @@
       "added_at": "2026-09-03T00:16:36.467676+00:00"
     },
     {
-      "url": "https://therecord.media/russian-national-facing-20-years-malware-campaign",
-      "title": "Russian national facing 20 years for malware campaign that infected 80,000 freelancers",
-      "summary": "Searzhudin Tamirlanovich Aktulaev appeared in a San Francisco federal court on Monday after being arrested in Cyprus in May 2025 and extradited to the U.S. last week.",
-      "published_at": "2026-09-02T18:43:00+00:00",
-      "content_hash": "ffd5590749833d70",
-      "labels": [
-        "CYBERDUDEBIVASH",
-        "Threat Intelligence",
-        "Malware Research",
-        "Global Intel"
-      ],
-      "source": "global_rss",
-      "full_content": "Source Publisher: The Record by Recorded Future\nOriginal Article: https://therecord.media/russian-national-facing-20-years-malware-campaign\n\nSearzhudin Tamirlanovich Aktulaev appeared in a San Francisco federal court on Monday after being arrested in Cyprus in May 2025 and extradited to the U.S. last week.",
-      "source_publisher": "The Record by Recorded Future",
-      "cve_id": null,
-      "cvss_score": null,
-      "cvss_vector": null,
-      "cwe_ids": null,
-      "affected_vendor": null,
-      "affected_product": null,
-      "epss_score": null,
-      "epss_percentile": null,
-      "kev_listed": null,
-      "kev_date_added": null,
-      "kev_due_date": null,
-      "kev_required_action": null,
-      "ransomware_group": null,
-      "ransomware_sector": null,
-      "ransomware_country": null,
-      "last_error": "Publication blocked: premium public-report gate: visible analytical depth 2078 words is below production floor 2200; premium public-report gate: missing core enterprise section(s): executive recommendations, references",
-      "attempts": 2,
-      "added_at": "2026-09-03T00:17:29.405704+00:00"
-    },
-    {
       "url": "https://blog.cyberdudebivash.in/posts/pnpm-environment-secrets-exfiltrated-via-env-placeholder-ex.html",
       "title": "pnpm: Environment secrets exfiltrated via env-placeholder expansion in proxy settings read from an untrusted pnpm-workspace.yaml",
       "summary": "Summary pnpm expands ${VAR} environment placeholders in the httpProxy / httpsProxy / noProxy settings read from a project's pnpm-workspace.yaml. Because a. Cybersecurity analysis, IOCs, and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.",
@@ -93806,6 +93628,181 @@
       "last_error": "Publication blocked: evidence-graph correctness controls failed -- content is not reliable enough to publish at any tier (see the composer's DowngradeResult.failed_controls)",
       "attempts": 3,
       "added_at": "2026-09-03T00:17:55.684978+00:00"
+    },
+    {
+      "url": "https://blog.cyberdudebivash.in/posts/cve-2026-83548-the-hacker-news-threat-intelligence.html",
+      "title": "Attackers Exploit Two SonicWall SMA 1000 Zero-Days That May Form an Attack Chain",
+      "summary": "CVE-2026-83548 (CVSS 10) — SonicWall has released security updates to address two security flaws impacting its Secure Mobile Access (SMA) 1000 series VPN. Source-attributed analysis and response guidance by CYBERDUDEBIVASH SENTINEL APEX.",
+      "published_at": "2026-09-02T12:00:00+00:00",
+      "content_hash": "8c6def08c07605cc",
+      "labels": [
+        "CYBERDUDEBIVASH",
+        "Threat Intelligence",
+        "Vulnerabilities",
+        "Zero-Day",
+        "CVE Analysis",
+        "Vulnerability Intelligence",
+        "Cybersecurity"
+      ],
+      "source": "rss",
+      "full_content": null,
+      "source_publisher": "CYBERDUDEBIVASH",
+      "cve_id": null,
+      "cvss_score": null,
+      "cvss_vector": null,
+      "cwe_ids": null,
+      "affected_vendor": null,
+      "affected_product": null,
+      "epss_score": null,
+      "epss_percentile": null,
+      "kev_listed": null,
+      "kev_date_added": null,
+      "kev_due_date": null,
+      "kev_required_action": null,
+      "ransomware_group": null,
+      "ransomware_sector": null,
+      "ransomware_country": null,
+      "last_error": "Publication blocked: unverified exploitation assertion matched /\\bconfirmed exploitation\\b/",
+      "attempts": 2,
+      "added_at": "2026-09-03T04:38:28.947441+00:00"
+    },
+    {
+      "url": "https://www.ransomware.live/id/R3JlZW5iZXJnIFRyYXVyaWdAU2lsZW50UmFuc29tR3JvdXA=",
+      "title": "SilentRansomGroup Ransomware Claims New Victim: Greenberg Traurig | Professional Services Sector",
+      "summary": "SilentRansomGroup has listed Greenberg Traurig as a new victim on its leak site. Reported sector: Professional Services. Country: US.",
+      "published_at": "2026-09-02T23:21:12.808426+00:00",
+      "content_hash": "d128320f4261e45a",
+      "labels": [
+        "CYBERDUDEBIVASH",
+        "Threat Intelligence",
+        "Ransomware"
+      ],
+      "source": "ransomware_intel",
+      "full_content": "Ransomware Group: SilentRansomGroup\nVictim: Greenberg Traurig\nSector: Professional Services\nCountry: US\nLeak Site: https://www.ransomware.live/id/R3JlZW5iZXJnIFRyYXVyaWdAU2lsZW50UmFuc29tR3JvdXA=",
+      "source_publisher": null,
+      "cve_id": null,
+      "cvss_score": null,
+      "cvss_vector": null,
+      "cwe_ids": null,
+      "affected_vendor": null,
+      "affected_product": null,
+      "epss_score": null,
+      "epss_percentile": null,
+      "kev_listed": null,
+      "kev_date_added": null,
+      "kev_due_date": null,
+      "kev_required_action": null,
+      "ransomware_group": "SilentRansomGroup",
+      "ransomware_sector": "Professional Services",
+      "ransomware_country": "US",
+      "last_error": "Publication blocked: premium public-report gate: only 17 distinct analytical headings; minimum is 18; premium public-report gate: missing core enterprise section(s): executive recommendations, references, soc analyst playbook",
+      "attempts": 1,
+      "added_at": "2026-09-03T04:39:01.731283+00:00"
+    },
+    {
+      "url": "https://blog.cyberdudebivash.in/posts/cve-2026-73667-go-github-com-openchoreo-openchoreo.html",
+      "title": "OpenChoreo: Authenticated OS command injection via OpenChoreo Workflow Plane templates enables code execution in privileged pods",
+      "summary": "CVE-2026-73667 (CVSS 8.8) — Summary OpenChoreo Workflow Plane templates were vulnerable to OS command injection because some developer-controlled workflow. Source-attributed analysis and response guidance by CYBERDUDEBIVASH SENTINEL APEX.",
+      "published_at": "2026-09-03T12:00:00+00:00",
+      "content_hash": "ff120c96323a72a7",
+      "labels": [
+        "CYBERDUDEBIVASH",
+        "Threat Intelligence",
+        "Vulnerabilities",
+        "CVE Analysis",
+        "Vulnerability Intelligence",
+        "Cybersecurity"
+      ],
+      "source": "rss",
+      "full_content": null,
+      "source_publisher": "CYBERDUDEBIVASH",
+      "cve_id": null,
+      "cvss_score": null,
+      "cvss_vector": null,
+      "cwe_ids": null,
+      "affected_vendor": null,
+      "affected_product": null,
+      "epss_score": null,
+      "epss_percentile": null,
+      "kev_listed": null,
+      "kev_date_added": null,
+      "kev_due_date": null,
+      "kev_required_action": null,
+      "ransomware_group": null,
+      "ransomware_sector": null,
+      "ransomware_country": null,
+      "last_error": "Publication blocked: premium public-report gate: only 17 distinct analytical headings; minimum is 18; premium public-report gate: missing core enterprise section(s): executive recommendations, references, soc analyst playbook",
+      "attempts": 1,
+      "added_at": "2026-09-03T04:39:55.785310+00:00"
+    },
+    {
+      "url": "https://blog.cyberdudebivash.in/posts/sonicwall-patches-two-new-actively-exploited-zero-days-in-sm.html",
+      "title": "SonicWall Patches Two New Actively Exploited Zero-Days in SMA 1000 VPNs",
+      "summary": "SonicWall Patches Two New Actively Exploited Zero-Days in SMA 1000 VPNs. Cybersecurity analysis, IOCs, and detection guidance by CYBERDUDEBIVASH SENTINEL APEX.",
+      "published_at": "2026-09-02T12:00:00+00:00",
+      "content_hash": "d1fce3ae8fd5944b",
+      "labels": [
+        "CYBERDUDEBIVASH",
+        "Threat Intelligence",
+        "Zero-Day",
+        "Cyber Threat Intelligence",
+        "Cybersecurity"
+      ],
+      "source": "rss",
+      "full_content": null,
+      "source_publisher": "CYBERDUDEBIVASH",
+      "cve_id": null,
+      "cvss_score": null,
+      "cvss_vector": null,
+      "cwe_ids": null,
+      "affected_vendor": null,
+      "affected_product": null,
+      "epss_score": null,
+      "epss_percentile": null,
+      "kev_listed": null,
+      "kev_date_added": null,
+      "kev_due_date": null,
+      "kev_required_action": null,
+      "ransomware_group": null,
+      "ransomware_sector": null,
+      "ransomware_country": null,
+      "last_error": "Publication blocked: premium public-report gate: visible analytical depth 2198 words is below production floor 2200; premium public-report gate: missing core enterprise section(s): executive recommendations, references",
+      "attempts": 3,
+      "added_at": "2026-09-03T04:40:37.594796+00:00"
+    },
+    {
+      "url": "https://therecord.media/russian-national-facing-20-years-malware-campaign",
+      "title": "Russian national facing 20 years for malware campaign that infected 80,000 freelancers",
+      "summary": "Searzhudin Tamirlanovich Aktulaev appeared in a San Francisco federal court on Monday after being arrested in Cyprus in May 2025 and extradited to the U.S. last week.",
+      "published_at": "2026-09-02T18:43:00+00:00",
+      "content_hash": "ffd5590749833d70",
+      "labels": [
+        "CYBERDUDEBIVASH",
+        "Threat Intelligence",
+        "Malware Research",
+        "Global Intel"
+      ],
+      "source": "global_rss",
+      "full_content": "Source Publisher: The Record by Recorded Future\nOriginal Article: https://therecord.media/russian-national-facing-20-years-malware-campaign\n\nSearzhudin Tamirlanovich Aktulaev appeared in a San Francisco federal court on Monday after being arrested in Cyprus in May 2025 and extradited to the U.S. last week.",
+      "source_publisher": "The Record by Recorded Future",
+      "cve_id": null,
+      "cvss_score": null,
+      "cvss_vector": null,
+      "cwe_ids": null,
+      "affected_vendor": null,
+      "affected_product": null,
+      "epss_score": null,
+      "epss_percentile": null,
+      "kev_listed": null,
+      "kev_date_added": null,
+      "kev_due_date": null,
+      "kev_required_action": null,
+      "ransomware_group": null,
+      "ransomware_sector": null,
+      "ransomware_country": null,
+      "last_error": "Publication blocked: premium public-report gate: primary narrative is not LLM-authored; deterministic fallback is safe for resilience but below the premium public-report depth mandate; premium public-report gate: visible analytical depth 661 words is below production floor 2200; premium public-report gate: only 1 distinct analytical headings; minimum is 18; premium public-report gate: only 9 substantive paragraphs; minimum is 18; premium public-report gate: only 5 substantive list items; minimum is 18; premium public-report gate: missing core enterprise section(s): business impact, detection engineering guidance, executive recommendations, executive summary, references, soc analyst playbook, technical analysis, threat classification, threat hunting queries, verified facts",
+      "attempts": 3,
+      "added_at": "2026-09-03T04:40:55.900249+00:00"
     }
   ]
 }
