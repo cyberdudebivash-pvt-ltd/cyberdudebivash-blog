@@ -302,15 +302,37 @@ def _prompt_value(prompt: str, name: str) -> str:
     return match.group(1).strip() if match else ""
 
 
-def _replace_unnegated(text: str, pattern: str, replacement: str) -> tuple[str, int]:
-    matches = list(re.finditer(pattern, text, re.IGNORECASE))
+def _replace_pattern_set_unnegated(
+    text: str,
+    replacements: tuple[tuple[str, str], ...],
+) -> tuple[str, int]:
+    """Replace multiple forbidden patterns against one immutable text snapshot.
+
+    Each replacement injects explicit negation/qualification.  If later
+    patterns were matched against already-rewritten text, that newly inserted
+    ``not`` could incorrectly suppress a second unsupported assertion in the
+    same sentence.  Evaluate every match and its negation context against the
+    original string, then perform one substitution pass so repairs cannot
+    hide other repairs from themselves.
+    """
+    if not replacements:
+        return text, 0
+
+    original = text
+    combined = "|".join(f"(?P<p{index}>{pattern})" for index, (pattern, _) in enumerate(replacements))
     replaced = 0
-    for match in reversed(matches):
-        if _integrity._is_negated_immediately_before(text, match.start()):
-            continue
-        text = text[: match.start()] + replacement + text[match.end() :]
-        replaced += 1
-    return text, replaced
+
+    def _replacement(match: re.Match) -> str:
+        nonlocal replaced
+        if _integrity._is_negated_immediately_before(original, match.start()):
+            return match.group(0)
+        for index, (_, replacement) in enumerate(replacements):
+            if match.group(f"p{index}") is not None:
+                replaced += 1
+                return replacement
+        return match.group(0)
+
+    return re.sub(combined, _replacement, original, flags=re.IGNORECASE), replaced
 
 
 def _repair_evidence_language(content: str, prompt: str) -> tuple[str, int]:
@@ -328,9 +350,8 @@ def _repair_evidence_language(content: str, prompt: str) -> tuple[str, int]:
             (r"\bconfirmed exploitation\b", "no confirmed exploitation in cited evidence"),
             (r"\bexploitation (?:has been|was) observed\b", "exploitation has not been observed in cited evidence"),
         )
-        for pattern, replacement in replacements:
-            repaired, count = _replace_unnegated(repaired, pattern, replacement)
-            changes += count
+        repaired, count = _replace_pattern_set_unnegated(repaired, replacements)
+        changes += count
 
     if family == "ransomware_claim":
         replacements = (
@@ -339,9 +360,8 @@ def _repair_evidence_language(content: str, prompt: str) -> tuple[str, int]:
             (r"\bdata (?:has been|was) (?:confirmed )?(?:stolen|exfiltrated)\b", "data theft or exfiltration is claimed by the actor and is not independently verified"),
             (r"\bvictim(?:'s)? (?:data|network|systems?) (?:has been|was|is) (?:confirmed )?compromised\b", "compromise of the victim environment is claimed by the actor and is not independently verified"),
         )
-        for pattern, replacement in replacements:
-            repaired, count = _replace_unnegated(repaired, pattern, replacement)
-            changes += count
+        repaired, count = _replace_pattern_set_unnegated(repaired, replacements)
+        changes += count
 
     return repaired, changes
 
