@@ -6,8 +6,17 @@ from automation import premium_incident_recovery as recovery
 from automation import premium_provider_budget as budget
 from automation import premium_publication as premium
 from automation import premium_yield_hardening as hardening
+from automation import premium_yield_contract_guard as guard
 from automation.config import Config
 from automation.content_discovery import DiscoveredArticle
+
+
+_SUBSTANTIVE_PARAGRAPH = (
+    "Evidence-backed analysis explains telemetry validation and enterprise response decisions."
+)
+_SUBSTANTIVE_LIST_ITEM = (
+    "Validate authoritative telemetry before operational escalation or containment decisions."
+)
 
 
 def _article(**overrides):
@@ -33,11 +42,18 @@ def _article(**overrides):
 
 
 def _report_without_tail(words=2300):
-    core = sorted(set(premium._CORE_HEADINGS) - {"executive recommendations", "references"})
-    auxiliary = [f"Operational Section {idx}" for idx in range(1, 11)]
+    # The strict runtime contract is 25 sections.  A legitimate terminal
+    # recovery fixture therefore contains every non-tail mandatory section,
+    # not merely the smaller public-core subset used by the pre-P0.1 tests.
+    headings = [
+        heading for heading in guard._MANDATORY_HEADINGS
+        if heading not in {"Executive Recommendations", "References"}
+    ]
     sections = "".join(
-        f"<h3>{heading}</h3><p>evidence decision telemetry validation</p>"
-        for heading in core + auxiliary
+        f"<h3>{heading}</h3>"
+        f"<p>{_SUBSTANTIVE_PARAGRAPH}</p>"
+        f"<ul><li>{_SUBSTANTIVE_LIST_ITEM}</li></ul>"
+        for heading in headings
     )
     filler = " ".join("evidence" for _ in range(words))
     return f"{sections}<p>{filler}</p>"
@@ -56,17 +72,32 @@ def test_prompt_adds_authoritative_evidence_boundary_and_stays_provider_safe(mon
     assert len(prompt) <= budget.PREMIUM_PROMPT_CHAR_CEILING
 
 
-def test_authoritative_structural_preflight_accepts_numbered_core_headings():
-    numbered_core = [f"{idx}. {heading.title()}" for idx, heading in enumerate(sorted(premium._CORE_HEADINGS), 1)]
-    auxiliary = [f"Operational Section {idx}" for idx in range(1, 10)]
-    sections = "".join(f"<h3>{heading}</h3><p>evidence validation decision</p>" for heading in numbered_core + auxiliary)
-    content = sections + "<p>" + ("evidence " * 1900) + "</p>"
+def test_authoritative_structural_preflight_accepts_numbered_mandatory_headings():
+    # Preserve the original numbered-heading regression but make the fixture a
+    # real publication-shaped report.  P0 semantic alignment intentionally no
+    # longer treats ten public-core headings plus arbitrary auxiliary headings
+    # as a complete 25-section contract.
+    numbered = [
+        f"{idx}. {heading}"
+        for idx, heading in enumerate(guard._MANDATORY_HEADINGS, 1)
+    ]
+    sections = "".join(
+        f"<h3>{heading}</h3>"
+        f"<p>{_SUBSTANTIVE_PARAGRAPH}</p>"
+        f"<ul><li>{_SUBSTANTIVE_LIST_ITEM}</li></ul>"
+        for heading in numbered
+    )
+    content = sections + "<p>" + ("evidence " * 2300) + "</p>"
 
-    words, heading_count, core_hits = hardening.authoritative_raw_contract_metrics(content)
+    words, heading_count, coverage = hardening.authoritative_raw_contract_metrics(content)
 
-    assert words >= recovery._RAW_MIN_VISIBLE_WORDS
+    assert words >= premium.MIN_VISIBLE_WORDS
     assert heading_count >= premium.MIN_DISTINCT_HEADINGS
-    assert core_hits == len(premium._CORE_HEADINGS)
+    # Depending on whether the production contract guard has already been
+    # installed in this pytest process, compatibility metric #3 is either
+    # public-core coverage (10) or strict mandatory coverage (25).  Both must
+    # at least cover every public-core heading; completeness is asserted below.
+    assert coverage >= len(premium._CORE_HEADINGS)
     assert hardening.yield_contract_complete(content) is True
 
 
