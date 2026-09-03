@@ -70,3 +70,35 @@ def test_reference_recovery_fails_closed_without_canonical_source_url():
     assert repaired == content
     assert added == 0
     assert guard._missing_mandatory(repaired) == {"references"}
+
+
+def test_reference_url_validator_accepts_only_absolute_http_or_https_without_credentials():
+    assert guard._validated_http_url("https://example.test/advisory?id=1#evidence") == "https://example.test/advisory?id=1#evidence"
+    assert guard._validated_http_url("http://example.test/source") == "http://example.test/source"
+    assert guard._validated_http_url("javascript:alert(1)") is None
+    assert guard._validated_http_url("data:text/html,<script>alert(1)</script>") is None
+    assert guard._validated_http_url("//example.test/source") is None
+    assert guard._validated_http_url("https://") is None
+    assert guard._validated_http_url("https://user:pass@example.test/source") is None
+    assert guard._validated_http_url("https://example.test/source\njavascript:alert(1)") is None
+    assert guard._validated_http_url("https://example.test:99999/source") is None
+
+
+def test_reference_tail_recovery_rejects_dangerous_source_scheme_without_rendering_href():
+    headings = [heading for heading in guard._MANDATORY_HEADINGS if heading != "References"]
+    content = _report(headings)
+    prompt = (
+        "SOURCE URL: javascript:alert(document.domain)\n"
+        "SOURCE TITLE: Adversarial feed item\n"
+        "CDB_EVIDENCE_FAMILY: cve_advisory\n"
+        "CDB_EXPLOITATION_STATUS: not_confirmed\n"
+    )
+
+    assert guard.strict_yield_contract_complete(content) is True
+    repaired, added = guard.strict_tail_sections(content, prompt)
+
+    assert repaired == content
+    assert added == 0
+    assert "javascript:" not in repaired
+    assert "<h3>References</h3>" not in repaired
+    assert guard._missing_mandatory(repaired) == {"references"}
