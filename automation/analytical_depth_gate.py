@@ -27,8 +27,10 @@ if TYPE_CHECKING:
     from .report_integrity import ReportContext
 
 # authority_transformer.py's real content_source values for genuine
-# analyst/LLM authorship (llm_client._PROVIDERS' name field) -- everything
-# else ("reportx_composer", "template") is a structured or legacy fallback
+# analyst/LLM authorship -- the bare provider-family name call_llm()
+# returns regardless of which specific model within that family
+# succeeded (see llm_client.call_llm's docstring). Everything else
+# ("reportx_composer", "template") is a structured or legacy fallback
 # with no capacity to produce Key Judgements (Section 3) at all.
 LLM_AUTHORED_SOURCES = frozenset({"groq", "deepseek", "openrouter", "anthropic"})
 

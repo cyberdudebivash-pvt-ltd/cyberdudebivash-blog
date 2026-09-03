@@ -8,6 +8,13 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 
+def _parse_csv_env(name: str, default: tuple[str, ...]) -> tuple[str, ...]:
+    raw = os.environ.get(name, "")
+    if not raw.strip():
+        return default
+    return tuple(item.strip() for item in raw.split(",") if item.strip())
+
+
 @dataclass
 class Config:
     # Blogger OAuth2
@@ -35,8 +42,24 @@ class Config:
     # replacement (console.groq.com/docs/deprecations) for the same 70B-class
     # general-purpose tier the original default targeted.
     llm_model_groq: str = "openai/gpt-oss-120b"
+    # P0-FREE-TIER-RESILIENCE-2026-09-03: the platform runs on free-tier LLM
+    # access only until it earns real revenue (operator decision) -- DeepSeek
+    # and OpenRouter's paid tiers are unfunded (402 on every call) and that
+    # is not going to change from this repository. Groq's free/on_demand
+    # tier enforces its "tokens per day" ceiling PER MODEL, not account-
+    # wide (confirmed from a real 429 body: "Rate limit reached for model
+    # `openai/gpt-oss-120b` ... on tokens per day (TPD): Limit 200000"), so
+    # the SAME already-configured GROQ_API_KEY gets an independent daily
+    # budget on each of these -- trying them in sequence multiplies real,
+    # free, zero-signup daily capacity with no new secret. Overridable via
+    # GROQ_FALLBACK_MODELS (comma-separated) if Groq's free-tier catalog
+    # changes before this default is updated.
+    llm_model_groq_fallbacks: tuple[str, ...] = ("openai/gpt-oss-20b", "qwen/qwen3.6-27b", "qwen/qwen3.8-27b")
     llm_model_deepseek: str = "deepseek-chat"
-    llm_model_openrouter: str = "deepseek/deepseek-chat"
+    # OpenRouter has no fixed default model here: its free ($0-priced)
+    # catalog is reported to churn weekly, so llm_client.py discovers a
+    # currently-free model from OpenRouter's own live /models endpoint at
+    # call time instead of a hardcoded ID that would just go stale again.
     # COMMERCIAL-QUALITY-2026-08-19: was "claude-opus-4-8", a model ID that
     # does not exist in the current Claude lineup -- confirmed via a live
     # dry-run trigger of blogger-syndication.yml once GROQ/DEEPSEEK/
@@ -121,6 +144,9 @@ class Config:
             newsletter_signup_url=os.environ.get("NEWSLETTER_SIGNUP_URL", "https://cyberdudebivash.substack.com"),
             public_cti_url=os.environ.get("PUBLIC_CTI_URL", "https://cti.cyberdudebivash.in"),
             max_posts_per_run=int(os.environ.get("MAX_POSTS_PER_RUN", "5")),
+            llm_model_groq_fallbacks=_parse_csv_env(
+                "GROQ_FALLBACK_MODELS", ("openai/gpt-oss-20b", "qwen/qwen3.6-27b", "qwen/qwen3.8-27b")
+            ),
         )
 
     def validate(self) -> list[str]:
