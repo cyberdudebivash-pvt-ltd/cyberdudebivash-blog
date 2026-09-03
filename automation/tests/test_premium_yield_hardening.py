@@ -98,6 +98,32 @@ def test_tail_repair_refuses_short_or_broadly_incomplete_content():
     assert sections_added == 0
 
 
+def test_baseline_tail_repair_rejects_unsafe_reference_url():
+    content = _report_without_tail()
+    prompt = """SOURCE TITLE: Adversarial feed item
+SOURCE URL: javascript:alert(document.domain)
+CDB_EVIDENCE_FAMILY: cve_advisory
+CDB_EXPLOITATION_STATUS: not_confirmed
+"""
+
+    repaired, sections_added = hardening._tail_sections(content, prompt)
+
+    assert repaired == content
+    assert sections_added == 0
+    assert "javascript:" not in repaired
+    assert "<h3>References</h3>" not in repaired
+
+
+def test_baseline_reference_url_validator_rejects_non_http_and_credential_urls():
+    assert hardening._validated_http_url("https://example.test/source") == "https://example.test/source"
+    assert hardening._validated_http_url("http://example.test/source") == "http://example.test/source"
+    assert hardening._validated_http_url("javascript:alert(1)") is None
+    assert hardening._validated_http_url("data:text/html,boom") is None
+    assert hardening._validated_http_url("//example.test/source") is None
+    assert hardening._validated_http_url("https://user:pass@example.test/source") is None
+    assert hardening._validated_http_url("https://example.test:99999/source") is None
+
+
 def test_unconfirmed_exploitation_language_is_conservatively_downgraded():
     content = (
         "<h3>Verified Facts</h3><p>The vulnerability is actively exploited and "
