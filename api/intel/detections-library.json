@@ -1,8 +1,48 @@
 {
-  "generated": "2026-09-02T21:06:57.120Z",
+  "generated": "2026-09-03T04:59:28.602Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-62676-pip-omnigent",
+      "title": "Omnigent Guardrail policy bypass: shell-command parser fails open in policies/builtins/_shell.py",
+      "url": "/posts/cve-2026-62676-pip-omnigent.html",
+      "generated": "2026-09-02T22:57:05.006Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-62676",
+        "CVE-2026-62676"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/aaronjmars/aeon)\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/aaronjmars/aeon)\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-84366-pip-scrapy",
+      "title": "Scrapy: S3DownloadHandler sends signed S3 requests over plaintext HTTP by default",
+      "url": "/posts/cve-2026-84366-pip-scrapy.html",
+      "generated": "2026-09-02T22:57:04.995Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-84366",
+        "CVE-2026-84366"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://bucket.s3.amazonaws.com/key`\"; http.host; content:\"bucket.s3.amazonaws.com\"; nocase; http.uri; content:\"/key`\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain bucket.s3.amazonaws.com\"; dns.query; content:\"bucket.s3.amazonaws.com\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
+        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain s3.amazonaws.com\"; dns.query; content:\"s3.amazonaws.com\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-62680-npm-orval",
       "title": "Orval: Generation-time SSRF + remote/local file inclusion via unrestricted $ref",
@@ -4175,56 +4215,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uukhej/artlistio_appears_to_have_been_compromised_b\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uukhej/artlistio_appears_to_have_been_compromised_b\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain artlist.io\"; dns.query; content:\"artlist.io\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "cve-2026-47291-reddit-netsec-threat-intelligence",
-      "title": "CVE-2026-47291: Windows Critical Unauthenticated Remote Code Execution in HTTP.sys",
-      "url": "/posts/cve-2026-47291-reddit-netsec-threat-intelligence.html",
-      "generated": "2026-07-12T15:02:10.424Z",
-      "severity": "HIGH",
-      "cves": [
-        "CVE-2026-47291"
-      ],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Emergency_Stable_923&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Emergency_Stable_923&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://byteray-ai.github.io/drift-corpus/item/http_a10f1434-http-report-20260629-001610.html&quot;&\"; http.host; content:\"byteray-ai.github.io\"; nocase; http.uri; content:\"/drift-corpus/item/http_a10f1434-http-report-20260629-001610.html&quot\\;&\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1uuh80d/cve202647291_windows_critical_unauthenticated/&quot\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1uuh80d/cve202647291_windows_critical_unauthenticated/&quot\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain byteray-ai.github.io\"; dns.query; content:\"byteray-ai.github.io\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "passive-security-measurement-of-10-020-it-domains-csp-coo",
-      "title": "Passive security measurement of 10,020 .it domains: CSP, cookies, TLS and email authentication",
-      "url": "/posts/passive-security-measurement-of-10-020-it-domains-csp-coo.html",
-      "generated": "2026-07-12T15:02:10.421Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [
-        {
-          "id": "T1110",
-          "name": "Brute Force",
-          "tactic": "credential-access",
-          "confidence": "HIGH"
-        }
-      ],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://doi.org/10.5281/zenodo.21322437&quot;&gt;https://doi.org/10.5281/zenodo.21322437&lt;/a&gt;&l\"; http.host; content:\"doi.org\"; nocase; http.uri; content:\"/10.5281/zenodo.21322437&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://doi.org/10.5281/zenodo.21323346&quot;&gt;https://doi.org/10.5281/zenodo.21323346&lt;/a&gt;&l\"; http.host; content:\"doi.org\"; nocase; http.uri; content:\"/10.5281/zenodo.21323346&quot\\;&gt\\;https\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/Joman1102&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/Joman1102&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uuhlp1/passive_security_measurement_of_10020_it_dom\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uuhlp1/passive_security_measurement_of_10020_it_dom\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain doi.org\"; dns.query; content:\"doi.org\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
       ]
     }
   ]
