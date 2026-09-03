@@ -1,30 +1,29 @@
 """Production yield hardening for premium Blogger intelligence reports.
 
 This layer addresses the second-order production bottlenecks observed after
-PR #163 restored publication on 2026-09-03.  The first post-fix production
-run proved Blogger, discovery, evidence gating, and fetch-back healthy, but
-only one of five selected reports published.  The remaining loss was caused
-by four distinct generation-side inefficiencies:
+PR #163 restored publication on 2026-09-03. The first post-fix production run
+proved Blogger, discovery, evidence gating, and fetch-back healthy, but only
+one of five selected reports published. The remaining loss was caused by
+four generation-side inefficiencies:
 
 * the primary Groq model was already at its model-scoped daily token ceiling,
-  yet every later task retried it even after Groq supplied a long reset time;
-* the secondary Key Judgements task consumed the same expensive primary-model
-  ordering as the long-form narrative even though its output is small,
-  structured JSON and is independently evidence-validated before acceptance;
+  yet later tasks retried it after Groq supplied a long reset time;
+* secondary Key Judgements used the same expensive primary-model ordering as
+  the long-form narrative even though their output is small structured JSON
+  and is independently evidence-validated before acceptance;
 * premium structural preflight counted core headings more strictly than the
-  authoritative public gate, so numbered/prefixed headings could be treated
-  as absent and trigger unnecessary extra model calls;
-* otherwise strong LLM responses could still contain a small number of
-  evidence-law violations or truncate only the final Executive
-  Recommendations / References tail.
+  authoritative public gate, causing unnecessary fallback generation;
+* otherwise strong LLM responses could contain a small number of evidence-law
+  violations or truncate the terminal Executive Recommendations / References
+  sections.
 
-The implementation remains fail closed.  It never lowers the 2,200-word
-public floor, ReportX/evidence-graph controls, mandatory heading gate,
-LLM-authorship requirement, or Blogger fetch-back verification.  Instead it
-reduces wasted provider calls, makes the generation prompt carry the exact
-pipeline evidence boundary, conservatively repairs only unsupported wording,
-and completes only the two terminal sections when every other core section
-and the word/heading floors are already present.
+The implementation remains fail closed. It never lowers the 2,200-word public
+floor, ReportX/evidence-graph controls, mandatory heading gate, LLM-authorship
+requirement, or Blogger fetch-back verification. It reduces wasted provider
+calls, makes the generation prompt carry the pipeline evidence boundary,
+conservatively downgrades unsupported wording, and permits only bounded
+terminal-section recovery. The stricter 25-section policy is installed by
+``premium_yield_contract_guard`` after this layer.
 """
 
 from __future__ import annotations
@@ -34,6 +33,7 @@ import re
 import time
 from dataclasses import replace
 from typing import Callable, Optional
+from urllib.parse import urlsplit
 
 import requests
 
@@ -100,13 +100,14 @@ def quota_aware_openai_call(
     """Remember long provider-declared 429 resets for the remainder of a run.
 
     ``llm_client`` already skips a pointless retry when Retry-After exceeds
-    its bounded wait ceiling.  Production then immediately retried the same
+    its bounded wait ceiling. Production then immediately retried the same
     exhausted 120B model on the next article and again on Key Judgements.
-    This wrapper converts that one request's provider evidence into a
-    process-local circuit breaker.  No state survives the GitHub Actions job.
+    This wrapper converts the provider evidence into a process-local circuit
+    breaker. No cooldown state survives the GitHub Actions job.
     """
     if _ORIGINAL_OPENAI_CALL is None:
         raise RuntimeError("premium yield hardening is not installed")
+
     try:
         content = _ORIGINAL_OPENAI_CALL(
             url=url,
@@ -125,8 +126,8 @@ def quota_aware_openai_call(
                 _activate_model_cooldown(url, model, raw_retry_after)
         raise
     else:
-        # A successful call is authoritative evidence that any old process-
-        # local cooldown has expired or was stale.
+        # Success is authoritative evidence that an old process-local cooldown
+        # has expired or was stale.
         _MODEL_COOLDOWNS.pop(_cooldown_key(url, model), None)
         return content
 
@@ -150,7 +151,11 @@ def quota_aware_try_provider(
     if remaining > 0:
         logger.info(
             "Skipping provider model still inside declared cooldown",
-            extra={"provider": name, "model": model, "retry_after_seconds": round(remaining, 2)},
+            extra={
+                "provider": name,
+                "model": model,
+                "retry_after_seconds": round(remaining, 2),
+            },
         )
         if attempts is not None:
             attempts.append(
@@ -180,13 +185,17 @@ def quota_aware_try_provider(
 def _secondary_groq_config(config):
     """Route small structured Key Judgements away from the 120B primary first.
 
-    The first configured fallback is intentionally the preferred secondary
-    model.  The primary model remains last in the Groq sequence, so quality
-    still has a final Groq fallback if every smaller independent model quota
-    is unavailable.  Non-Groq provider ordering is unchanged.
+    The first configured fallback is the preferred secondary model. The
+    primary model remains last in the Groq sequence, so quality still has a
+    final Groq fallback if every smaller independent model quota is unavailable.
+    Non-Groq provider ordering is unchanged.
     """
     primary = str(config.llm_model_groq or "").strip()
-    fallbacks = [str(model).strip() for model in config.llm_model_groq_fallbacks if str(model).strip()]
+    fallbacks = [
+        str(model).strip()
+        for model in config.llm_model_groq_fallbacks
+        if str(model).strip()
+    ]
     ordered: list[str] = []
     for model in [*fallbacks, primary]:
         if model and model not in ordered:
@@ -220,13 +229,15 @@ def call_quota_efficient_key_judgements(
 
 
 def _normalized_headings(content: str) -> set[str]:
-    return {_premium._normalized_heading(value) for value in _premium._headings(content)}
+    return {
+        _premium._normalized_heading(value)
+        for value in _premium._headings(content)
+    }
 
 
 def _core_heading_hits(headings: set[str]) -> set[str]:
-    # This is deliberately identical to assess_enterprise_report()'s public
-    # gate semantics: a numbered/prefixed heading such as
-    # "21 Executive Recommendations" still satisfies that core heading.
+    # Deliberately identical to assess_enterprise_report()'s public-gate
+    # semantics: numbered/prefixed headings still satisfy the core heading.
     return {
         core
         for core in _premium._CORE_HEADINGS
@@ -236,7 +247,11 @@ def _core_heading_hits(headings: set[str]) -> set[str]:
 
 def authoritative_raw_contract_metrics(content: str) -> tuple[int, int, int]:
     headings = _normalized_headings(content)
-    return _premium._word_count(content), len(headings), len(_core_heading_hits(headings))
+    return (
+        _premium._word_count(content),
+        len(headings),
+        len(_core_heading_hits(headings)),
+    )
 
 
 def _missing_core_headings(content: str) -> set[str]:
@@ -245,13 +260,11 @@ def _missing_core_headings(content: str) -> set[str]:
 
 
 def yield_contract_complete(content: str) -> bool:
-    """Recognize a fully valid or safely tail-repairable raw LLM response.
+    """Recognize a fully valid or minimally tail-repairable raw response.
 
-    Tail repair is allowed only when the raw response already clears the
-    *public* 2,200-word floor, all non-tail core headings are present, and
-    adding at most the two terminal headings can reach the public 18-heading
-    floor.  This cannot turn a short or broadly incomplete report into a
-    publishable one; all downstream gates remain authoritative.
+    The stricter runtime guard replaces this predicate with the exact 25-section
+    contract. This baseline remains conservative and is retained for focused
+    unit testing and defensive standalone use.
     """
     words, heading_count, core_hits = authoritative_raw_contract_metrics(content)
     if (
@@ -298,28 +311,62 @@ BOUNDARY ENFORCEMENT
 
 
 def _prompt_value(prompt: str, name: str) -> str:
-    match = re.search(rf"^{re.escape(name)}:\s*(.+?)\s*$", prompt, re.MULTILINE)
+    match = re.search(
+        rf"^{re.escape(name)}:\s*(.+?)\s*$",
+        prompt,
+        re.MULTILINE,
+    )
     return match.group(1).strip() if match else ""
+
+
+def _validated_http_url(value: str) -> str | None:
+    """Validate external source data before rendering it as an HTML href.
+
+    HTML escaping prevents attribute breakout but does not make dangerous
+    schemes safe. Require an absolute HTTP(S) URL with a real host, valid
+    optional port, no embedded credentials, and no whitespace/control
+    characters. Invalid input is not rendered; recovery therefore stays
+    fail-closed and downstream publication gates retain authority.
+    """
+    candidate = str(value or "").strip()
+    if not candidate:
+        return None
+    if any(ch.isspace() or ord(ch) < 0x20 or ord(ch) == 0x7F for ch in candidate):
+        return None
+    try:
+        parsed = urlsplit(candidate)
+        # Accessing .port validates malformed/non-numeric/out-of-range ports.
+        _ = parsed.port
+    except (TypeError, ValueError):
+        return None
+    if parsed.scheme.lower() not in {"http", "https"}:
+        return None
+    if not parsed.hostname:
+        return None
+    if parsed.username is not None or parsed.password is not None:
+        return None
+    return candidate
 
 
 def _replace_pattern_set_unnegated(
     text: str,
     replacements: tuple[tuple[str, str], ...],
 ) -> tuple[str, int]:
-    """Replace multiple forbidden patterns against one immutable text snapshot.
+    """Replace forbidden patterns against one immutable text snapshot.
 
-    Each replacement injects explicit negation/qualification.  If later
-    patterns were matched against already-rewritten text, that newly inserted
-    ``not`` could incorrectly suppress a second unsupported assertion in the
-    same sentence.  Evaluate every match and its negation context against the
-    original string, then perform one substitution pass so repairs cannot
-    hide other repairs from themselves.
+    Replacement text itself contains negation/qualification. Evaluating later
+    matches against already-mutated text can therefore hide a second unsafe
+    assertion from the negation detector. All matches and negation context are
+    evaluated against the original string and substituted in one pass.
     """
     if not replacements:
         return text, 0
 
     original = text
-    combined = "|".join(f"(?P<p{index}>{pattern})" for index, (pattern, _) in enumerate(replacements))
+    combined = "|".join(
+        f"(?P<p{index}>{pattern})"
+        for index, (pattern, _) in enumerate(replacements)
+    )
     replaced = 0
 
     def _replacement(match: re.Match) -> str:
@@ -344,21 +391,48 @@ def _repair_evidence_language(content: str, prompt: str) -> tuple[str, int]:
 
     if exploitation_status and exploitation_status != "confirmed":
         replacements = (
-            (r"\bactively exploited\b", "not established as actively exploited in cited evidence"),
-            (r"\bexploited in the wild\b", "not established as exploited in the wild in cited evidence"),
-            (r"\bobserved exploitation\b", "no independently verified observed exploitation"),
-            (r"\bconfirmed exploitation\b", "no confirmed exploitation in cited evidence"),
-            (r"\bexploitation (?:has been|was) observed\b", "exploitation has not been observed in cited evidence"),
+            (
+                r"\bactively exploited\b",
+                "not established as actively exploited in cited evidence",
+            ),
+            (
+                r"\bexploited in the wild\b",
+                "not established as exploited in the wild in cited evidence",
+            ),
+            (
+                r"\bobserved exploitation\b",
+                "no independently verified observed exploitation",
+            ),
+            (
+                r"\bconfirmed exploitation\b",
+                "no confirmed exploitation in cited evidence",
+            ),
+            (
+                r"\bexploitation (?:has been|was) observed\b",
+                "exploitation has not been observed in cited evidence",
+            ),
         )
         repaired, count = _replace_pattern_set_unnegated(repaired, replacements)
         changes += count
 
     if family == "ransomware_claim":
         replacements = (
-            (r"\bconfirms? (?:a |the )?(?:breach|compromise)\b", "reports a claimed breach or compromise"),
-            (r"\b(?:the )?(?:breach|compromise|data theft) (?:is|has been|was) confirmed\b", "the incident is reported as an actor claim and is not independently confirmed"),
-            (r"\bdata (?:has been|was) (?:confirmed )?(?:stolen|exfiltrated)\b", "data theft or exfiltration is claimed by the actor and is not independently verified"),
-            (r"\bvictim(?:'s)? (?:data|network|systems?) (?:has been|was|is) (?:confirmed )?compromised\b", "compromise of the victim environment is claimed by the actor and is not independently verified"),
+            (
+                r"\bconfirms? (?:a |the )?(?:breach|compromise)\b",
+                "reports a claimed breach or compromise",
+            ),
+            (
+                r"\b(?:the )?(?:breach|compromise|data theft) (?:is|has been|was) confirmed\b",
+                "the incident is reported as an actor claim and is not independently confirmed",
+            ),
+            (
+                r"\bdata (?:has been|was) (?:confirmed )?(?:stolen|exfiltrated)\b",
+                "data theft or exfiltration is claimed by the actor and is not independently verified",
+            ),
+            (
+                r"\bvictim(?:'s)? (?:data|network|systems?) (?:has been|was|is) (?:confirmed )?compromised\b",
+                "compromise of the victim environment is claimed by the actor and is not independently verified",
+            ),
         )
         repaired, count = _replace_pattern_set_unnegated(repaired, replacements)
         changes += count
@@ -367,6 +441,12 @@ def _repair_evidence_language(content: str, prompt: str) -> tuple[str, int]:
 
 
 def _tail_sections(content: str, prompt: str) -> tuple[str, int]:
+    """Baseline terminal recovery; production runtime installs the stricter guard.
+
+    This function remains independently safe because SOURCE URL is untrusted
+    feed data. It refuses References recovery unless the URL is a validated
+    absolute HTTP(S) URL before HTML escaping and href rendering.
+    """
     missing = _missing_core_headings(content)
     if not missing or not missing.issubset(_TAIL_REPAIRABLE_CORE):
         return content, 0
@@ -377,7 +457,9 @@ def _tail_sections(content: str, prompt: str) -> tuple[str, int]:
         return content, 0
     if heading_count + len(missing) < _premium.MIN_DISTINCT_HEADINGS:
         return content, 0
-    if (set(_premium._CORE_HEADINGS) - missing) - _core_heading_hits(_normalized_headings(content)):
+    if (
+        set(_premium._CORE_HEADINGS) - missing
+    ) - _core_heading_hits(_normalized_headings(content)):
         return content, 0
 
     source_url = _prompt_value(prompt, "SOURCE URL")
@@ -406,10 +488,17 @@ def _tail_sections(content: str, prompt: str) -> tuple[str, int]:
                 "<li><strong>Remediation governance:</strong> Apply only remediation or mitigations established by the cited source or authoritative vendor guidance; otherwise use compensating controls and verify the change path before production rollout.</li>"
                 "<li><strong>Validation:</strong> Preserve pre-change telemetry and perform post-change verification so remediation effectiveness and residual exposure can be demonstrated.</li>"
             )
-        additions.append(f"<h3>Executive Recommendations</h3><ul>{recommendations}</ul>")
+        additions.append(
+            f"<h3>Executive Recommendations</h3><ul>{recommendations}</ul>"
+        )
 
-    if "references" in missing and source_url:
-        safe_url = html_lib.escape(source_url, quote=True)
+    if "references" in missing:
+        validated_url = _validated_http_url(source_url)
+        if validated_url is None:
+            # Do not partially repair a two-section tail if References cannot
+            # be safely bound to the actual canonical source.
+            return content, 0
+        safe_url = html_lib.escape(validated_url, quote=True)
         safe_title = html_lib.escape(source_title)
         additions.append(
             "<h3>References</h3><ul>"
@@ -432,6 +521,7 @@ def evidence_safe_quality_llm(
     """Run existing quality-aware generation, then apply bounded safe repairs."""
     if _ORIGINAL_PREMIUM_CALL is None:
         raise RuntimeError("premium yield hardening is not installed")
+
     result = _ORIGINAL_PREMIUM_CALL(
         config,
         prompt,
@@ -473,7 +563,7 @@ def install_yield_hardening_overrides() -> None:
     _llm._try_provider = quota_aware_try_provider
 
     # Replace the provider-budget Key Judgements wrapper with the same shared
-    # pacing gate plus a small-model-first order.  Independent judgement
+    # pacing gate plus a small-model-first order. Independent judgement
     # verification remains unchanged inside key_judgements.py.
     _key_judgements.call_llm = call_quota_efficient_key_judgements
 
