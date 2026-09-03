@@ -1,9 +1,11 @@
+import time
 from unittest.mock import Mock, patch
 
 from automation.config import Config
 from automation.content_discovery import DiscoveredArticle
 from automation import llm_client
 from automation import premium_publication
+from automation import premium_provider_budget
 from automation.premium_provider_budget import (
     PREMIUM_COMPLETION_TOKENS,
     PREMIUM_PROMPT_CHAR_CEILING,
@@ -60,12 +62,72 @@ def test_budgeted_prompt_retains_full_enterprise_section_contract():
 
 
 def test_budgeted_llm_call_never_reinflates_completion_reservation():
-    config = Config(groq_api_key="test")
-    with patch.object(premium_publication, "_ORIGINAL_LLM_CALL", return_value=("ok", "groq")) as call:
-        result = call_budgeted_premium_llm(config, "prompt", max_tokens=999999, attempts=[])
+    old_pacing_state = premium_provider_budget._last_premium_call_started_at
+    premium_provider_budget._last_premium_call_started_at = None
+    try:
+        config = Config(groq_api_key="test")
+        with patch.object(premium_publication, "_ORIGINAL_LLM_CALL", return_value=("ok", "groq")) as call:
+            result = call_budgeted_premium_llm(config, "prompt", max_tokens=999999, attempts=[])
 
-    assert result == ("ok", "groq")
-    assert call.call_args.kwargs["max_tokens"] == PREMIUM_COMPLETION_TOKENS
+        assert result == ("ok", "groq")
+        assert call.call_args.kwargs["max_tokens"] == PREMIUM_COMPLETION_TOKENS
+    finally:
+        premium_provider_budget._last_premium_call_started_at = old_pacing_state
+
+
+# Production incident 2026-09-03: a full syndication run makes up to 5 of
+# these calls back-to-back with no pacing, so the 2nd+ candidate landed in
+# the same Groq TPM window as the 1st and was rate-limited, then fell
+# through two permanently-unfunded fallback providers straight to the thin
+# template fallback -- which can never clear the premium public-report
+# gate. These tests cover the proactive pacing fix using an injected
+# sleep_fn so the suite never actually waits ~65 seconds.
+
+
+def test_first_budgeted_call_in_a_fresh_run_does_not_pace():
+    old_pacing_state = premium_provider_budget._last_premium_call_started_at
+    premium_provider_budget._last_premium_call_started_at = None
+    try:
+        config = Config(groq_api_key="test")
+        fake_sleep = Mock()
+        with patch.object(premium_publication, "_ORIGINAL_LLM_CALL", return_value=("ok", "groq")):
+            call_budgeted_premium_llm(config, "prompt", attempts=[], sleep_fn=fake_sleep)
+        fake_sleep.assert_not_called()
+    finally:
+        premium_provider_budget._last_premium_call_started_at = old_pacing_state
+
+
+def test_budgeted_call_immediately_after_a_prior_call_paces_to_the_ceiling():
+    old_pacing_state = premium_provider_budget._last_premium_call_started_at
+    premium_provider_budget._last_premium_call_started_at = time.monotonic()
+    try:
+        config = Config(groq_api_key="test")
+        fake_sleep = Mock()
+        with patch.object(premium_publication, "_ORIGINAL_LLM_CALL", return_value=("ok", "groq")):
+            call_budgeted_premium_llm(config, "prompt", attempts=[], sleep_fn=fake_sleep)
+        fake_sleep.assert_called_once()
+        (waited,) = fake_sleep.call_args.args
+        # Immediately after a prior call, the wait should be within a
+        # small tolerance of the full ceiling (real wall-clock time passes
+        # during the test itself, so allow a couple of seconds of slack).
+        assert PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS - 2 <= waited <= PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS
+    finally:
+        premium_provider_budget._last_premium_call_started_at = old_pacing_state
+
+
+def test_budgeted_call_after_the_window_has_elapsed_does_not_pace():
+    old_pacing_state = premium_provider_budget._last_premium_call_started_at
+    premium_provider_budget._last_premium_call_started_at = (
+        time.monotonic() - PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS - 5
+    )
+    try:
+        config = Config(groq_api_key="test")
+        fake_sleep = Mock()
+        with patch.object(premium_publication, "_ORIGINAL_LLM_CALL", return_value=("ok", "groq")):
+            call_budgeted_premium_llm(config, "prompt", attempts=[], sleep_fn=fake_sleep)
+        fake_sleep.assert_not_called()
+    finally:
+        premium_provider_budget._last_premium_call_started_at = old_pacing_state
 
 
 def test_installation_raises_retry_after_ceiling_without_changing_retry_count():
