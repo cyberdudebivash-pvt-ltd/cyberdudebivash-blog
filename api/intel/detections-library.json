@@ -1,8 +1,27 @@
 {
-  "generated": "2026-09-03T16:32:52.853Z",
+  "generated": "2026-09-03T21:08:33.249Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-73222-npm-claude-code-templates",
+      "title": "Claude Code Templates: Unauthenticated OS command injection (RCE) in Claude Code Studio server (--studio)",
+      "url": "/posts/cve-2026-73222-npm-claude-code-templates.html",
+      "generated": "2026-09-03T20:39:38.197Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-73222",
+        "CVE-2026-73222"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 0.0.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 0.0.0.0\"; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-62676-pip-omnigent",
       "title": "Omnigent Guardrail policy bypass: shell-command parser fails open in policies/builtins/_shell.py",
@@ -4195,26 +4214,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uulmjv/it_governance_vs_ai_governance/&quot;&gt;[li\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uulmjv/it_governance_vs_ai_governance/&quot\\;&gt\\;[li\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uulmjv/it_governance_vs_ai_governance/&quot;&gt;[co\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uulmjv/it_governance_vs_ai_governance/&quot\\;&gt\\;[co\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "artlist-io-appears-to-have-been-compromised-by-a-clickfix-at",
-      "title": "Artlist.io appears to have been compromised by a ClickFix attack",
-      "url": "/posts/artlist-io-appears-to-have-been-compromised-by-a-clickfix-at.html",
-      "generated": "2026-07-12T17:02:02.644Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL http://Artlist.io&quot;&gt;Artlist.io&lt;/a&gt;\"; http.host; content:\"Artlist.io&quot\\;&gt\\;Artlist.io&lt\\;\"; nocase; http.uri; content:\"/a&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/KybalionOfficial&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/KybalionOfficial&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uukhej/artlistio_appears_to_have_been_compromised_b\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uukhej/artlistio_appears_to_have_been_compromised_b\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain artlist.io\"; dns.query; content:\"artlist.io\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
       ]
     }
   ]
