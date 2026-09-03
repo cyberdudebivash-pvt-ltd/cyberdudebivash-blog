@@ -29,26 +29,46 @@ _MAX_BACKOFF_SECONDS = 10.0
 _BASE_BACKOFF_SECONDS = 1.0
 
 
-def _retry_after_seconds(response) -> Optional[float]:
+def _raw_retry_after_seconds(response) -> Optional[float]:
     """Parses a real ``Retry-After`` header -- either delay-seconds or an
-    HTTP-date (RFC 9110 §10.2.3, both forms seen across real APIs) -- capped
-    at ``_MAX_BACKOFF_SECONDS`` so a provider's own hint can't itself blow
-    the bounded budget above. Returns ``None`` (never 0) when absent or
-    unparseable, so the caller falls back to its own backoff schedule
-    instead of silently retrying with no delay at all."""
+    HTTP-date (RFC 9110 §10.2.3, both forms seen across real APIs) -- with
+    NO cap applied. This is the provider's own, honest statement of how
+    long it wants us to wait; ``_retry_after_seconds()`` below is the
+    version actually used to schedule a retry (capped at
+    ``_MAX_BACKOFF_SECONDS`` for the pipeline's own bounded-budget reasons).
+    Kept separate and logged (see ``_call_openai_compat`` below) so a real
+    429 always leaves evidence of what the provider actually asked for,
+    not just what we chose to honor -- production incident 2026-09-03:
+    every single observed retry delay was logged as exactly the capped
+    value with zero variance across 12 samples, strong evidence the real
+    ask consistently exceeds the cap and every retry was therefore
+    scheduled before the provider was actually ready, guaranteeing the
+    second 429. Without the raw value on record, that could only ever be
+    inferred, never confirmed."""
     if response is None:
         return None
     value = response.headers.get("Retry-After")
     if not value:
         return None
     try:
-        seconds = float(value)
+        return float(value)
     except ValueError:
         try:
-            seconds = (parsedate_to_datetime(value) - datetime.now(timezone.utc)).total_seconds()
+            return (parsedate_to_datetime(value) - datetime.now(timezone.utc)).total_seconds()
         except (TypeError, ValueError):
             return None
-    return max(0.0, min(seconds, _MAX_BACKOFF_SECONDS))
+
+
+def _retry_after_seconds(response) -> Optional[float]:
+    """Parses a real ``Retry-After`` header, capped at
+    ``_MAX_BACKOFF_SECONDS`` so a provider's own hint can't itself blow the
+    bounded budget above. Returns ``None`` (never 0) when absent or
+    unparseable, so the caller falls back to its own backoff schedule
+    instead of silently retrying with no delay at all."""
+    raw = _raw_retry_after_seconds(response)
+    if raw is None:
+        return None
+    return max(0.0, min(raw, _MAX_BACKOFF_SECONDS))
 
 
 def _backoff_seconds(attempt: int, retry_after: Optional[float]) -> float:
@@ -202,10 +222,25 @@ def _call_openai_compat(
     for attempt in range(_MAX_RETRIES_ON_RATE_LIMIT + 1):
         resp = requests.post(url, json=payload, headers=headers, timeout=60)
         if resp.status_code == 429 and attempt < _MAX_RETRIES_ON_RATE_LIMIT:
+            raw_retry_after = _raw_retry_after_seconds(resp)
             delay = _backoff_seconds(attempt, _retry_after_seconds(resp))
+            # raw_retry_after (uncapped) vs delay_seconds (what we actually
+            # waited) -- see _raw_retry_after_seconds's docstring. If these
+            # two diverge, the provider asked for longer than we honored
+            # and this retry is scheduled before the provider says it will
+            # be ready. response_body is truncated (rate-limit error bodies
+            # are typically short JSON) purely so a real reason/reset-time
+            # string a provider includes is visible in logs, never silently
+            # discarded as it was before this instrumentation existed.
             logger.info(
                 "LLM provider rate-limited, retrying",
-                extra={"url": url, "attempt": attempt + 1, "delay_seconds": round(delay, 2)},
+                extra={
+                    "url": url,
+                    "attempt": attempt + 1,
+                    "delay_seconds": round(delay, 2),
+                    "raw_retry_after_seconds": raw_retry_after,
+                    "response_body": resp.text[:500] if resp.text else None,
+                },
             )
             sleep_fn(delay)
             continue
