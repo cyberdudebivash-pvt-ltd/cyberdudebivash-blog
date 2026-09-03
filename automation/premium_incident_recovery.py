@@ -3,26 +3,20 @@
 Production incident 2026-09-03: scheduled syndication remained green while
 fresh articles were discovered and LLM requests succeeded, but the premium
 public-report gate rejected every generated article. The smaller Groq
-fallback models were commonly spending the fixed 4,400-token completion
-budget on the first half of the 25-section contract and never reaching late
-mandatory sections such as Executive Recommendations and References.
+fallback models were commonly spending the fixed completion budget on the
+first half of the 25-section contract and never reaching late mandatory
+sections such as Executive Recommendations and References.
 
-This module deliberately does *not* lower any evidence, word, heading, or
-LLM-authorship gate. It fixes the generation side of the contract instead:
+The first post-#164 production run exposed a second mismatch: recovery could
+stop on a response that met its coarse word/core-heading preflight while the
+authoritative public gate later rejected the same artifact for independent
+heading, paragraph, or list-item density.  The strict contract guard now owns
+those exact semantics; this module drives model failover until that guard says
+the candidate is genuinely publication-shaped.
 
-* rebalance the fixed completion budget so the model must finish all 25
-  headings before expanding early sections;
-* when a Groq response is HTTP-successful but structurally incomplete, try
-  the still-unused Groq fallback models (independent model quotas on the same
-  configured key) and select the strongest evidence-bounded candidate;
-* surface a batch-wide premium-gate outage as FAILED rather than allowing a
-  misleading green workflow when two or more selected reports all fail the
-  same publication-quality barrier.
-
-The module is installed after premium_provider_budget and before
-premium_publication.install_runtime_overrides(), so the existing ReportX
-integrity gates, Blogger fetch-back verification, and publication transaction
-remain authoritative.
+This module deliberately does *not* lower any evidence, word, heading,
+paragraph, list, ReportX, product-tier, LLM-authorship, artifact-integrity, or
+Blogger fetch-back gate. It fixes the generation side of the contract.
 """
 
 from __future__ import annotations
@@ -56,23 +50,25 @@ _TARGET_REPLACEMENT = (
     "20% of completion capacity for sections 21-25, and shorten earlier prose "
     "before ever omitting a mandatory heading. Never pad or repeat the source."
 )
+_SEMANTIC_OUTPUT_RULES = """
+P0 PUBLIC-SEMANTIC OUTPUT CONTRACT
+- Emit every one of the 25 mandatory sections as its own independently closed <h3>Exact Heading</h3> element. Numeric prefixes are allowed, but never combine two section names into one heading and never leave nested/unclosed heading tags.
+- Across the complete report emit at least 18 substantive <p> elements, each containing at least eight useful words, and at least 18 substantive <li> elements, each containing at least four useful words.
+- Satisfy paragraph/list density with evidence-specific facts, decisions, validation steps, collection requirements, or explicitly stated evidence gaps. Never create unsupported facts, indicators, exploitation claims, breach claims, or filler merely to reach a count.
+- Use valid HTML structure only; do not substitute Markdown heading markers or Markdown dash bullets for the required <h3>, <p>, and <li> elements.
+"""
 _FINAL_CHECK_PREFIX = "Before returning, silently check:"
 _FINAL_CHECK_REPLACEMENT = (
-    "Before returning, silently check: all 25 exact headings are present, "
-    "especially Executive Recommendations and References; if space is tight, "
-    "compress earlier sections rather than the section list;"
+    "Before returning, silently check: all 25 exact independent <h3> headings "
+    "are present, at least 18 substantive <p> elements and at least 18 "
+    "substantive <li> elements are present, and Executive Recommendations and "
+    "References are included; if space is tight, compress earlier prose rather "
+    "than the section list or semantic structure;"
 )
 
 
 def _shrink_source_excerpt_to_ceiling(prompt: str) -> str:
-    """Keep a rebalanced prompt inside the provider-safe character ceiling.
-
-    The provider-budget layer already caps the source excerpt. The recovery
-    wording adds only a small amount of instruction text, but a future source
-    metadata expansion could leave no headroom. If that happens, remove only
-    the necessary middle bytes from SOURCE EXCERPT while preserving its head,
-    tail, structured evidence, and the untrusted-data boundary.
-    """
+    """Keep a rebalanced prompt inside the provider-safe character ceiling."""
     ceiling = _budget.PREMIUM_PROMPT_CHAR_CEILING
     if len(prompt) <= ceiling:
         return prompt
@@ -117,13 +113,17 @@ def build_completion_safe_prompt(article: DiscoveredArticle) -> str:
     prompt = _ORIGINAL_PROMPT_BUILDER(article)
     updated, replacements = _TARGET_RE.subn(_TARGET_REPLACEMENT, prompt, count=1)
     if replacements == 0:
-        # Fail-safe for future prompt wording drift: preserve the upstream
-        # contract and add the smallest possible completion-order override.
         updated += (
             "\nOUTPUT-BUDGET OVERRIDE: complete all 25 mandatory headings before "
             "expanding early sections; reserve output for Executive "
             "Recommendations and References; never omit a heading to gain depth.\n"
         )
+
+    # The authoritative public gate checks semantic HTML density in addition
+    # to words/headings.  Put those requirements in the generation contract so
+    # fallback selection is not forced to choose between equally malformed
+    # outputs after the fact.
+    updated += _SEMANTIC_OUTPUT_RULES
 
     if _FINAL_CHECK_PREFIX in updated:
         updated = updated.replace(
@@ -156,9 +156,6 @@ def _raw_contract_complete(content: str) -> bool:
 
 def _candidate_score(content: str) -> tuple[int, int, int]:
     words, heading_count, core_hits = _raw_contract_metrics(content)
-    # Core-heading coverage dominates because the live premium gate requires
-    # every core section. Heading count then outranks raw word volume so a
-    # verbose, truncated first-half report cannot beat a complete structure.
     return core_hits, min(heading_count, 25), min(words, 3200)
 
 
@@ -186,15 +183,7 @@ def call_quality_aware_premium_llm(
     attempts=None,
     sleep_fn=time.sleep,
 ):
-    """Use HTTP success *and* report-contract completeness as failover signal.
-
-    llm_client.call_llm intentionally returns the first provider/model that
-    answers successfully. For ordinary prompts that is correct. For a strict
-    25-section publication contract, however, an HTTP 200 containing a
-    truncated half-report is not usable and must not prevent still-unused
-    Groq models from being tried. This wrapper adds that premium-only policy
-    without changing the generic LLM client.
-    """
+    """Use HTTP success *and* report-contract completeness as failover signal."""
     if _ORIGINAL_PREMIUM_LLM_CALL is None:
         raise RuntimeError("premium incident recovery is not installed")
 
@@ -239,11 +228,6 @@ def call_quality_aware_premium_llm(
         },
     )
 
-    # These are different, not-yet-attempted Groq models. Their free-tier
-    # quotas are model-scoped, so we can try them directly rather than rerun
-    # the whole provider chain (which would waste time on already-known 429s
-    # and unfunded providers). _try_provider retains the bounded 429 logic and
-    # records each attempt in the same audit ledger.
     for model in remaining[:_MAX_QUALITY_FALLBACKS]:
         candidate = _llm._try_provider(
             name="groq",
@@ -266,9 +250,6 @@ def call_quality_aware_premium_llm(
             )
             return candidate, "groq"
 
-    # No candidate reached the pre-publication structural target. Return the
-    # strongest response, never a weaker last response. The unchanged premium
-    # and evidence-integrity gates still make the final fail-closed decision.
     return max(candidates, key=lambda item: _candidate_score(item[0]))
 
 
