@@ -1,0 +1,213 @@
+from unittest.mock import Mock
+
+import requests
+
+from automation import premium_incident_recovery as recovery
+from automation import premium_provider_budget as budget
+from automation import premium_publication as premium
+from automation import premium_yield_hardening as hardening
+from automation.config import Config
+from automation.content_discovery import DiscoveredArticle
+
+
+def _article(**overrides):
+    values = dict(
+        url="https://example.test/advisory/CVE-2026-99999",
+        title="CVE-2026-99999 Example Product remote security advisory",
+        summary="Example Vendor reports a security issue affecting Example Product.",
+        published_at="2026-09-03T00:00:00Z",
+        content_hash="yield-hardening-abc123",
+        labels=["Threat Intelligence", "Vulnerabilities", "CVE Analysis"],
+        source="nvd",
+        full_content=("Example Vendor Example Product CVE-2026-99999 evidence remediation telemetry. " * 180),
+        source_publisher="Example Vendor",
+        cve_id="CVE-2026-99999",
+        cvss_score=8.1,
+        cwe_ids=["CWE-20"],
+        affected_vendor="Example Vendor",
+        affected_product="Example Product",
+        kev_listed=False,
+    )
+    values.update(overrides)
+    return DiscoveredArticle(**values)
+
+
+def _report_without_tail(words=2300):
+    core = sorted(set(premium._CORE_HEADINGS) - {"executive recommendations", "references"})
+    auxiliary = [f"Operational Section {idx}" for idx in range(1, 11)]
+    sections = "".join(
+        f"<h3>{heading}</h3><p>evidence decision telemetry validation</p>"
+        for heading in core + auxiliary
+    )
+    filler = " ".join("evidence" for _ in range(words))
+    return f"{sections}<p>{filler}</p>"
+
+
+def test_prompt_adds_authoritative_evidence_boundary_and_stays_provider_safe(monkeypatch):
+    monkeypatch.setattr(recovery, "_ORIGINAL_PROMPT_BUILDER", budget.build_budgeted_premium_prompt)
+    monkeypatch.setattr(hardening, "_ORIGINAL_PROMPT_BUILDER", recovery.build_completion_safe_prompt)
+
+    prompt = hardening.build_evidence_explicit_prompt(_article())
+
+    assert "CDB_EVIDENCE_FAMILY: cve_advisory" in prompt
+    assert "CDB_EXPLOITATION_STATUS: not_confirmed" in prompt
+    assert "CDB_SOURCE_CLAIM_ONLY: false" in prompt
+    assert "do not assert that exploitation is active" in prompt
+    assert len(prompt) <= budget.PREMIUM_PROMPT_CHAR_CEILING
+
+
+def test_authoritative_structural_preflight_accepts_numbered_core_headings():
+    numbered_core = [f"{idx}. {heading.title()}" for idx, heading in enumerate(sorted(premium._CORE_HEADINGS), 1)]
+    auxiliary = [f"Operational Section {idx}" for idx in range(1, 10)]
+    sections = "".join(f"<h3>{heading}</h3><p>evidence validation decision</p>" for heading in numbered_core + auxiliary)
+    content = sections + "<p>" + ("evidence " * 1900) + "</p>"
+
+    words, heading_count, core_hits = hardening.authoritative_raw_contract_metrics(content)
+
+    assert words >= recovery._RAW_MIN_VISIBLE_WORDS
+    assert heading_count >= premium.MIN_DISTINCT_HEADINGS
+    assert core_hits == len(premium._CORE_HEADINGS)
+    assert hardening.yield_contract_complete(content) is True
+
+
+def test_tail_repair_only_completes_terminal_sections_on_otherwise_publishable_report():
+    content = _report_without_tail()
+    prompt = """SOURCE TITLE: Example advisory
+SOURCE URL: https://example.test/advisory
+CDB_EVIDENCE_FAMILY: cve_advisory
+CDB_EXPLOITATION_STATUS: not_confirmed
+"""
+
+    assert hardening.yield_contract_complete(content) is True
+    repaired, sections_added = hardening._tail_sections(content, prompt)
+
+    assert sections_added == 2
+    assert "<h3>Executive Recommendations</h3>" in repaired
+    assert "<h3>References</h3>" in repaired
+    assert "https://example.test/advisory" in repaired
+    assert hardening._missing_core_headings(repaired) == set()
+
+
+def test_tail_repair_refuses_short_or_broadly_incomplete_content():
+    short = "<h3>Executive Summary</h3><p>" + ("evidence " * 500) + "</p>"
+    prompt = "SOURCE URL: https://example.test/advisory\nSOURCE TITLE: Example\n"
+
+    repaired, sections_added = hardening._tail_sections(short, prompt)
+
+    assert repaired == short
+    assert sections_added == 0
+
+
+def test_unconfirmed_exploitation_language_is_conservatively_downgraded():
+    content = (
+        "<h3>Verified Facts</h3><p>The vulnerability is actively exploited and "
+        "exploitation has been observed across exposed systems.</p>"
+    )
+    prompt = "CDB_EVIDENCE_FAMILY: cve_advisory\nCDB_EXPLOITATION_STATUS: not_confirmed\n"
+
+    repaired, changes = hardening._repair_evidence_language(content, prompt)
+
+    assert changes == 2
+    assert "is not established as actively exploited in cited evidence" in repaired
+    assert "exploitation has not been observed in cited evidence" in repaired
+    for pattern in hardening._integrity._CONFIRMED_EXPLOITATION_PATTERNS:
+        for match in hardening.re.finditer(pattern, repaired, hardening.re.IGNORECASE):
+            assert hardening._integrity._is_negated_immediately_before(repaired, match.start())
+
+
+def test_ransomware_claim_language_remains_claim_not_confirmed_breach():
+    content = (
+        "<p>The actor confirms a breach. The breach is confirmed. "
+        "Data was stolen and the victim's network was compromised.</p>"
+    )
+    prompt = "CDB_EVIDENCE_FAMILY: ransomware_claim\nCDB_EXPLOITATION_STATUS: third_party_claim\n"
+
+    repaired, changes = hardening._repair_evidence_language(content, prompt)
+
+    assert changes == 4
+    assert "reports a claimed breach or compromise" in repaired
+    assert "not independently confirmed" in repaired
+    assert "not independently verified" in repaired
+    for pattern in hardening._integrity._RANSOMWARE_CLAIM_CONFIRMED_BREACH_PATTERNS:
+        assert hardening.re.search(pattern, repaired, hardening.re.IGNORECASE) is None
+
+
+def test_provider_declared_long_reset_activates_process_local_model_cooldown(monkeypatch):
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    model = "openai/gpt-oss-120b"
+    response = Mock(status_code=429, headers={"Retry-After": "300"})
+    error = requests.exceptions.HTTPError("429", response=response)
+
+    monkeypatch.setattr(hardening, "_ORIGINAL_OPENAI_CALL", Mock(side_effect=error))
+    hardening._MODEL_COOLDOWNS.clear()
+
+    try:
+        hardening.quota_aware_openai_call(
+            url=url,
+            api_key="k",
+            model=model,
+            prompt="p",
+            max_tokens=100,
+            extra_headers={},
+            sleep_fn=lambda _seconds: None,
+        )
+        assert False, "expected HTTPError"
+    except requests.exceptions.HTTPError:
+        pass
+
+    assert hardening._cooldown_remaining(url, model) > 250
+
+
+def test_cooldown_skips_repeat_model_without_network_call(monkeypatch):
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    model = "openai/gpt-oss-120b"
+    original_try = Mock(side_effect=AssertionError("network path must not run during cooldown"))
+    monkeypatch.setattr(hardening, "_ORIGINAL_TRY_PROVIDER", original_try)
+    hardening._MODEL_COOLDOWNS.clear()
+    hardening._activate_model_cooldown(url, model, 120)
+    attempts = []
+
+    result = hardening.quota_aware_try_provider(
+        name="groq",
+        url=url,
+        api_key="k",
+        model=model,
+        prompt="p",
+        max_tokens=100,
+        extra_headers={},
+        sleep_fn=lambda _seconds: None,
+        attempts=attempts,
+    )
+
+    assert result is None
+    original_try.assert_not_called()
+    assert attempts[0]["error"] == "provider_cooldown_active"
+    assert attempts[0]["retry_after_seconds"] > 0
+
+
+def test_key_judgements_spend_fallback_model_quota_before_primary(monkeypatch):
+    config = Config(
+        groq_api_key="k",
+        llm_model_groq="primary-120b",
+        llm_model_groq_fallbacks=("small-20b", "qwen-a", "qwen-b"),
+    )
+    captured = {}
+
+    def fake_call(routed, prompt, max_tokens=2000, attempts=None, sleep_fn=None):
+        captured["primary"] = routed.llm_model_groq
+        captured["fallbacks"] = routed.llm_model_groq_fallbacks
+        return "[]", "groq"
+
+    monkeypatch.setattr(hardening._budget, "_pace_premium_request", lambda _sleep: None)
+    monkeypatch.setattr(hardening._budget, "_ORIGINAL_KEY_JUDGEMENTS_LLM_CALL", fake_call)
+
+    result = hardening.call_quota_efficient_key_judgements(
+        config,
+        "prompt",
+        attempts=[],
+        sleep_fn=lambda _seconds: None,
+    )
+
+    assert result == ("[]", "groq")
+    assert captured["primary"] == "small-20b"
+    assert captured["fallbacks"] == ("qwen-a", "qwen-b", "primary-120b")
