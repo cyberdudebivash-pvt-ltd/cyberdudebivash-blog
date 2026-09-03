@@ -35,12 +35,32 @@ tokenization ratio for English prose (~3.3 chars/token), prompt tokens are
 using less than the available budget. 4400 keeps a ~200-token safety margin
 under that same worst case while giving generation ~13% more room to finish
 the mandated section set and clear the word floor.
+
+Production incident 2026-09-03 (continued): the first pacing fix above still
+left every run at zero published posts. Root cause, found from production
+job logs after that fix was live: authority_transformer.AuthorityTransformer.
+transform() makes a *second*, separate Groq request per article -- for
+Key Judgements, via key_judgements.generate_key_judgements() -- immediately
+after a successful primary narrative call, whenever content_source is
+LLM-authored. That second call is issued through key_judgements.py's own
+``from .llm_client import call_llm`` binding, never through
+authority_transformer.call_llm, so the pacing gate above never saw it and
+never accounted for the TPM budget it consumed. The next candidate's primary
+call still fired exactly PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS after the
+*primary* call it knew about, landing inside the same TPM window as the
+unpaced Key Judgements call and getting rate-limited anyway. The fix is the
+same proactive pacing gate, shared (one clock, not two), and installed on
+key_judgements.call_llm the same way it is installed on
+premium_publication._premium_llm_call -- key_judgements.py's own docstring
+already documents this exact module-attribute monkeypatch as its supported
+override mechanism.
 """
 
 from __future__ import annotations
 
 import time
 
+from . import key_judgements as _key_judgements
 from . import llm_client as _llm
 from . import premium_publication as _premium
 from .content_discovery import DiscoveredArticle
@@ -188,10 +208,16 @@ Before returning, silently check: all 25 headings are present; no factual claim 
 # window instead of racing the tail of the last one. Reuses the same
 # ceiling constant as the reactive 429 backoff above rather than inventing
 # a second, possibly-inconsistent number for "how long a TPM window needs".
+#
+# One shared clock, not one per call site: the primary narrative call and
+# the Key Judgements call (see module docstring, 2026-09-03 continued) both
+# reserve Groq TPM budget, so both must pace against the same timestamp --
+# two independent clocks would each individually "wait 65s since the last
+# call *of that kind*" while still letting the two kinds land back-to-back.
 _last_premium_call_started_at: float | None = None
 
 
-def call_budgeted_premium_llm(config, prompt: str, max_tokens: int = 3000, attempts=None, sleep_fn=time.sleep):
+def _pace_premium_request(sleep_fn) -> None:
     global _last_premium_call_started_at
     if _last_premium_call_started_at is not None:
         elapsed = time.monotonic() - _last_premium_call_started_at
@@ -199,6 +225,10 @@ def call_budgeted_premium_llm(config, prompt: str, max_tokens: int = 3000, attem
         if wait > 0:
             sleep_fn(wait)
     _last_premium_call_started_at = time.monotonic()
+
+
+def call_budgeted_premium_llm(config, prompt: str, max_tokens: int = 3000, attempts=None, sleep_fn=time.sleep):
+    _pace_premium_request(sleep_fn)
 
     # Fixed upper bound is deliberate: on the current Groq 8K TPM tier the
     # request reservation is prompt + requested completion. Increasing this
@@ -213,6 +243,26 @@ def call_budgeted_premium_llm(config, prompt: str, max_tokens: int = 3000, attem
     )
 
 
+# key_judgements.py calls the raw llm_client.call_llm directly (its own
+# ``from .llm_client import call_llm``), never through authority_transformer,
+# so patching _premium._premium_llm_call above does not reach it. Preserves
+# its own max_tokens=2000 (a much smaller, structured-JSON task -- forcing
+# PREMIUM_COMPLETION_TOKENS here would be wasteful, not safer) while sharing
+# the same pacing clock as the primary narrative call.
+_ORIGINAL_KEY_JUDGEMENTS_LLM_CALL = _key_judgements.call_llm
+
+
+def call_paced_key_judgements_llm(config, prompt: str, max_tokens: int = 2000, attempts=None, sleep_fn=time.sleep):
+    _pace_premium_request(sleep_fn)
+    return _ORIGINAL_KEY_JUDGEMENTS_LLM_CALL(
+        config,
+        prompt,
+        max_tokens=max_tokens,
+        attempts=attempts,
+        sleep_fn=sleep_fn,
+    )
+
+
 def install_provider_budget_overrides() -> None:
     # Retry-After on a real TPM exhaustion can legitimately span most of a
     # minute. The old 10-second cap caused all bounded retries to expire
@@ -221,3 +271,4 @@ def install_provider_budget_overrides() -> None:
     _llm._MAX_BACKOFF_SECONDS = PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS
     _premium.build_premium_analyst_prompt = build_budgeted_premium_prompt
     _premium._premium_llm_call = call_budgeted_premium_llm
+    _key_judgements.call_llm = call_paced_key_judgements_llm
