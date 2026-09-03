@@ -12,14 +12,29 @@ This module keeps the premium quality floor but makes the request budget a
 first-class invariant:
 - stable, compact instruction prefix (prompt-cache friendly),
 - source data appended once, at the end, with a strict character budget,
-- 3900 completion-token ceiling (sufficient for the 2200-word public gate),
+- 4400 completion-token ceiling (see headroom note below),
 - provider Retry-After may be honored for up to 65 seconds so sequential
   reports do not collapse to fallback merely because the previous premium
-  generation consumed the current TPM window.
+  generation consumed the current TPM window,
+- proactive pacing (see call_budgeted_premium_llm below) so the *next*
+  premium request never starts inside the *same* TPM window as the last.
 
 It is installed before premium_publication.install_runtime_overrides(), so the
 existing AuthorityTransformer orchestration, evidence graph, integrity gates,
 and Blogger repair/quarantine transaction remain unchanged.
+
+Production incident 2026-09-03: even with the 413 fix, real runs landed
+reports at 1826-2152 visible words -- short of the 2200-word gate -- because
+the original 3900-token completion ceiling left too little room to complete
+all 25 mandatory sections (the model was consistently cut off before the
+last two, References and Executive Recommendations, which are also members
+of the gate's required-heading set). At the worst-case allowed prompt size
+(PREMIUM_PROMPT_CHAR_CEILING, 11200 chars) and the most pessimistic realistic
+tokenization ratio for English prose (~3.3 chars/token), prompt tokens are
+~3394, leaving ~4606 tokens safely under the 8000 TPM ceiling -- 3900 was
+using less than the available budget. 4400 keeps a ~200-token safety margin
+under that same worst case while giving generation ~13% more room to finish
+the mandated section set and clear the word floor.
 """
 
 from __future__ import annotations
@@ -30,7 +45,7 @@ from . import llm_client as _llm
 from . import premium_publication as _premium
 from .content_discovery import DiscoveredArticle
 
-PREMIUM_COMPLETION_TOKENS = 3900
+PREMIUM_COMPLETION_TOKENS = 4400
 PREMIUM_SOURCE_CHAR_BUDGET = 3600
 PREMIUM_PROMPT_CHAR_CEILING = 11200
 PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS = 65.0
@@ -152,7 +167,39 @@ Before returning, silently check: all 25 headings are present; no factual claim 
     return prompt
 
 
+# Production incident 2026-09-02/03 (continued): the 413 fix above made a
+# single premium request provider-safe, but a full syndication run makes up
+# to MAX_POSTS_PER_RUN (5) of these requests back-to-back with no pacing.
+# Each request reserves ~7000 of Groq's 8K TPM budget (prompt + completion),
+# so the 2nd+ request in the same run landed inside the *same* rolling TPM
+# window as the 1st and was rate-limited (HTTP 429). The bounded 429 retry
+# in llm_client only waits up to PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS and
+# gives up after _MAX_RETRIES_ON_RATE_LIMIT attempts, so repeated candidates
+# exhausted Groq, then fell through DeepSeek and OpenRouter (both returning
+# HTTP 402 -- unfunded/invalid keys, confirmed via production job logs, not
+# fixable from this repository) and Anthropic (no key configured), landing
+# on the deterministic template fallback -- which can never clear the 2200-
+# word premium public-report gate. Net effect: zero new posts published for
+# over 24 hours despite the pipeline running successfully on schedule.
+#
+# The fix is proactive pacing, not a bigger/retried request: never start a
+# new premium Groq request less than PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS
+# after the previous one *started*, so each request lands in a fresh TPM
+# window instead of racing the tail of the last one. Reuses the same
+# ceiling constant as the reactive 429 backoff above rather than inventing
+# a second, possibly-inconsistent number for "how long a TPM window needs".
+_last_premium_call_started_at: float | None = None
+
+
 def call_budgeted_premium_llm(config, prompt: str, max_tokens: int = 3000, attempts=None, sleep_fn=time.sleep):
+    global _last_premium_call_started_at
+    if _last_premium_call_started_at is not None:
+        elapsed = time.monotonic() - _last_premium_call_started_at
+        wait = PREMIUM_RATE_LIMIT_WAIT_CEILING_SECONDS - elapsed
+        if wait > 0:
+            sleep_fn(wait)
+    _last_premium_call_started_at = time.monotonic()
+
     # Fixed upper bound is deliberate: on the current Groq 8K TPM tier the
     # request reservation is prompt + requested completion. Increasing this
     # opportunistically recreates the 413 incident even though the model's
