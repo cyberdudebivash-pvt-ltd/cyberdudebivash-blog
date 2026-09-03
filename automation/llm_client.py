@@ -332,6 +332,30 @@ def _call_openai_compat(
         resp = requests.post(url, json=payload, headers=headers, timeout=60)
         if resp.status_code == 429 and attempt < _MAX_RETRIES_ON_RATE_LIMIT:
             raw_retry_after = _raw_retry_after_seconds(resp)
+            # Production incident 2026-09-03 (see _raw_retry_after_seconds's
+            # docstring): every retry scheduled against a raw ask this far
+            # past our own ceiling was observed to hit a second 429 anyway,
+            # 12/12 samples, zero variance -- a wait-then-retry on THIS
+            # model is a guaranteed failure, not a real second chance, when
+            # the provider has explicitly told us its own reset is minutes
+            # to tens of minutes away (a tokens-per-day quota, not a
+            # transient tokens-per-minute one). Paying the capped wait
+            # anyway just delays call_llm's own model/provider fallback
+            # chain from reaching a model that can actually answer now --
+            # so skip the remaining retries and let that fallback run
+            # immediately instead.
+            if raw_retry_after is not None and raw_retry_after > _MAX_BACKOFF_SECONDS:
+                logger.info(
+                    "LLM provider rate-limited beyond the retry ceiling, skipping remaining retries",
+                    extra={
+                        "url": url,
+                        "attempt": attempt + 1,
+                        "raw_retry_after_seconds": raw_retry_after,
+                        "backoff_ceiling_seconds": _MAX_BACKOFF_SECONDS,
+                        "response_body": resp.text[:500] if resp.text else None,
+                    },
+                )
+                resp.raise_for_status()
             delay = _backoff_seconds(attempt, _retry_after_seconds(resp))
             # raw_retry_after (uncapped) vs delay_seconds (what we actually
             # waited) -- see _raw_retry_after_seconds's docstring. If these
