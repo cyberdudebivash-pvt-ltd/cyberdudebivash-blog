@@ -8,6 +8,7 @@ from . import main as _main
 from .premium_incident_recovery import install_incident_recovery_overrides
 from .premium_provider_budget import install_provider_budget_overrides
 from .premium_publication import install_runtime_overrides
+from .premium_yield_contract_guard import install_yield_contract_guard
 from .premium_yield_hardening import install_yield_hardening_overrides
 
 
@@ -16,11 +17,14 @@ def main() -> int:
     # recovery layer then rebalances the fixed completion budget and adds
     # structure-aware Groq model failover. Yield hardening consumes that
     # recovered runtime, adds model cooldowns/evidence-safe generation and
-    # secondary-task routing, then the premium runtime snapshots the final
-    # analyst-prompt and LLM-call functions into AuthorityTransformer.
+    # secondary-task routing. The contract guard then constrains recovery to
+    # the observed terminal-truncation case while preserving all 25 required
+    # sections and their order. Finally the premium runtime snapshots the
+    # active analyst-prompt and LLM-call functions into AuthorityTransformer.
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
+    install_yield_contract_guard()
     install_runtime_overrides(_main)
     return _main.main()
 
