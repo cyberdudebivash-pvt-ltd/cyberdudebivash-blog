@@ -28,43 +28,171 @@ def test_first_provider_success_records_single_ok_attempt():
     with patch("automation.llm_client._call_openai_compat", return_value="generated content"):
         result = call_llm(Config(groq_api_key="k"), "prompt", attempts=attempts)
     assert result == ("generated content", "groq")
-    assert attempts == [{"provider": "groq", "ok": True, "error": None}]
+    assert attempts == [{"provider": "groq", "model": "openai/gpt-oss-120b", "ok": True, "error": None}]
 
 
-def test_first_provider_exception_falls_through_with_both_attempts_recorded():
+def test_groq_primary_model_failure_falls_through_to_groq_fallback_model_first():
+    # Production incident 2026-09-03 (continued): Groq's free/on_demand
+    # tier enforces its daily token quota per model, not account-wide, so
+    # a real per-model outage must be answered by trying the *next Groq
+    # model* (an independent daily budget on the same key) before ever
+    # falling through to a paid provider we know is unfunded.
     attempts = []
     with patch(
         "automation.llm_client._call_openai_compat",
-        side_effect=[RuntimeError("HTTP 429 rate limited"), "content from deepseek"],
+        side_effect=[RuntimeError("HTTP 429 rate limited"), "content from fallback model"],
     ):
         result = call_llm(
             Config(groq_api_key="k1", deepseek_api_key="k2"), "prompt", attempts=attempts
         )
-    assert result == ("content from deepseek", "deepseek")
+    assert result == ("content from fallback model", "groq")
     assert attempts == [
-        {"provider": "groq", "ok": False, "error": "HTTP 429 rate limited"},
-        {"provider": "deepseek", "ok": True, "error": None},
+        {"provider": "groq", "model": "openai/gpt-oss-120b", "ok": False, "error": "HTTP 429 rate limited"},
+        {"provider": "groq", "model": "openai/gpt-oss-20b", "ok": True, "error": None},
     ]
+
+
+def test_all_groq_models_exhausted_falls_through_to_deepseek():
+    attempts = []
+    config = Config(groq_api_key="k1", deepseek_api_key="k2")
+    groq_model_count = 1 + len(config.llm_model_groq_fallbacks)
+    with patch(
+        "automation.llm_client._call_openai_compat",
+        side_effect=[RuntimeError("429") for _ in range(groq_model_count)] + ["content from deepseek"],
+    ):
+        result = call_llm(config, "prompt", attempts=attempts)
+    assert result == ("content from deepseek", "deepseek")
+    assert [a["provider"] for a in attempts] == ["groq"] * groq_model_count + ["deepseek"]
+    assert attempts[-1] == {"provider": "deepseek", "model": "deepseek-chat", "ok": True, "error": None}
 
 
 def test_empty_response_is_recorded_as_a_failed_attempt_and_does_not_return():
     # Only groq has a key, but an empty response must not be mistaken for
-    # success — the loop should still record it as a failed attempt and
-    # continue on to the (keyless) remaining providers, same as any other
-    # per-provider failure.
+    # success — the loop should still record every Groq model attempt as
+    # failed and continue to the (keyless) remaining providers, same as
+    # any other per-provider failure.
     attempts = []
+    config = Config(groq_api_key="k")
+    groq_model_count = 1 + len(config.llm_model_groq_fallbacks)
     with patch("automation.llm_client._call_openai_compat", return_value=""):
-        result = call_llm(Config(groq_api_key="k"), "prompt", attempts=attempts)
+        result = call_llm(config, "prompt", attempts=attempts)
     assert result is None
-    assert attempts[0] == {"provider": "groq", "ok": False, "error": "empty_response"}
-    assert [a["provider"] for a in attempts[1:]] == ["deepseek", "openrouter", "anthropic"]
-    assert all(a["error"] == "no_api_key" for a in attempts[1:])
+    assert [a["provider"] for a in attempts[:groq_model_count]] == ["groq"] * groq_model_count
+    assert all(a["error"] == "empty_response" for a in attempts[:groq_model_count])
+    assert [a["provider"] for a in attempts[groq_model_count:]] == ["deepseek", "openrouter", "anthropic"]
+    assert all(a["error"] == "no_api_key" for a in attempts[groq_model_count:])
 
 
 def test_attempts_parameter_is_optional_and_backward_compatible():
     with patch("automation.llm_client._call_openai_compat", return_value="x"):
         result = call_llm(Config(groq_api_key="k"), "prompt")
     assert result == ("x", "groq")
+
+
+def test_groq_fallback_models_deduplicate_against_the_primary_model():
+    # If an operator's GROQ_FALLBACK_MODELS override happens to repeat the
+    # primary model, it must not be tried twice.
+    attempts = []
+    config = Config(groq_api_key="k", llm_model_groq_fallbacks=("openai/gpt-oss-120b", "qwen/qwen3.6-27b"))
+    with patch("automation.llm_client._call_openai_compat", return_value="ok"):
+        call_llm(config, "prompt", attempts=attempts)
+    assert [a["model"] for a in attempts] == ["openai/gpt-oss-120b"]
+
+
+# Production incident 2026-09-03 (continued): OpenRouter's own paid model
+# (deepseek/deepseek-chat) was hardcoded here and unfunded (402 on every
+# call). Its free ($0-priced, ":free"-suffixed) catalog is reported to
+# churn weekly, so a hardcoded free model ID would just recreate the same
+# incident the next time OpenRouter retires it. These tests cover live
+# discovery against OpenRouter's own /models endpoint instead.
+
+
+def _reset_openrouter_cache():
+    llm_client._openrouter_free_model_cache = None
+    llm_client._openrouter_discovery_attempted = False
+
+
+def _models_response(models):
+    resp = Mock()
+    resp.raise_for_status = Mock()
+    resp.json = Mock(return_value={"data": models})
+    return resp
+
+
+def test_openrouter_discovery_picks_the_largest_context_free_model():
+    _reset_openrouter_cache()
+    try:
+        models = [
+            {"id": "some/paid-model", "pricing": {"prompt": "0.002", "completion": "0.004"}, "context_length": 128000},
+            {"id": "some/small-free-model:free", "pricing": {"prompt": "0", "completion": "0"}, "context_length": 8000},
+            {"id": "some/large-free-model:free", "pricing": {"prompt": "0", "completion": "0"}, "context_length": 131072},
+        ]
+        with patch("automation.llm_client.requests.get", return_value=_models_response(models)):
+            model = llm_client._discover_openrouter_free_model("k")
+        assert model == "some/large-free-model:free"
+    finally:
+        _reset_openrouter_cache()
+
+
+def test_openrouter_discovery_returns_none_when_no_free_model_is_listed():
+    _reset_openrouter_cache()
+    try:
+        models = [{"id": "some/paid-model", "pricing": {"prompt": "0.002", "completion": "0.004"}, "context_length": 128000}]
+        with patch("automation.llm_client.requests.get", return_value=_models_response(models)):
+            assert llm_client._discover_openrouter_free_model("k") is None
+    finally:
+        _reset_openrouter_cache()
+
+
+def test_openrouter_discovery_failure_is_never_fatal():
+    _reset_openrouter_cache()
+    try:
+        with patch("automation.llm_client.requests.get", side_effect=RuntimeError("network down")):
+            assert llm_client._discover_openrouter_free_model("k") is None
+    finally:
+        _reset_openrouter_cache()
+
+
+def test_openrouter_discovery_is_cached_per_process():
+    _reset_openrouter_cache()
+    try:
+        models = [{"id": "some/free-model:free", "pricing": {"prompt": "0", "completion": "0"}, "context_length": 100}]
+        with patch("automation.llm_client.requests.get", return_value=_models_response(models)) as mock_get:
+            first = llm_client._discover_openrouter_free_model("k")
+            second = llm_client._discover_openrouter_free_model("k")
+        assert first == second == "some/free-model:free"
+        mock_get.assert_called_once()
+    finally:
+        _reset_openrouter_cache()
+
+
+def test_call_llm_uses_the_discovered_openrouter_free_model():
+    _reset_openrouter_cache()
+    try:
+        attempts = []
+        models = [{"id": "some/free-model:free", "pricing": {"prompt": "0", "completion": "0"}, "context_length": 100}]
+        config = Config(groq_api_key="", openrouter_api_key="ork")
+        with patch("automation.llm_client.requests.get", return_value=_models_response(models)), \
+             patch("automation.llm_client._call_openai_compat", return_value="ok") as mock_call:
+            result = call_llm(config, "prompt", attempts=attempts)
+        assert result == ("ok", "openrouter")
+        assert mock_call.call_args.kwargs["model"] == "some/free-model:free"
+    finally:
+        _reset_openrouter_cache()
+
+
+def test_call_llm_skips_openrouter_gracefully_when_no_free_model_is_available():
+    _reset_openrouter_cache()
+    try:
+        attempts = []
+        config = Config(groq_api_key="", openrouter_api_key="ork")
+        with patch("automation.llm_client.requests.get", return_value=_models_response([])):
+            result = call_llm(config, "prompt", attempts=attempts)
+        assert result is None
+        openrouter_attempts = [a for a in attempts if a["provider"] == "openrouter"]
+        assert openrouter_attempts == [{"provider": "openrouter", "model": None, "ok": False, "error": "no_free_model_available"}]
+    finally:
+        _reset_openrouter_cache()
 
 
 # Production incident 2026-09-03 (continued): #158 and #159 fixed proactive

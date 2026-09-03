@@ -5,6 +5,7 @@ Tests for the multi-provider LLM client — provider priority, fallback, error h
 import unittest
 from unittest.mock import MagicMock, patch
 
+from automation import llm_client
 from automation.config import Config
 from automation.llm_client import (
     _backoff_seconds,
@@ -21,6 +22,30 @@ def _config(**kwargs) -> Config:
     for k, v in kwargs.items():
         setattr(cfg, k, v)
     return cfg
+
+
+def _groq_model_count(cfg: Config) -> int:
+    return 1 + len(cfg.llm_model_groq_fallbacks)
+
+
+def _openrouter_discovery_mock(free_model_id: str = "some/free-model:free"):
+    # Production incident 2026-09-03 (continued): OpenRouter's free catalog
+    # churns too often to hardcode, so call_llm() now discovers a free
+    # model from OpenRouter's own live /models endpoint (a GET) before the
+    # actual chat completion (a POST). Every test that can reach the
+    # OpenRouter branch must mock this discovery call too, or it silently
+    # attempts a real network request.
+    resp = MagicMock()
+    resp.raise_for_status = MagicMock()
+    resp.json.return_value = {
+        "data": [{"id": free_model_id, "pricing": {"prompt": "0", "completion": "0"}, "context_length": 128000}]
+    }
+    return resp
+
+
+def _reset_openrouter_cache():
+    llm_client._openrouter_free_model_cache = None
+    llm_client._openrouter_discovery_attempted = False
 
 
 class TestCallLLMNoKeys(unittest.TestCase):
@@ -83,7 +108,11 @@ class TestCallLLMGroqPriority(unittest.TestCase):
 
 
 class TestCallLLMDeepSeek(unittest.TestCase):
-    def test_deepseek_called_when_groq_fails(self):
+    def test_deepseek_called_when_all_groq_models_fail(self):
+        # Production incident 2026-09-03 (continued): Groq's free tier now
+        # tries multiple models (each an independent daily quota) before
+        # ever falling through to a paid provider -- deepseek is only
+        # reached once every one of them has failed.
         cfg = _config(groq_api_key="bad-key", deepseek_api_key="ds-valid")
 
         groq_resp = MagicMock()
@@ -95,7 +124,8 @@ class TestCallLLMDeepSeek(unittest.TestCase):
         }
         deepseek_resp.raise_for_status = MagicMock()
 
-        with patch("requests.post", side_effect=[groq_resp, deepseek_resp]):
+        responses = [groq_resp] * _groq_model_count(cfg) + [deepseek_resp]
+        with patch("requests.post", side_effect=responses):
             result = call_llm(cfg, "test prompt")
 
         self.assertIsNotNone(result)
@@ -122,6 +152,12 @@ class TestCallLLMDeepSeek(unittest.TestCase):
 
 
 class TestCallLLMOpenRouter(unittest.TestCase):
+    def setUp(self):
+        _reset_openrouter_cache()
+
+    def tearDown(self):
+        _reset_openrouter_cache()
+
     def test_openrouter_used_when_only_openrouter_key(self):
         cfg = _config(openrouter_api_key="sk-or-test")
 
@@ -131,7 +167,8 @@ class TestCallLLMOpenRouter(unittest.TestCase):
         }
         mock_resp.raise_for_status = MagicMock()
 
-        with patch("requests.post", return_value=mock_resp) as mock_post:
+        with patch("requests.get", return_value=_openrouter_discovery_mock()), \
+             patch("requests.post", return_value=mock_resp) as mock_post:
             result = call_llm(cfg, "test prompt")
 
         call_url = mock_post.call_args[0][0]
@@ -148,7 +185,8 @@ class TestCallLLMOpenRouter(unittest.TestCase):
         }
         mock_resp.raise_for_status = MagicMock()
 
-        with patch("requests.post", return_value=mock_resp) as mock_post:
+        with patch("requests.get", return_value=_openrouter_discovery_mock()), \
+             patch("requests.post", return_value=mock_resp) as mock_post:
             call_llm(cfg, "test prompt")
 
         headers_sent = mock_post.call_args[1]["headers"]
@@ -157,6 +195,12 @@ class TestCallLLMOpenRouter(unittest.TestCase):
 
 
 class TestCallLLMFallbackChain(unittest.TestCase):
+    def setUp(self):
+        _reset_openrouter_cache()
+
+    def tearDown(self):
+        _reset_openrouter_cache()
+
     def test_falls_through_all_failing_providers_to_none(self):
         cfg = _config(
             groq_api_key="bad-groq",
@@ -167,7 +211,8 @@ class TestCallLLMFallbackChain(unittest.TestCase):
         fail_resp = MagicMock()
         fail_resp.raise_for_status.side_effect = Exception("HTTP 401")
 
-        with patch("requests.post", return_value=fail_resp):
+        with patch("requests.get", return_value=_openrouter_discovery_mock()), \
+             patch("requests.post", return_value=fail_resp):
             result = call_llm(cfg, "test prompt")
 
         self.assertIsNone(result)
@@ -188,7 +233,11 @@ class TestCallLLMFallbackChain(unittest.TestCase):
         }
         ok_resp.raise_for_status = MagicMock()
 
-        with patch("requests.post", side_effect=[fail_resp, fail_resp, ok_resp]):
+        # Every Groq model fails, then deepseek fails, then openrouter
+        # (the discovered free model) succeeds.
+        responses = [fail_resp] * (_groq_model_count(cfg) + 1) + [ok_resp]
+        with patch("requests.get", return_value=_openrouter_discovery_mock()), \
+             patch("requests.post", side_effect=responses):
             result = call_llm(cfg, "test prompt")
 
         self.assertIsNotNone(result)
@@ -366,9 +415,15 @@ class TestLLMModelConfig(unittest.TestCase):
         cfg = Config()
         self.assertIn("deepseek", cfg.llm_model_deepseek.lower())
 
-    def test_openrouter_default_model(self):
+    def test_groq_fallback_models_are_distinct_from_the_primary_model(self):
+        # Production incident 2026-09-03 (continued): these must be real,
+        # distinct models -- a repeated ID would silently retry the same
+        # exhausted daily quota instead of reaching a fresh one.
         cfg = Config()
-        self.assertIn("deepseek", cfg.llm_model_openrouter.lower())
+        fallbacks = cfg.llm_model_groq_fallbacks
+        self.assertTrue(len(fallbacks) > 0)
+        self.assertNotIn(cfg.llm_model_groq, fallbacks)
+        self.assertEqual(len(fallbacks), len(set(fallbacks)))
 
 
 if __name__ == "__main__":
