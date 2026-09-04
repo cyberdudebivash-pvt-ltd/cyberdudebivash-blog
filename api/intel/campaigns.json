@@ -2409,6 +2409,60 @@
       "clustering_model": "graph_reconstruction_v1"
     },
     {
+      "campaign_id": "campaign:cve-2026-75911-and-cve-2026-75859",
+      "name": "rust deepseek-tui Exploitation Campaign",
+      "severity": "HIGH",
+      "confidence": 0.84,
+      "item_count": 2,
+      "ioc_count": 1,
+      "first_seen": "2026-09-04",
+      "last_seen": "2026-09-04",
+      "related_intel_ids": [
+        "CVE-2026-75911",
+        "CVE-2026-75859"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-75911",
+          "title": "CodeWhale: Project config `allow_shell` override enables arbitrary shell command execution via cloned repository",
+          "type": "CVE_REPORT",
+          "priority_score": 65,
+          "published": "2026-09-04",
+          "exploited": false,
+          "cisa_kev": false
+        },
+        {
+          "id": "CVE-2026-75859",
+          "title": "CodeWhale: Project config `instructions` override enables arbitrary file read into AI system prompt via cloned repository",
+          "type": "CVE_REPORT",
+          "priority_score": 57,
+          "published": "2026-09-04",
+          "exploited": false,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "sha1:43563356b98c6b993085554da82e77370160a31c"
+      ],
+      "shared_cves": [
+        "CVE-2026-75911",
+        "CVE-2026-75859"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 65,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": false,
+      "reasoning": [
+        "2 intel item(s) clustered with composite confidence 0.840",
+        "2 related CVEs: CVE-2026-75911, CVE-2026-75859",
+        "1 shared IOC(s) across items",
+        "Item CVE-2026-75859 joined cluster (score: 0.637): 1 shared IOC(s) (Jaccard: 1.000)"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
       "campaign_id": "campaign:cluster-280042e9",
       "name": "China-Nexus Covert Intrusion Campaign",
       "severity": "HIGH",
@@ -21288,6 +21342,7 @@
     {
       "campaign_id": "campaign:cve-2026-85046",
       "name": "The Threat Exploitation Campaign",
+      "clustering_model": "weighted_v2",
       "severity": "HIGH",
       "confidence": 0.9,
       "item_count": 1,
@@ -21300,7 +21355,7 @@
       "related_intel": [
         {
           "id": "CVE-2026-85046",
-          "title": "Google Releases Chrome Update to Patch Actively Exploited V8 Zero-Day",
+          "title": "Google patches actively exploited Chrome zero-day (CVE-2026-85046)",
           "type": "ZERO_DAY",
           "priority_score": 78,
           "published": "2026-09-04",
@@ -21322,8 +21377,7 @@
         "1 intel item(s) clustered with composite confidence 0.900",
         "Single CVE basis: CVE-2026-85046",
         "1 item(s) confirmed exploited in the wild"
-      ],
-      "clustering_model": "weighted_v2"
+      ]
     },
     {
       "campaign_id": "campaign:cve-2026-75913",
@@ -21364,6 +21418,46 @@
         "1 intel item(s) clustered with composite confidence 0.900",
         "Single CVE basis: CVE-2026-75913",
         "1 shared IOC(s) across items"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2026-9586",
+      "name": "Multi-Vendor Platform Exploitation Campaign",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-09-04",
+      "last_seen": "2026-09-04",
+      "related_intel_ids": [
+        "CVE-2026-9586"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-9586",
+          "title": "Sangoma Switchvox Vulnerabilities Exploited in the Wild",
+          "type": "CVE_REPORT",
+          "priority_score": 71,
+          "published": "2026-09-04",
+          "exploited": true,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2026-9586"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 71,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": true,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-9586",
+        "1 item(s) confirmed exploited in the wild"
       ],
       "clustering_model": "weighted_v2"
     },
@@ -22948,6 +23042,7 @@
     {
       "campaign_id": "campaign:cve-2026-75915-and-cve-2026-75914",
       "name": "rust deepseek-tui Exploitation Campaign",
+      "clustering_model": "weighted_v2",
       "severity": "MEDIUM",
       "confidence": 0.83,
       "item_count": 2,
@@ -22963,7 +23058,7 @@
           "id": "CVE-2026-75915",
           "title": "CodeWhale: js_execution leaks parent environment to model context via missing env scrub",
           "type": "CVE_REPORT",
-          "priority_score": 62,
+          "priority_score": 57,
           "published": "2026-09-04",
           "exploited": false,
           "cisa_kev": false
@@ -22972,7 +23067,7 @@
           "id": "CVE-2026-75914",
           "title": "CodeWhale: image_analyze follows workspace symlinks, leaking external file bytes",
           "type": "CVE_REPORT",
-          "priority_score": 62,
+          "priority_score": 57,
           "published": "2026-09-04",
           "exploited": false,
           "cisa_kev": false
@@ -22996,6 +23091,113 @@
         "2 related CVEs: CVE-2026-75915, CVE-2026-75914",
         "1 shared IOC(s) across items",
         "Item CVE-2026-75914 joined cluster (score: 0.601): 1 shared IOC(s) (Jaccard: 1.000)"
+      ]
+    },
+    {
+      "campaign_id": "campaign:cve-2026-75913-and-cve-2026-75912",
+      "name": "rust deepseek-tui Exploitation Campaign",
+      "severity": "MEDIUM",
+      "confidence": 0.84,
+      "item_count": 2,
+      "ioc_count": 1,
+      "first_seen": "2026-09-04",
+      "last_seen": "2026-09-04",
+      "related_intel_ids": [
+        "CVE-2026-75913",
+        "CVE-2026-75912"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-75913",
+          "title": "CodeWhale: Argument Injection in `git_show` Tool Allows Arbitrary File Write Without Approval",
+          "type": "CVE_REPORT",
+          "priority_score": 64,
+          "published": "2026-09-04",
+          "exploited": false,
+          "cisa_kev": false
+        },
+        {
+          "id": "CVE-2026-75912",
+          "title": "CodeWhale: Argument Injection in `git_blame` Tool Allows Arbitrary File Read Without Approval",
+          "type": "CVE_REPORT",
+          "priority_score": 56,
+          "published": "2026-09-04",
+          "exploited": false,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "sha1:9a34b5034d29f05d1f28fa61b04719ca6a741020"
+      ],
+      "shared_cves": [
+        "CVE-2026-75913",
+        "CVE-2026-75912"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 64,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": false,
+      "reasoning": [
+        "2 intel item(s) clustered with composite confidence 0.840",
+        "2 related CVEs: CVE-2026-75913, CVE-2026-75912",
+        "1 shared IOC(s) across items",
+        "Item CVE-2026-75912 joined cluster (score: 0.655): 1 shared IOC(s) (Jaccard: 1.000)"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
+      "campaign_id": "campaign:cve-2026-75858-and-cve-2026-75857",
+      "name": "rust deepseek-tui Exploitation Campaign",
+      "severity": "MEDIUM",
+      "confidence": 0.83,
+      "item_count": 2,
+      "ioc_count": 1,
+      "first_seen": "2026-09-04",
+      "last_seen": "2026-09-04",
+      "related_intel_ids": [
+        "CVE-2026-75858",
+        "CVE-2026-75857"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-75858",
+          "title": "CodeWhale: rlm_eval auto-approves arbitrary Python execution, bypassing the user's approval policy (RCE)",
+          "type": "CVE_REPORT",
+          "priority_score": 62,
+          "published": "2026-09-04",
+          "exploited": false,
+          "cisa_kev": false
+        },
+        {
+          "id": "CVE-2026-75857",
+          "title": "CodeWhale: exec_shell_interact sends LLM-controlled input to a running shell without an approval prompt (privilege escalation)",
+          "type": "CVE_REPORT",
+          "priority_score": 58,
+          "published": "2026-09-04",
+          "exploited": false,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [
+        "sha1:57f3c89471e27ac4032d9791f6885e5d4408c381"
+      ],
+      "shared_cves": [
+        "CVE-2026-75858",
+        "CVE-2026-75857"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 62,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": false,
+      "reasoning": [
+        "2 intel item(s) clustered with composite confidence 0.830",
+        "2 related CVEs: CVE-2026-75858, CVE-2026-75857",
+        "1 shared IOC(s) across items",
+        "Item CVE-2026-75857 joined cluster (score: 0.611): 1 shared IOC(s) (Jaccard: 1.000)"
       ],
       "clustering_model": "weighted_v2"
     },
@@ -46971,6 +47173,45 @@
       "clustering_model": "weighted_v2"
     },
     {
+      "campaign_id": "campaign:cve-2026-63735",
+      "name": "rust surrealdb Exploitation Campaign",
+      "severity": "MEDIUM",
+      "confidence": 0.9,
+      "item_count": 1,
+      "ioc_count": 0,
+      "first_seen": "2026-09-04",
+      "last_seen": "2026-09-04",
+      "related_intel_ids": [
+        "CVE-2026-63735"
+      ],
+      "related_intel": [
+        {
+          "id": "CVE-2026-63735",
+          "title": "SurrealDB: Custom API route lets authenticated callers override namespace/database scope via URL path",
+          "type": "CVE_REPORT",
+          "priority_score": 63,
+          "published": "2026-09-04",
+          "exploited": false,
+          "cisa_kev": false
+        }
+      ],
+      "shared_iocs": [],
+      "shared_cves": [
+        "CVE-2026-63735"
+      ],
+      "threat_actor": null,
+      "threat_actors": [],
+      "max_priority_score": 63,
+      "has_kev": false,
+      "has_ransomware": false,
+      "has_exploited": false,
+      "reasoning": [
+        "1 intel item(s) clustered with composite confidence 0.900",
+        "Single CVE basis: CVE-2026-63735"
+      ],
+      "clustering_model": "weighted_v2"
+    },
+    {
       "campaign_id": "campaign:cluster-6d58c496",
       "name": "reddit_netsec Threat Exploitation Campaign",
       "severity": "LOW",
@@ -50107,7 +50348,7 @@
       "clustering_model": "graph_reconstruction_v1"
     }
   ],
-  "generated": "2026-09-04T18:11:07.671Z",
+  "generated": "2026-09-04T20:56:37.149Z",
   "version": "1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX v4.0"
 }
