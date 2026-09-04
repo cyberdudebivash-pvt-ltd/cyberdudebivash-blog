@@ -3,7 +3,7 @@
 The production failure after PR #166 was no longer discovery or Blogger: a
 large candidate pool reached the factory, but valid 3k-4k word narratives were
 rejected because free-form model HTML omitted References or other structural
-sections.  This layer moves structural authority out of model output.
+sections. This layer moves structural authority out of model output.
 
 Design invariants:
 - the existing ReportX evidence graph, contradiction gate, quantitative-claim
@@ -15,7 +15,7 @@ Design invariants:
 - References are rebuilt only from trusted structured provenance;
 - Key Judgements are derived from real EvidenceGraph claim IDs, removing the
   mandatory second model call and malformed-JSON failure class;
-- model output remains optional analytical enrichment.  The renderer owns the
+- model output remains optional analytical enrichment. The renderer owns the
   public section contract.
 """
 
@@ -47,7 +47,7 @@ GENERATION_EVIDENCE_COMPILED = "EVIDENCE_COMPILED"
 GENERATION_LEGACY_FALLBACK = "LEGACY_FALLBACK"
 
 # The public deterministic section contract requested by the production
-# program.  These exact titles intentionally satisfy premium_publication's
+# program. These exact titles intentionally satisfy premium_publication's
 # customer-facing core-section names while keeping stable machine IDs.
 CANONICAL_SECTION_CONTRACT: tuple[tuple[str, str], ...] = (
     ("executive_summary", "Executive Summary"),
@@ -129,6 +129,8 @@ def _safe_reference_url(value: object) -> Optional[str]:
         return None
     if parsed.scheme.lower() not in {"http", "https"} or not parsed.hostname:
         return None
+    if parsed.username is not None or parsed.password is not None:
+        return None
     host = parsed.hostname.lower().rstrip(".")
     if host in {"localhost", "localhost.localdomain"} or host.endswith(".local"):
         return None
@@ -186,7 +188,7 @@ def _strip_model_structure_and_reference_section(body_content: str) -> str:
     """Preserve analytical content while removing model ownership of structure.
 
     Model-supplied References sections are discarded completely; all other
-    h2/h3 labels become non-heading strong labels.  The deterministic compiler
+    h2/h3 labels become non-heading strong labels. The deterministic compiler
     then emits the only public h3 contract and the only References section.
     """
     soup = BeautifulSoup(body_content or "", "html.parser")
@@ -459,10 +461,11 @@ def compiler_semantic_preflight_complete(content: str) -> bool:
 def _patched_assemble_html(self, article, body_content: str, seo_data: dict, context, image_url=None):
     if _ORIGINAL_ASSEMBLE_HTML is None:
         raise RuntimeError("premium evidence compiler is not installed")
+    paragraphs, list_items = _premium._semantic_counts(body_content)
     self._cdb_compiler_input_metrics = {
         "words": _premium._word_count(body_content),
-        "paragraphs": _premium._semantic_counts(body_content)[0],
-        "list_items": _premium._semantic_counts(body_content)[1],
+        "paragraphs": paragraphs,
+        "list_items": list_items,
     }
     compiled = compile_premium_body(article, context, body_content)
     return _ORIGINAL_ASSEMBLE_HTML(self, article, compiled, seo_data, context, image_url=image_url)
@@ -495,12 +498,16 @@ def _patched_base_transform(self, article):
     else:
         mode = GENERATION_LEGACY_FALLBACK
 
-    metrics = getattr(self, "_cdb_compiler_input_metrics", {}) or {}
+    metrics = getattr(self, "_cdb_compiler_input_metrics", None)
     transformed["generation_mode"] = mode
     transformed["key_judgement_derivation_mode"] = "DETERMINISTIC_EVIDENCE_GRAPH"
-    transformed["compiler_input_visible_words"] = int(metrics.get("words", 0) or 0)
-    transformed["compiler_input_substantive_paragraphs"] = int(metrics.get("paragraphs", 0) or 0)
-    transformed["compiler_input_substantive_list_items"] = int(metrics.get("list_items", 0) or 0)
+    if isinstance(metrics, dict):
+        if "words" in metrics:
+            transformed["compiler_input_visible_words"] = int(metrics.get("words") or 0)
+        if "paragraphs" in metrics:
+            transformed["compiler_input_substantive_paragraphs"] = int(metrics.get("paragraphs") or 0)
+        if "list_items" in metrics:
+            transformed["compiler_input_substantive_list_items"] = int(metrics.get("list_items") or 0)
     transformed["compiler_contract_sections"] = len(CANONICAL_SECTION_CONTRACT)
 
     _RUNTIME["generation_modes"][mode] += 1
@@ -515,21 +522,24 @@ def _assessment_with_input_floor(article, transformed: dict):
     assessment = _ORIGINAL_ASSESSMENT(article, transformed)
     reasons = list(assessment.reasons)
 
-    input_words = int(transformed.get("compiler_input_visible_words", 0) or 0)
-    input_paragraphs = int(transformed.get("compiler_input_substantive_paragraphs", 0) or 0)
-    input_list_items = int(transformed.get("compiler_input_substantive_list_items", 0) or 0)
-    if input_words and input_words < _premium.MIN_VISIBLE_WORDS:
-        reasons.append(
-            f"pre-compiler analytical depth {input_words} words is below production floor {_premium.MIN_VISIBLE_WORDS}; deterministic structure cannot manufacture depth"
-        )
-    if input_paragraphs and input_paragraphs < _premium.MIN_PARAGRAPHS:
-        reasons.append(
-            f"pre-compiler substantive paragraph density {input_paragraphs} is below production floor {_premium.MIN_PARAGRAPHS}"
-        )
-    if input_list_items and input_list_items < _premium.MIN_LIST_ITEMS:
-        reasons.append(
-            f"pre-compiler substantive list density {input_list_items} is below production floor {_premium.MIN_LIST_ITEMS}"
-        )
+    if "compiler_input_visible_words" in transformed:
+        input_words = int(transformed.get("compiler_input_visible_words") or 0)
+        if input_words < _premium.MIN_VISIBLE_WORDS:
+            reasons.append(
+                f"pre-compiler analytical depth {input_words} words is below production floor {_premium.MIN_VISIBLE_WORDS}; deterministic structure cannot manufacture depth"
+            )
+    if "compiler_input_substantive_paragraphs" in transformed:
+        input_paragraphs = int(transformed.get("compiler_input_substantive_paragraphs") or 0)
+        if input_paragraphs < _premium.MIN_PARAGRAPHS:
+            reasons.append(
+                f"pre-compiler substantive paragraph density {input_paragraphs} is below production floor {_premium.MIN_PARAGRAPHS}"
+            )
+    if "compiler_input_substantive_list_items" in transformed:
+        input_list_items = int(transformed.get("compiler_input_substantive_list_items") or 0)
+        if input_list_items < _premium.MIN_LIST_ITEMS:
+            reasons.append(
+                f"pre-compiler substantive list density {input_list_items} is below production floor {_premium.MIN_LIST_ITEMS}"
+            )
 
     unique_reasons = tuple(dict.fromkeys(reasons))
     return _premium.EnterpriseQualityAssessment(
@@ -639,13 +649,13 @@ def install_premium_evidence_compiler_overrides(main_module) -> None:
     _authority._build_analyst_prompt = _compiler_prompt
 
     # Public premium certification recognizes evidence-compiled generation as
-    # a generation mode, not as fake LLM authorship.  Every other premium gate
+    # a generation mode, not as fake LLM authorship. Every other premium gate
     # below remains unchanged and the separate ReportX product tier continues
     # to report TACTICAL when analyst authorship/corroboration is absent.
     _premium._LLM_SOURCES = frozenset(set(_premium._LLM_SOURCES) | {EVIDENCE_COMPILED_SOURCE})
     _premium.assess_enterprise_report = _assessment_with_input_floor
 
-    # Structural headings are now renderer-owned.  Model failover is driven by
+    # Structural headings are now renderer-owned. Model failover is driven by
     # the exact analytical density floors the public gate will still apply to
     # pre-compiler content, so a 4k-word semantically thin response still does
     # not qualify and a 3k-word sound response no longer burns models merely
