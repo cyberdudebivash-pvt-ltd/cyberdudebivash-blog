@@ -40,6 +40,19 @@ def _dense_body(words_per_paragraph=130, paragraphs=18, list_items=18):
     return "".join(body)
 
 
+def _passing_assessment():
+    return premium.EnterpriseQualityAssessment(
+        ready=True,
+        report_type="CVE_VULNERABILITY_REPORT",
+        quality_band=premium.PUBLIC_QUALITY_BAND,
+        visible_words=4300,
+        distinct_headings=25,
+        substantive_paragraphs=25,
+        substantive_list_items=25,
+        reasons=(),
+    )
+
+
 def test_contract_has_exact_25_stable_sections():
     assert len(compiler.CANONICAL_SECTION_CONTRACT) == 25
     ids = [item[0] for item in compiler.CANONICAL_SECTION_CONTRACT]
@@ -74,11 +87,12 @@ def test_model_supplied_references_are_removed_and_rebuilt_from_provenance():
     assert [" ".join(h.stripped_strings) for h in BeautifulSoup(rendered, "html.parser").find_all("h3")].count("References") == 1
 
 
-def test_reference_builder_rejects_non_http_and_private_targets():
+def test_reference_builder_rejects_non_http_private_and_credentialed_targets():
     assert compiler._safe_reference_url("javascript:alert(1)") is None
     assert compiler._safe_reference_url("file:///etc/passwd") is None
     assert compiler._safe_reference_url("http://127.0.0.1/private") is None
     assert compiler._safe_reference_url("http://10.0.0.7/private") is None
+    assert compiler._safe_reference_url("https://user:secret@example.test/advisory") is None
     assert compiler._safe_reference_url("https://nvd.nist.gov/vuln/detail/CVE-2026-9999") is not None
 
 
@@ -171,17 +185,7 @@ def test_blocking_contradiction_prevents_deterministic_judgement():
 
 
 def test_compiler_assessment_preserves_precompiler_word_floor(monkeypatch):
-    base = premium.EnterpriseQualityAssessment(
-        ready=True,
-        report_type="CVE_VULNERABILITY_REPORT",
-        quality_band=premium.PUBLIC_QUALITY_BAND,
-        visible_words=3000,
-        distinct_headings=25,
-        substantive_paragraphs=25,
-        substantive_list_items=25,
-        reasons=(),
-    )
-    monkeypatch.setattr(compiler, "_ORIGINAL_ASSESSMENT", lambda article, transformed: base)
+    monkeypatch.setattr(compiler, "_ORIGINAL_ASSESSMENT", lambda article, transformed: _passing_assessment())
     transformed = {
         "compiler_input_visible_words": 1715,
         "compiler_input_substantive_paragraphs": 20,
@@ -193,17 +197,7 @@ def test_compiler_assessment_preserves_precompiler_word_floor(monkeypatch):
 
 
 def test_compiler_assessment_preserves_precompiler_paragraph_and_list_floors(monkeypatch):
-    base = premium.EnterpriseQualityAssessment(
-        ready=True,
-        report_type="CVE_VULNERABILITY_REPORT",
-        quality_band=premium.PUBLIC_QUALITY_BAND,
-        visible_words=4300,
-        distinct_headings=25,
-        substantive_paragraphs=25,
-        substantive_list_items=25,
-        reasons=(),
-    )
-    monkeypatch.setattr(compiler, "_ORIGINAL_ASSESSMENT", lambda article, transformed: base)
+    monkeypatch.setattr(compiler, "_ORIGINAL_ASSESSMENT", lambda article, transformed: _passing_assessment())
     transformed = {
         "compiler_input_visible_words": 4100,
         "compiler_input_substantive_paragraphs": 8,
@@ -213,6 +207,40 @@ def test_compiler_assessment_preserves_precompiler_paragraph_and_list_floors(mon
     assert assessment.ready is False
     assert any("paragraph density 8" in reason for reason in assessment.reasons)
     assert any("list density 15" in reason for reason in assessment.reasons)
+
+
+def test_measured_zero_precompiler_metrics_fail_closed(monkeypatch):
+    monkeypatch.setattr(compiler, "_ORIGINAL_ASSESSMENT", lambda article, transformed: _passing_assessment())
+    transformed = {
+        "compiler_input_visible_words": 0,
+        "compiler_input_substantive_paragraphs": 0,
+        "compiler_input_substantive_list_items": 0,
+    }
+    assessment = compiler._assessment_with_input_floor(_article(), transformed)
+    assert assessment.ready is False
+    assert any("analytical depth 0" in reason for reason in assessment.reasons)
+    assert any("paragraph density 0" in reason for reason in assessment.reasons)
+    assert any("list density 0" in reason for reason in assessment.reasons)
+
+
+def test_absent_precompiler_metrics_remain_unmeasured_not_fake_zero(monkeypatch):
+    monkeypatch.setattr(compiler, "_ORIGINAL_ASSESSMENT", lambda article, transformed: _passing_assessment())
+    assessment = compiler._assessment_with_input_floor(_article(), {})
+    assert assessment.ready is True
+    assert not any("pre-compiler" in reason for reason in assessment.reasons)
+
+
+def test_patched_base_transform_does_not_materialize_missing_metrics(monkeypatch):
+    monkeypatch.setattr(
+        compiler,
+        "_ORIGINAL_BASE_TRANSFORM",
+        lambda self, article: {"content_source": "groq", "llm_attempts": []},
+    )
+    transformer = SimpleNamespace()
+    result = compiler._patched_base_transform(transformer, _article())
+    assert "compiler_input_visible_words" not in result
+    assert "compiler_input_substantive_paragraphs" not in result
+    assert "compiler_input_substantive_list_items" not in result
 
 
 def test_compiler_does_not_insert_source_specific_iocs_or_attack_techniques():
