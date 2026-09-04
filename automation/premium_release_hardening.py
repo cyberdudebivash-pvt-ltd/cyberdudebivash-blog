@@ -30,6 +30,7 @@ from typing import Callable, Optional
 from urllib.parse import urlsplit
 
 import requests
+from bs4 import BeautifulSoup
 
 from . import authority_transformer as _authority
 from . import llm_client as _llm
@@ -42,6 +43,7 @@ from .logger import setup_logger
 logger = setup_logger("premium_release_hardening")
 
 _ORIGINAL_CANDIDATE_SCORE: Optional[Callable] = None
+_ORIGINAL_RAW_CONTRACT_COMPLETE: Optional[Callable] = None
 _ORIGINAL_GROUNDED_NUMBERS: Optional[Callable] = None
 _ORIGINAL_ASSEMBLE_HTML: Optional[Callable] = None
 _ORIGINAL_RAW_OPENAI_CALL: Optional[Callable] = None
@@ -89,11 +91,29 @@ _PROVIDER_BY_HOST = {
 }
 
 
+def _analytical_word_count(content: str) -> int:
+    """Count analytical body words while excluding model-owned heading labels."""
+    soup = BeautifulSoup(content or "", "html.parser")
+    for heading in soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"]):
+        heading.decompose()
+    return _premium._word_count(str(soup))
+
+
 def _semantic_metrics(content: str) -> tuple[int, int, int]:
-    """Return the exact pre-compiler semantic metrics enforced in production."""
-    words = _premium._word_count(content)
+    """Return the heading-independent pre-compiler semantic release metrics."""
+    words = _analytical_word_count(content)
     paragraphs, list_items = _premium._semantic_counts(content)
     return words, paragraphs, list_items
+
+
+def semantic_preflight_complete(content: str) -> bool:
+    """Stop model failover only when all heading-independent density floors pass."""
+    words, paragraphs, list_items = _semantic_metrics(content)
+    return (
+        words >= _premium.MIN_VISIBLE_WORDS
+        and paragraphs >= _premium.MIN_PARAGRAPHS
+        and list_items >= _premium.MIN_LIST_ITEMS
+    )
 
 
 def semantic_candidate_score(content: str) -> tuple[int, int, float, float, int, int, int]:
@@ -176,12 +196,13 @@ def final_evidence_boundary_assemble_html(
     context,
     image_url=None,
 ):
-    """Apply evidence-language repair to the final pre-hash assembled artifact.
+    """Apply final semantic accounting and evidence repair before artifact hash.
 
-    Stage-2's compiler remains the structural authority. This wrapper runs after
-    that compiler but before ``transform()`` computes the certified artifact
-    hash, so any bounded wording downgrade is itself part of the exact artifact
-    that later integrity checks and Blogger fetch-back verify.
+    Stage-2's compiler remains the structural authority. Its assembler first
+    captures input metrics and compiles the public section contract. Stage-3
+    then replaces only the stored word metric with a heading-independent count
+    and repairs evidence language in the final HTML. Both changes occur before
+    ``transform()`` computes the certified artifact hash.
     """
     if _ORIGINAL_ASSEMBLE_HTML is None:
         raise RuntimeError("premium release hardening is not installed")
@@ -193,6 +214,10 @@ def final_evidence_boundary_assemble_html(
         context,
         image_url=image_url,
     )
+    metrics = getattr(self, "_cdb_compiler_input_metrics", None)
+    if isinstance(metrics, dict):
+        metrics["words"] = _analytical_word_count(body_content)
+
     repaired, changes = _hardening._repair_evidence_language(
         assembled,
         _evidence_repair_prompt(context),
@@ -362,13 +387,15 @@ def _release_write_run_report(report: dict, logs_dir: str) -> None:
 
 def install_release_hardening(main_module) -> None:
     """Install Stage-3 last so it sees the complete Stage-2 runtime graph."""
-    global _ORIGINAL_CANDIDATE_SCORE, _ORIGINAL_GROUNDED_NUMBERS
-    global _ORIGINAL_ASSEMBLE_HTML, _ORIGINAL_RAW_OPENAI_CALL
-    global _ORIGINAL_TRY_PROVIDER, _ORIGINAL_RUN_REPORT_WRITER, _INSTALLED
+    global _ORIGINAL_CANDIDATE_SCORE, _ORIGINAL_RAW_CONTRACT_COMPLETE
+    global _ORIGINAL_GROUNDED_NUMBERS, _ORIGINAL_ASSEMBLE_HTML
+    global _ORIGINAL_RAW_OPENAI_CALL, _ORIGINAL_TRY_PROVIDER
+    global _ORIGINAL_RUN_REPORT_WRITER, _INSTALLED
     if _INSTALLED:
         return
 
     _ORIGINAL_CANDIDATE_SCORE = _recovery._candidate_score
+    _ORIGINAL_RAW_CONTRACT_COMPLETE = _recovery._raw_contract_complete
     _ORIGINAL_GROUNDED_NUMBERS = _integrity._grounded_numbers
     _ORIGINAL_ASSEMBLE_HTML = _authority.AuthorityTransformer._assemble_html
     _ORIGINAL_RAW_OPENAI_CALL = _hardening._ORIGINAL_OPENAI_CALL
@@ -379,6 +406,7 @@ def install_release_hardening(main_module) -> None:
         raise RuntimeError("premium yield hardening must be installed before Stage-3")
 
     _recovery._candidate_score = semantic_candidate_score
+    _recovery._raw_contract_complete = semantic_preflight_complete
     _integrity._grounded_numbers = grounded_numbers_with_compact_suffixes
     _authority.AuthorityTransformer._assemble_html = final_evidence_boundary_assemble_html
 
@@ -395,6 +423,7 @@ def install_release_hardening(main_module) -> None:
         "P0 Stage-3 premium release hardening installed",
         extra={
             "candidate_ranking": "PRECOMPILER_SEMANTIC_DENSITY",
+            "semantic_word_count": "EXCLUDES_MODEL_HEADINGS",
             "compact_numeric_grounding": "EXACT_K_M_B_EXPANSION",
             "final_evidence_repair": "PRE_HASH",
             "otpm_scope": "PROCESS_LOCAL_AFTER_FINAL_FAILURE",
