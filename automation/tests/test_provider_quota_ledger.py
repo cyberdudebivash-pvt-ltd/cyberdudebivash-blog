@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta, timezone
 
+import pytest
 import requests
 
 from automation import provider_quota_ledger as ledger
 
 
 def _response(*, retry_after="120", body="Rate limit reached on tokens per day (TPD)"):
+    """Build a minimal synthetic provider 429 response."""
     response = requests.Response()
     response.status_code = 429
     if retry_after is not None:
@@ -16,8 +18,9 @@ def _response(*, retry_after="120", body="Rate limit reached on tokens per day (
 
 
 def _configure_tmp(monkeypatch, tmp_path):
+    """Redirect the code-owned test constant without exposing runtime env control."""
     path = tmp_path / "provider_quota_state.json"
-    monkeypatch.setenv("CDB_PROVIDER_QUOTA_STATE", str(path))
+    monkeypatch.setattr(ledger, "_STATE_FILE", path)
     for key in ledger._TELEMETRY:
         ledger._TELEMETRY[key] = 0
     return path
@@ -33,6 +36,25 @@ def test_tpd_429_persists_nonsecret_model_cooldown(monkeypatch, tmp_path):
     assert "api_key" not in text.lower()
     assert "authorization" not in text.lower()
     assert "prompt" not in text.lower()
+
+
+def test_runtime_environment_cannot_redirect_production_state(monkeypatch, tmp_path):
+    path = _configure_tmp(monkeypatch, tmp_path)
+    attacker_target = tmp_path / "attacker-controlled.json"
+    monkeypatch.setenv("CDB_PROVIDER_QUOTA_STATE", str(attacker_target))
+    ledger.record_429("groq", "model-a", _response(retry_after="120"))
+    assert path.is_file()
+    assert not attacker_target.exists()
+
+
+def test_symlink_state_target_is_rejected(monkeypatch, tmp_path):
+    real_target = tmp_path / "real.json"
+    real_target.write_text("{}", encoding="utf-8")
+    link = tmp_path / "provider_quota_state.json"
+    link.symlink_to(real_target)
+    monkeypatch.setattr(ledger, "_STATE_FILE", link)
+    with pytest.raises(RuntimeError, match="must not be a symlink"):
+        ledger._load_state()
 
 
 def test_tpm_is_classified_independently(monkeypatch, tmp_path):
@@ -99,6 +121,32 @@ def test_durable_skip_does_not_call_inner_provider(monkeypatch, tmp_path):
     assert called == []
     assert attempts[0]["error"] == "durable_provider_cooldown_active"
     assert ledger.telemetry_snapshot()["durable_provider_skips"] == 1
+
+
+def test_provider_alias_cannot_bypass_url_derived_cooldown(monkeypatch, tmp_path):
+    _configure_tmp(monkeypatch, tmp_path)
+    ledger.record_429("groq", "model-a", _response(retry_after="120"))
+    called = []
+    monkeypatch.setattr(ledger, "_ORIGINAL_TRY_PROVIDER", lambda **kwargs: called.append(kwargs) or "unexpected")
+    attempts = []
+
+    result = ledger.durable_try_provider(
+        name="groq-primary-alias",
+        url="https://api.groq.com/openai/v1/chat/completions",
+        api_key="secret",
+        model="model-a",
+        prompt="x",
+        max_tokens=100,
+        extra_headers={},
+        sleep_fn=lambda _seconds: None,
+        attempts=attempts,
+    )
+
+    assert result is None
+    assert called == []
+    assert attempts[0]["provider"] == "groq-primary-alias"
+    assert attempts[0]["quota_provider"] == "groq"
+    assert attempts[0]["error"] == "durable_provider_cooldown_active"
 
 
 def test_unavailable_model_does_not_block_other_model(monkeypatch, tmp_path):
@@ -184,7 +232,16 @@ def test_retry_after_is_bounded(monkeypatch, tmp_path):
     assert entry["retry_after_seconds"] == ledger._MAX_RETRY_AFTER_SECONDS
 
 
-def test_provider_mapping_is_host_scoped():
+def test_provider_mapping_is_exact_host_scoped():
     assert ledger._provider_for_url("https://api.groq.com/openai/v1/chat/completions") == "groq"
     assert ledger._provider_for_url("https://openrouter.ai/api/v1/chat/completions") == "openrouter"
     assert ledger._provider_for_url("https://api.deepseek.com/chat/completions") == "deepseek"
+    assert ledger._provider_for_url("https://api.groq.com./openai/v1/chat/completions") == "groq"
+
+
+def test_provider_mapping_rejects_hostname_confusion_and_userinfo_spoofs():
+    assert ledger._provider_for_url("https://evilgroq.com/openai/v1/chat/completions") == "evilgroq.com"
+    assert ledger._provider_for_url("https://groq.com.attacker.invalid/openai/v1/chat/completions") == "groq.com.attacker.invalid"
+    assert ledger._provider_for_url("https://api.groq.com.evil.invalid/openai/v1/chat/completions") == "api.groq.com.evil.invalid"
+    assert ledger._provider_for_url("https://api.deepseek.com.evil.invalid/chat/completions") == "api.deepseek.com.evil.invalid"
+    assert ledger._provider_for_url("https://api.groq.com@evil.invalid/openai/v1/chat/completions") == "evil.invalid"
