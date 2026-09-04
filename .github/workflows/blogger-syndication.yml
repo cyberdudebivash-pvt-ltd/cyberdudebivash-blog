@@ -114,7 +114,6 @@ jobs:
           MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '5' }}
           CDB_FACTORY_RETRY_QUEUE_LIMIT: "500"
           CDB_FACTORY_RETRY_ATTEMPTS: "5"
-          CDB_PROVIDER_QUOTA_STATE: "data/provider_quota_state.json"
         run: |
           DRY_RUN_FLAG=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
@@ -153,8 +152,11 @@ jobs:
           git add data/published_posts.json || true
           # P0 Stage-2: durable provider/model cooldown metadata contains no
           # credentials, prompts or response bodies and must survive the next
-          # scheduled Actions process.
-          git add data/provider_quota_state.json || true
+          # scheduled Actions process. Missing state is normal when no provider
+          # supplied a persistable cooldown; an existing file must stage cleanly.
+          if [ -f data/provider_quota_state.json ]; then
+            git add data/provider_quota_state.json
+          fi
           git add logs/*.json || true
 
           if git diff --cached --quiet; then
