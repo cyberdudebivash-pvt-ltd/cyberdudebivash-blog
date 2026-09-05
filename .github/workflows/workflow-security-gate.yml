@@ -1,0 +1,120 @@
+name: "P0 Workflow Security Gate"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: workflow-security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: "Validate all workflow security invariants"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: "Enforce workflow policy"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          workflow_dir = Path('.github/workflows')
+          files = sorted([*workflow_dir.glob('*.yml'), *workflow_dir.glob('*.yaml')])
+          failures = []
+          warnings = []
+
+          content_writers = {
+              'ai-security-intel.yml',
+              'blogger-syndication.yml',
+              'cve-pages.yml',
+              'generate-rss.yml',
+              'intelligence-hub.yml',
+              'sentinel-apex.yml',
+          }
+          actions_writers = {'freshness-check.yml'}
+
+          for path in files:
+              text = path.read_text(encoding='utf-8')
+              name = path.name
+
+              if re.search(r'(?m)^\s*pull_request_target\s*:', text):
+                  failures.append(f'{name}: pull_request_target is forbidden')
+              if re.search(r'(?m)^\s*permissions\s*:\s*write-all\s*$', text):
+                  failures.append(f'{name}: permissions: write-all is forbidden')
+              if not re.search(r'(?m)^permissions\s*:', text):
+                  failures.append(f'{name}: explicit top-level permissions block is required')
+
+              if re.search(r'(?m)^\s*contents\s*:\s*write\s*$', text) and name not in content_writers:
+                  failures.append(f'{name}: contents:write is not in the approved writer allowlist')
+              if re.search(r'(?m)^\s*actions\s*:\s*write\s*$', text) and name not in actions_writers:
+                  failures.append(f'{name}: actions:write is not in the approved writer allowlist')
+
+              for m in re.finditer(r'(?m)^\s*retention-days\s*:\s*(\d+)\s*$', text):
+                  days = int(m.group(1))
+                  if days > 7:
+                      failures.append(f'{name}: retention-days={days} exceeds seven-day production policy')
+
+              if 'jobs:' in text and 'timeout-minutes:' not in text:
+                  failures.append(f'{name}: every workflow must define bounded job timeout(s)')
+
+              if re.search(r'actions/checkout@v[1-4]\b', text):
+                  warnings.append(f'{name}: checkout action is below v5; migrate in runtime-modernization tranche')
+              if re.search(r'actions/setup-python@v[1-5]\b', text):
+                  warnings.append(f'{name}: setup-python action is below v6')
+              if re.search(r'actions/setup-node@v[1-4]\b', text):
+                  warnings.append(f'{name}: setup-node action is below v5')
+              if re.search(r"node-version:\s*['\"]?20['\"]?", text):
+                  warnings.append(f'{name}: Node 20 workload runtime remains; migrate after compatibility certification')
+
+              # Catch direct secret interpolation into shell commands. Secrets
+              # belong in step env mappings so shells receive values as data,
+              # not as command-source text.
+              lines = text.splitlines()
+              in_run = False
+              run_indent = None
+              for idx, line in enumerate(lines, 1):
+                  stripped = line.lstrip()
+                  indent = len(line) - len(stripped)
+                  if re.match(r'^run\s*:\s*[|>]?', stripped):
+                      in_run = True
+                      run_indent = indent
+                  elif in_run and stripped and indent <= (run_indent or 0) and not stripped.startswith('#'):
+                      in_run = False
+                      run_indent = None
+                  if in_run and '${{ secrets.' in line:
+                      failures.append(f'{name}:{idx}: direct secrets interpolation inside run block is forbidden')
+
+          print(f'Workflows inspected: {len(files)}')
+          for warning in warnings:
+              print(f'::warning::{warning}')
+          if failures:
+              for failure in failures:
+                  print(f'::error::{failure}')
+              print(f'Workflow security policy FAILED with {len(failures)} violation(s).')
+              sys.exit(1)
+          print('Workflow security policy PASS: critical invariants satisfied across every workflow.')
+          PY
