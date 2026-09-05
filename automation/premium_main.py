@@ -6,6 +6,7 @@ import sys
 
 from . import main as _main
 from .cti_dossier_presentation import install_cti_dossier_presentation
+from .cti_evidence_convergence import install_cti_evidence_convergence
 from .premium_evidence_compiler import install_premium_evidence_compiler_overrides
 from .premium_factory_throughput import install_factory_throughput_overrides
 from .premium_incident_recovery import install_incident_recovery_overrides
@@ -27,9 +28,11 @@ def main() -> int:
     # Stage-2 installs the durable quota ledger and deterministic evidence
     # compiler after the legacy generation/runtime layers. Stage-3 reconciles
     # final evidence language and provider capability against the complete live
-    # runtime graph. CTI Dossier v4 installs strictly after Stage-3: it changes
-    # presentation only, then the normal transform path computes the exact
-    # artifact hash over those final bytes before Blogger publication/fetch-back.
+    # runtime graph. CTI Dossier v5 installs strictly after Stage-3. The v6
+    # evidence-convergence layer then wraps the complete dossier bytes to remove
+    # legacy nested duplicate analyst sections and repair command metadata only
+    # from structured evidence already present. The normal transform path hashes
+    # those final bytes before Blogger publication/fetch-back verification.
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
@@ -40,6 +43,7 @@ def main() -> int:
     install_premium_evidence_compiler_overrides(_main)
     install_release_hardening(_main)
     install_cti_dossier_presentation(_main)
+    install_cti_evidence_convergence(_main)
     return _main.main()
 
 
