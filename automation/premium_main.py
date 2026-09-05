@@ -10,6 +10,7 @@ from .cti_evidence_convergence import install_cti_evidence_convergence
 from .cti_evidence_convergence_v7 import install_cti_evidence_convergence_v7
 from .generation_evidence_admission import install_generation_evidence_admission
 from .premium_capacity_recovery import install_premium_capacity_recovery
+from .premium_capacity_runtime_binding import install_capacity_runtime_binding_fix
 from .premium_evidence_compiler import install_premium_evidence_compiler_overrides
 from .premium_factory_throughput import install_factory_throughput_overrides
 from .premium_incident_recovery import install_incident_recovery_overrides
@@ -36,9 +37,11 @@ def main() -> int:
     # function marker so the historical v5/v6 wrapper-name collision cannot
     # suppress convergence. Stage-4/v8 binds active article context to provider
     # candidate selection and rejects unsupported high-impact claims. Stage-5/v9
-    # installs last and adds bounded <=900-token continuation recovery for
-    # short-capability Groq/Qwen models; acceptance still flows through the
-    # already-installed v8 evidence gate and unchanged semantic/public floors.
+    # installs bounded <=900-token continuation recovery. v10 then rebinds that
+    # recovery wrapper around the ACTUAL authority_transformer.call_llm consumer,
+    # preserving Stage-4 as the inner evidence-admission layer. This final bind
+    # closes the Python function-alias bug proven by production run #8623, where
+    # v9 logged as installed but could never execute.
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
@@ -53,6 +56,7 @@ def main() -> int:
     install_cti_evidence_convergence_v7(_main)
     install_generation_evidence_admission(_main)
     install_premium_capacity_recovery(_main)
+    install_capacity_runtime_binding_fix()
     return _main.main()
 
 
