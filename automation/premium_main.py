@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 
 from . import main as _main
+from .cti_dossier_presentation import install_cti_dossier_presentation
 from .premium_evidence_compiler import install_premium_evidence_compiler_overrides
 from .premium_factory_throughput import install_factory_throughput_overrides
 from .premium_incident_recovery import install_incident_recovery_overrides
@@ -24,11 +25,11 @@ def main() -> int:
     # snapshots that active runtime into the production transformer/publisher.
     #
     # Stage-2 installs the durable quota ledger and deterministic evidence
-    # compiler after the legacy generation/runtime layers. Stage-3 is strictly
-    # last so it can reconcile fallback ranking, final pre-hash evidence
-    # language, compact numeric grounding, and observed provider capability
-    # hints against the complete live runtime graph without replacing ReportX,
-    # publication integrity, artifact hashing, or Blogger fetch-back.
+    # compiler after the legacy generation/runtime layers. Stage-3 reconciles
+    # final evidence language and provider capability against the complete live
+    # runtime graph. CTI Dossier v4 installs strictly after Stage-3: it changes
+    # presentation only, then the normal transform path computes the exact
+    # artifact hash over those final bytes before Blogger publication/fetch-back.
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
@@ -38,6 +39,7 @@ def main() -> int:
     install_provider_quota_ledger()
     install_premium_evidence_compiler_overrides(_main)
     install_release_hardening(_main)
+    install_cti_dossier_presentation(_main)
     return _main.main()
 
 
