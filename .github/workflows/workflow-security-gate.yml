@@ -56,6 +56,7 @@ jobs:
               'sentinel-apex.yml',
           }
           actions_writers = {'freshness-check.yml'}
+          secret_expression_prefix = '$' + '{{ secrets.'
 
           for path in files:
               text = path.read_text(encoding='utf-8')
@@ -92,7 +93,8 @@ jobs:
 
               # Catch direct secret interpolation into shell commands. Secrets
               # belong in step env mappings so shells receive values as data,
-              # not as command-source text.
+              # not as command-source text. The marker is assembled above so
+              # GitHub's workflow expression parser cannot consume it first.
               lines = text.splitlines()
               in_run = False
               run_indent = None
@@ -105,7 +107,7 @@ jobs:
                   elif in_run and stripped and indent <= (run_indent or 0) and not stripped.startswith('#'):
                       in_run = False
                       run_indent = None
-                  if in_run and '${{ secrets.' in line:
+                  if in_run and secret_expression_prefix in line:
                       failures.append(f'{name}:{idx}: direct secrets interpolation inside run block is forbidden')
 
           print(f'Workflows inspected: {len(files)}')
