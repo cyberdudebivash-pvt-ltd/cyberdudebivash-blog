@@ -7,6 +7,10 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'api/**'
+      - 'automation/**'
+      - 'lib/**'
+      - 'scripts/**'
+      - 'Sentinel-APEX/**'
       - 'fetch-live-intel.js'
       - 'generate-rss.js'
       - '.github/workflows/**'
@@ -16,6 +20,10 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'api/**'
+      - 'automation/**'
+      - 'lib/**'
+      - 'scripts/**'
+      - 'Sentinel-APEX/**'
       - 'fetch-live-intel.js'
       - 'generate-rss.js'
       - '.github/workflows/**'
@@ -58,10 +66,14 @@ jobs:
           npm ci --ignore-scripts --no-fund --legacy-peer-deps
           npm audit --omit=dev --audit-level=critical
 
-      - name: "🔍 Secret Exposure Gate"
+      - name: "🔍 Production Secret Exposure Gate"
         shell: bash
         run: |
           set -euo pipefail
+          # Synthetic credential-shaped fixtures are intentionally allowed only
+          # inside test trees. Production/runtime/workflow/source surfaces remain
+          # fail-closed. This prevents the exact false positive found on PR #178
+          # without teaching the gate to ignore any real production credential.
           PATTERNS=(
             'sk_live_[A-Za-z0-9]+'
             'AKIA[A-Z0-9]{16}'
@@ -74,13 +86,26 @@ jobs:
           for pattern in "${PATTERNS[@]}"; do
             while IFS= read -r match; do
               [ -z "$match" ] && continue
-              echo "::error title=Potential Secret Exposure::Tracked content matched a credential/private-key signature."
+              echo "::error title=Potential Secret Exposure::Tracked production content matched a credential/private-key signature."
               echo "$match" | sed -E 's/([A-Za-z0-9_\/-]{6})[A-Za-z0-9_\/-]+/\1[REDACTED]/g'
               FOUND=1
-            done < <(git grep -nE "$pattern" -- ':!*.md' ':!docs/**' ':!.env.example' 2>/dev/null || true)
+            done < <(
+              git grep -nE "$pattern" -- \
+                ':!*.md' \
+                ':!docs/**' \
+                ':!.env.example' \
+                ':!tests/**' \
+                ':!tests-js/**' \
+                ':!automation/tests/**' \
+                ':!**/*.test.js' \
+                ':!**/*.test.ts' \
+                ':!**/*.spec.js' \
+                ':!**/*.spec.ts' \
+                2>/dev/null || true
+            )
           done
           if [ "$FOUND" -ne 0 ]; then
-            echo "Secret exposure gate FAILED"
+            echo "Production secret exposure gate FAILED"
             exit 1
           fi
           echo "No credential/private-key signatures detected in tracked production content"
