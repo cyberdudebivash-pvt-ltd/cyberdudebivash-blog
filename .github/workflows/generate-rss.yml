@@ -7,14 +7,7 @@ on:
       - 'posts/**'
       - 'generate-rss.js'
   schedule:
-    # :09 — every 6h fire lands on an even UTC hour (0,6,12,18), inside the
-    # first-10-minutes Vercel deploy window (vercel-ignore-build.sh). Offset
-    # from :00 (and from cve-pages.yml's :05) so this schedule doesn't collide
-    # with sibling cron schedules (see sentinel-apex.yml for the incident this
-    # fixes — cve-pages.yml and generate-rss.yml previously shared "0 */6 * * *"
-    # verbatim, guaranteeing a simultaneous GitHub Actions scheduler collision
-    # every 6 hours).
-    - cron: '9 */6 * * *'   # Regenerate every 6 hours
+    - cron: '9 */6 * * *'
   workflow_dispatch:
 
 permissions:
@@ -32,15 +25,15 @@ jobs:
 
     steps:
       - name: "📥 Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "⚙️ Setup Node.js"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: "🛰 Generate RSS feed"
         run: |
@@ -54,23 +47,19 @@ jobs:
             echo "::error title=RSS Generation Failed::rss.xml was not generated"
             exit 1
           fi
-
           size=$(wc -c < rss.xml)
           if [ "$size" -lt 500 ]; then
             echo "::error title=RSS Too Small::rss.xml is only ${size} bytes — generation may have failed"
             exit 1
           fi
-
           if ! grep -q '<rss version="2.0"' rss.xml; then
             echo "::error title=RSS Invalid::rss.xml missing <rss version=\"2.0\"> declaration"
             exit 1
           fi
-
           if ! grep -q '<item>' rss.xml; then
             echo "::error title=RSS No Items::rss.xml has no <item> elements"
             exit 1
           fi
-
           item_count=$(grep -c '<item>' rss.xml)
           echo "✅ rss.xml validated: ${size} bytes, ${item_count} items"
           echo "📡 Feed: https://blog.cyberdudebivash.in/rss.xml"
@@ -93,8 +82,6 @@ jobs:
           git config user.email "bivash@cyberdudebivash.com"
           git add rss.xml
           git commit -m "🛰 [SENTINEL APEX] Auto-update rss.xml — $(date -u '+%Y-%m-%d %H:%M UTC') [skip ci]"
-
-          # Push with retry + rebase on conflict
           for i in 1 2 3; do
             git push origin main && echo "✅ Push succeeded (attempt $i)" && break
             if [ $i -lt 3 ]; then
