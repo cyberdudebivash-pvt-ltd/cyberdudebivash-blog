@@ -8,9 +8,10 @@ quota. A single 4,400-token request is therefore not a reliable recovery path.
 
 This module adds a bounded continuation rescue without lowering any public
 quality or evidence gate. It is installed after Stage-4 evidence admission so
-combined candidates are evaluated by the existing evidence-safe semantic
-contract before they can win. Short-capability Qwen models are used only for
-<=900-token continuation fragments, never as an excuse to publish a thin body.
+combined candidates are evaluated against the same semantic floors and, while
+an article is active, directly against the v8 evidence boundary. Short-capacity
+Qwen models are used only for <=900-token continuation fragments, never as an
+excuse to publish a thin body.
 """
 from __future__ import annotations
 
@@ -21,7 +22,6 @@ from typing import Callable, Optional
 from bs4 import BeautifulSoup
 
 from . import llm_client as _llm
-from . import premium_incident_recovery as _recovery
 from . import premium_provider_budget as _budget
 from . import premium_publication as _premium
 from .logger import setup_logger
@@ -49,7 +49,6 @@ def _safe_fragment_html(raw: str) -> str:
     soup = BeautifulSoup(raw or "", "html.parser")
     for node in soup(["script", "style", "iframe", "object", "embed", "form", "input", "button"]):
         node.decompose()
-    # Continuations may not create model-owned public structure or references.
     for heading in soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"]):
         label = " ".join(heading.stripped_strings).strip()
         if re.search(r"\breferences?\b", label, re.I):
@@ -65,7 +64,7 @@ def _safe_fragment_html(raw: str) -> str:
 
 
 def _semantic_metrics(content: str) -> tuple[int, int, int]:
-    """Use the active Stage-3 semantic accounting when available."""
+    """Use the Stage-3 heading-independent semantic accounting when available."""
     try:
         from . import premium_release_hardening as _release
         return _release._semantic_metrics(content)
@@ -74,9 +73,48 @@ def _semantic_metrics(content: str) -> tuple[int, int, int]:
         return _premium._word_count(content), paragraphs, list_items
 
 
+def _semantic_floor_complete(content: str) -> bool:
+    words, paragraphs, list_items = _semantic_metrics(content)
+    return (
+        words >= _premium.MIN_VISIBLE_WORDS
+        and paragraphs >= _premium.MIN_PARAGRAPHS
+        and list_items >= _premium.MIN_LIST_ITEMS
+    )
+
+
+def _active_contract_complete(content: str) -> bool:
+    """Apply unchanged semantic floors and the live v8 evidence boundary.
+
+    Do not depend on the historical ``_raw_contract_complete`` monkeypatch chain:
+    in isolated tests that symbol still means the obsolete model-heading contract,
+    while in production it is replaced several times. Stage-5 owns semantic
+    continuation acceptance explicitly and asks Stage-4's active article context
+    to certify the combined candidate whenever that context exists.
+    """
+    if not _semantic_floor_complete(content):
+        return False
+    try:
+        from . import generation_evidence_admission as _admission
+        article = _admission._CURRENT_ARTICLE.get()
+        if article is not None and _admission.evaluate_generation_evidence(article, content):
+            return False
+    except Exception as exc:
+        # Never turn a broken evidence evaluator into an allow decision when an
+        # active article context should exist. Import-only/unit contexts with no
+        # article remain governed by deterministic semantic floors.
+        try:
+            from . import generation_evidence_admission as _admission
+            if _admission._CURRENT_ARTICLE.get() is not None:
+                logger.error("Stage-5 evidence admission evaluation failed", extra={"error": str(exc)})
+                return False
+        except Exception:
+            pass
+    return True
+
+
 def _rescue_needed(content: str) -> bool:
     words, _, _ = _semantic_metrics(content)
-    return words >= MIN_RESCUE_WORDS and not _recovery._raw_contract_complete(content)
+    return words >= MIN_RESCUE_WORDS and not _active_contract_complete(content)
 
 
 def _remaining_requirement(content: str) -> tuple[int, int, int]:
@@ -90,8 +128,6 @@ def _remaining_requirement(content: str) -> tuple[int, int, int]:
 
 def _continuation_prompt(original_prompt: str, current: str, pass_index: int) -> str:
     missing_words, missing_paragraphs, missing_items = _remaining_requirement(current)
-    # Reuse the already evidence-bounded source prompt. Keep only the tail of the
-    # current candidate so the model can avoid repetition without exploding TPM.
     current_text = BeautifulSoup(current or "", "html.parser").get_text(" ", strip=True)
     tail = current_text[-3500:]
     prompt = f"""{original_prompt}
@@ -124,8 +160,7 @@ def _eligible_short_models(config) -> list[str]:
         if not model or model in seen:
             continue
         seen.add(model)
-        lower = str(model).lower()
-        if "qwen" in lower:
+        if "qwen" in str(model).lower():
             models.append(str(model))
     return models
 
@@ -142,7 +177,7 @@ def capacity_aware_premium_llm(config, prompt: str, max_tokens: int = 3000, atte
     if not result:
         return result
     content, provider = result
-    if _recovery._raw_contract_complete(content) or not _rescue_needed(content):
+    if _active_contract_complete(content) or not _rescue_needed(content):
         return result
     if not getattr(config, "groq_api_key", None):
         return result
@@ -178,11 +213,8 @@ def capacity_aware_premium_llm(config, prompt: str, max_tokens: int = 3000, atte
         if not safe_fragment:
             continue
         _RUNTIME["rescue_fragments"] += 1
-        candidate = combined + safe_fragment
-        # The active Stage-4 wrapper is intentionally consulted here. This
-        # keeps evidence admission authoritative for the combined candidate.
-        combined = candidate
-        if _recovery._raw_contract_complete(combined):
+        combined = combined + safe_fragment
+        if _active_contract_complete(combined):
             _RUNTIME["rescue_successes"] += 1
             logger.info(
                 "Premium continuation rescue reached the unchanged semantic/evidence contract",
@@ -194,8 +226,6 @@ def capacity_aware_premium_llm(config, prompt: str, max_tokens: int = 3000, atte
         "Premium continuation rescue exhausted without lowering public quality floors",
         extra={"metrics": _semantic_metrics(combined), "passes": MAX_CONTINUATION_PASSES},
     )
-    # Return the best enriched body; the unchanged downstream gates remain the
-    # final authority and will hold it if it is still below contract.
     return combined, provider
 
 
@@ -212,7 +242,7 @@ def telemetry_snapshot() -> dict:
 
 
 def install_premium_capacity_recovery(main_module) -> None:
-    """Install after Stage-4 so continuation acceptance inherits v8 evidence gates."""
+    """Install after Stage-4 so active candidate acceptance remains evidence-gated."""
     del main_module
     global _ORIGINAL_PREMIUM_LLM_CALL, _INSTALLED
     if _INSTALLED:
