@@ -8,6 +8,7 @@ from . import main as _main
 from .cti_dossier_presentation import install_cti_dossier_presentation
 from .cti_evidence_convergence import install_cti_evidence_convergence
 from .cti_evidence_convergence_v7 import install_cti_evidence_convergence_v7
+from .generation_evidence_admission import install_generation_evidence_admission
 from .premium_evidence_compiler import install_premium_evidence_compiler_overrides
 from .premium_factory_throughput import install_factory_throughput_overrides
 from .premium_incident_recovery import install_incident_recovery_overrides
@@ -30,10 +31,12 @@ def main() -> int:
     # compiler after the legacy generation/runtime layers. Stage-3 reconciles
     # final evidence language and provider capability against the complete live
     # runtime graph. CTI Dossier v5 installs strictly after Stage-3. v6 remains
-    # in the chain for backward compatibility; v7 installs last with an explicit
+    # in the chain for backward compatibility; v7 installs with an explicit
     # function marker so the historical v5/v6 wrapper-name collision cannot
-    # suppress convergence. The normal transform path hashes those final bytes
-    # before Blogger publication/fetch-back verification.
+    # suppress convergence. Stage-4/v8 installs last: it binds the active
+    # article context to provider candidate selection, rejects high-impact
+    # unsupported claims before an LLM response can win failover, and leaves all
+    # downstream evidence/compiler/hash/fetch-back controls intact.
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
@@ -46,6 +49,7 @@ def main() -> int:
     install_cti_dossier_presentation(_main)
     install_cti_evidence_convergence(_main)
     install_cti_evidence_convergence_v7(_main)
+    install_generation_evidence_admission(_main)
     return _main.main()
 
 
