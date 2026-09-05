@@ -2,17 +2,6 @@ name: "⚡ SENTINEL APEX — Intel Feed Freshness Monitor"
 
 on:
   schedule:
-    # The generator (sentinel-apex.yml) runs at :03/:33. Check ten minutes
-    # later instead of racing the writer at the same nominal cron boundary.
-    # GitHub scheduled runs may start late under load, so correctness still
-    # comes from the runtime timestamp classifier below, not from assuming
-    # exact cron time. (Minutes shifted from :10/:40 to :13/:43 — and every
-    # other scheduled workflow in this repo given its own distinct minute —
-    # after a repo-wide GitHub Actions scheduled-trigger stall on 2026-09-03
-    # caused by 6+ cron schedules clustered on :00/:15/:30/:40, which GitHub
-    # documents as high-load, delay-prone times. This watchdog is itself
-    # schedule-triggered, so during that stall it could not fire either —
-    # spreading the load reduces the chance of a repeat.)
     - cron: '13,43 * * * *'
   workflow_dispatch:
 
@@ -28,20 +17,17 @@ jobs:
   freshness-check:
     name: "Verify SENTINEL APEX runtime and intel freshness"
     runs-on: ubuntu-latest
-    # Normal healthy checks still finish in seconds. The larger ceiling is
-    # reserved for the exceptional self-heal path, which must wait for the
-    # dispatched generator to finish before deciding whether production is
-    # actually healthy or still down.
     timeout-minutes: 15
 
     steps:
       - name: "Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: "Setup Node.js 22"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "22"
 
@@ -55,29 +41,17 @@ jobs:
           CHECK_EXIT=$?
           set -e
           printf '%s\n' "$CLASSIFIER_OUTPUT"
-
           STATUS=$(printf '%s\n' "$CLASSIFIER_OUTPUT" | sed -n 's/^STATUS=//p' | tail -1)
           echo "classifier_exit=${CHECK_EXIT}" >> "$GITHUB_OUTPUT"
           echo "status=${STATUS:-UNKNOWN}" >> "$GITHUB_OUTPUT"
-
           case "$CHECK_EXIT" in
-            0)
-              echo "recovery_required=false" >> "$GITHUB_OUTPUT"
-              ;;
+            0) echo "recovery_required=false" >> "$GITHUB_OUTPUT" ;;
             1)
-              # Structural feed/monitor corruption is not evidence that the
-              # generator is down. Fail hard and deliberately DO NOT dispatch
-              # the generator, preserving the classifier's safety boundary.
               echo "recovery_required=false" >> "$GITHUB_OUTPUT"
               echo "::error title=SENTINEL APEX Monitor Integrity Failure::Freshness classifier reported monitor/feed corruption. Automatic generator recovery is intentionally suppressed."
               exit 1
               ;;
             2)
-              # A proven runtime outage is recoverable. Do not turn the whole
-              # workflow red yet: dispatch recovery, wait for it, then re-run
-              # the classifier against the new main branch state. The final
-              # workflow result must represent the post-recovery production
-              # state, not the pre-recovery incident.
               echo "recovery_required=true" >> "$GITHUB_OUTPUT"
               echo "::warning title=SENTINEL APEX Runtime Outage::Generator runtime exceeded the critical threshold. Controlled recovery is starting."
               ;;
@@ -100,82 +74,39 @@ jobs:
             const workflowId = 'sentinel-apex.yml';
             const dispatchStartedAt = Date.now();
             const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
             core.warning('Proven runtime outage detected — dispatching SENTINEL APEX recovery and waiting for a verified result.');
-
             await github.rest.actions.createWorkflowDispatch({
-              owner,
-              repo,
-              workflow_id: workflowId,
-              ref: 'main',
-              inputs: {
-                force_reset_state: 'false',
-                debug: 'true'
-              }
+              owner, repo, workflow_id: workflowId, ref: 'main',
+              inputs: { force_reset_state: 'false', debug: 'true' }
             });
-
-            // createWorkflowDispatch returns 204 with no run id. Discover only
-            // a new workflow_dispatch run created by github-actions[bot] after
-            // this dispatch began. The freshness workflow's concurrency group
-            // prevents two monitor instances from making this ambiguous.
             let recoveryRun = null;
             for (let attempt = 1; attempt <= 30; attempt++) {
               const { data } = await github.rest.actions.listWorkflowRuns({
-                owner,
-                repo,
-                workflow_id: workflowId,
-                event: 'workflow_dispatch',
-                branch: 'main',
-                per_page: 20
+                owner, repo, workflow_id: workflowId, event: 'workflow_dispatch', branch: 'main', per_page: 20
               });
-
               const candidates = data.workflow_runs
                 .filter(run => Date.parse(run.created_at) >= dispatchStartedAt - 5000)
                 .filter(run => run.actor && run.actor.login === 'github-actions[bot]')
                 .sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
-
-              if (candidates.length > 0) {
-                recoveryRun = candidates[0];
-                break;
-              }
-
+              if (candidates.length > 0) { recoveryRun = candidates[0]; break; }
               console.log(`Waiting for recovery run registration (${attempt}/30)...`);
               await sleep(3000);
             }
-
-            if (!recoveryRun) {
-              throw new Error('Recovery dispatch was accepted but no matching SENTINEL APEX workflow run appeared within 90 seconds.');
-            }
-
+            if (!recoveryRun) throw new Error('Recovery dispatch was accepted but no matching SENTINEL APEX workflow run appeared within 90 seconds.');
             core.setOutput('recovery_run_id', String(recoveryRun.id));
             core.setOutput('recovery_run_url', recoveryRun.html_url);
             console.log(`Recovery run discovered: #${recoveryRun.run_number} ${recoveryRun.html_url}`);
-
-            // The generator has a 7-minute job ceiling. Allow up to ten
-            // minutes here for queueing behind another serialized content
-            // writer plus execution. A timeout/failure remains a real red
-            // production incident; it is never converted to success.
             for (let attempt = 1; attempt <= 120; attempt++) {
-              const { data: current } = await github.rest.actions.getWorkflowRun({
-                owner,
-                repo,
-                run_id: recoveryRun.id
-              });
-
+              const { data: current } = await github.rest.actions.getWorkflowRun({ owner, repo, run_id: recoveryRun.id });
               console.log(`Recovery status: ${current.status}${current.conclusion ? ` / ${current.conclusion}` : ''}`);
-
               if (current.status === 'completed') {
                 core.setOutput('recovery_conclusion', current.conclusion || 'unknown');
-                if (current.conclusion !== 'success') {
-                  throw new Error(`SENTINEL APEX recovery run ${current.id} completed with conclusion=${current.conclusion}.`);
-                }
+                if (current.conclusion !== 'success') throw new Error(`SENTINEL APEX recovery run ${current.id} completed with conclusion=${current.conclusion}.`);
                 core.notice(`SENTINEL APEX recovery run #${current.run_number} completed successfully.`);
                 return;
               }
-
               await sleep(5000);
             }
-
             throw new Error(`Timed out waiting for SENTINEL APEX recovery run ${recoveryRun.id} to complete.`);
 
       - name: "Re-verify production after recovery"
@@ -186,22 +117,18 @@ jobs:
           echo "🔁 Recovery completed — refreshing origin/main before the final health decision"
           git fetch --depth=1 origin main
           git reset --hard origin/main
-
           set +e
           POST_OUTPUT=$(node scripts/check-intel-freshness.js live-intel.json intel-state.json 2>&1)
           POST_EXIT=$?
           set -e
           printf '%s\n' "$POST_OUTPUT"
-
           POST_STATUS=$(printf '%s\n' "$POST_OUTPUT" | sed -n 's/^STATUS=//p' | tail -1)
           echo "classifier_exit=${POST_EXIT}" >> "$GITHUB_OUTPUT"
           echo "status=${POST_STATUS:-UNKNOWN}" >> "$GITHUB_OUTPUT"
-
           if [ "$POST_EXIT" -ne 0 ]; then
             echo "::error title=SENTINEL APEX Recovery Verification Failed::Recovery workflow completed, but production freshness is still unhealthy (status=${POST_STATUS:-UNKNOWN}, exit=${POST_EXIT})."
             exit "$POST_EXIT"
           fi
-
           echo "::notice title=SENTINEL APEX Self-Healed::The runtime outage was recovered and production freshness re-verified successfully against the latest main branch."
 
       - name: "Monitor result summary"
