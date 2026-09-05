@@ -31,10 +31,14 @@ on:
       - 'package-lock.json'
       - '.github/workflows/test.yml'
       - '.github/workflows/freshness-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
   group: test-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: '22'
@@ -44,39 +48,24 @@ jobs:
     name: Jest Test Suite
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
       - name: Install locked dependencies
         run: npm ci --legacy-peer-deps
-
       - name: Check TypeScript compilation
         run: npx tsc --noEmit
-
-      # test:ci already runs Jest with --coverage. This is the canonical test
-      # execution and the only place the full Jest suite is run with coverage.
       - name: Run Jest with coverage
         run: npm run test:ci
         env:
           NODE_ENV: test
-
-      - name: Upload coverage to Codecov
-        if: success()
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage/coverage-final.json
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
-
       - name: Archive canonical coverage artifact
         if: success()
         uses: actions/upload-artifact@v4
@@ -84,52 +73,46 @@ jobs:
           name: test-results-node22
           path: coverage/
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 7
 
   build-check:
     name: Build Verification
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
       - name: Install locked dependencies
         run: npm ci --legacy-peer-deps
-
       - name: Validate production entrypoint syntax
         run: node --check fetch-live-intel.js
-
-      - name: Dependency audit (advisory)
-        continue-on-error: true
-        run: npm audit --omit=dev --audit-level=high
+      - name: Dependency audit — production critical gate
+        run: npm audit --omit=dev --audit-level=critical
 
   test-e2e:
     name: End-to-End Tests
     runs-on: ubuntu-latest
     timeout-minutes: 45
     needs: [test, build-check]
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
       - name: Install locked dependencies
         run: npm ci --legacy-peer-deps
-
       - name: Run E2E tests
         run: npm run test:e2e
         env:
@@ -140,20 +123,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: test-e2e
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
       - name: Install locked dependencies
         run: npm ci --legacy-peer-deps
-
       - name: Run governance tests
         run: npm run test:governance
         env:
@@ -164,20 +145,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     needs: test-governance
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
       - name: Install locked dependencies
         run: npm ci --legacy-peer-deps
-
       - name: Run performance tests
         run: npm run test:performance
         env:
@@ -188,20 +167,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: test-performance
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-
       - name: Install locked dependencies
         run: npm ci --legacy-peer-deps
-
       - name: Run resilience tests
         run: npm run test:resilience
         env:
@@ -212,35 +189,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [test, test-resilience]
-    permissions:
-      contents: read
-      pull-requests: write
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Reuse the coverage generated by the canonical Jest execution instead
-      # of running the complete test suite a second time. The blocking floor
-      # remains jest.config.js#coverageThreshold and has already been enforced
-      # by the upstream `test` job.
       - name: Download canonical coverage artifact
         uses: actions/download-artifact@v4
         with:
           name: test-results-node22
           path: coverage
-
       - name: Verify coverage artifact integrity
         shell: bash
         run: |
+          set -euo pipefail
           test -s coverage/coverage-final.json
           test -s coverage/lcov.info
           echo "Canonical coverage artifact is present and non-empty."
-
-      - name: Comment coverage on PR
-        if: github.event_name == 'pull_request'
-        continue-on-error: true
-        uses: romeovs/lcov-reporter-action@v0.3.1
-        with:
-          lcov-file: ./coverage/lcov.info
-          github-token: ${{ secrets.GITHUB_TOKEN }}
