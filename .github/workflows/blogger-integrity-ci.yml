@@ -10,6 +10,7 @@ on:
       - '.github/workflows/blogger-syndication.yml'
       - '.github/workflows/blogger-legacy-quality.yml'
       - '.github/workflows/blogger-integrity-ci.yml'
+      - '.github/workflows/workflow-security-gate.yml'
   pull_request:
     branches: [main]
     paths:
@@ -19,6 +20,7 @@ on:
       - '.github/workflows/blogger-syndication.yml'
       - '.github/workflows/blogger-legacy-quality.yml'
       - '.github/workflows/blogger-integrity-ci.yml'
+      - '.github/workflows/workflow-security-gate.yml'
   workflow_dispatch:
 
 permissions:
@@ -36,10 +38,12 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: "Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: pip
