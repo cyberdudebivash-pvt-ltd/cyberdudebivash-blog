@@ -26,7 +26,9 @@ def _article(**overrides):
     values = dict(
         title="Spring Ring Campaign Uses Teams Vishing, PowerShell RAT and NTLM Relay Attacks",
         labels=["Malware Research", "Threat Intelligence"],
-        source="GBHackers Security",
+        source="global_rss",
+        source_publisher="GBHackers Security",
+        cvss_score=None,
     )
     values.update(overrides)
     return SimpleNamespace(**values)
@@ -48,26 +50,53 @@ def test_dossier_renders_enterprise_command_deck_and_preserves_content():
     assert "ADVANCED CTI DOSSIER" in rendered
     assert "CDB-CTI-2026-C51BE2974378" in rendered
     assert "GBHackers Security" in rendered
+    assert "global_rss" not in rendered.split("cdbd-kpis", 1)[1].split("</div>", 7)[0]
     assert "Restrict to specific domains" in rendered
     assert "FLASH_READY" in rendered
 
 
-def test_metadata_is_derived_from_existing_evidence_and_unknown_stays_unknown():
+def test_metadata_uses_publisher_and_existing_severity_evidence():
     rendered = decorate_cti_dossier(BASE_HTML, _article(), _context())
     assert ">HIGH<" in rendered
     assert ">MEDIUM<" in rendered
+    assert ">GBHackers Security<" in rendered
 
+
+def test_cvss_is_canonical_severity_when_structured():
+    rendered = decorate_cti_dossier(BASE_HTML, _article(cvss_score=9.8), _context())
+    assert ">CRITICAL<" in rendered
+
+
+def test_unknown_states_remain_explicit_and_no_compliance_claims():
     no_claim_html = "<h3>Executive Summary</h3><p>No risk classification is asserted.</p>"
     unknown = decorate_cti_dossier(
         no_claim_html,
-        _article(source=None),
+        _article(source=None, source_publisher=None),
         _context(report_id=None, certification_status=None),
     )
     assert ">UNSPECIFIED<" in unknown
+    assert ">NOT ASSIGNED<" in unknown
     assert "NOT EXPOSED" in unknown
     assert ">CRITICAL<" not in unknown
     assert "SOC 2 CERTIFIED" not in unknown.upper()
     assert "SOC 2 COMPLIANT" not in unknown.upper()
+
+
+def test_duplicate_canonical_sections_converge_to_later_reportx_version():
+    html = """
+    <h3>Executive Summary</h3><p>first summary</p>
+    <h3>MITRE ATT&amp;CK Assessment</h3><p>speculative mapping</p>
+    <h3>Technical Analysis</h3><p>middle</p>
+    <h3>MITRE ATT&amp;CK Assessment</h3><p>Not established in cited evidence.</p>
+    <h3>Executive Summary</h3><p>canonical summary</p>
+    """
+    rendered = decorate_cti_dossier(html, _article(), _context())
+    assert "speculative mapping" not in rendered
+    assert "first summary" not in rendered
+    assert "Not established in cited evidence." in rendered
+    assert "canonical summary" in rendered
+    assert rendered.count('<h3 class="cdbd-section-title" id="mitre-att-ck-assessment">MITRE ATT&amp;CK Assessment</h3>') == 1
+    assert rendered.count('<h3 class="cdbd-section-title" id="executive-summary">Executive Summary</h3>') == 1
 
 
 def test_dossier_is_idempotent():
