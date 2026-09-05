@@ -16,6 +16,7 @@ from .premium_factory_throughput import install_factory_throughput_overrides
 from .premium_incident_recovery import install_incident_recovery_overrides
 from .premium_provider_budget import install_provider_budget_overrides
 from .premium_publication import install_runtime_overrides
+from .premium_quota_deferral_v12 import install_quota_deferral_v12
 from .premium_quota_scheduler_v11 import install_quota_aware_scheduler_v11
 from .premium_release_hardening import install_release_hardening
 from .premium_yield_contract_guard import install_yield_contract_guard
@@ -40,10 +41,12 @@ def main() -> int:
     # candidate selection and rejects unsupported high-impact claims. Stage-5/v9
     # installs bounded <=900-token continuation recovery. v10 rebinds that
     # recovery wrapper around the ACTUAL authority_transformer.call_llm consumer.
-    # v11 installs last: it reserves 1,000-OTPM Qwen models for <=900-token chunk
-    # work, honors real Retry-After pacing, and can seed a bounded chunked report
-    # when long-form providers are unavailable. Stage-4 remains the evidence-gated
-    # inner layer and every combined candidate still faces unchanged public floors.
+    # v11 installs last on the generation path: it reserves 1,000-OTPM Qwen
+    # models for <=900-token chunk work, honors real Retry-After pacing, and can
+    # seed a bounded chunked report when long-form providers are unavailable.
+    # v12 installs after v11 on run-status semantics only: a provider-declared
+    # active quota reset window becomes DEGRADED/DEFERRED instead of a false
+    # systemic pipeline failure, while evidence and publication gates stay hard.
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
@@ -60,6 +63,7 @@ def main() -> int:
     install_premium_capacity_recovery(_main)
     install_capacity_runtime_binding_fix()
     install_quota_aware_scheduler_v11(_main)
+    install_quota_deferral_v12(_main)
     return _main.main()
 
 
