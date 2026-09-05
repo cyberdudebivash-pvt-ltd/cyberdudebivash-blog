@@ -1,14 +1,5 @@
 name: "🛡️ SENTINEL APEX — Continuous Assurance"
 
-# Runs scripts/assure.sh (ECAP v1) — the same orchestration entry point a
-# developer runs locally before pushing. This is additive alongside, not a
-# replacement for, the existing path-scoped workflows
-# (intelligence-engine-ci.yml, report-renderer-ci.yml,
-# detection-engine-node-ci.yml), which stay fast and narrowly triggered for
-# quick per-area feedback. This workflow is the comprehensive pass: every
-# suite plus the quality gate and EICF v1 certification together, which
-# nothing previously ran in CI at all.
-
 on:
   push:
     branches: [main]
@@ -17,6 +8,8 @@ on:
       - 'tests-js/**'
       - 'fetch-live-intel.js'
       - 'scripts/assure.sh'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/continuous-assurance.yml'
   pull_request:
     paths:
@@ -24,6 +17,8 @@ on:
       - 'tests-js/**'
       - 'fetch-live-intel.js'
       - 'scripts/assure.sh'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/continuous-assurance.yml'
   workflow_dispatch:
 
@@ -42,27 +37,34 @@ jobs:
 
     steps:
       - name: "📥 Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: "🐍 Set up Python"
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: 'pip'
+          cache-dependency-path: requirements.txt
 
       - name: "🟢 Set up Node"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: "📦 Install Python dependencies"
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest
 
       - name: "📦 Install Node dependencies"
-        run: npm ci --no-audit --no-fund
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: "🔒 Production dependency critical-vulnerability gate"
+        run: npm audit --omit=dev --audit-level=critical
 
       - name: "🛡️ Run scripts/assure.sh (all stages)"
         run: bash scripts/assure.sh

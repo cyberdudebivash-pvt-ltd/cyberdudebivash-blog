@@ -7,10 +7,28 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'api/**'
+      - 'automation/**'
+      - 'lib/**'
+      - 'scripts/**'
+      - 'Sentinel-APEX/**'
       - 'fetch-live-intel.js'
       - 'generate-rss.js'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'api/**'
+      - 'automation/**'
+      - 'lib/**'
+      - 'scripts/**'
+      - 'Sentinel-APEX/**'
+      - 'fetch-live-intel.js'
+      - 'generate-rss.js'
+      - '.github/workflows/**'
   schedule:
-    - cron: '39 6 * * 1'   # Every Monday at 06:39 UTC (was 06:00 — see sentinel-apex.yml incident note)
+    - cron: '39 6 * * 1'
   workflow_dispatch:
 
 permissions:
@@ -24,111 +42,101 @@ jobs:
   security-audit:
     name: "npm audit + Security Validation"
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
 
     steps:
       - name: "📥 Checkout repository"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: "⚙️ Setup Node.js"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
-      - name: "🔒 npm audit — Critical vulnerabilities only"
+      - name: "🔒 npm audit — production critical vulnerabilities"
         run: |
-          echo "🔒 SENTINEL APEX Security Audit — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-
           if [ ! -f "package.json" ]; then
-            echo "ℹ️  No package.json found — static site, skipping npm audit"
+            echo "No package.json found — dependency audit not applicable"
             exit 0
           fi
+          npm ci --ignore-scripts --no-fund --legacy-peer-deps
+          npm audit --omit=dev --audit-level=critical
 
-          npm ci --ignore-scripts --no-fund --legacy-peer-deps 2>&1 | grep -v "deprecated" | tail -5
-          echo ""
-          echo "=== npm audit (critical only) ==="
-          npm audit --audit-level=critical --json 2>/dev/null | node -e "
-            const d = JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
-            const vulns = d.vulnerabilities || {};
-            const critical = Object.values(vulns).filter(v => v.severity === 'critical');
-
-            if (critical.length > 0) {
-              console.error('❌ FAIL: ' + critical.length + ' CRITICAL vulnerabilities found:');
-              critical.forEach(v => {
-                console.error('  - ' + v.name + ' [CRITICAL]');
-                console.error('    Fix: ' + (v.fixAvailable ? 'Available' : 'No fix available'));
-              });
-              process.exit(1);
-            } else {
-              console.log('✅ No CRITICAL vulnerabilities found');
-              const high = Object.values(vulns).filter(v => v.severity === 'high');
-              const moderate = Object.values(vulns).filter(v => v.severity === 'moderate');
-              const low = Object.values(vulns).filter(v => v.severity === 'low');
-              if (high.length > 0) console.log('⚠️  ' + high.length + ' high-severity (in dev deps, monitoring)');
-              if (moderate.length > 0) console.log('ℹ️  ' + moderate.length + ' moderate-severity (acceptable in dev)');
-              if (low.length > 0) console.log('ℹ️  ' + low.length + ' low-severity');
-            }
-          " || exit 1
-
-      - name: "🔍 Secret Exposure Check"
+      - name: "🔍 Production Secret Exposure Gate"
+        shell: bash
         run: |
-          echo "🔍 Checking for accidentally committed secrets..."
-
-          # Check for common secret patterns in committed files (not .env files)
+          set -euo pipefail
+          # Synthetic credential-shaped fixtures are intentionally allowed only
+          # inside test trees. Production/runtime/workflow/source surfaces remain
+          # fail-closed. This prevents the exact false positive found on PR #178
+          # without teaching the gate to ignore any real production credential.
           PATTERNS=(
-            "sk_live_"
-            "sk_test_"
-            "AKIA[A-Z0-9]{16}"
-            "ghp_[A-Za-z0-9]{36}"
-            "xoxb-[0-9]{11}"
+            'sk_live_[A-Za-z0-9]+'
+            'AKIA[A-Z0-9]{16}'
+            'ghp_[A-Za-z0-9]{36}'
+            'github_pat_[A-Za-z0-9_]+'
+            'xox[baprs]-[A-Za-z0-9-]+'
+            '-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----'
           )
-
           FOUND=0
           for pattern in "${PATTERNS[@]}"; do
-            if git grep -rE "$pattern" -- '*.js' '*.html' '*.json' '*.yml' '*.yaml' 2>/dev/null | grep -v "node_modules" | grep -v ".git" | grep -v "# example" | head -5; then
-              echo "::warning title=Potential Secret Exposure::Pattern '$pattern' found in tracked files. Review above matches."
+            while IFS= read -r match; do
+              [ -z "$match" ] && continue
+              echo "::error title=Potential Secret Exposure::Tracked production content matched a credential/private-key signature."
+              echo "$match" | sed -E 's/([A-Za-z0-9_\/-]{6})[A-Za-z0-9_\/-]+/\1[REDACTED]/g'
               FOUND=1
-            fi
+            done < <(
+              git grep -nE "$pattern" -- \
+                ':!*.md' \
+                ':!docs/**' \
+                ':!.env.example' \
+                ':!tests/**' \
+                ':!tests-js/**' \
+                ':!automation/tests/**' \
+                ':!**/*.test.js' \
+                ':!**/*.test.ts' \
+                ':!**/*.spec.js' \
+                ':!**/*.spec.ts' \
+                2>/dev/null || true
+            )
           done
-
-          if [ "$FOUND" -eq 0 ]; then
-            echo "✅ No secret patterns detected in tracked files"
+          if [ "$FOUND" -ne 0 ]; then
+            echo "Production secret exposure gate FAILED"
+            exit 1
           fi
+          echo "No credential/private-key signatures detected in tracked production content"
 
       - name: "🔐 Security Headers Validation"
         run: |
-          echo "🔐 Validating vercel.json security headers..."
-
           if [ ! -f "vercel.json" ]; then
-            echo "⚠️  vercel.json not found — cannot validate headers"
+            echo "::warning::vercel.json not found — static deployment header validation not applicable here"
             exit 0
           fi
-
-          node -e "
-            const v = require('./vercel.json');
-            const headers = v.headers || [];
-            const required = ['Strict-Transport-Security','X-Frame-Options','X-Content-Type-Options','Referrer-Policy'];
-            const allHeaders = headers.flatMap(h => (h.headers||[]).map(x => x.key));
-            const missing = required.filter(r => !allHeaders.includes(r));
-            if (missing.length > 0) {
-              console.warn('⚠️  Missing security headers: ' + missing.join(', '));
-            } else {
-              console.log('✅ All required security headers present: ' + required.join(', '));
-            }
-            const hasHSTS = allHeaders.includes('Strict-Transport-Security');
-            console.log('HSTS:             ' + (hasHSTS ? '✅' : '❌'));
-            console.log('X-Frame-Options:  ' + (allHeaders.includes('X-Frame-Options') ? '✅' : '❌'));
-            console.log('CSP present:      ' + (allHeaders.includes('Content-Security-Policy') ? '✅' : '❌'));
-          "
+          node - <<'NODE'
+          const v = require('./vercel.json');
+          const headers = v.headers || [];
+          const all = new Set(headers.flatMap(h => (h.headers || []).map(x => x.key)));
+          const required = [
+            'Strict-Transport-Security',
+            'X-Content-Type-Options',
+            'Referrer-Policy',
+            'Content-Security-Policy'
+          ];
+          const missing = required.filter(x => !all.has(x));
+          if (missing.length) {
+            console.error('Missing required production security headers: ' + missing.join(', '));
+            process.exit(1);
+          }
+          console.log('Required production security headers are present');
+          NODE
 
       - name: "📋 Audit Summary"
         if: always()
         run: |
-          echo "════════════════════════════════════"
-          echo "🔒 SENTINEL APEX Security Audit Done"
-          echo "Timestamp : $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-          echo "Trigger   : ${{ github.event_name }}"
-          echo "════════════════════════════════════"
+          echo "SENTINEL APEX security audit completed"
+          echo "Timestamp: $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          echo "Trigger: ${{ github.event_name }}"
