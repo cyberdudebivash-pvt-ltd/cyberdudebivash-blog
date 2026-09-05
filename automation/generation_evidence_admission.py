@@ -1,15 +1,11 @@
 """Generation-time evidence admission gate for premium CTI narratives.
 
-This stage runs while the LLM candidate is still being selected. It prevents a
-semantically rich but evidence-unsafe candidate from winning provider failover,
-then rejects the final candidate if every provider crossed a high-impact truth
-boundary. Downstream ReportX, publication-integrity, compiler, dossier and
-fetch-back controls remain unchanged.
-
-The gate is deliberately narrow. It governs only claim classes for which the
-pipeline already has deterministic structured truth: exploitation, CISA KEV,
-patch/remediation state, ransomware-claim breach status, explicit ATT&CK IDs,
-and unsupported predictive forecasts. It never manufactures a replacement fact.
+An LLM candidate must satisfy the existing semantic generation contract *and*
+this narrow evidence contract before it can win provider failover. The gate
+uses only truth states already owned by ReportContext/DiscoveredArticle and
+never synthesizes replacement facts. ReportX, the deterministic compiler,
+publication integrity, artifact hashing and Blogger fetch-back remain the
+independent downstream authorities.
 """
 from __future__ import annotations
 
@@ -17,7 +13,7 @@ import contextvars
 import hashlib
 import re
 from collections import Counter
-from typing import Any, Callable, Optional
+from typing import Callable, Optional
 
 from bs4 import BeautifulSoup, Tag
 
@@ -42,7 +38,6 @@ _CURRENT_ARTICLE: contextvars.ContextVar[Optional[DiscoveredArticle]] = contextv
 _CURRENT_TELEMETRY: contextvars.ContextVar[Optional[dict]] = contextvars.ContextVar(
     "cdb_generation_admission_telemetry", default=None
 )
-
 _ORIGINAL_TRANSFORM: Optional[Callable] = None
 _ORIGINAL_CALL_LLM: Optional[Callable] = None
 _ORIGINAL_COMPLETE: Optional[Callable] = None
@@ -50,15 +45,21 @@ _ORIGINAL_SCORE: Optional[Callable] = None
 
 _ATTACK_ID_RE = re.compile(r"\bT\d{4}(?:\.\d{3})?\b", re.I)
 _KEV_LISTED_RE = re.compile(
-    r"\b(?:is|was|has been|already|currently)?\s*(?:listed|included|added)\s+(?:in|to|on)\s+(?:the\s+)?(?:CISA\s+)?(?:Known Exploited Vulnerabilities|KEV)\b",
+    r"\b(?:is|was|has been|already|currently)?\s*(?:listed|included|added)\s+"
+    r"(?:in|to|on)\s+(?:the\s+)?(?:CISA\s+)?(?:Known Exploited Vulnerabilities|KEV)\b",
     re.I,
 )
 _KEV_NOT_LISTED_RE = re.compile(
-    r"\b(?:is|was|has been)?\s*(?:not|isn.t|wasn.t)\s+(?:listed|included|added)\s+(?:in|to|on)\s+(?:the\s+)?(?:CISA\s+)?(?:Known Exploited Vulnerabilities|KEV)\b",
+    r"\b(?:is|was|has been)?\s*(?:not|isn.t|wasn.t)\s+(?:listed|included|added)\s+"
+    r"(?:in|to|on)\s+(?:the\s+)?(?:CISA\s+)?(?:Known Exploited Vulnerabilities|KEV)\b",
     re.I,
 )
+# Covers both "upgrade to version 2.8.175" and the live failure shape
+# "upgrade GeoDirectory to version 2.8.175" without treating a bare version
+# mention as remediation evidence.
 _SPECIFIC_PATCH_RE = re.compile(
-    r"\b(?:upgrade|update|patch|move)\s+(?:the\s+[^.]{0,35}\s+)?(?:to|onto)\s+(?:version|release)?\s*v?\d+(?:\.\d+){1,4}\b",
+    r"\b(?:upgrade|update|patch|move)\b[^.?!\n]{0,70}\b(?:to|onto)\s+"
+    r"(?:[A-Za-z0-9_.+\-]+\s+){0,5}(?:version|release)?\s*v?\d+(?:\.\d+){1,4}\b",
     re.I,
 )
 _FORECAST_PREDICTION_RE = re.compile(
@@ -75,7 +76,7 @@ _SAFE_FORECAST_RE = re.compile(
 
 
 def _source_text(article: DiscoveredArticle) -> str:
-    return " ".join(str(v or "") for v in (article.title, article.summary, article.full_content))
+    return " ".join(str(value or "") for value in (article.title, article.summary, article.full_content))
 
 
 def _plain(html: str) -> str:
@@ -103,7 +104,7 @@ def _forecast_text(html: str) -> str:
     return ""
 
 
-def _has_unnegated_pattern(text: str, patterns: tuple[str, ...]) -> bool:
+def _has_unnegated(text: str, patterns: tuple[str, ...]) -> bool:
     for pattern in patterns:
         for match in re.finditer(pattern, text, re.I):
             if not _is_negated_immediately_before(text, match.start()):
@@ -112,7 +113,7 @@ def _has_unnegated_pattern(text: str, patterns: tuple[str, ...]) -> bool:
 
 
 def evaluate_generation_evidence(article: DiscoveredArticle, html: str) -> tuple[str, ...]:
-    """Return deterministic high-impact evidence-boundary violations."""
+    """Return deterministic high-impact admission failures for one LLM body."""
     if not html:
         return ("EMPTY_GENERATION",)
 
@@ -121,21 +122,14 @@ def evaluate_generation_evidence(article: DiscoveredArticle, html: str) -> tuple
     source = _source_text(article)
     issues: list[str] = []
 
-    # ATT&CK technique identifiers are admissible only when that exact ID is
-    # already present in cited source data. ReportX may add independently
-    # validated mappings later; the free-form generation layer may not invent
-    # mappings from victimology or generic security reasoning.
-    source_attack_ids = {m.upper() for m in _ATTACK_ID_RE.findall(source)}
-    generated_attack_ids = {m.upper() for m in _ATTACK_ID_RE.findall(text)}
+    source_attack_ids = {value.upper() for value in _ATTACK_ID_RE.findall(source)}
+    generated_attack_ids = {value.upper() for value in _ATTACK_ID_RE.findall(text)}
     unsupported_attack = sorted(generated_attack_ids - source_attack_ids)
     if unsupported_attack:
         issues.append("ATTACK_ID_UNSUPPORTED:" + ",".join(unsupported_attack[:8]))
 
-    # CISA KEV is tri-state. Unknown can never be rendered as either a positive
-    # or a negative catalog assertion; False may support only the negative
-    # snapshot claim; True may support only the positive assertion.
-    says_listed = bool(_KEV_LISTED_RE.search(text)) and not bool(_KEV_NOT_LISTED_RE.search(text))
     says_not_listed = bool(_KEV_NOT_LISTED_RE.search(text))
+    says_listed = bool(_KEV_LISTED_RE.search(text)) and not says_not_listed
     if article.kev_listed is None and (says_listed or says_not_listed):
         issues.append("KEV_UNKNOWN_PROMOTED")
     elif article.kev_listed is True and says_not_listed:
@@ -143,25 +137,20 @@ def evaluate_generation_evidence(article: DiscoveredArticle, html: str) -> tuple
     elif article.kev_listed is False and says_listed:
         issues.append("KEV_FALSE_CONTRADICTED")
 
-    if context.exploitation_status != "confirmed" and _has_unnegated_pattern(
-        text, _CONFIRMED_EXPLOITATION_PATTERNS
-    ):
+    if context.exploitation_status != "confirmed" and _has_unnegated(text, _CONFIRMED_EXPLOITATION_PATTERNS):
         issues.append("EXPLOITATION_UNSUPPORTED")
 
     if context.patch_status not in {"available", "required_action"}:
-        if _has_unnegated_pattern(text, _PATCH_AVAILABLE_PATTERNS) or _SPECIFIC_PATCH_RE.search(text):
+        if _has_unnegated(text, _PATCH_AVAILABLE_PATTERNS) or _SPECIFIC_PATCH_RE.search(text):
             issues.append("REMEDIATION_UNSUPPORTED")
 
-    if context.family == "ransomware_claim" and _has_unnegated_pattern(
+    if context.family == "ransomware_claim" and _has_unnegated(
         text, _RANSOMWARE_CLAIM_CONFIRMED_BREACH_PATTERNS
     ):
         issues.append("RANSOMWARE_CLAIM_PROMOTED")
 
     forecast = _forecast_text(html)
     if forecast and not _SAFE_FORECAST_RE.search(forecast) and _FORECAST_PREDICTION_RE.search(forecast):
-        # A matching prediction is allowed only when the source itself carries
-        # the same predictive proposition class. We do not synthesize a future
-        # event merely because a model can reason that it is plausible.
         if not _FORECAST_PREDICTION_RE.search(source):
             issues.append("FORECAST_UNSUPPORTED")
 
@@ -226,7 +215,7 @@ def _admission_call_llm(config, prompt: str, max_tokens: int = 3000, attempts=No
     if issues:
         logger.warning(
             "Generation candidate rejected by evidence admission gate",
-            extra={"provider": provider, "reason_codes": [x.split(":", 1)[0] for x in issues]},
+            extra={"provider": provider, "reason_codes": [item.split(":", 1)[0] for item in issues]},
         )
         return None
     return result
@@ -235,20 +224,23 @@ def _admission_call_llm(config, prompt: str, max_tokens: int = 3000, attempts=No
 def _contextual_transform(self, article: DiscoveredArticle) -> dict:
     if _ORIGINAL_TRANSFORM is None:
         raise RuntimeError("generation evidence admission transform wrapper is not installed")
-    telemetry = {"version": "v8", "evaluated_candidates": 0, "rejected_candidates": 0, "reason_counts": {}, "enforced": True}
+    telemetry: dict = {
+        "version": "v8",
+        "evaluated_candidates": 0,
+        "rejected_candidates": 0,
+        "reason_counts": Counter(),
+        "enforced": True,
+    }
     article_token = _CURRENT_ARTICLE.set(article)
     telemetry_token = _CURRENT_TELEMETRY.set(telemetry)
     try:
         result = _ORIGINAL_TRANSFORM(self, article)
         if isinstance(result, dict):
-            reason_counts = telemetry.get("reason_counts", {})
-            if isinstance(reason_counts, Counter):
-                reason_counts = dict(reason_counts)
             result["generation_evidence_admission"] = {
                 "version": "v8",
-                "evaluated_candidates": int(telemetry.get("evaluated_candidates", 0)),
-                "rejected_candidates": int(telemetry.get("rejected_candidates", 0)),
-                "reason_counts": dict(reason_counts),
+                "evaluated_candidates": int(telemetry["evaluated_candidates"]),
+                "rejected_candidates": int(telemetry["rejected_candidates"]),
+                "reason_counts": dict(telemetry["reason_counts"]),
                 "enforced": True,
             }
         return result
@@ -258,13 +250,11 @@ def _contextual_transform(self, article: DiscoveredArticle) -> dict:
 
 
 def install_generation_evidence_admission(main_module) -> None:
-    """Install after premium runtime/recovery so candidate failover sees truth gates."""
+    """Install after all runtime wrappers so recovery and the final LLM result are gated."""
     global _ORIGINAL_TRANSFORM, _ORIGINAL_CALL_LLM, _ORIGINAL_COMPLETE, _ORIGINAL_SCORE
 
     transformer = getattr(main_module, "AuthorityTransformer", None)
-    if transformer is None:
-        return
-    if getattr(transformer.transform, "_cdb_generation_admission_v8", False):
+    if transformer is None or getattr(transformer.transform, "_cdb_generation_admission_v8", False):
         return
 
     _ORIGINAL_COMPLETE = _recovery._raw_contract_complete
