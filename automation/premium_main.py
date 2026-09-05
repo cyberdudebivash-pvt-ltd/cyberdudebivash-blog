@@ -16,6 +16,7 @@ from .premium_factory_throughput import install_factory_throughput_overrides
 from .premium_incident_recovery import install_incident_recovery_overrides
 from .premium_provider_budget import install_provider_budget_overrides
 from .premium_publication import install_runtime_overrides
+from .premium_quota_scheduler_v11 import install_quota_aware_scheduler_v11
 from .premium_release_hardening import install_release_hardening
 from .premium_yield_contract_guard import install_yield_contract_guard
 from .premium_yield_hardening import install_yield_hardening_overrides
@@ -37,11 +38,12 @@ def main() -> int:
     # function marker so the historical v5/v6 wrapper-name collision cannot
     # suppress convergence. Stage-4/v8 binds active article context to provider
     # candidate selection and rejects unsupported high-impact claims. Stage-5/v9
-    # installs bounded <=900-token continuation recovery. v10 then rebinds that
-    # recovery wrapper around the ACTUAL authority_transformer.call_llm consumer,
-    # preserving Stage-4 as the inner evidence-admission layer. This final bind
-    # closes the Python function-alias bug proven by production run #8623, where
-    # v9 logged as installed but could never execute.
+    # installs bounded <=900-token continuation recovery. v10 rebinds that
+    # recovery wrapper around the ACTUAL authority_transformer.call_llm consumer.
+    # v11 installs last: it reserves 1,000-OTPM Qwen models for <=900-token chunk
+    # work, honors real Retry-After pacing, and can seed a bounded chunked report
+    # when long-form providers are unavailable. Stage-4 remains the evidence-gated
+    # inner layer and every combined candidate still faces unchanged public floors.
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
@@ -57,6 +59,7 @@ def main() -> int:
     install_generation_evidence_admission(_main)
     install_premium_capacity_recovery(_main)
     install_capacity_runtime_binding_fix()
+    install_quota_aware_scheduler_v11(_main)
     return _main.main()
 
 
