@@ -85,7 +85,7 @@ def test_fragment_sanitizer_removes_headings_references_and_active_content():
     assert premium._word_count(safe) > 0
 
 
-def test_continuation_prompt_preserves_no-fabrication_contract():
+def test_continuation_prompt_preserves_no_fabrication_contract():
     base = _dense_fragment(paragraphs=10, items=10, words_per_paragraph=50)
     prompt = capacity._continuation_prompt("SOURCE EVIDENCE", base, 1)
     assert "Never invent a fact" in prompt
