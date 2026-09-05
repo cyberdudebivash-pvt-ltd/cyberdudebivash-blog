@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from automation import generation_evidence_admission as admission
 from automation import premium_capacity_recovery as capacity
-from automation import premium_incident_recovery as recovery
 from automation import premium_publication as premium
 from automation.config import Config
+from automation.content_discovery import DiscoveredArticle
 
 
 def _dense_fragment(paragraphs: int = 10, items: int = 10, words_per_paragraph: int = 80) -> str:
@@ -14,6 +15,21 @@ def _dense_fragment(paragraphs: int = 10, items: int = 10, words_per_paragraph: 
         + "".join(f"<li>evidence specific validation action {i}</li>" for i in range(items))
         + "</ul>"
     )
+
+
+def _article(**overrides) -> DiscoveredArticle:
+    values = dict(
+        url="https://example.test/source",
+        title="Source-backed malware campaign",
+        summary="The source reports malicious activity without an ATT&CK technique mapping.",
+        published_at="2026-09-05T10:00:00Z",
+        content_hash="abc123",
+        labels=["Threat Intelligence"],
+        source="global_rss",
+        full_content="The source describes malicious activity but provides no ATT&CK technique identifier.",
+    )
+    values.update(overrides)
+    return DiscoveredArticle(**values)
 
 
 def test_continuation_rescue_uses_bounded_qwen_calls_and_reaches_existing_contract(monkeypatch):
@@ -39,7 +55,7 @@ def test_continuation_rescue_uses_bounded_qwen_calls_and_reaches_existing_contra
     )
 
     assert result is not None
-    assert recovery._raw_contract_complete(result[0]) is True
+    assert capacity._active_contract_complete(result[0]) is True
     assert len(calls) == 1
     assert calls[0]["max_tokens"] == capacity.CONTINUATION_MAX_TOKENS
     assert calls[0]["max_tokens"] <= 900
@@ -69,7 +85,19 @@ def test_tiny_candidate_is_not_padded_into_premium_report(monkeypatch):
     monkeypatch.setattr(capacity._llm, "_try_provider", unexpected)
     result = capacity.capacity_aware_premium_llm(config, "prompt", attempts=[], sleep_fn=lambda _: None)
     assert result == (tiny, "groq")
-    assert recovery._raw_contract_complete(result[0]) is False
+    assert capacity._active_contract_complete(result[0]) is False
+
+
+def test_active_contract_rejects_stage4_unsupported_attack_id():
+    article = _article()
+    dense = _dense_fragment(paragraphs=18, items=18, words_per_paragraph=125)
+    unsafe = dense + "<p>ATT&CK technique T1566 applies to this campaign.</p>"
+    token = admission._CURRENT_ARTICLE.set(article)
+    try:
+        assert capacity._semantic_floor_complete(unsafe) is True
+        assert capacity._active_contract_complete(unsafe) is False
+    finally:
+        admission._CURRENT_ARTICLE.reset(token)
 
 
 def test_fragment_sanitizer_removes_headings_references_and_active_content():
