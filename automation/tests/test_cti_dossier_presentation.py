@@ -95,8 +95,8 @@ def test_duplicate_canonical_sections_converge_to_later_reportx_version():
     assert "first summary" not in rendered
     assert "Not established in cited evidence." in rendered
     assert "canonical summary" in rendered
-    assert rendered.count("MITRE ATT&amp;CK Assessment") == 1
-    assert rendered.count("Executive Summary") == 2  # heading + nav label
+    assert rendered.count('<h3 class="cdbd-section-title" id="mitre-att-ck-assessment">MITRE ATT&amp;CK Assessment</h3>') == 1
+    assert rendered.count('<h3 class="cdbd-section-title" id="executive-summary">Executive Summary</h3>') == 1
 
 
 def test_dossier_is_idempotent():
