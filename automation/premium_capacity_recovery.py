@@ -45,21 +45,47 @@ _RUNTIME = {
 
 
 def _safe_fragment_html(raw: str) -> str:
-    """Keep continuation output as body-level semantic HTML only."""
+    """Keep continuation output as body-level semantic HTML only.
+
+    LLM fragments are untrusted, frequently malformed HTML. BeautifulSoup can
+    legally parse malformed/nested heading markup into a tree where decomposing
+    one heading also detaches another heading that was already captured by
+    ``find_all``. Calling ``unwrap`` on that detached node raises ``ValueError``
+    and used to turn an otherwise fail-closed provider-capacity condition into a
+    terminal pipeline exception (production Blogger run #8630).
+
+    Every destructive mutation therefore verifies that the node is still part
+    of the active soup tree before touching it. The sanitizer remains fail-safe:
+    active content is removed, References headings are removed, structural model
+    headings are flattened, and only the same body-level allowlist survives.
+    """
     soup = BeautifulSoup(raw or "", "html.parser")
-    for node in soup(["script", "style", "iframe", "object", "embed", "form", "input", "button"]):
-        node.decompose()
-    for heading in soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"]):
+
+    for node in list(soup(["script", "style", "iframe", "object", "embed", "form", "input", "button"])):
+        if node.parent is not None:
+            node.decompose()
+
+    # Snapshotting is intentional, but malformed/nested headings can cause an
+    # earlier decompose() to detach a later snapshot entry. Guard every mutation.
+    for heading in list(soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])):
+        if heading.parent is None:
+            continue
         label = " ".join(heading.stripped_strings).strip()
         if re.search(r"\breferences?\b", label, re.I):
             heading.decompose()
         else:
             heading.unwrap()
-    for tag in soup.find_all(True):
+
+    # Re-query after heading mutations so detached descendants are never carried
+    # into the generic allowlist pass.
+    for tag in list(soup.find_all(True)):
+        if tag.parent is None:
+            continue
         if tag.name not in {"p", "ul", "ol", "li", "strong", "em", "b", "i", "br", "pre", "code", "table", "thead", "tbody", "tr", "th", "td"}:
             tag.unwrap()
         elif tag.name not in {"table", "thead", "tbody", "tr", "th", "td"}:
             tag.attrs = {}
+
     return str(soup).strip()
 
 
@@ -99,9 +125,6 @@ def _active_contract_complete(content: str) -> bool:
         if article is not None and _admission.evaluate_generation_evidence(article, content):
             return False
     except Exception as exc:
-        # Never turn a broken evidence evaluator into an allow decision when an
-        # active article context should exist. Import-only/unit contexts with no
-        # article remain governed by deterministic semantic floors.
         try:
             from . import generation_evidence_admission as _admission
             if _admission._CURRENT_ARTICLE.get() is not None:
@@ -126,49 +149,42 @@ def _remaining_requirement(content: str) -> tuple[int, int, int]:
     )
 
 
-def _continuation_prompt(original_prompt: str, current: str, pass_index: int) -> str:
-    missing_words, missing_paragraphs, missing_items = _remaining_requirement(current)
-    current_text = BeautifulSoup(current or "", "html.parser").get_text(" ", strip=True)
-    tail = current_text[-3500:]
-    prompt = f"""{original_prompt}
-
-P0 CAPACITY CONTINUATION PASS {pass_index}/{MAX_CONTINUATION_PASSES}
-The existing analytical body is below the unchanged premium semantic floor.
-Return ONLY a continuation HTML fragment. Do not repeat or rewrite prior text.
-Do not emit headings, section names, References, source URLs, or a preamble.
-Use only <p>, <ul>/<li>, <ol>/<li>, <table>, and inline emphasis/code tags.
-Add decision-useful source-bounded analysis, validation logic, telemetry needs,
-intelligence gaps, alternatives, and evidence-conditioned operational actions.
-Never invent a fact, ATT&CK ID, IOC, exploit status, patch/version, victim impact,
-breach confirmation, attribution, future event, statistic, or customer exposure.
-If evidence is insufficient, state the exact evidence gap and what would resolve it.
-Current deficit: about {missing_words} analytical words, {missing_paragraphs} substantive paragraphs,
-and {missing_items} substantive list items. Prefer multiple concise substantive paragraphs
-and evidence-specific list items over long generic prose.
-
-TAIL OF EXISTING BODY — context only, do not repeat:
-{tail}
-"""
-    return prompt[: _budget.PREMIUM_PROMPT_CHAR_CEILING]
+def _continuation_prompt(original_prompt: str, existing: str, pass_index: int) -> str:
+    need_words, need_paragraphs, need_items = _remaining_requirement(existing)
+    return (
+        original_prompt
+        + "\n\nP0 PREMIUM CONTINUATION PASS "
+        + str(pass_index)
+        + "\nYou are extending an already generated source-bounded premium CTI analysis. "
+        + "Return ONLY additional body-level HTML fragments using <p>, <ul>/<ol>, and <li> where useful. "
+        + "Do not emit a title, section heading, References section, metadata, scorecard, or wrapper element. "
+        + "Never invent a fact, IOC, CVE property, ATT&CK mapping, exploitation state, patch version, victim impact, "
+        + "attribution, statistic, or customer exposure that is not supported by the supplied source evidence. "
+        + "Preserve uncertainty and source-attributed language. Add distinct analytical depth and decision-useful "
+        + "validation/hunting/mitigation reasoning; do not repeat the existing text.\n"
+        + f"Current deficit: at least {need_words} additional semantic words, {need_paragraphs} substantive "
+        + f"paragraphs, and {need_items} substantive list items remain before the unchanged public floor can be met.\n"
+        + "EXISTING BODY (do not repeat):\n"
+        + existing[-12000:]
+    )
 
 
 def _eligible_short_models(config) -> list[str]:
-    """Return configured Qwen-style Groq models suited to <=900-token fragments."""
-    models = []
-    seen = set()
-    for model in [getattr(config, "llm_model_groq", None), *getattr(config, "llm_model_groq_fallbacks", ())]:
-        if not model or model in seen:
+    ordered = [config.llm_model_groq, *list(config.llm_model_groq_fallbacks or ())]
+    models: list[str] = []
+    for model in ordered:
+        model = str(model or "").strip()
+        if not model or "qwen" not in model.lower() or model in models:
             continue
-        seen.add(model)
-        if "qwen" in str(model).lower():
-            models.append(str(model))
+        models.append(model)
     return models
 
 
 def capacity_aware_premium_llm(config, prompt: str, max_tokens: int = 3000, attempts=None, sleep_fn=None):
-    """Run the proven generator first, then bounded semantic continuations."""
+    """Try the established premium chain, then bounded Qwen continuation rescue."""
     if _ORIGINAL_PREMIUM_LLM_CALL is None:
-        raise RuntimeError("premium capacity recovery is not installed")
+        raise RuntimeError("Stage-5 premium capacity recovery is not installed")
+
     ledger = attempts if attempts is not None else []
     kwargs = {"max_tokens": max_tokens, "attempts": ledger}
     if sleep_fn is not None:
@@ -176,25 +192,25 @@ def capacity_aware_premium_llm(config, prompt: str, max_tokens: int = 3000, atte
     result = _ORIGINAL_PREMIUM_LLM_CALL(config, prompt, **kwargs)
     if not result:
         return result
+
     content, provider = result
     if _active_contract_complete(content) or not _rescue_needed(content):
         return result
-    if not getattr(config, "groq_api_key", None):
-        return result
 
     models = _eligible_short_models(config)
-    if not models:
+    if not models or not getattr(config, "groq_api_key", None):
         return result
 
     _RUNTIME["rescue_attempts"] += 1
     combined = content
     logger.warning(
         "Premium candidate below semantic floor; starting bounded quota-aware continuation rescue",
-        extra={"metrics": _semantic_metrics(combined), "models": models, "max_tokens": CONTINUATION_MAX_TOKENS},
+        extra={"metrics": _semantic_metrics(content), "models": models},
     )
 
     for pass_index in range(1, MAX_CONTINUATION_PASSES + 1):
         model = models[(pass_index - 1) % len(models)]
+        _RUNTIME["rescue_models"][model] += 1
         fragment = _llm._try_provider(
             name="groq",
             url=_llm._GROQ_URL,
@@ -206,24 +222,23 @@ def capacity_aware_premium_llm(config, prompt: str, max_tokens: int = 3000, atte
             sleep_fn=sleep_fn or (lambda _seconds: None),
             attempts=ledger,
         )
-        _RUNTIME["rescue_models"][model] += 1
         if not fragment:
             continue
         safe_fragment = _safe_fragment_html(fragment)
         if not safe_fragment:
             continue
+        combined += safe_fragment
         _RUNTIME["rescue_fragments"] += 1
-        combined = combined + safe_fragment
         if _active_contract_complete(combined):
             _RUNTIME["rescue_successes"] += 1
             logger.info(
-                "Premium continuation rescue reached the unchanged semantic/evidence contract",
+                "Bounded continuation rescue reached unchanged premium/evidence contract",
                 extra={"model": model, "pass": pass_index, "metrics": _semantic_metrics(combined)},
             )
             return combined, "groq"
 
     logger.warning(
-        "Premium continuation rescue exhausted without lowering public quality floors",
+        "Bounded continuation rescue exhausted without lowering public quality floors",
         extra={"metrics": _semantic_metrics(combined), "passes": MAX_CONTINUATION_PASSES},
     )
     return combined, provider
@@ -242,15 +257,25 @@ def telemetry_snapshot() -> dict:
 
 
 def install_premium_capacity_recovery(main_module) -> None:
-    """Install after Stage-4 so active candidate acceptance remains evidence-gated."""
+    """Install after Stage-4 so evidence admission remains the inner authority."""
     del main_module
     global _ORIGINAL_PREMIUM_LLM_CALL, _INSTALLED
     if _INSTALLED:
         return
-    _ORIGINAL_PREMIUM_LLM_CALL = _premium._premium_llm_call
-    _premium._premium_llm_call = capacity_aware_premium_llm
+    from . import authority_transformer as _authority
+
+    live = _authority.call_llm
+    if live is capacity_aware_premium_llm:
+        _INSTALLED = True
+        return
+    _ORIGINAL_PREMIUM_LLM_CALL = live
+    _authority.call_llm = capacity_aware_premium_llm
     _INSTALLED = True
     logger.info(
         "P0 Stage-5 provider-capability premium yield recovery installed",
-        extra={"version": "v9", "continuation_max_tokens": CONTINUATION_MAX_TOKENS, "passes": MAX_CONTINUATION_PASSES},
+        extra={
+            "version": "v9",
+            "continuation_max_tokens": CONTINUATION_MAX_TOKENS,
+            "passes": MAX_CONTINUATION_PASSES,
+        },
     )

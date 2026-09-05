@@ -113,6 +113,38 @@ def test_fragment_sanitizer_removes_headings_references_and_active_content():
     assert premium._word_count(safe) > 0
 
 
+def test_fragment_sanitizer_handles_nested_reference_heading_detachment():
+    """Regression for production #8630: parent decompose detaches child snapshot node."""
+    raw = (
+        '<h2>References <h3>Nested model heading</h3></h2>'
+        '<p class="model-output" onclick="alert(1)">source bounded analytical body</p>'
+        '<h4>Technical Analysis <h5>Nested subsection</h5></h4>'
+        '<script>alert(1)</script>'
+    )
+
+    safe = capacity._safe_fragment_html(raw)
+
+    # The exact production failure was a ValueError before this point. The
+    # resulting fragment must also retain the original sanitizer boundaries.
+    assert "References" not in safe
+    assert "<h2" not in safe
+    assert "<h3" not in safe
+    assert "<h4" not in safe
+    assert "<h5" not in safe
+    assert "<script" not in safe
+    assert "onclick" not in safe
+    assert 'class="model-output"' not in safe
+    assert "source bounded analytical body" in safe
+    assert "Technical Analysis" in safe
+
+
+def test_fragment_sanitizer_is_idempotent_for_already_safe_body_html():
+    raw = '<p><strong>Evidence</strong> bounded analysis</p><ul><li>validate telemetry</li></ul>'
+    once = capacity._safe_fragment_html(raw)
+    twice = capacity._safe_fragment_html(once)
+    assert twice == once
+
+
 def test_continuation_prompt_preserves_no_fabrication_contract():
     base = _dense_fragment(paragraphs=10, items=10, words_per_paragraph=50)
     prompt = capacity._continuation_prompt("SOURCE EVIDENCE", base, 1)
