@@ -9,6 +9,7 @@ from .astra_revenue_intelligence_v18 import (
     install_astra_revenue_presentation_v18,
     install_astra_revenue_runtime_v18,
 )
+from .astra_revenue_yield_alignment_v18_1 import install_astra_revenue_yield_alignment_v18_1
 from .cti_dossier_presentation import install_cti_dossier_presentation
 from .cti_dossier_v8 import install_cti_dossier_v8
 from .cti_dossier_v9 import install_cti_dossier_v9
@@ -98,6 +99,12 @@ def main() -> int:
     # 2200/18/18 public contract. Run telemetry contains aggregate scores/yield
     # only — never prompts, generated content, credentials, or customer data.
     #
+    # v18.1 installs immediately after v18 and aligns continuation completion to
+    # the exact Stage-2 pre-compiler semantic contract: useful words, substantive
+    # paragraphs and substantive list items. The deterministic compiler owns all
+    # headings, so v18.1 forbids headings in continuation fragments rather than
+    # wasting scarce provider quota on renderer-owned structure. No floor changes.
+    #
     # Dossier v8 remains the authoritative fail-closed final-content integrity
     # layer: it blocks prompt/reasoning leakage and residual duplicate canonical
     # sections. Dossier v9 adds the premium SOC/CTI command-center experience.
@@ -135,6 +142,7 @@ def main() -> int:
     install_zero_cost_mesh_v16_hardening(_main)
     install_puter_user_pays_v17(_main)
     install_astra_revenue_runtime_v18(_main)
+    install_astra_revenue_yield_alignment_v18_1()
     install_cti_dossier_v8(_main)
     install_cti_dossier_v9(_main)
     install_cti_dossier_v10(_main)
