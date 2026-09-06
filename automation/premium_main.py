@@ -28,6 +28,7 @@ from .premium_yield_contract_guard import install_yield_contract_guard
 from .premium_yield_hardening import install_yield_hardening_overrides
 from .premium_zero_cost_mesh_v16 import install_zero_cost_mesh_v16
 from .premium_zero_cost_mesh_v16_hardening import install_zero_cost_mesh_v16_hardening
+from .premium_puter_user_pays_v17 import install_puter_user_pays_v17
 from .provider_quota_ledger import install_provider_quota_ledger
 
 
@@ -77,6 +78,14 @@ def main() -> int:
     # layer gives all long-form free providers the established 4,400-token
     # completion budget and persists only non-secret provider-attempt telemetry.
     #
+    # v17 installs strictly after v16 hardening. Puter is intentionally outside
+    # the zero-cost mesh because backend/CI use requires an operator auth token,
+    # so the token owner's Puter allowance is the metered resource. The fallback
+    # is disabled by default, requires explicit PUBLIC_DATA_ONLY opt-in, performs
+    # a monthly-allowance preflight before every request, caps calls per run, and
+    # passes only PUTER_AUTH_TOKEN plus minimal process environment to its Node 24
+    # bridge. No Puter token or allowance amount is persisted in public telemetry.
+    #
     # Dossier v8 remains the authoritative fail-closed final-content integrity
     # layer: it blocks prompt/reasoning leakage and residual duplicate canonical
     # sections. Dossier v9 adds the premium SOC/CTI command-center experience.
@@ -106,6 +115,7 @@ def main() -> int:
     install_capacity_aware_allocator_v13(_main)
     install_zero_cost_mesh_v16(_main)
     install_zero_cost_mesh_v16_hardening(_main)
+    install_puter_user_pays_v17(_main)
     install_cti_dossier_v8(_main)
     install_cti_dossier_v9(_main)
     install_cti_dossier_v10(_main)
