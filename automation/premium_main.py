@@ -23,6 +23,7 @@ from .premium_publication import install_runtime_overrides
 from .premium_quota_deferral_v12 import install_quota_deferral_v12
 from .premium_quota_scheduler_v11 import install_quota_aware_scheduler_v11
 from .premium_release_hardening import install_release_hardening
+from .premium_source_rss_v15 import install_source_rich_rss_v15
 from .premium_yield_contract_guard import install_yield_contract_guard
 from .premium_yield_hardening import install_yield_hardening_overrides
 from .provider_quota_ledger import install_provider_quota_ledger
@@ -34,6 +35,13 @@ def main() -> int:
     # controls preserve the proven pre-Stage-2 safety chain; factory throughput
     # then adds family scheduling and model-scoped pacing. premium_publication
     # snapshots that active runtime into the production transformer/publisher.
+    #
+    # v15 source-rich RSS installs before the pipeline starts discovery. It
+    # patches only the external global RSS parser alias and preserves publisher-
+    # supplied content:encoded/Atom content as bounded source evidence while the
+    # legacy 1,500-character summary contract remains unchanged. It deliberately
+    # does not patch first-party canonical RSS, does not fetch article pages, and
+    # introduces no new network calls or trust in previously generated reports.
     #
     # Stage-2 installs the durable quota ledger and deterministic evidence
     # compiler after the legacy generation/runtime layers. Stage-3 reconciles
@@ -52,8 +60,8 @@ def main() -> int:
     # active quota reset window becomes DEGRADED/DEFERRED instead of a false
     # systemic pipeline failure, while evidence and publication gates stay hard.
     # v13 installs after durable quota/run-status semantics and wraps the active
-    # factory scheduler. When multiple TPD cooldowns are already present before
-    # allocation it admits only source-rich candidates that can plausibly use
+    # factory scheduler. When active/recent TPD saturation signals prove capacity
+    # constrained it admits only source-rich candidates that can plausibly use
     # the provider-independent evidence compiler, preventing scarce calls from
     # being burned on known-thin reports. It never relaxes any publication gate.
     #
@@ -65,6 +73,7 @@ def main() -> int:
     # tracking, canonical decision surfacing, machine-readable capability links,
     # and conservative removal of inapplicable/legacy UI. v9/v10 are fail-open
     # presentation layers and cannot weaken v8 fail-closed publication integrity.
+    install_source_rich_rss_v15()
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
