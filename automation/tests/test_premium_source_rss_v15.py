@@ -68,10 +68,11 @@ def test_external_article_uses_full_feed_body_but_keeps_summary(tmp_path, monkey
     cfg.max_article_age_hours = 10_000
     state = PublicationState(cfg.state_file)
     feed = rss_aggregator._Feed("Example Research", "https://publisher.example/feed")
+    aggregator = rss_aggregator.GlobalRSSAggregator(cfg)
 
     original = rss_aggregator.GlobalRSSAggregator._to_article
     monkeypatch.setattr(source_rss, "_ORIGINAL_TO_ARTICLE", original)
-    article = source_rss._source_rich_to_article(feed, item, state)
+    article = source_rss._source_rich_to_article(aggregator, feed, item, state)
 
     assert article is not None
     assert article.summary == "Short preview"
