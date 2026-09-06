@@ -17,6 +17,39 @@ const RATE_LIMITS = {
 
 const TIERS = ['free', 'starter', 'pro', 'enterprise'];
 
+/* P0 Revenue Conversion v19 — conversion metadata only. This does not alter
+ * entitlement order or limits. It turns a real quota-exhaustion event into a
+ * deterministic next-tier checkout path while preserving the billing API as
+ * the only authority that can accept payment or grant access. */
+const NEXT_PAID_TIER = Object.freeze({
+  free: 'starter',
+  starter: 'pro',
+  pro: 'enterprise',
+  enterprise: null,
+});
+const DIRECT_CHECKOUT_BASE = 'https://blog.cyberdudebivash.in/buy.html';
+
+function nextPaidTier(tier) {
+  return Object.prototype.hasOwnProperty.call(NEXT_PAID_TIER, tier)
+    ? NEXT_PAID_TIER[tier]
+    : 'starter';
+}
+
+function upgradeCheckoutUrl(tier, source = 'api_rate_limit') {
+  const nextTier = nextPaidTier(tier);
+  if (!nextTier) return null;
+  const content = `${String(tier || 'unknown').replace(/[^a-z0-9_.-]/gi, '_')}_quota`;
+  const query = new URLSearchParams({
+    plan: nextTier,
+    checkout: '1',
+    utm_source: String(source || 'api_rate_limit').slice(0, 80),
+    utm_medium: 'api',
+    utm_campaign: 'p0_revenue_conversion_v19',
+    utm_content: content.slice(0, 100),
+  });
+  return `${DIRECT_CHECKOUT_BASE}?${query.toString()}`;
+}
+
 function today() {
   return new Date().toISOString().slice(0, 10).replace(/-/g, '');
 }
@@ -38,6 +71,7 @@ function corsHeaders() {
     'Access-Control-Allow-Origin':  '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Authorization, X-API-Key, Content-Type, X-Admin-Key',
+    'Access-Control-Expose-Headers': 'X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-Tier, X-RateLimit-Upgrade-Tier, X-RateLimit-Upgrade-URL, Link, Retry-After',
     'Access-Control-Max-Age':       '86400',
   };
 }
@@ -121,11 +155,6 @@ async function authenticate(req, res) {
   } catch (e) {
     // Redis unavailable — allow a synthetic dev user ONLY when BOTH
     // NODE_ENV=development AND ALLOW_DEV_AUTH_BYPASS=true are set.
-    // NODE_ENV alone is not sufficient: Vercel doesn't set
-    // NODE_ENV=development on Production/Preview on its own, but an env
-    // reconstruction (e.g. rebuilding a Vercel project's variables after
-    // an account-recovery migration) could introduce it accidentally,
-    // and that alone must never grant a live tier bypass.
     if (process.env.NODE_ENV === 'development' && process.env.ALLOW_DEV_AUTH_BYPASS === 'true') {
       return { tier: 'pro', userId: 'dev', email: 'dev@local', keyHash: hash };
     }
@@ -145,15 +174,40 @@ async function authenticate(req, res) {
 
     if (used > limit) {
       recordAuthFailure('rate_limited');
-      apiError(res, 429, 'RATE_LIMIT_EXCEEDED',
-        `Rate limit reached: ${limit} requests/day for ${tier} tier. Upgrade at https://blog.cyberdudebivash.in/pricing.html`,
-        {
-          'X-RateLimit-Limit': String(limit),
-          'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': String(Math.ceil(Date.now() / 86400000) * 86400),
-          'Retry-After': String(86400 - (Math.floor(Date.now() / 1000) % 86400)),
-        }
-      );
+      const nextTier = nextPaidTier(tier);
+      const checkoutUrl = upgradeCheckoutUrl(tier);
+      const headers = {
+        'X-RateLimit-Limit': String(limit),
+        'X-RateLimit-Remaining': '0',
+        'X-RateLimit-Reset': String(Math.ceil(Date.now() / 86400000) * 86400),
+        'Retry-After': String(86400 - (Math.floor(Date.now() / 1000) % 86400)),
+      };
+      if (nextTier && checkoutUrl) {
+        headers['X-RateLimit-Upgrade-Tier'] = nextTier;
+        headers['X-RateLimit-Upgrade-URL'] = checkoutUrl;
+        headers.Link = `<${checkoutUrl}>; rel="upgrade"`;
+      }
+
+      respond(res, 429, {
+        error: {
+          code: 'RATE_LIMIT_EXCEEDED',
+          message: nextTier
+            ? `Rate limit reached: ${limit} requests/day for ${tier} tier. Upgrade to ${nextTier} for additional capacity.`
+            : `Rate limit reached: ${limit} requests/day for enterprise tier. Contact support if you require additional capacity.`,
+        },
+        ...(nextTier && checkoutUrl ? {
+          upgrade: {
+            recommended_tier: nextTier,
+            checkout_url: checkoutUrl,
+            reason: 'daily_api_quota_exhausted',
+          },
+        } : {}),
+        meta: {
+          platform: 'CYBERDUDEBIVASH SENTINEL APEX v4.0',
+          timestamp: new Date().toISOString(),
+          revenue_conversion_version: 'v19',
+        },
+      }, headers);
       return null;
     }
 
@@ -175,10 +229,24 @@ async function authenticate(req, res) {
   }
 
   // Set rate limit response headers
+  const remaining = Math.max(0, limit - (used || 0));
   res.setHeader('X-RateLimit-Limit', String(limit));
-  res.setHeader('X-RateLimit-Remaining', String(Math.max(0, limit - (used || 0))));
+  res.setHeader('X-RateLimit-Remaining', String(remaining));
   res.setHeader('X-RateLimit-Tier', tier);
   res.setHeader('X-Powered-By', 'CYBERDUDEBIVASH SENTINEL APEX v4.0');
+
+  // Near-capacity users are already demonstrating product value. Surface the
+  // next paid tier as response metadata before they hard-fail, without changing
+  // the response body or consuming additional storage/network services.
+  const nextTier = nextPaidTier(tier);
+  if (nextTier && limit > 0 && remaining <= Math.ceil(limit * 0.10)) {
+    const checkoutUrl = upgradeCheckoutUrl(tier, 'api_capacity_warning');
+    if (checkoutUrl) {
+      res.setHeader('X-RateLimit-Upgrade-Tier', nextTier);
+      res.setHeader('X-RateLimit-Upgrade-URL', checkoutUrl);
+      res.setHeader('Link', `<${checkoutUrl}>; rel="upgrade"`);
+    }
+  }
 
   return {
     tier,
@@ -233,6 +301,8 @@ module.exports = {
   hashKey,
   RATE_LIMITS,
   TIERS,
+  nextPaidTier,
+  upgradeCheckoutUrl,
   recordAuthFailure,
   // Re-export security helpers so routers only need one import
   guardRequest:        sec.guardRequest,
