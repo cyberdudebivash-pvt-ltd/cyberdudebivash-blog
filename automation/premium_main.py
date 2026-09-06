@@ -27,6 +27,7 @@ from .premium_source_rss_v15 import install_source_rich_rss_v15
 from .premium_yield_contract_guard import install_yield_contract_guard
 from .premium_yield_hardening import install_yield_hardening_overrides
 from .premium_zero_cost_mesh_v16 import install_zero_cost_mesh_v16
+from .premium_zero_cost_mesh_v16_hardening import install_zero_cost_mesh_v16_hardening
 from .provider_quota_ledger import install_provider_quota_ledger
 
 
@@ -72,7 +73,9 @@ def main() -> int:
     # hard-disabled unless ALLOW_PAID_LLM=true. Gemini/NIM are additionally
     # gated by explicit PUBLIC_DATA_ONLY controls. Their provider identities are
     # registered with the analytical-depth contract so genuine LLM enrichment is
-    # never mislabeled as deterministic fallback.
+    # never mislabeled as deterministic fallback. The adjacent v16 hardening
+    # layer gives all long-form free providers the established 4,400-token
+    # completion budget and persists only non-secret provider-attempt telemetry.
     #
     # Dossier v8 remains the authoritative fail-closed final-content integrity
     # layer: it blocks prompt/reasoning leakage and residual duplicate canonical
@@ -102,6 +105,7 @@ def main() -> int:
     install_quota_deferral_v12(_main)
     install_capacity_aware_allocator_v13(_main)
     install_zero_cost_mesh_v16(_main)
+    install_zero_cost_mesh_v16_hardening(_main)
     install_cti_dossier_v8(_main)
     install_cti_dossier_v9(_main)
     install_cti_dossier_v10(_main)
