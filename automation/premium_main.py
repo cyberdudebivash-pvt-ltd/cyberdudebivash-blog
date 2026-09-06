@@ -7,6 +7,7 @@ import sys
 from . import main as _main
 from .cti_dossier_presentation import install_cti_dossier_presentation
 from .cti_dossier_v8 import install_cti_dossier_v8
+from .cti_dossier_v9 import install_cti_dossier_v9
 from .cti_evidence_convergence import install_cti_evidence_convergence
 from .cti_evidence_convergence_v7 import install_cti_evidence_convergence_v7
 from .generation_evidence_admission import install_generation_evidence_admission
@@ -49,11 +50,13 @@ def main() -> int:
     # active quota reset window becomes DEGRADED/DEFERRED instead of a false
     # systemic pipeline failure, while evidence and publication gates stay hard.
     #
-    # Dossier v8 is the absolute final _assemble_html wrapper. It sees the fully
-    # converged customer artifact, blocks prompt/reasoning leakage and residual
-    # duplicate canonical sections, then adds evidence-safe SOC/CTI command
-    # modules. Visual enrichment is fail-open; content-integrity failures are
-    # fail-closed via PublicationIntegrityError.
+    # Dossier v8 remains the authoritative fail-closed final-content integrity
+    # layer: it blocks prompt/reasoning leakage and residual duplicate canonical
+    # sections. Dossier v9 installs immediately after v8 and adds evidence-safe
+    # premium command-center modules (confidence/evidence matrix, exposure
+    # decision engine, attack-surface control path, chronology visualization,
+    # lifecycle ribbon and richer publication-state controls). v9 is visual and
+    # fail-open; it never weakens or replaces v8 integrity enforcement.
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
@@ -72,6 +75,7 @@ def main() -> int:
     install_quota_aware_scheduler_v11(_main)
     install_quota_deferral_v12(_main)
     install_cti_dossier_v8(_main)
+    install_cti_dossier_v9(_main)
     return _main.main()
 
 
