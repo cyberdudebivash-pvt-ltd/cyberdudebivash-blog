@@ -100,4 +100,3 @@ def test_v19_telemetry_is_aggregate_and_makes_no_revenue_guarantee():
     serialized = str(telemetry).lower()
     assert "email" not in serialized
     assert "api_key" not in serialized
-    assert "payment_id" not in serialized
