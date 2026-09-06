@@ -5,6 +5,10 @@ from __future__ import annotations
 import sys
 
 from . import main as _main
+from .astra_revenue_intelligence_v18 import (
+    install_astra_revenue_presentation_v18,
+    install_astra_revenue_runtime_v18,
+)
 from .cti_dossier_presentation import install_cti_dossier_presentation
 from .cti_dossier_v8 import install_cti_dossier_v8
 from .cti_dossier_v9 import install_cti_dossier_v9
@@ -86,6 +90,14 @@ def main() -> int:
     # passes only PUTER_AUTH_TOKEN plus minimal process environment to its Node 24
     # bridge. No Puter token or allowance amount is persisted in public telemetry.
     #
+    # v18 installs its runtime after v17 so the proven provider mesh remains the
+    # inner generation authority. It adds an internal commercial-delivery score
+    # to scheduler ordering (never a threat/customer risk score), and uses the
+    # existing free-model mesh for at most two evidence-bounded targeted
+    # continuation passes when a genuine candidate is below the unchanged
+    # 2200/18/18 public contract. Run telemetry contains aggregate scores/yield
+    # only — never prompts, generated content, credentials, or customer data.
+    #
     # Dossier v8 remains the authoritative fail-closed final-content integrity
     # layer: it blocks prompt/reasoning leakage and residual duplicate canonical
     # sections. Dossier v9 adds the premium SOC/CTI command-center experience.
@@ -94,6 +106,12 @@ def main() -> int:
     # tracking, canonical decision surfacing, machine-readable capability links,
     # and conservative removal of inapplicable/legacy UI. v9/v10 are fail-open
     # presentation layers and cannot weaken v8 fail-closed publication integrity.
+    #
+    # v18 commercial presentation installs last, after Dossier v10. It is a
+    # deterministic conversion/product-access surface mapped to the repository's
+    # existing Free / Starter / Pro / Enterprise entitlements and UTM-tagged for
+    # the already-deployed conversion-engine.js + GA4 stack. It never alters
+    # intelligence assertions or creates a second billing/entitlement system.
     install_source_rich_rss_v15()
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
@@ -116,9 +134,11 @@ def main() -> int:
     install_zero_cost_mesh_v16(_main)
     install_zero_cost_mesh_v16_hardening(_main)
     install_puter_user_pays_v17(_main)
+    install_astra_revenue_runtime_v18(_main)
     install_cti_dossier_v8(_main)
     install_cti_dossier_v9(_main)
     install_cti_dossier_v10(_main)
+    install_astra_revenue_presentation_v18(_main)
     return _main.main()
 
 
