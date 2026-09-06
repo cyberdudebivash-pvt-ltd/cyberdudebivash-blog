@@ -1,33 +1,42 @@
-"""P0 v13 capacity-aware publication allocation for the premium CTI factory.
+"""P0 capacity-aware publication allocation for the premium CTI factory.
 
 Production acceptance after Dossier v10 exposed an availability/selection
-mismatch: the factory can have a large candidate pool while multiple premium
-Groq models are already in durable TPD cooldown.  The family-fair scheduler
-still selected thin candidates that require model expansion to satisfy the
-unchanged premium semantic floor, so the run spent scarce provider attempts
+mismatch: the factory can have a large candidate pool while premium Groq models
+are already in, or have only just exited, durable TPD cooldown. The family-fair
+scheduler can otherwise select thin candidates that require model expansion to
+satisfy the unchanged premium semantic floor, spending scarce provider attempts
 only to fail closed with zero publications.
 
-This layer changes scheduling only.  It never lowers the public quality floor,
+This layer changes scheduling only. It never lowers the public quality floor,
 changes evidence admission, trusts previously generated report prose, or turns
 provider failure into publish permission.
 
-When at least two provider/model TPD cooldowns are already active at allocation
-time, only candidates with enough *normalized source evidence* to plausibly
-clear the existing provider-independent compiler path are admitted to the
-finite five-post batch.  The existing factory scheduler remains authoritative
-for family/fresh/retry fairness inside that qualified pool.  If no candidate is
-source-rich enough, the run is explicitly deferred rather than burning model
-calls on artifacts known to depend on unavailable capacity.
+Capacity is considered constrained when at least two distinct provider/model
+TPD saturation signals exist. A signal can be an active durable cooldown or a
+recently-expired TPD cooldown still inside a bounded recovery-grace window.
+The grace window is necessary because provider retry timestamps are permission
+to retry, not proof that enough rolling daily capacity has recovered for a
+multi-thousand-token premium report. Production acceptance demonstrated models
+relapsing into TPD exhaustion minutes after their stored retry timestamp.
+
+Under constrained capacity, only candidates with enough *normalized source
+evidence* to plausibly clear the existing provider-independent compiler path
+are admitted to the finite five-post batch. The existing factory scheduler
+remains authoritative for family/fresh/retry fairness inside that qualified
+pool. If no candidate is source-rich enough, the run is explicitly deferred
+rather than burning model calls on artifacts known to depend on unavailable
+capacity.
 
 Generated first-party HTML is deliberately NOT counted as source richness just
-because it is canonical.  Only ``DiscoveredArticle.full_content``/``summary``
+because it is canonical. Only ``DiscoveredArticle.full_content``/``summary``
 and normalized structured fields are measured, preserving the current ReportX
 source boundary.
 """
 from __future__ import annotations
 
+import json
 import re
-from collections import Counter
+from datetime import datetime, timedelta, timezone
 from typing import Callable, Optional
 
 from bs4 import BeautifulSoup
@@ -40,10 +49,14 @@ from .logger import setup_logger
 logger = setup_logger("premium_capacity_allocator_v13")
 
 MARKER = "CDB-PREMIUM-CAPACITY-ALLOCATOR-V13"
-MIN_ACTIVE_TPD_COOLDOWNS = 2
+MIN_TPD_CAPACITY_SIGNALS = 2
+TPD_RECOVERY_GRACE_SECONDS = 30 * 60
+
+# Backward-compatible alias used by existing tests/telemetry consumers.
+MIN_ACTIVE_TPD_COOLDOWNS = MIN_TPD_CAPACITY_SIGNALS
 
 # These are derived from the unchanged public semantic floor rather than being
-# independent quality thresholds.  A candidate must bring substantial real
+# independent quality thresholds. A candidate must bring substantial real
 # source material before deterministic structure is allowed to substitute for
 # temporarily unavailable model capacity.
 MIN_RICH_EVIDENCE_WORDS = max(1, int(_premium.MIN_VISIBLE_WORDS * 0.80))
@@ -61,6 +74,7 @@ _RUNTIME = {
     "qualified_candidates": 0,
     "deferred_candidates": 0,
     "selected_candidates": 0,
+    "recovery_grace_runs": 0,
 }
 
 _STRUCTURED_FIELDS = (
@@ -80,6 +94,23 @@ _STRUCTURED_FIELDS = (
     "ransomware_sector",
     "ransomware_country",
 )
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _parse_utc(value: object) -> Optional[datetime]:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
 
 
 def _visible_source_text(article) -> str:
@@ -111,7 +142,7 @@ def _structured_evidence_count(article) -> int:
 def _provider_independent_candidate(article) -> bool:
     """Conservative admission for a report that may have no external LLM.
 
-    This is intentionally stricter than ordinary scheduling.  It is not a
+    This is intentionally stricter than ordinary scheduling. It is not a
     publication gate: downstream ReportX, evidence admission, compiler-input
     floors, Dossier v8, Blogger fetch-back, and all other gates still run and
     remain authoritative.
@@ -128,6 +159,63 @@ def _provider_independent_candidate(article) -> bool:
     )
 
 
+def _signal_key(item: dict) -> str:
+    return f"{str(item.get('provider') or '').lower()}::{str(item.get('model') or '')}"
+
+
+def _recent_expired_tpd_signals(*, now: Optional[datetime] = None) -> list[dict]:
+    """Read recent expired TPD entries before telemetry cleanup removes them.
+
+    The quota ledger intentionally deletes expired cooldown entries when its
+    normal telemetry snapshot is requested. For allocation, however, a just-
+    expired TPD retry timestamp is still operationally relevant: it does not
+    prove enough rolling daily capacity exists for a full premium generation.
+    We therefore inspect the same code-owned, non-secret ledger immediately
+    before cleanup and retain only a short, bounded recovery-grace signal.
+    """
+    current = (now or _utcnow()).astimezone(timezone.utc)
+    try:
+        path = _quota._state_path()
+        _quota._assert_safe_state_target(path)
+        if not path.exists():
+            return []
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError, RuntimeError, json.JSONDecodeError) as exc:
+        logger.warning(
+            "Capacity allocator could not inspect pre-cleanup quota ledger; active telemetry remains authoritative",
+            extra={"error": str(exc)},
+        )
+        return []
+
+    models = payload.get("models") if isinstance(payload, dict) else None
+    if not isinstance(models, dict):
+        return []
+
+    recent: list[dict] = []
+    grace = timedelta(seconds=TPD_RECOVERY_GRACE_SECONDS)
+    for raw in models.values():
+        if not isinstance(raw, dict):
+            continue
+        if str(raw.get("limit_type") or "").upper() != "TPD":
+            continue
+        until = _parse_utc(raw.get("unavailable_until"))
+        if until is None or until > current:
+            # Active entries are supplied by the quota ledger snapshot below.
+            continue
+        age = current - until
+        if age < timedelta(0) or age > grace:
+            continue
+        recent.append({
+            "provider": str(raw.get("provider") or ""),
+            "model": str(raw.get("model") or ""),
+            "limit_type": "TPD",
+            "unavailable_until": until.isoformat(),
+            "recovery_grace": True,
+            "seconds_since_retry_window": round(age.total_seconds(), 2),
+        })
+    return recent
+
+
 def _active_tpd_cooldowns() -> list[dict]:
     snapshot = _quota.telemetry_snapshot()
     return [
@@ -138,8 +226,26 @@ def _active_tpd_cooldowns() -> list[dict]:
 
 
 def _capacity_constrained() -> tuple[bool, list[dict]]:
+    # Capture recently-expired entries *before* telemetry_snapshot performs its
+    # normal cleanup. This order is a production invariant.
+    recent = _recent_expired_tpd_signals()
     active = _active_tpd_cooldowns()
-    return len(active) >= MIN_ACTIVE_TPD_COOLDOWNS, active
+
+    signals: dict[str, dict] = {}
+    for item in recent:
+        key = _signal_key(item)
+        if key != "::":
+            signals[key] = dict(item)
+    for item in active:
+        key = _signal_key(item)
+        if key != "::":
+            normalized = dict(item)
+            normalized["recovery_grace"] = False
+            # Active evidence supersedes a recent-expired entry for same model.
+            signals[key] = normalized
+
+    combined = list(signals.values())
+    return len(combined) >= MIN_TPD_CAPACITY_SIGNALS, combined
 
 
 def _zero_selected_metrics(metrics: dict) -> dict:
@@ -166,19 +272,25 @@ def capacity_aware_select_publication_batch(
         raise RuntimeError("capacity-aware allocator is not installed")
 
     # The baseline call is selection-only (no transformation/network/provider
-    # work).  It preserves the existing candidate accounting and gives us the
-    # exact production scheduler's view of the pool.
+    # work). It preserves existing candidate accounting and gives us the exact
+    # production scheduler's view of the pool.
     baseline = _ORIGINAL_SELECT(retry_articles, fresh_articles, max_posts)
-    constrained, active = _capacity_constrained()
+    constrained, signals = _capacity_constrained()
     if not constrained:
         return baseline
 
+    active_count = sum(1 for item in signals if not bool(item.get("recovery_grace")))
+    recent_count = sum(1 for item in signals if bool(item.get("recovery_grace")))
+
     _RUNTIME["capacity_aware_runs"] += 1
+    if recent_count:
+        _RUNTIME["recovery_grace_runs"] += 1
+
     qualified_fresh = [article for article in fresh_articles if _provider_independent_candidate(article)]
     qualified_retry = [article for article in retry_articles if _provider_independent_candidate(article)]
 
     # Let the already-proven factory scheduler own fairness within the safe
-    # source-rich subset.  It still deduplicates and enforces the live burst cap.
+    # source-rich subset. It still deduplicates and enforces the live burst cap.
     qualified = _ORIGINAL_SELECT(qualified_retry, qualified_fresh, max_posts)
     qualified_count = int(qualified.metrics.get("candidate_count", 0) or 0)
     total_count = int(baseline.metrics.get("candidate_count", 0) or 0)
@@ -191,7 +303,7 @@ def capacity_aware_select_publication_batch(
     if qualified.articles:
         metrics = dict(qualified.metrics)
         # Candidate pool metrics describe discovery supply, not only the
-        # constrained subset.  Keep the baseline accounting for observability.
+        # constrained subset. Keep baseline accounting for observability.
         for key in ("candidate_count", "fresh_candidates", "retry_candidates"):
             if key in baseline.metrics:
                 metrics[key] = baseline.metrics[key]
@@ -201,7 +313,10 @@ def capacity_aware_select_publication_batch(
     metrics.update({
         "capacity_aware_selection": True,
         "provider_capacity_constrained": True,
-        "active_tpd_cooldown_count": len(active),
+        "active_tpd_cooldown_count": active_count,
+        "recent_tpd_recovery_count": recent_count,
+        "tpd_capacity_signal_count": len(signals),
+        "tpd_recovery_grace_seconds": TPD_RECOVERY_GRACE_SECONDS,
         "provider_independent_candidates": qualified_count,
         "provider_capacity_deferred_candidates": deferred_count,
         "capacity_allocator_marker": MARKER,
@@ -210,7 +325,9 @@ def capacity_aware_select_publication_batch(
     logger.warning(
         "Provider capacity constrained; publication allocator admitted only source-rich candidates",
         extra={
-            "active_tpd_cooldowns": len(active),
+            "active_tpd_cooldowns": active_count,
+            "recent_tpd_recovery_signals": recent_count,
+            "tpd_capacity_signals": len(signals),
             "candidate_count": total_count,
             "provider_independent_candidates": qualified_count,
             "selected": len(qualified.articles),
@@ -231,14 +348,17 @@ def _capacity_write_run_report(report: dict, logs_dir: str) -> None:
     qualified = int(report.get("provider_independent_candidates", 0) or 0)
 
     # A capacity-driven zero-selection is not "no intel" and not a healthy
-    # publication run.  Make the deferred state explicit without manufacturing
+    # publication run. Make the deferred state explicit without manufacturing
     # failed posts or weakening downstream integrity semantics.
     if constrained and candidates > 0 and attempted == 0 and published == 0:
         report["run_status"] = "DEGRADED"
         report["provider_capacity_deferred"] = True
         report["provider_capacity"] = {
-            "reason": "active TPD cooldowns left no source-rich candidate eligible for provider-independent premium generation",
+            "reason": "active/recent TPD saturation signals left no source-rich candidate eligible for provider-independent premium generation",
             "active_tpd_cooldown_count": int(report.get("active_tpd_cooldown_count", 0) or 0),
+            "recent_tpd_recovery_count": int(report.get("recent_tpd_recovery_count", 0) or 0),
+            "tpd_capacity_signal_count": int(report.get("tpd_capacity_signal_count", 0) or 0),
+            "recovery_grace_seconds": TPD_RECOVERY_GRACE_SECONDS,
             "provider_independent_candidates": qualified,
             "deferred_candidates": int(report.get("provider_capacity_deferred_candidates", candidates) or 0),
             "allocator": MARKER,
@@ -247,10 +367,12 @@ def _capacity_write_run_report(report: dict, logs_dir: str) -> None:
     report["capacity_allocator_v13"] = {
         "marker": MARKER,
         "capacity_aware_runs": int(_RUNTIME["capacity_aware_runs"]),
+        "recovery_grace_runs": int(_RUNTIME["recovery_grace_runs"]),
         "qualified_candidates": int(_RUNTIME["qualified_candidates"]),
         "deferred_candidates": int(_RUNTIME["deferred_candidates"]),
         "selected_candidates": int(_RUNTIME["selected_candidates"]),
-        "min_active_tpd_cooldowns": MIN_ACTIVE_TPD_COOLDOWNS,
+        "min_tpd_capacity_signals": MIN_TPD_CAPACITY_SIGNALS,
+        "tpd_recovery_grace_seconds": TPD_RECOVERY_GRACE_SECONDS,
         "min_rich_evidence_words": MIN_RICH_EVIDENCE_WORDS,
         "min_structured_evidence_words": MIN_STRUCTURED_EVIDENCE_WORDS,
         "min_dense_structured_evidence_words": MIN_DENSE_STRUCTURED_EVIDENCE_WORDS,
@@ -279,7 +401,8 @@ def install_capacity_aware_allocator_v13(main_module) -> None:
         "P0 capacity-aware publication allocator installed",
         extra={
             "marker": MARKER,
-            "min_active_tpd_cooldowns": MIN_ACTIVE_TPD_COOLDOWNS,
+            "min_tpd_capacity_signals": MIN_TPD_CAPACITY_SIGNALS,
+            "tpd_recovery_grace_seconds": TPD_RECOVERY_GRACE_SECONDS,
             "min_rich_evidence_words": MIN_RICH_EVIDENCE_WORDS,
             "public_quality_floor_unchanged": _premium.MIN_VISIBLE_WORDS,
         },
