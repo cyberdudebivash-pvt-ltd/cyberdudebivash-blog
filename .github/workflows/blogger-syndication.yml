@@ -55,11 +55,34 @@ jobs:
           cache: "pip"
           cache-dependency-path: requirements.txt
 
+      - name: "🟩 Set Up Node.js 24 for optional Puter bridge"
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
       - name: "📦 Install Dependencies"
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-timeout
+
+      - name: "🧩 Prepare Optional Puter User-Pays Runtime"
+        env:
+          PUTER_AUTH_TOKEN: ${{ secrets.PUTER_AUTH_TOKEN }}
+          PUTER_AUTOMATION_ENABLED: ${{ vars.PUTER_AUTOMATION_ENABLED }}
+        run: |
+          node --check automation/puter_runtime/bridge.mjs
+          if [ "${PUTER_AUTOMATION_ENABLED,,}" = "true" ] && [ -n "$PUTER_AUTH_TOKEN" ]; then
+            echo "Puter automation explicitly enabled; installing pinned SDK runtime"
+            npm install \
+              --prefix automation/puter_runtime \
+              --package-lock=false \
+              --ignore-scripts \
+              --no-audit \
+              --no-fund
+          else
+            echo "Puter automation disabled or token absent; no Puter SDK install performed"
+          fi
 
       - name: "✅ Validate Premium Publication Modules"
         run: |
@@ -73,12 +96,13 @@ jobs:
           from automation.provider_quota_ledger import install_provider_quota_ledger
           from automation.premium_publication import PremiumAuthorityTransformer, VerifiedBloggerPublisher, assess_enterprise_report, assess_live_artifact
           from automation.premium_zero_cost_mesh_v16 import install_zero_cost_mesh_v16
+          from automation.premium_puter_user_pays_v17 import install_puter_user_pays_v17
           from automation.premium_main import main as premium_main
           from automation.seo_optimizer import SEOOptimizer
           from automation.social_amplifier import SocialAmplifier
           from automation.rss_aggregator import GlobalRSSAggregator
           from automation.threat_feeds import CISAAdvisoriesSource, RansomwareIntelSource, DataBreachIntelSource, ThreatActorIntelSource
-          print('Premium publication + Global CTI Stage-2 + zero-cost v16 provider mesh modules imported successfully')
+          print('Premium publication + Global CTI Stage-2 + zero-cost v16 + guarded Puter v17 modules imported successfully')
           "
 
       - name: "🧪 Run Unit & Integration Tests"
@@ -120,6 +144,17 @@ jobs:
           ALLOW_PAID_LLM: "false"
           GEMINI_PUBLIC_DATA_ONLY: "true"
           NVIDIA_NIM_PUBLIC_DATA_ONLY: "true"
+
+          # P0-PUTER-USER-PAYS-V17: backend Puter usage is *not* considered part
+          # of the zero-cost provider pool because this token's account is the
+          # metered user. It is opt-in, public-CTI-only, allowance-guarded, and
+          # capped. Missing variables preserve fail-closed defaults in code.
+          PUTER_AUTH_TOKEN: ${{ secrets.PUTER_AUTH_TOKEN }}
+          PUTER_AUTOMATION_ENABLED: ${{ vars.PUTER_AUTOMATION_ENABLED }}
+          PUTER_PUBLIC_DATA_ONLY: "true"
+          PUTER_MODEL: ${{ vars.PUTER_MODEL }}
+          PUTER_MAX_CALLS_PER_RUN: ${{ vars.PUTER_MAX_CALLS_PER_RUN }}
+          PUTER_MIN_REMAINING_MICROCENTS: ${{ vars.PUTER_MIN_REMAINING_MICROCENTS }}
 
           MAX_POSTS_PER_RUN: ${{ github.event.inputs.max_posts || '5' }}
           CDB_FACTORY_RETRY_QUEUE_LIMIT: "500"
@@ -192,7 +227,7 @@ jobs:
             fi
             if [ $attempt -lt 3 ]; then
               echo "Push failed, retrying in $((attempt * 3))s..."
-              sleep $((attempt * 3))
+              sleep $((attempt * 3))s
             else
               echo "Push failed after 3 attempts — state will sync next run"
               exit 0
@@ -231,6 +266,9 @@ jobs:
               print(f'Generation modes: {stage2.get(\"generation_mode_counts\", {})}')
               print(f'Gate failures: {stage2.get(\"gate_failure_counts\", {})}')
               print(f'Provider quota: {stage2.get(\"provider_quota\", {})}')
+            puter = r.get('puter_user_pays_v17') or {}
+            if puter:
+              print(f'Puter v17: enabled={puter.get(\"operator_opt_in_enabled\", False)} calls={puter.get(\"actual_calls\", 0)} successes={puter.get(\"successes\", 0)}')
             if r.get('provider_capacity'):
               print(f'Provider capacity deferral evidence: {r.get(\"provider_capacity\")}')
             if r.get('errors'):
