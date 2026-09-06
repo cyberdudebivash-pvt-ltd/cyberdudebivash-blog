@@ -1,3 +1,6 @@
+import json
+from datetime import datetime, timedelta, timezone
+
 from automation import premium_capacity_allocator_v13 as allocator
 from automation import publication_scheduler as scheduler
 from automation.content_discovery import DiscoveredArticle
@@ -102,9 +105,10 @@ def test_tpd_saturation_filters_thin_candidates_before_generation(monkeypatch):
     assert result.metrics["provider_independent_candidates"] == 1
     assert result.metrics["provider_capacity_deferred_candidates"] == 1
     assert result.metrics["provider_capacity_constrained"] is True
+    assert result.metrics["active_tpd_cooldown_count"] == 2
 
 
-def test_dense_structured_source_can_qualify_below_rich_word_threshold(monkeypatch):
+def test_dense_structured_source_can_qualify_below_rich_word_threshold():
     article = _article(
         3,
         words=allocator.MIN_DENSE_STRUCTURED_EVIDENCE_WORDS + 25,
@@ -117,7 +121,7 @@ def test_dense_structured_source_can_qualify_below_rich_word_threshold(monkeypat
 
 def test_canonical_url_does_not_bypass_source_richness_requirement():
     # A first-party URL is a provenance advantage, not permission to treat
-    # previously generated report prose as raw evidence.  A summary-only
+    # previously generated report prose as raw evidence. A summary-only
     # canonical handoff must therefore remain below the provider-independent
     # admission threshold.
     article = _article(
@@ -155,6 +159,132 @@ def test_capacity_saturation_with_no_rich_candidate_defers_entire_batch(monkeypa
     assert result.metrics["provider_capacity_deferred_candidates"] == 5
 
 
+def test_recent_expired_tpd_entries_are_captured_before_ledger_cleanup(monkeypatch, tmp_path):
+    now = datetime(2026, 9, 6, 21, 30, tzinfo=timezone.utc)
+    state_path = tmp_path / "provider_quota_state.json"
+    state_path.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "models": {
+                    "recent": {
+                        "provider": "groq",
+                        "model": "recent-model",
+                        "limit_type": "TPD",
+                        "unavailable_until": (now - timedelta(minutes=5)).isoformat(),
+                    },
+                    "stale": {
+                        "provider": "groq",
+                        "model": "stale-model",
+                        "limit_type": "TPD",
+                        "unavailable_until": (now - timedelta(seconds=allocator.TPD_RECOVERY_GRACE_SECONDS + 1)).isoformat(),
+                    },
+                    "active": {
+                        "provider": "groq",
+                        "model": "active-model",
+                        "limit_type": "TPD",
+                        "unavailable_until": (now + timedelta(minutes=5)).isoformat(),
+                    },
+                    "recent-tpm": {
+                        "provider": "groq",
+                        "model": "tpm-model",
+                        "limit_type": "TPM",
+                        "unavailable_until": (now - timedelta(minutes=1)).isoformat(),
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(allocator._quota, "_state_path", lambda: state_path)
+    monkeypatch.setattr(allocator._quota, "_assert_safe_state_target", lambda _path: None)
+
+    recent = allocator._recent_expired_tpd_signals(now=now)
+
+    assert [item["model"] for item in recent] == ["recent-model"]
+    assert recent[0]["recovery_grace"] is True
+    assert recent[0]["seconds_since_retry_window"] == 300.0
+
+
+def test_active_plus_recent_tpd_signal_triggers_capacity_circuit(monkeypatch):
+    monkeypatch.setattr(
+        allocator,
+        "_recent_expired_tpd_signals",
+        lambda: [
+            {
+                "provider": "groq",
+                "model": "just-expired",
+                "limit_type": "TPD",
+                "recovery_grace": True,
+            }
+        ],
+    )
+    monkeypatch.setattr(
+        allocator,
+        "_active_tpd_cooldowns",
+        lambda: [
+            {
+                "provider": "groq",
+                "model": "still-active",
+                "limit_type": "TPD",
+            }
+        ],
+    )
+
+    constrained, signals = allocator._capacity_constrained()
+
+    assert constrained is True
+    assert len(signals) == 2
+    assert sum(bool(item.get("recovery_grace")) for item in signals) == 1
+
+
+def test_two_recent_tpd_signals_trigger_recovery_grace_filter(monkeypatch):
+    thin = _article(7, words=100)
+    monkeypatch.setattr(allocator, "_ORIGINAL_SELECT", _fake_selection)
+    monkeypatch.setattr(
+        allocator,
+        "_capacity_constrained",
+        lambda: (
+            True,
+            [
+                {"provider": "groq", "model": "a", "limit_type": "TPD", "recovery_grace": True},
+                {"provider": "groq", "model": "b", "limit_type": "TPD", "recovery_grace": True},
+            ],
+        ),
+    )
+
+    result = allocator.capacity_aware_select_publication_batch([], [thin], 5)
+
+    assert result.articles == []
+    assert result.metrics["active_tpd_cooldown_count"] == 0
+    assert result.metrics["recent_tpd_recovery_count"] == 2
+    assert result.metrics["tpd_capacity_signal_count"] == 2
+    assert result.metrics["tpd_recovery_grace_seconds"] == allocator.TPD_RECOVERY_GRACE_SECONDS
+
+
+def test_duplicate_active_and_recent_model_counts_once(monkeypatch):
+    monkeypatch.setattr(
+        allocator,
+        "_recent_expired_tpd_signals",
+        lambda: [
+            {"provider": "groq", "model": "same", "limit_type": "TPD", "recovery_grace": True}
+        ],
+    )
+    monkeypatch.setattr(
+        allocator,
+        "_active_tpd_cooldowns",
+        lambda: [
+            {"provider": "groq", "model": "same", "limit_type": "TPD"}
+        ],
+    )
+
+    constrained, signals = allocator._capacity_constrained()
+
+    assert constrained is False
+    assert len(signals) == 1
+    assert signals[0]["recovery_grace"] is False
+
+
 def test_zero_selection_due_capacity_is_reported_degraded_not_no_intel(monkeypatch):
     captured = {}
     monkeypatch.setattr(
@@ -167,7 +297,9 @@ def test_zero_selection_due_capacity_is_reported_degraded_not_no_intel(monkeypat
         "discovered": 0,
         "published": 0,
         "provider_capacity_constrained": True,
-        "active_tpd_cooldown_count": 3,
+        "active_tpd_cooldown_count": 1,
+        "recent_tpd_recovery_count": 2,
+        "tpd_capacity_signal_count": 3,
         "provider_independent_candidates": 0,
         "provider_capacity_deferred_candidates": 191,
         "run_status": "SUCCESS",
@@ -178,5 +310,8 @@ def test_zero_selection_due_capacity_is_reported_degraded_not_no_intel(monkeypat
     assert report["run_status"] == "DEGRADED"
     assert report["provider_capacity_deferred"] is True
     assert report["provider_capacity"]["deferred_candidates"] == 191
+    assert report["provider_capacity"]["active_tpd_cooldown_count"] == 1
+    assert report["provider_capacity"]["recent_tpd_recovery_count"] == 2
     assert report["capacity_allocator_v13"]["marker"] == allocator.MARKER
+    assert report["capacity_allocator_v13"]["tpd_recovery_grace_seconds"] == allocator.TPD_RECOVERY_GRACE_SECONDS
     assert captured["report"] is report
