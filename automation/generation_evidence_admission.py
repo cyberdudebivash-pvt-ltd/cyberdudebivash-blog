@@ -30,7 +30,7 @@ from .report_integrity import (
 )
 
 logger = setup_logger("generation_evidence_admission")
-MARKER = "CDB-GENERATION-EVIDENCE-ADMISSION-V8"
+MARKER = "CDB-GENERATION-EVIDENCE-ADMISSION-V9"
 
 _CURRENT_ARTICLE: contextvars.ContextVar[Optional[DiscoveredArticle]] = contextvars.ContextVar(
     "cdb_generation_article", default=None
@@ -74,6 +74,23 @@ _SAFE_FORECAST_RE = re.compile(
     re.I,
 )
 
+# High-signal generation scratchpad phrases. We require a constellation of at
+# least two independent planning/constraint categories so a source article that
+# legitimately quotes one conversational phrase is not rejected. Internal CDB
+# control tokens are never valid customer prose and are sufficient alone.
+_PROMPT_LEAK_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("planning", re.compile(r"\bthe user wants me to\b", re.I)),
+    ("planning", re.compile(r"\blet me (?:analy[sz]e|draft|structure|write|think|plan)\b", re.I)),
+    ("planning", re.compile(r"\bi need to (?:be|write|ensure|follow|structure|carefully|make sure)\b", re.I)),
+    ("planning", re.compile(r"\bi should (?:be|not|ensure|write|follow|avoid)\b", re.I)),
+    ("constraint", re.compile(r"\b(?:\d{1,2}\s+)?mandatory sections?\b", re.I)),
+    ("constraint", re.compile(r"\b\d[\d,]*\s*(?:[-–]\s*\d[\d,]*)?\s+visible words?\b", re.I)),
+    ("constraint", re.compile(r"\bhtml only,? no markdown\b", re.I)),
+    ("constraint", re.compile(r"\bno preamble,? no markdown fences?\b", re.I)),
+    ("internal-control", re.compile(r"\bCDB_(?:EXPLOITATION_STATUS|SOURCE_CLAIM_ONLY)\b", re.I)),
+    ("role-instruction", re.compile(r"\b(?:system|developer|user) (?:message|prompt|instruction)s?\b", re.I)),
+)
+
 
 def _source_text(article: DiscoveredArticle) -> str:
     return " ".join(str(value or "") for value in (article.title, article.summary, article.full_content))
@@ -112,6 +129,17 @@ def _has_unnegated(text: str, patterns: tuple[str, ...]) -> bool:
     return False
 
 
+def _has_prompt_leakage(text: str) -> bool:
+    categories = {
+        category
+        for category, pattern in _PROMPT_LEAK_PATTERNS
+        if pattern.search(text or "")
+    }
+    if "internal-control" in categories or "role-instruction" in categories:
+        return True
+    return len(categories) >= 2
+
+
 def evaluate_generation_evidence(article: DiscoveredArticle, html: str) -> tuple[str, ...]:
     """Return deterministic high-impact admission failures for one LLM body."""
     if not html:
@@ -121,6 +149,9 @@ def evaluate_generation_evidence(article: DiscoveredArticle, html: str) -> tuple
     text = _plain(html)
     source = _source_text(article)
     issues: list[str] = []
+
+    if _has_prompt_leakage(text):
+        issues.append("PROMPT_LEAKAGE")
 
     source_attack_ids = {value.upper() for value in _ATTACK_ID_RE.findall(source)}
     generated_attack_ids = {value.upper() for value in _ATTACK_ID_RE.findall(text)}
@@ -225,7 +256,7 @@ def _contextual_transform(self, article: DiscoveredArticle) -> dict:
     if _ORIGINAL_TRANSFORM is None:
         raise RuntimeError("generation evidence admission transform wrapper is not installed")
     telemetry: dict = {
-        "version": "v8",
+        "version": "v9",
         "evaluated_candidates": 0,
         "rejected_candidates": 0,
         "reason_counts": Counter(),
@@ -237,7 +268,7 @@ def _contextual_transform(self, article: DiscoveredArticle) -> dict:
         result = _ORIGINAL_TRANSFORM(self, article)
         if isinstance(result, dict):
             result["generation_evidence_admission"] = {
-                "version": "v8",
+                "version": "v9",
                 "evaluated_candidates": int(telemetry["evaluated_candidates"]),
                 "rejected_candidates": int(telemetry["rejected_candidates"]),
                 "reason_counts": dict(telemetry["reason_counts"]),
@@ -254,7 +285,7 @@ def install_generation_evidence_admission(main_module) -> None:
     global _ORIGINAL_TRANSFORM, _ORIGINAL_CALL_LLM, _ORIGINAL_COMPLETE, _ORIGINAL_SCORE
 
     transformer = getattr(main_module, "AuthorityTransformer", None)
-    if transformer is None or getattr(transformer.transform, "_cdb_generation_admission_v8", False):
+    if transformer is None or getattr(transformer.transform, "_cdb_generation_admission_v9", False):
         return
 
     _ORIGINAL_COMPLETE = _recovery._raw_contract_complete
@@ -266,5 +297,5 @@ def install_generation_evidence_admission(main_module) -> None:
     _authority.call_llm = _admission_call_llm
 
     _ORIGINAL_TRANSFORM = transformer.transform
-    _contextual_transform._cdb_generation_admission_v8 = True
+    _contextual_transform._cdb_generation_admission_v9 = True
     transformer.transform = _contextual_transform
