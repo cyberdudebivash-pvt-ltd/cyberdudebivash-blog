@@ -3,7 +3,8 @@
 /**
  * Build the explicit Cloudflare static-asset bundle. This remains
  * allowlist-first: an omitted path fails visibly instead of exposing internal
- * repository state. Premium commerce adds only two customer-facing root pages.
+ * repository state. Premium commerce adds only explicitly customer-facing
+ * revenue surfaces.
  */
 const fs = require('fs');
 const path = require('path');
@@ -19,7 +20,7 @@ const PUBLIC_DIRS = [
 
 const PUBLIC_ROOT_FILES = [
   'about.html', 'api-dashboard.html', 'api.html', 'archive.html',
-  'contact.html', 'enterprise.html', 'faq.html', 'index.html',
+  'buy.html', 'contact.html', 'enterprise.html', 'faq.html', 'index.html',
   'intelligence.html', 'mitre-attack-detection.html', 'newsletter.html',
   'order-confirmation.html', 'owasp-llm-top10.html', 'pricing.html',
   'privacy.html', 'products.html', 'search.html',
@@ -32,8 +33,8 @@ const PUBLIC_ROOT_FILES = [
   'ai-monetization-engine.js', 'analytics-engine.js', 'auto-intel-engine.js',
   'banner-orchestrator.js', 'conversion-engine.js', 'email-engine.js',
   'live-feed-widget.js', 'monetization.js', 'payment-engine.js',
-  'payment-flow.js', 'revenue-cta-block.js', 'security-engine.js',
-  'seo-engine.js', 'ux-controller.js',
+  'payment-flow.js', 'revenue-conversion-v19.js', 'revenue-cta-block.js',
+  'security-engine.js', 'seo-engine.js', 'ux-controller.js',
   'apple-touch-icon.png', 'brand-logo.svg', 'favicon.ico', 'favicon.svg',
   'icon-192.png', 'icon-512.png', 'og-image.png', 'site.webmanifest',
   'robots.txt', 'rss.xml', 'sitemap.xml',
