@@ -26,6 +26,9 @@ from .premium_release_hardening import install_release_hardening
 from .premium_source_rss_v15 import install_source_rich_rss_v15
 from .premium_yield_contract_guard import install_yield_contract_guard
 from .premium_yield_hardening import install_yield_hardening_overrides
+from .premium_zero_cost_mesh_v16 import install_zero_cost_mesh_v16
+from .premium_zero_cost_mesh_v16_hardening import install_zero_cost_mesh_v16_hardening
+from .premium_puter_user_pays_v17 import install_puter_user_pays_v17
 from .provider_quota_ledger import install_provider_quota_ledger
 
 
@@ -53,17 +56,35 @@ def main() -> int:
     # candidate selection and rejects unsupported high-impact claims. Stage-5/v9
     # installs bounded <=900-token continuation recovery. v10 rebinds that
     # recovery wrapper around the ACTUAL authority_transformer.call_llm consumer.
-    # v11 installs last on the generation path: it reserves 1,000-OTPM Qwen
-    # models for <=900-token chunk work, honors real Retry-After pacing, and can
-    # seed a bounded chunked report when long-form providers are unavailable.
-    # v12 installs after v11 on run-status semantics only: a provider-declared
-    # active quota reset window becomes DEGRADED/DEFERRED instead of a false
+    # v11 installs last on the legacy generation path: it reserves 1,000-OTPM
+    # Qwen models for <=900-token chunk work, honors real Retry-After pacing, and
+    # can seed a bounded chunked report when long-form Groq capacity is absent.
+    # v12 installs after v11 on run-status semantics only: provider-declared
+    # active quota reset windows become DEGRADED/DEFERRED instead of a false
     # systemic pipeline failure, while evidence and publication gates stay hard.
-    # v13 installs after durable quota/run-status semantics and wraps the active
-    # factory scheduler. When active/recent TPD saturation signals prove capacity
-    # constrained it admits only source-rich candidates that can plausibly use
-    # the provider-independent evidence compiler, preventing scarce calls from
-    # being burned on known-thin reports. It never relaxes any publication gate.
+    # v13 wraps the active factory scheduler. During active/recent TPD saturation
+    # it admits only source-rich candidates that can plausibly use deterministic
+    # evidence compilation, preventing scarce calls from being burned on known-
+    # thin reports. It never relaxes any publication gate.
+    #
+    # v16 installs after every quota/capacity layer so it owns the final live LLM
+    # consumer without bypassing those controls. It preserves the proven Groq
+    # path, then adds Gemini Free Tier and NVIDIA NIM free API Catalog endpoints,
+    # then OpenRouter's live-discovered zero-priced model. DeepSeek/Anthropic are
+    # hard-disabled unless ALLOW_PAID_LLM=true. Gemini/NIM are additionally
+    # gated by explicit PUBLIC_DATA_ONLY controls. Their provider identities are
+    # registered with the analytical-depth contract so genuine LLM enrichment is
+    # never mislabeled as deterministic fallback. The adjacent v16 hardening
+    # layer gives all long-form free providers the established 4,400-token
+    # completion budget and persists only non-secret provider-attempt telemetry.
+    #
+    # v17 installs strictly after v16 hardening. Puter is intentionally outside
+    # the zero-cost mesh because backend/CI use requires an operator auth token,
+    # so the token owner's Puter allowance is the metered resource. The fallback
+    # is disabled by default, requires explicit PUBLIC_DATA_ONLY opt-in, performs
+    # a monthly-allowance preflight before every request, caps calls per run, and
+    # passes only PUTER_AUTH_TOKEN plus minimal process environment to its Node 24
+    # bridge. No Puter token or allowance amount is persisted in public telemetry.
     #
     # Dossier v8 remains the authoritative fail-closed final-content integrity
     # layer: it blocks prompt/reasoning leakage and residual duplicate canonical
@@ -92,6 +113,9 @@ def main() -> int:
     install_quota_aware_scheduler_v11(_main)
     install_quota_deferral_v12(_main)
     install_capacity_aware_allocator_v13(_main)
+    install_zero_cost_mesh_v16(_main)
+    install_zero_cost_mesh_v16_hardening(_main)
+    install_puter_user_pays_v17(_main)
     install_cti_dossier_v8(_main)
     install_cti_dossier_v9(_main)
     install_cti_dossier_v10(_main)
