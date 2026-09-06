@@ -1,8 +1,8 @@
 """P0 v16 zero-cost multi-provider inference mesh for SENTINEL APEX.
 
 The production factory is pre-revenue and must not make automatic paid LLM
-calls.  Existing provider-resilience layers already make Groq model capacity
-quota-aware and preserve OpenRouter's zero-priced catalog path.  v16 adds two
+calls. Existing provider-resilience layers already make Groq model capacity
+quota-aware and preserve OpenRouter's zero-priced catalog path. v16 adds two
 independent free-capacity domains without weakening any evidence or publication
 gate:
 
@@ -10,16 +10,16 @@ gate:
     -> OpenRouter zero-priced model -> safe defer
 
 DeepSeek and Anthropic remain configurable for a future commercial phase, but
-are never called unless ``ALLOW_PAID_LLM=true``.  The production workflow keeps
+are never called unless ``ALLOW_PAID_LLM=true``. The production workflow keeps
 that flag false and does not inject paid-provider credentials into the job.
 
 Privacy/trust boundary:
 - Gemini and hosted NVIDIA NIM are enabled only when their explicit
   ``*_PUBLIC_DATA_ONLY`` controls are true.
-- This pipeline is for public CTI/OSINT.  Customer telemetry, credentials,
+- This pipeline is for public CTI/OSINT. Customer telemetry, credentials,
   unpublished VDP material, private incidents, or proprietary data must never
   be sent through these free endpoints.
-- Model output remains untrusted analytical enrichment.  ReportX evidence,
+- Model output remains untrusted analytical enrichment. ReportX evidence,
   contradiction, prompt-leak, duplicate-section, provenance, and publication
   gates remain authoritative.
 
@@ -41,9 +41,11 @@ from . import analytical_depth_gate as _depth
 from . import authority_transformer as _authority
 from . import key_judgements as _key_judgements
 from . import llm_client as _llm
+from . import premium_capacity_allocator_v13 as _allocator
 from . import premium_evidence_compiler as _compiler
 from . import premium_publication as _publication
 from . import provider_quota_ledger as _quota
+from .config import Config
 from .logger import setup_logger
 
 logger = setup_logger("premium_zero_cost_mesh_v16")
@@ -54,13 +56,14 @@ GEMINI_URL_TEMPLATE = (
 )
 NVIDIA_NIM_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 
-# One bounded retry is enough for a genuinely transient free-tier 429.  Durable
+# One bounded retry is enough for a genuinely transient free-tier 429. Durable
 # reset windows are persisted by provider_quota_ledger and skipped on later
 # calls/runs rather than repeatedly burning quota.
 _MAX_TRANSIENT_RETRIES = 1
 
 _INNER_AUTHORITY_CALL: Optional[Callable] = None
 _INNER_KEY_JUDGEMENTS_CALL: Optional[Callable] = None
+_ORIGINAL_CAPACITY_CONSTRAINED: Optional[Callable] = None
 _INSTALLED = False
 
 _RUNTIME = {
@@ -68,6 +71,7 @@ _RUNTIME = {
     "provider_successes": Counter(),
     "policy_blocks": Counter(),
     "gemini_thought_parts_discarded": 0,
+    "allocator_alt_capacity_bypasses": 0,
 }
 
 
@@ -122,6 +126,7 @@ def _gemini_text(payload: dict) -> str:
 
 
 def _gemini_retry_delay(response) -> Optional[float]:
+    """Return the provider's raw retry hint; the caller decides if it is bounded."""
     try:
         raw = _llm._raw_retry_after_seconds(response)
     except Exception:
@@ -132,10 +137,7 @@ def _gemini_retry_delay(response) -> Optional[float]:
         raw = float(raw)
     except (TypeError, ValueError):
         return None
-    if raw < 0:
-        return 0.0
-    # Never let one free endpoint monopolize the factory run.
-    return min(raw, float(getattr(_llm, "_MAX_BACKOFF_SECONDS", 65.0)))
+    return max(0.0, raw)
 
 
 def _call_gemini_model(config, prompt: str, model: str, max_tokens: int, attempts, sleep_fn) -> Optional[str]:
@@ -196,9 +198,10 @@ def _call_gemini_model(config, prompt: str, model: str, max_tokens: int, attempt
         if response.status_code == 429:
             _quota.record_429(provider, model, response)
             delay = _gemini_retry_delay(response)
-            if retry_index < _MAX_TRANSIENT_RETRIES and delay is not None and delay <= float(
-                getattr(_llm, "_MAX_BACKOFF_SECONDS", 65.0)
-            ):
+            max_wait = float(getattr(_llm, "_MAX_BACKOFF_SECONDS", 65.0))
+            # A provider-declared wait beyond our bounded request budget is a
+            # durable capacity signal, not a reason to sleep and retry too early.
+            if retry_index < _MAX_TRANSIENT_RETRIES and delay is not None and delay <= max_wait:
                 sleep_fn(delay)
                 continue
 
@@ -377,15 +380,21 @@ def _run_mesh(inner_call: Callable, config, prompt: str, max_tokens: int, attemp
     if result:
         return result
 
-    for candidate in (
-        _try_gemini(config, prompt, max_tokens, attempts, sleep_fn or time.sleep),
-        _try_nvidia(config, prompt, max_tokens, attempts, sleep_fn or time.sleep),
-        _try_openrouter_free(config, prompt, max_tokens, attempts, sleep_fn or time.sleep),
-    ):
-        if candidate:
-            return candidate
+    # These must be strictly sequential. Eager tuple construction would call
+    # every provider even after an earlier success and waste free quota.
+    candidate = _try_gemini(config, prompt, max_tokens, attempts, sleep_fn or time.sleep)
+    if candidate:
+        return candidate
 
-    # Future commercial escape hatch.  This is deliberately opt-in and the
+    candidate = _try_nvidia(config, prompt, max_tokens, attempts, sleep_fn or time.sleep)
+    if candidate:
+        return candidate
+
+    candidate = _try_openrouter_free(config, prompt, max_tokens, attempts, sleep_fn or time.sleep)
+    if candidate:
+        return candidate
+
+    # Future commercial escape hatch. This is deliberately opt-in and the
     # production workflow sets ALLOW_PAID_LLM=false and withholds these secrets.
     if bool(getattr(config, "allow_paid_llm", False)):
         paid_attempts: list[dict] = []
@@ -427,6 +436,49 @@ def zero_cost_key_judgements_llm(config, prompt: str, max_tokens: int = 2000, at
     return _run_mesh(_INNER_KEY_JUDGEMENTS_CALL, config, prompt, max_tokens, attempts, sleep_fn)
 
 
+def _alternate_free_capacity_available(config: Optional[Config] = None) -> bool:
+    """Return True when a configured alternate free model is outside cooldown.
+
+    v13 was intentionally written when Groq was effectively the only usable
+    free provider. Its conservative source-rich filter must remain authoritative
+    only when the *mesh*, not merely Groq, is constrained.
+    """
+    config = config or Config.from_env()
+
+    if getattr(config, "gemini_api_key", "") and _public_only_enabled(config, "gemini"):
+        for model in _dedupe_models(
+            getattr(config, "llm_model_gemini", ""),
+            getattr(config, "llm_model_gemini_fallbacks", ()),
+        ):
+            if _quota.cooldown_remaining("gemini", model) <= 0:
+                return True
+
+    if getattr(config, "nvidia_nim_api_key", "") and _public_only_enabled(config, "nvidia_nim"):
+        for model in _dedupe_models(
+            getattr(config, "llm_model_nvidia_nim", ""),
+            getattr(config, "llm_model_nvidia_nim_fallbacks", ()),
+        ):
+            if _quota.cooldown_remaining("nvidia_nim", model) <= 0:
+                return True
+
+    return False
+
+
+def mesh_capacity_constrained():
+    """Keep v13 conservative deferral only when no alternate free capacity exists."""
+    if _ORIGINAL_CAPACITY_CONSTRAINED is None:
+        raise RuntimeError("v16 allocator capacity binding is not installed")
+    constrained, signals = _ORIGINAL_CAPACITY_CONSTRAINED()
+    if constrained and _alternate_free_capacity_available():
+        _RUNTIME["allocator_alt_capacity_bypasses"] += 1
+        logger.info(
+            "Groq TPD constrained but alternate zero-cost mesh capacity is available; preserving normal scheduling",
+            extra={"signal_count": len(signals)},
+        )
+        return False, signals
+    return constrained, signals
+
+
 def telemetry_snapshot() -> dict:
     return {
         "version": "v16",
@@ -434,6 +486,7 @@ def telemetry_snapshot() -> dict:
         "provider_successes": dict(_RUNTIME["provider_successes"]),
         "policy_blocks": dict(_RUNTIME["policy_blocks"]),
         "gemini_thought_parts_discarded": int(_RUNTIME["gemini_thought_parts_discarded"]),
+        "allocator_alt_capacity_bypasses": int(_RUNTIME["allocator_alt_capacity_bypasses"]),
         "paid_default": False,
         "public_data_only_providers": ["gemini", "nvidia_nim"],
     }
@@ -442,14 +495,15 @@ def telemetry_snapshot() -> dict:
 def install_zero_cost_mesh_v16(main_module) -> None:
     """Install after quota/capacity layers so v16 owns the final live consumer."""
     del main_module
-    global _INNER_AUTHORITY_CALL, _INNER_KEY_JUDGEMENTS_CALL, _INSTALLED
+    global _INNER_AUTHORITY_CALL, _INNER_KEY_JUDGEMENTS_CALL
+    global _ORIGINAL_CAPACITY_CONSTRAINED, _INSTALLED
     if _INSTALLED:
         return
 
     # Give NVIDIA's exact hosted API hostname a stable durable-ledger identity.
     _quota._PROVIDER_BY_HOST[NVIDIA_NIM_URL.split("//", 1)[1].split("/", 1)[0]] = "nvidia_nim"
 
-    # Provider identity is part of the analytical-depth contract.  Gemini/NIM
+    # Provider identity is part of the analytical-depth contract. Gemini/NIM
     # must be recognized as genuine LLM-authored enrichment rather than silently
     # mislabeled as deterministic/template fallback.
     new_sources = {"gemini", "nvidia_nim"}
@@ -457,11 +511,17 @@ def install_zero_cost_mesh_v16(main_module) -> None:
     _publication._LLM_SOURCES = frozenset(set(_publication._LLM_SOURCES) | new_sources)
     _depth.LLM_AUTHORED_SOURCES = frozenset(set(_depth.LLM_AUTHORED_SOURCES) | new_sources)
 
+    # v13's capacity predicate is global inside its scheduler function, so a
+    # final binding here lets the allocator evaluate mesh capacity rather than
+    # treating Groq-only saturation as whole-platform saturation.
+    _ORIGINAL_CAPACITY_CONSTRAINED = _allocator._capacity_constrained
+    _allocator._capacity_constrained = mesh_capacity_constrained
+
     _INNER_AUTHORITY_CALL = _authority.call_llm
     _authority.call_llm = zero_cost_authority_llm
 
     # key_judgements imported call_llm by value and therefore needs an explicit
-    # final binding.  Stage-2 normally derives judgements deterministically, but
+    # final binding. Stage-2 normally derives judgements deterministically, but
     # this closes the paid-provider escape route if that legacy path is invoked.
     _INNER_KEY_JUDGEMENTS_CALL = _key_judgements.call_llm
     _key_judgements.call_llm = zero_cost_key_judgements_llm
@@ -470,6 +530,8 @@ def install_zero_cost_mesh_v16(main_module) -> None:
         raise RuntimeError("v16 failed to bind authority_transformer.call_llm")
     if _key_judgements.call_llm is not zero_cost_key_judgements_llm:
         raise RuntimeError("v16 failed to bind key_judgements.call_llm")
+    if _allocator._capacity_constrained is not mesh_capacity_constrained:
+        raise RuntimeError("v16 failed to bind mesh-aware capacity predicate")
 
     _INSTALLED = True
     logger.info(
@@ -479,5 +541,6 @@ def install_zero_cost_mesh_v16(main_module) -> None:
             "order": ["groq", "gemini", "nvidia_nim", "openrouter_free", "safe_defer"],
             "paid_default": False,
             "public_data_only": True,
+            "capacity_scope": "FULL_FREE_MESH",
         },
     )
