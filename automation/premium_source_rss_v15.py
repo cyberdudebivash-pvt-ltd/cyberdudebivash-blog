@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import re
 import xml.etree.ElementTree as ET
-from typing import Optional
 
 from bs4 import BeautifulSoup
 
@@ -176,11 +175,11 @@ def parse_source_rich_feed_items(xml_text: str) -> list[dict]:
     return parsed
 
 
-def _source_rich_to_article(feed, item: dict, state):
+def _source_rich_to_article(self, feed, item: dict, state):
     if _ORIGINAL_TO_ARTICLE is None:
         raise RuntimeError("source-rich RSS runtime is not installed")
 
-    article = _ORIGINAL_TO_ARTICLE(feed, item, state)
+    article = _ORIGINAL_TO_ARTICLE(self, feed, item, state)
     if article is None:
         return None
 
