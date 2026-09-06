@@ -35,6 +35,26 @@ class GenerationEvidenceAdmissionTests(unittest.TestCase):
         """
         self.assertEqual(evaluate_generation_evidence(article, html), ())
 
+    def test_production_prompt_planning_leakage_is_rejected_upstream(self):
+        article = _article()
+        html = """
+        <h3>Technical Analysis</h3>
+        <p>The user wants me to produce a comprehensive HTML intelligence report.</p>
+        <p>Let me analyze the source carefully. I need to ensure all mandatory sections are present.</p>
+        <p>HTML only, no markdown. CDB_EXPLOITATION_STATUS: not_applicable.</p>
+        """
+        self.assertIn("PROMPT_LEAKAGE", evaluate_generation_evidence(article, html))
+
+    def test_single_source_quote_does_not_false_positive_as_prompt_leakage(self):
+        article = _article(full_content='The article quotes an agent saying "let me analyze this" during testing.')
+        html = '<p>The source quotes the agent saying “let me analyze this” during the controlled test.</p>'
+        self.assertNotIn("PROMPT_LEAKAGE", evaluate_generation_evidence(article, html))
+
+    def test_internal_cdb_control_token_is_sufficient_to_reject_generation(self):
+        article = _article()
+        html = "<p>CDB_SOURCE_CLAIM_ONLY: false</p>"
+        self.assertIn("PROMPT_LEAKAGE", evaluate_generation_evidence(article, html))
+
     def test_inferred_attack_ids_are_rejected_when_source_has_no_ids(self):
         article = _article()
         html = """
