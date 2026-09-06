@@ -6,6 +6,7 @@ import sys
 
 from . import main as _main
 from .cti_dossier_presentation import install_cti_dossier_presentation
+from .cti_dossier_v8 import install_cti_dossier_v8
 from .cti_evidence_convergence import install_cti_evidence_convergence
 from .cti_evidence_convergence_v7 import install_cti_evidence_convergence_v7
 from .generation_evidence_admission import install_generation_evidence_admission
@@ -47,6 +48,12 @@ def main() -> int:
     # v12 installs after v11 on run-status semantics only: a provider-declared
     # active quota reset window becomes DEGRADED/DEFERRED instead of a false
     # systemic pipeline failure, while evidence and publication gates stay hard.
+    #
+    # Dossier v8 is the absolute final _assemble_html wrapper. It sees the fully
+    # converged customer artifact, blocks prompt/reasoning leakage and residual
+    # duplicate canonical sections, then adds evidence-safe SOC/CTI command
+    # modules. Visual enrichment is fail-open; content-integrity failures are
+    # fail-closed via PublicationIntegrityError.
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
@@ -64,6 +71,7 @@ def main() -> int:
     install_capacity_runtime_binding_fix()
     install_quota_aware_scheduler_v11(_main)
     install_quota_deferral_v12(_main)
+    install_cti_dossier_v8(_main)
     return _main.main()
 
 
