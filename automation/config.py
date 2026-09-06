@@ -15,6 +15,13 @@ def _parse_csv_env(name: str, default: tuple[str, ...]) -> tuple[str, ...]:
     return tuple(item.strip() for item in raw.split(",") if item.strip())
 
 
+def _parse_bool_env(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 @dataclass
 class Config:
     # Blogger OAuth2
@@ -23,11 +30,17 @@ class Config:
     blogger_refresh_token: str = ""
     blogger_blog_id: str = ""
 
-    # LLM providers — tried in priority order: Groq → DeepSeek → OpenRouter → Anthropic
+    # LLM providers. Production policy defaults to zero-paid routing:
+    # Groq free pool → Gemini Free Tier → OpenRouter zero-priced model → defer.
+    # Paid providers remain configurable but cannot be called unless the
+    # operator explicitly sets ALLOW_PAID_LLM=true.
     groq_api_key: str = ""
+    gemini_api_key: str = ""
     deepseek_api_key: str = ""
     openrouter_api_key: str = ""
     anthropic_api_key: str = ""
+    allow_paid_llm: bool = False
+    gemini_public_data_only: bool = False
 
     # External data source API keys
     nvd_api_key: str = ""
@@ -36,43 +49,24 @@ class Config:
     # Model selection per provider
     # P0-REPORTX-2026-08-19: "llama-3.3-70b-versatile" was deprecated by Groq
     # for free/developer-tier usage (announced 2026-06-17, deprecation dated
-    # 2026-08-16) -- this WAS the "Groq 404 likely a retired model ID" cause
-    # noted below, and unlike the DeepSeek/OpenRouter 402s, it is fixable
-    # from this repository. "openai/gpt-oss-120b" is Groq's own documented
-    # replacement (console.groq.com/docs/deprecations) for the same 70B-class
-    # general-purpose tier the original default targeted.
+    # 2026-08-16). "openai/gpt-oss-120b" is the current general-purpose
+    # replacement used by this factory.
     llm_model_groq: str = "openai/gpt-oss-120b"
-    # P0-FREE-TIER-RESILIENCE-2026-09-03: the platform runs on free-tier LLM
-    # access only until it earns real revenue (operator decision) -- DeepSeek
-    # and OpenRouter's paid tiers are unfunded (402 on every call) and that
-    # is not going to change from this repository. Groq's free/on_demand
-    # tier enforces its "tokens per day" ceiling PER MODEL, not account-
-    # wide (confirmed from a real 429 body: "Rate limit reached for model
-    # `openai/gpt-oss-120b` ... on tokens per day (TPD): Limit 200000"), so
-    # the SAME already-configured GROQ_API_KEY gets an independent daily
-    # budget on each of these -- trying them in sequence multiplies real,
-    # free, zero-signup daily capacity with no new secret. Overridable via
-    # GROQ_FALLBACK_MODELS (comma-separated) if Groq's free-tier catalog
-    # changes before this default is updated.
+    # Groq free/on_demand TPD is model-scoped. Fallback models therefore add
+    # independent daily headroom under the same configured key.
     llm_model_groq_fallbacks: tuple[str, ...] = ("openai/gpt-oss-20b", "qwen/qwen3.6-27b", "qwen/qwen3.8-27b")
+
+    # P0-ZERO-COST-MESH-V16-2026-09-07: Gemini is enabled only for public CTI
+    # workloads. The production workflow sets GEMINI_PUBLIC_DATA_ONLY=true;
+    # callers that do not make that explicit cannot send data to Gemini.
+    # Model IDs are environment-overridable so catalog changes do not require
+    # weakening provider or evidence controls.
+    llm_model_gemini: str = "gemini-3.7-flash"
+    llm_model_gemini_fallbacks: tuple[str, ...] = ("gemini-3.5-flash", "gemini-3.1-flash-lite")
+
     llm_model_deepseek: str = "deepseek-chat"
-    # OpenRouter has no fixed default model here: its free ($0-priced)
-    # catalog is reported to churn weekly, so llm_client.py discovers a
-    # currently-free model from OpenRouter's own live /models endpoint at
-    # call time instead of a hardcoded ID that would just go stale again.
-    # COMMERCIAL-QUALITY-2026-08-19: was "claude-opus-4-8", a model ID that
-    # does not exist in the current Claude lineup -- confirmed via a live
-    # dry-run trigger of blogger-syndication.yml once GROQ/DEEPSEEK/
-    # OPENROUTER keys were actually wired through: those three reached real
-    # HTTP calls for the first time (no longer no_api_key) and failed on
-    # their own account-side issues (Groq 404 -- a retired model ID, fixed
-    # above 2026-08-19; DeepSeek/OpenRouter 402 Payment Required -- an
-    # account-billing issue, not fixable from this repository).
-    # ANTHROPIC_API_KEY was unset in that
-    # run, so this stale ID was never actually exercised live, but it would
-    # fail identically the moment a real key is added. "claude-opus-5" keeps
-    # the same Opus-tier choice the original default signaled, updated to a
-    # real, current model ID.
+    # OpenRouter has no fixed model default: llm_client.py discovers a current
+    # zero-priced :free model from OpenRouter's own catalog at call time.
     claude_model: str = "claude-opus-5"
 
     # Google Search Console
@@ -94,10 +88,8 @@ class Config:
     source_base_url: str = "https://blog.cyberdudebivash.in"
 
     # Target Blogger — target_blog_url is the underlying Blogspot hosting
-    # implementation detail (used only for internal/API purposes). public_cti_url
-    # is the commercial, customer-facing canonical identity of the same site
-    # (custom-domain-mapped) and is what belongs in public-facing structured
-    # data, sameAs references, and anywhere else customers or crawlers see it.
+    # implementation detail. public_cti_url is the customer-facing canonical
+    # identity used in public structured data and report surfaces.
     target_blog_url: str = "https://cyberbivash.blogspot.com"
     public_cti_url: str = "https://cti.cyberdudebivash.in"
     blogger_api_base: str = "https://www.googleapis.com/blogger/v3"
@@ -131,9 +123,12 @@ class Config:
             blogger_refresh_token=os.environ.get("BLOGGER_REFRESH_TOKEN", ""),
             blogger_blog_id=os.environ.get("BLOGGER_BLOG_ID", ""),
             groq_api_key=os.environ.get("GROQ_API_KEY", ""),
+            gemini_api_key=os.environ.get("GEMINI_API_KEY", ""),
             deepseek_api_key=os.environ.get("DEEPSEEK_API_KEY", ""),
             openrouter_api_key=os.environ.get("OPENROUTER_API_KEY", ""),
             anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY", ""),
+            allow_paid_llm=_parse_bool_env("ALLOW_PAID_LLM", False),
+            gemini_public_data_only=_parse_bool_env("GEMINI_PUBLIC_DATA_ONLY", False),
             nvd_api_key=os.environ.get("NVD_API_KEY", ""),
             alienvault_otx_key=os.environ.get("ALIENVAULT_OTX_KEY", ""),
             google_search_console_key=os.environ.get("GOOGLE_SEARCH_CONSOLE_KEY", ""),
@@ -144,8 +139,13 @@ class Config:
             newsletter_signup_url=os.environ.get("NEWSLETTER_SIGNUP_URL", "https://cyberdudebivash.substack.com"),
             public_cti_url=os.environ.get("PUBLIC_CTI_URL", "https://cti.cyberdudebivash.in"),
             max_posts_per_run=int(os.environ.get("MAX_POSTS_PER_RUN", "5")),
+            llm_model_groq=os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b"),
             llm_model_groq_fallbacks=_parse_csv_env(
                 "GROQ_FALLBACK_MODELS", ("openai/gpt-oss-20b", "qwen/qwen3.6-27b", "qwen/qwen3.8-27b")
+            ),
+            llm_model_gemini=os.environ.get("GEMINI_MODEL", "gemini-3.7-flash"),
+            llm_model_gemini_fallbacks=_parse_csv_env(
+                "GEMINI_FALLBACK_MODELS", ("gemini-3.5-flash", "gemini-3.1-flash-lite")
             ),
         )
 
