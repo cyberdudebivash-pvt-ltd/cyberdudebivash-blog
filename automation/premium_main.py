@@ -8,6 +8,7 @@ from . import main as _main
 from .cti_dossier_presentation import install_cti_dossier_presentation
 from .cti_dossier_v8 import install_cti_dossier_v8
 from .cti_dossier_v9 import install_cti_dossier_v9
+from .cti_dossier_v10 import install_cti_dossier_v10
 from .cti_evidence_convergence import install_cti_evidence_convergence
 from .cti_evidence_convergence_v7 import install_cti_evidence_convergence_v7
 from .generation_evidence_admission import install_generation_evidence_admission
@@ -52,11 +53,12 @@ def main() -> int:
     #
     # Dossier v8 remains the authoritative fail-closed final-content integrity
     # layer: it blocks prompt/reasoning leakage and residual duplicate canonical
-    # sections. Dossier v9 installs immediately after v8 and adds evidence-safe
-    # premium command-center modules (confidence/evidence matrix, exposure
-    # decision engine, attack-surface control path, chronology visualization,
-    # lifecycle ribbon and richer publication-state controls). v9 is visual and
-    # fail-open; it never weakens or replaces v8 integrity enforcement.
+    # sections. Dossier v9 adds the premium SOC/CTI command-center experience.
+    # Dossier v10 installs strictly after v9 and adds evidence-graph traceability,
+    # family-adaptive exposure validation, provenance chronology, intelligence-gap
+    # tracking, canonical decision surfacing, machine-readable capability links,
+    # and conservative removal of inapplicable/legacy UI. v9/v10 are fail-open
+    # presentation layers and cannot weaken v8 fail-closed publication integrity.
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
     install_yield_hardening_overrides()
@@ -76,6 +78,7 @@ def main() -> int:
     install_quota_deferral_v12(_main)
     install_cti_dossier_v8(_main)
     install_cti_dossier_v9(_main)
+    install_cti_dossier_v10(_main)
     return _main.main()
 
 
