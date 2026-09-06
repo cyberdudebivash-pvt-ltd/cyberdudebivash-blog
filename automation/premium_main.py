@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 
 from . import main as _main
+from .astra_cash_conversion_v19 import install_astra_cash_conversion_v19
 from .astra_revenue_intelligence_v18 import (
     install_astra_revenue_presentation_v18,
     install_astra_revenue_runtime_v18,
@@ -114,11 +115,17 @@ def main() -> int:
     # and conservative removal of inapplicable/legacy UI. v9/v10 are fail-open
     # presentation layers and cannot weaken v8 fail-closed publication integrity.
     #
-    # v18 commercial presentation installs last, after Dossier v10. It is a
-    # deterministic conversion/product-access surface mapped to the repository's
-    # existing Free / Starter / Pro / Enterprise entitlements and UTM-tagged for
-    # the already-deployed conversion-engine.js + GA4 stack. It never alters
-    # intelligence assertions or creates a second billing/entitlement system.
+    # v18 commercial presentation installs after Dossier v10. It is a
+    # deterministic product-access surface mapped to the repository's existing
+    # Free / Starter / Pro / Enterprise entitlements. It never alters intelligence
+    # assertions or creates a second billing/entitlement system.
+    #
+    # v19 installs strictly outside v18 as the final presentation wrapper. It
+    # preserves v18's tier recommendation but rewrites qualified paid CTI CTAs to
+    # the focused /buy.html checkout surface, eliminating an unnecessary pricing-
+    # page hop. It also adds aggregate checkout-link telemetry only. Canonical
+    # prices remain server-owned in api/_lib/payment-utils.js and all payment
+    # verification remains server-owned in api/v1/billing.
     install_source_rich_rss_v15()
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
@@ -147,6 +154,7 @@ def main() -> int:
     install_cti_dossier_v9(_main)
     install_cti_dossier_v10(_main)
     install_astra_revenue_presentation_v18(_main)
+    install_astra_cash_conversion_v19(_main)
     return _main.main()
 
 
