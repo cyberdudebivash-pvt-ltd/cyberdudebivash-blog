@@ -12,6 +12,7 @@ from .cti_dossier_v10 import install_cti_dossier_v10
 from .cti_evidence_convergence import install_cti_evidence_convergence
 from .cti_evidence_convergence_v7 import install_cti_evidence_convergence_v7
 from .generation_evidence_admission import install_generation_evidence_admission
+from .premium_capacity_allocator_v13 import install_capacity_aware_allocator_v13
 from .premium_capacity_recovery import install_premium_capacity_recovery
 from .premium_capacity_runtime_binding import install_capacity_runtime_binding_fix
 from .premium_evidence_compiler import install_premium_evidence_compiler_overrides
@@ -50,6 +51,11 @@ def main() -> int:
     # v12 installs after v11 on run-status semantics only: a provider-declared
     # active quota reset window becomes DEGRADED/DEFERRED instead of a false
     # systemic pipeline failure, while evidence and publication gates stay hard.
+    # v13 installs after durable quota/run-status semantics and wraps the active
+    # factory scheduler. When multiple TPD cooldowns are already present before
+    # allocation it admits only source-rich candidates that can plausibly use
+    # the provider-independent evidence compiler, preventing scarce calls from
+    # being burned on known-thin reports. It never relaxes any publication gate.
     #
     # Dossier v8 remains the authoritative fail-closed final-content integrity
     # layer: it blocks prompt/reasoning leakage and residual duplicate canonical
@@ -76,6 +82,7 @@ def main() -> int:
     install_capacity_runtime_binding_fix()
     install_quota_aware_scheduler_v11(_main)
     install_quota_deferral_v12(_main)
+    install_capacity_aware_allocator_v13(_main)
     install_cti_dossier_v8(_main)
     install_cti_dossier_v9(_main)
     install_cti_dossier_v10(_main)
