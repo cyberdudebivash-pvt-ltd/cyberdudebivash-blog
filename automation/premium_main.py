@@ -19,6 +19,7 @@ from .cti_evidence_convergence import install_cti_evidence_convergence
 from .cti_evidence_convergence_v7 import install_cti_evidence_convergence_v7
 from .cti_integrity_revenue_v19_1 import install_cti_integrity_revenue_v19_1
 from .cti_integrity_revenue_v19_1_claim_semantics import install_claim_semantics_v19_1
+from .cti_publication_recovery_v19_2 import install_cti_publication_recovery_v19_2
 from .generation_evidence_admission import install_generation_evidence_admission
 from .premium_capacity_allocator_v13 import install_capacity_aware_allocator_v13
 from .premium_capacity_recovery import install_premium_capacity_recovery
@@ -140,6 +141,14 @@ def main() -> int:
     # if any contradiction survives. It does not change ReportX tier computation,
     # provider routing, prices, entitlements, payment verification, or the
     # underlying evidence graph.
+    #
+    # v19.2 installs after v19.1 as a narrow P0 publication-recovery compatibility
+    # layer. It repairs only already-observed high-signal model scratch/control
+    # fragments before Dossier v8's original fail-closed prompt gate re-checks the
+    # artifact, and retains the exact internal ReportX certification as non-visible
+    # machine metadata after v19.1 applies the truthful SOURCE_ONLY_PRELIMINARY
+    # customer label. No evidence, quality, tier, provider, billing, or pricing
+    # gate is weakened.
     install_source_rich_rss_v15()
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
@@ -171,6 +180,7 @@ def main() -> int:
     install_astra_cash_conversion_v19(_main)
     install_claim_semantics_v19_1()
     install_cti_integrity_revenue_v19_1(_main)
+    install_cti_publication_recovery_v19_2(_main)
     return _main.main()
 
 
