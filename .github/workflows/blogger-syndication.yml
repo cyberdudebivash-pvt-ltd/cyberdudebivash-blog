@@ -28,8 +28,18 @@ on:
         required: false
         default: "5"
 
+# P0-BLOGGER-FRESHNESS-2026-09-07:
+# The Blogger publisher previously shared `main-content-writers` with the
+# high-frequency Sentinel APEX, AI-security, RSS, CVE and intelligence-hub
+# generators. GitHub Actions concurrency permits only one running and one
+# pending run per concurrency group, so unrelated content-generation jobs could
+# displace/serialize the 15-minute Blogger publication clock even though Blogger
+# writes only its publication ledger/quota state/run report and rebases before
+# pushing. Isolate the remote-publishing lane while still serializing Blogger
+# against itself. The existing pull --rebase + bounded push retry below remains
+# the cross-writer Git race safeguard.
 concurrency:
-  group: main-content-writers
+  group: blogger-syndication-writer
   cancel-in-progress: false
 
 permissions:
@@ -97,12 +107,13 @@ jobs:
           from automation.premium_publication import PremiumAuthorityTransformer, VerifiedBloggerPublisher, assess_enterprise_report, assess_live_artifact
           from automation.premium_zero_cost_mesh_v16 import install_zero_cost_mesh_v16
           from automation.premium_puter_user_pays_v17 import install_puter_user_pays_v17
+          from automation.cti_publication_recovery_v19_2 import install_cti_publication_recovery_v19_2
           from automation.premium_main import main as premium_main
           from automation.seo_optimizer import SEOOptimizer
           from automation.social_amplifier import SocialAmplifier
           from automation.rss_aggregator import GlobalRSSAggregator
           from automation.threat_feeds import CISAAdvisoriesSource, RansomwareIntelSource, DataBreachIntelSource, ThreatActorIntelSource
-          print('Premium publication + Global CTI Stage-2 + zero-cost v16 + guarded Puter v17 modules imported successfully')
+          print('Premium publication + Global CTI Stage-2 + zero-cost v16 + guarded Puter v17 + publication recovery v19.2 modules imported successfully')
           "
 
       - name: "🧪 Run Unit & Integration Tests"
@@ -266,6 +277,9 @@ jobs:
               print(f'Generation modes: {stage2.get(\"generation_mode_counts\", {})}')
               print(f'Gate failures: {stage2.get(\"gate_failure_counts\", {})}')
               print(f'Provider quota: {stage2.get(\"provider_quota\", {})}')
+            recovery = r.get('cti_publication_recovery_v19_2') or {}
+            if recovery:
+              print(f'Publication recovery v19.2: scrubbed={recovery.get(\"dossiers_scrubbed\", 0)} bindings={recovery.get(\"certification_bindings_added\", 0)}')
             puter = r.get('puter_user_pays_v17') or {}
             if puter:
               print(f'Puter v17: enabled={puter.get(\"operator_opt_in_enabled\", False)} calls={puter.get(\"actual_calls\", 0)} successes={puter.get(\"successes\", 0)}')
