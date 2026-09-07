@@ -17,6 +17,8 @@
   'use strict';
 
   const VALID_PLANS = Object.freeze(['starter', 'pro', 'enterprise']);
+  const PAYMENT_SESSION_KEY = 'apex_pf_state';
+  const MANUAL_STATUS_INTERVAL_MS = 10000;
   const FALLBACK_PLANS = Object.freeze({
     starter: {
       label: 'API Starter', amount: 999, currency: 'INR',
@@ -61,13 +63,14 @@
   }
 
   function eventPayload(plan, attribution, extra) {
+    const attr = attribution || { source: 'direct', medium: 'checkout', campaign: 'p0_revenue_conversion_v19', content: 'direct_checkout' };
     return Object.assign({
       plan: sanitizePlan(plan) || 'unknown',
       revenue_surface: 'buy_v19',
-      utm_source: attribution.source,
-      utm_medium: attribution.medium,
-      utm_campaign: attribution.campaign,
-      utm_content: attribution.content,
+      utm_source: attr.source,
+      utm_medium: attr.medium,
+      utm_campaign: attr.campaign,
+      utm_content: attr.content,
     }, extra || {});
   }
 
@@ -83,6 +86,118 @@
         root.gtag('event', name, Object.assign({ platform: 'sentinel_apex' }, payload));
       }
     } catch (_) {}
+  }
+
+  /* The legacy billing status endpoint returns the authoritative manual-payment
+   * state under payment_status. Keep this normalizer pure/testable so the v19
+   * direct-checkout watcher cannot silently regress to reading a wrong top-level
+   * status field. No identity or transaction value is returned from here. */
+  function extractPaymentStatus(body) {
+    const source = (body && body.payment_status)
+      || (body && body.data && body.data.payment_status)
+      || {};
+    const status = String(source.status || 'pending_review').toLowerCase();
+    return {
+      status: ['pending_review', 'approved', 'rejected'].includes(status) ? status : 'pending_review',
+      rejectionNote: String(source.rejection_note || ''),
+    };
+  }
+
+  function verifiedPaymentCopy(plan) {
+    const key = sanitizePlan(plan) || 'pro';
+    const label = (FALLBACK_PLANS[key] || FALLBACK_PLANS.pro).label;
+    return {
+      title: `Payment Verified — ${label}`,
+      subtitle: 'If this email already has a SENTINEL APEX account, paid access is active now. If not, register with the same email and the verified entitlement will activate automatically.',
+      capabilityHeading: 'PLAN CAPABILITIES AFTER ACTIVATION',
+    };
+  }
+
+  function applyVerifiedPaymentCopy(plan) {
+    if (!root || !root.document) return;
+    const copy = verifiedPaymentCopy(plan);
+    const title = root.document.getElementById('pf-ok-title');
+    const sub = root.document.getElementById('pf-ok-sub');
+    if (title) title.textContent = copy.title;
+    if (sub) sub.textContent = copy.subtitle;
+    const unlock = root.document.getElementById('pf-unlock');
+    const heading = unlock && unlock.querySelector ? unlock.querySelector('h4') : null;
+    if (heading) heading.textContent = copy.capabilityHeading;
+  }
+
+  let manualStatusTimer = null;
+
+  function stopManualStatusWatch() {
+    if (manualStatusTimer && root && typeof root.clearInterval === 'function') {
+      root.clearInterval(manualStatusTimer);
+    }
+    manualStatusTimer = null;
+  }
+
+  function readPaymentSession() {
+    if (!root || !root.sessionStorage) return null;
+    try {
+      const parsed = JSON.parse(root.sessionStorage.getItem(PAYMENT_SESSION_KEY) || 'null');
+      if (!parsed || typeof parsed !== 'object') return null;
+      return parsed;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function startManualStatusWatch(flow, plan, attribution) {
+    if (!root || typeof root.fetch !== 'function' || !flow) return false;
+    const session = readPaymentSession();
+    if (!session || !session.transactionId || !session.email) return false;
+
+    stopManualStatusWatch();
+    let stopped = false;
+    const finish = () => {
+      stopped = true;
+      stopManualStatusWatch();
+    };
+
+    const check = async () => {
+      if (stopped) return;
+      try {
+        const url = `/api/v1/billing?action=status&transaction_id=${encodeURIComponent(session.transactionId)}&email=${encodeURIComponent(session.email)}`;
+        const response = await root.fetch(url, { credentials: 'same-origin' });
+        if (!response.ok) return;
+        const body = await response.json();
+        if (!body || body.success !== true) return;
+        const payment = extractPaymentStatus(body);
+
+        if (payment.status === 'approved') {
+          finish();
+          try { root.sessionStorage.removeItem(PAYMENT_SESSION_KEY); } catch (_) {}
+          flow._go(5);
+          applyVerifiedPaymentCopy(plan);
+          track('manual_payment_verified', plan, attribution, { checkout_version: 'v19' });
+          return;
+        }
+
+        if (payment.status === 'rejected') {
+          finish();
+          const doc = root.document;
+          const badge = doc && doc.getElementById('pf-status-badge');
+          const sub = doc && doc.getElementById('pf-poll-sub');
+          if (badge) {
+            badge.className = 'pf-badge rejected';
+            badge.textContent = '✗ Rejected';
+          }
+          if (sub) sub.textContent = payment.rejectionNote || 'Payment could not be verified. Contact billing support with your Intent ID.';
+          track('manual_payment_rejected', plan, attribution, { checkout_version: 'v19' });
+        }
+      } catch (_) {
+        /* Fail open to the original payment-flow poller; never mutate billing. */
+      }
+    };
+
+    check();
+    if (typeof root.setInterval === 'function') {
+      manualStatusTimer = root.setInterval(check, MANUAL_STATUS_INTERVAL_MS);
+    }
+    return true;
   }
 
   function instrumentPaymentFlow(flow, plan, attribution) {
@@ -105,9 +220,18 @@
         const n = Number(step);
         if (n >= 1 && n <= 5) {
           track('checkout_step', plan, attribution, { step: n });
-          if (n === 5 && !completionTracked) {
-            completionTracked = true;
-            track('checkout_complete', plan, attribution, { checkout_version: 'v19' });
+          if (n === 4) startManualStatusWatch(flow, plan, attribution);
+          if (n === 5) {
+            stopManualStatusWatch();
+            /* The shared payment-flow historically says "Tier Activated" even
+             * when a verified pre-registration payment is intentionally held as
+             * a pending entitlement. v19 replaces only the customer copy with a
+             * statement that is correct for both backend outcomes. */
+            applyVerifiedPaymentCopy(plan);
+            if (!completionTracked) {
+              completionTracked = true;
+              track('checkout_complete', plan, attribution, { checkout_version: 'v19' });
+            }
           }
         }
         return result;
@@ -117,6 +241,7 @@
     if (typeof flow.close === 'function') {
       const innerClose = flow.close.bind(flow);
       flow.close = function () {
+        stopManualStatusWatch();
         track('checkout_closed', plan, attribution, { before_completion: !completionTracked });
         return innerClose();
       };
@@ -217,6 +342,8 @@
     parseAttribution,
     formatPrice,
     eventPayload,
+    extractPaymentStatus,
+    verifiedPaymentCopy,
     instrumentPaymentFlow,
     loadCanonicalPlan,
     begin,
