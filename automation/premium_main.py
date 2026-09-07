@@ -39,6 +39,7 @@ from .premium_zero_cost_mesh_v16 import install_zero_cost_mesh_v16
 from .premium_zero_cost_mesh_v16_hardening import install_zero_cost_mesh_v16_hardening
 from .premium_puter_user_pays_v17 import install_puter_user_pays_v17
 from .provider_quota_ledger import install_provider_quota_ledger
+from .rapid_intel_lane_v19_3 import install_rapid_intel_lane_v19_3
 
 
 def main() -> int:
@@ -149,6 +150,18 @@ def main() -> int:
     # machine metadata after v19.1 applies the truthful SOURCE_ONLY_PRELIMINARY
     # customer label. No evidence, quality, tier, provider, billing, or pricing
     # gate is weakened.
+    #
+    # v19.3 installs strictly last and separates publication freshness from the
+    # premium long-form structural contract. Direct authoritative connectors and
+    # first-party canonical reports may use an evidence-safe Rapid Intelligence
+    # lane: they still execute the complete base ReportX/Dossier integrity chain,
+    # but do not require PremiumAuthorityTransformer's additional 2200/18/18
+    # commercial long-form floor. Rapid generation is deterministic and bypasses
+    # provider calls, preserving free-model capacity for premium dossiers. The
+    # Blogger fetch-back verifier uses a distinct rapid-product floor while the
+    # premium path remains byte-for-byte unchanged. v19.3 also closes the residual
+    # cross-node/code/pre prompt-leakage gap and then delegates to v19.2 + original
+    # v8 fail-closed validation.
     install_source_rich_rss_v15()
     install_provider_budget_overrides()
     install_incident_recovery_overrides(_main)
@@ -181,6 +194,7 @@ def main() -> int:
     install_claim_semantics_v19_1()
     install_cti_integrity_revenue_v19_1(_main)
     install_cti_publication_recovery_v19_2(_main)
+    install_rapid_intel_lane_v19_3(_main)
     return _main.main()
 
 
