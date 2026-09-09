@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-09T19:57:37.910Z",
+  "generated": "2026-09-09T22:20:14.647Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,8 +8,60 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 103,
+  "count": 108,
   "items": [
+    {
+      "id": "CVE-2026-20079",
+      "title": "Cisco confirms max-severity FMC bug (CVE-2026-20079) is being exploited in the wild",
+      "description": "CVSS 10.0, unauthenticated auth bypass in Cisco Secure FMC. Attacker sends a crafted HTTP request to the web interface → gets root. No login needed. Disclosed back in March as \"no known exploitation.\" That changed — Cisco confirmed this week (Sept 9) that PSIRT saw active exploitation starting in Au",
+      "cvss": 10,
+      "final_ps": 84,
+      "quality_score": 0.448,
+      "threat_level": "HIGH",
+      "type": "SOCIAL_ENGINEERING",
+      "source": "reddit_cyber",
+      "sources_confirmed": 2,
+      "merged_sources": [
+        "bleepingcomputer",
+        "reddit_cyber"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "reddit_cyber",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-20079",
+        "CVE-2026-20316"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/cisco-confirms-cve-2026-20079-secure-fmc-flaw-exploited-in-attacks/",
+        "https://www.reddit.com/r/cybersecurity/comments/1wbzdsv/cisco_confirms_maxseverity_fmc_bug_cve202620079/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.42 (reddit_cyber)",
+          "data_confidence=1.00",
+          "multi_source=2 sources",
+          "recency=999d (score=0.05)",
+          "QS=0.448"
+        ],
+        "priority": [
+          "+10 CVSS≥9",
+          "+8 exploited_in_wild",
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
     {
       "id": "SENTINELAPEX-6a06aee4f665",
       "title": "Google warns of new Chrome zero-day bug exploited in attacks",
@@ -423,6 +475,52 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-44282",
+      "title": "decidim-elections: Election question titles allow stored script execution",
+      "description": "Description\n\nA low-privilege process-scoped admin who can manage elections can store arbitrary HTML in the question statement/body without sanitization, and the public elections UI renders that value unsafely.\n\nTechnical description\n\nThis stored XSS appears because election quest... [Full analysis a",
+      "cvss": 4.8,
+      "final_ps": 45,
+      "quality_score": 0.453,
+      "threat_level": "MEDIUM",
+      "type": "SOCIAL_ENGINEERING",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-44282"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-9mvp-w4rr-5c6x"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.50",
+          "recency=0d (score=1.00)",
+          "QS=0.453"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-86218",
       "title": "N-able patches critical N-central zero-day exploited in the wild (CVE-2026-86218)",
       "description": "",
@@ -510,6 +608,52 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2025-24890",
+      "title": "gix-sec safe.directory protections absent for elevated administrators",
+      "description": "Summary\n\nIn a process run with full administrative rights on Windows, gix-sec wrongly treats all locations as trusted, leading to the execution of commands configured in repositories controlled by limited user accounts.\n\nDetails\n\nIn a similar way to Git, gitoxide tries to avoid o... [Full analysis a",
+      "cvss": 6.8,
+      "final_ps": 42,
+      "quality_score": 0.453,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2025-24890"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-7rhf-42qf-vrvc"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.50",
+          "recency=0d (score=1.00)",
+          "QS=0.453"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -1561,6 +1705,98 @@
         "priority": [
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-55073",
+      "title": "weasyprint Has Server-Side Request Forgery (SSRF)",
+      "description": "Summary\n\nurl_fetcher is WeasyPrint's documented mechanism for restricting resource loading - applications use it to block file://, internal hosts, etc. when rendering untrusted input.\n\nTwo write_pdf() channels ignore the document's url_fetcher and build a fresh default URLFetcher... [Full analysis a",
+      "cvss": 6.2,
+      "final_ps": 40,
+      "quality_score": 0.453,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-55073"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-jf6q-chmf-3h3v"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.50",
+          "recency=0d (score=1.00)",
+          "QS=0.453"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-69304",
+      "title": "Microsoft Security Advisory CVE-2026-69304 – ASP.NET Core Denial of Service Vulnerability",
+      "description": "Microsoft Security Advisory CVE-2026-69304 – ASP.NET Core Denial of Service Vulnerability\n\nExecutive summary\n\nMicrosoft is releasing this security advisory to provide information about a vulnerability in ASP.NET Core IIS out-of-process hosting and request decompression. This advi... [Full analysis a",
+      "cvss": 5.9,
+      "final_ps": 40,
+      "quality_score": 0.453,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-69304"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-8cp2-47hg-mfgh"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.50",
+          "recency=0d (score=1.00)",
+          "QS=0.453"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2810,6 +3046,236 @@
         ],
         "priority": [
           "+12 PoC_available"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-73787",
+      "title": "CVE-2026-73787 - Authenticated Arbitrary File Write allows Remote Code Execution via CPPM Web Interface",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 28,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73787"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-73787"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-87911",
+      "title": "CVE-2026-87911 - Read-only enforcement bypass enabling operating system command execution in the SQL validation componen",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 28,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-87911"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-87911"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-73789",
+      "title": "CVE-2026-73789 - Unauthenticated Insecure Parameter Manipulation allows Data Tampering In CPPM Web Interface",
+      "description": "",
+      "cvss": 9.1,
+      "final_ps": 28,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73789"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-73789"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-73769",
+      "title": "CVE-2026-73769 - Authenticated Remote Code Execution in CPPM Web Interface",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 28,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73769"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-73769"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-73786",
+      "title": "CVE-2026-73786 - Unauthenticated Network-Based Denial of Service in CPPM systems",
+      "description": "",
+      "cvss": 9.1,
+      "final_ps": 28,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-73786"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-73786"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -4397,56 +4863,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-44282",
-      "title": "decidim-elections: Election question titles allow stored script execution",
+      "id": "CVE-2026-61910",
+      "title": "CVE-2026-61910 - Cyrus IMAP Mailbox Annotation Privilege Escalation",
       "description": "",
-      "cvss": 4.8,
-      "final_ps": 20,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "SOCIAL_ENGINEERING",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-09",
-      "last_seen": "2026-09-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-44282"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-9mvp-w4rr-5c6x"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "+4 critical_infra"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-87874",
-      "title": "CVE-2026-87874 - Community.general: community.general: memcached cache plugin deserializes untrusted pickle data from me",
-      "description": "",
-      "cvss": 8.1,
+      "cvss": 7.8,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
@@ -4465,11 +4885,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-87874"
+        "CVE-2026-61910"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-87874"
+        "https://cvefeed.io/vuln/detail/CVE-2026-61910"
       ],
       "explanation": {
         "quality": [
@@ -4489,10 +4909,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-87927",
-      "title": "CVE-2026-87927 - MaxSite CMS through 109.6 Local File Inclusion via ajax dispatcher",
+      "id": "CVE-2026-73788",
+      "title": "CVE-2026-73788 - Privilege Escalation in ClearPass OnGuard Agent",
       "description": "",
-      "cvss": 8.2,
+      "cvss": 7.8,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
@@ -4511,11 +4931,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-87927"
+        "CVE-2026-73788"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-87927"
+        "https://cvefeed.io/vuln/detail/CVE-2026-73788"
       ],
       "explanation": {
         "quality": [
@@ -4526,190 +4946,6 @@
         ],
         "priority": [
           "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-87853",
-      "title": "CVE-2026-87853 - Sssd: sssd: idp authentication prefix comparison allows cross-user impersonation",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-09",
-      "last_seen": "2026-09-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-87853"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-87853"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2025-24890",
-      "title": "gix-sec safe.directory protections absent for elevated administrators",
-      "description": "",
-      "cvss": 6.8,
-      "final_ps": 16,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-09",
-      "last_seen": "2026-09-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2025-24890"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7rhf-42qf-vrvc"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-55073",
-      "title": "weasyprint Has Server-Side Request Forgery (SSRF)",
-      "description": "",
-      "cvss": 6.2,
-      "final_ps": 16,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-09",
-      "last_seen": "2026-09-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55073"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-jf6q-chmf-3h3v"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-69304",
-      "title": "Microsoft Security Advisory CVE-2026-69304 – ASP.NET Core Denial of Service Vulnerability",
-      "description": "",
-      "cvss": 5.9,
-      "final_ps": 16,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-09",
-      "last_seen": "2026-09-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-69304"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-8cp2-47hg-mfgh"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
         ],
         "suppression": null,
         "merge": null
