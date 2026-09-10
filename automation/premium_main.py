@@ -19,6 +19,7 @@ from .cti_evidence_convergence import install_cti_evidence_convergence
 from .cti_evidence_convergence_v7 import install_cti_evidence_convergence_v7
 from .cti_integrity_revenue_v19_1 import install_cti_integrity_revenue_v19_1
 from .cti_integrity_revenue_v19_1_claim_semantics import install_claim_semantics_v19_1
+from .cti_ioc_state_reconciliation import install_cti_ioc_state_reconciliation
 from .cti_publication_recovery_v19_2 import install_cti_publication_recovery_v19_2
 from .generation_evidence_admission import install_generation_evidence_admission
 from .premium_capacity_allocator_v13 import install_capacity_aware_allocator_v13
@@ -195,6 +196,7 @@ def main() -> int:
     install_cti_integrity_revenue_v19_1(_main)
     install_cti_publication_recovery_v19_2(_main)
     install_rapid_intel_lane_v19_3(_main)
+    install_cti_ioc_state_reconciliation(_main)
     return _main.main()
 
 

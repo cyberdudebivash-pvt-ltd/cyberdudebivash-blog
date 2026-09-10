@@ -2573,7 +2573,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
   <article>
     <div class="meta-bar">${badges}<span class="rep-date">Published: ${pubDateFmt}</span></div>
     <h1 class="rh1">${escHtml(item.title)}</h1>
-    <p class="rsubtitle">${escHtml(cleanDescText.slice(0,350))}${cleanDescText.length>350?'...':''}</p>
+    <p class="rsubtitle">${escHtml(truncAtWord(cleanDescText,350))}${cleanDescText.length>350?'…':''}</p>
     <div class="stats-bar">
       <div class="stat red"><div class="sv">${cvss}</div><div class="sl">CVSS Score</div></div>
       <div class="stat"><div class="sv" style="color:${cvssColor}">${tl}</div><div class="sl">Threat Level</div></div>
