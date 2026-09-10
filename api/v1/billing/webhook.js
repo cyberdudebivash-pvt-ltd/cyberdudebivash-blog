@@ -10,7 +10,7 @@ const redis  = require('../../_lib/redis');
 const stripe = require('../../_lib/stripe');
 const sec    = require('../../_lib/security');
 const { planToTier } = stripe;
-const { now, auditLog } = require('../../_lib/payment-utils');
+const { now, auditLog, upgradeUserTier } = require('../../_lib/payment-utils');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -120,24 +120,22 @@ module.exports = async (req, res) => {
 // Stripe signed, not a re-serialization of the parsed object.
 module.exports.config = { api: { bodyParser: false } };
 
-// Upgrade user tier in Redis
+// Upgrade user tier — delegates to the shared, pending-tier-aware
+// upgradeUserTier() (api/_lib/payment-utils.js) instead of a separate local
+// implementation. Without this, a buyer who completes Stripe Checkout
+// before ever registering for an API key had their tier silently dropped
+// (no account existed yet for their email, so the old local upgrade was a
+// no-op past a console warning) -- the exact same case the Razorpay flow
+// already handles correctly via this same shared function.
 async function upgradeTier(email, newTier, subscriptionId) {
-  const emailKey = `user:email:${email.replace('@','_at_')}`;
-  const userId   = await redis.get(emailKey);
-  if (!userId) {
-    console.warn(`[WEBHOOK] No user found for email: ${email}`);
-    return;
+  const result = await upgradeUserTier(email, newTier, { transactionId: subscriptionId || '' });
+  if (result.pending) {
+    console.log(`[WEBHOOK] Payment confirmed for ${email} before registration — pending tier ${newTier} stored`);
+  } else if (result.upgraded) {
+    console.log(`[WEBHOOK] Upgraded ${email} → ${newTier}`);
+  } else {
+    console.warn(`[WEBHOOK] Could not upgrade ${email}: ${result.reason}`);
   }
-  const hash = await redis.get(`user:id:${userId}`);
-  if (!hash) return;
-
-  await redis.hmset(`user:key:${hash}`, {
-    tier:           newTier,
-    subscriptionId: subscriptionId || '',
-    upgradedAt:     new Date().toISOString(),
-    paymentWarning: '',
-  });
-  console.log(`[WEBHOOK] Upgraded ${email} → ${newTier}`);
 }
 
 // Downgrade user to free tier

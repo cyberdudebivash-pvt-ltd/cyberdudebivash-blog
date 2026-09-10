@@ -20,7 +20,7 @@ const redis     = require('../_lib/redis');
 const stripe    = require('../_lib/stripe');
 const razorpay  = require('../_lib/razorpay');
 const {
-  authenticate, apiError, respond, corsHeaders,
+  authenticate, extractApiKey, apiError, respond, corsHeaders,
 } = require('../_lib/middleware');
 const {
   PLANS, PAYMENT_INSTRUCTIONS,
@@ -426,13 +426,20 @@ async function handlePlans(req, res) {
    POST /api/v1/billing?action=subscribe
    Create Stripe Checkout session for automated billing.
    Body: { plan: "pro"|"enterprise" }
-   Requires API key auth.
+   Requires API key auth for an EXISTING account upgrading its plan.
+   A request with no API key is treated as a first-time buyer (mirrors
+   the unauthenticated create-razorpay-order flow below): Stripe itself
+   collects and verifies the card, so only a contact email is required
+   up front. Tier is granted by the Stripe webhook once payment is
+   confirmed, using the same pending-tier mechanism already used for
+   Razorpay purchases made before registration.
 ═══════════════════════════════════════════════════════════════ */
 async function handleSubscribe(req, res) {
   if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
 
-  const user = await authenticate(req, res);
-  if (!user) return;
+  const hasApiKey = !!extractApiKey(req);
+  const user = hasApiKey ? await authenticate(req, res) : null;
+  if (hasApiKey && !user) return; // authenticate() already sent the response
 
   let body = {};
   try {
@@ -443,9 +450,22 @@ async function handleSubscribe(req, res) {
   if (!['starter', 'pro', 'enterprise'].includes(plan)) {
     return fail(res, 400, 'INVALID_PLAN', 'plan must be "starter", "pro", or "enterprise"');
   }
-  if (user.tier === plan || user.tier === 'enterprise') {
-    return fail(res, 400, 'ALREADY_ON_PLAN', `You are already on the ${user.tier} plan.`);
+
+  let email;
+  if (user) {
+    if (user.tier === plan || user.tier === 'enterprise') {
+      return fail(res, 400, 'ALREADY_ON_PLAN', `You are already on the ${user.tier} plan.`);
+    }
+    email = user.email;
+  } else {
+    email = normalizeEmail(body.email);
+    if (!sec.validateEmail(email)) {
+      return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
+    }
+    /* Same daily intent-creation budget as the manual/Razorpay flows */
+    if (!(await sec.intentIpRateLimit(req, res))) return;
   }
+
   if (!process.env.STRIPE_SECRET_KEY) {
     return fail(res, 503, 'BILLING_UNAVAILABLE',
       `Automated billing not configured. Use manual payment: POST /api/v1/billing?action=create-intent — or contact bivash@cyberdudebivash.com`);
@@ -454,7 +474,7 @@ async function handleSubscribe(req, res) {
   try {
     const base    = process.env.NEXT_PUBLIC_BASE_URL || 'https://blog.cyberdudebivash.in';
     const session = await stripe.createCheckoutSession(
-      user.email, plan,
+      email, plan,
       `${base}/api-dashboard.html?session_id={CHECKOUT_SESSION_ID}&status=success`,
       `${base}/api-dashboard.html?status=cancelled`
     );

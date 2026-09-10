@@ -293,6 +293,7 @@ function successResponse(res, data, meta = {}) {
 
 module.exports = {
   authenticate,
+  extractApiKey,
   respond,
   apiError,
   successResponse,
