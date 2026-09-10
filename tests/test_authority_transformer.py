@@ -263,6 +263,23 @@ class TestMonetizationCtaWiring(unittest.TestCase):
         self.assertIn(self.API_MARKER, content)
         self.assertNotIn(self.MSSP_MARKER, content)
 
+    def test_api_cta_appears_when_cve_id_is_structured_but_absent_from_text(self):
+        # article.cve_id is populated independently by source enrichment
+        # (nvd_source.py/cisa_kev_source.py's own API response) and can be
+        # set even when an editorial/LLM-rewritten title+summary omits the
+        # literal "CVE-YYYY-NNNNN" string the regex-based `cves` extraction
+        # depends on. The API CTA must still fire from the structured
+        # field alone.
+        article = _make_article(
+            title="Vendor patches a critical remote code execution flaw",
+            summary="A vendor shipped a fix for a remote code execution vulnerability in its web service.",
+            full_content="A vendor shipped a fix for a remote code execution vulnerability in its web service.",
+            cve_id="CVE-2026-12345", cvss_score=9.1, kev_listed=None,
+        )
+        content = AuthorityTransformer(self.config).transform(article)["content"]
+        self.assertIn(self.API_MARKER, content)
+        self.assertNotIn(self.MSSP_MARKER, content)
+
     def test_mssp_cta_wins_over_api_cta_for_a_kev_listed_cve(self):
         # This article has both a CVE (would qualify for the API CTA) and
         # kev_listed=True (would qualify for the MSSP CTA) -- the higher-
