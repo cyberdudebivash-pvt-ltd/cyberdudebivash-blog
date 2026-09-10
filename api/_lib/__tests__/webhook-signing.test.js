@@ -5,7 +5,7 @@ const {
   isBlockedIpv4, isBlockedIpv6,
 } = require('../webhook-signing');
 
-describe('signPayload / verifySignature — HMAC scheme (mirrors stripe.js inbound verification)', () => {
+describe('signPayload / verifySignature — timestamp-prefixed HMAC scheme', () => {
   test('a correctly signed payload verifies', () => {
     const secret = 'test_secret';
     const ts = Math.floor(Date.now() / 1000);

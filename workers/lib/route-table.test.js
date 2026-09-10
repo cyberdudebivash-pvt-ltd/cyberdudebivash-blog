@@ -68,7 +68,7 @@ describe('resolveRoute — pretty-URL rewrites', () => {
 });
 
 describe('resolveRoute — direct api/** filesystem routes', () => {
-  test('every real handler file on disk has a route (40-function parity check)', () => {
+  test('every real handler file on disk is either routed or a known internal-only module (42-file parity check)', () => {
     const files = [];
     function walk(dir) {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -79,13 +79,28 @@ describe('resolveRoute — direct api/** filesystem routes', () => {
       }
     }
     walk(path.join(__dirname, '..', '..', 'api'));
-    // 39-handler baseline + api/v1/premium-intelligence.js.
-    assert.equal(files.length, 40, 'expected exactly 40 routable api/** functions — update route-table.js if this changes');
+    // 39 routable handlers (37 DIRECT_API_HANDLERS + 2 DYNAMIC_API_HANDLERS)
+    // + 3 internal-only "legacy" library modules that live directly under
+    // api/v1/** (not api/_lib/**) but are require()'d by their routed
+    // sibling, never routed themselves: api/v1/billing-legacy.js (required
+    // by api/v1/billing.js), api/v1/products/legacy-index.js (required by
+    // api/v1/products/index.js), api/v1/reports/legacy-index.js (required
+    // by api/v1/reports/index.js).
+    assert.equal(files.length, 42, 'expected exactly 42 real api/** files (39 routable + 3 internal-only legacy modules) — update route-table.js and/or this test if this changes');
 
     const INDEX_HANDLERS = new Set(['api/v1/products/index', 'api/v1/quality/index', 'api/v1/reports/index']);
     const DYNAMIC_FILE_SUFFIX = /\[id]$/;
+    // Required-not-routed internal library modules — see the file-count
+    // comment above for why each exists and is intentionally excluded from
+    // route-table.js's DIRECT_API_HANDLERS.
+    const INTERNAL_ONLY_MODULES = new Set([
+      'api/v1/billing-legacy',
+      'api/v1/products/legacy-index',
+      'api/v1/reports/legacy-index',
+    ]);
     for (const file of files) {
       const rel = path.relative(path.join(__dirname, '..', '..'), file).replace(/\\/g, '/').replace(/\.js$/, '');
+      if (INTERNAL_ONLY_MODULES.has(rel)) continue;
       if (DYNAMIC_FILE_SUFFIX.test(rel)) {
         assert.ok(DYNAMIC_API_HANDLERS.some(([, handlerPath]) => handlerPath === rel), `${rel} has no entry in DYNAMIC_API_HANDLERS`);
         continue;
@@ -143,10 +158,10 @@ describe('resolveRoute — no match', () => {
 });
 
 describe('table sanity', () => {
-  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 40 handlers with no overlap', () => {
+  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 39 handlers with no overlap', () => {
     const dynamicPaths = DYNAMIC_API_HANDLERS.map(([, handlerPath]) => handlerPath);
     const all = [...DIRECT_API_HANDLERS, ...dynamicPaths];
-    assert.equal(all.length, 40);
-    assert.equal(new Set(all).size, 40, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
+    assert.equal(all.length, 39);
+    assert.equal(new Set(all).size, 39, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
   });
 });

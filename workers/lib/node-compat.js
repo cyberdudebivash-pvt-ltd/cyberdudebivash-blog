@@ -78,7 +78,7 @@ async function readBoundedText(request) {
  * @param {Request} request Web-standard Request from the Worker's fetch handler
  * @param {{ api?: { bodyParser?: boolean } }} [handlerConfig] the target
  *   handler module's own exported `config` (e.g.
- *   api/v1/billing/webhook.js's `module.exports.config = { api: { bodyParser: false } }`).
+ *   api/v1/billing/razorpay-webhook.js's `module.exports.config = { api: { bodyParser: false } }`).
  *   Same discriminator Vercel itself reads — reused here rather than
  *   inventing a parallel Workers-specific route list.
  */
@@ -123,7 +123,7 @@ async function toNodeRequest(request, handlerConfig = {}) {
 
   if (handlerConfig?.api?.bodyParser === false) {
     // Matches Vercel's config.api.bodyParser = false convention (see
-    // api/v1/billing/webhook.js, api/v1/billing/razorpay-webhook.js): the
+    // api/v1/billing/razorpay-webhook.js): the
     // handler reads the exact raw bytes itself via security.js#readRawBody
     // for signature verification. Attach the original Web Request so
     // readRawBody's Workers branch can read it — see the __cfRequest
