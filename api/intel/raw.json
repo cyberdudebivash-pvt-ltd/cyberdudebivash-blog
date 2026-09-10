@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-10T20:32:33.515Z",
+  "generated": "2026-09-10T22:44:59.807Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,8 +8,54 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 104,
+  "count": 108,
   "items": [
+    {
+      "id": "SENTINELAPEX-1b64b4e08991",
+      "title": "Hackers Exploit Critical Cisco Firewall Flaw to Gain Root Access and Deploy Malware",
+      "description": "Cisco Talos has confirmed active exploitation of two vulnerabilities affecting Cisco Secure Firewall Management Center (FMC) Software, with state-sponsored hacking groups and a ransomware affiliate leveraging the flaws to seize root access, plant malware, and stage attacks on ent... [Full analysis a",
+      "cvss": 0,
+      "final_ps": 73,
+      "quality_score": 0.452,
+      "threat_level": "HIGH",
+      "type": "RANSOMWARE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://cybersecuritynews.com/cisco-firewall-root-access-flaw/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.452"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed",
+          "+8 exploited_in_wild",
+          "+5 nation_state"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
     {
       "id": "SENTINELAPEX-0263b0605594",
       "title": "CISA: WatchGuard RCE flaw now exploited in ransomware attacks",
@@ -53,6 +99,149 @@
       },
       "suppressed": true,
       "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-58ba3762b101164c",
+      "title": " mistral.rs: Unbounded Remote Media Fetch and Video Frame Expansion DoS",
+      "description": "## Unbounded Remote Media Fetch and Video Frame Expansion DoS ### Summary\nThe `POST /v1/chat/completions` endpoint in mistral.rs fetches attacker-supplied media URLs (image, audio, video) into server memory with no byte limit, and extracts every frame of a supplied video when `num_frames` is `None`.",
+      "cvss": 7.5,
+      "final_ps": 59,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "mistralrs-server-core",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-m3wp-48jr-vr4g",
+        "https://github.com/EricLBuehler/mistral.rs/security/advisories/GHSA-m3wp-48jr-vr4g",
+        "https://github.com/EricLBuehler/mistral.rs/releases/tag/v0.8.18",
+        "https://github.com/advisories/GHSA-m3wp-48jr-vr4g"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=59 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "GHSA-12ba5eeadb4cba3c",
+      "title": "mistral.rs Media Loader: Unauthenticated SSRF and arbitrary local file read via image_url",
+      "description": "### Summary\nmistral.rs fetches any request-supplied image/audio URL with no host or IP validation, and opens arbitrary local files (a `file://` URL, or any existing relative/absolute path). A remote, unauthenticated client of any vision/audio deployment can cause the server to issue requests to inte",
+      "cvss": 7.2,
+      "final_ps": 57,
+      "quality_score": 0.548,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "rust",
+      "product": "mistralrs-server-core",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-wfgq-w7cq-qj7j",
+        "https://github.com/EricLBuehler/mistral.rs/security/advisories/GHSA-wfgq-w7cq-qj7j",
+        "https://github.com/EricLBuehler/mistral.rs/commit/74793379649febc758b6a0d4b71aa6aeabc80f9c",
+        "https://github.com/advisories/GHSA-wfgq-w7cq-qj7j"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=1.00",
+          "recency=0d (score=1.00)",
+          "QS=0.547"
+        ],
+        "priority": [
+          "base_ps=57 (no boosts)"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-85103",
+      "title": "Critical Check Point VPN Vulnerabilities Enable Remote Code Execution Attacks",
+      "description": "Check Point Software has disclosed and patched two critical VPN-related vulnerabilities, CVE-2026-85102 and CVE-2026-85103, both carrying a maximum CVSS score of 9.8 and both capable of allowing unauthenticated remote code execution under specific conditions. Check Point&#8217;s ... [Full analysis a",
+      "cvss": 9.8,
+      "final_ps": 56,
+      "quality_score": 0.397,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-85103",
+        "CVE-2026-85102"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cybersecuritynews.com/check-point-vpn-vulnerabilities/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=999d (score=0.05)",
+          "QS=0.397"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": [
+          "MERGED: CVE-2026-85102 → CVE-2026-85103 (sim=0.85)"
+        ]
+      },
+      "suppressed": false,
+      "suppression_reason": null,
       "iocs": []
     },
     {
@@ -274,52 +463,6 @@
           "+10 ransomware_confirmed",
           "+10 CVSS≥9",
           "+8 exploited_in_wild"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-87995",
-      "title": "Open WebUI: Same-origin XSS to account takeover via terminal port-preview iframe hardcoding allow-same-origin",
-      "description": "Summary\nAny authenticated user with access to a shared terminal server could get script of their choosing to run in the Open WebUI origin itself. The in-app port preview rendered the content of a previewed port in an iframe whose sandbox always granted allow-same-origin alongside... [Full analysis a",
-      "cvss": 8.7,
-      "final_ps": 49,
-      "quality_score": 0.493,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-87995"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-jmc6-2wr8-h3wj"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=49 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -565,6 +708,50 @@
       "iocs": []
     },
     {
+      "id": "BLEEPINGCOMPUTER-aa1496fd1623bd0e",
+      "title": "New Android malware encrypts files, steals data, and harasses victims",
+      "description": "A new Android malware strain called Mantax Otax combines ransomware and spyware capabilities to encrypt files, steal sensitive data, and spam and harass victims. [...]",
+      "cvss": 0,
+      "final_ps": 42,
+      "quality_score": 0.42,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "bleepingcomputer",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "bleepingcomputer"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "BleepingComputer",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/new-android-malware-encrypts-files-steals-data-and-harasses-victims/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.72 (bleepingcomputer)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.420"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-54121",
       "title": "PoC exploit released for critical AD CS domain-takeover flaw (CVE-2026-54121)",
       "description": "",
@@ -738,6 +925,50 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-13be1772ae77",
+      "title": "New Android malware encrypts files, steals data, and harasses victims",
+      "description": "A new Android malware strain called Mantax Otax combines ransomware and spyware capabilities to encrypt files, steal sensitive data, and spam and harass victims. [...]",
+      "cvss": 0,
+      "final_ps": 41,
+      "quality_score": 0.392,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/new-android-malware-encrypts-files-steals-data-and-harasses-victims/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=0d (score=1.00)",
+          "QS=0.392"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -1569,50 +1800,6 @@
       },
       "suppressed": false,
       "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "SENTINELAPEX-6fc39188b793",
-      "title": "Veradigm warns of patient data breach after ransomware gang claims attack",
-      "description": "Healthcare technology company Veradigm disclosed a data breach after a cybersecurity incident at one of its third-party vendors exposed patients' personal data. [...]",
-      "cvss": 0,
-      "final_ps": 40,
-      "quality_score": 0.378,
-      "threat_level": "LOW",
-      "type": "RANSOMWARE",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-09",
-      "last_seen": "2026-09-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/security/veradigm-discloses-patient-data-breach-after-gentlemen-gang-claims-attack/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=1d (score=0.85)",
-          "QS=0.378"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -2678,6 +2865,50 @@
       "iocs": []
     },
     {
+      "id": "SENTINELAPEX-aad957d1f42e",
+      "title": "Conti ransomware crew member sentenced to four years in prison",
+      "description": "Conti ransomware crew member sentenced to four years in prison",
+      "cvss": 0,
+      "final_ps": 39,
+      "quality_score": 0.343,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://cyberscoop.com/conti-ransomware-developer-sentenced/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.10",
+          "recency=0d (score=1.00)",
+          "QS=0.343"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": "Quality score below minimum threshold (QS < 0.35)",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Quality score below minimum threshold (QS < 0.35)",
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-20079",
       "title": "Cisco confirms max-severity FMC bug (CVE-2026-20079) is being exploited in the wild",
       "description": "",
@@ -2914,6 +3145,98 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-19490",
+      "title": "CISA Warns of Citrix NetScaler Authentication Bypass Vulnerability Exploited in Attacks",
+      "description": "",
+      "cvss": 9.8,
+      "final_ps": 28,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19490"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cybersecuritynews.com/cisa-citrix-netscaler-authentication/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-89094",
+      "title": "CVE-2026-89094 - Forgejo Remote Code Execution Vulnerability",
+      "description": "",
+      "cvss": 9.9,
+      "final_ps": 28,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-89094"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-89094"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-88899",
       "title": "CVE-2026-88899 - knowns before 0.31.0 External Control of Agent Working Directory via x-opencode-directory Header",
       "description": "",
@@ -2941,53 +3264,6 @@
       "ioc_count": 0,
       "refs": [
         "https://cvefeed.io/vuln/detail/CVE-2026-88899"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "+10 CVSS≥9"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-85103",
-      "title": "Critical Check Point VPN Vulnerabilities Enable Remote Code Execution Attacks",
-      "description": "",
-      "cvss": 9.8,
-      "final_ps": 28,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-85103",
-        "CVE-2026-85102"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cybersecuritynews.com/check-point-vpn-vulnerabilities/"
       ],
       "explanation": {
         "quality": [
@@ -3698,6 +3974,154 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-59960",
+      "title": "@argos-ci/core: CI Branch Name OS Command Injection",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@argos-ci/core",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59960",
+        "CVE-2026-59960"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4x45-gxvp-6283",
+        "https://github.com/argos-ci/argos-javascript/security/advisories/GHSA-4x45-gxvp-6283",
+        "https://github.com/argos-ci/argos-javascript/commit/8355f3af3be3f4fe361d58a688d21535cf672717",
+        "https://github.com/argos-ci/argos-javascript/releases/tag/@argos-ci/core@6.2.1"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-59965",
+      "title": "@jhb.software/payload-alt-text-plugin: Alt Text Endpoint Authorization Bypass via Payload Local API `overrideAccess` Omi",
+      "description": "",
+      "cvss": 7.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "npm",
+      "product": "@jhb.software/payload-alt-text-plugin",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59965",
+        "CVE-2026-59965"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-4qpv-39hg-f7fx",
+        "https://github.com/jhb-software/payload-plugins/security/advisories/GHSA-4qpv-39hg-f7fx",
+        "https://github.com/advisories/GHSA-4qpv-39hg-f7fx"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-87016",
+      "title": "Open WebUI: Sign-in as another user via wildcard characters in the OAuth subject claim on SQLite",
+      "description": "",
+      "cvss": 8.1,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "open-webui",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-87016"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-wpmr-8h3q-fwj7",
+        "https://github.com/open-webui/open-webui/security/advisories/GHSA-wpmr-8h3q-fwj7",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-87016",
+        "https://github.com/open-webui/open-webui/pull/28624"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-55416",
       "title": "Pimcore: SQL Injection in Custom Reports via Malicious Report Configuration",
       "description": "",
@@ -3739,6 +4163,144 @@
         ],
         "priority": [
           "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-86079",
+      "title": "n8n: Path Injection in Elasticsearch and ElasticSecurity Nodes via Unencoded Identifiers",
+      "description": "",
+      "cvss": 5.5,
+      "final_ps": 20,
+      "quality_score": 0.398,
+      "threat_level": "LOW",
+      "type": "CRITICAL_INFRASTRUCTURE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-86079"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-f2cp-m7mv-8jpv"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.25",
+          "recency=0d (score=1.00)",
+          "QS=0.398"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-89087",
+      "title": "CVE-2026-89087 - cstruct OCaml Out-of-Bounds Access Vulnerability",
+      "description": "",
+      "cvss": 7.3,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-89087"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-89087"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-87995",
+      "title": "Open WebUI: Same-origin XSS to account takeover via terminal port-preview iframe hardcoding allow-same-origin",
+      "description": "",
+      "cvss": 8.7,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-87995"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-jmc6-2wr8-h3wj"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4304,291 +4866,14 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-86076",
-      "title": "n8n: Expression Sandbox Escape via Class-Field Sanitizer Rebinding Can Lead to Code Execution",
+      "id": "CVE-2026-87015",
+      "title": "Open WebUI: A user's session cookies are sent to tool servers configured for bearer authentication",
       "description": "",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-86076"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-hw8v-xxg5-vvvx"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-87996",
-      "title": "Open WebUI: SSRF into internal services via DNS rebinding in the Playwright web loader",
-      "description": "",
-      "cvss": 7.7,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "MALWARE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-87996"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4v28-j6q3-5m4r"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-59161",
-      "title": "Excelize: Streaming GetRows row-bound bypass causes attacker-controlled allocation",
-      "description": "",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59161",
-        "CVE-2026-54063"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-q5j5-6p94-4gwc"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-88027",
-      "title": "CVE-2026-88027 Mass deletion and overwrite of embedded documents via query-operator injection in embedded record keys in",
-      "description": "",
-      "cvss": 7.1,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-88027"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://vulners.com/cve/CVE-2026-88027?utm_source=rss&utm_medium=rss&utm_campaign=rss"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-87998",
-      "title": "Open WebUI: Non-admin users can delete admin-owned external knowledge connections via knowledge base deletion",
-      "description": "",
-      "cvss": 7.1,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-87998"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-2724-6cpj-gf3v"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-87999",
-      "title": "Open WebUI: Any authenticated user can reach the Azure platform channel via server-side web fetch",
-      "description": "",
-      "cvss": 7.1,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-87999"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-34r3-9m95-vq73"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-88055",
-      "title": "CVE-2026-88055 AnythingLLM: Stored XSS Due to Unescaped Server-Side HTML Concatenation in MetaGenerator",
-      "description": "",
-      "cvss": 6.1,
+      "cvss": 6.8,
       "final_ps": 16,
       "quality_score": 0.398,
       "threat_level": "LOW",
-      "type": "AI_SECURITY",
+      "type": "NEWS_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -4603,11 +4888,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-88055"
+        "CVE-2026-87015"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://vulners.com/cvelist/CVELIST:CVE-2026-88055?utm_source=rss&utm_medium=rss&utm_campaign=rss"
+        "https://github.com/advisories/GHSA-p78m-89r6-pgf7"
       ],
       "explanation": {
         "quality": [
@@ -4627,10 +4912,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-88026",
-      "title": "CVE-2026-88026 Regular expression injection via unescaped characters in LINQ query translation in MongoDB C# Driver",
+      "id": "CVE-2026-19596",
+      "title": "CVE-2026-19596 - OpenNMS XML collector XXE allows arbitrary file read from the OpenNMS host",
       "description": "",
-      "cvss": 6.5,
+      "cvss": 5.9,
       "final_ps": 16,
       "quality_score": 0.398,
       "threat_level": "LOW",
@@ -4649,103 +4934,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-88026"
+        "CVE-2026-19596"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://vulners.com/cve/CVE-2026-88026?utm_source=rss&utm_medium=rss&utm_campaign=rss"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-88028",
-      "title": "CVE-2026-88028 Unauthorized document disclosure via query-operator injection in polymorphic relation identifiers in Mong",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 16,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-88028"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://vulners.com/cve/CVE-2026-88028?utm_source=rss&utm_medium=rss&utm_campaign=rss"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-88005",
-      "title": "Open WebUI: Users denied by the OAuth domain allowlist or role policy can still sign in via token exchange",
-      "description": "",
-      "cvss": 6.5,
-      "final_ps": 16,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-88005"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4qg5-cxx4-g927"
+        "https://cvefeed.io/vuln/detail/CVE-2026-19596"
       ],
       "explanation": {
         "quality": [
