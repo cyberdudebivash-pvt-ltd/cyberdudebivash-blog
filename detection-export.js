@@ -99,10 +99,18 @@
     return { category: category ? category.trim() : '', keywords: keywords };
   }
 
+  // Backslashes must be escaped before quotes -- otherwise a keyword
+  // ending in a backslash (e.g. "foo\") would leave the closing quote we
+  // add escaped by that backslash instead of terminating the string,
+  // letting the rest of the generated query run as unquoted content.
+  function quoteTerm(k) {
+    return '"' + k.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+  }
+
   function deriveSplunkSPL(sigmaText) {
     var parsed = parseSigmaKeywords(sigmaText);
     if (!parsed.keywords.length) return '';
-    var terms = parsed.keywords.map(function (k) { return '"' + k.replace(/"/g, '\\"') + '"'; }).join(' OR ');
+    var terms = parsed.keywords.map(quoteTerm).join(' OR ');
     var src = parsed.category ? 'sourcetype=' + parsed.category + ' ' : '';
     return 'index=* ' + src + '(' + terms + ')';
   }
@@ -110,7 +118,7 @@
   function deriveSentinelKQL(sigmaText) {
     var parsed = parseSigmaKeywords(sigmaText);
     if (!parsed.keywords.length) return '';
-    var terms = parsed.keywords.map(function (k) { return '"' + k.replace(/"/g, '\\"') + '"'; }).join(', ');
+    var terms = parsed.keywords.map(quoteTerm).join(', ');
     return 'search ' + terms + '\n| where TimeGenerated > ago(30d)';
   }
 
