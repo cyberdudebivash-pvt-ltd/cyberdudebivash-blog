@@ -31,13 +31,10 @@ repository secrets) — never in this repository.
 | `UPSTASH_REDIS_REST_URL` | `api/_lib/redis.js`, GitHub Actions alert-delivery bridge |
 | `UPSTASH_REDIS_REST_TOKEN` | Same |
 
-## 3. Payment processors (external SaaS — Stripe, Razorpay own financial truth; see the Auth & Billing Deferral Audit)
+## 3. Payment processors (external SaaS — Razorpay owns financial truth for the automated rail; see the Auth & Billing Deferral Audit)
 
 | Name | Used by |
 |---|---|
-| `STRIPE_SECRET_KEY` | `api/_lib/stripe.js`, `api/v1/billing/webhook.js` |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signature verification |
-| `STRIPE_PRICE_STARTER` / `STRIPE_PRICE_PRO` / `STRIPE_PRICE_ENTERPRISE` | Stripe Checkout price IDs |
 | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` | `api/_lib/razorpay.js` |
 | `RAZORPAY_WEBHOOK_SECRET` | Razorpay webhook signature verification |
 

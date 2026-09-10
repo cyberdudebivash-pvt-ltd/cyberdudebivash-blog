@@ -109,34 +109,35 @@ non-200 or undersized response on a critical page; or a customer reports
 2. Check Vercel's own deployment logs for the affected function.
 3. If the failure correlates with a recent push, prefer `git revert` of
    the specific commit over `git reset` — see **Rollback** below.
-4. If it's an upstream dependency (Redis, Stripe, Razorpay, Resend), see
+4. If it's an upstream dependency (Redis, Razorpay, Resend), see
    that provider's specific section below.
 
 ---
 
-## Payment Provider Outage (Stripe / Razorpay / manual UPI)
+## Payment Provider Outage (Razorpay / manual UPI)
 
 Manual UPI/bank-transfer is the primary path today (`OPERATIONS.md`);
-Stripe/Razorpay are secondary and, per that same document, may not yet be
-fully activated end-to-end.
+Razorpay is secondary and, per that same document, may not yet be
+fully activated end-to-end. Stripe was fully removed from this platform
+2026-09-10 — see `ENVIRONMENT_VARIABLE_MATRIX.md`.
 
 1. **Manual UPI/bank transfer**: this path depends on human review of
    submitted transaction references, not a third-party API — an "outage"
    here means the reviewer is unavailable, not a technical failure.
    Payment intents remain queryable in Redis (`api/_lib/payment-utils.js`)
    regardless.
-2. **Stripe/Razorpay**: check the provider's own status page. If a
-   webhook is failing signature verification (not a provider outage),
-   confirm `STRIPE_WEBHOOK_SECRET`/`RAZORPAY_WEBHOOK_SECRET` in Vercel
-   match what's configured in each provider's dashboard.
-3. **Before ever activating Stripe live**: `api/_lib/stripe.js`'s own
-   header comment states a code change here cannot confirm what the live
-   `STRIPE_PRICE_PRO`/`STRIPE_PRICE_STARTER`/`STRIPE_PRICE_ENTERPRISE` env
-   vars actually point to in the Stripe dashboard — verify each Price
-   object's real amount matches `api/_lib/payment-utils.js`'s `PLANS`
-   directly before enabling, every time any tier's price changes. This is
-   the same class of risk `docs/PRICING.md` documents for the pricing
-   pages themselves, just on infrastructure this repo can't inspect.
+2. **Razorpay**: check the provider's own status page. If a webhook is
+   failing signature verification (not a provider outage), confirm
+   `RAZORPAY_WEBHOOK_SECRET` in Vercel matches what's configured in the
+   Razorpay dashboard.
+3. **Before relying on `action=create-subscription`**: `api/_lib/subscriptions.js`'s
+   `createSubscription` builds a `plan_id` of the form
+   `plan_<planType>_<period>` and expects a matching Plan object to
+   already exist in the Razorpay dashboard — verify each Plan's real
+   amount matches `api/_lib/payment-utils.js`'s `PLANS` directly, every
+   time any tier's price changes. This is the same class of risk
+   `docs/PRICING.md` documents for the pricing pages themselves, just on
+   infrastructure this repo can't inspect.
 
 ---
 
