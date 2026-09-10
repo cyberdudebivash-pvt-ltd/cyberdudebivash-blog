@@ -13,6 +13,7 @@ describe('P0 Revenue Conversion v19', () => {
   test('only canonical paid tiers may enter direct checkout', () => {
     assert.equal(revenue.sanitizePlan('starter'), 'starter');
     assert.equal(revenue.sanitizePlan('PRO'), 'pro');
+    assert.equal(revenue.sanitizePlan('team'), 'team');
     assert.equal(revenue.sanitizePlan('enterprise'), 'enterprise');
     assert.equal(revenue.sanitizePlan('free'), null);
     assert.equal(revenue.sanitizePlan('admin'), null);
@@ -37,7 +38,8 @@ describe('P0 Revenue Conversion v19', () => {
   test('API quota exhaustion recommends exactly one next paid tier', () => {
     assert.equal(middleware.nextPaidTier('free'), 'starter');
     assert.equal(middleware.nextPaidTier('starter'), 'pro');
-    assert.equal(middleware.nextPaidTier('pro'), 'enterprise');
+    assert.equal(middleware.nextPaidTier('pro'), 'team');
+    assert.equal(middleware.nextPaidTier('team'), 'enterprise');
     assert.equal(middleware.nextPaidTier('enterprise'), null);
   });
 
@@ -49,6 +51,8 @@ describe('P0 Revenue Conversion v19', () => {
     assert.equal(url.searchParams.get('utm_source'), 'api_rate_limit');
     assert.equal(url.searchParams.get('utm_medium'), 'api');
     assert.equal(url.searchParams.get('utm_campaign'), 'p0_revenue_conversion_v19');
+    assert.equal(new URL(middleware.upgradeCheckoutUrl('pro')).searchParams.get('plan'), 'team');
+    assert.equal(new URL(middleware.upgradeCheckoutUrl('team')).searchParams.get('plan'), 'enterprise');
     assert.equal(middleware.upgradeCheckoutUrl('enterprise'), null);
   });
 

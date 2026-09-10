@@ -16,7 +16,7 @@
 })(typeof window !== 'undefined' ? window : null, function (root) {
   'use strict';
 
-  const VALID_PLANS = Object.freeze(['starter', 'pro', 'enterprise']);
+  const VALID_PLANS = Object.freeze(['starter', 'pro', 'team', 'enterprise']);
   const PAYMENT_SESSION_KEY = 'apex_pf_state';
   const MANUAL_STATUS_INTERVAL_MS = 10000;
   const FALLBACK_PLANS = Object.freeze({
@@ -28,9 +28,13 @@
       label: 'SOC Pro', amount: 1499, currency: 'INR',
       features: ['25,000 API calls/day', 'Complete IOC feed access', 'SIGMA + Yara detection rules', 'Authenticated full-intelligence API depth'],
     },
+    team: {
+      label: 'Sentinel Team', amount: 20699, currency: 'INR',
+      features: ['100,000 API calls/day', '5 team seats', 'STIX 2.1 bundle export', 'SIEM export (Splunk/Sentinel/Elastic)', 'All Pro capabilities'],
+    },
     enterprise: {
-      label: 'Enterprise', amount: 4999, currency: 'INR',
-      features: ['Extended API capacity', 'STIX 2.1 bundle export', 'Bulk CSV/JSON export', 'Priority support and all Pro capabilities'],
+      label: 'Enterprise Apex', amount: 82999, currency: 'INR',
+      features: ['Unlimited API capacity', 'Dedicated analyst & custom SLA', 'White-label reporting', 'All Sentinel Team capabilities'],
     },
   });
 
