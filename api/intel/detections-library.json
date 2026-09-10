@@ -1,8 +1,27 @@
 {
-  "generated": "2026-09-10T16:32:18.192Z",
+  "generated": "2026-09-10T20:58:31.611Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-87999-pip-open-webui",
+      "title": "Open WebUI: Any authenticated user can reach the Azure platform channel via server-side web fetch",
+      "url": "/posts/cve-2026-87999-pip-open-webui.html",
+      "generated": "2026-09-10T17:48:27.564Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-87999",
+        "CVE-2026-87999"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 168.63.129.16 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 168.63.129.16\"; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-60414",
       "title": "ZDI-26-638: Oracle Outside In Technology WPS File Parsing Memory Corruption Remote Code Execution Vulnerability",
@@ -4213,26 +4232,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.linkedin.com/feed/update/urn:li:activity:7481021730409603072/&quot;&gt;[link]&lt;/a&gt;&\"; http.host; content:\"www.linkedin.com\"; nocase; http.uri; content:\"/feed/update/urn:li:activity:7481021730409603072/&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.linkedin.com\"; dns.query; content:\"www.linkedin.com\"; nocase; classtype:trojan-activity; sid:9000006; rev:1;)"
-      ]
-    },
-    {
-      "slug": "a-hardware-security-ai-assistant-that-checks-chips-for-hidde",
-      "title": "A hardware security AI assistant that checks chips for hidden backdoors",
-      "url": "/posts/a-hardware-security-ai-assistant-that-checks-chips-for-hidde.html",
-      "generated": "2026-07-13T08:02:03.063Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.helpnetsecurity.com/2026/07/13/hardware-security-ai-assistant-hidden-backdoors/&quot;&gt\"; http.host; content:\"www.helpnetsecurity.com\"; nocase; http.uri; content:\"/2026/07/13/hardware-security-ai-assistant-hidden-backdoors/&quot\\;&gt\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/sunychoudhary&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/sunychoudhary&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uv52xv/a_hardware_security_ai_assistant_that_checks\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uv52xv/a_hardware_security_ai_assistant_that_checks\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.helpnetsecurity.com\"; dns.query; content:\"www.helpnetsecurity.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
       ]
     }
   ]
