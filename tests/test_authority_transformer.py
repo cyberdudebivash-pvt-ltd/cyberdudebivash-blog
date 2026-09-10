@@ -233,10 +233,11 @@ class TestMonetizationCtaWiring(unittest.TestCase):
     """MonetizationInjector defines several CTA blocks that _assemble_html
     must actually call for them to ever reach a published article -- a
     method existing on the class proves nothing about live output. This
-    guards the newsletter CTA specifically, wired in because email capture
-    is the one conversion type nothing else in the assembled article
-    provides (unlike inject_api_cta/inject_mssp_cta, still dormant by
-    design pending a placement decision)."""
+    guards the newsletter CTA (unconditional) and the mutually-exclusive
+    closing CTA slot (inject_mssp_cta vs. inject_api_cta vs. neither)."""
+
+    API_MARKER = "THREAT INTELLIGENCE API — FREE TIER AVAILABLE"
+    MSSP_MARKER = "MANAGED SECURITY SERVICES — CYBERDUDEBIVASH® MSSP"
 
     def setUp(self):
         self.config = Config()
@@ -253,6 +254,48 @@ class TestMonetizationCtaWiring(unittest.TestCase):
         # article too, not just the default CVE fixture above.
         article = _make_article(labels=["Ransomware", "CYBERDUDEBIVASH"], cve_id=None, cvss_score=None)
         content = AuthorityTransformer(self.config).transform(article)["content"]
+        self.assertIn("WEEKLY THREAT INTELLIGENCE BRIEFING", content)
+
+    def test_api_cta_appears_for_a_plain_cve_article(self):
+        # Default fixture: kev_listed=None, no ransomware label, a real CVE
+        # in the title -- the self-serve API ask, not the enterprise one.
+        content = AuthorityTransformer(self.config).transform(_make_article())["content"]
+        self.assertIn(self.API_MARKER, content)
+        self.assertNotIn(self.MSSP_MARKER, content)
+
+    def test_mssp_cta_wins_over_api_cta_for_a_kev_listed_cve(self):
+        # This article has both a CVE (would qualify for the API CTA) and
+        # kev_listed=True (would qualify for the MSSP CTA) -- the higher-
+        # value enterprise ask must win, not both rendering back to back.
+        article = _make_article(kev_listed=True)
+        content = AuthorityTransformer(self.config).transform(article)["content"]
+        self.assertIn(self.MSSP_MARKER, content)
+        self.assertNotIn(self.API_MARKER, content)
+
+    def test_mssp_cta_appears_for_ransomware_label_without_kev_or_cve(self):
+        article = _make_article(
+            title="Global ransomware group claims new victim",
+            summary="A ransomware group posted a new victim to its leak site.",
+            full_content="A ransomware group posted a new victim to its leak site.",
+            labels=["Ransomware", "CYBERDUDEBIVASH"],
+            cve_id=None, cvss_score=None, kev_listed=None,
+        )
+        content = AuthorityTransformer(self.config).transform(article)["content"]
+        self.assertIn(self.MSSP_MARKER, content)
+        self.assertNotIn(self.API_MARKER, content)
+
+    def test_neither_secondary_cta_appears_without_cve_kev_or_ransomware(self):
+        article = _make_article(
+            title="New AI governance framework published for enterprise adoption",
+            summary="A new AI governance framework was published covering model risk management.",
+            full_content="A new AI governance framework was published covering model risk management.",
+            labels=["AI Security", "CYBERDUDEBIVASH"],
+            cve_id=None, cvss_score=None, kev_listed=None,
+        )
+        content = AuthorityTransformer(self.config).transform(article)["content"]
+        self.assertNotIn(self.API_MARKER, content)
+        self.assertNotIn(self.MSSP_MARKER, content)
+        # The newsletter CTA still must appear -- it's unconditional.
         self.assertIn("WEEKLY THREAT INTELLIGENCE BRIEFING", content)
 
 
