@@ -52,6 +52,7 @@ const PRETTY_URL_REWRITES = [
   [/^\/api\/v1\/admin\/payments\/audit$/, 'api/v1/admin', () => ({ action: 'audit' })],
   [/^\/api\/v1\/admin\/payments\/razorpay-orders$/, 'api/v1/admin', () => ({ action: 'razorpay-orders' })],
   [/^\/api\/v1\/admin\/payments\/product-orders$/, 'api/v1/admin', () => ({ action: 'product-orders' })],
+  [/^\/api\/v1\/admin\/payments\/gumroad-sales$/, 'api/v1/admin', () => ({ action: 'gumroad-sales' })],
 ];
 
 const ASSET_REWRITES = [
@@ -82,6 +83,7 @@ const DIRECT_API_HANDLERS = new Set([
   'api/v1/hunts',
   'api/v1/analysis/assessments',
   'api/v1/analysis/findings',
+  'api/v1/billing/gumroad-webhook',
   'api/v1/billing/razorpay-webhook',
   'api/v1/customer/dashboard',
   'api/v1/customer/download',

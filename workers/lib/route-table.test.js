@@ -68,7 +68,7 @@ describe('resolveRoute — pretty-URL rewrites', () => {
 });
 
 describe('resolveRoute — direct api/** filesystem routes', () => {
-  test('every real handler file on disk is either routed or a known internal-only module (42-file parity check)', () => {
+  test('every real handler file on disk is either routed or a known internal-only module (43-file parity check)', () => {
     const files = [];
     function walk(dir) {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -79,14 +79,14 @@ describe('resolveRoute — direct api/** filesystem routes', () => {
       }
     }
     walk(path.join(__dirname, '..', '..', 'api'));
-    // 39 routable handlers (37 DIRECT_API_HANDLERS + 2 DYNAMIC_API_HANDLERS)
+    // 40 routable handlers (38 DIRECT_API_HANDLERS + 2 DYNAMIC_API_HANDLERS)
     // + 3 internal-only "legacy" library modules that live directly under
     // api/v1/** (not api/_lib/**) but are require()'d by their routed
     // sibling, never routed themselves: api/v1/billing-legacy.js (required
     // by api/v1/billing.js), api/v1/products/legacy-index.js (required by
     // api/v1/products/index.js), api/v1/reports/legacy-index.js (required
     // by api/v1/reports/index.js).
-    assert.equal(files.length, 42, 'expected exactly 42 real api/** files (39 routable + 3 internal-only legacy modules) — update route-table.js and/or this test if this changes');
+    assert.equal(files.length, 43, 'expected exactly 43 real api/** files (40 routable + 3 internal-only legacy modules) — update route-table.js and/or this test if this changes');
 
     const INDEX_HANDLERS = new Set(['api/v1/products/index', 'api/v1/quality/index', 'api/v1/reports/index']);
     const DYNAMIC_FILE_SUFFIX = /\[id]$/;
@@ -158,10 +158,10 @@ describe('resolveRoute — no match', () => {
 });
 
 describe('table sanity', () => {
-  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 39 handlers with no overlap', () => {
+  test('DIRECT_API_HANDLERS and DYNAMIC_API_HANDLERS together account for all 40 handlers with no overlap', () => {
     const dynamicPaths = DYNAMIC_API_HANDLERS.map(([, handlerPath]) => handlerPath);
     const all = [...DIRECT_API_HANDLERS, ...dynamicPaths];
-    assert.equal(all.length, 39);
-    assert.equal(new Set(all).size, 39, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
+    assert.equal(all.length, 40);
+    assert.equal(new Set(all).size, 40, 'duplicate handler path across DIRECT_API_HANDLERS/DYNAMIC_API_HANDLERS');
   });
 });
