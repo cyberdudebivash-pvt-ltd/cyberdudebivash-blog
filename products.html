@@ -953,13 +953,13 @@ function filterProducts(cat, btn) {
   });
 }
 
-/* ── Real checkout (Stripe, one-time digital products) ── */
+/* ── Real checkout (one-time digital products) ── */
 let _checkoutProductId = null;
 
 function buyProduct(productId, productName, priceLabel) {
   _checkoutProductId = productId;
   document.getElementById('checkoutModalTitle').textContent = productName;
-  document.getElementById('checkoutModalPrice').textContent = priceLabel + ' — secure checkout via Stripe';
+  document.getElementById('checkoutModalPrice').textContent = priceLabel + ' — secure checkout';
   document.getElementById('checkoutEmail').value = '';
   document.getElementById('checkoutError').textContent = '';
   document.getElementById('checkoutModal').classList.add('open');
@@ -1009,7 +1009,7 @@ async function submitCheckout() {
   }
 }
 
-/* ── Post-checkout banner (Stripe success_url / cancel_url redirect) ── */
+/* ── Post-checkout banner (checkout-flow success_url / cancel_url redirect) ── */
 (function () {
   const params = new URLSearchParams(window.location.search);
   const status = params.get('checkout');
@@ -1025,7 +1025,7 @@ async function submitCheckout() {
 <script src="/ai-monetization-engine.js" defer></script>
 <script src="/analytics-engine.js" defer></script>
 <script src="/email-engine.js" defer></script>
-<script src="/payment-engine.js" defer></script>
+
 <script src="/auto-intel-engine.js"></script>
 </body>
 </html>

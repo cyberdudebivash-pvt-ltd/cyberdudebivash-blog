@@ -337,8 +337,8 @@ X-API-Key: sentinel_your_key_here</div>
       <div class="ep-desc">Register and get an API key. Body: {email, name, plan}. Returns api_key (shown only once).</div>
     </div>
     <div class="endpoint">
-      <div><span class="ep-method">POST</span><span class="ep-path">/api/v1/billing/subscribe</span><span class="ep-tier ep-pro">AUTH</span></div>
-      <div class="ep-desc">Create a Stripe checkout session. Body: {plan: "pro"|"enterprise"}. Returns checkout_url.</div>
+      <div><span class="ep-method">POST</span><span class="ep-path">/api/v1/billing?action=create-subscription</span><span class="ep-tier ep-pro">AUTH</span></div>
+      <div class="ep-desc">Create a Razorpay subscription. Body: {plan_type, period}. Returns a Razorpay subscription for instant tier upgrade.</div>
     </div>
 
     <div style="margin-top:24px">
@@ -948,7 +948,8 @@ async function retryDeadLetterUI(eventId, channel) {
   } catch (e) { showAlert(alertEl, 'error', 'Network error retrying delivery.'); }
 }
 
-// Check for Stripe redirect
+// Show a success banner if redirected back with ?status=success (a
+// redirect-based checkout flow's success_url landing here).
 const params = new URLSearchParams(location.search);
 if(params.get('status')==='success') {
   switchTab('dashboard');

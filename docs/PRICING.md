@@ -163,11 +163,19 @@ here can verify or perform.
 
 ## Known open item outside this codebase
 
-If Stripe is ever activated (`STRIPE_SECRET_KEY` set), each
-`STRIPE_PRICE_*` env var must point at a real Stripe Price object priced
-to match its `PLANS.<tier>.amount` above (`STRIPE_PRICE_STARTER` →
-Starter, `STRIPE_PRICE_PRO` → Pro at $18/mo, `STRIPE_PRICE_TEAM` → Team
-at $249/mo, `STRIPE_PRICE_ENTERPRISE` → Enterprise Apex's $999/mo
-starting price). Those objects live in the Stripe dashboard, not this
-repository, and cannot be verified or fixed by a code change — confirm
-them directly before enabling Stripe checkout.
+Razorpay's Subscriptions API (`api/_lib/subscriptions.js`'s
+`createSubscription`) builds a `plan_id` of the form
+`plan_<planType>_<period>` (e.g. `plan_pro_monthly`) and expects a
+matching Razorpay Plan object to already exist in the Razorpay dashboard,
+priced to match `PLANS.<tier>.amount` above. Those Plan objects live in
+the Razorpay dashboard, not this repository, and cannot be verified or
+created by a code change — confirm one exists for every
+`(planType, period)` combination in current use, including the
+`team`/`enterprise` tiers added 2026-09-10, before relying on
+`action=create-subscription`.
+
+Stripe was fully removed from this platform 2026-09-10 (see
+`ENVIRONMENT_VARIABLE_MATRIX.md`) — Razorpay is now the sole automated
+payment rail, with manual UPI/bank-transfer as the human-reviewed primary
+path and Gumroad available as an optional secondary rail for global
+digital-product downloads.

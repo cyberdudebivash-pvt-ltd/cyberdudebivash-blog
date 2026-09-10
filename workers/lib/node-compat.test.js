@@ -63,7 +63,7 @@ describe('toNodeRequest', () => {
   });
 
   test('POST application/x-www-form-urlencoded body is parsed into a plain object', async () => {
-    const request = new Request('https://blog.cyberdudebivash.in/api/v1/billing?action=subscribe', {
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/billing?action=create-razorpay-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: 'plan=pro&email=a%40b.com',
@@ -105,14 +105,14 @@ describe('toNodeRequest', () => {
 
   test('an oversized body is rejected for form-urlencoded and plain-text content types too', async () => {
     const oversized = 'a'.repeat(5 * 1024 * 1024);
-    const formRequest = new Request('https://blog.cyberdudebivash.in/api/v1/billing?action=subscribe', {
+    const formRequest = new Request('https://blog.cyberdudebivash.in/api/v1/billing?action=create-razorpay-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: `note=${oversized}`,
     });
     await assert.rejects(() => toNodeRequest(formRequest), err => err.isBodyTooLargeError === true);
 
-    const textRequest = new Request('https://blog.cyberdudebivash.in/api/v1/billing?action=subscribe', {
+    const textRequest = new Request('https://blog.cyberdudebivash.in/api/v1/billing?action=create-razorpay-order', {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: oversized,
@@ -132,10 +132,10 @@ describe('toNodeRequest', () => {
   });
 
   test('bodyParser:false config defers to __cfRequest instead of parsing JSON', async () => {
-    const request = new Request('https://blog.cyberdudebivash.in/api/v1/billing/webhook', {
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/billing/razorpay-webhook', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'stripe-signature': 't=1,v1=abc' },
-      body: JSON.stringify({ type: 'checkout.session.completed' }),
+      headers: { 'Content-Type': 'application/json', 'x-razorpay-signature': 'abc' },
+      body: JSON.stringify({ event: 'payment.captured' }),
     });
     const req = await toNodeRequest(request, { api: { bodyParser: false } });
     assert.equal(req.body, undefined);

@@ -332,14 +332,14 @@ function applySecurityHeaders(res) {
   // CORS — explicit headers
   res.setHeader('Access-Control-Allow-Origin',  '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Authorization, X-API-Key, Content-Type, X-Admin-Key, stripe-signature');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization, X-API-Key, Content-Type, X-Admin-Key, x-razorpay-signature');
   res.setHeader('Access-Control-Max-Age', '86400');
 }
 exports.applySecurityHeaders = applySecurityHeaders;
 
 /* ══════════════════════════════════════════════════════════════════
    WEBHOOK RAW BODY READER
-   Payment-gateway webhooks (Stripe, Razorpay) sign the exact raw bytes
+   Payment-gateway webhooks (Razorpay) sign the exact raw bytes
    they sent. Vercel auto-parses JSON bodies before the handler runs, so
    re-serializing req.body is not guaranteed byte-identical to what was
    signed. Webhook handlers must export `config.api.bodyParser = false`

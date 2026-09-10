@@ -72,13 +72,10 @@ exists, registered customers' API keys are stated as unrecoverable — see
 
 ### Payments — Stripe
 
-| Variable | Used By | Purpose | Required? | Environment | Secret? | Current Value Known? | Migration Action |
-|---|---|---|---|---|---|---|---|
-| `STRIPE_SECRET_KEY` | `api/_lib/stripe.js:15`; `api/v1/billing.js:444`; **also** an independent second direct-fetch use in `api/v1/billing/webhook.js:164` | Bearer auth to Stripe REST API | Optional at load; 503 if unset at subscribe endpoint | Vercel (Production) | Yes | NOT VERIFIED | ROTATION REQUIRED |
-| `STRIPE_WEBHOOK_SECRET` | `api/_lib/stripe.js:16,51,61` | HMAC verification of `Stripe-Signature` | Webhook always rejected if unset | Vercel (Production) | Yes | NOT VERIFIED | ROTATION REQUIRED |
-| `STRIPE_PRICE_STARTER` | `api/_lib/stripe.js:17` | Stripe Price ID, Starter plan | Checkout throws if unset | Vercel (Production) | No (identifier) | NOT VERIFIED | KNOWN gap — per `RUNBOOKS.md:107-108`, may never have had a Price object created in Stripe at all; verify in dashboard before reuse, don't assume recovery = done |
-| `STRIPE_PRICE_PRO` | `api/_lib/stripe.js:18` | Stripe Price ID, Pro plan | Same | Vercel (Production) | No | NOT VERIFIED | Verify amount matches `api/_lib/payment-utils.js` `PLANS` before reactivating |
-| `STRIPE_PRICE_ENTERPRISE` | `api/_lib/stripe.js:19` | Stripe Price ID, Enterprise plan | Same | Vercel (Production) | No | NOT VERIFIED | Same verification requirement |
+**REMOVED 2026-09-10** — Stripe has been fully purged from this platform
+(code, config, and env vars). Razorpay is the sole automated payment rail;
+manual UPI/bank-transfer remains the human-reviewed primary path. See
+`docs/PRICING.md` for the current payments architecture.
 
 ### Payments — Razorpay (per `OPERATIONS.md`, the canonical/primary processor)
 

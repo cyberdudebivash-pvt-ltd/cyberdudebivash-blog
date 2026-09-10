@@ -161,9 +161,9 @@ describe('handleFetch — malformed/oversized body handling (real handler dispat
 
   test('a bodyParser:false route (webhook) is unaffected by the generic body-parse error path', async () => {
     const { env } = fakeEnv();
-    const request = new Request('https://blog.cyberdudebivash.in/api/v1/billing/webhook', {
+    const request = new Request('https://blog.cyberdudebivash.in/api/v1/billing/razorpay-webhook', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'stripe-signature': 't=1,v1=deadbeef' },
+      headers: { 'Content-Type': 'application/json', 'x-razorpay-signature': 'deadbeef' },
       body: '{"not":"valid json at all',
     });
     const response = await handleFetch(request, env);

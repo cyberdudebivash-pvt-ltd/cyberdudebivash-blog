@@ -6,9 +6,10 @@ waiting on environment configuration. Activating them is the single highest-
 leverage revenue action available today: the code path exists and is verified;
 it just needs credentials set in Vercel.
 
-Last verified: 2026-07-05. Section 2.2's Stripe warning updated 2026-07-28
-(GEORP v1) — see that section for what changed. For incident/outage
-procedures (not covered here), see `RUNBOOKS.md`.
+Last verified: 2026-07-05. Section 2.2's payments guidance updated
+2026-09-10 (Stripe removed platform-wide) — see that section for what
+changed. For incident/outage procedures (not covered here), see
+`RUNBOOKS.md`.
 
 ---
 
@@ -60,8 +61,7 @@ verified in production on the date above. Set the env vars in
 |---|---|---|---|
 | **Resend** | Newsletter → owned email audience + nurture (the content→SaaS funnel) | `RESEND_API_KEY`, `RESEND_AUDIENCE_ID` | ❌ **not configured** (`esp_status: not_configured`) |
 | **Upstash Redis** | Lead storage, API keys, rate limiting, billing state | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | ⚠️ verify (lead endpoint returns "captured") |
-| **Stripe** | USD card subscriptions (SOC Pro, Enterprise) | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_ENTERPRISE` | ⚠️ verify |
-| **Razorpay** | INR payments (primary processor) | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | ⚠️ verify |
+| **Razorpay** | INR payments — the platform's sole automated processor (Stripe removed 2026-09-10) | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` | ⚠️ verify |
 
 ### 2.1 Newsletter → Resend (highest-leverage, do this first)
 
@@ -91,24 +91,23 @@ contact (segments supported: `general`, `cve-alerts`, `ai-security`, `mssp`,
 
 ### 2.2 Payments — verify and reconcile
 
-Verify each processor responds configured (endpoints are already live at
+Verify Razorpay responds configured (endpoints are already live at
 `/api/v1/billing`). Then confirm the **price actually charged matches the price
 displayed** ($18/mo SOC Pro after the pricing-consistency fix).
 
-> **Update (2026-07-28, GEORP v1):** the code-level $49/$18 mismatch this
-> warning originally flagged is fixed — `api/_lib/stripe.js`'s own header
-> comment now correctly states the canonical amount (₹1,499/≈$18) and
-> explicitly warns that a code change here cannot confirm what the live
-> Stripe dashboard Price object actually points at. That residual risk is
-> real and current, and now applies to **three** tiers, not just Pro:
-> Starter was also repriced (₹2,499/$29 → ₹999/$12, `docs/PRICING.md`,
-> GCDOM v1) and has never had a Stripe Price object created for it at any
-> price. **Before ever activating Stripe live**, verify all three —
-> `STRIPE_PRICE_STARTER` ($12), `STRIPE_PRICE_PRO` ($18),
-> `STRIPE_PRICE_ENTERPRISE` ($60) — against `api/_lib/payment-utils.js`'s
-> `PLANS` directly in the Stripe dashboard. Razorpay (INR-denominated,
-> matching `PLANS` directly) remains the canonical, verified-in-production
-> processor.
+> **Update (2026-09-10):** Stripe has been fully removed from this
+> platform (code, config, and env vars — see
+> `ENVIRONMENT_VARIABLE_MATRIX.md`). Razorpay (INR-denominated, matching
+> `PLANS` directly) is now the sole automated payment rail; this section's
+> prior Stripe-specific guidance (2026-07-28, GEORP v1) no longer applies.
+> Razorpay's own equivalent open item: `api/_lib/subscriptions.js`'s
+> `createSubscription` builds a `plan_id` of the form
+> `plan_<planType>_<period>` and expects a matching Plan object to already
+> exist in the Razorpay dashboard, priced to match
+> `api/_lib/payment-utils.js`'s `PLANS` — confirm one exists for every
+> tier/period combination in current use, including `team`/`enterprise`
+> (added 2026-09-10), before relying on `action=create-subscription`. See
+> `docs/PRICING.md`'s "Known open item" section.
 >
 > **Separately (verified live, 2026-07-28):** `GET
 > /api/v1/billing?action=plans` on the actual production site still
@@ -142,7 +141,7 @@ curl -s -o /dev/null -w 'favicon    %{http_code}\n' $BASE/favicon.ico           
 - **Content → audience:** SEO (3,000+ posts, favicon/entity-graph live), research
   hub + Exploitation Velocity Index (linkable data asset), detection packs
   (lead magnets) → newsletter capture (`/api/v1/newsletter`, needs Resend).
-- **Audience → revenue:** SOC Pro subscription (Stripe/Razorpay), Enterprise
+- **Audience → revenue:** SOC Pro subscription (Razorpay), Enterprise
   (contact + Calendly opportunity), API access (keys via `/api/v1/auth`),
   detection-pack storefront (`products.html` → `/api/v1/billing`).
 - **Trust layer (done):** verifiable sourcing + corrections policy, legal pages,

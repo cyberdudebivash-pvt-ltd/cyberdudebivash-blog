@@ -15,8 +15,8 @@
     "api/v1/hunts.js":           { "memory": 256, "maxDuration": 25 },
     "api/v1/detections/performance.js": { "memory": 256, "maxDuration": 20 },
     "api/v1/admin.js":           { "memory": 256, "maxDuration": 20 },
-    "api/v1/billing/webhook.js": { "memory": 128, "maxDuration": 10 },
     "api/v1/billing/razorpay-webhook.js": { "memory": 128, "maxDuration": 10 },
+    "api/v1/billing/gumroad-webhook.js": { "memory": 128, "maxDuration": 10 },
     "api/cron/dispatch-intel.js": { "memory": 128, "maxDuration": 10 },
     "api/og.js":                  { "memory": 512, "maxDuration": 15 }
   },
@@ -27,7 +27,7 @@
       "headers": [
         { "key": "Access-Control-Allow-Origin",  "value": "*" },
         { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Authorization, X-API-Key, Content-Type, X-Admin-Key, stripe-signature" },
+        { "key": "Access-Control-Allow-Headers", "value": "Authorization, X-API-Key, Content-Type, X-Admin-Key, x-razorpay-signature" },
         { "key": "X-Content-Type-Options",       "value": "nosniff" },
         { "key": "X-Frame-Options",              "value": "DENY" },
         { "key": "Content-Security-Policy",      "value": "default-src 'none'; frame-ancestors 'none'" },
@@ -131,8 +131,8 @@
     { "source": "/AUDIT-REPORT-2026-05-28.md",          "destination": "/api/_lib/blocked-404" },
     { "source": "/OPERATIONS.md",                       "destination": "/api/_lib/blocked-404" },
 
-    { "source": "/api/v1/billing/webhook",          "destination": "/api/v1/billing/webhook" },
     { "source": "/api/v1/billing/razorpay-webhook", "destination": "/api/v1/billing/razorpay-webhook" },
+    { "source": "/api/v1/billing/gumroad-webhook", "destination": "/api/v1/billing/gumroad-webhook" },
 
     { "source": "/api/v1/intel/live",                  "destination": "/api/v1/intel?action=live" },
     { "source": "/api/v1/intel/top-threats",           "destination": "/api/v1/intel?action=top" },
@@ -152,7 +152,6 @@
     { "source": "/api/v1/billing/create-intent",       "destination": "/api/v1/billing?action=create-intent" },
     { "source": "/api/v1/billing/submit-payment",      "destination": "/api/v1/billing?action=submit-payment" },
     { "source": "/api/v1/billing/payment-status",      "destination": "/api/v1/billing?action=status" },
-    { "source": "/api/v1/billing/subscribe",           "destination": "/api/v1/billing?action=subscribe" },
     { "source": "/api/v1/billing/razorpay/order",      "destination": "/api/v1/billing?action=create-razorpay-order" },
     { "source": "/api/v1/billing/razorpay/verify",     "destination": "/api/v1/billing?action=verify-razorpay-payment" },
     { "source": "/api/v1/billing/products/checkout",  "destination": "/api/v1/billing?action=create-product-checkout" },
@@ -163,6 +162,7 @@
     { "source": "/api/v1/admin/payments/audit",        "destination": "/api/v1/admin?action=audit" },
     { "source": "/api/v1/admin/payments/razorpay-orders", "destination": "/api/v1/admin?action=razorpay-orders" },
     { "source": "/api/v1/admin/payments/product-orders",  "destination": "/api/v1/admin?action=product-orders" },
+    { "source": "/api/v1/admin/payments/gumroad-sales",  "destination": "/api/v1/admin?action=gumroad-sales" },
 
     { "source": "/api/v1/workbench/investigations/:apexSubpath*", "destination": "/api/v1/workbench/investigations?apexSubpath=:apexSubpath*" },
     { "source": "/api/v1/workbench/cases/:apexSubpath*",          "destination": "/api/v1/workbench/cases?apexSubpath=:apexSubpath*" },

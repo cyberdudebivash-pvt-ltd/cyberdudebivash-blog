@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
 
   if (!action) {
     return fail(res, 400, 'MISSING_ACTION',
-      'action required. Valid: pending, approve, reject, audit, razorpay-orders, product-orders. All routes require X-Admin-Key header.');
+      'action required. Valid: pending, approve, reject, audit, razorpay-orders, product-orders, gumroad-sales. All routes require X-Admin-Key header.');
   }
 
   /* Phase 3: Admin auth gate — timing-safe, X-Admin-Key only */
@@ -64,9 +64,10 @@ module.exports = async (req, res) => {
     case 'audit':            return handleAudit(req, res);
     case 'razorpay-orders':  return handleRazorpayOrders(req, res);
     case 'product-orders':   return handleProductOrders(req, res);
+    case 'gumroad-sales':    return handleGumroadSales(req, res);
     default:
       return fail(res, 400, 'INVALID_ACTION',
-        `Unknown action: "${action}". Valid: pending, approve, reject, audit, razorpay-orders, product-orders`);
+        `Unknown action: "${action}". Valid: pending, approve, reject, audit, razorpay-orders, product-orders, gumroad-sales`);
   }
 };
 
@@ -472,6 +473,71 @@ async function handleRazorpayOrders(req, res) {
 
   } catch (e) {
     return fail(res, 500, 'FETCH_FAILED', sec.safeError(e, 'Failed to fetch Razorpay orders. Please retry.'));
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GET /api/v1/admin?action=gumroad-sales
+   Reconciliation view of Gumroad sales recorded by
+   api/v1/billing/gumroad-webhook.js — Gumroad fulfills the purchased
+   file/license key directly, so this is purely CyberDudeBivash's own
+   sale visibility and audit trail, not a delivery gate.
+   Query: ?limit=50  ?offset=0
+═══════════════════════════════════════════════════════════════ */
+async function handleGumroadSales(req, res) {
+  if (req.method !== 'GET') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'GET required');
+
+  const limit  = Math.min(parseInt(req.query.limit  || '50', 10), 200);
+  const offset = Math.max(parseInt(req.query.offset || '0',  10), 0);
+
+  try {
+    const saleIds = await redis.zrevrange('payment:gumroad:sales', 0, 999) || [];
+    const total   = saleIds.length;
+    const page    = saleIds.slice(offset, offset + limit);
+
+    if (page.length === 0) {
+      return ok(res, {
+        sales: [], total, limit, offset,
+        message: total === 0 ? 'No Gumroad sales found.' : `No sales at offset ${offset}. Total: ${total}`,
+      });
+    }
+
+    let results;
+    try {
+      results = await redis.pipeline(page.map(id => ['HGETALL', `payment:gumroad:sale:${id}`]));
+    } catch (_) {
+      results = await Promise.all(page.map(id => redis.hgetall(`payment:gumroad:sale:${id}`)));
+    }
+
+    const sales = results.map((raw, idx) => {
+      const obj = parseHash(raw);
+      if (!obj) {
+        return { sale_id: page[idx], note: 'Sale record expired or missing.' };
+      }
+      return {
+        sale_id:            obj.saleId,
+        email:              obj.email,
+        product_id:         obj.productId,
+        product_permalink:  obj.productPermalink,
+        product_name:       obj.productName,
+        price:              obj.price,
+        currency:           obj.currency,
+        refunded:           obj.refunded === 'true',
+        recorded_at:        obj.recordedAt,
+      };
+    });
+
+    return ok(res, {
+      sales, total, limit, offset,
+      pagination: {
+        has_more:    offset + limit < total,
+        next_offset: offset + limit < total ? offset + limit : null,
+      },
+      note: 'Gumroad delivers the file/license key to the buyer directly — this is a sale record for reconciliation, not a fulfillment queue.',
+    });
+
+  } catch (e) {
+    return fail(res, 500, 'FETCH_FAILED', sec.safeError(e, 'Failed to fetch Gumroad sales. Please retry.'));
   }
 }
 
