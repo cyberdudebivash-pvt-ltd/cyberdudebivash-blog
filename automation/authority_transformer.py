@@ -2750,14 +2750,20 @@ class AuthorityTransformer:
         # here instead, after the reader has seen the full technical
         # content. inject_api_cta (self-serve, lower-friction) only fires
         # when a real CVE is present — its own content ("live CVE data, KEV
-        # alerts") has nothing to offer an article with no CVE. Never both:
-        # two competing conversion asks in the same slot is worse than one
-        # well-chosen ask, and KEV/ransomware already wins the higher-value
-        # MSSP ask over the API one when both conditions are true.
+        # alerts") has nothing to offer an article with no CVE. Checks both
+        # `cves` (regex-extracted from title+summary) and article.cve_id
+        # (structured, populated independently by source enrichment --
+        # e.g. nvd_source.py/cisa_kev_source.py's own API response) since
+        # an editorial/LLM-rewritten title+summary can omit the literal
+        # "CVE-YYYY-NNNNN" string even when the structured field carries a
+        # real one. Never both CTAs: two competing conversion asks in the
+        # same slot is worse than one well-chosen ask, and KEV/ransomware
+        # already wins the higher-value MSSP ask over the API one when
+        # both conditions are true.
         label_set = {str(label).lower() for label in (article.labels or [])}
         if article.kev_listed is True or "ransomware" in label_set:
             closing_cta = self.monetization.inject_mssp_cta()
-        elif cves:
+        elif article.cve_id or cves:
             closing_cta = self.monetization.inject_api_cta()
         else:
             closing_cta = ""
