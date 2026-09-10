@@ -2790,6 +2790,8 @@ class AuthorityTransformer:
 
 {ext_refs}
 
+{self.monetization.inject_newsletter_cta()}
+
 {self.monetization.inject_read_more_cta(article.url)}
 
 {hashtags}

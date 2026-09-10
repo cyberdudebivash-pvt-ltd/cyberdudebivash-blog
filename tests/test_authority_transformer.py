@@ -229,6 +229,33 @@ class TestCveAndKevSemantics(unittest.TestCase):
         self.assertEqual(rule["status"], "experimental")
 
 
+class TestMonetizationCtaWiring(unittest.TestCase):
+    """MonetizationInjector defines several CTA blocks that _assemble_html
+    must actually call for them to ever reach a published article -- a
+    method existing on the class proves nothing about live output. This
+    guards the newsletter CTA specifically, wired in because email capture
+    is the one conversion type nothing else in the assembled article
+    provides (unlike inject_api_cta/inject_mssp_cta, still dormant by
+    design pending a placement decision)."""
+
+    def setUp(self):
+        self.config = Config()
+
+    def test_newsletter_cta_appears_in_every_assembled_article(self):
+        content = AuthorityTransformer(self.config).transform(_make_article())["content"]
+        self.assertIn("WEEKLY THREAT INTELLIGENCE BRIEFING", content)
+        self.assertIn(self.config.newsletter_signup_url, content)
+
+    def test_newsletter_cta_appears_regardless_of_article_category(self):
+        # inject_urgency_cta's placement is category-conditional (KEV/
+        # ransomware/APT/etc.); the newsletter CTA must not be tied to
+        # that same branching, so check it survives a ransomware-labeled
+        # article too, not just the default CVE fixture above.
+        article = _make_article(labels=["Ransomware", "CYBERDUDEBIVASH"], cve_id=None, cvss_score=None)
+        content = AuthorityTransformer(self.config).transform(article)["content"]
+        self.assertIn("WEEKLY THREAT INTELLIGENCE BRIEFING", content)
+
+
 class TestFamilySpecificSchemas(unittest.TestCase):
     def setUp(self):
         self.config = Config()
