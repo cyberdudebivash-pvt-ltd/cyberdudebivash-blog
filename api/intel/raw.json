@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-10T09:58:32.822Z",
+  "generated": "2026-09-10T14:07:50.177Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,53 +8,8 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 108,
+  "count": 110,
   "items": [
-    {
-      "id": "BLEEPINGCOMPUTER-53ff1f7364287247",
-      "title": "CISA: WatchGuard RCE flaw now exploited in ransomware attacks",
-      "description": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) has confirmed that ransomware gangs are also exploiting a critical WatchGuard Firebox firewall vulnerability, which it flagged as actively exploited in December. [...]",
-      "cvss": 0,
-      "final_ps": 65,
-      "quality_score": 0.48,
-      "threat_level": "HIGH",
-      "type": "RANSOMWARE",
-      "source": "bleepingcomputer",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "bleepingcomputer"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": true,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "BleepingComputer",
-      "product": "Threat Intelligence",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/security/cisa-watchguard-rce-flaw-now-exploited-in-ransomware-attacks/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.72 (bleepingcomputer)",
-          "data_confidence=0.65",
-          "recency=0d (score=1.00)",
-          "QS=0.480"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed",
-          "+8 exploited_in_wild"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
     {
       "id": "SENTINELAPEX-6a06aee4f665",
       "title": "Google warns of new Chrome zero-day bug exploited in attacks",
@@ -283,11 +238,57 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59185",
-      "title": "Identrail Cross-tenant IDOR: Client-supplied GitHub App installation_id is bound to the caller's workspace without owner",
-      "description": "Summary\n\nidentrail's GitHub App connection-completion endpoint binds a fully client-supplied installation_id to the caller's workspace without verifying that the installation belongs to, or was installed by, the workspace that initiated the connect flow. identrail then mints a Gi... [Full analysis a",
-      "cvss": 8.5,
-      "final_ps": 48,
+      "id": "CVE-2026-59177",
+      "title": "ESPHome Device Builder Dashboard: Unauthenticated dashboard access via the HA add-on ingress site bound to all interface",
+      "description": "Summary\n\nOn the Home Assistant add-on, the dashboard serves a trusted ingress site that skips authentication because the supervisor authenticates the request upstream. That site was binding 0.0.0.0. The add-on runs in host network mode for mDNS, so binding all interfaces also bou... [Full analysis a",
+      "cvss": 8.8,
+      "final_ps": 49,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "SOCIAL_ENGINEERING",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59177"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-vv4j-m4vr-f3g6"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=49 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-59160",
+      "title": "@yeger/turbo-graph: Unauthenticated Network-Exposed Task Execution via /api/run",
+      "description": "Unauthenticated Network-Exposed Turborepo Task Execution via /api/run\n\nSummary\n\n@yeger/turbo-graph starts its embedded Next.js server without binding to the loopback interface, causing it to listen on all network interfaces (0.0.0.0:29312 by default). The /api/run HTTP endpoint e... [Full analysis a",
+      "cvss": 8.8,
+      "final_ps": 49,
       "quality_score": 0.493,
       "threat_level": "MEDIUM",
       "type": "NEWS_REPORT",
@@ -305,11 +306,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-59185"
+        "CVE-2026-59160"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-cp3j-m783-3ph5"
+        "https://github.com/advisories/GHSA-2r5q-h53f-9rp3"
       ],
       "explanation": {
         "quality": [
@@ -319,7 +320,7 @@
           "QS=0.493"
         ],
         "priority": [
-          "base_ps=48 (no boosts)"
+          "base_ps=49 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -423,6 +424,98 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-59179",
+      "title": "@openhop/server: Path Traversal in Flow ID File Operations",
+      "description": "Path Traversal in Flow ID File Operations\n\nSummary\n\n@openhop/server passes unsanitized HTTP route parameters directly to path.join() when constructing filesystem paths for flow YAML files. An unauthenticated attacker who can reach the server can read arbitrary .yaml files accessi... [Full analysis a",
+      "cvss": 8.3,
+      "final_ps": 47,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59179"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-g72f-jw3w-mgh7"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-19490",
+      "title": "Critical NetScaler Vulnerability Exploited in Attacks",
+      "description": "Tracked as CVE-2026-19490, the authentication bypass flaw has been exploited in the wild since at least September 3. The post Critical NetScaler Vulnerability Exploited in Attacks appeared first on SecurityWeek .",
+      "cvss": 0,
+      "final_ps": 47,
+      "quality_score": 0.505,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "securityweek",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "securityweek"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "SecurityWeek",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19490"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.securityweek.com/critical-netscaler-vulnerability-exploited-in-attacks/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.70 (securityweek)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.505"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-58644",
       "title": "CISA Adds Exploited SharePoint RCE Zero-Day CVE-2026-58644 to KEV",
       "description": "",
@@ -469,14 +562,14 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59158",
-      "title": "Nuxt Ollama: Public Runtime Config Exposes Ollama API Key to Browser Clients",
-      "description": "Public Runtime Config Exposes Ollama API Key to Browser Clients\n\nSummary\n\nnuxt-ollama@1.2.26 unconditionally merges all module options — including api_key — into Nuxt's public runtime config (runtimeConfig.public.ollama). Nuxt serializes runtimeConfig.public into the SSR HTML res... [Full analysis a",
-      "cvss": 7.5,
+      "id": "CVE-2026-59172",
+      "title": "Joker linter executed project-local .jokerd/linter.* files during linting",
+      "description": "Impact\n\nIn Joker versions before 1.8.2, joker --lint <file> located a .jokerd/ directory by walking up from the linted file and executed matching linter.* files from that directory before linting. Because these files are executable Joker/Clojure code, linting a file inside an unt... [Full analysis a",
+      "cvss": 7.8,
       "final_ps": 46,
       "quality_score": 0.493,
       "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
+      "type": "SOCIAL_ENGINEERING",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -491,103 +584,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-59158"
+        "CVE-2026-59172"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-fxg7-897c-57mp"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-55864",
-      "title": "GeoNetwork Web Module: Unauthenticaded Server-Side Request Forgery  in SLD Tool",
-      "description": "Summary\nAn unauthenticated server-side request forgery vulnerability lets any anonymous user make the GeoNetwork server issue arbitrary outbound HTTP requests. This gives an external attacker a position inside the server's network, making it possible to make internal requests no ... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 46,
-      "quality_score": 0.493,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-09",
-      "last_seen": "2026-09-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-55864"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-5hx7-j24v-rffj"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-85730",
-      "title": "smol-toml: Denial of Service via malformed TOML documents",
-      "description": "Summary\nparse() can be forced into an infinite loop when a value inside an array or inline table is followed by a comment that has no trailing newline (i.e. the comment \"ends\" the document).\n\nThe library fails to exit an internal loop when attempting to find the end of the struct... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 46,
-      "quality_score": 0.493,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-09",
-      "last_seen": "2026-09-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-85730"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-7w5x-hrqm-74c2"
+        "https://github.com/advisories/GHSA-m835-3cm9-rggg"
       ],
       "explanation": {
         "quality": [
@@ -700,6 +701,50 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-a566673ffdcb",
+      "title": "Update Chrome now to protect against an actively exploited vulnerability",
+      "description": "Update Chrome now to protect against an actively exploited vulnerability",
+      "cvss": 0,
+      "final_ps": 43,
+      "quality_score": 0.403,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": true,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.malwarebytes.com/blog/bugs/2026/09/update-chrome-now-to-protect-against-an-actively-exploited-vulnerability"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.10",
+          "recency=0d (score=1.00)",
+          "QS=0.403"
+        ],
+        "priority": [
+          "+8 exploited_in_wild"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -876,50 +921,6 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": "Single-source item with no CVE IDs or IOCs",
-        "merge": null
-      },
-      "suppressed": true,
-      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
-      "iocs": []
-    },
-    {
-      "id": "SENTINELAPEX-6fc39188b793",
-      "title": "Veradigm warns of patient data breach after ransomware gang claims attack",
-      "description": "Healthcare technology company Veradigm disclosed a data breach after a cybersecurity incident at one of its third-party vendors exposed patients' personal data. [...]",
-      "cvss": 0,
-      "final_ps": 41,
-      "quality_score": 0.392,
-      "threat_level": "LOW",
-      "type": "RANSOMWARE",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-09",
-      "last_seen": "2026-09-09",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": true,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [],
-      "ioc_count": 0,
-      "refs": [
-        "https://www.bleepingcomputer.com/news/security/veradigm-discloses-patient-data-breach-after-gentlemen-gang-claims-attack/"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.35",
-          "recency=0d (score=1.00)",
-          "QS=0.392"
-        ],
-        "priority": [
-          "+10 ransomware_confirmed"
         ],
         "suppression": "Single-source item with no CVE IDs or IOCs",
         "merge": null
@@ -1797,6 +1798,50 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "SENTINELAPEX-6fc39188b793",
+      "title": "Veradigm warns of patient data breach after ransomware gang claims attack",
+      "description": "Healthcare technology company Veradigm disclosed a data breach after a cybersecurity incident at one of its third-party vendors exposed patients' personal data. [...]",
+      "cvss": 0,
+      "final_ps": 40,
+      "quality_score": 0.378,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/veradigm-discloses-patient-data-breach-after-gentlemen-gang-claims-attack/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.35",
+          "recency=1d (score=0.85)",
+          "QS=0.378"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -2862,6 +2907,51 @@
       "iocs": []
     },
     {
+      "id": "SENTINELAPEX-0263b0605594",
+      "title": "CISA: WatchGuard RCE flaw now exploited in ransomware attacks",
+      "description": "CISA: WatchGuard RCE flaw now exploited in ransomware attacks",
+      "cvss": 0,
+      "final_ps": 39,
+      "quality_score": 0.343,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.bleepingcomputer.com/news/security/cisa-watchguard-rce-flaw-now-exploited-in-ransomware-attacks/",
+        "https://intel.cyberdudebivash.com/reports/2026/09/intel--c02f93042ff77c929670f6ee.html"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.10",
+          "recency=0d (score=1.00)",
+          "QS=0.343"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": "Quality score below minimum threshold (QS < 0.35)",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Quality score below minimum threshold (QS < 0.35)",
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-20079",
       "title": "Cisco confirms max-severity FMC bug (CVE-2026-20079) is being exploited in the wild",
       "description": "",
@@ -3089,6 +3179,52 @@
         ],
         "priority": [
           "+12 PoC_available"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-8323",
+      "title": "CVE-2026-8323 - Open Redirect in Armiya Information Technologies' Access Control System",
+      "description": "",
+      "cvss": 9.3,
+      "final_ps": 28,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-8323"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-8323"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -4433,21 +4569,21 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59177",
-      "title": "ESPHome Device Builder Dashboard: Unauthenticated dashboard access via the HA add-on ingress site bound to all interface",
+      "id": "CVE-2026-87962",
+      "title": "CVE-2026-87962 - t-digest 3.1 through 3.3 Denial of Service via Unvalidated Length Fields in MergingDigest.fromBytes",
       "description": "",
-      "cvss": 8.8,
+      "cvss": 7.5,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
-      "type": "SOCIAL_ENGINEERING",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-09-09",
-      "last_seen": "2026-09-09",
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -4455,11 +4591,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-59177"
+        "CVE-2026-87962"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-vv4j-m4vr-f3g6"
+        "https://cvefeed.io/vuln/detail/CVE-2026-87962"
       ],
       "explanation": {
         "quality": [
@@ -4479,10 +4615,56 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59160",
-      "title": "@yeger/turbo-graph: Unauthenticated Network-Exposed Task Execution via /api/run",
+      "id": "CVE-2026-87961",
+      "title": "CVE-2026-87961 - ESP32-audioI2S 3.4.4 through 4.0.0 Heap-based Out-of-Bounds Read via Shadowed Length Parameter in read_",
       "description": "",
-      "cvss": 8.8,
+      "cvss": 7.1,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-87961"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-87961"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-59185",
+      "title": "Identrail Cross-tenant IDOR: Client-supplied GitHub App installation_id is bound to the caller's workspace without owner",
+      "description": "",
+      "cvss": 8.5,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
@@ -4501,11 +4683,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-59160"
+        "CVE-2026-59185"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-2r5q-h53f-9rp3"
+        "https://github.com/advisories/GHSA-cp3j-m783-3ph5"
       ],
       "explanation": {
         "quality": [
@@ -4525,10 +4707,10 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59179",
-      "title": "@openhop/server: Path Traversal in Flow ID File Operations",
+      "id": "CVE-2026-59158",
+      "title": "Nuxt Ollama: Public Runtime Config Exposes Ollama API Key to Browser Clients",
       "description": "",
-      "cvss": 8.3,
+      "cvss": 7.5,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
@@ -4547,11 +4729,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-59179"
+        "CVE-2026-59158"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-g72f-jw3w-mgh7"
+        "https://github.com/advisories/GHSA-fxg7-897c-57mp"
       ],
       "explanation": {
         "quality": [
@@ -4571,14 +4753,14 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59172",
-      "title": "Joker linter executed project-local .jokerd/linter.* files during linting",
+      "id": "CVE-2026-55864",
+      "title": "GeoNetwork Web Module: Unauthenticaded Server-Side Request Forgery  in SLD Tool",
       "description": "",
-      "cvss": 7.8,
+      "cvss": 7.5,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
-      "type": "SOCIAL_ENGINEERING",
+      "type": "NEWS_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -4593,11 +4775,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-59172"
+        "CVE-2026-55864"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-m835-3cm9-rggg"
+        "https://github.com/advisories/GHSA-5hx7-j24v-rffj"
       ],
       "explanation": {
         "quality": [
@@ -4617,8 +4799,54 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-18386",
-      "title": "CVE-2026-18386 - WP BackItUp Community Edition <= 2.1.0 - Authenticated (Administrator+) Path Traversal to Arbitrary Fil",
+      "id": "CVE-2026-85730",
+      "title": "smol-toml: Denial of Service via malformed TOML documents",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-09",
+      "last_seen": "2026-09-09",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-85730"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-7w5x-hrqm-74c2"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-84828",
+      "title": "CVE-2026-84828 - Pcs: pcs: non-root haclient users can read arbitrary files via pcs host auth --token",
       "description": "",
       "cvss": 6.5,
       "final_ps": 16,
@@ -4639,11 +4867,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-18386"
+        "CVE-2026-84828"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-18386"
+        "https://cvefeed.io/vuln/detail/CVE-2026-84828"
       ],
       "explanation": {
         "quality": [
@@ -4782,144 +5010,6 @@
       "ioc_count": 0,
       "refs": [
         "https://github.com/advisories/GHSA-v25g-mvwr-f5fp"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-15796",
-      "title": "CVE-2026-15796 - Builderall for WordPress <= 3.0.2 - Authenticated (Contributor+) Stored Cross-Site Scripting via 'bg_vi",
-      "description": "",
-      "cvss": 6.1,
-      "final_ps": 16,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15796"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-15796"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-15820",
-      "title": "CVE-2026-15820 - Builderall for WordPress <= 3.0.2 - Authenticated (Contributor+) Stored Cross-Site Scripting via Photo ",
-      "description": "",
-      "cvss": 6.1,
-      "final_ps": 16,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-15820"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-15820"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-4657",
-      "title": "CVE-2026-4657 - Easy Google Fonts <= 2.0.4 - Authenticated (Author+) Stored Cross-Site Scripting via control_selectors M",
-      "description": "",
-      "cvss": 6.1,
-      "final_ps": 16,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-4657"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-4657"
       ],
       "explanation": {
         "quality": [
