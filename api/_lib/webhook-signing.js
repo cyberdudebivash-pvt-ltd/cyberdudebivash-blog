@@ -6,15 +6,13 @@
  * so both can be unit-tested without a network or Redis.
  *
  * Signature scheme: HMAC-SHA256 over `${timestamp}.${rawBody}`, header
- * format `t=<unix-seconds>,v1=<hex>`. This is not a new invention — it
- * mirrors api/_lib/stripe.js's own inbound-webhook verification pattern
- * exactly (same timestamp-prefixed HMAC construction, same
- * crypto.timingSafeEqual comparison discipline), just run in the
- * opposite direction: stripe.js verifies signatures Stripe sent us; this
- * module produces the equivalent for webhooks *we* send customers. Using
- * the same widely-recognized scheme customers already know from Stripe/
- * GitHub is a deliberate choice, not an oversight — zero new protocol for
- * integrators to learn.
+ * format `t=<unix-seconds>,v1=<hex>`. This is not a new invention — a
+ * timestamp-prefixed HMAC with crypto.timingSafeEqual comparison is a
+ * widely-recognized webhook-signing convention integrators already know.
+ * This module only ever signs (produces the header for webhooks *we* send
+ * customers); verifySignature below exists for completeness/testability
+ * of the scheme, not because v1's own delivery path verifies anything
+ * itself.
  *
  * SSRF guard (isSafeWebhookUrl): a customer-registered webhook URL is
  * fetched by our own server on every delivery — the classic SSRF vector
@@ -39,7 +37,8 @@ const { URL } = require('url');
 const SIGNATURE_VERSION = 'v1';
 // Reject a signed request whose timestamp is older than this when
 // *verifying* (not used for our own outbound sends, but exported for any
-// future inbound-relay use and for symmetry with stripe.js's own window).
+// future inbound-relay use — 300s is a conventional replay-window default
+// for this class of timestamp-prefixed HMAC scheme).
 const MAX_SIGNATURE_AGE_SECONDS = 300;
 
 function signPayload(secret, timestampSeconds, rawBody) {
@@ -48,8 +47,8 @@ function signPayload(secret, timestampSeconds, rawBody) {
   return `t=${timestampSeconds},${SIGNATURE_VERSION}=${digest}`;
 }
 
-// Mirrors stripe.js's verification structure (parse t=/v1= pairs, recompute,
-// timingSafeEqual) -- provided for completeness/testability of the scheme
+// Parses the t=/v1= pairs, recomputes the HMAC, and compares via
+// timingSafeEqual -- provided for completeness/testability of the scheme
 // (e.g. a future "replay this delivery" debug tool) even though v1's own
 // delivery path only ever signs, never verifies its own output.
 function verifySignature(secret, header, rawBody, { maxAgeSeconds = MAX_SIGNATURE_AGE_SECONDS } = {}) {

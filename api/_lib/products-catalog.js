@@ -1,13 +1,17 @@
 /**
  * SENTINEL APEX — Digital Product Catalog
- * Single source of truth for one-time digital product checkout (Stripe).
- * Mirrors the products listed on /products.html. Prices are in USD cents
- * (Stripe's smallest currency unit). Keep IDs in sync with the
- * data-product-id attributes on /products.html buy buttons.
+ * Single source of truth for one-time digital product checkout. Mirrors
+ * the products listed on /products.html. Prices are in USD cents (the
+ * conventional smallest-currency-unit representation for this amount
+ * field). Keep IDs in sync with the data-product-id attributes on
+ * /products.html buy buttons.
  *
- * Fulfillment is currently manual: a paid order is recorded in Redis and
- * surfaced via GET /api/v1/admin?action=product-orders so the deliverable
- * can be emailed to the buyer. No automated file-delivery infra exists yet.
+ * Currently dormant: api/v1/billing.js's BLOCKED_PRODUCT_ACTIONS
+ * fail-closes both create-product-checkout and verify-product-payment
+ * (see that file for why). Fulfillment, once reactivated, is manual: a
+ * paid order is recorded in Redis and surfaced via GET
+ * /api/v1/admin?action=product-orders so the deliverable can be emailed
+ * to the buyer. No automated file-delivery infra exists yet.
  */
 'use strict';
 
