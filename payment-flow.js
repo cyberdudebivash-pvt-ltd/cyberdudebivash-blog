@@ -21,9 +21,10 @@
      (api/_lib/payment-utils.js); this must be kept in sync with it as a
      last-resort, not treated as authoritative. See docs/PRICING.md. */
   let PLANS = {
-    starter:    { name: 'API Starter', price: '₹999', amount: 999, currency: 'INR' },
-    pro:        { name: 'SOC Pro',    price: '₹1,499', amount: 1499, currency: 'INR' },
-    enterprise: { name: 'Enterprise', price: '₹4,999', amount: 4999, currency: 'INR' },
+    starter:    { name: 'API Starter',     price: '₹999',    amount: 999,   currency: 'INR' },
+    pro:        { name: 'SOC Pro',         price: '₹1,499',  amount: 1499,  currency: 'INR' },
+    team:       { name: 'Sentinel Team',   price: '₹20,699', amount: 20699, currency: 'INR' },
+    enterprise: { name: 'Enterprise Apex', price: '₹82,999', amount: 82999, currency: 'INR' },
   };
 
   /* Fetched once at script load and cached — the actual source of truth for

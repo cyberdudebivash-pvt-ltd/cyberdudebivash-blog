@@ -95,7 +95,8 @@ the entitlements already enforced by `api/_lib/middleware.js`,
 | Public / Free | Public evidence-linked dossier; Free API remains rate-limited by existing middleware |
 | API Starter — ₹999/month | 5,000 API calls/day, weekly intel digest, one API key |
 | SOC Pro — ₹1,499/month | 25,000 API calls/day, IOC access, detection intelligence, full authenticated intel API depth |
-| Enterprise — ₹4,999/month | STIX 2.1 export, bulk intelligence access, extended API capacity, priority support |
+| Sentinel Team — ₹20,699/month | 100,000 API calls/day, 5 seats, STIX 2.1 + SIEM export |
+| Enterprise Apex — from ₹82,999/month (custom-scoped) | Unlimited API capacity, dedicated analyst, custom SLA, white-label reporting |
 
 A public dossier never claims that paying increases factual certainty. Paid
 products add operational delivery, volume, machine-readable formats, and support.

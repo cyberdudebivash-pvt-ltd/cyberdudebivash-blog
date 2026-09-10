@@ -12,7 +12,8 @@ regression test below.
 |---|---|---|
 | Starter | 999 | INR (≈$12) |
 | Pro ("SOC Pro") | 1,499 | INR (≈$18) |
-| Enterprise | 4,999 | INR (≈$60) — self-serve API tier only; the separate white-label/SLA "Enterprise Platform" offering is custom-quoted, not a fixed price |
+| Team ("Sentinel Team") | 20,699 | INR (≈$249) — added 2026-09-10; see below |
+| Enterprise ("Enterprise Apex") | 82,999 | INR (≈$999) — starting price for a custom-scoped, contact-sales offering; repositioned 2026-09-10, see below. Distinct from api.html's separately-priced "Enterprise Managed" API product (confirmed as a different offering, not a price conflict — see the 2026-07-17 entry below). |
 
 ## Runtime consumers
 
@@ -106,9 +107,67 @@ roadmap document is left as-is (a dated planning snapshot, not rewritten to
 match this decision) and should be read accordingly by anyone consulting
 it going forward: its pricing proposal is superseded, not current.
 
+## Pricing change (2026-09-10) — added Team, repositioned Enterprise; Pro/Starter deliberately untouched
+
+An external audit (via Gemini) flagged the platform's pricing as severely
+underpriced relative to enterprise CTI comparables ($25k-100k+/yr for
+CrowdStrike/Recorded Future/Mandiant) and proposed a global ladder with Pro
+raised to $199/mo. Before implementing anything, this exact proposal was
+checked against the decision immediately above (2026-07-29): Pro was
+already reopened once, on a very similar $79/mo proposal, and explicitly
+kept at $18/mo for a documented, competitively-sourced reason. The new
+proposal is the same category of change (again reopening Pro), only more
+aggressive — so it was **not** re-adopted for Pro. $49/mo was also
+specifically considered and rejected as a starting point for any renamed
+tier: it's the exact stale pre-cut price `tests-js/pricing-consistency
+.test.js` permanently guards against ever reappearing next to "SOC Pro"
+(see the 2026-07-17 incident above) — reusing it, even for a different
+tier name, would be indistinguishable from that regression to anyone
+reading the code later.
+
+**Decision**: Starter (₹999/$12) and Pro (₹1,499/$18) are unchanged —
+the 2026-07-29 reasoning stands. Two changes were made instead, both pure
+upward expansion:
+
+1. **Added `PLANS.team`** ("Sentinel Team", ₹20,699/$249/mo, 100,000
+   calls/day, 5 seats, STIX 2.1 + SIEM export) — a genuinely new tier
+   above Pro, not a repricing of anything that existed before.
+2. **Repositioned `PLANS.enterprise`** ("Enterprise Apex") from a flat
+   ₹4,999/$60/mo self-serve API tier to a ₹82,999/$999/mo *starting*
+   price for a custom-scoped, contact-sales offering (dedicated analyst,
+   custom SLA, white-label reporting) — sitting above Team. This tier's
+   `amount` **was** changed, unlike Pro/Starter: no prior decision
+   protected this specific number the way Pro's was protected, and
+   leaving it at ₹4,999 while introducing a ₹20,699 Team tier directly
+   below it would have created a new, self-inflicted contradiction
+   (a "premium apex" tier priced below the mid-tier it's supposed to sit
+   above) of exactly the kind this whole review was meant to eliminate.
+
+Every location this file's own discipline requires was updated together:
+`api/_lib/payment-utils.js` (`PLANS`, canonical), the tier-key enumeration
+sites this required touching for the first time (`api/_lib/middleware.js`
+`RATE_LIMITS`/`TIERS`/`NEXT_PAID_TIER`, `api/_lib/security.js`
+`validatePlan`, `api/v1/billing-legacy.js` and `api/v1/auth.js`'s plan
+validation and pending-tier activation lists, `api/_lib/stripe.js`
+`PRICE_BY_PLAN`/`planToTier`), `payment-flow.js` and `pricing.html`'s
+client-side fallback constants and rendered plan/comparison cards,
+`api-dashboard.html` and `api.html`'s tier cards, and `faq.html`/
+`contact.html`'s pricing mentions. `tests-js/pricing-consistency.test.js`
+now pins Team's and Enterprise Apex's canonical amounts and the full
+Starter < Pro < Team < Enterprise monotonic ordering.
+
+If real, currently-active subscribers exist on the old ₹4,999/mo
+Enterprise tier, they are **not** automatically grandfathered by this
+change — that requires a manual Redis review outside what a code change
+here can verify or perform.
+
 ## Known open item outside this codebase
 
-If Stripe is ever activated (`STRIPE_SECRET_KEY` set), `STRIPE_PRICE_PRO`
-must point at a Stripe Price object priced at $18/mo. That object lives in
-the Stripe dashboard, not this repository, and cannot be verified or fixed
-by a code change — confirm it directly before enabling Stripe checkout.
+If Stripe is ever activated (`STRIPE_SECRET_KEY` set), each
+`STRIPE_PRICE_*` env var must point at a real Stripe Price object priced
+to match its `PLANS.<tier>.amount` above (`STRIPE_PRICE_STARTER` →
+Starter, `STRIPE_PRICE_PRO` → Pro at $18/mo, `STRIPE_PRICE_TEAM` → Team
+at $249/mo, `STRIPE_PRICE_ENTERPRISE` → Enterprise Apex's $999/mo
+starting price). Those objects live in the Stripe dashboard, not this
+repository, and cannot be verified or fixed by a code change — confirm
+them directly before enabling Stripe checkout.

@@ -35,8 +35,27 @@ test('canonical PLANS.starter matches the reordered price (₹999/mo, below Pro)
   assert.ok(PLANS.starter.upiNote.includes('₹999'), 'upiNote must quote the same amount it charges');
 });
 
-test('canonical PLANS.enterprise is unchanged from its known-correct value', () => {
-  assert.strictEqual(PLANS.enterprise.amount, 4999);
+// 2026-09-10: repositioned from a flat ₹4,999/$60 self-serve API tier to
+// "Enterprise Apex" — a starting price for a custom-quoted, contact-sales
+// offering (dedicated analyst, custom SLA, white-label), sitting above the
+// new Sentinel Team tier below. Explicit, documented decision (see
+// docs/PRICING.md) -- Starter and Pro were deliberately left untouched in
+// the same change (see the 2026-07-29 decision above: Pro's affordable,
+// transparent self-serve pricing is a verified competitive differentiator
+// and was not reopened here).
+test('canonical PLANS.enterprise reflects its 2026-09-10 Enterprise Apex reposition (₹82,999/mo)', () => {
+  assert.strictEqual(PLANS.enterprise.amount, 82999);
+  assert.strictEqual(PLANS.enterprise.currency, 'INR');
+  assert.ok(PLANS.enterprise.upiNote.includes('₹82,999'), 'upiNote must quote the same amount it charges');
+});
+
+// 2026-09-10: new tier, added above Pro without touching Pro/Starter --
+// pure upward expansion for teams needing multi-seat access, STIX 2.1
+// export, and SIEM export, not a repricing of any existing tier.
+test('canonical PLANS.team matches its introductory price (₹20,699/mo)', () => {
+  assert.strictEqual(PLANS.team.amount, 20699);
+  assert.strictEqual(PLANS.team.currency, 'INR');
+  assert.ok(PLANS.team.upiNote.includes('₹20,699'), 'upiNote must quote the same amount it charges');
 });
 
 /* ─── Structural invariant, not just a pinned number ──────────────────── */
@@ -45,9 +64,10 @@ test('canonical PLANS.enterprise is unchanged from its known-correct value', () 
    itself so a future isolated price change to any one tier can't silently
    reintroduce a cheaper-but-more-featured tier being priced above a
    pricier-but-less-featured one. */
-test('tier prices increase monotonically with tier (Starter < Pro < Enterprise)', () => {
+test('tier prices increase monotonically with tier (Starter < Pro < Team < Enterprise)', () => {
   assert.ok(PLANS.starter.amount < PLANS.pro.amount, 'Starter must be cheaper than Pro');
-  assert.ok(PLANS.pro.amount < PLANS.enterprise.amount, 'Pro must be cheaper than Enterprise');
+  assert.ok(PLANS.pro.amount < PLANS.team.amount, 'Pro must be cheaper than Team');
+  assert.ok(PLANS.team.amount < PLANS.enterprise.amount, 'Team must be cheaper than Enterprise');
 });
 
 /* ─── Client-side fallback constants must agree with the backend ─────── */
@@ -86,6 +106,34 @@ test('pricing.html fallback PLANS.starter matches the backend amount', () => {
   assert.strictEqual(Number(m[1]), PLANS.starter.amount);
 });
 
+test('payment-flow.js fallback PLANS.team matches the backend amount', () => {
+  const src = readFile('payment-flow.js');
+  const m = src.match(/team:\s*\{[^}]*amount:\s*(\d+)/);
+  assert.ok(m, 'could not find fallback team.amount in payment-flow.js');
+  assert.strictEqual(Number(m[1]), PLANS.team.amount);
+});
+
+test('pricing.html fallback PLANS.team matches the backend amount', () => {
+  const src = readFile('pricing.html');
+  const m = src.match(/team:\s*\{[^}]*amount:\s*(\d+)/);
+  assert.ok(m, 'could not find fallback team.amount in pricing.html');
+  assert.strictEqual(Number(m[1]), PLANS.team.amount);
+});
+
+test('payment-flow.js fallback PLANS.enterprise matches the backend amount', () => {
+  const src = readFile('payment-flow.js');
+  const m = src.match(/enterprise:\s*\{[^}]*amount:\s*(\d+)/);
+  assert.ok(m, 'could not find fallback enterprise.amount in payment-flow.js');
+  assert.strictEqual(Number(m[1]), PLANS.enterprise.amount);
+});
+
+test('pricing.html fallback PLANS.enterprise matches the backend amount', () => {
+  const src = readFile('pricing.html');
+  const m = src.match(/enterprise:\s*\{[^}]*amount:\s*(\d+)/);
+  assert.ok(m, 'could not find fallback enterprise.amount in pricing.html');
+  assert.strictEqual(Number(m[1]), PLANS.enterprise.amount);
+});
+
 test('pricing.html\'s Starter plan-price card shows the canonical INR/USD amounts', () => {
   const src = readFile('pricing.html');
   // Scoped to the "API Starter" plan-name *card* element specifically, not
@@ -100,6 +148,26 @@ test('pricing.html\'s Starter plan-price card shows the canonical INR/USD amount
   const m = section.match(/class="plan-price" data-inr="([\d,]+)" data-usd="(\d+)"/);
   assert.ok(m, 'could not find the Starter plan-price card in pricing.html');
   assert.strictEqual(Number(m[1].replace(/,/g, '')), PLANS.starter.amount);
+});
+
+test('pricing.html\'s Sentinel Team plan-price card shows the canonical INR/USD amounts', () => {
+  const src = readFile('pricing.html');
+  const idx = src.indexOf('<div class="plan-name">Sentinel Team</div>');
+  assert.ok(idx !== -1, 'could not find the Sentinel Team plan-name card in pricing.html');
+  const section = src.slice(idx, idx + 400);
+  const m = section.match(/class="plan-price" data-inr="([\d,]+)" data-usd="(\d+)"/);
+  assert.ok(m, 'could not find the Sentinel Team plan-price card in pricing.html');
+  assert.strictEqual(Number(m[1].replace(/,/g, '')), PLANS.team.amount);
+});
+
+test('pricing.html\'s Enterprise Apex plan-price card shows the canonical INR/USD amounts', () => {
+  const src = readFile('pricing.html');
+  const idx = src.indexOf('<div class="plan-name">Enterprise Apex</div>');
+  assert.ok(idx !== -1, 'could not find the Enterprise Apex plan-name card in pricing.html');
+  const section = src.slice(idx, idx + 400);
+  const m = section.match(/class="plan-price" data-inr="([\d,]+)" data-usd="(\d+)"/);
+  assert.ok(m, 'could not find the Enterprise Apex plan-price card in pricing.html');
+  assert.strictEqual(Number(m[1].replace(/,/g, '')), PLANS.enterprise.amount);
 });
 
 test('api-dashboard.html\'s Starter tier-price card shows the canonical amount', () => {

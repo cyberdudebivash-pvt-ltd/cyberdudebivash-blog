@@ -33,10 +33,13 @@ pass an internal quality gate and certification process before publication.
 | Free | $0 | Rate-limited API, public CVE/threat pages |
 | API Starter | ₹999 / ~$12 per month | 5,000 API calls/day, weekly intel digest |
 | SOC Pro | ₹1,499 / ~$18 per month | 25,000 API calls/day, full IOC feed, Sigma/Yara rules |
-| Enterprise | ₹4,999 / ~$60 per month | Unlimited API calls, STIX 2.1 export, bulk data, priority support |
+| Sentinel Team | ₹20,699 / ~$249 per month | 100,000 API calls/day, 5 seats, STIX 2.1 + SIEM export |
+| Enterprise Apex | From ₹82,999 / ~$999 per month | Unlimited API calls, dedicated analyst, custom SLA, white-label |
 
-All four tiers are publicly priced and self-serve — no sales call required
-to see cost or start using the product.
+The first four tiers are publicly priced and self-serve — no sales call
+required to see cost or start using the product. Enterprise Apex is
+custom-scoped: the price above is a starting point, not a fixed rate —
+contact sales for a quote.
 
 ## What we do not claim
 

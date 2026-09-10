@@ -136,8 +136,8 @@ async function handleRegister(req, res) {
   if (!sec.validateEmail(email)) {
     return apiError(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
   }
-  if (!['free', 'starter', 'pro', 'enterprise'].includes(plan)) {
-    return apiError(res, 400, 'INVALID_PLAN', 'plan must be: free, starter, pro, or enterprise');
+  if (!['free', 'starter', 'pro', 'team', 'enterprise'].includes(plan)) {
+    return apiError(res, 400, 'INVALID_PLAN', 'plan must be: free, starter, pro, team, or enterprise');
   }
   if (plan !== 'free') {
     return apiError(res, 402, 'PAYMENT_REQUIRED',
@@ -165,7 +165,7 @@ async function handleRegister(req, res) {
       const pendingRaw = await redis.get(`user:pending:tier:${safeEmail}`);
       if (pendingRaw) {
         const pending = JSON.parse(pendingRaw);
-        if (pending && pending.tier && ['starter', 'pro', 'enterprise'].includes(pending.tier)) {
+        if (pending && pending.tier && ['starter', 'pro', 'team', 'enterprise'].includes(pending.tier)) {
           activeTier      = pending.tier;
           tierActivatedBy = pending.transactionId || 'manual_payment';
           await redis.del(`user:pending:tier:${safeEmail}`).catch(() => {});

@@ -2573,7 +2573,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
   <article>
     <div class="meta-bar">${badges}<span class="rep-date">Published: ${pubDateFmt}</span></div>
     <h1 class="rh1">${escHtml(item.title)}</h1>
-    <p class="rsubtitle">${escHtml(cleanDescText.slice(0,350))}${cleanDescText.length>350?'...':''}</p>
+    <p class="rsubtitle">${escHtml(truncAtWord(cleanDescText,350))}${cleanDescText.length>350?'…':''}</p>
     <div class="stats-bar">
       <div class="stat red"><div class="sv">${cvss}</div><div class="sl">CVSS Score</div></div>
       <div class="stat"><div class="sv" style="color:${cvssColor}">${tl}</div><div class="sl">Threat Level</div></div>
@@ -2699,7 +2699,7 @@ footer{background:var(--apex-surface);border-top:1px solid var(--apex-border);pa
   Unauthorized reproduction without attribution is prohibited.<br>
   <a href="/">Blog</a> · <a href="/products.html">Detection Packs</a> · <a href="/pricing.html">SOC Pro</a> · <a href="/api.html">API</a> · <a href="/enterprise.html">Enterprise</a> · <a href="/contact.html">Contact Sales</a> · <a href="/rss.xml">RSS</a> · <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a></p>
 </footer>
-<script src="/security-engine.js" defer></script><script src="/monetization.js" defer></script><script src="/conversion-engine.js?v=20260705" defer></script><script src="/seo-engine.js" defer></script>
+<script src="/security-engine.js" defer></script><script src="/monetization.js" defer></script><script src="/conversion-engine.js?v=20260705" defer></script><script src="/seo-engine.js" defer></script><script src="/detection-export.js" defer></script>
 <script>
 (function(){var c=document.getElementById('mc');if(!c)return;var x=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;var cols=Math.floor(c.width/16),drops=new Array(cols).fill(1);setInterval(function(){x.fillStyle='rgba(7,9,15,0.05)';x.fillRect(0,0,c.width,c.height);x.fillStyle='#00ffe018';x.font='12px monospace';drops.forEach(function(y,i){x.fillText(String.fromCharCode(33+Math.random()*93),i*16,y*16);if(y*16>c.height&&Math.random()>.975)drops[i]=0;drops[i]++;});},90);window.addEventListener('resize',function(){c.width=window.innerWidth;c.height=window.innerHeight;});})();
 </script>

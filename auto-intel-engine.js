@@ -515,7 +515,7 @@
       <span>✓ SIEM queries</span><span>✓ Response playbook</span>
     </div>
     <a class="gate-cta" href="/pricing.html">Unlock with SOC Pro — $18/mo</a>
-    <a class="gate-cta gate-cta-outline" href="/leads.html">Get Free Sample Report</a>
+    <a class="gate-cta gate-cta-outline" href="/pricing.html#free">Get Free Sample Report</a>
   </div>
 </div>`;
   }
