@@ -31,7 +31,6 @@ const HANDLER_MODULES = {
   'api/v1/auth': () => require('../../api/v1/auth'),
   'api/v1/billing': () => require('../../api/v1/billing'),
   'api/v1/billing/razorpay-webhook': () => require('../../api/v1/billing/razorpay-webhook'),
-  'api/v1/billing/webhook': () => require('../../api/v1/billing/webhook'),
   'api/v1/connectors': () => require('../../api/v1/connectors'),
   'api/v1/customer/dashboard': () => require('../../api/v1/customer/dashboard'),
   'api/v1/customer/download': () => require('../../api/v1/customer/download'),

@@ -1,14 +1,15 @@
 /**
  * SENTINEL APEX — Consolidated Billing Router
  * Single serverless function handling ALL billing/payment endpoints.
- * Note: Stripe webhook kept separate (api/v1/billing/webhook.js) — requires raw body.
+ * Payment rails: Razorpay (default -- INR direct checkout, UPI, cards) and
+ * manual UPI/bank transfer. Note: the Razorpay webhook is kept separate
+ * (api/v1/billing/razorpay-webhook.js) — requires raw body.
  *
  * Routing: /api/v1/billing?action={action}
  *
  *  action=create-intent          POST  Generate payment intent UUID, store in Redis 24h
  *  action=submit-payment         POST  Accept UTR with fraud protection + duplicate guard
  *  action=status                 GET   User self-service payment status check
- *  action=subscribe               POST  Create Stripe checkout session (when available)
  *  action=create-razorpay-order  POST  Create a Razorpay Order for instant checkout
  *  action=verify-razorpay-payment POST Verify checkout.js signature, instant tier upgrade
  *
@@ -17,10 +18,9 @@
 'use strict';
 const crypto    = require('crypto');
 const redis     = require('../_lib/redis');
-const stripe    = require('../_lib/stripe');
 const razorpay  = require('../_lib/razorpay');
 const {
-  authenticate, extractApiKey, apiError, respond, corsHeaders,
+  authenticate, apiError, respond, corsHeaders,
 } = require('../_lib/middleware');
 const {
   PLANS, PAYMENT_INSTRUCTIONS,
@@ -69,7 +69,7 @@ module.exports = async (req, res) => {
 
   const action = String(req.query.action || '').toLowerCase().trim();
 
-  const VALID_ACTIONS = 'plans, create-intent, submit-payment, status, subscribe, create-razorpay-order, verify-razorpay-payment, create-product-checkout, verify-product-payment, create-subscription, manage-subscription, list-subscriptions';
+  const VALID_ACTIONS = 'plans, create-intent, submit-payment, status, create-razorpay-order, verify-razorpay-payment, create-product-checkout, verify-product-payment, create-subscription, manage-subscription, list-subscriptions';
 
   if (!action) {
     return fail(res, 400, 'MISSING_ACTION', `action parameter required. Valid: ${VALID_ACTIONS}.`);
@@ -81,7 +81,6 @@ module.exports = async (req, res) => {
     case 'create-intent':            return handleCreateIntent(req, res);
     case 'submit-payment':           return handleSubmitPayment(req, res);
     case 'status':                   return handlePaymentStatus(req, res);
-    case 'subscribe':                return handleSubscribe(req, res);
     case 'create-razorpay-order':    return handleCreateRazorpayOrder(req, res);
     case 'verify-razorpay-payment':  return handleVerifyRazorpayPayment(req, res);
     case 'create-product-checkout':  return handleCreateProductCheckout(req, res);
@@ -420,75 +419,6 @@ async function handlePlans(req, res) {
   }
   res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
   return ok(res, { plans: publicPlans });
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   POST /api/v1/billing?action=subscribe
-   Create Stripe Checkout session for automated billing.
-   Body: { plan: "pro"|"enterprise" }
-   Requires API key auth for an EXISTING account upgrading its plan.
-   A request with no API key is treated as a first-time buyer (mirrors
-   the unauthenticated create-razorpay-order flow below): Stripe itself
-   collects and verifies the card, so only a contact email is required
-   up front. Tier is granted by the Stripe webhook once payment is
-   confirmed, using the same pending-tier mechanism already used for
-   Razorpay purchases made before registration.
-═══════════════════════════════════════════════════════════════ */
-async function handleSubscribe(req, res) {
-  if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
-
-  const hasApiKey = !!extractApiKey(req);
-  const user = hasApiKey ? await authenticate(req, res) : null;
-  if (hasApiKey && !user) return; // authenticate() already sent the response
-
-  let body = {};
-  try {
-    body = await parseBody(req);
-  } catch (_) {}
-
-  const plan = String(body.plan || 'pro').toLowerCase();
-  if (!['starter', 'pro', 'team', 'enterprise'].includes(plan)) {
-    return fail(res, 400, 'INVALID_PLAN', 'plan must be "starter", "pro", "team", or "enterprise"');
-  }
-
-  let email;
-  if (user) {
-    if (user.tier === plan || user.tier === 'enterprise') {
-      return fail(res, 400, 'ALREADY_ON_PLAN', `You are already on the ${user.tier} plan.`);
-    }
-    email = user.email;
-  } else {
-    email = normalizeEmail(body.email);
-    if (!sec.validateEmail(email)) {
-      return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
-    }
-    /* Same daily intent-creation budget as the manual/Razorpay flows */
-    if (!(await sec.intentIpRateLimit(req, res))) return;
-  }
-
-  if (!process.env.STRIPE_SECRET_KEY) {
-    return fail(res, 503, 'BILLING_UNAVAILABLE',
-      `Automated billing not configured. Use manual payment: POST /api/v1/billing?action=create-intent — or contact bivash@cyberdudebivash.com`);
-  }
-
-  try {
-    const base    = process.env.NEXT_PUBLIC_BASE_URL || 'https://blog.cyberdudebivash.in';
-    const session = await stripe.createCheckoutSession(
-      email, plan,
-      `${base}/api-dashboard.html?session_id={CHECKOUT_SESSION_ID}&status=success`,
-      `${base}/api-dashboard.html?status=cancelled`
-    );
-
-    return ok(res, {
-      checkout_url: session.url,
-      session_id:   session.id,
-      plan,
-      price: plan === 'enterprise' ? 'Custom pricing' : `₹${PLANS[plan].amount}/${PLANS[plan].period}`,
-    });
-
-  } catch (e) {
-    return fail(res, 500, 'CHECKOUT_FAILED', sec.safeError(e, 'Checkout unavailable. Use manual payment or contact support.'));
-  }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -933,9 +863,8 @@ async function handleVerifyProductPayment(req, res) {
    Set up recurring billing (monthly or annual subscription) for the
    authenticated caller. Requires an API key -- unlike create-intent/
    create-razorpay-order (a brand-new customer's very first payment, who
-   has no key yet), recurring billing is for an existing account, the same
-   reasoning handleSubscribe() (the Stripe equivalent, above) already
-   applies. Body: { plan_type: "starter"|"pro"|"team"|"enterprise", period: "monthly"|"yearly" }
+   has no key yet), recurring billing is for an existing account.
+   Body: { plan_type: "starter"|"pro"|"team"|"enterprise", period: "monthly"|"yearly" }
 ═══════════════════════════════════════════════════════════════ */
 async function handleCreateSubscription(req, res) {
   if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
