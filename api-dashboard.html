@@ -53,6 +53,7 @@ input:focus,select:focus{border-color:var(--apex-cyan);box-shadow:0 0 0 2px rgba
 .bdg-free{background:#6b728022;color:#6b7280;border:1px solid #6b728033}
 .bdg-pro{background:#00ffe022;color:#00ffe0;border:1px solid #00ffe044}
 .bdg-ent{background:#a855f722;color:#a855f7;border:1px solid #a855f744}
+.bdg-team{background:#00ff8822;color:#00ff88;border:1px solid #00ff8844}
 .bdg-starter{background:#0099ff22;color:#0099ff;border:1px solid #0099ff44}
 .code-block{background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;padding:16px 20px;font-family:var(--mono);font-size:12px;color:#a6e22e;overflow-x:auto;white-space:pre;margin:12px 0;position:relative}
 .endpoint{background:#0a0e18;border:1px solid var(--apex-border);border-radius:8px;padding:14px 18px;margin-bottom:10px}
@@ -203,7 +204,8 @@ const data = await res.json();</div>
       <div class="card-title" style="color:var(--apex-cyan)">🚀 Upgrade Your Plan</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="ApexPaymentFlow.startUpgrade('pro')">⚡ Upgrade to Pro — ₹1,499/mo</button>
-        <button class="btn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7" onclick="ApexPaymentFlow.startUpgrade('enterprise')">🏢 Enterprise — ₹4,999/mo</button>
+        <button class="btn" style="background:rgba(0,255,136,.15);border:1px solid rgba(0,255,136,.4);color:#00ff88" onclick="ApexPaymentFlow.startUpgrade('team')">🛡️ Sentinel Team — ₹20,699/mo</button>
+        <button class="btn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7" onclick="window.location.href='/enterprise.html'">🏢 Enterprise Apex — Contact Sales</button>
       </div>
       <p style="font-size:13px;color:var(--apex-muted);margin-top:12px">Pro includes: 5,000 req/day · Full IOC access · MITRE mapping · Sigma/YARA rules · Pay via UPI or bank transfer</p>
     </div>
@@ -433,13 +435,31 @@ X-API-Key: sentinel_your_key_here</div>
       <button class="btn btn-primary" onclick="ApexPaymentFlow.startUpgrade('pro')" style="width:100%">⚡ Upgrade to Pro →</button>
     </div>
     <div class="tier-card">
-      <span class="badge bdg-ent" style="margin-bottom:12px">ENTERPRISE</span>
-      <div class="tier-name">Enterprise</div>
-      <div class="tier-price" style="color:#a855f7">₹4,999<span>/month</span></div>
+      <span class="badge bdg-team" style="margin-bottom:12px">TEAM</span>
+      <div class="tier-name">Sentinel Team</div>
+      <div class="tier-price" style="color:#00ff88">₹20,699<span>/month</span></div>
+      <ul class="tier-features">
+        <li>100,000 API requests/day</li>
+        <li>5 team seats</li>
+        <li>STIX 2.1 bundle export</li>
+        <li>SIEM export (Splunk/Sentinel/Elastic)</li>
+        <li>Sigma & YARA rules included</li>
+        <li>Full MITRE ATT&CK mapping</li>
+        <li>Full search (unlimited results)</li>
+        <li>Priority Slack/Discord channel</li>
+        <li>Pay via UPI or bank transfer</li>
+        <li class="locked">Dedicated analyst / custom SLA</li>
+      </ul>
+      <button class="btn" style="background:rgba(0,255,136,.15);border:1px solid rgba(0,255,136,.4);color:#00ff88;width:100%" onclick="ApexPaymentFlow.startUpgrade('team')">🛡️ Upgrade to Team →</button>
+    </div>
+    <div class="tier-card">
+      <span class="badge bdg-ent" style="margin-bottom:12px">ENTERPRISE APEX</span>
+      <div class="tier-name">Enterprise Apex</div>
+      <div class="tier-price" style="color:#a855f7">₹82,999<span>/month starting</span></div>
       <ul class="tier-features">
         <li>Unlimited API requests</li>
-        <li>Full IOC export (200+/item)</li>
-        <li>STIX 2.1 bundle export</li>
+        <li>All Sentinel Team features included</li>
+        <li>Unlimited team seats</li>
         <li>Real-time intel feed</li>
         <li>Bulk data export</li>
         <li>Custom advisory reports</li>
@@ -448,7 +468,7 @@ X-API-Key: sentinel_your_key_here</div>
         <li>SLA guarantee</li>
         <li>MSSP licensing available</li>
       </ul>
-      <button class="btn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7;width:100%" onclick="ApexPaymentFlow.startUpgrade('enterprise')">🏢 Upgrade to Enterprise →</button>
+      <button class="btn" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.4);color:#a855f7;width:100%" onclick="window.location.href='/enterprise.html'">🏢 Contact Sales →</button>
     </div>
   </div>
 </div>

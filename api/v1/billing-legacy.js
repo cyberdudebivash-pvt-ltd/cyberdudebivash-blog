@@ -97,7 +97,7 @@ module.exports = async (req, res) => {
 /* ═══════════════════════════════════════════════════════════════
    POST /api/v1/billing?action=create-intent
    Generate a payment intent before user transfers money.
-   Body: { email, plan_type: "pro"|"enterprise" }
+   Body: { email, plan_type: "starter"|"pro"|"team"|"enterprise" }
 ═══════════════════════════════════════════════════════════════ */
 async function handleCreateIntent(req, res) {
   if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
@@ -117,7 +117,7 @@ async function handleCreateIntent(req, res) {
     return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
   }
   if (!sec.validatePlan(planType)) {
-    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "pro" or "enterprise"');
+    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "starter", "pro", "team" or "enterprise"');
   }
 
   /* Phase 4: intent creation IP rate limit (5/day/IP) */
@@ -447,8 +447,8 @@ async function handleSubscribe(req, res) {
   } catch (_) {}
 
   const plan = String(body.plan || 'pro').toLowerCase();
-  if (!['starter', 'pro', 'enterprise'].includes(plan)) {
-    return fail(res, 400, 'INVALID_PLAN', 'plan must be "starter", "pro", or "enterprise"');
+  if (!['starter', 'pro', 'team', 'enterprise'].includes(plan)) {
+    return fail(res, 400, 'INVALID_PLAN', 'plan must be "starter", "pro", "team", or "enterprise"');
   }
 
   let email;
@@ -497,7 +497,7 @@ async function handleSubscribe(req, res) {
    netbanking/wallets via Razorpay's checkout.js). No admin review needed —
    a valid post-payment signature (action=verify-razorpay-payment) is itself
    cryptographic proof of payment.
-   Body: { email, plan_type: "starter"|"pro"|"enterprise" }
+   Body: { email, plan_type: "starter"|"pro"|"team"|"enterprise" }
 ═══════════════════════════════════════════════════════════════ */
 const RAZORPAY_ID_RE = /^[a-zA-Z0-9_]{6,64}$/;
 
@@ -522,7 +522,7 @@ async function handleCreateRazorpayOrder(req, res) {
     return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
   }
   if (!sec.validatePlan(planType)) {
-    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "starter", "pro" or "enterprise"');
+    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "starter", "pro", "team" or "enterprise"');
   }
 
   /* Same daily intent-creation budget as the manual flow (5/day/IP) */
@@ -606,7 +606,7 @@ async function handleVerifyRazorpayPayment(req, res) {
     return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
   }
   if (!sec.validatePlan(planType)) {
-    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "starter", "pro" or "enterprise"');
+    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "starter", "pro", "team" or "enterprise"');
   }
   if (!RAZORPAY_ID_RE.test(orderId) || !RAZORPAY_ID_RE.test(paymentId)) {
     return fail(res, 400, 'INVALID_RAZORPAY_ID', 'razorpay_order_id / razorpay_payment_id are malformed.');
@@ -681,7 +681,7 @@ async function handleVerifyRazorpayPayment(req, res) {
      * this remains a cross-service trust boundary, not a fixed one. */
     let apexApiKey = null;
     try {
-      const apexTier = { starter: 'PRO', pro: 'PRO', enterprise: 'ENTERPRISE' }[planType] || 'PRO';
+      const apexTier = { starter: 'PRO', pro: 'PRO', team: 'ENTERPRISE', enterprise: 'ENTERPRISE' }[planType] || 'PRO';
       const apexBody = JSON.stringify({
         razorpay_order_id:   orderId,
         razorpay_payment_id: paymentId,
@@ -935,7 +935,7 @@ async function handleVerifyProductPayment(req, res) {
    create-razorpay-order (a brand-new customer's very first payment, who
    has no key yet), recurring billing is for an existing account, the same
    reasoning handleSubscribe() (the Stripe equivalent, above) already
-   applies. Body: { plan_type: "starter"|"pro"|"enterprise", period: "monthly"|"yearly" }
+   applies. Body: { plan_type: "starter"|"pro"|"team"|"enterprise", period: "monthly"|"yearly" }
 ═══════════════════════════════════════════════════════════════ */
 async function handleCreateSubscription(req, res) {
   if (req.method !== 'POST') return fail(res, 405, 'METHOD_NOT_ALLOWED', 'POST required');
@@ -965,7 +965,7 @@ async function handleCreateSubscription(req, res) {
     return fail(res, 400, 'INVALID_EMAIL', 'A valid email address is required.');
   }
   if (!sec.validatePlan(planType)) {
-    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "starter", "pro" or "enterprise"');
+    return fail(res, 400, 'INVALID_PLAN', 'plan_type must be "starter", "pro", "team" or "enterprise"');
   }
   if (!['monthly', 'yearly'].includes(period)) {
     return fail(res, 400, 'INVALID_PERIOD', 'period must be "monthly" or "yearly"');

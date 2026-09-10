@@ -2,12 +2,12 @@
  * SENTINEL APEX — Stripe REST Client (zero npm dependencies)
  * Uses Stripe REST API directly via fetch.
  * Required env vars: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
- * Price IDs: STRIPE_PRICE_PRO, STRIPE_PRICE_ENTERPRISE (custom).
- * STRIPE_PRICE_PRO must point at a Stripe Price object matching the
- * canonical amount in api/_lib/payment-utils.js (PLANS.pro — currently
- * ₹1,499/mo, ≈$18) — verify this in the Stripe dashboard directly; a code
- * change here cannot confirm what the live env var actually points at.
- * See docs/PRICING.md.
+ * Price IDs: STRIPE_PRICE_STARTER, STRIPE_PRICE_PRO, STRIPE_PRICE_TEAM,
+ * STRIPE_PRICE_ENTERPRISE.
+ * Each must point at a Stripe Price object matching the canonical amount
+ * in api/_lib/payment-utils.js (PLANS.<tier>) — verify these in the Stripe
+ * dashboard directly; a code change here cannot confirm what the live env
+ * var actually points at. See docs/PRICING.md.
  */
 'use strict';
 const crypto = require('crypto');
@@ -16,9 +16,10 @@ const STRIPE_KEY       = process.env.STRIPE_SECRET_KEY       || '';
 const WEBHOOK_SECRET   = process.env.STRIPE_WEBHOOK_SECRET   || '';
 const PRICE_STARTER    = process.env.STRIPE_PRICE_STARTER    || '';
 const PRICE_PRO        = process.env.STRIPE_PRICE_PRO        || '';
+const PRICE_TEAM       = process.env.STRIPE_PRICE_TEAM       || '';
 const PRICE_ENTERPRISE = process.env.STRIPE_PRICE_ENTERPRISE || '';
 
-const PRICE_BY_PLAN = { starter: PRICE_STARTER, pro: PRICE_PRO, enterprise: PRICE_ENTERPRISE };
+const PRICE_BY_PLAN = { starter: PRICE_STARTER, pro: PRICE_PRO, team: PRICE_TEAM, enterprise: PRICE_ENTERPRISE };
 
 const STRIPE_BASE = 'https://api.stripe.com/v1';
 
@@ -100,7 +101,7 @@ async function createCheckoutSession(email, plan, successUrl, cancelUrl) {
     'line_items[0][quantity]':   '1',
     success_url:                 successUrl,
     cancel_url:                  cancelUrl,
-    'subscription_data[trial_period_days]': (plan === 'pro' || plan === 'starter') ? '7' : '0',
+    'subscription_data[trial_period_days]': (plan === 'pro' || plan === 'starter' || plan === 'team') ? '7' : '0',
     'metadata[plan]':            plan,
   });
 }
@@ -139,6 +140,7 @@ function planToTier(plan) {
   if (!plan) return 'free';
   const p = String(plan).toLowerCase();
   if (p.includes('enterprise')) return 'enterprise';
+  if (p.includes('team'))       return 'team';
   if (p.includes('pro'))        return 'pro';
   if (p.includes('starter'))    return 'starter';
   return 'free';
@@ -155,5 +157,6 @@ module.exports = {
   planToTier,
   PRICE_STARTER,
   PRICE_PRO,
+  PRICE_TEAM,
   PRICE_ENTERPRISE,
 };

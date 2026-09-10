@@ -12,10 +12,11 @@ const RATE_LIMITS = {
   free:       100,
   starter:    5000,
   pro:        25000,
+  team:       100000,
   enterprise: 999999,
 };
 
-const TIERS = ['free', 'starter', 'pro', 'enterprise'];
+const TIERS = ['free', 'starter', 'pro', 'team', 'enterprise'];
 
 /* P0 Revenue Conversion v19 — conversion metadata only. This does not alter
  * entitlement order or limits. It turns a real quota-exhaustion event into a
@@ -24,7 +25,8 @@ const TIERS = ['free', 'starter', 'pro', 'enterprise'];
 const NEXT_PAID_TIER = Object.freeze({
   free: 'starter',
   starter: 'pro',
-  pro: 'enterprise',
+  pro: 'team',
+  team: 'enterprise',
   enterprise: null,
 });
 const DIRECT_CHECKOUT_BASE = 'https://blog.cyberdudebivash.in/buy.html';

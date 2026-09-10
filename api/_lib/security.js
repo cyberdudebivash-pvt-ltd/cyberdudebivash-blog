@@ -240,7 +240,7 @@ exports.normalizeUTR = (s) => (typeof s === 'string' ? s.trim().toUpperCase().re
  * Plan type validation.
  */
 function validatePlan(s) {
-  return s === 'starter' || s === 'pro' || s === 'enterprise';
+  return s === 'starter' || s === 'pro' || s === 'team' || s === 'enterprise';
 }
 exports.validatePlan = validatePlan;
 

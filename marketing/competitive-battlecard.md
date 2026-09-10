@@ -10,7 +10,7 @@ features change without notice and this file will not update itself.
 
 | Dimension | Recorded Future | Sentinel APEX |
 |---|---|---|
-| Pricing model | Not independently price-checked; enterprise-motion positioning (public-sector offering exists) | Fully public, self-serve, four fixed tiers from $0 to ~$60/mo |
+| Pricing model | Not independently price-checked; enterprise-motion positioning (public-sector offering exists) | Fully public, self-serve, four fixed tiers from $0 to ~$249/mo, plus a custom-scoped Enterprise Apex tier starting ~$999/mo |
 | Scale | Claims 900B data points/day, 13B+ entity Intelligence Graph, 430 nation-state-sponsored groups tracked | Materially smaller graph — do not claim comparable scale, it is not true |
 | Report production | Largely automated intelligence production at scale | Small number of hand-authored, evidence-cited, individually certified reports — depth and traceability per report, not volume |
 | Compliance posture | Public-sector-specific offering suggests compliance investment we have not made | None claimed — do not imply otherwise |
