@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-10T22:44:59.807Z",
+  "generated": "2026-09-11T00:52:14.583Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -7,11 +7,11 @@
   "docs": "https://blog.cyberdudebivash.in/api.html",
   "endpoint": "/api/intel/live.json",
   "description": "S2N live threat intelligence feed — top 100 items by final_ps",
-  "total_published": 4485,
+  "total_published": 4500,
   "s2n_stats": {
-    "passed": 97,
+    "passed": 99,
     "suppressed": 11,
-    "avg_qs": 0.493
+    "avg_qs": 0.496
   },
   "items": [
     {
@@ -448,6 +448,49 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-87015",
+      "title": "Open WebUI: A user's session cookies are sent to tool servers configured for bearer authentication",
+      "description": "Summary\n\nWhen more than one external tool server is reachable in the same request, a tool call to a server configured for bearer authentication can arrive carrying the calling user's Open WebUI session cookies alongside that server's own key. The cookie jar is built per connectio... [Full analysis a",
+      "cvss": 6.8,
+      "final_ps": 42,
+      "quality_score": 0.453,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-87015"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-p78m-89r6-pgf7"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.50",
+          "recency=0d (score=1.00)",
+          "QS=0.453"
+        ],
+        "priority": [
+          "base_ps=42 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -1397,6 +1440,49 @@
       }
     },
     {
+      "id": "CVE-2026-19596",
+      "title": "CVE-2026-19596 - OpenNMS XML collector XXE allows arbitrary file read from the OpenNMS host",
+      "description": "CVE-2026-19596 - OpenNMS XML collector XXE allows arbitrary file read from the OpenNMS host",
+      "cvss": 5.9,
+      "final_ps": 40,
+      "quality_score": 0.453,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-19596"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-19596"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.50",
+          "recency=0d (score=1.00)",
+          "QS=0.453"
+        ],
+        "priority": [
+          "base_ps=40 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2023-2868",
       "title": "poc-cve-2023-2868",
       "description": "",
@@ -2217,7 +2303,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-56121",
@@ -2259,7 +2347,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2025-2783",
@@ -3439,6 +3529,153 @@
       "suppression_reason": null
     },
     {
+      "id": "CVE-2026-88045",
+      "title": "rclone: S3 multipart declared-length memory exhaustion",
+      "description": "## Summary In streamed multipart mode, `serve s3` passes the request's declared part length to `multipart.NewRW().Reserve(contentLength)` before reading any part data. `Reserve` immediately obtains enough 1 MiB pool pages for the entire declared length. The request handler therefore allocates attack",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/rclone/rclone",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-88045",
+        "CVE-2026-88045"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-2p48-j3qc-rx9f",
+        "https://github.com/rclone/rclone/security/advisories/GHSA-2p48-j3qc-rx9f",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-88045",
+        "https://github.com/rclone/rclone/issues/9616"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-87011",
+      "title": "Open WebUI: Unauthenticated requests can stall the server via uncached OIDC fetches in back-channel logout",
+      "description": "## Summary The OIDC back-channel logout endpoint is unauthenticated by design, because the identity provider calls it without a browser session. Before checking whether the submitted logout token was genuine, the handler fetched the provider's discovery document and its signing keys over the network",
+      "cvss": 7.5,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "pip",
+      "product": "open-webui",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-87011",
+        "CVE-2026-87011"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-3g9q-v48f-hh9w",
+        "https://github.com/open-webui/open-webui/security/advisories/GHSA-3g9q-v48f-hh9w",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-87011",
+        "https://github.com/open-webui/open-webui/commit/aeda6ff13a25d3b3ba1b303609f35382db22142c"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-88017",
+      "title": "rclone: FTP cross-session auth-proxy backend confusion",
+      "description": "## Summary The FTP auth-proxy driver stores one obscured password per username in a server-wide map. It does not bind the credential or returned VFS to the authenticated FTP session. If two accepted credentials use the same username but resolve to different proxy backends, the later login overwrites",
+      "cvss": 7.3,
+      "final_ps": 21,
+      "quality_score": 0.523,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/rclone/rclone",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-88017",
+        "CVE-2026-88017"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-c476-6w5q-jw77",
+        "https://github.com/rclone/rclone/security/advisories/GHSA-c476-6w5q-jw77",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-88017",
+        "https://github.com/rclone/rclone/commit/c6af0b57c2b4af848bc968c2b407354476184b99"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.75",
+          "recency=0d (score=1.00)",
+          "QS=0.523"
+        ],
+        "priority": [
+          "base_ps=21 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
       "id": "CVE-2026-59960",
       "title": "@argos-ci/core: CI Branch Name OS Command Injection",
       "description": "## CI Branch Name OS Command Injection in @argos-ci/core ### Summary `@argos-ci/core@6.2.0` passes attacker-controlled CI branch/ref strings directly into an `execSync()` template literal in `packages/core/src/ci-environment/git.ts:89`. When a CI project has `hasRemoteContentAccess: false`, the Argo",
@@ -3671,6 +3908,55 @@
         ],
         "priority": [
           "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-88009",
+      "title": "Traefik: Rootless HTTP/1 request-target routes as \"/\" but is forwarded verbatim, bypassing path-scoped routing, middlewa",
+      "description": "## Summary Traefik accepts an HTTP/1.x request whose request-target is in rootless / opaque form (for example `GET http:http://internal-vhost/admin HTTP/1.1`). Go parses this into `URL.Opaque` with an empty `URL.Path`, so Traefik evaluates all routing, path-sanitization, middleware and access-log de",
+      "cvss": 0,
+      "final_ps": 18,
+      "quality_score": 0.453,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "github_advisories",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "github_advisories"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "go",
+      "product": "github.com/traefik/traefik/v3",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-88009",
+        "CVE-2026-88009"
+      ],
+      "ioc_count": 1,
+      "refs": [
+        "https://github.com/advisories/GHSA-f52w-8j3h-j724",
+        "https://github.com/traefik/traefik/security/advisories/GHSA-f52w-8j3h-j724",
+        "https://nvd.nist.gov/vuln/detail/CVE-2026-88009",
+        "https://github.com/traefik/traefik/pull/13796"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.95 (github_advisories)",
+          "data_confidence=0.40",
+          "recency=0d (score=1.00)",
+          "QS=0.453"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4125,276 +4411,6 @@
         ],
         "priority": [
           "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-88018",
-      "title": "CVE-2026-88018 - rclone serve s3: --auth-proxy without --auth-key authenticates nobody - full SigV4 signature bypass",
-      "description": "CVE-2026-88018 - rclone serve s3: --auth-proxy without --auth-key authenticates nobody - full SigV4 signature bypass",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-88018"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-88018"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-86082",
-      "title": "n8n: Domain-Restriction Bypass via Unguarded Model-Search Endpoint in OpenAI Chat Model Node",
-      "description": "Impact\n\nThe OpenAI Chat Model node checked a custom base URL against the credential's allowed-domains configuration before sending a request, but the model-search dropdown did not. A request setting options.baseURL on that path reached an arbitrary host with the credential attach... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-86082"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-34ff-336r-5q23"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-86081",
-      "title": "n8n: Regular Expression Denial of Service in the Default Blocked-File-Pattern Match via a Git Node Clone Path",
-      "description": "Impact\n\nThe Git node's clone operation matched the destination path against the default N8N_BLOCK_FILE_PATTERNS expression, which was written so that a crafted path caused catastrophic backtracking. Evaluation runs synchronously in the main n8n process, so an authenticated user c... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-86081"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-j535-v25q-vx3q"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-86075",
-      "title": "n8n: Unauthenticated Persistent Storage Exhaustion via OAuth Dynamic Client Registration Endpoint",
-      "description": "Impact\n\nThe OAuth Dynamic Client Registration endpoints validated field sizes only for redirect_uris, leaving client_name and grant_types bounded by presence checks alone. An unauthenticated remote caller could submit arbitrarily large values in either field and have them persist... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-86075"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-hh89-3r9w-qj3j"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-87015",
-      "title": "Open WebUI: A user's session cookies are sent to tool servers configured for bearer authentication",
-      "description": "Summary\n\nWhen more than one external tool server is reachable in the same request, a tool call to a server configured for bearer authentication can arrive carrying the calling user's Open WebUI session cookies alongside that server's own key. The cookie jar is built per connectio... [Full analysis a",
-      "cvss": 6.8,
-      "final_ps": 16,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-87015"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-p78m-89r6-pgf7"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-19596",
-      "title": "CVE-2026-19596 - OpenNMS XML collector XXE allows arbitrary file read from the OpenNMS host",
-      "description": "CVE-2026-19596 - OpenNMS XML collector XXE allows arbitrary file read from the OpenNMS host",
-      "cvss": 5.9,
-      "final_ps": 16,
-      "quality_score": 0.398,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-19596"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-19596"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
-          "recency=0d (score=1.00)",
-          "QS=0.398"
-        ],
-        "priority": [
-          "base_ps=16 (no boosts)"
         ],
         "suppression": null,
         "merge": null
