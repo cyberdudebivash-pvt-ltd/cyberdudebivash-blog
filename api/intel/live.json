@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-11T10:47:34.957Z",
+  "generated": "2026-09-11T14:52:30.942Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -10,7 +10,7 @@
   "total_published": 4525,
   "s2n_stats": {
     "passed": 102,
-    "suppressed": 6,
+    "suppressed": 15,
     "avg_qs": 0.492
   },
   "items": [
@@ -318,6 +318,178 @@
       }
     },
     {
+      "id": "CVE-2026-88008",
+      "title": "Traefik: Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling') and Incorrect Authorization",
+      "description": "Summary\n\nThere is a high-severity request-smuggling vulnerability in Traefik's handling of the HTTP/1.1 Upgrade mechanism. Since Traefik moved to unencrypted HTTP/2 with prior knowledge (Go 1.24), a client-initiated Upgrade: h2c request header and its connection-specific HTTP2-Se... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 46,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-88008"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-w4v4-9rw7-5326"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=46 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-88004",
+      "title": "Traefik entrypoint header-name sanitization bypassed via request trailers",
+      "description": "Summary\n\nTraefik's entrypoint defenses against spoofed trusted header names aliasHeadersStrategy / underscoreHeadersStrategy in delete or reject mode, and the default forwardedHeaders stripping of client-supplied X-Forwarded-* scan req.Header only and never req.Trailer. An unauth... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 46,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-88004"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-v67p-phpq-fc8x"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=46 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-88009",
+      "title": "Traefik: Rootless HTTP/1 request-target routes as \"/\" but is forwarded verbatim, bypassing path-scoped routing, middlewa",
+      "description": "Summary\n\nTraefik accepts an HTTP/1.x request whose request-target is in rootless / opaque form (for example GET http:http://internal-vhost/admin HTTP/1.1). Go parses this into URL.Opaque with an empty URL.Path, so Traefik evaluates all routing, path-sanitization, middleware and a... [Full analysis a",
+      "cvss": 7.5,
+      "final_ps": 46,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-88009"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-f52w-8j3h-j724"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=46 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
+      "id": "CVE-2026-88015",
+      "title": "rclone local: crafted Range request against a translated symlink panics (DoS)",
+      "description": "Summary\nWhen backend/local is used with --links/-l (or the links=true config option), each symlink is exposed as an rclone object whose content is the target path string, suffixed .rclonelink. Object.Open() decodes an incoming fs.RangeOption via Decode(o.Size()), then for a trans... [Full analysis a",
+      "cvss": 5.3,
+      "final_ps": 46,
+      "quality_score": 0.453,
+      "threat_level": "MEDIUM",
+      "type": "CRITICAL_INFRASTRUCTURE",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-10",
+      "last_seen": "2026-09-10",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-88015"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-p6m2-r3w9-mpxw"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.50",
+          "recency=0d (score=1.00)",
+          "QS=0.453"
+        ],
+        "priority": [
+          "+4 critical_infra"
+        ],
+        "suppression": null,
+        "merge": null
+      }
+    },
+    {
       "id": "CVE-2026-86218",
       "title": "N-able patches critical N-central zero-day exploited in the wild (CVE-2026-86218)",
       "description": "",
@@ -402,49 +574,6 @@
           "+12 PoC_available",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": null,
-        "merge": null
-      }
-    },
-    {
-      "id": "CVE-2026-87015",
-      "title": "Open WebUI: A user's session cookies are sent to tool servers configured for bearer authentication",
-      "description": "Summary\n\nWhen more than one external tool server is reachable in the same request, a tool call to a server configured for bearer authentication can arrive carrying the calling user's Open WebUI session cookies alongside that server's own key. The cookie jar is built per connectio... [Full analysis a",
-      "cvss": 6.8,
-      "final_ps": 42,
-      "quality_score": 0.453,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-87015"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-p78m-89r6-pgf7"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.50",
-          "recency=0d (score=1.00)",
-          "QS=0.453"
-        ],
-        "priority": [
-          "base_ps=42 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -2171,7 +2300,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2024-24919",
@@ -2215,7 +2346,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-13001",
@@ -2257,7 +2390,9 @@
         ],
         "suppression": null,
         "merge": null
-      }
+      },
+      "suppressed": false,
+      "suppression_reason": null
     },
     {
       "id": "CVE-2026-56121",
@@ -2662,6 +2797,51 @@
         ],
         "priority": [
           "+12 PoC_available"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-47839",
+      "title": "CVE-2026-47839 - Federated OIDC Users Can Bypass externalGroupsWhitelist to Gain uaa.admin",
+      "description": "CVE-2026-47839 - Federated OIDC Users Can Bypass externalGroupsWhitelist to Gain uaa.admin",
+      "cvss": 9.5,
+      "final_ps": 28,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-47839"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-47839"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "+10 CVSS≥9"
         ],
         "suppression": null,
         "merge": null
@@ -3858,118 +4038,21 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-59965",
-      "title": "@jhb.software/payload-alt-text-plugin: Alt Text Endpoint Authorization Bypass via Payload Local API `overrideAccess` Omi",
-      "description": "## Alt Text Endpoint Authorization Bypass via Payload Local API `overrideAccess` Omission ### Summary `@jhb.software/payload-alt-text-plugin` v0.7.0 exposes custom Payload CMS endpoints (`POST /api/alt-text-plugin/generate` and `/bulk`) that call the Payload Local API (`findByID` and `update`) witho",
-      "cvss": 7.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
+      "id": "CVE-2026-89176",
+      "title": "CVE-2026-89176 - HowyarWeenyGenius - Missing Authentication",
+      "description": "CVE-2026-89176 - HowyarWeenyGenius - Missing Authentication",
+      "cvss": 8.8,
+      "final_ps": 18,
+      "quality_score": 0.438,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "github_advisories"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "npm",
-      "product": "@jhb.software/payload-alt-text-plugin",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-59965",
-        "CVE-2026-59965"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-4qpv-39hg-f7fx",
-        "https://github.com/jhb-software/payload-plugins/security/advisories/GHSA-4qpv-39hg-f7fx",
-        "https://github.com/advisories/GHSA-4qpv-39hg-f7fx"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-87016",
-      "title": "Open WebUI: Sign-in as another user via wildcard characters in the OAuth subject claim on SQLite",
-      "description": "## Summary On SQLite deployments, the lookup that maps an external identity to a local account does a substring match instead of an exact match. A subject value containing SQL wildcard characters therefore matches accounts the value was never issued for, and the sign-in binds to whichever account th",
-      "cvss": 8.1,
-      "final_ps": 21,
-      "quality_score": 0.523,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "github_advisories",
-      "sources_confirmed": 2,
-      "merged_sources": [
-        "github_advisories",
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "pip",
-      "product": "open-webui",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-87016"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-wpmr-8h3q-fwj7",
-        "https://github.com/open-webui/open-webui/security/advisories/GHSA-wpmr-8h3q-fwj7",
-        "https://nvd.nist.gov/vuln/detail/CVE-2026-87016",
-        "https://github.com/open-webui/open-webui/pull/28624"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.95 (github_advisories)",
-          "data_confidence=0.75",
-          "recency=0d (score=1.00)",
-          "QS=0.523"
-        ],
-        "priority": [
-          "base_ps=21 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-88015",
-      "title": "rclone local: crafted Range request against a translated symlink panics (DoS)",
-      "description": "Summary\nWhen backend/local is used with --links/-l (or the links=true config option), each symlink is exposed as an rclone object whose content is the target path string, suffixed .rclonelink. Object.Open() decodes an incoming fs.RangeOption via Decode(o.Size()), then for a trans... [Full analysis a",
-      "cvss": 5.3,
-      "final_ps": 20,
-      "quality_score": 0.398,
-      "threat_level": "MEDIUM",
-      "type": "CRITICAL_INFRASTRUCTURE",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
         "sentinel_apex"
       ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
       "exploited": false,
       "cisa_kev": false,
       "ransomware": false,
@@ -3977,21 +4060,21 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-88015"
+        "CVE-2026-89176"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-p6m2-r3w9-mpxw"
+        "https://cvefeed.io/vuln/detail/CVE-2026-89176"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.25",
+          "data_confidence=0.45",
           "recency=0d (score=1.00)",
-          "QS=0.398"
+          "QS=0.438"
         ],
         "priority": [
-          "+4 critical_infra"
+          "base_ps=18 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -4000,9 +4083,99 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-77807",
-      "title": "CVE-2026-77807 - AcyMailing  An Ultimate Newsletter Plugin and Marketing Automation Solution for WordPress <= 11.0.4 - U",
-      "description": "CVE-2026-77807 - AcyMailing An Ultimate Newsletter Plugin and Marketing Automation Solution for WordPress <= 11.0.4 - Unauthenticated Arbitrary File Read via 'user[name]' Parameter",
+      "id": "CVE-2026-89177",
+      "title": "CVE-2026-89177 - HowyarWeenyGenius - Use of Insecure Protocol",
+      "description": "CVE-2026-89177 - HowyarWeenyGenius - Use of Insecure Protocol",
+      "cvss": 8.8,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-89177"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-89177"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-89178",
+      "title": "CVE-2026-89178 - HowyarWeenyGenius - Origin Validation Error",
+      "description": "CVE-2026-89178 - HowyarWeenyGenius - Origin Validation Error",
+      "cvss": 8.8,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-89178"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-89178"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2026-89146",
+      "title": "CVE-2026-89146 - libp2p-rendezvous through 0.17.1 Denial of Service via Unbounded Registration TTL in Discovery Response",
+      "description": "CVE-2026-89146 - libp2p-rendezvous through 0.17.1 Denial of Service via Unbounded Registration TTL in Discovery Responses",
       "cvss": 7.5,
       "final_ps": 18,
       "quality_score": 0.438,
@@ -4022,11 +4195,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-77807"
+        "CVE-2026-89146"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-77807"
+        "https://cvefeed.io/vuln/detail/CVE-2026-89146"
       ],
       "explanation": {
         "quality": [
@@ -4045,9 +4218,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-78130",
-      "title": "CVE-2026-78130 - strongSwan X.509 Attribute Certificate Parser NULL Pointer Dereference",
-      "description": "CVE-2026-78130 - strongSwan X.509 Attribute Certificate Parser NULL Pointer Dereference",
+      "id": "CVE-2026-89147",
+      "title": "CVE-2026-89147 - Net-SNMP through 5.9.5.2 Denial of Service via Blocking Unauthenticated SMUX Read",
+      "description": "CVE-2026-89147 - Net-SNMP through 5.9.5.2 Denial of Service via Blocking Unauthenticated SMUX Read",
       "cvss": 7.5,
       "final_ps": 18,
       "quality_score": 0.438,
@@ -4067,11 +4240,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-78130"
+        "CVE-2026-89147"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-78130"
+        "https://cvefeed.io/vuln/detail/CVE-2026-89147"
       ],
       "explanation": {
         "quality": [
@@ -4090,9 +4263,54 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-78132",
-      "title": "CVE-2026-78132 - strongSwan x509 Plugin Infinite Loop Vulnerability",
-      "description": "CVE-2026-78132 - strongSwan x509 Plugin Infinite Loop Vulnerability",
+      "id": "CVE-2026-80469",
+      "title": "CVE-2026-80469 - CVE-2026-80469",
+      "description": "CVE-2026-80469 - CVE-2026-80469",
+      "cvss": 8.3,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-80469"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-80469"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null
+    },
+    {
+      "id": "CVE-2025-15679",
+      "title": "CVE-2025-15679 - BMC root account active without password",
+      "description": "CVE-2025-15679 - BMC root account active without password",
       "cvss": 7.5,
       "final_ps": 18,
       "quality_score": 0.438,
@@ -4112,11 +4330,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-78132"
+        "CVE-2025-15679"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-78132"
+        "https://cvefeed.io/vuln/detail/CVE-2025-15679"
       ],
       "explanation": {
         "quality": [
@@ -4135,9 +4353,9 @@
       "suppression_reason": null
     },
     {
-      "id": "CVE-2026-78133",
-      "title": "CVE-2026-78133 - strongSwan libcharon Use-After-Free Vulnerability",
-      "description": "CVE-2026-78133 - strongSwan libcharon Use-After-Free Vulnerability",
+      "id": "CVE-2026-19486",
+      "title": "CVE-2026-19486 - SSRF in Gemini Enterprise Agent Platform App Builder",
+      "description": "CVE-2026-19486 - SSRF in Gemini Enterprise Agent Platform App Builder",
       "cvss": 7.5,
       "final_ps": 18,
       "quality_score": 0.438,
@@ -4157,236 +4375,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-78133"
+        "CVE-2026-19486"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-78133"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-78134",
-      "title": "CVE-2026-78134 - strongSwan EAP-TTLS and EAP-PEAP Incorrect Access Control",
-      "description": "CVE-2026-78134 - strongSwan EAP-TTLS and EAP-PEAP Incorrect Access Control",
-      "cvss": 7.1,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-11",
-      "last_seen": "2026-09-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-78134"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-78134"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-88009",
-      "title": "Traefik: Rootless HTTP/1 request-target routes as \"/\" but is forwarded verbatim, bypassing path-scoped routing, middlewa",
-      "description": "Summary\n\nTraefik accepts an HTTP/1.x request whose request-target is in rootless / opaque form (for example GET http:http://internal-vhost/admin HTTP/1.1). Go parses this into URL.Opaque with an empty URL.Path, so Traefik evaluates all routing, path-sanitization, middleware and a... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-88009"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-f52w-8j3h-j724"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-16174",
-      "title": "CVE-2026-16174 - Netskope Endpoint DLP Driver Integer Overflow Leading to Kernel Pool Overflow",
-      "description": "CVE-2026-16174 - Netskope Endpoint DLP Driver Integer Overflow Leading to Kernel Pool Overflow",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-16174"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-16174"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-88008",
-      "title": "Traefik: Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling') and Incorrect Authorization",
-      "description": "Summary\n\nThere is a high-severity request-smuggling vulnerability in Traefik's handling of the HTTP/1.1 Upgrade mechanism. Since Traefik moved to unencrypted HTTP/2 with prior knowledge (Go 1.24), a client-initiated Upgrade: h2c request header and its connection-specific HTTP2-Se... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-88008"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-w4v4-9rw7-5326"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null
-    },
-    {
-      "id": "CVE-2026-88004",
-      "title": "Traefik entrypoint header-name sanitization bypassed via request trailers",
-      "description": "Summary\n\nTraefik's entrypoint defenses against spoofed trusted header names — aliasHeadersStrategy / underscoreHeadersStrategy in delete or reject mode, and the default forwardedHeaders stripping of client-supplied X-Forwarded-* — scan req.Header only and never req.Trailer. An un... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-10",
-      "last_seen": "2026-09-10",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-88004"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-v67p-phpq-fc8x"
+        "https://cvefeed.io/vuln/detail/CVE-2026-19486"
       ],
       "explanation": {
         "quality": [
