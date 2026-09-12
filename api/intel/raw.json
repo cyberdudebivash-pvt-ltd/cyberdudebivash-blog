@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-12T09:21:03.834Z",
+  "generated": "2026-09-12T11:07:24.881Z",
   "version": "5.1",
   "engine": "SENTINEL APEX S2N v1.0",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
@@ -8,15 +8,15 @@
   "endpoint": "/api/intel/raw.json",
   "description": "Raw unfiltered S2N feed — all items including suppressed. Enterprise tier.",
   "note": "Access requires Enterprise API key. Includes suppression_reason and full IOC data.",
-  "count": 122,
+  "count": 123,
   "items": [
     {
-      "id": "CVE-2026-59973",
-      "title": "FrontMCP and mcp-from-openapi have bypass of OpenAPI external $ref SSRF fix",
-      "description": "Summary\n\nThe published fix for GHSA-v6ph-xcq9-qxxj / CVE-2026-39885 added a direct hostname denylist for OpenAPI external $ref dereferencing, but the latest patched dependency mcp-from-openapi 2.3.0 still makes backend-origin requests to loopback when the target is reached throug... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 52,
-      "quality_score": 0.493,
+      "id": "CVE-2022-38181",
+      "title": "Exploit for Use After Free in Arm Bifrost_Gpu_Kernel_Driver",
+      "description": "Proof-of-concept exploit for CVE-2022-38181 and CVE-2026-43499. CVSS 8.8.",
+      "cvss": 8.8,
+      "final_ps": 59,
+      "quality_score": 0.443,
       "threat_level": "MEDIUM",
       "type": "CVE_REPORT",
       "source": "sentinel_apex",
@@ -33,22 +33,68 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-59973",
-        "CVE-2026-39885"
+        "CVE-2022-38181",
+        "CVE-2026-43499"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-65h7-9wrw-629c"
+        "https://sploitus.com/exploit?id=B7F4C122-DCF4-5F88-B125-FCF4479408A9&utm_source=rss&utm_medium=rss"
       ],
       "explanation": {
         "quality": [
           "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
+          "data_confidence=0.45",
           "recency=0d (score=1.00)",
-          "QS=0.493"
+          "QS=0.443"
         ],
         "priority": [
-          "+3 supply_chain"
+          "+12 PoC_available"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-14962",
+      "title": "Exploit for CVE-2026-14962",
+      "description": "Proof-of-concept exploit for CVE-2026-14962. CVSS 8.6.",
+      "cvss": 8.6,
+      "final_ps": 58,
+      "quality_score": 0.443,
+      "threat_level": "MEDIUM",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-14962"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://sploitus.com/exploit?id=1827572E-4B22-5D4D-A969-CBB7418FEC3D&utm_source=rss&utm_medium=rss"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.443"
+        ],
+        "priority": [
+          "+12 PoC_available"
         ],
         "suppression": null,
         "merge": null
@@ -240,9 +286,9 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-59148",
-      "title": "@Mockoon/commons-server: Unauthenticated admin API + wildcard CORS allows mock-state hijack and secret theft",
-      "description": "Summary\n\nMockoon's admin API (commons-server/src/libs/server/admin-api.ts (https://github.com/mockoon/mockoon/blob/4375a8f/packages/commons-server/src/libs/server/admin-api.ts)) is mounted on the same Express listener as the user-defined mock routes, enabled by default in every s... [Full analysis a",
+      "id": "CVE-2026-56828",
+      "title": "Shopper: privilege escalation via improper Livewire admin component authorization",
+      "description": "Summary\n\nThree Livewire admin components in shopper/framework (latest master at commit fcd0c59, released as v2.8.0) gate state-mutating actions on the read-only view_users permission. This is the same class as the issue Shopper fixed in v2.8.0 / PR #511 / GHSA-f946-9qp6-vgch (htt... [Full analysis a",
       "cvss": 8.8,
       "final_ps": 49,
       "quality_score": 0.493,
@@ -262,11 +308,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-59148"
+        "CVE-2026-56828"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-rqx4-3f6q-3x2v"
+        "https://github.com/advisories/GHSA-j328-xmgp-j4q3"
       ],
       "explanation": {
         "quality": [
@@ -425,6 +471,98 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-56827",
+      "title": "Shopper: Authorization bypass in Filament bulk actions allows browse-only staff to mass-delete attributes/tags and mass-",
+      "description": "Summary\n\nFive Filament groupedBulkActions blocks across the Shopper admin Livewire pages omit the ->authorize(...) permission gate, while their per-record sibling actions (and other Shopper Index pages such as Pages/Settings/Currencies.php, Pages/Reviews/Index.php, Pages/Collecti... [Full analysis a",
+      "cvss": 8.1,
+      "final_ps": 47,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-56827"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-243p-f3cv-c5wh"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-56829",
+      "title": "Shopper: Unauthorized inventory stock manipulation via unlocked variant property in VariantStock component",
+      "description": "Title\n\nUnauthorized inventory stock manipulation via unlocked variant property in VariantStock component\n\nDescription\n\nA lack of authorization control was discovered in the stockAction() method in packages/admin/src/Livewire/Components/Products/VariantStock.php. The component exp... [Full analysis a",
+      "cvss": 8.1,
+      "final_ps": 47,
+      "quality_score": 0.493,
+      "threat_level": "MEDIUM",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-56829"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-g3f9-g5vj-p62f"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.70",
+          "recency=0d (score=1.00)",
+          "QS=0.493"
+        ],
+        "priority": [
+          "base_ps=47 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-58644",
       "title": "CISA Adds Exploited SharePoint RCE Zero-Day CVE-2026-58644 to KEV",
       "description": "",
@@ -462,144 +600,6 @@
           "+10 CVSS≥9",
           "+8 exploited_in_wild",
           "+7 zero_day"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-90460",
-      "title": "CVE-2026-90460 - OpenStack Keystone Improper Access Control Vulnerability",
-      "description": "CVE ID : CVE-2026-90460\n\n Published : Sept. 11, 2026, 10:16 p.m. | 35minutes ago\n\n Description : An issue was discovered in OpenStack Keystone before 29.0.3. Tokens obtained via delegated authentication methods (EC2 credentials, application credentials, OAuth1 access tokens, and ... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 46,
-      "quality_score": 0.493,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-11",
-      "last_seen": "2026-09-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-90460"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-90460"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-90451",
-      "title": "CVE-2026-90451 - Packet-Analysis Component Authentication Cookie Forgery via Hardcoded Secret",
-      "description": "CVE ID : CVE-2026-90451\n\n Published : Sept. 11, 2026, 10:16 p.m. | 35minutes ago\n\n Description : An example environment-configuration file ships with a fixed, publicly-known secret value used to sign authentication cookies for a bundled packet-analysis component. A deployment tha... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 46,
-      "quality_score": 0.493,
-      "threat_level": "MEDIUM",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-11",
-      "last_seen": "2026-09-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-90451"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-90451"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-11745",
-      "title": "Central Dogma: SSH host-key verification permanently disabled in Git mirror (SshGitMirror)",
-      "description": "Vulnerability\n\nCentral Dogma's Git mirror SSH client installs an Apache MINA SSHD ServerKeyVerifier lambda that returns true unconditionally for every outbound SSH connection used by git+ssh:// mirrors. The accompanying lines disable the known_hosts and ~/.ssh/config fallbacks, a... [Full analysis a",
-      "cvss": 7.5,
-      "final_ps": 46,
-      "quality_score": 0.493,
-      "threat_level": "MEDIUM",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-11",
-      "last_seen": "2026-09-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-11745"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-vjfw-cpmh-xwv3"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.70",
-          "recency=0d (score=1.00)",
-          "QS=0.493"
-        ],
-        "priority": [
-          "base_ps=46 (no boosts)"
         ],
         "suppression": null,
         "merge": null
@@ -794,6 +794,50 @@
       },
       "suppressed": false,
       "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "WIRED_SECURITY-3847461820b71e54",
+      "title": "From Hacks to Bioweapons, Claude Misuse Is Now Everywhere",
+      "description": "Plus: The US disrupts the internet’s biggest black market, a Conti ransomware hacker gets prison time, Meta fails to stop AI-generated videos of child abuse.",
+      "cvss": 0,
+      "final_ps": 42,
+      "quality_score": 0.402,
+      "threat_level": "LOW",
+      "type": "RANSOMWARE",
+      "source": "wired_security",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "wired_security"
+      ],
+      "first_seen": "2026-09-12",
+      "last_seen": "2026-09-12",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": true,
+      "vendor": "wired_security",
+      "product": "Threat Intelligence",
+      "due_date": null,
+      "cves": [],
+      "ioc_count": 0,
+      "refs": [
+        "https://www.wired.com/story/security-news-this-week-from-hacks-to-bioweapons-claude-misuse-is-now-everywhere/"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.65 (wired_security)",
+          "data_confidence=0.65",
+          "recency=0d (score=1.00)",
+          "QS=0.402"
+        ],
+        "priority": [
+          "+10 ransomware_confirmed"
+        ],
+        "suppression": "Single-source item with no CVE IDs or IOCs",
+        "merge": null
+      },
+      "suppressed": true,
+      "suppression_reason": "Single-source item with no CVE IDs or IOCs",
       "iocs": []
     },
     {
@@ -4701,6 +4745,52 @@
       "iocs": []
     },
     {
+      "id": "CVE-2026-42978",
+      "title": "Exploit for Use After Free in Microsoft",
+      "description": "",
+      "cvss": 7.8,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-42978"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://sploitus.com/exploit?id=BFC6879E-FC83-58F4-9A74-5DE915C4DB33&utm_source=rss&utm_medium=rss"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
       "id": "CVE-2026-86544",
       "title": "CVE-2026-86544: knowns versions before 0.30.0 contain an authorization bypass vulnerability where mutating code actions ",
       "description": "",
@@ -4747,54 +4837,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-56828",
-      "title": "Shopper: privilege escalation via improper Livewire admin component authorization",
-      "description": "",
-      "cvss": 8.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-11",
-      "last_seen": "2026-09-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-56828"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-j328-xmgp-j4q3"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-56827",
-      "title": "Shopper: Authorization bypass in Filament bulk actions allows browse-only staff to mass-delete attributes/tags and mass-",
+      "id": "CVE-2026-56825",
+      "title": "Shopper: Missing authorization on product removal actions in CollectionProducts component",
       "description": "",
       "cvss": 8.1,
       "final_ps": 18,
@@ -4815,11 +4859,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-56827"
+        "CVE-2026-56825"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-243p-f3cv-c5wh"
+        "https://github.com/advisories/GHSA-2cg9-97gq-9mqp"
       ],
       "explanation": {
         "quality": [
@@ -4839,14 +4883,14 @@
       "iocs": []
     },
     {
-      "id": "CVE-2026-56829",
-      "title": "Shopper: Unauthorized inventory stock manipulation via unlocked variant property in VariantStock component",
+      "id": "CVE-2026-54258",
+      "title": "CVE-2026-54258 - Cross-monitor event media authorization bypass in direct event media endpoints",
       "description": "",
-      "cvss": 8.1,
+      "cvss": 7.5,
       "final_ps": 18,
       "quality_score": 0.438,
       "threat_level": "LOW",
-      "type": "NEWS_REPORT",
+      "type": "CVE_REPORT",
       "source": "sentinel_apex",
       "sources_confirmed": 1,
       "merged_sources": [
@@ -4861,11 +4905,11 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-56829"
+        "CVE-2026-54258"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://github.com/advisories/GHSA-g3f9-g5vj-p62f"
+        "https://cvefeed.io/vuln/detail/CVE-2026-54258"
       ],
       "explanation": {
         "quality": [
@@ -5161,193 +5205,8 @@
       "iocs": []
     },
     {
-      "id": "CVE-2022-38181",
-      "title": "Exploit for Use After Free in Arm Bifrost_Gpu_Kernel_Driver",
-      "description": "",
-      "cvss": 8.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-11",
-      "last_seen": "2026-09-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2022-38181",
-        "CVE-2026-43499"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://sploitus.com/exploit?id=B7F4C122-DCF4-5F88-B125-FCF4479408A9&utm_source=rss&utm_medium=rss"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-14962",
-      "title": "Exploit for CVE-2026-14962",
-      "description": "",
-      "cvss": 8.6,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-11",
-      "last_seen": "2026-09-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-14962"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://sploitus.com/exploit?id=1827572E-4B22-5D4D-A969-CBB7418FEC3D&utm_source=rss&utm_medium=rss"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-42978",
-      "title": "Exploit for Use After Free in Microsoft",
-      "description": "",
-      "cvss": 7.8,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "CVE_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-11",
-      "last_seen": "2026-09-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-42978"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://sploitus.com/exploit?id=BFC6879E-FC83-58F4-9A74-5DE915C4DB33&utm_source=rss&utm_medium=rss"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-56825",
-      "title": "Shopper: Missing authorization on product removal actions in CollectionProducts component",
-      "description": "",
-      "cvss": 8.1,
-      "final_ps": 18,
-      "quality_score": 0.438,
-      "threat_level": "LOW",
-      "type": "NEWS_REPORT",
-      "source": "sentinel_apex",
-      "sources_confirmed": 1,
-      "merged_sources": [
-        "sentinel_apex"
-      ],
-      "first_seen": "2026-09-11",
-      "last_seen": "2026-09-11",
-      "exploited": false,
-      "cisa_kev": false,
-      "ransomware": false,
-      "vendor": "",
-      "product": "",
-      "due_date": null,
-      "cves": [
-        "CVE-2026-56825"
-      ],
-      "ioc_count": 0,
-      "refs": [
-        "https://github.com/advisories/GHSA-2cg9-97gq-9mqp"
-      ],
-      "explanation": {
-        "quality": [
-          "source_weight=0.85 (sentinel_apex)",
-          "data_confidence=0.45",
-          "recency=0d (score=1.00)",
-          "QS=0.438"
-        ],
-        "priority": [
-          "base_ps=18 (no boosts)"
-        ],
-        "suppression": null,
-        "merge": null
-      },
-      "suppressed": false,
-      "suppression_reason": null,
-      "iocs": []
-    },
-    {
-      "id": "CVE-2026-54258",
-      "title": "CVE-2026-54258 - Cross-monitor event media authorization bypass in direct event media endpoints",
+      "id": "CVE-2026-59973",
+      "title": "FrontMCP and mcp-from-openapi have bypass of OpenAPI external $ref SSRF fix",
       "description": "",
       "cvss": 7.5,
       "final_ps": 18,
@@ -5368,11 +5227,196 @@
       "product": "",
       "due_date": null,
       "cves": [
-        "CVE-2026-54258"
+        "CVE-2026-59973",
+        "CVE-2026-39885"
       ],
       "ioc_count": 0,
       "refs": [
-        "https://cvefeed.io/vuln/detail/CVE-2026-54258"
+        "https://github.com/advisories/GHSA-65h7-9wrw-629c"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-59148",
+      "title": "@Mockoon/commons-server: Unauthenticated admin API + wildcard CORS allows mock-state hijack and secret theft",
+      "description": "",
+      "cvss": 8.8,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-59148"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-rqx4-3f6q-3x2v"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-90460",
+      "title": "CVE-2026-90460 - OpenStack Keystone Improper Access Control Vulnerability",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-90460"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-90460"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-90451",
+      "title": "CVE-2026-90451 - Packet-Analysis Component Authentication Cookie Forgery via Hardcoded Secret",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "CVE_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-90451"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://cvefeed.io/vuln/detail/CVE-2026-90451"
+      ],
+      "explanation": {
+        "quality": [
+          "source_weight=0.85 (sentinel_apex)",
+          "data_confidence=0.45",
+          "recency=0d (score=1.00)",
+          "QS=0.438"
+        ],
+        "priority": [
+          "base_ps=18 (no boosts)"
+        ],
+        "suppression": null,
+        "merge": null
+      },
+      "suppressed": false,
+      "suppression_reason": null,
+      "iocs": []
+    },
+    {
+      "id": "CVE-2026-11745",
+      "title": "Central Dogma: SSH host-key verification permanently disabled in Git mirror (SshGitMirror)",
+      "description": "",
+      "cvss": 7.5,
+      "final_ps": 18,
+      "quality_score": 0.438,
+      "threat_level": "LOW",
+      "type": "NEWS_REPORT",
+      "source": "sentinel_apex",
+      "sources_confirmed": 1,
+      "merged_sources": [
+        "sentinel_apex"
+      ],
+      "first_seen": "2026-09-11",
+      "last_seen": "2026-09-11",
+      "exploited": false,
+      "cisa_kev": false,
+      "ransomware": false,
+      "vendor": "",
+      "product": "",
+      "due_date": null,
+      "cves": [
+        "CVE-2026-11745"
+      ],
+      "ioc_count": 0,
+      "refs": [
+        "https://github.com/advisories/GHSA-vjfw-cpmh-xwv3"
       ],
       "explanation": {
         "quality": [
