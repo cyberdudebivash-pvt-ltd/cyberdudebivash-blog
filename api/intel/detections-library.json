@@ -1,8 +1,54 @@
 {
-  "generated": "2026-09-11T21:04:01.085Z",
+  "generated": "2026-09-12T04:44:24.063Z",
   "platform": "CYBERDUDEBIVASH SENTINEL APEX",
   "count": 200,
   "items": [
+    {
+      "slug": "cve-2026-56828-composer-shopper-framework",
+      "title": "Shopper: privilege escalation via improper Livewire admin component authorization",
+      "url": "/posts/cve-2026-56828-composer-shopper-framework.html",
+      "generated": "2026-09-11T23:29:51.172Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-56828",
+        "CVE-2026-56828"
+      ],
+      "mitreAttack": [
+        {
+          "id": "T1068",
+          "name": "Exploitation for Privilege Escalation",
+          "tactic": "privilege-escalation",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/shopperlabs/shopper/security/advisories/GHSA-f946-9qp6-vgch)\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/shopperlabs/shopper/security/advisories/GHSA-f946-9qp6-vgch)\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)"
+      ]
+    },
+    {
+      "slug": "cve-2026-59148-npm-mockoon-commons-server",
+      "title": "@Mockoon/commons-server: Unauthenticated admin API + wildcard CORS allows mock-state hijack and secret theft",
+      "url": "/posts/cve-2026-59148-npm-mockoon-commons-server.html",
+      "generated": "2026-09-11T23:29:51.167Z",
+      "severity": "HIGH",
+      "cves": [
+        "CVE-2026-59148",
+        "CVE-2026-59148"
+      ],
+      "mitreAttack": [],
+      "sigma": [],
+      "kql": [],
+      "splunk": [],
+      "osquery": [],
+      "suricata": [
+        "alert ip $HOME_NET any -> 0.0.0.0 any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious IP 0.0.0.0\"; classtype:trojan-activity; sid:9000001; rev:1;)",
+        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://github.com/mockoon/mockoon/blob/4375a8f/packages/commons-server/src/libs/server/admin-api.ts\"; http.host; content:\"github.com\"; nocase; http.uri; content:\"/mockoon/mockoon/blob/4375a8f/packages/commons-server/src/libs/server/admin-api.ts\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)"
+      ]
+    },
     {
       "slug": "cve-2026-88056-npm-angular-platform-server",
       "title": "Angular: SSRF and Cross-Origin Credential Disclosure via URL Resolution Discrepancy in SSR",
@@ -4188,55 +4234,6 @@
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uv73du/the_way_forward/&quot;&gt;[link]&lt;/a&gt;&l\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uv73du/the_way_forward/&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&l\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
         "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uv73du/the_way_forward/&quot;&gt;[comments]&lt;/a&g\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uv73du/the_way_forward/&quot\\;&gt\\;[comments]&lt\\;/a&g\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
         "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)"
-      ]
-    },
-    {
-      "slug": "cve-2026-40639-reddit-netsec-threat-intelligence",
-      "title": "Dell BIOS Passwords: Weak XOR Encryption Allows Recovery from SPI Flash (CVE-2026-40639)",
-      "url": "/posts/cve-2026-40639-reddit-netsec-threat-intelligence.html",
-      "generated": "2026-07-13T10:02:11.669Z",
-      "severity": "HIGH",
-      "cves": [
-        "CVE-2026-40639"
-      ],
-      "mitreAttack": [],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/sajkoterrapefft&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/sajkoterrapefft&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://blog.amberwolf.com/blog/2026/july/dell-bios-passwords-weak-xor-encryption-allows-recovery-fr\"; http.host; content:\"blog.amberwolf.com\"; nocase; http.uri; content:\"/blog/2026/july/dell-bios-passwords-weak-xor-encryption-allows-recovery-fr\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/netsec/comments/1uv6qbn/dell_bios_passwords_weak_xor_encryption_allows/&quo\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/netsec/comments/1uv6qbn/dell_bios_passwords_weak_xor_encryption_allows/&quo\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain blog.amberwolf.com\"; dns.query; content:\"blog.amberwolf.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
-      ]
-    },
-    {
-      "slug": "persistence-via-fake-amsi-provider-playbook-amp-detectio",
-      "title": "Persistence via Fake AMSI Provider | Playbook &amp; Detection Strategies",
-      "url": "/posts/persistence-via-fake-amsi-provider-playbook-amp-detectio.html",
-      "generated": "2026-07-13T08:02:03.070Z",
-      "severity": "MEDIUM",
-      "cves": [],
-      "mitreAttack": [
-        {
-          "id": "T1071",
-          "name": "Application Layer Protocol",
-          "tactic": "command-and-control",
-          "confidence": "MEDIUM"
-        }
-      ],
-      "sigma": [],
-      "kql": [],
-      "splunk": [],
-      "osquery": [],
-      "suricata": [
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/r/cybersecurity/comments/1uv4zhw/persistence_via_fake_amsi_provider_playbook/\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/r/cybersecurity/comments/1uv4zhw/persistence_via_fake_amsi_provider_playbook/\"; nocase; classtype:trojan-activity; sid:9000001; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://external-preview.redd.it/qtEEnRCp_4syRkN70oGFF0rM5SyjC2db7rd5nj49LQw.png?width=640&amp;amp;c\"; http.host; content:\"external-preview.redd.it\"; nocase; http.uri; content:\"/qtEEnRCp_4syRkN70oGFF0rM5SyjC2db7rd5nj49LQw.png?width=640&amp\\;amp\\;c\"; nocase; classtype:trojan-activity; sid:9000002; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://www.reddit.com/user/netbiosX&quot;&gt;\"; http.host; content:\"www.reddit.com\"; nocase; http.uri; content:\"/user/netbiosX&quot\\;&gt\\;\"; nocase; classtype:trojan-activity; sid:9000003; rev:1;)",
-        "alert http $HOME_NET any -> $EXTERNAL_NET any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious URL https://ipurple.team/2026/07/13/amsi-provider/&quot;&gt;[link]&lt;/a&gt;&lt;/span&gt;\"; http.host; content:\"ipurple.team\"; nocase; http.uri; content:\"/2026/07/13/amsi-provider/&quot\\;&gt\\;[link]&lt\\;/a&gt\\;&lt\\;/span&gt\\;\"; nocase; classtype:trojan-activity; sid:9000004; rev:1;)",
-        "alert dns $HOME_NET any -> any any (msg:\"CYBERDUDEBIVASH SENTINEL APEX - malicious domain www.reddit.com\"; dns.query; content:\"www.reddit.com\"; nocase; classtype:trojan-activity; sid:9000005; rev:1;)"
       ]
     }
   ]
